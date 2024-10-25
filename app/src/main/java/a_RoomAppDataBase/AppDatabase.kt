@@ -9,7 +9,8 @@ import androidx.room.RoomDatabase
 @Database(
     entities = [
         BaseDonne::class,
-        CategoriesTabelleECB::class  // Add the new entity
+        CategoriesTabelleECB::class,
+        ArticlesAcheteModele::class,
     ],
     version = 1,
     exportSchema = false

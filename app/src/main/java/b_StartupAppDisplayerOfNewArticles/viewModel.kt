@@ -1,12 +1,12 @@
-package b_StartupEcommerceApp
+package b_StartupAppDisplayerOfNewArticles
 
+import a_RoomDB.ArticlesAcheteModele
 import a_RoomDB.CategoriesTabelleECB
 import a_RoomDB.ColorsArticles
 import a_RoomDB.DataBaseArticles
 import a_RoomDB.TabelleSuppliersSA
 import android.content.Context
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.Dispatchers

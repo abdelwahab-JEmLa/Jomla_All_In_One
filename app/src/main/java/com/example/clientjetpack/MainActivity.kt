@@ -2,6 +2,7 @@ package com.example.clientjetpack
 
 import a_RoomDB.AppDatabase
 import a_RoomDB.DataBaseArticles
+import android.app.Application
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -17,13 +18,11 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -35,27 +34,66 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import b_StartupEcommerceApp.HeadOfViewModelFactory
-import b_StartupEcommerceApp.HeadOfViewModels
-import com.example.clientjetpack.ui.theme.ClientJetPackTheme
+import b_StartupAppDisplayerOfNewArticles.HeadOfViewModels
 
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.wear.compose.material.ContentAlpha
+import b_StartupAppDisplayerOfNewArticles.StartupAppDisplayerOfNewArticles
+import com.example.abdelwahabjemlajetpack.PermissionHandler
+import com.google.firebase.FirebaseApp
+import com.google.firebase.database.FirebaseDatabase
 
 
 // MainActivity.kt
 class MainActivity : ComponentActivity() {
     private lateinit var permissionHandler: PermissionHandler
     private val database by lazy { AppDatabase.getInstance(this) }
-    private val headOfViewModels: HeadOfViewModels by viewModels {
-        HeadOfViewModelFactory(this)
+    class MyApplication : Application() {
+        override fun onCreate() {
+            super.onCreate()
+            FirebaseApp.initializeApp(this)
+            FirebaseDatabase.getInstance().setPersistenceEnabled(true)
+        }
     }
+
+    data class AppViewModels(
+        val headOfViewModels: HeadOfViewModels,
+
+    )
+
+    // Updated MainActivity
+    class MainActivity : ComponentActivity() {
+        private lateinit var permissionHandler: PermissionHandler
+        private val database by lazy { AppDatabase.getInstance(this) }
+        private val viewModelFactory by lazy {
+            object : ViewModelProvider.Factory {
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                    return when {
+                                             modelClass.isAssignableFrom(HeadOfViewModels::class.java) -> {
+                            HeadOfViewModels(this@MainActivity, database.categoriesTabelleECBDao()) as T
+                        }
+                        else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
+                    }
+                }
+            }
+        }
+
+        private val headOfViewModels: HeadOfViewModels by viewModels { viewModelFactory }
+
+        private val appViewModels by lazy {
+            AppViewModels(
+                headOfViewModels = headOfViewModels,
+            )
+        }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,12 +101,10 @@ class MainActivity : ComponentActivity() {
         permissionHandler.checkAndRequestPermissions()
 
         setContent {
-            AbdelwahabJeMLaJetPackTheme {
                 MainScreen(
                     database = database,
-                    viewModel = headOfViewModels
-                )
-            }
+                    viewModel = headOfViewModels)
+        }
         }
     }
 }
@@ -82,14 +118,11 @@ private fun MainScreen(
     var isNavBarVisible by remember { mutableStateOf(true) }
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-    val uploadProgress by viewModel.uploadProgress.collectAsState()
-    val textProgress by viewModel.textProgress.collectAsState()
 
     Scaffold(
         bottomBar = {
             if (isNavBarVisible) {
                 Column {
-                    ProgressBarWithAnimation(uploadProgress, textProgress)
                     CustomNavigationBar(
                         items = items,
                         currentRoute = currentRoute,
@@ -167,7 +200,7 @@ fun AppNavHost(
             modifier = Modifier.fillMaxSize()
         ) {
             composable(Screen.EditDatabaseWithCreateNewArticles.route) {
-                MainFragmentEditDatabaseWithCreateNewArticles(
+                StartupAppDisplayerOfNewArticles(
                     viewModel = headOfViewModels,
                     onToggleNavBar = onToggleNavBar,
                     onNewArticleAdded = { dialogArticle = it },

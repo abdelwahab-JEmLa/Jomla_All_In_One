@@ -1,4 +1,4 @@
-package b_StartupEcommerceApp
+package b_StartupAppDisplayerOfNewArticles
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally
