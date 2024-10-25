@@ -1,5 +1,9 @@
 package b_StartupEcommerceApp
 
+import a_RoomDB.CategoriesTabelleECB
+import a_RoomDB.ColorsArticles
+import a_RoomDB.DataBaseArticles
+import a_RoomDB.TabelleSuppliersSA
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -9,6 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
