@@ -1,7 +1,7 @@
 package com.example.clientjetpack
 
-import a_RoomDB.AppDatabase
 import a_RoomDB.ArticlesBasesStats
+import a_RoomDB.Objects
 import android.app.Application
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -25,19 +25,17 @@ import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import b_StartupAppDisplayerOfNewArticles.HeadOfViewModels
-
-import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.Alignment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavHostController
@@ -46,9 +44,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.wear.compose.material.ContentAlpha
+import b_StartupAppDisplayerOfNewArticles.HeadOfViewModels
 import b_StartupAppDisplayerOfNewArticles.StartupAppDisplayerOfNewArticles
 import c_WindosBuyAndDesplayeArticleStats.WindosBuyAndDesplayeArticleStats
-import com.example.abdelwahabjemlajetpack.PermissionHandler
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.FirebaseDatabase
 
@@ -66,7 +64,7 @@ data class AppViewModels(
 
 class MainActivity : ComponentActivity() {
     private lateinit var permissionHandler: PermissionHandler
-    private val database by lazy { AppDatabase.getInstance(this) }
+    private val database by lazy { Objects.getInstance(this) }
 
     private val viewModelFactory by lazy {
         object : ViewModelProvider.Factory {
@@ -96,7 +94,6 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             MainScreen(
-                database = database,
                 viewModel = headOfViewModels
             )
         }
@@ -145,8 +142,6 @@ private fun MainScreen(
     }
 }
 
-// AppNavigation.kt
-
 sealed class Screen(
     val route: String,
     val icon: ImageVector,
@@ -179,7 +174,6 @@ fun AppNavHost(
     var windosBuyAndDesplayeArticleStats by remember { mutableStateOf<ArticlesBasesStats?>(null) }
     var reloadTrigger by remember { mutableIntStateOf(0) }
 
-    // Update dialog article when currentEditedArticle changes
     LaunchedEffect(currentEditedArticle) {
         windosBuyAndDesplayeArticleStats = currentEditedArticle
     }

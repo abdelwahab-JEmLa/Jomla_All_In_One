@@ -15,18 +15,18 @@ import androidx.room.RoomDatabase
     version = 1,
     exportSchema = false
 )
-abstract class AppDatabase : RoomDatabase() {
+abstract class Objects : RoomDatabase() {
     abstract fun categoriesDao(): CategoriesDao
 
     companion object {
         @Volatile
-        private var INSTANCE: AppDatabase? = null
+        private var INSTANCE: Objects? = null
 
-        fun getInstance(context: Context): AppDatabase {
+        fun getInstance(context: Context): Objects {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
-                    AppDatabase::class.java,
+                    Objects::class.java,
                     "app_database"
                 ).build()
                 INSTANCE = instance

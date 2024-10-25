@@ -58,7 +58,7 @@ data class PlacesOfArticelsInCamionette(
     var classement: Int = 0
 )
 
-data class TabelleSupplierArticlesRecived(
+data class ArticlesRecived(
     val aa_vid: Long = 0,
     var a_c_idarticle_c: Long = 0,
     val a_d_nomarticlefinale_c: String = "",
@@ -89,7 +89,7 @@ data class TabelleSupplierArticlesRecived(
     constructor() : this(0L)
 }
 
-data class TabelleSuppliersSA(
+data class Suppliers(
     var idSupplierSu: Long = 0,
     var nomSupplierSu: String = "",
     var nomVocaleArabeDuSupplier: String = "",

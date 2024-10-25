@@ -5,13 +5,12 @@ import a_RoomDB.ArticlesBasesStats
 import a_RoomDB.ArticlesSelled
 import a_RoomDB.Categories
 import a_RoomDB.ColorsArticles
-import a_RoomDB.TabelleSuppliersSA
+import a_RoomDB.Suppliers
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -26,7 +25,7 @@ data class CreatAndEditeInBaseDonnRepositeryModels(
     val categoriesECB: List<Categories> = emptyList(),
     val colorsArticles: List<ColorsArticles> = emptyList(),
     val articlesSelled: List<ArticlesSelled> = emptyList(),
-    val tabelleSuppliersSA: List<TabelleSuppliersSA> = emptyList(),
+    val suppliers: List<Suppliers> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null
 )
@@ -46,15 +45,13 @@ class HeadOfViewModels(
     private val _uploadProgress = MutableStateFlow(100f)
     val uploadProgress = _uploadProgress.asStateFlow()
 
-    private val _textProgress = MutableStateFlow("")
-    val textProgress = _textProgress.asStateFlow()
 
-    private val database = FirebaseDatabase.getInstance()
-    private val articlesRef = database.getReference("e_DBJetPackExport")
-    private val categoriesRef = database.getReference("H_CategorieTabele")
-    private val colorsRef = database.getReference("H_ColorsArticles")
-    private val purchasedArticlesRef = database.getReference("ArticlesAcheteModeleAdapted")
-    private val suppliersRef = database.getReference("F_Suppliers")
+    private val firebase = FirebaseDatabase.getInstance()
+    private val articlesRef = firebase.getReference("e_DBJetPackExport")
+    private val categoriesRef = firebase.getReference("H_CategorieTabele")
+    private val colorsRef = firebase.getReference("H_ColorsArticles")
+    private val purchasedArticlesRef = firebase.getReference("ArticlesAcheteModeleAdapted")
+    private val suppliersRef = firebase.getReference("F_Suppliers")
 
     init {
         viewModelScope.launch {
@@ -62,24 +59,11 @@ class HeadOfViewModels(
         }
     }
 
-    fun updateProgressBar(
-        actionName: String = "",
-        progress: Int = 100,
-        isComplete: Boolean = false,
-        delayMs: Long = 0
-    ) {
-        viewModelScope.launch {
-            _uploadProgress.value = if (isComplete) 0f else progress.toFloat()
-            _textProgress.value = actionName
-            if (delayMs > 0) delay(delayMs)
-        }
-    }
+
 
     private suspend fun initDataFromFirebase() = withContext(Dispatchers.IO) {
         try {
             _uiState.update { it.copy(isLoading = true) }
-
-            updateProgressBar("Fetching data...", 0)
 
             val articles = fetchArticles()
             val categories = fetchCategories()
@@ -93,18 +77,16 @@ class HeadOfViewModels(
                     categoriesECB = categories,
                     colorsArticles = colors,
                     articlesSelled = purchasedArticles,
-                    tabelleSuppliersSA = suppliers,
+                    suppliers = suppliers,
                     isLoading = false
                 )
             }
 
-            updateProgressBar("Data loaded successfully", 100, true, 1000)
         } catch (e: Exception) {
             _uiState.update { it.copy(
                 error = e.message,
                 isLoading = false
             ) }
-            updateProgressBar("Error loading data", 0, true)
         }
     }
 
@@ -139,7 +121,7 @@ class HeadOfViewModels(
         .get()
         .await()
         .children
-        .mapNotNull { it.getValue(TabelleSuppliersSA::class.java) }
+        .mapNotNull { it.getValue(Suppliers::class.java) }
         .sortedBy { it.classmentSupplier }
 }
 

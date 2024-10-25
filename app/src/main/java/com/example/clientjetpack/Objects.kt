@@ -1,4 +1,4 @@
-package com.example.abdelwahabjemlajetpack
+package com.example.clientjetpack
 
 import android.Manifest
 import android.content.pm.PackageManager
