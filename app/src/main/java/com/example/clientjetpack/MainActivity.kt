@@ -289,7 +289,7 @@ fun LoadingOverlay(
         // Indicateur de progression circulaire
         CircularProgressIndicator(
             progress = { progress },
-            trackColor = ProgressIndicatorDefaults.circularTrackColor,
+            trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
             modifier = Modifier.size(64.dp)
         )
     }
