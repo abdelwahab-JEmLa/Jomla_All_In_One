@@ -1,6 +1,7 @@
 package a_RoomDB
 
-import a_MainAppCompnents.CategoriesDao
+import a_MainAppCompnents.ArticlesBasesStatsModelDao
+import a_MainAppCompnents.CategoriesModelDao
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
@@ -8,29 +9,27 @@ import androidx.room.RoomDatabase
 
 @Database(
     entities = [
-        ArticlesBasesStats::class,
-        Categories::class,
-        ArticlesSelled::class,
+        ArticlesBasesStatsModel::class,
+        CategoriesModel::class,
     ],
     version = 1,
     exportSchema = false
 )
 abstract class Objects : RoomDatabase() {
-    abstract fun categoriesDao(): CategoriesDao
+    abstract fun articlesBasesStatsModelDao(): ArticlesBasesStatsModelDao
+    abstract fun categoriesModelDao(): CategoriesModelDao
 
     companion object {
         @Volatile
-        private var INSTANCE: Objects? = null
+        private var instance: Objects? = null
 
         fun getInstance(context: Context): Objects {
-            return INSTANCE ?: synchronized(this) {
-                val instance = Room.databaseBuilder(
+            return instance ?: synchronized(this) {
+                Room.databaseBuilder(
                     context.applicationContext,
                     Objects::class.java,
                     "app_database"
-                ).build()
-                INSTANCE = instance
-                instance
+                ).build().also { instance = it }
             }
         }
     }

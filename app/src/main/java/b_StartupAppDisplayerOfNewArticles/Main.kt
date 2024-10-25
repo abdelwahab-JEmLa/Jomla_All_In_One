@@ -1,7 +1,7 @@
 package b_StartupAppDisplayerOfNewArticles
 
-import a_RoomDB.Categories
-import a_RoomDB.ArticlesBasesStats
+import a_RoomDB.CategoriesModel
+import a_RoomDB.ArticlesBasesStatsModel
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -47,7 +47,7 @@ import c_WindosBuyAndDesplayeArticleStats.DisplayeImageECB
 fun StartupAppDisplayerOfNewArticles(
     viewModel: HeadOfViewModels,
     onToggleNavBar: () -> Unit,
-    onNewArticleAdded: (ArticlesBasesStats) -> Unit,
+    onNewArticleAdded: (ArticlesBasesStatsModel) -> Unit,
     reloadTrigger: Int
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -131,8 +131,8 @@ fun StartupAppDisplayerOfNewArticles(
 
 @Composable
 fun ArticleItemECB(
-    article: ArticlesBasesStats,
-    onClickOnImg: (ArticlesBasesStats) -> Unit,
+    article: ArticlesBasesStatsModel,
+    onClickOnImg: (ArticlesBasesStatsModel) -> Unit,
     viewModel: HeadOfViewModels,
     reloadTrigger: Int
 ) {
@@ -172,7 +172,7 @@ fun ArticleItemECB(
 //CategoryHeaderECB
 @Composable
 fun CategoryHeaderECB(
-    category: Categories,
+    category: CategoriesModel,
 ) {
 
     Box(

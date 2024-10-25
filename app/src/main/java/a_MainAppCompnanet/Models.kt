@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
-data class ArticlesBasesStats(
+data class ArticlesBasesStatsModel(
     @PrimaryKey var idArticle: Int = 0,
     var nomArticleFinale: String = "",
     var classementCate: Double = 0.0,
@@ -106,9 +106,6 @@ data class Suppliers(
     constructor() : this(0)
 }
 
-
-
-
 data class PlacesOfArticelsInEacheSupplierSrore(
     val idCombinedIdArticleIdSupplier: String = "",
     val idPlace: Long= 0,
@@ -124,11 +121,11 @@ data class MapArticleInSupplierStore(
 )
 
 @Entity
-data class Categories(
+data class CategoriesModel(
     @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
-    val name: String = "",
-    var position: Int = 0
+    val idCategorieInCategoriesTabele: Long = 0,
+    val nomCategorieInCategoriesTabele: String = "",
+    var idClassementCategorieInCategoriesTabele: Int = 0
 ) {
     constructor() : this(0, "", 0)
 }

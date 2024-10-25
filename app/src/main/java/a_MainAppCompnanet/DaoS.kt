@@ -1,6 +1,7 @@
 package a_MainAppCompnents
 
-import a_RoomDB.Categories
+import a_RoomDB.ArticlesBasesStatsModel
+import a_RoomDB.CategoriesModel
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -9,25 +10,47 @@ import androidx.room.Transaction
 import androidx.room.Update
 
 @Dao
-interface CategoriesDao {
-    @Transaction
-    suspend fun transaction(block: suspend CategoriesDao.() -> Unit) {
-        block()
-    }
-
-    @Query("SELECT * FROM Categories ORDER BY id")
-    suspend fun getAllCategoriesList(): MutableList<Categories>
+interface CategoriesModelDao {
+    @Query("SELECT * FROM CategoriesModel ORDER BY idClassementCategorieInCategoriesTabele")
+    suspend fun getAll(): MutableList<CategoriesModel>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(category: Categories)
+    suspend fun insert(category: CategoriesModel)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(categories: List<Categories>)
+    suspend fun insertAll(categories: List<CategoriesModel>)
 
-    @Query("DELETE FROM Categories")
+    @Query("DELETE FROM CategoriesModel")
     suspend fun deleteAll()
 
     @Update
-    suspend fun updateAll(categories: List<Categories>)
+    suspend fun updateAll(categories: List<CategoriesModel>)
+
+    @Transaction
+    suspend fun transaction(block: suspend CategoriesModelDao.() -> Unit) {
+        block()
+    }
 }
 
+@Dao
+interface ArticlesBasesStatsModelDao {
+    @Transaction
+    suspend fun transaction(block: suspend ArticlesBasesStatsModelDao.() -> Unit) {
+        block()
+    }
+
+    @Query("SELECT * FROM ArticlesBasesStatsModel ORDER BY idCategorie")
+    suspend fun getAll(): MutableList<ArticlesBasesStatsModel>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(category: ArticlesBasesStatsModel)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(articlesBasesStatsModel: List<ArticlesBasesStatsModel>)
+
+    @Query("DELETE FROM ArticlesBasesStatsModel")
+    suspend fun deleteAll()
+
+    @Update
+    suspend fun updateAll(articlesBasesStatsModel: List<ArticlesBasesStatsModel>)
+}

@@ -1,21 +1,20 @@
 package com.example.clientjetpack
 
-import a_RoomDB.ArticlesBasesStats
+import a_RoomDB.ArticlesBasesStatsModel
 import a_RoomDB.Objects
 import android.app.Application
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EditRoad
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.NavigationBar
@@ -50,6 +49,7 @@ import c_WindosBuyAndDesplayeArticleStats.WindosBuyAndDesplayeArticleStats
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.FirebaseDatabase
 
+// Application.kt
 class MyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
@@ -63,70 +63,58 @@ data class AppViewModels(
 )
 
 class MainActivity : ComponentActivity() {
-    private lateinit var permissionHandler: PermissionHandler
     private val database by lazy { Objects.getInstance(this) }
-
-    private val viewModelFactory by lazy {
-        object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return when {
-                    modelClass.isAssignableFrom(HeadOfViewModels::class.java) -> {
-                        HeadOfViewModels(this@MainActivity, database.categoriesDao()) as T
-                    }
-                    else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
-                }
-            }
-        }
+    private val permissionHandler by lazy { PermissionHandler(this) }
+    private val headOfViewModels: HeadOfViewModels by viewModels {
+        ViewModelFactory(database)
     }
-
-    private val headOfViewModels: HeadOfViewModels by viewModels { viewModelFactory }
-
-    private val appViewModels by lazy {
-        AppViewModels(
-            headOfViewModels = headOfViewModels
-        )
-    }
+    private val appViewModels by lazy { AppViewModels(headOfViewModels) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        permissionHandler = PermissionHandler(this)
         permissionHandler.checkAndRequestPermissions()
-
         setContent {
-            MainScreen(
-                viewModel = headOfViewModels
-            )
+            MainScreen(appViewModels)
         }
     }
 }
+
+// ViewModelFactory.kt
+class ViewModelFactory(
+    private val database: Objects
+) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        return when {
+            modelClass.isAssignableFrom(HeadOfViewModels::class.java) ->
+                HeadOfViewModels(database) as T
+            else -> throw IllegalArgumentException("Unknown ViewModel: ${modelClass.name}")
+        }
+    }
+}
+
+// MainScreen.kt
 @Composable
-private fun MainScreen(
-    viewModel: HeadOfViewModels
-) {
+private fun MainScreen(appViewModels: AppViewModels) {
     val navController = rememberNavController()
     val items = NavigationItems.getItems()
     var isNavBarVisible by remember { mutableStateOf(true) }
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
+    val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
     Scaffold(
         bottomBar = {
-            if (isNavBarVisible) {
-                Column {
-                    CustomNavigationBar(
-                        items = items,
-                        currentRoute = currentRoute,
-                        onNavigate = { route ->
-                            navController.navigate(route) {
-                                popUpTo(navController.graph.startDestinationId)
-                                launchSingleTop = true
-                            }
+            AnimatedVisibility(visible = isNavBarVisible) {
+                CustomNavigationBar(
+                    items = items,
+                    currentRoute = currentRoute,
+                    onNavigate = { route ->
+                        navController.navigate(route) {
+                            popUpTo(navController.graph.startDestinationId)
+                            launchSingleTop = true
                         }
-                    )
-                }
+                    }
+                )
             }
-        },
-        floatingActionButtonPosition = FabPosition.End
+        }
     ) { padding ->
         Box(
             modifier = Modifier
@@ -134,8 +122,8 @@ private fun MainScreen(
                 .padding(padding)
         ) {
             AppNavHost(
+                appViewModels = appViewModels,
                 navController = navController,
-                headOfViewModels = viewModel,
                 onToggleNavBar = { isNavBarVisible = !isNavBarVisible }
             )
         }
@@ -162,16 +150,16 @@ object NavigationItems {
 
 @Composable
 fun AppNavHost(
+    appViewModels:AppViewModels,
     navController: NavHostController,
-    headOfViewModels: HeadOfViewModels,
     onToggleNavBar: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val uiState by headOfViewModels.uiState.collectAsState()
-    val uploadProgress by headOfViewModels.uploadProgress.collectAsState()
-    val currentEditedArticle by headOfViewModels.currentEditedArticle.collectAsState()
+    val uiState by appViewModels.headOfViewModels.uiState.collectAsState()
+    val uploadProgress by appViewModels.headOfViewModels.uploadProgress.collectAsState()
+    val currentEditedArticle by appViewModels.headOfViewModels.currentEditedArticle.collectAsState()
 
-    var windosBuyAndDesplayeArticleStats by remember { mutableStateOf<ArticlesBasesStats?>(null) }
+    var windosBuyAndDesplayeArticleStats by remember { mutableStateOf<ArticlesBasesStatsModel?>(null) }
     var reloadTrigger by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(currentEditedArticle) {
@@ -186,7 +174,7 @@ fun AppNavHost(
         ) {
             composable(Screen.EditDatabaseWithCreateNewArticles.route) {
                 StartupAppDisplayerOfNewArticles(
-                    viewModel = headOfViewModels,
+                    viewModel = appViewModels.headOfViewModels,
                     onToggleNavBar = onToggleNavBar,
                     onNewArticleAdded = { windosBuyAndDesplayeArticleStats = it },
                     reloadTrigger = reloadTrigger
@@ -214,7 +202,7 @@ fun AppNavHost(
                 article = article,
                 uiState = uiState,
                 onDismiss = { windosBuyAndDesplayeArticleStats = null },
-                viewModel = headOfViewModels,
+                viewModel = appViewModels.headOfViewModels,
                 modifier = Modifier.padding(horizontal = 3.dp),
                 onReloadTrigger = { reloadTrigger += 1 },
                 reloadTrigger = reloadTrigger

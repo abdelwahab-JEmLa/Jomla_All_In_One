@@ -1,6 +1,6 @@
 package c_WindosBuyAndDesplayeArticleStats
 
-import a_RoomDB.ArticlesBasesStats
+import a_RoomDB.ArticlesBasesStatsModel
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -39,7 +39,7 @@ import java.io.File
 @Composable
 fun WindosBuyAndDesplayeArticleStats(
     uiState: CreatAndEditeInBaseDonnRepositeryModels,
-    article: ArticlesBasesStats,
+    article: ArticlesBasesStatsModel,
     onDismiss: () -> Unit,
     viewModel: HeadOfViewModels,
     modifier: Modifier = Modifier,
@@ -83,7 +83,7 @@ fun WindosBuyAndDesplayeArticleStats(
 
 
 @Composable
-fun DisplayColorsCards(article: ArticlesBasesStats, viewModel: HeadOfViewModels, modifier: Modifier = Modifier,
+fun DisplayColorsCards(article: ArticlesBasesStatsModel, viewModel: HeadOfViewModels, modifier: Modifier = Modifier,
                        onDismiss: () -> Unit,
                        onReloadTrigger: () -> Unit,
                        relodeTigger: Int
@@ -129,7 +129,7 @@ fun DisplayColorsCards(article: ArticlesBasesStats, viewModel: HeadOfViewModels,
 
 @Composable
 private fun ColorCard(
-    article: ArticlesBasesStats,
+    article: ArticlesBasesStatsModel,
     index: Int,
     relodeTigger: Int,
 ) {
@@ -164,7 +164,7 @@ private fun ColorCard(
 
 @Composable
 fun DisplayeImageECB(
-    article: ArticlesBasesStats,
+    article: ArticlesBasesStatsModel,
     index: Int = 0,
     reloadKey: Any = Unit,
     modifier: Modifier = Modifier
