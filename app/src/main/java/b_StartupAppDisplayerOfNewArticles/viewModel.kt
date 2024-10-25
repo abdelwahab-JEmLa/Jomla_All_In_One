@@ -1,9 +1,10 @@
 package b_StartupAppDisplayerOfNewArticles
 
-import a_RoomDB.ArticlesAcheteModele
-import a_RoomDB.CategoriesTabelleECB
+import a_MainAppCompnents.CategoriesDao
+import a_RoomDB.ArticlesBasesStats
+import a_RoomDB.ArticlesSelled
+import a_RoomDB.Categories
 import a_RoomDB.ColorsArticles
-import a_RoomDB.DataBaseArticles
 import a_RoomDB.TabelleSuppliersSA
 import android.content.Context
 import androidx.lifecycle.ViewModel
@@ -21,21 +22,25 @@ import kotlinx.coroutines.withContext
 
 // State class
 data class CreatAndEditeInBaseDonnRepositeryModels(
-    val articlesBaseDonneECB: List<DataBaseArticles> = emptyList(),
-    val categoriesECB: List<CategoriesTabelleECB> = emptyList(),
+    val articlesBaseDonneECB: List<ArticlesBasesStats> = emptyList(),
+    val categoriesECB: List<Categories> = emptyList(),
     val colorsArticles: List<ColorsArticles> = emptyList(),
-    val articlesAcheteModele: List<ArticlesAcheteModele> = emptyList(),
+    val articlesSelled: List<ArticlesSelled> = emptyList(),
     val tabelleSuppliersSA: List<TabelleSuppliersSA> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null
 )
 
 // HeadOfViewModels.kt
-class HeadOfViewModels(private val context: Context) : ViewModel() {
+class HeadOfViewModels(
+    private val context: Context,
+    private val categoriesDao: CategoriesDao,
+
+    ) : ViewModel() {
     private val _uiState = MutableStateFlow(CreatAndEditeInBaseDonnRepositeryModels())
     val uiState = _uiState.asStateFlow()
 
-    private val _currentEditedArticle = MutableStateFlow<DataBaseArticles?>(null)
+    private val _currentEditedArticle = MutableStateFlow<ArticlesBasesStats?>(null)
     val currentEditedArticle = _currentEditedArticle.asStateFlow()
 
     private val _uploadProgress = MutableStateFlow(100f)
@@ -87,7 +92,7 @@ class HeadOfViewModels(private val context: Context) : ViewModel() {
                     articlesBaseDonneECB = articles,
                     categoriesECB = categories,
                     colorsArticles = colors,
-                    articlesAcheteModele = purchasedArticles,
+                    articlesSelled = purchasedArticles,
                     tabelleSuppliersSA = suppliers,
                     isLoading = false
                 )
@@ -108,17 +113,15 @@ class HeadOfViewModels(private val context: Context) : ViewModel() {
         .await()
         .children
         .mapNotNull { snapshot ->
-            snapshot.getValue(DataBaseArticles::class.java)?.apply {
-                idArticle = snapshot.key?.toIntOrNull() ?: 0
-            }
+            snapshot.getValue(ArticlesBasesStats::class.java)
         }
 
     private suspend fun fetchCategories() = categoriesRef
         .get()
         .await()
         .children
-        .mapNotNull { it.getValue(CategoriesTabelleECB::class.java) }
-        .sortedBy { it.idClassementCategorieInCategoriesTabele }
+        .mapNotNull { it.getValue(Categories::class.java) }
+        .sortedBy { it.position }
 
     private suspend fun fetchColors() = colorsRef
         .get()
@@ -130,7 +133,7 @@ class HeadOfViewModels(private val context: Context) : ViewModel() {
         .get()
         .await()
         .children
-        .mapNotNull { it.getValue(ArticlesAcheteModele::class.java) }
+        .mapNotNull { it.getValue(ArticlesSelled::class.java) }
 
     private suspend fun fetchSuppliers() = suppliersRef
         .get()

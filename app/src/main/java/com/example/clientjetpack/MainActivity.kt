@@ -1,7 +1,7 @@
 package com.example.clientjetpack
 
 import a_RoomDB.AppDatabase
-import a_RoomDB.DataBaseArticles
+import a_RoomDB.ArticlesBasesStats
 import android.app.Application
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -47,53 +47,47 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.wear.compose.material.ContentAlpha
 import b_StartupAppDisplayerOfNewArticles.StartupAppDisplayerOfNewArticles
+import c_WindosBuyAndDesplayeArticleStats.WindosBuyAndDesplayeArticleStats
 import com.example.abdelwahabjemlajetpack.PermissionHandler
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.FirebaseDatabase
 
+class MyApplication : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        FirebaseApp.initializeApp(this)
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true)
+    }
+}
 
-// MainActivity.kt
+data class AppViewModels(
+    val headOfViewModels: HeadOfViewModels
+)
+
 class MainActivity : ComponentActivity() {
     private lateinit var permissionHandler: PermissionHandler
     private val database by lazy { AppDatabase.getInstance(this) }
-    class MyApplication : Application() {
-        override fun onCreate() {
-            super.onCreate()
-            FirebaseApp.initializeApp(this)
-            FirebaseDatabase.getInstance().setPersistenceEnabled(true)
-        }
-    }
 
-    data class AppViewModels(
-        val headOfViewModels: HeadOfViewModels,
-
-    )
-
-    // Updated MainActivity
-    class MainActivity : ComponentActivity() {
-        private lateinit var permissionHandler: PermissionHandler
-        private val database by lazy { AppDatabase.getInstance(this) }
-        private val viewModelFactory by lazy {
-            object : ViewModelProvider.Factory {
-                override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return when {
-                                             modelClass.isAssignableFrom(HeadOfViewModels::class.java) -> {
-                            HeadOfViewModels(this@MainActivity, database.categoriesTabelleECBDao()) as T
-                        }
-                        else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
+    private val viewModelFactory by lazy {
+        object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return when {
+                    modelClass.isAssignableFrom(HeadOfViewModels::class.java) -> {
+                        HeadOfViewModels(this@MainActivity, database.categoriesDao()) as T
                     }
+                    else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
                 }
             }
         }
+    }
 
-        private val headOfViewModels: HeadOfViewModels by viewModels { viewModelFactory }
+    private val headOfViewModels: HeadOfViewModels by viewModels { viewModelFactory }
 
-        private val appViewModels by lazy {
-            AppViewModels(
-                headOfViewModels = headOfViewModels,
-            )
-        }
-
+    private val appViewModels by lazy {
+        AppViewModels(
+            headOfViewModels = headOfViewModels
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -101,16 +95,15 @@ class MainActivity : ComponentActivity() {
         permissionHandler.checkAndRequestPermissions()
 
         setContent {
-                MainScreen(
-                    database = database,
-                    viewModel = headOfViewModels)
-        }
+            MainScreen(
+                database = database,
+                viewModel = headOfViewModels
+            )
         }
     }
 }
 @Composable
 private fun MainScreen(
-    database: AppDatabase,
     viewModel: HeadOfViewModels
 ) {
     val navController = rememberNavController()
@@ -145,7 +138,6 @@ private fun MainScreen(
         ) {
             AppNavHost(
                 navController = navController,
-                database = database,
                 headOfViewModels = viewModel,
                 onToggleNavBar = { isNavBarVisible = !isNavBarVisible }
             )
@@ -176,7 +168,6 @@ object NavigationItems {
 @Composable
 fun AppNavHost(
     navController: NavHostController,
-    database: AppDatabase,
     headOfViewModels: HeadOfViewModels,
     onToggleNavBar: () -> Unit,
     modifier: Modifier = Modifier
@@ -185,12 +176,12 @@ fun AppNavHost(
     val uploadProgress by headOfViewModels.uploadProgress.collectAsState()
     val currentEditedArticle by headOfViewModels.currentEditedArticle.collectAsState()
 
-    var dialogArticle by remember { mutableStateOf<DataBaseArticles?>(null) }
+    var windosBuyAndDesplayeArticleStats by remember { mutableStateOf<ArticlesBasesStats?>(null) }
     var reloadTrigger by remember { mutableIntStateOf(0) }
 
     // Update dialog article when currentEditedArticle changes
     LaunchedEffect(currentEditedArticle) {
-        dialogArticle = currentEditedArticle
+        windosBuyAndDesplayeArticleStats = currentEditedArticle
     }
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -203,7 +194,7 @@ fun AppNavHost(
                 StartupAppDisplayerOfNewArticles(
                     viewModel = headOfViewModels,
                     onToggleNavBar = onToggleNavBar,
-                    onNewArticleAdded = { dialogArticle = it },
+                    onNewArticleAdded = { windosBuyAndDesplayeArticleStats = it },
                     reloadTrigger = reloadTrigger
                 )
 
@@ -224,11 +215,11 @@ fun AppNavHost(
         }
 
         // Article Detail Dialog
-        dialogArticle?.let { article ->
-            ArticleDetailWindow(
+        windosBuyAndDesplayeArticleStats?.let { article ->
+            WindosBuyAndDesplayeArticleStats(
                 article = article,
                 uiState = uiState,
-                onDismiss = { dialogArticle = null },
+                onDismiss = { windosBuyAndDesplayeArticleStats = null },
                 viewModel = headOfViewModels,
                 modifier = Modifier.padding(horizontal = 3.dp),
                 onReloadTrigger = { reloadTrigger += 1 },

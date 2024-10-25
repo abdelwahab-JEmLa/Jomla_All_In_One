@@ -1,6 +1,6 @@
 package a_RoomDB
 
-import a_MainAppCompnents.CategoriesTabelleECBDao
+import a_MainAppCompnents.CategoriesDao
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
@@ -8,15 +8,15 @@ import androidx.room.RoomDatabase
 
 @Database(
     entities = [
-        BaseDonne::class,
-        CategoriesTabelleECB::class,
-        ArticlesAcheteModele::class,
+        ArticlesBasesStats::class,
+        Categories::class,
+        ArticlesSelled::class,
     ],
     version = 1,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun categoriesTabelleECBDao(): CategoriesTabelleECBDao  // Add the new DAO
+    abstract fun categoriesDao(): CategoriesDao
 
     companion object {
         @Volatile
