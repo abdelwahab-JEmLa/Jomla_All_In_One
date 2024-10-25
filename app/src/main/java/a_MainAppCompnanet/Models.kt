@@ -41,7 +41,9 @@ data class ArticlesBasesStats(
     var monPrixAchatUniter: Double = 0.0,
     var monPrixVentUniter: Double = 0.0,
     var benificeClient: Double = 0.0,
-    var monBeneficeUniter: Double = 0.0
+    var monBeneficeUniter: Double = 0.0,
+    //Stats
+    var articleHaveUniteImages: Boolean = false,
 ) {
     // No-argument constructor for Firebase
     constructor() : this(0)
