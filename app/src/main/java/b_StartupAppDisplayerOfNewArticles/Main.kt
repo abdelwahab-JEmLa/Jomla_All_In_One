@@ -48,7 +48,6 @@ import com.example.clientjetpack.LoadingOverlay
 fun StartupAppDisplayerOfNewArticles(
     viewModel: HeadOfViewModels,
     onToggleNavBar: () -> Unit,
-    onNewArticleAdded: (ArticlesBasesStatsModel) -> Unit,
     reloadTrigger: Int
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -86,7 +85,7 @@ fun StartupAppDisplayerOfNewArticles(
                 contentPadding = PaddingValues(8.dp)
             ) {
                 uiState.categories.forEach { category ->
-                    val articlesInCategory = uiState.articles.filter { article ->
+                    val articlesInCategory = uiState.articlesBasesStatsModel.filter { article ->
                         article.nomCategorie == category.nomCategorieInCategoriesTabele &&
                                 article.diponibilityState.isEmpty() &&
                                 (filterText.isEmpty() || article.nomArticleFinale.contains(filterText, ignoreCase = true))
@@ -105,7 +104,6 @@ fun StartupAppDisplayerOfNewArticles(
                         ) { article ->
                             ArticleItemECB(
                                 article = article,
-                                onClickOnImg = onNewArticleAdded,
                                 viewModel = viewModel,
                                 reloadTrigger = reloadTrigger
                             )
@@ -136,7 +134,6 @@ fun StartupAppDisplayerOfNewArticles(
 @Composable
 fun ArticleItemECB(
     article: ArticlesBasesStatsModel,
-    onClickOnImg: (ArticlesBasesStatsModel) -> Unit,
     viewModel: HeadOfViewModels,
     reloadTrigger: Int
 ) {
@@ -150,7 +147,7 @@ fun ArticleItemECB(
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(1f)
-                    .clickable { onClickOnImg(article) },
+                    .clickable { viewModel.updateCurrentArticle(article) },
                 contentAlignment = Alignment.Center
             ) {
                 DisplayeImageECB(

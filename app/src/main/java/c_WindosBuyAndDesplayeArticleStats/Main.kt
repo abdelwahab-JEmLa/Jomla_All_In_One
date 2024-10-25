@@ -28,17 +28,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import b_StartupAppDisplayerOfNewArticles.CreatAndEditeInBaseDonnRepositeryModels
 import b_StartupAppDisplayerOfNewArticles.HeadOfViewModels
+import b_StartupAppDisplayerOfNewArticles.ViewModelsDataBase
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
+import com.example.clientjetpack.R
 import java.io.File
 
 
 @Composable
 fun WindosBuyAndDesplayeArticleStats(
-    uiState: CreatAndEditeInBaseDonnRepositeryModels,
+    uiState: ViewModelsDataBase,
     article: ArticlesBasesStatsModel,
     onDismiss: () -> Unit,
     viewModel: HeadOfViewModels,
@@ -182,7 +183,7 @@ fun DisplayeImageECB(
         )
     }
 
-    val imageSource = imageExist ?: R.drawable.blanc
+    val imageSource = imageExist ?: R.drawable.baked_goods_1
 
     val requestKey = "${article.idArticle}_${if (index == -1) "Unite" else index}_$reloadKey"
 

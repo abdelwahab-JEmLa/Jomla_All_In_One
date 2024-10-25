@@ -19,7 +19,7 @@ import kotlinx.coroutines.tasks.await
 
 // ViewModelsDataBase.kt
 data class ViewModelsDataBase(
-    val articles: List<ArticlesBasesStatsModel> = emptyList(),
+    val articlesBasesStatsModel: List<ArticlesBasesStatsModel> = emptyList(),
     val categories: List<CategoriesModel> = emptyList(),
     val colors: List<ColorsArticles> = emptyList(),
     val soldArticles: List<ArticlesSelled> = emptyList(),
@@ -38,6 +38,10 @@ class HeadOfViewModels(
 
     private val _currentArticle = MutableStateFlow<ArticlesBasesStatsModel?>(null)
     val currentArticle = _currentArticle.asStateFlow()
+
+    fun updateCurrentArticle(article: ArticlesBasesStatsModel) {
+        _currentArticle.value= article
+    }
 
     fun updateLoadingProgress(progress: Float) {
         _uiState.update { it.copy(loadingProgress = progress) }
@@ -77,7 +81,7 @@ class HeadOfViewModels(
                 database.categoriesModelDao().insertAll(categories)
                 updateLoadingProgress(70f)
 
-                // Import articles
+                // Import articlesBasesStatsModel
                 val articlesSnapshot = refDBJetPackExport.get().await()
                 val articles = articlesSnapshot.children.mapNotNull { snapshot ->
                     snapshot.getValue(ArticlesBasesStatsModel::class.java)
@@ -112,7 +116,7 @@ class HeadOfViewModels(
             val categories = database.categoriesModelDao().getAll()
 
             _uiState.update { it.copy(
-                articles = articles,
+                articlesBasesStatsModel = articles,
                 categories = categories,
             ) }
         } catch (e: Exception) {
