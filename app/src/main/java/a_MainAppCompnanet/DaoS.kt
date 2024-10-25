@@ -34,13 +34,13 @@ interface CategoriesModelDao {
 
 @Dao
 interface ArticlesBasesStatsModelDao {
+    @Query("SELECT * FROM ArticlesBasesStatsModel ORDER BY idCategorie")
+    suspend fun getAll(): MutableList<ArticlesBasesStatsModel>
+
     @Transaction
     suspend fun transaction(block: suspend ArticlesBasesStatsModelDao.() -> Unit) {
         block()
     }
-
-    @Query("SELECT * FROM ArticlesBasesStatsModel ORDER BY idCategorie")
-    suspend fun getAll(): MutableList<ArticlesBasesStatsModel>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(category: ArticlesBasesStatsModel)

@@ -1,7 +1,7 @@
 package b_StartupAppDisplayerOfNewArticles
 
-import a_RoomDB.CategoriesModel
 import a_RoomDB.ArticlesBasesStatsModel
+import a_RoomDB.CategoriesModel
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -42,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import c_WindosBuyAndDesplayeArticleStats.DisplayeImageECB
+import com.example.clientjetpack.LoadingOverlay
 
 @Composable
 fun StartupAppDisplayerOfNewArticles(
@@ -51,7 +52,6 @@ fun StartupAppDisplayerOfNewArticles(
     reloadTrigger: Int
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    var showFloatingButtons by remember { mutableStateOf(false) }
     var gridColumns by remember { mutableStateOf(2) }
     var showFilter by remember { mutableStateOf(false) }
     var filterText by remember { mutableStateOf("") }
@@ -86,13 +86,13 @@ fun StartupAppDisplayerOfNewArticles(
                 contentPadding = PaddingValues(8.dp)
             ) {
                 uiState.categories.forEach { category ->
-                    val articlesInCategory = uiState.articlesBaseDonneECB.filter { article ->
-                        article.nomCategorie == category.name &&
+                    val articlesInCategory = uiState.articles.filter { article ->
+                        article.nomCategorie == category.nomCategorieInCategoriesTabele &&
                                 article.diponibilityState.isEmpty() &&
                                 (filterText.isEmpty() || article.nomArticleFinale.contains(filterText, ignoreCase = true))
                     }
 
-                    if (articlesInCategory.isNotEmpty() || category.name == "New Articles") {
+                    if (articlesInCategory.isNotEmpty() || category.nomCategorieInCategoriesTabele == "New Articles") {
                         item(span = { GridItemSpan(gridColumns) }) {
                             CategoryHeaderECB(
                                 category = category,
@@ -115,18 +115,22 @@ fun StartupAppDisplayerOfNewArticles(
             }
         }
 
-        // Floating Action Buttons
-        FloatingActionButtons(
-            showFloatingButtons = showFloatingButtons,
+// Replace FloatingActionButtons with FloatingActionButtonGroup
+        FloatingActionButtonGroup(
             onToggleNavBar = onToggleNavBar,
-            onToggleFloatingButtons = { showFloatingButtons = !showFloatingButtons },
             onToggleOutlineFilter = { showFilter = !showFilter },
-            onChangeGridColumns = { gridColumns = it }
+            onChangeGridColumns = { gridColumns = it },
+            viewModel = viewModel
         )
+
+        // Add loading overlay when loading
+        if (uiState.isLoading) {
+            LoadingOverlay(
+                progress = uiState.loadingProgress
+            )
+        }
     }
 }
-
-
 
 
 @Composable
@@ -187,7 +191,7 @@ fun CategoryHeaderECB(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = category.name,
+                text = category.nomCategorieInCategoriesTabele,
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier
                     .padding(16.dp)

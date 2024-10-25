@@ -8,6 +8,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -32,8 +34,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -149,69 +154,6 @@ object NavigationItems {
 }
 
 @Composable
-fun AppNavHost(
-    appViewModels:AppViewModels,
-    navController: NavHostController,
-    onToggleNavBar: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val uiState by appViewModels.headOfViewModels.uiState.collectAsState()
-    val uploadProgress by appViewModels.headOfViewModels.uploadProgress.collectAsState()
-    val currentEditedArticle by appViewModels.headOfViewModels.currentEditedArticle.collectAsState()
-
-    var windosBuyAndDesplayeArticleStats by remember { mutableStateOf<ArticlesBasesStatsModel?>(null) }
-    var reloadTrigger by remember { mutableIntStateOf(0) }
-
-    LaunchedEffect(currentEditedArticle) {
-        windosBuyAndDesplayeArticleStats = currentEditedArticle
-    }
-
-    Box(modifier = modifier.fillMaxSize()) {
-        NavHost(
-            navController = navController,
-            startDestination = Screen.EditDatabaseWithCreateNewArticles.route,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            composable(Screen.EditDatabaseWithCreateNewArticles.route) {
-                StartupAppDisplayerOfNewArticles(
-                    viewModel = appViewModels.headOfViewModels,
-                    onToggleNavBar = onToggleNavBar,
-                    onNewArticleAdded = { windosBuyAndDesplayeArticleStats = it },
-                    reloadTrigger = reloadTrigger
-                )
-
-                // Show upload progress indicator
-                if (uploadProgress in 0f..100f) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(
-                            progress = { uploadProgress / 100f },
-                            trackColor = ProgressIndicatorDefaults.circularTrackColor,
-                            modifier = Modifier.size(64.dp)
-                        )
-                    }
-                }
-            }
-        }
-
-        // Article Detail Dialog
-        windosBuyAndDesplayeArticleStats?.let { article ->
-            WindosBuyAndDesplayeArticleStats(
-                article = article,
-                uiState = uiState,
-                onDismiss = { windosBuyAndDesplayeArticleStats = null },
-                viewModel = appViewModels.headOfViewModels,
-                modifier = Modifier.padding(horizontal = 3.dp),
-                onReloadTrigger = { reloadTrigger += 1 },
-                reloadTrigger = reloadTrigger
-            )
-        }
-    }
-}
-
-@Composable
 fun CustomNavigationBar(
     items: List<Screen>,
     currentRoute: String?,
@@ -236,5 +178,90 @@ fun CustomNavigationBar(
                 )
             )
         }
+    }
+}
+
+// AppNavHost.kt
+@Composable
+fun AppNavHost(
+    appViewModels: AppViewModels,
+    navController: NavHostController,
+    onToggleNavBar: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val uiState by appViewModels.headOfViewModels.uiState.collectAsState()
+    val currentEditedArticle by appViewModels.headOfViewModels.currentArticle.collectAsState()
+
+    var windosBuyAndDesplayeArticleStats by remember { mutableStateOf<ArticlesBasesStatsModel?>(null) }
+    var reloadTrigger by remember { mutableIntStateOf(0) }
+
+    LaunchedEffect(currentEditedArticle) {
+        windosBuyAndDesplayeArticleStats = currentEditedArticle
+    }
+
+    Box(modifier = modifier.fillMaxSize()) {
+        NavHost(
+            navController = navController,
+            startDestination = Screen.EditDatabaseWithCreateNewArticles.route,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            composable(Screen.EditDatabaseWithCreateNewArticles.route) {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    StartupAppDisplayerOfNewArticles(
+                        viewModel = appViewModels.headOfViewModels,
+                        onToggleNavBar = onToggleNavBar,
+                        onNewArticleAdded = { windosBuyAndDesplayeArticleStats = it },
+                        reloadTrigger = reloadTrigger
+                    )
+
+                    if (uiState.isLoading) {
+                        LoadingOverlay(
+                            progress = uiState.loadingProgress / 100f,
+                            modifier = Modifier.matchParentSize()
+                        )
+                    }
+                }
+            }
+        }
+
+        windosBuyAndDesplayeArticleStats?.let { article ->
+            WindosBuyAndDesplayeArticleStats(
+                article = article,
+                uiState = uiState,
+                onDismiss = { windosBuyAndDesplayeArticleStats = null },
+                viewModel = appViewModels.headOfViewModels,
+                modifier = Modifier.padding(horizontal = 3.dp),
+                onReloadTrigger = { reloadTrigger += 1 },
+                reloadTrigger = reloadTrigger
+            )
+        }
+    }
+}
+
+// LoadingOverlay.kt
+@Composable
+fun LoadingOverlay(
+    progress: Float,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.3f)),
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            painter = painterResource(id = com.google.firebase.appcheck.interop.R.drawable.common_google_signin_btn_icon_dark),
+            contentDescription = null,
+            modifier = Modifier
+                .size(64.dp)
+                .rotate(360f * progress)
+                .alpha(0.8f)
+        )
+        CircularProgressIndicator(
+            progress = { progress },
+            trackColor = ProgressIndicatorDefaults.circularTrackColor,
+            modifier = Modifier.size(64.dp)
+        )
     }
 }

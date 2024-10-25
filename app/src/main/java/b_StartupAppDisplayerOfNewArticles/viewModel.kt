@@ -8,13 +8,16 @@ import a_RoomDB.Objects
 import a_RoomDB.Suppliers
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.database.FirebaseDatabase
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 
-// HeadOfViewModels.kt
+// ViewModelsDataBase.kt
 data class ViewModelsDataBase(
     val articles: List<ArticlesBasesStatsModel> = emptyList(),
     val categories: List<CategoriesModel> = emptyList(),
@@ -22,9 +25,11 @@ data class ViewModelsDataBase(
     val soldArticles: List<ArticlesSelled> = emptyList(),
     val suppliers: List<Suppliers> = emptyList(),
     val isLoading: Boolean = false,
+    val loadingProgress: Float = 0f,
     val error: String? = null
 )
 
+// HeadOfViewModels.kt
 class HeadOfViewModels(
     private val database: Objects
 ) : ViewModel() {
@@ -34,28 +39,86 @@ class HeadOfViewModels(
     private val _currentArticle = MutableStateFlow<ArticlesBasesStatsModel?>(null)
     val currentArticle = _currentArticle.asStateFlow()
 
+    fun updateLoadingProgress(progress: Float) {
+        _uiState.update { it.copy(loadingProgress = progress) }
+    }
+
+    fun setLoading(isLoading: Boolean) {
+        _uiState.update { it.copy(
+            isLoading = isLoading,
+            loadingProgress = if (!isLoading) 0f else it.loadingProgress
+        ) }
+    }
+
+    private val firebaseDatabase = FirebaseDatabase.getInstance()
+    private val refDBJetPackExport = firebaseDatabase.getReference("e_DBJetPackExport")
+    private val refCategorieTabelee = firebaseDatabase.getReference("H_CategorieTabele")
+
     init {
         viewModelScope.launch {
-            loadInitialData()
+            loadData()
+        }
+
+    }
+
+    fun importFromFirebase() {
+        viewModelScope.launch {
+            try {
+                setLoading(true)
+                updateLoadingProgress(10f)
+
+                // Import categories
+                val categoriesSnapshot = refCategorieTabelee.get().await()
+                updateLoadingProgress(40f)
+
+                val categories = categoriesSnapshot.children.mapNotNull { snapshot ->
+                    snapshot.getValue(CategoriesModel::class.java)
+                }
+                database.categoriesModelDao().insertAll(categories)
+                updateLoadingProgress(70f)
+
+                // Import articles
+                val articlesSnapshot = refDBJetPackExport.get().await()
+                val articles = articlesSnapshot.children.mapNotNull { snapshot ->
+                    snapshot.getValue(ArticlesBasesStatsModel::class.java)
+                }
+                database.articlesBasesStatsModelDao().insertAll(articles)
+                updateLoadingProgress(100f)
+
+                // Refresh UI state
+                loadData()
+            } catch (e: Exception) {
+                _uiState.update { it.copy(error = e.message) }
+            } finally {
+                setLoading(false)
+            }
         }
     }
 
-    private suspend fun loadInitialData() {
+    private suspend fun loadData() {
         try {
-            _uiState.update { it.copy(isLoading = true) }
+            setLoading(true)
+            var progress = 0f
+
+            // Simulate or track real progress
+            while (progress < 100f) {
+                progress += 10f
+                updateLoadingProgress(progress)
+                delay(100) // Simulate work being done
+            }
+
+            // Your actual loading logic here
             val articles = database.articlesBasesStatsModelDao().getAll()
             val categories = database.categoriesModelDao().getAll()
 
             _uiState.update { it.copy(
                 articles = articles,
                 categories = categories,
-                isLoading = false
             ) }
         } catch (e: Exception) {
-            _uiState.update { it.copy(
-                error = e.message,
-                isLoading = false
-            ) }
+            _uiState.update { it.copy(error = e.message) }
+        } finally {
+            setLoading(false)
         }
     }
 }
