@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.EditRoad
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FabPosition
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -37,6 +39,11 @@ import com.example.clientjetpack.ui.theme.ClientJetPackTheme
 
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.wear.compose.material.ContentAlpha
 
 
 // MainActivity.kt
