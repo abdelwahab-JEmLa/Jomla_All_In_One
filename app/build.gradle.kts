@@ -6,7 +6,6 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization") version "1.8.0"
 }
 
-
 android {
     namespace = "com.example.clientjetpack"
     compileSdk = 34
