@@ -85,7 +85,7 @@ fun StartupAppDisplayerOfNewArticles(
                 state = gridState,
                 contentPadding = PaddingValues(8.dp)
             ) {
-                uiState.categoriesECB.forEach { category ->
+                uiState.categories.forEach { category ->
                     val articlesInCategory = uiState.articlesBaseDonneECB.filter { article ->
                         article.nomCategorie == category.name &&
                                 article.diponibilityState.isEmpty() &&
