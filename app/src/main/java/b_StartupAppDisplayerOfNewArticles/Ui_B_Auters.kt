@@ -38,7 +38,7 @@ fun ScrolleAdBanner(
     var currentBannerIndex by remember { mutableStateOf(0) }
     val scrollState = rememberScrollState()
     val density = LocalDensity.current
-    val cardWidth = with(density) { 400.dp.toPx() }
+    val cardWidth = with(density) { 350.dp.toPx() }
     val totalCards = 3
 
     // Custom auto-scroll behavior
@@ -46,7 +46,7 @@ fun ScrolleAdBanner(
         while (true) {
             // Forward scroll (left to right)
             while (currentBannerIndex < totalCards - 1) {
-                delay(3000) // Pause for 3 seconds
+                delay(1500)
 
                 // Calculate steps for forward scroll
                 val totalSteps = 35
