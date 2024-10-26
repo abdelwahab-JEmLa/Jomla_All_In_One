@@ -31,7 +31,7 @@ data class ViewModelsDataBase(
 )
 
 // HeadOfViewModels.kt
-class StartUpNewArticlesViewModels(
+open class StartUpNewArticlesViewModels(
     private val database: Objects
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ViewModelsDataBase())
