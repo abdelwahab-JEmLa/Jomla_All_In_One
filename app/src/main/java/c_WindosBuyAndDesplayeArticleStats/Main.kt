@@ -23,12 +23,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import b_StartupAppDisplayerOfNewArticles.StartUpNewArticlesViewModels
-import b_StartupAppDisplayerOfNewArticles.ViewModelsDataBase
+import b_StartupAppDisplayerOfNewArticles.UiState
 
 
 @Composable
 fun WindosBuyAndDesplayeArticleStats(
-    uiState: ViewModelsDataBase,
+    uiState: UiState,
     article: ArticlesBasesStatsModel,
     onDismiss: () -> Unit,
     viewModel: StartUpNewArticlesViewModels,

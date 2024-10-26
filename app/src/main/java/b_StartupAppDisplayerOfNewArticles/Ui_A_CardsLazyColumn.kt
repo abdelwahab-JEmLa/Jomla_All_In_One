@@ -18,16 +18,17 @@ import c_WindosBuyAndDesplayeArticleStats.DisplayeImageECB
 fun DisplayeArticleWhithOneColore(
     article: ArticlesBasesStatsModel,
     viewModel: StartUpNewArticlesViewModels,
-    reloadTrigger: Int
+    reloadTrigger: Int,
+    modifier: Modifier
 ) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(4.dp)
     ) {
-        Column(modifier = Modifier.padding(8.dp)) {
+        Column(modifier = modifier.padding(8.dp)) {
             Box(
-                modifier = Modifier
+                modifier = modifier
                     .fillMaxWidth()
                     .aspectRatio(1f)
                     .clickable { viewModel.updateCurrentArticle(article) },
@@ -37,7 +38,8 @@ fun DisplayeArticleWhithOneColore(
                     viewModel = viewModel,
                     article = article,
                     index = 0,
-                    reloadKey = reloadTrigger
+                    reloadKey = reloadTrigger,
+                    modifier=modifier
                 )
             }
         }

@@ -18,8 +18,8 @@ import kotlinx.coroutines.tasks.await
 import java.io.File
 
 
-// ViewModelsDataBase.kt
-data class ViewModelsDataBase(
+// UiState.kt
+data class UiState(
     val articlesBasesStatsModel: List<ArticlesBasesStatsModel> = emptyList(),
     val categories: List<CategoriesModel> = emptyList(),
     val colors: List<ColorsArticles> = emptyList(),
@@ -34,7 +34,7 @@ data class ViewModelsDataBase(
 open class StartUpNewArticlesViewModels(
     private val database: Objects
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(ViewModelsDataBase())
+    private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()
 
     private val _currentArticle = MutableStateFlow<ArticlesBasesStatsModel?>(null)

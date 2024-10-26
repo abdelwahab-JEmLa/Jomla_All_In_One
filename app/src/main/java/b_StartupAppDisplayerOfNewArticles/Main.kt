@@ -1,12 +1,12 @@
 package b_StartupAppDisplayerOfNewArticles
 
 import a_RoomDB.ArticlesBasesStatsModel
+import a_RoomDB.CategoriesModel
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridScope
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.icons.Icons
@@ -33,88 +35,76 @@ import androidx.compose.ui.unit.dp
 import c_WindosBuyAndDesplayeArticleStats.DisplayeImageECB
 import com.example.clientjetpack.LoadingOverlay
 
+
 @Composable
 fun StartupAppDisplayerOfNewArticles(
     viewModel: StartUpNewArticlesViewModels,
     onToggleNavBar: () -> Unit,
-    reloadTrigger: Int
+    reloadTrigger: Int,
+    modifier: Modifier = Modifier
 ) {
-    val uiState by viewModel.uiState.collectAsState()
     var gridColumns by remember { mutableStateOf(2) }
     var showFilter by remember { mutableStateOf(false) }
     var filterText by remember { mutableStateOf("") }
     val gridState = rememberLazyGridState()
+    val uiState by viewModel.uiState.collectAsState()
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    ArticleDisplayScreen(
+        uiState = uiState,
+        gridColumns = gridColumns,
+        showFilter = showFilter,
+        filterText = filterText,
+        gridState = gridState,
+        onFilterTextChange = { filterText = it },
+        onToggleFilter = { showFilter = !showFilter },
+        onChangeGridColumns = { gridColumns = it },
+        onToggleNavBar = onToggleNavBar,
+        onArticleClick = viewModel::updateCurrentArticle,
+        viewModel = viewModel,
+        reloadTrigger = reloadTrigger,
+        modifier = modifier
+    )
+}
+
+@Composable
+private fun ArticleDisplayScreen(
+    uiState: UiState,
+    gridColumns: Int,
+    showFilter: Boolean,
+    filterText: String,
+    gridState: LazyGridState,
+    onFilterTextChange: (String) -> Unit,
+    onToggleFilter: () -> Unit,
+    onChangeGridColumns: (Int) -> Unit,
+    onToggleNavBar: () -> Unit,
+    onArticleClick: (ArticlesBasesStatsModel) -> Unit,
+    viewModel: StartUpNewArticlesViewModels,
+    reloadTrigger: Int,
+    modifier: Modifier = Modifier
+) {
+    Box(modifier = modifier.fillMaxSize()) {
         Column {
-            if (showFilter) {
-                OutlinedTextField(
-                    value = filterText,
-                    onValueChange = { filterText = it },
-                    label = { Text("Filter Articles") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
-                    leadingIcon = {
-                        Icon(Icons.Default.Search, contentDescription = "Search")
-                    }
-                )
-            }
+            SearchFilter(
+                showFilter = showFilter,
+                filterText = filterText,
+                onFilterTextChange = onFilterTextChange
+            )
 
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(gridColumns),
-                state = gridState,
-                contentPadding = PaddingValues(8.dp)
-            ) {
-                item(span = { GridItemSpan(gridColumns) }) {
-                    ScrolleAdBanner(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 8.dp)
-                    )
-                }
-
-                uiState.categories.forEach { category ->
-                    val articlesInCategory = uiState.articlesBasesStatsModel.filter { article ->
-                        article.nomCategorie == category.nomCategorieInCategoriesTabele &&
-                                article.diponibilityState.isEmpty() &&
-                                (filterText.isEmpty() || article.nomArticleFinale.contains(filterText, ignoreCase = true))
-                    }
-
-                    if (articlesInCategory.isNotEmpty() || category.nomCategorieInCategoriesTabele == "New Articles") {
-                        item(span = { GridItemSpan(gridColumns) }) {
-                            CategoryHeaderECB(category = category)
-                        }
-
-                        articlesInCategory.forEach { article ->
-                            val colorCount = countColors(article)
-                            if (colorCount == 3) {
-                                item(span = { GridItemSpan(gridColumns) }) {
-                                    ThreeColorArticleDisplay(
-                                        article = article,
-                                        viewModel = viewModel,
-                                        reloadTrigger = reloadTrigger
-                                    )
-                                }
-                            } else {
-                                item {
-                                    DisplayeArticleWhithOneColore(
-                                        article = article,
-                                        viewModel = viewModel,
-                                        reloadTrigger = reloadTrigger
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            ArticleGrid(
+                uiState = uiState,
+                gridColumns = gridColumns,
+                filterText = filterText,
+                gridState = gridState,
+                onArticleClick = onArticleClick,
+                viewModel = viewModel,
+                reloadTrigger = reloadTrigger
+            )
         }
 
         FloatingActionButtonGroup(
             onToggleNavBar = onToggleNavBar,
-            onToggleOutlineFilter = { showFilter = !showFilter },
-            onChangeGridColumns = { gridColumns = it },
+            onToggleOutlineFilter = onToggleFilter,
+            onChangeGridColumns = onChangeGridColumns,
             viewModel = viewModel
         )
 
@@ -125,64 +115,176 @@ fun StartupAppDisplayerOfNewArticles(
 }
 
 @Composable
-fun ThreeColorArticleDisplay(
-    article: ArticlesBasesStatsModel,
+private fun SearchFilter(
+    showFilter: Boolean,
+    filterText: String,
+    onFilterTextChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    if (showFilter) {
+        OutlinedTextField(
+            value = filterText,
+            onValueChange = onFilterTextChange,
+            label = { Text("Filter Articles") },
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            leadingIcon = {
+                Icon(Icons.Default.Search, contentDescription = "Search")
+            }
+        )
+    }
+}
+
+@Composable
+private fun ArticleGrid(
+    uiState: UiState,
+    gridColumns: Int,
+    filterText: String,
+    gridState: LazyGridState,
+    onArticleClick: (ArticlesBasesStatsModel) -> Unit,
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int
 ) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(4.dp)
-            .clickable { viewModel.updateCurrentArticle(article) }
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(gridColumns),
+        state = gridState,
+        contentPadding = PaddingValues(8.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp)
-                .padding(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            // Left column with two square images
-            Column(
+        item(span = { GridItemSpan(gridColumns) }) {
+            ScrolleAdBanner(
                 modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
-                ) {
-                    DisplayeImageECB(
-                        viewModel = viewModel,
-                        article = article,
-                        index = 0,
-                        reloadKey = reloadTrigger,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
-                ) {
-                    DisplayeImageECB(
-                        viewModel = viewModel,
-                        article = article,
-                        index = 1,
-                        reloadKey = reloadTrigger,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp)
+            )
+        }
+
+        uiState.categories.forEach { category ->
+            val articlesInCategory = uiState.articlesBasesStatsModel.filter { article ->
+                article.nomCategorie == category.nomCategorieInCategoriesTabele &&
+                        (filterText.isEmpty() || article.nomArticleFinale.contains(filterText, ignoreCase = true))
             }
 
-            // Right column with one tall image
+            if (articlesInCategory.isNotEmpty() || category.nomCategorieInCategoriesTabele == "New Articles") {
+                categorySection(
+                    category = category,
+                    articles = articlesInCategory,
+                    gridColumns = gridColumns,
+                    onArticleClick = onArticleClick,
+                    viewModel = viewModel,
+                    reloadTrigger = reloadTrigger
+                )
+            }
+        }
+    }
+}
+
+private fun LazyGridScope.categorySection(
+    category: CategoriesModel,
+    articles: List<ArticlesBasesStatsModel>,
+    gridColumns: Int,
+    onArticleClick: (ArticlesBasesStatsModel) -> Unit,
+    viewModel: StartUpNewArticlesViewModels,
+    reloadTrigger: Int
+) {
+    item(span = { GridItemSpan(gridColumns) }) {
+        CategoryHeaderECB(category = category)
+    }
+
+    items(
+        count = articles.size,
+        span = { index ->
+            val article = articles[index]
+            GridItemSpan(if (countColors(article) == 3) gridColumns else 1)
+        }
+    ) { index ->
+        val article = articles[index]
+        ArticleItem(
+            article = article,
+            onArticleClick = onArticleClick,
+            viewModel = viewModel,
+            reloadTrigger = reloadTrigger
+        )
+    }
+}
+
+@Composable
+private fun ArticleItem(
+    article: ArticlesBasesStatsModel,
+    onArticleClick: (ArticlesBasesStatsModel) -> Unit,
+    viewModel: StartUpNewArticlesViewModels,
+    reloadTrigger: Int
+) {
+    if (countColors(article) == 3) {
+        ThreeColorArticleDisplay(
+            article = article,
+            viewModel = viewModel,
+            reloadTrigger = reloadTrigger,
+            modifier = Modifier.clickable { onArticleClick(article) }
+        )
+    } else {
+        DisplayeArticleWhithOneColore(
+            article = article,
+            viewModel = viewModel,
+            reloadTrigger = reloadTrigger,
+            modifier = Modifier.clickable { onArticleClick(article) }
+        )
+    }
+}
+
+@Composable
+private fun ThreeColorArticleDisplay(
+    article: ArticlesBasesStatsModel,
+    viewModel: StartUpNewArticlesViewModels,
+    reloadTrigger: Int,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(4.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            // Première image
             Box(
                 modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight()
+                    .height(500.dp)
+                    .fillMaxWidth()
+            ) {
+                DisplayeImageECB(
+                    viewModel = viewModel,
+                    article = article,
+                    index = 0,
+                    reloadKey = reloadTrigger,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+
+            // Deuxième image
+            Box(
+                modifier = Modifier
+                    .height(150.dp)
+                    .fillMaxWidth()
+            ) {
+                DisplayeImageECB(
+                    viewModel = viewModel,
+                    article = article,
+                    index = 1,
+                    reloadKey = reloadTrigger,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+
+            // Troisième image
+            Box(
+                modifier = Modifier
+                    .height(150.dp)
+                    .fillMaxWidth()
             ) {
                 DisplayeImageECB(
                     viewModel = viewModel,
@@ -202,7 +304,6 @@ private fun countColors(article: ArticlesBasesStatsModel): Int {
         article.couleur2,
         article.couleur3,
         article.couleur4
-    ).count { it?.isNotEmpty() ?:false  }
+    ).count { !it.isNullOrEmpty() }
 }
-
 
