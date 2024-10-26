@@ -2,8 +2,6 @@ package b_StartupAppDisplayerOfNewArticles
 
 import a_RoomDB.ArticlesBasesStatsModel
 import a_RoomDB.CategoriesModel
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -38,7 +36,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,8 +47,6 @@ import c_WindosBuyAndDesplayeArticleStats.DisplayeImageECB
 import com.example.clientjetpack.LoadingOverlay
 import com.example.clientjetpack.R
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlin.math.roundToInt
 
 @Composable
 fun ScrolleAdBanner(
@@ -59,41 +54,48 @@ fun ScrolleAdBanner(
 ) {
     var currentBannerIndex by remember { mutableStateOf(0) }
     val scrollState = rememberScrollState()
-    val coroutineScope = rememberCoroutineScope()
     val density = LocalDensity.current
     val cardWidth = with(density) { 350.dp.toPx() }
     val totalCards = 3
 
-    // Auto-scroll every 3 seconds with smoother animation
+    // Custom auto-scroll behavior
     LaunchedEffect(Unit) {
         while (true) {
-            delay(3000) // Changed to 3 seconds
-            currentBannerIndex = (currentBannerIndex + 1) % totalCards
-            coroutineScope.launch {
-                scrollState.animateScrollTo(
-                    (currentBannerIndex * cardWidth).toInt(),
-                    animationSpec = tween(
-                        durationMillis = 1000, // Longer duration for smoother scroll
-                        easing = FastOutSlowInEasing // Smooth easing curve
-                    )
-                )
-            }
-        }
-    }
+            // Forward scroll (left to right)
+            while (currentBannerIndex < totalCards - 1) {
+                delay(3000) // Pause for 3 seconds
 
-    // Smoother snap effect for manual scrolling
-    val scrollOffset = scrollState.value
-    LaunchedEffect(scrollOffset) {
-        val nearestStop = (scrollOffset / cardWidth).roundToInt() * cardWidth
-        if (scrollOffset.toFloat() != nearestStop) {
-            currentBannerIndex = (nearestStop / cardWidth).toInt()
-            scrollState.animateScrollTo(
-                nearestStop.toInt(),
-                animationSpec = tween(
-                    durationMillis = 500,
-                    easing = FastOutSlowInEasing
-                )
-            )
+                // Calculate steps for forward scroll
+                val totalSteps = 35
+                val stepSize = cardWidth / totalSteps
+
+                // Smooth scroll to next card
+                for (step in 0 until totalSteps) {
+                    val nextPosition = (currentBannerIndex * cardWidth) + (step * stepSize)
+                    scrollState.scrollTo(nextPosition.toInt())
+                    delay(10) // 10ms delay between each step
+                }
+
+                currentBannerIndex++
+            }
+
+            // At this point we're at the last card
+            delay(3000) // Pause before returning
+
+            // Reverse scroll (right to left)
+            val totalSteps = 35
+            val maxScroll = (totalCards - 1) * cardWidth
+            val stepSize = maxScroll / totalSteps
+
+            // Smooth scroll back to start
+            for (step in 0 until totalSteps) {
+                val nextPosition = maxScroll - (step * stepSize)
+                scrollState.scrollTo(nextPosition.toInt())
+                delay(10) // 10ms delay between each step
+            }
+
+            // Reset position
+            currentBannerIndex = 0
         }
     }
 
@@ -127,7 +129,6 @@ fun ScrolleAdBanner(
         }
     }
 }
-
 @Composable
 fun StartupAppDisplayerOfNewArticles(
     viewModel: HeadOfViewModels,
