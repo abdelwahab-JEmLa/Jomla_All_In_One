@@ -56,7 +56,7 @@ class StartUpNewArticlesViewModels(
 
     private val firebaseDatabase = FirebaseDatabase.getInstance()
     private val refDBJetPackExport = firebaseDatabase.getReference("e_DBJetPackExport")
-    private val refCategorieTabelee = firebaseDatabase.getReference("H_CategorieTabele")
+    private val refCategorieModel = firebaseDatabase.getReference("H_CategorieTabele")
 
     init {
         viewModelScope.launch {
@@ -72,7 +72,7 @@ class StartUpNewArticlesViewModels(
                 updateLoadingProgress(10f)
 
                 // Import categories
-                val categoriesSnapshot = refCategorieTabelee.get().await()
+                val categoriesSnapshot = refCategorieModel.get().await()
                 updateLoadingProgress(40f)
 
                 val categories = categoriesSnapshot.children.mapNotNull { snapshot ->
