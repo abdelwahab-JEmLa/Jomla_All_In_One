@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import java.io.File
 
 
 // ViewModelsDataBase.kt
@@ -39,6 +40,12 @@ class StartUpNewArticlesViewModels(
     private val _currentArticle = MutableStateFlow<ArticlesBasesStatsModel?>(null)
     val currentArticle = _currentArticle.asStateFlow()
 
+    val viewModelImagesPath = File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne")
+    private val firebaseDatabase = FirebaseDatabase.getInstance()
+    private val refDBJetPackExport = firebaseDatabase.getReference("e_DBJetPackExport")
+    private val refCategorieModel = firebaseDatabase.getReference("H_CategorieTabele")
+    private val refColorsArticles = firebaseDatabase.getReference("H_ColorsArticles")
+
     fun updateCurrentArticle(article: ArticlesBasesStatsModel) {
         _currentArticle.value= article
     }
@@ -53,10 +60,6 @@ class StartUpNewArticlesViewModels(
             loadingProgress = if (!isLoading) 0f else it.loadingProgress
         ) }
     }
-
-    private val firebaseDatabase = FirebaseDatabase.getInstance()
-    private val refDBJetPackExport = firebaseDatabase.getReference("e_DBJetPackExport")
-    private val refCategorieModel = firebaseDatabase.getReference("H_CategorieTabele")
 
     init {
         viewModelScope.launch {
@@ -80,6 +83,16 @@ class StartUpNewArticlesViewModels(
                 }
                 database.categoriesModelDao().insertAll(categories)
                 updateLoadingProgress(70f)
+
+                // Import colors
+                val colorsSnapshot = refColorsArticles.get().await()
+                updateLoadingProgress(80f)
+
+                val colors = colorsSnapshot.children.mapNotNull { snapshot ->
+                    snapshot.getValue(ColorsArticles::class.java)
+                }
+                database.colorsArticlesDao().insertAll(colors)
+                updateLoadingProgress(90f)
 
                 // Import articlesBasesStatsModel
                 val articlesSnapshot = refDBJetPackExport.get().await()
@@ -114,11 +127,13 @@ class StartUpNewArticlesViewModels(
             // Your actual loading logic here
             val articles = database.articlesBasesStatsModelDao().getAll()
             val categories = database.categoriesModelDao().getAll()
+            val colors = database.colorsArticlesDao().getAll()
 
             _uiState.update { it.copy(
                 articlesBasesStatsModel = articles,
                 categories = categories,
-            ) }
+                colors = colors,
+                ) }
         } catch (e: Exception) {
             _uiState.update { it.copy(error = e.message) }
         } finally {

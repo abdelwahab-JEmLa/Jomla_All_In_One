@@ -2,6 +2,7 @@ package a_MainAppCompnents
 
 import a_RoomDB.ArticlesBasesStatsModel
 import a_RoomDB.CategoriesModel
+import a_RoomDB.ColorsArticles
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -53,4 +54,28 @@ interface ArticlesBasesStatsModelDao {
 
     @Update
     suspend fun updateAll(articlesBasesStatsModel: List<ArticlesBasesStatsModel>)
+}
+
+
+@Dao
+interface ColorsArticlesDao {
+    @Query("SELECT * FROM ColorsArticles ORDER BY idColore")
+    suspend fun getAll(): MutableList<ColorsArticles>
+
+    @Transaction
+    suspend fun transaction(block: suspend ColorsArticlesDao.() -> Unit) {
+        block()
+    }
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(category: ColorsArticles)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(colorsArticles: List<ColorsArticles>)
+
+    @Query("DELETE FROM ColorsArticles")
+    suspend fun deleteAll()
+
+    @Update
+    suspend fun updateAll(colorsArticles: List<ColorsArticles>)
 }

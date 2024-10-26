@@ -99,6 +99,7 @@ fun DisplayColorsCards(article: ArticlesBasesStatsModel, viewModel: StartUpNewAr
         if (article.articleHaveUniteImages) {
             item {
                 ColorCard(
+                    viewModel = viewModel,
                     article = article,
                     index = -1,
                     relodeTigger = relodeTigger
@@ -118,7 +119,8 @@ fun DisplayColorsCards(article: ArticlesBasesStatsModel, viewModel: StartUpNewAr
                 ColorCard(
                     article = article,
                     index = index,
-                    relodeTigger = relodeTigger
+                    relodeTigger = relodeTigger,
+                    viewModel = viewModel
                 )
             }
         }
@@ -133,6 +135,7 @@ private fun ColorCard(
     article: ArticlesBasesStatsModel,
     index: Int,
     relodeTigger: Int,
+    viewModel: StartUpNewArticlesViewModels,
 ) {
 
     Card(
@@ -145,6 +148,7 @@ private fun ColorCard(
         ) {
             // Background Image
             DisplayeImageECB(
+                viewModel = viewModel,
                 article = article,
                 index = index,
                 reloadKey = relodeTigger,
@@ -166,12 +170,14 @@ private fun ColorCard(
 @Composable
 fun DisplayeImageECB(
     article: ArticlesBasesStatsModel,
+    viewModel: StartUpNewArticlesViewModels,
     index: Int = 0,
     reloadKey: Any = Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val baseImagePath = "/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne/${article.idArticle}_${if (index == -1) "Unite" else (index + 1)}"
+      val viewModelImagesPath=  viewModel.viewModelImagesPath
+    val baseImagePath = "$viewModelImagesPath${article.idArticle}_${if (index == -1) "Unite" else (index + 1)}"
 
     val imageExist by remember(article.idArticle, reloadKey) {
         mutableStateOf(

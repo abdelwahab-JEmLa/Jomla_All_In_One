@@ -34,6 +34,7 @@ fun ArticleItemECB(
                 contentAlignment = Alignment.Center
             ) {
                 DisplayeImageECB(
+                    viewModel = viewModel,
                     article = article,
                     index = 0,
                     reloadKey = reloadTrigger

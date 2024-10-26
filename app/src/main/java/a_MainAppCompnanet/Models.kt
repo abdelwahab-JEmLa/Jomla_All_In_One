@@ -48,12 +48,16 @@ data class ArticlesBasesStatsModel(
     // No-argument constructor for Firebase
     constructor() : this(0)
 }
+@Entity
 data class ColorsArticles(
-    val idColore: Long = 0,
+    @PrimaryKey var idColore: Long = 0,
     val nameColore: String = "",
     val iconColore: String = "",
     var classementColore: Int = 0
-)
+){
+    // No-argument constructor for Firebase
+    constructor() : this(0)
+}
 data class PlacesOfArticelsInCamionette(
     val idPlace: Long = 0,
     val namePlace: String = "",
