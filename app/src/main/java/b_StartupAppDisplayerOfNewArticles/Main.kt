@@ -2,12 +2,11 @@ package b_StartupAppDisplayerOfNewArticles
 
 import a_RoomDB.ArticlesBasesStatsModel
 import a_RoomDB.CategoriesModel
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,31 +17,116 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import c_WindosBuyAndDesplayeArticleStats.DisplayeImageECB
 import com.example.clientjetpack.LoadingOverlay
+import com.example.clientjetpack.R
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
+
+@Composable
+fun ScrolleAdBanner(
+    modifier: Modifier = Modifier
+) {
+    var currentBannerIndex by remember { mutableStateOf(0) }
+    val scrollState = rememberScrollState()
+    val coroutineScope = rememberCoroutineScope()
+    val density = LocalDensity.current
+    val cardWidth = with(density) { 350.dp.toPx() }
+    val totalCards = 3
+
+    // Auto-scroll every 3 seconds with smoother animation
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(3000) // Changed to 3 seconds
+            currentBannerIndex = (currentBannerIndex + 1) % totalCards
+            coroutineScope.launch {
+                scrollState.animateScrollTo(
+                    (currentBannerIndex * cardWidth).toInt(),
+                    animationSpec = tween(
+                        durationMillis = 1000, // Longer duration for smoother scroll
+                        easing = FastOutSlowInEasing // Smooth easing curve
+                    )
+                )
+            }
+        }
+    }
+
+    // Smoother snap effect for manual scrolling
+    val scrollOffset = scrollState.value
+    LaunchedEffect(scrollOffset) {
+        val nearestStop = (scrollOffset / cardWidth).roundToInt() * cardWidth
+        if (scrollOffset.toFloat() != nearestStop) {
+            currentBannerIndex = (nearestStop / cardWidth).toInt()
+            scrollState.animateScrollTo(
+                nearestStop.toInt(),
+                animationSpec = tween(
+                    durationMillis = 500,
+                    easing = FastOutSlowInEasing
+                )
+            )
+        }
+    }
+
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .horizontalScroll(scrollState)
+            .padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        val images = listOf(
+            R.drawable.baked_goods_1,
+            R.drawable.baked_goods_2,
+            R.drawable.baked_goods_3
+        )
+
+        images.forEachIndexed { index, imageRes ->
+            Card(
+                modifier = Modifier
+                    .width(350.dp)
+                    .height(150.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            ) {
+                Image(
+                    painter = painterResource(id = imageRes),
+                    contentDescription = "Banner image ${index + 1}",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            }
+        }
+    }
+}
 
 @Composable
 fun StartupAppDisplayerOfNewArticles(
@@ -57,63 +141,66 @@ fun StartupAppDisplayerOfNewArticles(
     val gridState = rememberLazyGridState()
 
     Box(modifier = Modifier.fillMaxSize()) {
-        Column {
-            // Search Filter
-            AnimatedVisibility(
-                visible = showFilter,
-                enter = fadeIn() + expandVertically(),
-                exit = fadeOut() + shrinkVertically()
-            ) {
-
-                OutlinedTextField(
-                    value = filterText,
-                    onValueChange = { filterText = it },
-                    label = { Text("Filter Articles") },
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(gridColumns),
+            state = gridState,
+            contentPadding = PaddingValues(8.dp)
+        ) {
+            // Add banner as the first item spanning full width
+            item(span = { GridItemSpan(gridColumns) }) {
+                ScrolleAdBanner(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(8.dp),
-                    leadingIcon = {
-                        Icon(Icons.Default.Search, contentDescription = "Search")
-                    }
+                        .padding(bottom = 8.dp)
                 )
             }
 
-            // Grid Content
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(gridColumns),
-                state = gridState,
-                contentPadding = PaddingValues(8.dp)
-            ) {
-                uiState.categories.forEach { category ->
-                    val articlesInCategory = uiState.articlesBasesStatsModel.filter { article ->
-                        article.nomCategorie == category.nomCategorieInCategoriesTabele &&
-                                article.diponibilityState.isEmpty() &&
-                                (filterText.isEmpty() || article.nomArticleFinale.contains(filterText, ignoreCase = true))
+            // Filter UI
+            if (showFilter) {
+                item(span = { GridItemSpan(gridColumns) }) {
+                    OutlinedTextField(
+                        value = filterText,
+                        onValueChange = { filterText = it },
+                        label = { Text("Filter Articles") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
+                        leadingIcon = {
+                            Icon(Icons.Default.Search, contentDescription = "Search")
+                        }
+                    )
+                }
+            }
+
+            // Categories and articles
+            uiState.categories.forEach { category ->
+                val articlesInCategory = uiState.articlesBasesStatsModel.filter { article ->
+                    article.nomCategorie == category.nomCategorieInCategoriesTabele &&
+                            article.diponibilityState.isEmpty() &&
+                            (filterText.isEmpty() || article.nomArticleFinale.contains(filterText, ignoreCase = true))
+                }
+
+                if (articlesInCategory.isNotEmpty() || category.nomCategorieInCategoriesTabele == "New Articles") {
+                    item(span = { GridItemSpan(gridColumns) }) {
+                        CategoryHeaderECB(
+                            category = category,
+                        )
                     }
 
-                    if (articlesInCategory.isNotEmpty() || category.nomCategorieInCategoriesTabele == "New Articles") {
-                        item(span = { GridItemSpan(gridColumns) }) {
-                            CategoryHeaderECB(
-                                category = category,
-                            )
-                        }
-
-                        items(
-                            items = articlesInCategory,
-                            key = { it.idArticle }
-                        ) { article ->
-                            ArticleItemECB(
-                                article = article,
-                                viewModel = viewModel,
-                                reloadTrigger = reloadTrigger
-                            )
-                        }
+                    items(
+                        items = articlesInCategory,
+                        key = { it.idArticle }
+                    ) { article ->
+                        ArticleItemECB(
+                            article = article,
+                            viewModel = viewModel,
+                            reloadTrigger = reloadTrigger
+                        )
                     }
                 }
             }
         }
 
-// Replace FloatingActionButtons with FloatingActionButtonGroup
         FloatingActionButtonGroup(
             onToggleNavBar = onToggleNavBar,
             onToggleOutlineFilter = { showFilter = !showFilter },
@@ -121,7 +208,6 @@ fun StartupAppDisplayerOfNewArticles(
             viewModel = viewModel
         )
 
-        // Add loading overlay when loading
         if (uiState.isLoading) {
             LoadingOverlay(
                 progress = uiState.loadingProgress
@@ -129,8 +215,6 @@ fun StartupAppDisplayerOfNewArticles(
         }
     }
 }
-
-
 @Composable
 fun ArticleItemECB(
     article: ArticlesBasesStatsModel,
@@ -155,17 +239,6 @@ fun ArticleItemECB(
                     index = 0,
                     reloadKey = reloadTrigger
                 )
-
-                if (article.funChangeImagsDimention) {
-                    Icon(
-                        imageVector = Icons.Default.Image,
-                        contentDescription = null,
-                        tint = Color.Red,    // Add this line to make the icon red
-                        modifier = Modifier
-                            .align(Alignment.TopStart)
-                            .padding(8.dp)
-                    )
-                }
             }
         }
     }
