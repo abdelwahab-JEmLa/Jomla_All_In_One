@@ -55,7 +55,7 @@ fun ScrolleAdBanner(
     var currentBannerIndex by remember { mutableStateOf(0) }
     val scrollState = rememberScrollState()
     val density = LocalDensity.current
-    val cardWidth = with(density) { 350.dp.toPx() }
+    val cardWidth = with(density) { 400.dp.toPx() }
     val totalCards = 3
 
     // Custom auto-scroll behavior
@@ -115,7 +115,7 @@ fun ScrolleAdBanner(
         images.forEachIndexed { index, imageRes ->
             Card(
                 modifier = Modifier
-                    .width(350.dp)
+                    .width(320.dp)
                     .height(150.dp),
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
             ) {
