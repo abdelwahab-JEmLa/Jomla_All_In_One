@@ -188,6 +188,8 @@ private fun LazyGridScope.categorySection(
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int
 ) {
+    val tag = "CategorySection"
+
     item(span = { GridItemSpan(gridColumns) }) {
         CategoryHeaderECB(category = category)
     }
@@ -196,42 +198,77 @@ private fun LazyGridScope.categorySection(
         count = articles.size,
         span = { index ->
             val article = articles[index]
-            GridItemSpan(if (countColors(article) == 3) gridColumns else 1)
+            android.util.Log.d(tag, """
+                Calculating span for article: ${article.nomArticleFinale}
+                Colors count: ${countColors(article)}
+                funChangeImagsDimention: ${article.funChangeImagsDimention}
+            """.trimIndent())
+
+            // Return GridItemSpan instead of just an integer
+            GridItemSpan(1)
         }
     ) { index ->
         val article = articles[index]
-        ArticleItem(
-            article = article,
-            onArticleClick = onArticleClick,
-            viewModel = viewModel,
-            reloadTrigger = reloadTrigger
-        )
+
+        if (countColors(article) == 3) {
+            if (!article.funChangeImagsDimention) {
+                android.util.Log.d(tag, "Rendering in full width")
+                Box(
+                    modifier = Modifier.fillMaxWidth(1f)  // Force double largeur
+                ) {
+                    ThreeColorArticleDisplay(
+                        article = article,
+                        viewModel = viewModel,
+                        reloadTrigger = reloadTrigger,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onArticleClick(article) }
+                    )
+                }
+            } else {
+                android.util.Log.d(tag, "Rendering in grid of 2")
+                ThreeColorArticleDisplay(
+                    article = article,
+                    viewModel = viewModel,
+                    reloadTrigger = reloadTrigger,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onArticleClick(article) }
+                )
+            }
+        } else {
+            android.util.Log.d(tag, "Rendering normal article")
+            DisplayeArticleWhithOneColore(
+                article = article,
+                viewModel = viewModel,
+                reloadTrigger = reloadTrigger,
+                modifier = Modifier.clickable { onArticleClick(article) }
+            )
+        }
     }
 }
 
-@Composable
-private fun ArticleItem(
-    article: ArticlesBasesStatsModel,
-    onArticleClick: (ArticlesBasesStatsModel) -> Unit,
-    viewModel: StartUpNewArticlesViewModels,
-    reloadTrigger: Int
-) {
-    if (countColors(article) == 3) {
-        ThreeColorArticleDisplay(
-            article = article,
-            viewModel = viewModel,
-            reloadTrigger = reloadTrigger,
-            modifier = Modifier.clickable { onArticleClick(article) }
-        )
-    } else {
-        DisplayeArticleWhithOneColore(
-            article = article,
-            viewModel = viewModel,
-            reloadTrigger = reloadTrigger,
-            modifier = Modifier.clickable { onArticleClick(article) }
-        )
-    }
+private fun countColors(article: ArticlesBasesStatsModel): Int {
+    val colorCount = listOf(
+        article.couleur1,
+        article.couleur2,
+        article.couleur3,
+        article.couleur4
+    ).count { !it.isNullOrEmpty() }
+
+    android.util.Log.d("ColorCount", """
+        Article: ${article.nomArticleFinale}
+        Colors found: $colorCount
+        Color1: ${article.couleur1?.isNotEmpty()}
+        Color2: ${article.couleur2?.isNotEmpty()}
+        Color3: ${article.couleur3?.isNotEmpty()}
+        Color4: ${article.couleur4?.isNotEmpty()}
+    """.trimIndent())
+
+    return colorCount
 }
+
+
 @Composable
 fun DisplayeArticleWhithOneColore(
     article: ArticlesBasesStatsModel,
@@ -329,13 +366,3 @@ private fun ThreeColorArticleDisplay(
         }
     }
 }
-
-private fun countColors(article: ArticlesBasesStatsModel): Int {
-    return listOf(
-        article.couleur1,
-        article.couleur2,
-        article.couleur3,
-        article.couleur4
-    ).count { !it.isNullOrEmpty() }
-}
-
