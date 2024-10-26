@@ -40,7 +40,12 @@ class StartUpNewArticlesViewModels(
     private val _currentArticle = MutableStateFlow<ArticlesBasesStatsModel?>(null)
     val currentArticle = _currentArticle.asStateFlow()
 
-    val viewModelImagesPath = File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne")
+    // Ensure the directory exists when initializing the path
+    val viewModelImagesPath = File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne/").apply {
+        if (!exists()) {
+            mkdirs()
+        }
+    }
     private val firebaseDatabase = FirebaseDatabase.getInstance()
     private val refDBJetPackExport = firebaseDatabase.getReference("e_DBJetPackExport")
     private val refCategorieModel = firebaseDatabase.getReference("H_CategorieTabele")

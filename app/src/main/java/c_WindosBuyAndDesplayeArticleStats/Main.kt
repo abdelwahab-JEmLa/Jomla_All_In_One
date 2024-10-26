@@ -1,7 +1,6 @@
 package c_WindosBuyAndDesplayeArticleStats
 
 import a_RoomDB.ArticlesBasesStatsModel
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,23 +17,13 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import b_StartupAppDisplayerOfNewArticles.StartUpNewArticlesViewModels
 import b_StartupAppDisplayerOfNewArticles.ViewModelsDataBase
-import coil.compose.rememberAsyncImagePainter
-import coil.request.ImageRequest
-import coil.size.Size
-import com.example.clientjetpack.R
-import java.io.File
 
 
 @Composable
@@ -147,7 +136,7 @@ private fun ColorCard(
             modifier = Modifier.fillMaxSize()
         ) {
             // Background Image
-            DisplayeImageECB(
+            ImageDisplayer(
                 viewModel = viewModel,
                 article = article,
                 index = index,
@@ -166,50 +155,4 @@ private fun ColorCard(
     }
 
 }
-
-@Composable
-fun DisplayeImageECB(
-    article: ArticlesBasesStatsModel,
-    viewModel: StartUpNewArticlesViewModels,
-    index: Int = 0,
-    reloadKey: Any = Unit,
-    modifier: Modifier = Modifier
-) {
-    val context = LocalContext.current
-      val viewModelImagesPath=  viewModel.viewModelImagesPath
-    val baseImagePath = "$viewModelImagesPath${article.idArticle}_${if (index == -1) "Unite" else (index + 1)}"
-
-    val imageExist by remember(article.idArticle, reloadKey) {
-        mutableStateOf(
-            listOf("jpg", "webp").firstNotNullOfOrNull { extension ->
-                listOf( baseImagePath).firstOrNull { path ->
-                    File("$path.$extension").exists()
-                }?.let { "$it.$extension" }
-            }
-        )
-    }
-
-    val imageSource = imageExist ?: R.drawable.baked_goods_1
-
-    val requestKey = "${article.idArticle}_${if (index == -1) "Unite" else index}_$reloadKey"
-
-    val painter = rememberAsyncImagePainter(
-        ImageRequest.Builder(context)
-            .data(imageSource)
-            .size(Size(1000, 1000))
-            .crossfade(true)
-            .setParameter("key", requestKey, memoryCacheKey = requestKey)
-            .build()
-    )
-
-    Image(
-        painter = painter,
-        contentDescription = null,
-        modifier = modifier,
-        contentScale = ContentScale.Crop
-    )
-}
-
-
-
 

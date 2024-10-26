@@ -12,10 +12,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import c_WindosBuyAndDesplayeArticleStats.DisplayeImageECB
+import c_WindosBuyAndDesplayeArticleStats.ImageDisplayer
 
 @Composable
-fun ArticleItemECB(
+fun DisplayeArticleWhithOneColore(
     article: ArticlesBasesStatsModel,
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int
@@ -33,7 +33,7 @@ fun ArticleItemECB(
                     .clickable { viewModel.updateCurrentArticle(article) },
                 contentAlignment = Alignment.Center
             ) {
-                DisplayeImageECB(
+                ImageDisplayer(
                     viewModel = viewModel,
                     article = article,
                     index = 0,

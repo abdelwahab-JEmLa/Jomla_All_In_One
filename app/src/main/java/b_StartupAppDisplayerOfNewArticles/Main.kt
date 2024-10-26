@@ -1,7 +1,12 @@
 package b_StartupAppDisplayerOfNewArticles
 
+import a_RoomDB.ArticlesBasesStatsModel
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -12,6 +17,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -23,8 +29,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import c_WindosBuyAndDesplayeArticleStats.ImageDisplayer
 import com.example.clientjetpack.LoadingOverlay
 
+// StartupAppDisplayerOfNewArticles.kt
 @Composable
 fun StartupAppDisplayerOfNewArticles(
     viewModel: StartUpNewArticlesViewModels,
@@ -38,61 +46,66 @@ fun StartupAppDisplayerOfNewArticles(
     val gridState = rememberLazyGridState()
 
     Box(modifier = Modifier.fillMaxSize()) {
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(gridColumns),
-            state = gridState,
-            contentPadding = PaddingValues(8.dp)
-        ) {
-            // Add banner as the first item spanning full width
-            item(span = { GridItemSpan(gridColumns) }) {
-                ScrolleAdBanner(
+        Column {
+            if (showFilter) {
+                OutlinedTextField(
+                    value = filterText,
+                    onValueChange = { filterText = it },
+                    label = { Text("Filter Articles") },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 8.dp)
+                        .padding(8.dp),
+                    leadingIcon = {
+                        Icon(Icons.Default.Search, contentDescription = "Search")
+                    }
                 )
             }
 
-            // Filter UI
-            if (showFilter) {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(gridColumns),
+                state = gridState,
+                contentPadding = PaddingValues(8.dp)
+            ) {
                 item(span = { GridItemSpan(gridColumns) }) {
-                    OutlinedTextField(
-                        value = filterText,
-                        onValueChange = { filterText = it },
-                        label = { Text("Filter Articles") },
+                    ScrolleAdBanner(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(8.dp),
-                        leadingIcon = {
-                            Icon(Icons.Default.Search, contentDescription = "Search")
-                        }
+                            .padding(bottom = 8.dp)
                     )
                 }
-            }
 
-            // Categories and articles
-            uiState.categories.forEach { category ->
-                val articlesInCategory = uiState.articlesBasesStatsModel.filter { article ->
-                    article.nomCategorie == category.nomCategorieInCategoriesTabele &&
-                            article.diponibilityState.isEmpty() &&
-                            (filterText.isEmpty() || article.nomArticleFinale.contains(filterText, ignoreCase = true))
-                }
-
-                if (articlesInCategory.isNotEmpty() || category.nomCategorieInCategoriesTabele == "New Articles") {
-                    item(span = { GridItemSpan(gridColumns) }) {
-                        CategoryHeaderECB(
-                            category = category,
-                        )
+                uiState.categories.forEach { category ->
+                    val articlesInCategory = uiState.articlesBasesStatsModel.filter { article ->
+                        article.nomCategorie == category.nomCategorieInCategoriesTabele &&
+                                article.diponibilityState.isEmpty() &&
+                                (filterText.isEmpty() || article.nomArticleFinale.contains(filterText, ignoreCase = true))
                     }
 
-                    items(
-                        items = articlesInCategory,
-                        key = { it.idArticle }
-                    ) { article ->
-                        ArticleItemECB(
-                            article = article,
-                            viewModel = viewModel,
-                            reloadTrigger = reloadTrigger
-                        )
+                    if (articlesInCategory.isNotEmpty() || category.nomCategorieInCategoriesTabele == "New Articles") {
+                        item(span = { GridItemSpan(gridColumns) }) {
+                            CategoryHeaderECB(category = category)
+                        }
+
+                        items(
+                            items = articlesInCategory,
+                            key = { it.idArticle }
+                        ) { article ->
+                            val colorCount = countColors(article)
+                            if (colorCount == 3) {
+                                ThreeColorArticleDisplay(
+                                    article = article,
+                                    viewModel = viewModel,
+                                    reloadTrigger = reloadTrigger,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            } else {
+                                DisplayeArticleWhithOneColore(
+                                    article = article,
+                                    viewModel = viewModel,
+                                    reloadTrigger = reloadTrigger
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -106,9 +119,58 @@ fun StartupAppDisplayerOfNewArticles(
         )
 
         if (uiState.isLoading) {
-            LoadingOverlay(
-                progress = uiState.loadingProgress
-            )
+            LoadingOverlay(progress = uiState.loadingProgress)
+        }
+    }
+}
+
+@Composable
+fun ThreeColorArticleDisplay(
+    article: ArticlesBasesStatsModel,
+    viewModel: StartUpNewArticlesViewModels,
+    reloadTrigger: Int,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier
+            .padding(4.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                ImageDisplayer(
+                    viewModel = viewModel,
+                    article = article,
+                    index = 0,
+                    reloadKey = reloadTrigger,
+                    modifier = Modifier.aspectRatio(1f)
+                )
+                ImageDisplayer(
+                    viewModel = viewModel,
+                    article = article,
+                    index = 1,
+                    reloadKey = reloadTrigger,
+                    modifier = Modifier.aspectRatio(1f)
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .aspectRatio(0.5f)
+            ) {
+                ImageDisplayer(
+                    viewModel = viewModel,
+                    article = article,
+                    index = 2,
+                    reloadKey = reloadTrigger,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
         }
     }
 }
