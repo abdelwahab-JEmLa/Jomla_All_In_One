@@ -59,8 +59,8 @@ interface ArticlesBasesStatsModelDao {
 
 @Dao
 interface ColorsArticlesDao {
-    @Query("SELECT * FROM ColorsArticles ORDER BY idColore")
-    suspend fun getAll(): MutableList<ColorsArticles>
+    @Query("SELECT * FROM ColorsArticles ORDER BY classementColore")
+    suspend fun getAllOrdred(): MutableList<ColorsArticles>
 
     @Transaction
     suspend fun transaction(block: suspend ColorsArticlesDao.() -> Unit) {

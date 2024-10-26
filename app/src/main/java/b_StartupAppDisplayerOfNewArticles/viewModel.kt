@@ -127,7 +127,7 @@ class StartUpNewArticlesViewModels(
             // Your actual loading logic here
             val articles = database.articlesBasesStatsModelDao().getAll()
             val categories = database.categoriesModelDao().getAll()
-            val colors = database.colorsArticlesDao().getAll()
+            val colors = database.colorsArticlesDao().getAllOrdred()
 
             _uiState.update { it.copy(
                 articlesBasesStatsModel = articles,
