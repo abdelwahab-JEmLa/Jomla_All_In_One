@@ -14,34 +14,3 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import c_WindosBuyAndDesplayeArticleStats.DisplayeImageECB
 
-@Composable
-fun DisplayeArticleWhithOneColore(
-    article: ArticlesBasesStatsModel,
-    viewModel: StartUpNewArticlesViewModels,
-    reloadTrigger: Int,
-    modifier: Modifier
-) {
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(4.dp)
-    ) {
-        Column(modifier = modifier.padding(8.dp)) {
-            Box(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1f)
-                    .clickable { viewModel.updateCurrentArticle(article) },
-                contentAlignment = Alignment.Center
-            ) {
-                DisplayeImageECB(
-                    viewModel = viewModel,
-                    article = article,
-                    index = 0,
-                    reloadKey = reloadTrigger,
-                    modifier=modifier
-                )
-            }
-        }
-    }
-}

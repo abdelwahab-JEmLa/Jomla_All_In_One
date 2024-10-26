@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,11 +31,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import c_WindosBuyAndDesplayeArticleStats.DisplayeImageECB
 import com.example.clientjetpack.LoadingOverlay
-
 
 @Composable
 fun StartupAppDisplayerOfNewArticles(
@@ -231,6 +232,37 @@ private fun ArticleItem(
         )
     }
 }
+@Composable
+fun DisplayeArticleWhithOneColore(
+    article: ArticlesBasesStatsModel,
+    viewModel: StartUpNewArticlesViewModels,
+    reloadTrigger: Int,
+    modifier: Modifier
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(4.dp)
+    ) {
+        Column(modifier = modifier.padding(8.dp)) {
+            Box(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .aspectRatio(1f)
+                    .clickable { viewModel.updateCurrentArticle(article) },
+                contentAlignment = Alignment.Center
+            ) {
+                DisplayeImageECB(
+                    viewModel = viewModel,
+                    article = article,
+                    indexColor = 0,
+                    reloadKey = reloadTrigger,
+                    modifier=modifier
+                )
+            }
+        }
+    }
+}
 
 @Composable
 private fun ThreeColorArticleDisplay(
@@ -259,7 +291,7 @@ private fun ThreeColorArticleDisplay(
                 DisplayeImageECB(
                     viewModel = viewModel,
                     article = article,
-                    index = 0,
+                    indexColor = 0,
                     reloadKey = reloadTrigger,
                     modifier = Modifier.fillMaxSize()
                 )
@@ -274,7 +306,7 @@ private fun ThreeColorArticleDisplay(
                 DisplayeImageECB(
                     viewModel = viewModel,
                     article = article,
-                    index = 1,
+                    indexColor = 1,
                     reloadKey = reloadTrigger,
                     modifier = Modifier.fillMaxSize()
                 )
@@ -289,7 +321,7 @@ private fun ThreeColorArticleDisplay(
                 DisplayeImageECB(
                     viewModel = viewModel,
                     article = article,
-                    index = 2,
+                    indexColor = 2,
                     reloadKey = reloadTrigger,
                     modifier = Modifier.fillMaxSize()
                 )

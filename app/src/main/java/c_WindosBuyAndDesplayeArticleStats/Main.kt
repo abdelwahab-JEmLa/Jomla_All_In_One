@@ -139,7 +139,7 @@ private fun ColorCard(
             DisplayeImageECB(
                 viewModel = viewModel,
                 article = article,
-                index = index,
+                indexColor = index,
                 reloadKey = relodeTigger,
                 modifier = Modifier.fillMaxSize()
             )

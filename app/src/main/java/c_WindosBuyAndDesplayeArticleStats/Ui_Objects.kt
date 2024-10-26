@@ -20,7 +20,7 @@ import java.io.File
 fun DisplayeImageECB(
     article: ArticlesBasesStatsModel,
     viewModel: StartUpNewArticlesViewModels,
-    index: Int = 0,
+    indexColor: Int = 0,
     reloadKey: Any = Unit,
     modifier: Modifier = Modifier
 ) {
@@ -28,8 +28,8 @@ fun DisplayeImageECB(
     val viewModelImagesPath = viewModel.viewModelImagesPath
 
     // Construct base path ensuring directory exists
-    val baseImagePath = remember(viewModelImagesPath, article.idArticle, index) {
-        File(viewModelImagesPath, "${article.idArticle}_${if (index == -1) "Unite" else (index + 1)}")
+    val baseImagePath = remember(viewModelImagesPath, article.idArticle, indexColor) {
+        File(viewModelImagesPath, "${article.idArticle}_${if (indexColor == -1) "Unite" else (indexColor + 1)}")
             .absolutePath
     }
 
@@ -51,8 +51,8 @@ fun DisplayeImageECB(
     }
 
     // Create unique cache key for image
-    val requestKey = remember(article.idArticle, index, reloadKey) {
-        "${article.idArticle}_${if (index == -1) "Unite" else index}_$reloadKey"
+    val requestKey = remember(article.idArticle, indexColor, reloadKey) {
+        "${article.idArticle}_${if (indexColor == -1) "Unite" else indexColor}_$reloadKey"
     }
 
     val painter = rememberAsyncImagePainter(
@@ -66,7 +66,7 @@ fun DisplayeImageECB(
 
     Image(
         painter = painter,
-        contentDescription = "Article image ${article.idArticle} color ${index + 1}",
+        contentDescription = "Article image ${article.idArticle} color ${indexColor + 1}",
         modifier = modifier,
         contentScale = ContentScale.Crop
     )
