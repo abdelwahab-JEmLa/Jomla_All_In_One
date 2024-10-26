@@ -49,7 +49,6 @@ import com.example.clientjetpack.LoadingOverlay
 import com.example.clientjetpack.R
 import java.io.File
 
-
 @Composable
 fun StartupAppDisplayerOfNewArticles(
     viewModel: StartUpNewArticlesViewModels,
@@ -80,6 +79,7 @@ fun StartupAppDisplayerOfNewArticles(
     )
 }
 
+
 @Composable
 private fun ArticleDisplayScreen(
     uiState: UiState,
@@ -108,6 +108,7 @@ private fun ArticleDisplayScreen(
                 uiState = uiState,
                 gridColumns = gridColumns,
                 filterText = filterText,
+                showFilter = showFilter,  // Pass showFilter to ArticleGrid
                 gridState = gridState,
                 onArticleClick = onArticleClick,
                 viewModel = viewModel,
@@ -130,10 +131,11 @@ private fun ArticleDisplayScreen(
 
 
 @Composable
-fun ArticleGrid(
+private fun ArticleGrid(
     uiState: UiState,
     gridColumns: Int,
     filterText: String,
+    showFilter: Boolean,  // Added showFilter parameter
     gridState: LazyGridState,
     onArticleClick: (ArticlesBasesStatsModel) -> Unit,
     viewModel: StartUpNewArticlesViewModels,
@@ -141,18 +143,28 @@ fun ArticleGrid(
     modifier: Modifier = Modifier
 ) {
     LazyVerticalGrid(
-        columns = GridCells.Fixed(gridColumns),
+        columns = GridCells.Fixed(
+            when {
+                uiState.categories.find { it.nomCategorieInCategoriesTabele == "NewArrivale" } != null -> gridColumns
+                else -> 2
+            }
+        ),
         state = gridState,
         contentPadding = PaddingValues(8.dp),
         modifier = modifier.fillMaxSize()
     ) {
-        item(span = { GridItemSpan(gridColumns) }) {     //TODO fait que si le clavie s affiche ca ce cache
-            ScrolleAdBanner(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp)
-            )
+        // Only show banner when filter is not active
+        if (!showFilter) {
+            item(span = { GridItemSpan(gridColumns) }) {
+                ScrolleAdBanner(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp)
+                )
+            }
         }
+
+
         // Afficher d'abord la catégorie NewArrivale si elle existe
         val newArrivaleCategory = uiState.categories.find {
             it.nomCategorieInCategoriesTabele == "NewArrivale"
@@ -184,7 +196,6 @@ fun ArticleGrid(
             }
     }
 }
-
 private fun LazyGridScope.categorySection(
     category: CategoriesModel,
     articles: List<ArticlesBasesStatsModel>,
