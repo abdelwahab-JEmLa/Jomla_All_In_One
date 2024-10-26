@@ -1,19 +1,20 @@
 package b_StartupAppDisplayerOfNewArticles
 
 import a_RoomDB.ArticlesBasesStatsModel
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -29,10 +30,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import c_WindosBuyAndDesplayeArticleStats.ImageDisplayer
+import c_WindosBuyAndDesplayeArticleStats.DisplayeImageECB
 import com.example.clientjetpack.LoadingOverlay
 
-// StartupAppDisplayerOfNewArticles.kt
 @Composable
 fun StartupAppDisplayerOfNewArticles(
     viewModel: StartUpNewArticlesViewModels,
@@ -86,24 +86,24 @@ fun StartupAppDisplayerOfNewArticles(
                             CategoryHeaderECB(category = category)
                         }
 
-                        items(
-                            items = articlesInCategory,
-                            key = { it.idArticle }
-                        ) { article ->
+                        articlesInCategory.forEach { article ->
                             val colorCount = countColors(article)
                             if (colorCount == 3) {
-                                ThreeColorArticleDisplay(
-                                    article = article,
-                                    viewModel = viewModel,
-                                    reloadTrigger = reloadTrigger,
-                                    modifier = Modifier.fillMaxWidth()
-                                )
+                                item(span = { GridItemSpan(gridColumns) }) {
+                                    ThreeColorArticleDisplay(
+                                        article = article,
+                                        viewModel = viewModel,
+                                        reloadTrigger = reloadTrigger
+                                    )
+                                }
                             } else {
-                                DisplayeArticleWhithOneColore(
-                                    article = article,
-                                    viewModel = viewModel,
-                                    reloadTrigger = reloadTrigger
-                                )
+                                item {
+                                    DisplayeArticleWhithOneColore(
+                                        article = article,
+                                        viewModel = viewModel,
+                                        reloadTrigger = reloadTrigger
+                                    )
+                                }
                             }
                         }
                     }
@@ -128,42 +128,63 @@ fun StartupAppDisplayerOfNewArticles(
 fun ThreeColorArticleDisplay(
     article: ArticlesBasesStatsModel,
     viewModel: StartUpNewArticlesViewModels,
-    reloadTrigger: Int,
-    modifier: Modifier = Modifier
+    reloadTrigger: Int
 ) {
     Card(
-        modifier = modifier
+        modifier = Modifier
+            .fillMaxWidth()
             .padding(4.dp)
+            .clickable { viewModel.updateCurrentArticle(article) }
     ) {
         Row(
-            modifier = Modifier.padding(8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+                .padding(8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            // Left column with two square images
             Column(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                ImageDisplayer(
-                    viewModel = viewModel,
-                    article = article,
-                    index = 0,
-                    reloadKey = reloadTrigger,
-                    modifier = Modifier.aspectRatio(1f)
-                )
-                ImageDisplayer(
-                    viewModel = viewModel,
-                    article = article,
-                    index = 1,
-                    reloadKey = reloadTrigger,
-                    modifier = Modifier.aspectRatio(1f)
-                )
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                ) {
+                    DisplayeImageECB(
+                        viewModel = viewModel,
+                        article = article,
+                        index = 0,
+                        reloadKey = reloadTrigger,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                ) {
+                    DisplayeImageECB(
+                        viewModel = viewModel,
+                        article = article,
+                        index = 1,
+                        reloadKey = reloadTrigger,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
             }
+
+            // Right column with one tall image
             Box(
                 modifier = Modifier
                     .weight(1f)
-                    .aspectRatio(0.5f)
+                    .fillMaxHeight()
             ) {
-                ImageDisplayer(
+                DisplayeImageECB(
                     viewModel = viewModel,
                     article = article,
                     index = 2,
@@ -173,6 +194,15 @@ fun ThreeColorArticleDisplay(
             }
         }
     }
+}
+
+private fun countColors(article: ArticlesBasesStatsModel): Int {
+    return listOf(
+        article.couleur1,
+        article.couleur2,
+        article.couleur3,
+        article.couleur4
+    ).count { it?.isNotEmpty() ?:false  }
 }
 
 

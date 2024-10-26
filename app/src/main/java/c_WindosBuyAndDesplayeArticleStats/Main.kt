@@ -136,7 +136,7 @@ private fun ColorCard(
             modifier = Modifier.fillMaxSize()
         ) {
             // Background Image
-            ImageDisplayer(
+            DisplayeImageECB(
                 viewModel = viewModel,
                 article = article,
                 index = index,

@@ -55,11 +55,11 @@ class StartUpNewArticlesViewModels(
         _currentArticle.value= article
     }
 
-    fun updateLoadingProgress(progress: Float) {
+    private fun updateLoadingProgress(progress: Float) {
         _uiState.update { it.copy(loadingProgress = progress) }
     }
 
-    fun setLoading(isLoading: Boolean) {
+    private fun setLoading(isLoading: Boolean) {
         _uiState.update { it.copy(
             isLoading = isLoading,
             loadingProgress = if (!isLoading) 0f else it.loadingProgress

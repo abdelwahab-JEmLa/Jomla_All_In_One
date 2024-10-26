@@ -17,7 +17,7 @@ import com.example.clientjetpack.R
 import java.io.File
 
 @Composable
-fun ImageDisplayer(
+fun DisplayeImageECB(
     article: ArticlesBasesStatsModel,
     viewModel: StartUpNewArticlesViewModels,
     index: Int = 0,
