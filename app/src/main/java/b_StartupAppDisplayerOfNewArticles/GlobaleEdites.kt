@@ -39,7 +39,7 @@ fun FloatingActionButtonGroup(
     onToggleNavBar: () -> Unit,
     onToggleOutlineFilter: () -> Unit,
     onChangeGridColumns: (Int) -> Unit,
-    viewModel: HeadOfViewModels
+    viewModel: StartUpNewArticlesViewModels
 ) {
     var currentGridColumns by remember { mutableIntStateOf(2) }
     var showLabels by remember { mutableStateOf(false) }

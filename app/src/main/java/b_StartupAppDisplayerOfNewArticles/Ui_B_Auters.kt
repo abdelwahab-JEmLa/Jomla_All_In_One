@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.dp
 fun CategoryHeaderECB(
     category: CategoriesModel,
 ) {
-
     Box(
         modifier = Modifier
             .fillMaxWidth()

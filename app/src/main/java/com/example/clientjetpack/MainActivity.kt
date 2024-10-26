@@ -54,7 +54,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.wear.compose.material.ContentAlpha
-import b_StartupAppDisplayerOfNewArticles.HeadOfViewModels
+import b_StartupAppDisplayerOfNewArticles.StartUpNewArticlesViewModels
 import b_StartupAppDisplayerOfNewArticles.StartupAppDisplayerOfNewArticles
 import c_WindosBuyAndDesplayeArticleStats.WindosBuyAndDesplayeArticleStats
 import com.google.firebase.FirebaseApp
@@ -70,16 +70,16 @@ class MyApplication : Application() {
 }
 
 data class AppViewModels(
-    val headOfViewModels: HeadOfViewModels
+    val startUpNewArticlesViewModels: StartUpNewArticlesViewModels
 )
 
 class MainActivity : ComponentActivity() {
     private val database by lazy { Objects.getInstance(this) }
     private val permissionHandler by lazy { PermissionHandler(this) }
-    private val headOfViewModels: HeadOfViewModels by viewModels {
+    private val startUpNewArticlesViewModels: StartUpNewArticlesViewModels by viewModels {
         ViewModelFactory(database)
     }
-    private val appViewModels by lazy { AppViewModels(headOfViewModels) }
+    private val appViewModels by lazy { AppViewModels(startUpNewArticlesViewModels) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -96,8 +96,8 @@ class ViewModelFactory(
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when {
-            modelClass.isAssignableFrom(HeadOfViewModels::class.java) ->
-                HeadOfViewModels(database) as T
+            modelClass.isAssignableFrom(StartUpNewArticlesViewModels::class.java) ->
+                StartUpNewArticlesViewModels(database) as T
             else -> throw IllegalArgumentException("Unknown ViewModel: ${modelClass.name}")
         }
     }
@@ -195,8 +195,8 @@ fun AppNavHost(
     onToggleNavBar: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val uiState by appViewModels.headOfViewModels.uiState.collectAsState()
-    val currentEditedArticle by appViewModels.headOfViewModels.currentArticle.collectAsState()
+    val uiState by appViewModels.startUpNewArticlesViewModels.uiState.collectAsState()
+    val currentEditedArticle by appViewModels.startUpNewArticlesViewModels.currentArticle.collectAsState()
 
     var windosBuyAndDesplayeArticleStats by remember { mutableStateOf<ArticlesBasesStatsModel?>(null) }
     var reloadTrigger by remember { mutableIntStateOf(0) }
@@ -214,7 +214,7 @@ fun AppNavHost(
             composable(Screen.EditDatabaseWithCreateNewArticles.route) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     StartupAppDisplayerOfNewArticles(
-                        viewModel = appViewModels.headOfViewModels,
+                        viewModel = appViewModels.startUpNewArticlesViewModels,
                         onToggleNavBar = onToggleNavBar,
                         reloadTrigger = reloadTrigger
                     )
@@ -234,7 +234,7 @@ fun AppNavHost(
                 article = article,
                 uiState = uiState,
                 onDismiss = { windosBuyAndDesplayeArticleStats = null },
-                viewModel = appViewModels.headOfViewModels,
+                viewModel = appViewModels.startUpNewArticlesViewModels,
                 modifier = Modifier.padding(horizontal = 3.dp),
                 onReloadTrigger = { reloadTrigger += 1 },
                 reloadTrigger = reloadTrigger
