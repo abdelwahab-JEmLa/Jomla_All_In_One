@@ -73,6 +73,26 @@ open class StartUpNewArticlesViewModels(
 
     }
 
+    private suspend fun createNewArrivaleCategoryIfNeeded(existingCategories: List<CategoriesModel>) {
+        val hasNewArrivale = existingCategories.any {
+            it.nomCategorieInCategoriesTabele == "NewArrivale"
+        }
+
+        if (!hasNewArrivale) {
+            val maxId = existingCategories.maxOfOrNull {
+                it.idCategorieInCategoriesTabele
+            } ?: 0
+
+            val newArrivaleCategory = CategoriesModel(
+                idCategorieInCategoriesTabele = maxId + 1,
+                nomCategorieInCategoriesTabele = "NewArrivale",
+                idClassementCategorieInCategoriesTabele = 1
+            )
+
+            database.categoriesModelDao().insert(newArrivaleCategory)
+        }
+    }
+
     fun importFromFirebase() {
         viewModelScope.launch {
             try {
@@ -87,6 +107,9 @@ open class StartUpNewArticlesViewModels(
                     snapshot.getValue(CategoriesModel::class.java)
                 }
                 database.categoriesModelDao().insertAll(categories)
+
+                // Create NewArrivale category if needed
+                createNewArrivaleCategoryIfNeeded(categories)
                 updateLoadingProgress(70f)
 
                 // Import colors
@@ -122,27 +145,29 @@ open class StartUpNewArticlesViewModels(
             setLoading(true)
             var progress = 0f
 
-            // Simulate or track real progress
             while (progress < 100f) {
                 progress += 10f
                 updateLoadingProgress(progress)
-                delay(100) // Simulate work being done
+                delay(100)
             }
 
-            // Your actual loading logic here
             val articles = database.articlesBasesStatsModelDao().getAll()
             val categories = database.categoriesModelDao().getAll()
             val colors = database.colorsArticlesDao().getAllOrdred()
 
+            // Ensure NewArrivale category exists when loading data
+            createNewArrivaleCategoryIfNeeded(categories)
+
             _uiState.update { it.copy(
                 articlesBasesStatsModel = articles,
-                categories = categories,
+                categories = database.categoriesModelDao().getAll(), // Refresh categories after potential NewArrivale creation
                 colors = colors,
-                ) }
+            ) }
         } catch (e: Exception) {
             _uiState.update { it.copy(error = e.message) }
         } finally {
             setLoading(false)
         }
     }
+
 }

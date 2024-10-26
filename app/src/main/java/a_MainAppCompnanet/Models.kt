@@ -44,6 +44,7 @@ data class ArticlesBasesStatsModel(
     var monBeneficeUniter: Double = 0.0,
     //Stats
     var articleHaveUniteImages: Boolean = false,
+    var itsNewArrivale: Boolean = false,
 ) {
     // No-argument constructor for Firebase
     constructor() : this(0)
