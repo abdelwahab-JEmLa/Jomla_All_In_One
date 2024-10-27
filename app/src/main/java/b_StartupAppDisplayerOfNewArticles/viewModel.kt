@@ -95,7 +95,24 @@ open class StartUpNewArticlesViewModels(
                     )
                     else -> sale
                 }
-                _currentSale.value = updatedSale
+
+                try {
+                    // Update the sale in Room database
+                    database.soldArticlesTabelleDao().insert(updatedSale)
+
+                    // Update current sale state
+                    _currentSale.value = updatedSale
+
+                    // Update the UI state with the new sale information
+                    _uiState.update { state ->
+                        val updatedSales = state.soldArticlesModel.map {
+                            if (it?.vid == updatedSale.vid) updatedSale else it
+                        }
+                        state.copy(soldArticlesModel = updatedSales)
+                    }
+                } catch (e: Exception) {
+                    _uiState.update { it.copy(error = "Failed to update sale: ${e.message}") }
+                }
             }
         }
     }
@@ -110,7 +127,24 @@ open class StartUpNewArticlesViewModels(
                     3 -> sale.copy(color4IdPicked = 0, color4SoldQuantity = 0)
                     else -> sale
                 }
-                _currentSale.value = updatedSale
+
+                try {
+                    // Update the sale in Room database
+                    database.soldArticlesTabelleDao().insert(updatedSale)
+
+                    // Update current sale state
+                    _currentSale.value = updatedSale
+
+                    // Update the UI state with the new sale information
+                    _uiState.update { state ->
+                        val updatedSales = state.soldArticlesModel.map {
+                            if (it?.vid == updatedSale.vid) updatedSale else it
+                        }
+                        state.copy(soldArticlesModel = updatedSales)
+                    }
+                } catch (e: Exception) {
+                    _uiState.update { it.copy(error = "Failed to reset sale: ${e.message}") }
+                }
             }
         }
     }
