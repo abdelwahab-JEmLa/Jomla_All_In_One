@@ -54,7 +54,8 @@ fun StartupAppDisplayerOfNewArticles(
     viewModel: StartUpNewArticlesViewModels,
     onToggleNavBar: () -> Unit,
     reloadTrigger: Int,
-    modifier: Modifier = Modifier, onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit
+    modifier: Modifier = Modifier,
+    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit
 ) {
     var gridColumnsForNewArticels by remember { mutableStateOf(2) }
     var showFilter by remember { mutableStateOf(false) }
@@ -72,7 +73,6 @@ fun StartupAppDisplayerOfNewArticles(
         onToggleFilter = { showFilter = !showFilter },
         onChangeGridColumns = { gridColumnsForNewArticels = it },
         onToggleNavBar = onToggleNavBar,
-        onArticleClick = viewModel::updateCurrentArticle,
         viewModel = viewModel,
         reloadTrigger = reloadTrigger,
         modifier = modifier, onClickToOpenWindos = onClickToOpenWindos
@@ -91,10 +91,10 @@ private fun ArticleDisplayScreen(
     onToggleFilter: () -> Unit,
     onChangeGridColumns: (Int) -> Unit,
     onToggleNavBar: () -> Unit,
-    onArticleClick: (ArticlesBasesStatsTabelle) -> Unit,
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
-    modifier: Modifier = Modifier, onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit
+    modifier: Modifier = Modifier,
+    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         Column {
@@ -110,7 +110,6 @@ private fun ArticleDisplayScreen(
                 filterText = filterText,
                 showFilter = showFilter,  // Pass showFilter to ArticleGrid
                 gridState = gridState,
-                onArticleClick = onArticleClick,
                 viewModel = viewModel,
                 reloadTrigger = reloadTrigger, onClickToOpenWindos = onClickToOpenWindos
             )
@@ -137,10 +136,10 @@ private fun ArticleGrid(
     filterText: String,
     showFilter: Boolean,  // Added showFilter parameter
     gridState: LazyGridState,
-    onArticleClick: (ArticlesBasesStatsTabelle) -> Unit,
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
-    modifier: Modifier = Modifier, onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit
+    modifier: Modifier = Modifier,
+    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(
@@ -164,7 +163,6 @@ private fun ArticleGrid(
             }
         }
 
-
         // Afficher d'abord la catégorie NewArrivale si elle existe
         val newArrivaleCategory = uiState.categories.find {
             it.nomCategorieInCategoriesTabele == "NewArrivale"
@@ -176,7 +174,7 @@ private fun ArticleGrid(
             }
 
             if (newArrivaleArticles.isNotEmpty()) {
-                categorySection(category, newArrivaleArticles, gridColumns, onArticleClick, viewModel, reloadTrigger,
+                categorySection(category, newArrivaleArticles, gridColumns, viewModel, reloadTrigger,
                     onClickToOpenWindos
                 )
             }
@@ -193,7 +191,7 @@ private fun ArticleGrid(
                 }
 
                 if (articlesInCategory.isNotEmpty()) {
-                    categorySection(category, articlesInCategory, gridColumns, onArticleClick, viewModel, reloadTrigger,
+                    categorySection(category, articlesInCategory, gridColumns, viewModel, reloadTrigger,
                         onClickToOpenWindos
                     )
                 }
@@ -204,7 +202,6 @@ private fun LazyGridScope.categorySection(
     category: CategoriesTabelle,
     articles: List<ArticlesBasesStatsTabelle>,
     gridColumns: Int,
-    onArticleClick: (ArticlesBasesStatsTabelle) -> Unit,
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int, onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit
 ) {
@@ -226,7 +223,7 @@ private fun LazyGridScope.categorySection(
             article = article,
             viewModel = viewModel,
             reloadTrigger = reloadTrigger,
-            onArticleClick = onArticleClick, onClickToOpenWindos = onClickToOpenWindos
+             onClickToOpenWindos = onClickToOpenWindos
         )
     }
 }
@@ -237,7 +234,6 @@ private fun ArticleItem(
     article: ArticlesBasesStatsTabelle,
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
-    onArticleClick: (ArticlesBasesStatsTabelle) -> Unit,
     modifier: Modifier = Modifier, onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit
 ) {
     val hasThreeColors = countColors(article) == 3
@@ -246,7 +242,7 @@ private fun ArticleItem(
         modifier = modifier
             .padding(4.dp)
             .fillMaxWidth()
-            .clickable { onArticleClick(article) },
+            ,
         elevation = CardDefaults.cardElevation(
             defaultElevation = 2.dp
         )
@@ -286,8 +282,7 @@ fun DisplayeArticleWhithOneColore(
             Box(
                 modifier = modifier
                     .fillMaxWidth()
-                    .aspectRatio(1f)
-                    .clickable { viewModel.updateCurrentArticle(article) },
+                    .aspectRatio(1f),
                 contentAlignment = Alignment.Center
             ) {
                 ImageDisplayer(

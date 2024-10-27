@@ -3,6 +3,7 @@ package c_WindosBuyAndDesplayeArticleStats
 import a_RoomDB.ArticlesBasesStatsTabelle
 import a_RoomDB.ClientsModel
 import a_RoomDB.ColorsArticlesTabelle
+import a_RoomDB.SoldArticlesTabelle
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -88,11 +89,12 @@ fun WindosBuyAndDesplayeArticleStats(
     reloadTrigger: Int,
     modifier: Modifier = Modifier,
     indexColorStat: Int,
-    clientBuyerNow: ClientsModel?
+    clientBuyerNow: ClientsModel?,
+    relatedSaleOfArticleToClient: SoldArticlesTabelle?
 ) {
-    LaunchedEffect(clientBuyerNow, article) {
-        if (clientBuyerNow != null) {
-            viewModel.setCurrentClientAndArticle(clientBuyerNow, article)
+    LaunchedEffect(article, clientBuyerNow) {
+        if (relatedSaleOfArticleToClient == null && clientBuyerNow != null) {
+            viewModel.createNewSaleIfNotExist(article, clientBuyerNow)
         }
     }
     Dialog(
@@ -124,7 +126,8 @@ fun WindosBuyAndDesplayeArticleStats(
                             onDismiss = onDismiss,
                             onReloadTrigger = onReloadTrigger,
                             relodeTigger = reloadTrigger,
-                            initialShowPickerIndex = indexColorStat  // Pass the index to ColorsCards
+                            initialShowPickerIndex = indexColorStat,
+                            relatedSaleOfArticleToClient=relatedSaleOfArticleToClient
                         )
                     }
                 }
@@ -142,7 +145,8 @@ private fun ColorsCards(
     onReloadTrigger: () -> Unit,
     relodeTigger: Int,
     uiState: UiState,
-    initialShowPickerIndex: Int
+    initialShowPickerIndex: Int,
+    relatedSaleOfArticleToClient: SoldArticlesTabelle?
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -163,8 +167,8 @@ private fun ColorsCards(
                     index = index,
                     relodeTigger = relodeTigger,
                     viewModel = viewModel ,
-                    initialShowPicker = index == initialShowPickerIndex
-
+                    initialShowPicker = index == initialShowPickerIndex ,
+                    relatedSaleOfArticleToClient =relatedSaleOfArticleToClient
                 )
             }
         }
@@ -199,35 +203,31 @@ fun ColorItem(
     index: Int,
     relodeTigger: Int,
     viewModel: StartUpNewArticlesViewModels,
-    initialShowPicker: Boolean = false
+    initialShowPicker: Boolean = false,
+    relatedSaleOfArticleToClient: SoldArticlesTabelle?
 ) {
     var showPicker by remember { mutableStateOf(initialShowPicker) }
     val currentSale by viewModel.currentSale.collectAsState()
-    val selectedQuantities by viewModel.selectedQuantities.collectAsState()
+    val currentSaleOrRelated = currentSale ?: relatedSaleOfArticleToClient
 
-    // Get quantity with priority to existing sale
-    val currentQuantity = remember(currentSale, selectedQuantities, index) {
-        // First check existing sale
-        val existingSaleQuantity = when (index) {
-            0 -> currentSale?.color1SoldQuantity
-            1 -> currentSale?.color2SoldQuantity
-            2 -> currentSale?.color3SoldQuantity
-            3 -> currentSale?.color4SoldQuantity
+// Get quantity with priority to existing sale
+    val currentQuantity = remember(currentSaleOrRelated, index) {
+        when (index) {
+            0 -> currentSaleOrRelated?.color1SoldQuantity
+            1 -> currentSaleOrRelated?.color2SoldQuantity
+            2 -> currentSaleOrRelated?.color3SoldQuantity
+            3 -> currentSaleOrRelated?.color4SoldQuantity
             else -> null
-        }
-
-        // If no existing sale quantity, then check selected quantities
-        existingSaleQuantity ?: selectedQuantities[index]?.quantity?.takeIf { it > 0 } ?: 0
-    }
+        } ?: 0
+    }    // Get quantity with priority to existing sale
 
     // Debug logs for state tracking
-    LaunchedEffect(currentSale, selectedQuantities) {
+    LaunchedEffect(currentSale) {
         Log.d("ColorItem", """
             |State Debug for Color Index: $index
             |Article ID: ${article.idArticle}
             |Color ID: ${color?.idColore}
             |Current Sale ID: ${currentSale?.vid}
-            |Selected Quantities: ${selectedQuantities[index]}
             |Sale Color${index + 1} Quantity: ${when (index) {
             0 -> currentSale?.color1SoldQuantity
             1 -> currentSale?.color2SoldQuantity
@@ -240,10 +240,8 @@ fun ColorItem(
     }
 
     LaunchedEffect(showPicker) {
-        Log.d("ColorItem", "Picker visibility changed: $showPicker for color index: $index")
         if (!showPicker) {
-            Log.d("ColorItem", "Attempting to save transaction for article: ${article.idArticle}")
-            viewModel.saveSaleTransaction(article)
+            viewModel.saveSaleTransaction()
         }
     }
 

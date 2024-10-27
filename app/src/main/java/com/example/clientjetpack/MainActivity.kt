@@ -3,6 +3,7 @@ package com.example.clientjetpack
 import a_RoomDB.ArticlesBasesStatsTabelle
 import a_RoomDB.ClientsModel
 import a_RoomDB.Objects
+import a_RoomDB.SoldArticlesTabelle
 import android.app.Application
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -272,14 +273,16 @@ fun AppNavHost(
 ) {
     val uiState by appViewModels.startUpNewArticlesViewModels.uiState.collectAsState()
 
-    var windosBuyAndDesplayeArticleStats by remember { mutableStateOf<ArticlesBasesStatsTabelle?>(null) }
-    var clientBuyerNow by rememberSaveable() { mutableStateOf<ClientsModel?>(null) }
-    var showClientSelection by remember { mutableStateOf(false) }
-    var pendingArticle by remember { mutableStateOf<ArticlesBasesStatsTabelle?>(null) }
-    var pendingIndexColor by remember { mutableIntStateOf(0) }
+    var windowsSaleAndDisplayArticleStats by rememberSaveable { mutableStateOf<ArticlesBasesStatsTabelle?>(null) }
+    var clientBuyerNow by rememberSaveable { mutableStateOf<ClientsModel?>(null) }
+    var relatedSaleOfArticleToClient by rememberSaveable { mutableStateOf<SoldArticlesTabelle?>(null) }
 
-    var indexColorStat by remember { mutableIntStateOf(0) }
-    var reloadTrigger by remember { mutableIntStateOf(0) }
+    var showClientSelection by rememberSaveable { mutableStateOf(false) }
+    var pendingArticle by rememberSaveable { mutableStateOf<ArticlesBasesStatsTabelle?>(null) }
+    var pendingIndexColor by rememberSaveable { mutableIntStateOf(0) }
+
+    var indexColorStat by rememberSaveable { mutableIntStateOf(0) }
+    var reloadTrigger by rememberSaveable { mutableIntStateOf(0) }
 
     Box(modifier = modifier.fillMaxSize()) {
         NavHost(
@@ -296,12 +299,19 @@ fun AppNavHost(
                         onClickToOpenWindos = { article, indexColor ->
                             pendingArticle = article
                             pendingIndexColor = indexColor
+
                             if (clientBuyerNow == null) {
                                 showClientSelection = true
                             } else {
-                                // Si client déjà sélectionné, ouvre directement la fenêtre
-                                windosBuyAndDesplayeArticleStats = article
+                                // Safely find matching sale with null checks
+                                relatedSaleOfArticleToClient = uiState.soldArticlesModel.find { soldArticle ->
+                                    soldArticle?.let {
+                                        it.clientSoldToItId == clientBuyerNow?.idClientsSu &&
+                                                it.idArticle == article.idArticle.toLong()
+                                    } ?: false
+                                }
                                 indexColorStat = indexColor
+                                windowsSaleAndDisplayArticleStats = article
                             }
                         }
                     )
@@ -316,31 +326,32 @@ fun AppNavHost(
             }
         }
 
-        // N'ouvre le dialogue que si pas de client ET showClientSelection est true
         if (showClientSelection && clientBuyerNow == null) {
             ClientSelectionDialog(
                 clients = uiState.clientsModel,
                 onClientSelected = { client ->
                     clientBuyerNow = client
-                    windosBuyAndDesplayeArticleStats = pendingArticle
+                    windowsSaleAndDisplayArticleStats = pendingArticle
                     indexColorStat = pendingIndexColor
-                    showClientSelection = false  // Ferme le dialogue après sélection
+                    showClientSelection = false
                 },
-                onDismiss = { showClientSelection = false }
+                onDismiss = {
+                    showClientSelection = false
+                }
             )
         }
 
-        // Ouvre la fenêtre stats seulement si on a un article ET un client
-        windosBuyAndDesplayeArticleStats?.let { article ->
+        windowsSaleAndDisplayArticleStats?.let { article ->
             WindosBuyAndDesplayeArticleStats(
                 modifier = Modifier.padding(horizontal = 3.dp),
                 article = article,
                 clientBuyerNow = clientBuyerNow,
+                relatedSaleOfArticleToClient = relatedSaleOfArticleToClient,
                 viewModel = appViewModels.startUpNewArticlesViewModels,
                 onDismiss = {
-                    windosBuyAndDesplayeArticleStats = null
+                    windowsSaleAndDisplayArticleStats = null
                 },
-                onReloadTrigger = { reloadTrigger += 1 },
+                onReloadTrigger = { reloadTrigger++ },
                 reloadTrigger = reloadTrigger,
                 uiState = uiState,
                 indexColorStat = indexColorStat

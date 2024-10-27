@@ -7,7 +7,6 @@ import a_RoomDB.ColorsArticlesTabelle
 import a_RoomDB.Objects
 import a_RoomDB.SoldArticlesTabelle
 import a_RoomDB.SuppliersTabelle
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.database.FirebaseDatabase
@@ -25,7 +24,7 @@ data class UiState(
     val articlesBasesStatTabelles: List<ArticlesBasesStatsTabelle> = emptyList(),
     val categories: List<CategoriesTabelle> = emptyList(),
     val colorsArticlesTabelleModel: List<ColorsArticlesTabelle> = emptyList(),
-    val soldArticlesModel: List<SoldArticlesTabelle> = emptyList(),
+    val soldArticlesModel: List<SoldArticlesTabelle?> = emptyList(),
     val clientsModel: List<ClientsModel> = emptyList(),
     val suppliers: List<SuppliersTabelle> = emptyList(),
     val isLoading: Boolean = false,
@@ -40,9 +39,6 @@ open class StartUpNewArticlesViewModels(
     private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()
 
-    private val _currentArticle = MutableStateFlow<ArticlesBasesStatsTabelle?>(null)
-    val currentArticle = _currentArticle.asStateFlow()
-
     // Ensure the directory exists when initializing the path
     val viewModelImagesPath = File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne/").apply {
         if (!exists()) {
@@ -56,10 +52,6 @@ open class StartUpNewArticlesViewModels(
     private val refSoldArticlesTabelle = firebaseDatabase.getReference("O_SoldArticlesTabelle")
     private val refClientsTabelle = firebaseDatabase.getReference("G_Clients")
 
-
-    fun updateCurrentArticle(article: ArticlesBasesStatsTabelle) {
-        _currentArticle.value= article
-    }
 
     private fun updateLoadingProgress(progress: Float) {
         _uiState.update { it.copy(loadingProgress = progress) }
@@ -76,163 +68,96 @@ open class StartUpNewArticlesViewModels(
         viewModelScope.launch {
             loadData()
         }
-
     }
-
-    private var currentClientId: Long = 0L
-    private var currentSaleId: Long? = null
 
     private val _currentSale = MutableStateFlow<SoldArticlesTabelle?>(null)
     val currentSale = _currentSale.asStateFlow()
 
-    fun setCurrentClientAndArticle(client: ClientsModel, article: ArticlesBasesStatsTabelle) {
+    fun updateColorSelection(colorIndex: Int, colorId: Long, quantity: Int) {
         viewModelScope.launch {
-            currentClientId = client.idClientsSu
-
-            // Find existing sale for this client and article
-            val existingSale = _uiState.value.soldArticlesModel.find {
-                it.idArticle == article.idArticle.toLong() &&
-                        it.clientSoldToItId == currentClientId
-            }
-
-            currentSaleId = existingSale?.vid
-            _currentSale.value = existingSale
-
-            // Reset color selections to match existing sale if found
-            if (existingSale != null) {
-                _selectedQuantities.value = mapOf(
-                    0 to ColorSelection(existingSale.color1IdPicked, existingSale.color1SoldQuantity),
-                    1 to ColorSelection(existingSale.color2IdPicked, existingSale.color2SoldQuantity),
-                    2 to ColorSelection(existingSale.color3IdPicked, existingSale.color3SoldQuantity),
-                    3 to ColorSelection(existingSale.color4IdPicked, existingSale.color4SoldQuantity)
-                ).filterValues { it.colorId != 0L }
-            } else {
-                _selectedQuantities.value = emptyMap()
+            _currentSale.value?.let { sale ->
+                val updatedSale = when (colorIndex) {
+                    0 -> sale.copy(
+                        color1IdPicked = colorId,
+                        color1SoldQuantity = quantity
+                    )
+                    1 -> sale.copy(
+                        color2IdPicked = colorId,
+                        color2SoldQuantity = quantity
+                    )
+                    2 -> sale.copy(
+                        color3IdPicked = colorId,
+                        color3SoldQuantity = quantity
+                    )
+                    3 -> sale.copy(
+                        color4IdPicked = colorId,
+                        color4SoldQuantity = quantity
+                    )
+                    else -> sale
+                }
+                _currentSale.value = updatedSale
             }
         }
     }
 
     fun resetColorSelection(colorIndex: Int) {
-        _selectedQuantities.update { current ->
-            current.filterKeys { it != colorIndex }
-        }
-
-        // Also update the current sale record if it exists
-        currentSaleId?.let { saleId ->
-            viewModelScope.launch {
-                val updatedSale = _currentSale.value?.let { sale ->
-                    when (colorIndex) {
-                        0 -> sale.copy(color1IdPicked = 0L, color1SoldQuantity = 0)
-                        1 -> sale.copy(color2IdPicked = 0L, color2SoldQuantity = 0)
-                        2 -> sale.copy(color3IdPicked = 0L, color3SoldQuantity = 0)
-                        3 -> sale.copy(color4IdPicked = 0L, color4SoldQuantity = 0)
-                        else -> sale
-                    }
+        viewModelScope.launch {
+            _currentSale.value?.let { sale ->
+                val updatedSale = when (colorIndex) {
+                    0 -> sale.copy(color1IdPicked = 0, color1SoldQuantity = 0)
+                    1 -> sale.copy(color2IdPicked = 0, color2SoldQuantity = 0)
+                    2 -> sale.copy(color3IdPicked = 0, color3SoldQuantity = 0)
+                    3 -> sale.copy(color4IdPicked = 0, color4SoldQuantity = 0)
+                    else -> sale
                 }
+                _currentSale.value = updatedSale
+            }
+        }
+    }
 
-                updatedSale?.let {
-                    database.soldArticlesTabelleDao().insert(it)
-                    _currentSale.value = it
+    fun saveSaleTransaction() {
+        viewModelScope.launch {
+            _currentSale.value?.let { sale ->
+                try {
+                    // Update the sale in the database
+                    database.soldArticlesTabelleDao().insert(sale)
+
+                    // Update the UI state
                     _uiState.update { state ->
-                        state.copy(
-                            soldArticlesModel = state.soldArticlesModel.map { sale ->
-                                if (sale.vid == saleId) it else sale
-                            }
-                        )
+                        val updatedSales = state.soldArticlesModel.map {
+                            if (it?.vid == sale.vid) sale else it
+                        }
+                        state.copy(soldArticlesModel = updatedSales)
                     }
+                } catch (e: Exception) {
+                    _uiState.update { it.copy(error = "Failed to save sale: ${e.message}") }
                 }
             }
         }
     }
 
-    fun saveSaleTransaction(article: ArticlesBasesStatsTabelle) {
+    fun createNewSaleIfNotExist(article: ArticlesBasesStatsTabelle, clientBuyerNow: ClientsModel) {
         viewModelScope.launch {
-            val currentSelections = _selectedQuantities.value
-            Log.d("ViewModel", """
-                |Saving Sale Transaction:
-                |Article ID: ${article.idArticle}
-                |Client ID: $currentClientId
-                |Current Sale ID: $currentSaleId
-                |Selected Quantities: $currentSelections
-            """.trimMargin())
 
-            if (currentSelections.isEmpty() || currentClientId == 0L) {
-                Log.d("ViewModel", "Aborting save - No selections or no client")
-                return@launch
-            }
+            val maxId = _uiState.value.soldArticlesModel.maxOfOrNull { it?.vid ?: 1 } ?: 0
 
-            val newSale = if (currentSaleId != null) {
-                Log.d("ViewModel", "Updating existing sale: $currentSaleId")
-                _currentSale.value?.copy(
-                    color1IdPicked = currentSelections[0]?.colorId ?: 0,
-                    color1SoldQuantity = currentSelections[0]?.quantity ?: 0,
-                    color2IdPicked = currentSelections[1]?.colorId ?: 0,
-                    color2SoldQuantity = currentSelections[1]?.quantity ?: 0,
-                    color3IdPicked = currentSelections[2]?.colorId ?: 0,
-                    color3SoldQuantity = currentSelections[2]?.quantity ?: 0,
-                    color4IdPicked = currentSelections[3]?.colorId ?: 0,
-                    color4SoldQuantity = currentSelections[3]?.quantity ?: 0
-                )
-            } else {
-                Log.d("ViewModel", "Creating new sale")
-                val maxId = _uiState.value.soldArticlesModel.maxOfOrNull { it.vid } ?: 0
-                SoldArticlesTabelle(
+            val newSale = SoldArticlesTabelle(
                     vid = maxId + 1,
                     idArticle = article.idArticle.toLong(),
                     nameArticle = article.nomArticleFinale,
-                    clientSoldToItId = currentClientId,
+                    clientSoldToItId = clientBuyerNow.idClientsSu,
                     date = System.currentTimeMillis().toString(),
-                    color1IdPicked = currentSelections[0]?.colorId ?: 0,
-                    color1SoldQuantity = currentSelections[0]?.quantity ?: 0,
-                    color2IdPicked = currentSelections[1]?.colorId ?: 0,
-                    color2SoldQuantity = currentSelections[1]?.quantity ?: 0,
-                    color3IdPicked = currentSelections[2]?.colorId ?: 0,
-                    color3SoldQuantity = currentSelections[2]?.quantity ?: 0,
-                    color4IdPicked = currentSelections[3]?.colorId ?: 0,
-                    color4SoldQuantity = currentSelections[3]?.quantity ?: 0
                 )
-            }
 
-            newSale?.let { sale ->
-                Log.d("ViewModel", """
-                    |Saving sale to database:
-                    |Sale ID: ${sale.vid}
-                    |Color1: ${sale.color1SoldQuantity}
-                    |Color2: ${sale.color2SoldQuantity}
-                    |Color3: ${sale.color3SoldQuantity}
-                    |Color4: ${sale.color4SoldQuantity}
-                """.trimMargin())
-
-                database.soldArticlesTabelleDao().insert(sale)
-                _currentSale.value = sale
-                currentSaleId = sale.vid
-
+            try {
+                database.soldArticlesTabelleDao().insert(newSale)
+                _currentSale.value = newSale
                 _uiState.update { state ->
-                    state.copy(
-                        soldArticlesModel = if (currentSaleId != null) {
-                            state.soldArticlesModel.map {
-                                if (it.vid == currentSaleId) sale else it
-                            }
-                        } else {
-                            state.soldArticlesModel + sale
-                        }
-                    )
+                    state.copy(soldArticlesModel = state.soldArticlesModel + newSale)
                 }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(error = "Failed to create sale: ${e.message}") }
             }
-        }
-    }
-
-    data class ColorSelection(
-        val colorId: Long,
-        val quantity: Int
-    )
-
-    private val _selectedQuantities = MutableStateFlow<Map<Int, ColorSelection>>(emptyMap())
-    val selectedQuantities = _selectedQuantities.asStateFlow()
-
-    fun updateColorSelection(colorIndex: Int, colorId: Long, quantity: Int) {
-        _selectedQuantities.update { current ->
-            current + (colorIndex to ColorSelection(colorId, quantity))
         }
     }
 
