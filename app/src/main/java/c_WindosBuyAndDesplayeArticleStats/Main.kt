@@ -3,6 +3,7 @@ package c_WindosBuyAndDesplayeArticleStats
 import a_RoomDB.ArticlesBasesStats
 import a_RoomDB.ColorsArticles
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,11 +23,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Inventory
-import androidx.compose.material.icons.filled.Inventory2
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
@@ -153,7 +152,26 @@ private fun ColorsCards(
     }
 }
 
-
+@Composable
+fun BuyButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    IconButton(
+        onClick = onClick,
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.error)
+    ) {
+        Icon(
+            imageVector = Icons.Default.Edit,
+            contentDescription = "Edit quantity",
+            tint = Color.White,
+            modifier = Modifier
+                .size(24.dp)
+        )
+    }
+}
 
 @Composable
 fun ColorItem(
@@ -165,90 +183,20 @@ fun ColorItem(
 ) {
     var showPicker by remember { mutableStateOf(false) }
 
-    // Determine if this article has only one color
-    val hasSingleColor = remember(article) {
-        listOf(article.idcolor2, article.idcolor3, article.idcolor4).all { it == 0L }
-    }
-
     Card(
         modifier = Modifier
-            .let {
-                if (hasSingleColor) {
-                    it.fillMaxWidth()
-                } else {
-                    it.size(200.dp)
-                }
-            }
+            .fillMaxWidth()
             .padding(4.dp)
     ) {
-        if (hasSingleColor) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Box(
+                modifier = Modifier
+                    .weight(0.7f)
+                    .fillMaxHeight()
             ) {
-                Box(
-                    modifier = Modifier
-                        .weight(0.7f)
-                        .fillMaxHeight()
-                ) {
-                    ImageDisplayer(
-                        modifier = Modifier.fillMaxSize(),
-                        article = article,
-                        viewModel = viewModel,
-                        indexColor = index,
-                        reloadKey = relodeTigger
-                    )
-
-                    // Only show color name overlay if color exists
-                    color?.let { colorData ->
-                        Surface(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .align(Alignment.BottomCenter),
-                            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f)
-                        ) {
-                            Text(
-                                text = colorData.nameColore,
-                                modifier = Modifier.padding(8.dp),
-                                style = MaterialTheme.typography.labelLarge,
-                                textAlign = TextAlign.Center
-                            )
-                        }
-                    }
-                }
-
-                Box(
-                    modifier = Modifier
-                        .weight(0.3f)
-                        .fillMaxHeight()
-                ) {
-                    if (showPicker) {
-                        CompactQuantityPicker(onDismiss = { showPicker = false })
-                    } else {
-                        IconButton(
-                            onClick = { showPicker = true },
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(8.dp)
-                        ) {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center,
-                                modifier = Modifier.fillMaxSize()
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Edit,
-                                    contentDescription = "Edit quantity",
-                                    modifier = Modifier.size(24.dp)
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        } else {
-            // Regular card layout for multiple colors
-            Box(modifier = Modifier.fillMaxSize()) {
                 ImageDisplayer(
                     modifier = Modifier.fillMaxSize(),
                     article = article,
@@ -273,6 +221,18 @@ fun ColorItem(
                     }
                 }
             }
+
+            Box(
+                modifier = Modifier
+                    .weight(0.3f)
+                    .fillMaxHeight()
+            ) {
+                if (showPicker) {
+                    CompactQuantityPicker(onDismiss = { showPicker = false })
+                } else {
+                    BuyButton(onClick = { showPicker = true })
+                }
+            }
         }
     }
 }
@@ -281,66 +241,55 @@ fun ColorItem(
 fun CompactQuantityPicker(
     onDismiss: () -> Unit
 ) {
-    Column(
+    Card(
         modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        elevation = CardDefaults.cardElevation(4.dp)
     ) {
-        val values = remember {
-            (1..15).map { it.toString() } +
-                    (20..25).map { it.toString() } +
-                    listOf("30", "40", "50")
-        }
-        val valuesPickerState = rememberPickerState()
-
-        var selectedValue by remember { mutableStateOf("1") }
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            Column(
-                modifier = Modifier.weight(0.7f),
-                horizontalAlignment = Alignment.CenterHorizontally
+            val values = remember {
+                (1..15).map { it.toString() } +
+                        (20..25).map { it.toString() } +
+                        listOf("30", "40", "50")
+            }
+            val valuesPickerState = rememberPickerState()
+
+            var selectedValue by remember { mutableStateOf("1") }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = Icons.Default.Inventory2, // Carton icon
-                    contentDescription = "Carton",
-                    modifier = Modifier.size(24.dp)
-                )
-                Icon(
-                    imageVector = Icons.Default.Inventory, // Package icon
-                    modifier = Modifier
-                        .size(24.dp)
-                        .padding(top = 8.dp),
-                    contentDescription = "Package"
+
+                Picker(
+                    state = valuesPickerState,
+                    items = values,
+                    visibleItemsCount = 3,
+                    modifier = Modifier,
+                    textModifier = Modifier.padding(8.dp),
+                    textStyle = TextStyle(fontSize = 24.sp)
                 )
             }
 
-            Picker(
-                state = valuesPickerState,
-                items = values,
-                visibleItemsCount = 3,
-                modifier = Modifier.weight(0.3f),
-                textModifier = Modifier.padding(8.dp),
-                textStyle = TextStyle(fontSize = 24.sp)
-            )
-        }
+            LaunchedEffect(valuesPickerState.selectedItem) {
+                selectedValue = valuesPickerState.selectedItem
+            }
 
-        LaunchedEffect(valuesPickerState.selectedItem) {
-            selectedValue = valuesPickerState.selectedItem
-        }
-
-        // Add a close button
-        IconButton(
-            onClick = onDismiss,
-            modifier = Modifier.padding(top = 8.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Close,
-                contentDescription = "Close picker"
-            )
+            IconButton(
+                onClick = onDismiss,
+                modifier = Modifier.padding(top = 8.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "Close picker"
+                )
+            }
         }
     }
 }
@@ -409,14 +358,14 @@ fun Picker(
             }
         }
 
-        Divider(
-            color = dividerColor,
-            modifier = Modifier.offset(y = itemHeightDp * visibleItemsMiddle)
+        HorizontalDivider(
+            modifier = Modifier.offset(y = itemHeightDp * visibleItemsMiddle),
+            color = dividerColor
         )
 
-        Divider(
-            color = dividerColor,
-            modifier = Modifier.offset(y = itemHeightDp * (visibleItemsMiddle + 1))
+        HorizontalDivider(
+            modifier = Modifier.offset(y = itemHeightDp * (visibleItemsMiddle + 1)),
+            color = dividerColor
         )
 
     }
