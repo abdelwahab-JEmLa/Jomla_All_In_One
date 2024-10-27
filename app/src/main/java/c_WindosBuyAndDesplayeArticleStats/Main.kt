@@ -96,12 +96,6 @@ fun WindosBuyAndDesplayeArticleStats(
             viewModel.createNewSaleIfNotExist(article, clientBuyerNow)
         }
     }
-
-    // Create a map to store picker states at the dialog level
-    val pickerStates = remember {
-        mutableMapOf<Int, PickerState>()
-    }
-
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false)
@@ -132,67 +126,8 @@ fun WindosBuyAndDesplayeArticleStats(
                             onReloadTrigger = onReloadTrigger,
                             relodeTigger = reloadTrigger,
                             initialShowPickerIndex = indexColorStat,
-                            relatedSaleOfArticleToClient = relatedSaleOfArticleToClient,
-                            pickerStates = pickerStates
+                            relatedSaleOfArticleToClient=relatedSaleOfArticleToClient
                         )
-
-
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            elevation = CardDefaults.cardElevation(4.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(8.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                val totalItems = pickerStates.values.sumOf {
-                                    it.selectedItem.toIntOrNull() ?: 0
-                                }
-
-                                Text(
-                                    text = "Total Items: $totalItems",
-                                    style = MaterialTheme.typography.titleMedium
-                                )
-
-                                IconButton(
-                                    onClick = {
-                                        // Update all quantities from picker states
-                                        pickerStates.forEach { (index, state) ->
-                                            val quantity = state.selectedItem.toIntOrNull() ?: 0
-                                            val colorId = when (index) {
-                                                0 -> article.idcolor1
-                                                1 -> article.idcolor2
-                                                2 -> article.idcolor3
-                                                3 -> article.idcolor4
-                                                else -> 0L
-                                            }
-                                            if (colorId != 0L) {
-                                                viewModel.updateColorSelection(index, colorId, quantity)
-                                            }
-                                        }
-                                        viewModel.saveSaleTransaction()
-                                        onDismiss()
-                                    },
-                                    modifier = Modifier
-                                        .background(
-                                            color = MaterialTheme.colorScheme.primary,
-                                            shape = MaterialTheme.shapes.small
-                                        )
-                                        .padding(8.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Edit,
-                                        contentDescription = "Confirm Purchase",
-                                        tint = Color.White
-                                    )
-                                }
-                            }
-                        }
                     }
                 }
             }
@@ -200,6 +135,44 @@ fun WindosBuyAndDesplayeArticleStats(
     }
 }
 
+@Composable
+private fun ColorsCards(
+    article: ArticlesBasesStatsTabelle,
+    viewModel: StartUpNewArticlesViewModels,
+    modifier: Modifier = Modifier,
+    onDismiss: () -> Unit,
+    onReloadTrigger: () -> Unit,
+    relodeTigger: Int,
+    uiState: UiState,
+    initialShowPickerIndex: Int,
+    relatedSaleOfArticleToClient: SoldArticlesTabelle?
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier.fillMaxWidth()
+    ) {
+        // Find corresponding colors from uiState.colors
+        listOf(
+            article.idcolor1,
+            article.idcolor2,
+            article.idcolor3,
+            article.idcolor4
+        ).forEachIndexed { index, colorId ->
+            val correspondingColor = uiState.colorsArticlesTabelleModel.find { it.idColore == colorId }
+            if (colorId != 0L && correspondingColor != null) {
+                ColorItem(
+                    article = article,
+                    color = correspondingColor,
+                    index = index,
+                    relodeTigger = relodeTigger,
+                    viewModel = viewModel ,
+                    initialShowPicker = index == initialShowPickerIndex ,
+                    relatedSaleOfArticleToClient =relatedSaleOfArticleToClient
+                )
+            }
+        }
+    }
+}
 
 @Composable
 fun BuyButton(
@@ -223,105 +196,6 @@ fun BuyButton(
 }
 
 @Composable
-fun ColorsCards(
-    article: ArticlesBasesStatsTabelle,
-    viewModel: StartUpNewArticlesViewModels,
-    modifier: Modifier = Modifier,
-    onDismiss: () -> Unit,
-    onReloadTrigger: () -> Unit,
-    relodeTigger: Int,
-    uiState: UiState,
-    initialShowPickerIndex: Int,
-    relatedSaleOfArticleToClient: SoldArticlesTabelle?,
-    pickerStates: MutableMap<Int, PickerState>
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier.fillMaxWidth()
-    ) {
-        // Colors display
-        listOf(
-            article.idcolor1,
-            article.idcolor2,
-            article.idcolor3,
-            article.idcolor4
-        ).forEachIndexed { index, colorId ->
-            val correspondingColor = uiState.colorsArticlesTabelleModel.find { it.idColore == colorId }
-            if (colorId != 0L && correspondingColor != null) {
-                ColorItem(
-                    article = article,
-                    color = correspondingColor,
-                    index = index,
-                    relodeTigger = relodeTigger,
-                    viewModel = viewModel,
-                    initialShowPicker = index == initialShowPickerIndex,
-                    relatedSaleOfArticleToClient = relatedSaleOfArticleToClient,
-                    pickerStates = pickerStates
-                )
-            }
-        }
-
-        // Add confirmation button at bottom
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            elevation = CardDefaults.cardElevation(4.dp)
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                val totalItems = pickerStates.values.sumOf {
-                    it.selectedItem.toIntOrNull() ?: 0
-                }
-
-                Text(
-                    text = "Total Items: $totalItems",
-                    style = MaterialTheme.typography.titleMedium
-                )
-
-                IconButton(
-                    onClick = {
-                        // Update all quantities from picker states
-                        pickerStates.forEach { (index, state) ->
-                            val quantity = state.selectedItem.toIntOrNull() ?: 0
-                            val colorId = when (index) {
-                                0 -> article.idcolor1
-                                1 -> article.idcolor2
-                                2 -> article.idcolor3
-                                3 -> article.idcolor4
-                                else -> 0L
-                            }
-                            if (colorId != 0L) {
-                                viewModel.updateColorSelection(index, colorId, quantity)
-                            }
-                        }
-                        viewModel.saveSaleTransaction()
-                        onDismiss()
-                    },
-                    modifier = Modifier
-                        .background(
-                            color = MaterialTheme.colorScheme.primary,
-                            shape = MaterialTheme.shapes.small
-                        )
-                        .padding(8.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Edit,
-                        contentDescription = "Confirm Purchase",
-                        tint = Color.White
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
 fun ColorItem(
     article: ArticlesBasesStatsTabelle,
     color: ColorsArticlesTabelle?,
@@ -329,13 +203,13 @@ fun ColorItem(
     relodeTigger: Int,
     viewModel: StartUpNewArticlesViewModels,
     initialShowPicker: Boolean = false,
-    relatedSaleOfArticleToClient: SoldArticlesTabelle?,
-    pickerStates: MutableMap<Int, PickerState>
+    relatedSaleOfArticleToClient: SoldArticlesTabelle?
 ) {
     var showPicker by remember { mutableStateOf(initialShowPicker) }
     val currentSale by viewModel.currentSale.collectAsState()
     val currentSaleOrRelated = currentSale ?: relatedSaleOfArticleToClient
 
+// Get quantity with priority to existing sale
     val currentQuantity = remember(currentSaleOrRelated, index) {
         when (index) {
             0 -> currentSaleOrRelated?.color1SoldQuantity
@@ -344,6 +218,13 @@ fun ColorItem(
             3 -> currentSaleOrRelated?.color4SoldQuantity
             else -> null
         } ?: 0
+    }
+
+
+    LaunchedEffect(showPicker) {
+        if (!showPicker) {
+            viewModel.saveSaleTransaction()
+        }
     }
 
     Card(
@@ -408,12 +289,7 @@ fun ColorItem(
                         colorId = color.idColore,
                         colorIndex = index,
                         viewModel = viewModel,
-                        initialQuantity = currentQuantity,
-                        pickerState = pickerStates.getOrPut(index) {
-                            PickerState().apply {
-                                selectedItem = currentQuantity.toString()
-                            }
-                        }
+                        initialQuantity = currentQuantity
                     )
                 }
             }
@@ -427,8 +303,7 @@ fun CompactQuantityPicker(
     colorId: Long,
     colorIndex: Int,
     viewModel: StartUpNewArticlesViewModels,
-    initialQuantity: Int = 0,
-    pickerState: PickerState
+    initialQuantity: Int = 0
 ) {
     Card(
         modifier = Modifier.fillMaxSize(),
@@ -447,6 +322,11 @@ fun CompactQuantityPicker(
                         listOf("30", "40", "50")
             }
 
+            // Initialize picker state with the current quantity
+            val valuesPickerState = rememberPickerState().apply {
+                selectedItem = initialQuantity.toString()
+            }
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -455,11 +335,12 @@ fun CompactQuantityPicker(
                 Picker(
                     modifier = Modifier,
                     items = values,
-                    state = pickerState,
+                    state = valuesPickerState,
                     visibleItemsCount = 3,
                     textModifier = Modifier.padding(8.dp),
                     textStyle = TextStyle(fontSize = 24.sp),
-                    startIndex = values.indexOfFirst { it == initialQuantity.toString() }.coerceAtLeast(0)
+                    startIndex = values.indexOfFirst { it == initialQuantity.toString() }.coerceAtLeast(0),
+                    onItemStat = {viewModel.updateColorSelection(colorIndex, colorId, it.toInt())}
                 )
             }
 
@@ -488,7 +369,8 @@ fun Picker(
     textModifier: Modifier = Modifier,
     textStyle: TextStyle = LocalTextStyle.current,
     dividerColor: Color = LocalContentColor.current,
-) {
+    onItemStat: (String) -> Unit,
+    ) {
 
     val visibleItemsMiddle = visibleItemsCount / 2
     val listScrollCount = Integer.MAX_VALUE
@@ -515,7 +397,9 @@ fun Picker(
         snapshotFlow { listState.firstVisibleItemIndex }
             .map { index -> getItem(index + visibleItemsMiddle) }
             .distinctUntilChanged()
-            .collect { item -> state.selectedItem = item }
+            .collect { item -> state.selectedItem = item
+                onItemStat(item)
+            }
     }
 
     Box(modifier = modifier) {
