@@ -15,14 +15,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
@@ -37,7 +42,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
@@ -56,7 +66,9 @@ import coil.request.ImageRequest
 import coil.size.Size
 import com.example.clientjetpack.R
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import java.io.File
+
 
 @Composable
 fun WindosBuyAndDesplayeArticleStats(
@@ -140,6 +152,28 @@ private fun ColorsCards(
     }
 }
 
+// Fixed TODO for IconButton in ColorItem
+@Composable
+fun BuyButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    IconButton(
+        onClick = onClick,
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.error)
+    ) {
+        Icon(
+            imageVector = Icons.Default.Edit,
+            contentDescription = "Edit quantity",
+            tint = Color.White,
+            modifier = Modifier
+                .size(24.dp)
+        )
+    }
+}
+
 @Composable
 fun ColorItem(
     article: ArticlesBasesStats,
@@ -149,22 +183,19 @@ fun ColorItem(
     viewModel: StartUpNewArticlesViewModels,
 ) {
     var showPicker by remember { mutableStateOf(false) }
-    var selectedQuantity by remember { mutableStateOf(1) }
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(350.dp)
             .padding(4.dp)
     ) {
         Row(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            // Image section
             Box(
                 modifier = Modifier
-                    .weight(0.6f)  // ~150dp pour une largeur totale de 250dp
+                    .weight(0.7f)
                     .fillMaxHeight()
             ) {
                 ImageDisplayer(
@@ -192,61 +223,15 @@ fun ColorItem(
                 }
             }
 
-            // Picker section
             Box(
                 modifier = Modifier
-                    .weight(0.4f)  // ~100dp
+                    .weight(0.3f)
                     .fillMaxHeight()
-                    .background(MaterialTheme.colorScheme.surface)
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(8.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = "Quantité",
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.padding(vertical = 8.dp)
-                    )
-
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth()
-                    ) {
-                        val values = remember {
-                            (1..15).map { it.toString() } +
-                                    (20..25).map { it.toString() } +
-                                    listOf("30", "40", "50")
-                        }
-                        val pickerState = rememberPickerState()
-
-                        CompactPicker(
-                            state = pickerState,
-                            items = values,
-                            visibleItemsCount = 3,
-                            textModifier = Modifier.padding(vertical = 4.dp),
-                            textStyle = MaterialTheme.typography.titleLarge.copy(
-                                fontSize = 20.sp,
-                                textAlign = TextAlign.Center
-                            ),
-                            dividerColor = MaterialTheme.colorScheme.primary
-                        )
-                    }
-
-                    Button(
-                        onClick = {
-                            // Traiter la quantité sélectionnée
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp)
-                    ) {
-                        Text("Ajouter au panier")
-                    }
+                if (showPicker) {
+                    CompactQuantityPicker(onDismiss = { showPicker = false })
+                } else {
+                    BuyButton(onClick = { showPicker = true })
                 }
             }
         }
@@ -254,71 +239,128 @@ fun ColorItem(
 }
 
 @Composable
-private fun CompactPicker(
+fun CompactQuantityPicker(
+    onDismiss: () -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxSize(),
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            val values = remember {
+                (1..15).map { it.toString() } +
+                        (20..25).map { it.toString() } +
+                        listOf("30", "40", "50")
+            }
+            val valuesPickerState = rememberPickerState()
+
+            var selectedValue by remember { mutableStateOf("1") }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                Picker(
+                    state = valuesPickerState,
+                    items = values,
+                    visibleItemsCount = 3,
+                    modifier = Modifier,
+                    textModifier = Modifier.padding(8.dp),
+                    textStyle = TextStyle(fontSize = 24.sp)
+                )
+            }
+
+            LaunchedEffect(valuesPickerState.selectedItem) {
+                selectedValue = valuesPickerState.selectedItem
+            }
+
+            IconButton(
+                onClick = onDismiss,
+                modifier = Modifier.padding(top = 8.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "Close picker"
+                )
+            }
+        }
+    }
+}
+
+
+
+@Composable
+fun Picker(
     items: List<String>,
-    state: PickerState,
+    state: PickerState = rememberPickerState(),
     modifier: Modifier = Modifier,
+    startIndex: Int = 0,
     visibleItemsCount: Int = 3,
     textModifier: Modifier = Modifier,
     textStyle: TextStyle = LocalTextStyle.current,
-    dividerColor: Color = LocalContentColor.current
+    dividerColor: Color = LocalContentColor.current,
 ) {
-    val visibleItemsMiddle = visibleItemsCount / 2
-    val listState = rememberLazyListState(
-        initialFirstVisibleItemIndex = items.size * 100 + visibleItemsMiddle
-    )
 
+    val visibleItemsMiddle = visibleItemsCount / 2
+    val listScrollCount = Integer.MAX_VALUE
+    val listScrollMiddle = listScrollCount / 2
+    val listStartIndex = listScrollMiddle - listScrollMiddle % items.size - visibleItemsMiddle + startIndex
+
+    fun getItem(index: Int) = items[index % items.size]
+
+    val listState = rememberLazyListState(initialFirstVisibleItemIndex = listStartIndex)
     val flingBehavior = rememberSnapFlingBehavior(lazyListState = listState)
+
     val itemHeightPixels = remember { mutableStateOf(0) }
     val itemHeightDp = pixelsToDp(itemHeightPixels.value)
 
+    val fadingEdgeGradient = remember {
+        Brush.verticalGradient(
+            0f to Color.Transparent,
+            0.5f to Color.Black,
+            1f to Color.Transparent
+        )
+    }
+
     LaunchedEffect(listState) {
-        snapshotFlow {
-            val index = listState.firstVisibleItemIndex + visibleItemsMiddle
-            items[index % items.size]
-        }
+        snapshotFlow { listState.firstVisibleItemIndex }
+            .map { index -> getItem(index + visibleItemsMiddle) }
             .distinctUntilChanged()
             .collect { item -> state.selectedItem = item }
     }
 
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-    ) {
+    Box(modifier = modifier) {
+
         LazyColumn(
             state = listState,
             flingBehavior = flingBehavior,
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(itemHeightDp * visibleItemsCount)
+                .fadingEdge(fadingEdgeGradient)
         ) {
-            items(items.size * 200) { index ->
-                val item = items[index % items.size]
+            items(listScrollCount) { index ->
                 Text(
-                    text = item,
+                    text = getItem(index),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     style = textStyle,
                     modifier = Modifier
-                        .fillMaxWidth()
                         .onSizeChanged { size -> itemHeightPixels.value = size.height }
-                        .then(textModifier),
-                    textAlign = TextAlign.Center
+                        .then(textModifier)
                 )
             }
         }
 
-        // Selection indicator
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(itemHeightDp)
-                .offset(y = itemHeightDp * visibleItemsMiddle)
-                .background(
-                    MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-                )
-        )
-
-        // Dividers
         HorizontalDivider(
             modifier = Modifier.offset(y = itemHeightDp * visibleItemsMiddle),
             color = dividerColor
@@ -328,22 +370,30 @@ private fun CompactPicker(
             modifier = Modifier.offset(y = itemHeightDp * (visibleItemsMiddle + 1)),
             color = dividerColor
         )
+
     }
+
 }
 
-class PickerState {
-    var selectedItem by mutableStateOf("1")
-}
-
-@Composable
-fun rememberPickerState() = remember { PickerState() }
-
-
+private fun Modifier.fadingEdge(brush: Brush) = this
+    .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
+    .drawWithContent {
+        drawContent()
+        drawRect(brush = brush, blendMode = BlendMode.DstIn)
+    }
 
 @Composable
 private fun pixelsToDp(pixels: Int) = with(LocalDensity.current) { pixels.toDp() }
 
 
+
+
+@Composable
+fun rememberPickerState() = remember { PickerState() }
+
+class PickerState {
+    var selectedItem by mutableStateOf("")
+}
 
 
 @Composable
