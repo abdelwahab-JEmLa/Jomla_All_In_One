@@ -42,7 +42,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -264,7 +263,6 @@ fun ClientSelectionDialog(
     }
 }
 
-// Update AppNavHost to include client selection
 @Composable
 fun AppNavHost(
     appViewModels: AppViewModels,
@@ -284,10 +282,6 @@ fun AppNavHost(
     var indexColorStat by remember { mutableIntStateOf(0) }
     var reloadTrigger by remember { mutableIntStateOf(0) }
 
-    LaunchedEffect(currentEditedArticle) {
-        windosBuyAndDesplayeArticleStats = currentEditedArticle
-    }
-
     Box(modifier = modifier.fillMaxSize()) {
         NavHost(
             navController = navController,
@@ -303,7 +297,13 @@ fun AppNavHost(
                         onClickToOpenWindos = { article, indexColor ->
                             pendingArticle = article
                             pendingIndexColor = indexColor
-                            showClientSelection = true
+                            if (clientBuyerNow == null) {
+                                showClientSelection = true
+                            } else {
+                                // Si client déjà sélectionné, ouvre directement la fenêtre
+                                windosBuyAndDesplayeArticleStats = article
+                                indexColorStat = indexColor
+                            }
                         }
                     )
 
@@ -317,18 +317,21 @@ fun AppNavHost(
             }
         }
 
-        if (showClientSelection && clientBuyerNow!=null) {
+        // N'ouvre le dialogue que si pas de client ET showClientSelection est true
+        if (showClientSelection && clientBuyerNow == null) {
             ClientSelectionDialog(
                 clients = uiState.clientsModel,
                 onClientSelected = { client ->
                     clientBuyerNow = client
                     windosBuyAndDesplayeArticleStats = pendingArticle
                     indexColorStat = pendingIndexColor
+                    showClientSelection = false  // Ferme le dialogue après sélection
                 },
                 onDismiss = { showClientSelection = false }
             )
         }
 
+        // Ouvre la fenêtre stats seulement si on a un article ET un client
         windosBuyAndDesplayeArticleStats?.let { article ->
             WindosBuyAndDesplayeArticleStats(
                 modifier = Modifier.padding(horizontal = 3.dp),
@@ -346,7 +349,6 @@ fun AppNavHost(
         }
     }
 }
-
 @Composable
 fun LoadingOverlay(
     progress: Float,
