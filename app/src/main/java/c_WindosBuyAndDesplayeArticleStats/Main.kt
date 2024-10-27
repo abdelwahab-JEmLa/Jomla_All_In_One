@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,8 +27,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Inventory
-import androidx.compose.material.icons.filled.Inventory2
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -75,9 +72,6 @@ import com.example.clientjetpack.R
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import java.io.File
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 
 @Composable
 fun WindosBuyAndDesplayeArticleStats(
@@ -244,71 +238,71 @@ fun CompactQuantityPicker(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceBetween
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.error)
     ) {
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            val values = remember {
-                (1..15).map { it.toString() } +
-                        (20..25).map { it.toString() } +
-                        listOf("30", "40", "50")
+            // Close button section (20% of height)
+            Box(
+                modifier = Modifier
+                    .weight(0.2f)
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                IconButton(
+                    onClick = onDismiss,
+                    modifier = Modifier
+                        .size(32.dp)
+                        .background(
+                            color = Color.White,
+                            shape = CircleShape
+                        )
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Close picker",
+                        tint = MaterialTheme.colorScheme.error
+                    )
+                }
             }
-            val valuesPickerState = rememberPickerState()
-            var selectedValue by remember { mutableStateOf("1") }
+            // Picker section (80% of height)
+            Box(
+                modifier = Modifier
+                    .weight(0.8f)
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                val values = remember {
+                    (1..15).map { it.toString() } +
+                            (20..25).map { it.toString() } +
+                            listOf("30", "40", "50")
+                }
+                val valuesPickerState = rememberPickerState()
+                var selectedValue by remember { mutableStateOf("1") }
 
-            Icon(
-                imageVector = Icons.Default.Inventory2,
-                contentDescription = "Carton",
-                tint = Color.White,
-                modifier = Modifier.size(24.dp)
-            )
+                Picker(
+                    state = valuesPickerState,
+                    items = values,
+                    visibleItemsCount = 3,
+                    textModifier = Modifier.padding(4.dp),
+                    textStyle = TextStyle(
+                        fontSize = 20.sp,
+                        color = Color.White
+                    ),
+                    dividerColor = Color.White
+                )
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Icon(
-                imageVector = Icons.Default.Inventory,
-                contentDescription = "Package",
-                tint = Color.White,
-                modifier = Modifier.size(24.dp)
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Picker(
-                state = valuesPickerState,
-                items = values,
-                visibleItemsCount = 3,
-                textModifier = Modifier.padding(4.dp),
-                textStyle = TextStyle(
-                    fontSize = 20.sp,
-                    color = Color.White
-                ),
-                dividerColor = Color.White
-            )
-
-            LaunchedEffect(valuesPickerState.selectedItem) {
-                selectedValue = valuesPickerState.selectedItem
+                LaunchedEffect(valuesPickerState.selectedItem) {
+                    selectedValue = valuesPickerState.selectedItem
+                }
             }
-        }
 
-        IconButton(
-            onClick = onDismiss,
-            modifier = Modifier
-                .padding(bottom = 8.dp)
-                .size(32.dp)
-                .background(color = MaterialTheme.colorScheme.error, shape = CircleShape)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Close,
-                contentDescription = "Close picker",
-                tint = Color.White
-            )
+
         }
     }
 }
