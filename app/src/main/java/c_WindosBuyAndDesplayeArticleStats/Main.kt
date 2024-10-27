@@ -2,6 +2,9 @@ package c_WindosBuyAndDesplayeArticleStats
 
 import a_RoomDB.ArticlesBasesStats
 import a_RoomDB.ColorsArticles
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
@@ -9,6 +12,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,10 +23,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Inventory
+import androidx.compose.material.icons.filled.Inventory2
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -68,7 +75,9 @@ import com.example.clientjetpack.R
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import java.io.File
-
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 
 @Composable
 fun WindosBuyAndDesplayeArticleStats(
@@ -153,27 +162,6 @@ private fun ColorsCards(
 }
 
 @Composable
-fun BuyButton(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    IconButton(
-        onClick = onClick,
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.error)
-    ) {
-        Icon(
-            imageVector = Icons.Default.Edit,
-            contentDescription = "Edit quantity",
-            tint = Color.White,
-            modifier = Modifier
-                .size(24.dp)
-        )
-    }
-}
-
-@Composable
 fun ColorItem(
     article: ArticlesBasesStats,
     color: ColorsArticles?,
@@ -194,7 +182,7 @@ fun ColorItem(
         ) {
             Box(
                 modifier = Modifier
-                    .weight(0.7f)
+                    .weight(0.8f)
                     .fillMaxHeight()
             ) {
                 ImageDisplayer(
@@ -220,17 +208,31 @@ fun ColorItem(
                         )
                     }
                 }
+
+                CircularBuyButton(
+                    onClick = { showPicker = true },
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .align(Alignment.BottomEnd)
+                )
             }
 
-            Box(
+            AnimatedVisibility(
+                visible = showPicker,
                 modifier = Modifier
-                    .weight(0.3f)
-                    .fillMaxHeight()
+                    .weight(0.2f)
+                    .fillMaxHeight(),
+                enter = slideInHorizontally(initialOffsetX = { it }),
+                exit = slideOutHorizontally(targetOffsetX = { it })
             ) {
-                if (showPicker) {
-                    CompactQuantityPicker(onDismiss = { showPicker = false })
-                } else {
-                    BuyButton(onClick = { showPicker = true })
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.error.copy(alpha = 0.9f)
+                ) {
+                    CompactQuantityPicker(
+                        onDismiss = { showPicker = false },
+                        modifier = Modifier.padding(8.dp)
+                    )
                 }
             }
         }
@@ -239,18 +241,18 @@ fun ColorItem(
 
 @Composable
 fun CompactQuantityPicker(
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = Modifier.fillMaxSize(),
-        elevation = CardDefaults.cardElevation(4.dp)
+    Column(
+        modifier = modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceBetween
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.weight(1f)
         ) {
             val values = remember {
                 (1..15).map { it.toString() } +
@@ -258,41 +260,81 @@ fun CompactQuantityPicker(
                         listOf("30", "40", "50")
             }
             val valuesPickerState = rememberPickerState()
-
             var selectedValue by remember { mutableStateOf("1") }
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+            Icon(
+                imageVector = Icons.Default.Inventory2,
+                contentDescription = "Carton",
+                tint = Color.White,
+                modifier = Modifier.size(24.dp)
+            )
 
-                Picker(
-                    state = valuesPickerState,
-                    items = values,
-                    visibleItemsCount = 3,
-                    modifier = Modifier,
-                    textModifier = Modifier.padding(8.dp),
-                    textStyle = TextStyle(fontSize = 24.sp)
-                )
-            }
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Icon(
+                imageVector = Icons.Default.Inventory,
+                contentDescription = "Package",
+                tint = Color.White,
+                modifier = Modifier.size(24.dp)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Picker(
+                state = valuesPickerState,
+                items = values,
+                visibleItemsCount = 3,
+                textModifier = Modifier.padding(4.dp),
+                textStyle = TextStyle(
+                    fontSize = 20.sp,
+                    color = Color.White
+                ),
+                dividerColor = Color.White
+            )
 
             LaunchedEffect(valuesPickerState.selectedItem) {
                 selectedValue = valuesPickerState.selectedItem
             }
+        }
 
-            IconButton(
-                onClick = onDismiss,
-                modifier = Modifier.padding(top = 8.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Close,
-                    contentDescription = "Close picker"
-                )
-            }
+        IconButton(
+            onClick = onDismiss,
+            modifier = Modifier
+                .padding(bottom = 8.dp)
+                .size(32.dp)
+                .background(color = MaterialTheme.colorScheme.error, shape = CircleShape)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Close,
+                contentDescription = "Close picker",
+                tint = Color.White
+            )
         }
     }
 }
+@Composable
+fun CircularBuyButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        onClick = onClick,
+        color = MaterialTheme.colorScheme.error,
+        shape = CircleShape,
+        modifier = modifier.size(48.dp)
+    ) {
+        Icon(
+            imageVector = Icons.Default.Edit,
+            contentDescription = "Edit quantity",
+            tint = Color.White,
+            modifier = Modifier
+                .padding(12.dp)
+                .fillMaxSize()
+        )
+    }
+}
+
+
 
 @Composable
 fun Picker(
