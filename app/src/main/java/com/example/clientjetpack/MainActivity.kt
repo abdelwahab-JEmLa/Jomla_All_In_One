@@ -199,6 +199,8 @@ fun AppNavHost(
     val currentEditedArticle by appViewModels.startUpNewArticlesViewModels.currentArticle.collectAsState()
 
     var windosBuyAndDesplayeArticleStats by remember { mutableStateOf<ArticlesBasesStats?>(null) }
+    var indexColorStat by remember { mutableStateOf(0) }
+
     var reloadTrigger by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(currentEditedArticle) {
@@ -216,7 +218,11 @@ fun AppNavHost(
                     StartupAppDisplayerOfNewArticles(
                         viewModel = appViewModels.startUpNewArticlesViewModels,
                         onToggleNavBar = onToggleNavBar,
-                        reloadTrigger = reloadTrigger
+                        reloadTrigger = reloadTrigger,
+                        onClickToOpenWindos = {article,indexColor->
+                            windosBuyAndDesplayeArticleStats=article
+                            indexColorStat=indexColor
+                        }
                     )
 
                     if (uiState.isLoading) {
@@ -237,7 +243,8 @@ fun AppNavHost(
                 onDismiss = { windosBuyAndDesplayeArticleStats = null },
                 onReloadTrigger = { reloadTrigger += 1 },
                 reloadTrigger = reloadTrigger  ,
-                uiState = uiState
+                uiState = uiState ,
+                indexColorStat=indexColorStat
             )
         }
     }

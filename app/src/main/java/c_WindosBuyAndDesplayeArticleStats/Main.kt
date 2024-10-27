@@ -77,13 +77,14 @@ import java.io.File
 
 @Composable
 fun WindosBuyAndDesplayeArticleStats(
-    uiState:UiState,
+    uiState: UiState,
     article: ArticlesBasesStats,
     viewModel: StartUpNewArticlesViewModels,
     onDismiss: () -> Unit,
     onReloadTrigger: () -> Unit,
     reloadTrigger: Int,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    indexColorStat: Int
 ) {
     Dialog(
         onDismissRequest = onDismiss,
@@ -113,7 +114,8 @@ fun WindosBuyAndDesplayeArticleStats(
                             viewModel = viewModel,
                             onDismiss = onDismiss,
                             onReloadTrigger = onReloadTrigger,
-                            relodeTigger = reloadTrigger
+                            relodeTigger = reloadTrigger,
+                            initialShowPickerIndex = indexColorStat  // Pass the index to ColorsCards
                         )
                     }
                 }
@@ -130,7 +132,8 @@ private fun ColorsCards(
     onDismiss: () -> Unit,
     onReloadTrigger: () -> Unit,
     relodeTigger: Int,
-    uiState: UiState
+    uiState: UiState  ,
+    initialShowPickerIndex: Int
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -150,7 +153,9 @@ private fun ColorsCards(
                     color = correspondingColor,
                     index = index,
                     relodeTigger = relodeTigger,
-                    viewModel = viewModel
+                    viewModel = viewModel ,
+                    initialShowPicker = index == initialShowPickerIndex  // Pass whether this color should show picker
+
                 )
             }
         }
@@ -185,8 +190,10 @@ fun ColorItem(
     index: Int,
     relodeTigger: Int,
     viewModel: StartUpNewArticlesViewModels,
+    initialShowPicker: Boolean = false
 ) {
-    var showPicker by remember { mutableStateOf(false) }
+    var showPicker by remember { mutableStateOf(initialShowPicker) }  // Initialize based on passed parameter
+
 
     Card(
         modifier = Modifier
@@ -281,10 +288,10 @@ fun CompactQuantityPicker(
             ) {
 
                 Picker(
-                    state = valuesPickerState,
-                    items = values,
-                    visibleItemsCount = 3,
                     modifier = Modifier,
+                    items = values,
+                    state = valuesPickerState,
+                    visibleItemsCount = 3,
                     textModifier = Modifier.padding(8.dp),
                     textStyle = TextStyle(fontSize = 24.sp)
                 )
@@ -309,9 +316,9 @@ fun CompactQuantityPicker(
 
 @Composable
 fun Picker(
+    modifier: Modifier = Modifier,
     items: List<String>,
     state: PickerState = rememberPickerState(),
-    modifier: Modifier = Modifier,
     startIndex: Int = 0,
     visibleItemsCount: Int = 3,
     textModifier: Modifier = Modifier,

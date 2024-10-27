@@ -54,7 +54,7 @@ fun StartupAppDisplayerOfNewArticles(
     viewModel: StartUpNewArticlesViewModels,
     onToggleNavBar: () -> Unit,
     reloadTrigger: Int,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier, onClickToOpenWindos: (ArticlesBasesStats, Int) -> Unit
 ) {
     var gridColumnsForNewArticels by remember { mutableStateOf(2) }
     var showFilter by remember { mutableStateOf(false) }
@@ -75,7 +75,7 @@ fun StartupAppDisplayerOfNewArticles(
         onArticleClick = viewModel::updateCurrentArticle,
         viewModel = viewModel,
         reloadTrigger = reloadTrigger,
-        modifier = modifier
+        modifier = modifier, onClickToOpenWindos = onClickToOpenWindos
     )
 }
 
@@ -94,7 +94,7 @@ private fun ArticleDisplayScreen(
     onArticleClick: (ArticlesBasesStats) -> Unit,
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier, onClickToOpenWindos: (ArticlesBasesStats, Int) -> Unit
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         Column {
@@ -112,7 +112,7 @@ private fun ArticleDisplayScreen(
                 gridState = gridState,
                 onArticleClick = onArticleClick,
                 viewModel = viewModel,
-                reloadTrigger = reloadTrigger
+                reloadTrigger = reloadTrigger, onClickToOpenWindos = onClickToOpenWindos
             )
         }
 
@@ -140,7 +140,7 @@ private fun ArticleGrid(
     onArticleClick: (ArticlesBasesStats) -> Unit,
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier, onClickToOpenWindos: (ArticlesBasesStats, Int) -> Unit
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(
@@ -176,7 +176,9 @@ private fun ArticleGrid(
             }
 
             if (newArrivaleArticles.isNotEmpty()) {
-                categorySection(category, newArrivaleArticles, gridColumns, onArticleClick, viewModel, reloadTrigger)
+                categorySection(category, newArrivaleArticles, gridColumns, onArticleClick, viewModel, reloadTrigger,
+                    onClickToOpenWindos
+                )
             }
         }
 
@@ -191,7 +193,9 @@ private fun ArticleGrid(
                 }
 
                 if (articlesInCategory.isNotEmpty()) {
-                    categorySection(category, articlesInCategory, gridColumns, onArticleClick, viewModel, reloadTrigger)
+                    categorySection(category, articlesInCategory, gridColumns, onArticleClick, viewModel, reloadTrigger,
+                        onClickToOpenWindos
+                    )
                 }
             }
     }
@@ -202,7 +206,7 @@ private fun LazyGridScope.categorySection(
     gridColumns: Int,
     onArticleClick: (ArticlesBasesStats) -> Unit,
     viewModel: StartUpNewArticlesViewModels,
-    reloadTrigger: Int
+    reloadTrigger: Int, onClickToOpenWindos: (ArticlesBasesStats, Int) -> Unit
 ) {
     // En-tête de la catégorie
     item(span = { GridItemSpan(gridColumns) }) {
@@ -222,7 +226,7 @@ private fun LazyGridScope.categorySection(
             article = article,
             viewModel = viewModel,
             reloadTrigger = reloadTrigger,
-            onArticleClick = onArticleClick
+            onArticleClick = onArticleClick, onClickToOpenWindos = onClickToOpenWindos
         )
     }
 }
@@ -234,7 +238,7 @@ private fun ArticleItem(
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
     onArticleClick: (ArticlesBasesStats) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier, onClickToOpenWindos: (ArticlesBasesStats, Int) -> Unit
 ) {
     val hasThreeColors = countColors(article) == 3
 
@@ -251,14 +255,14 @@ private fun ArticleItem(
             ThreeColorArticleDisplay(
                 article = article,
                 viewModel = viewModel,
-                reloadTrigger = reloadTrigger
+                reloadTrigger = reloadTrigger, onClickToOpenWindos = onClickToOpenWindos
             )
         } else {
             DisplayeArticleWhithOneColore(
                 article = article,
                 viewModel = viewModel,
                 reloadTrigger = reloadTrigger,
-                modifier = Modifier
+                modifier = Modifier, onClickToOpenWindos = onClickToOpenWindos
             )
         }
     }
@@ -271,7 +275,7 @@ fun DisplayeArticleWhithOneColore(
     article: ArticlesBasesStats,
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
-    modifier: Modifier
+    modifier: Modifier, onClickToOpenWindos: (ArticlesBasesStats, Int) -> Unit
 ) {
     Card(
         modifier = modifier
@@ -287,11 +291,12 @@ fun DisplayeArticleWhithOneColore(
                 contentAlignment = Alignment.Center
             ) {
                 ImageDisplayer(
-                    viewModel = viewModel,
+                    modifier=modifier,
                     article = article,
+                    viewModel = viewModel,
                     indexColor = 0,
                     reloadKey = reloadTrigger,
-                    modifier=modifier
+                    onClickToOpenWindos
                 )
             }
         }
@@ -303,7 +308,7 @@ private fun ThreeColorArticleDisplay(
     article: ArticlesBasesStats,
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier, onClickToOpenWindos: (ArticlesBasesStats, Int) -> Unit
 ) {
     Card(
         modifier = modifier
@@ -323,11 +328,12 @@ private fun ThreeColorArticleDisplay(
                     .fillMaxWidth()
             ) {
                 ImageDisplayer(
-                    viewModel = viewModel,
+                    modifier = Modifier.fillMaxSize(),
                     article = article,
+                    viewModel = viewModel,
                     indexColor = 0,
                     reloadKey = reloadTrigger,
-                    modifier = Modifier.fillMaxSize()
+                    onClickToOpenWindos
                 )
             }
 
@@ -338,11 +344,12 @@ private fun ThreeColorArticleDisplay(
                     .fillMaxWidth()
             ) {
                 ImageDisplayer(
-                    viewModel = viewModel,
+                    modifier = Modifier.fillMaxSize(),
                     article = article,
+                    viewModel = viewModel,
                     indexColor = 1,
                     reloadKey = reloadTrigger,
-                    modifier = Modifier.fillMaxSize()
+                    onClickToOpenWindos
                 )
             }
 
@@ -353,11 +360,12 @@ private fun ThreeColorArticleDisplay(
                     .fillMaxWidth()
             ) {
                 ImageDisplayer(
-                    viewModel = viewModel,
+                    modifier = Modifier.fillMaxSize(),
                     article = article,
+                    viewModel = viewModel,
                     indexColor = 2,
                     reloadKey = reloadTrigger,
-                    modifier = Modifier.fillMaxSize()
+                    onClickToOpenWindos
                 )
             }
         }
@@ -399,11 +407,12 @@ private fun SearchFilter(
 // 3. Make image width match container
 @Composable
 fun ImageDisplayer(
+    modifier: Modifier = Modifier,
     article: ArticlesBasesStats,
     viewModel: StartUpNewArticlesViewModels,
     indexColor: Int = 0,
     reloadKey: Any = Unit,
-    modifier: Modifier = Modifier
+    onClickToOpenWindos: (ArticlesBasesStats, Int) -> Unit
 ) {
     val context = LocalContext.current
     val viewModelImagesPath = viewModel.viewModelImagesPath
@@ -432,7 +441,8 @@ fun ImageDisplayer(
         "${article.idArticle}_${if (indexColor == -1) "Unite" else indexColor}_$reloadKey"
     }
 
-    Box(modifier = modifier.fillMaxWidth()) {
+    Box(modifier = modifier.fillMaxWidth()
+        .clickable { onClickToOpenWindos(article,indexColor) }) {
         val painter = rememberAsyncImagePainter(
             ImageRequest.Builder(context)
                 .data(imageSource)
