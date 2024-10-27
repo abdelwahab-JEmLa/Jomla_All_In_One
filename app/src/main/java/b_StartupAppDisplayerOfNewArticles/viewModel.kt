@@ -23,7 +23,7 @@ data class UiState(
     val articlesBasesStatTabelles: List<ArticlesBasesStatsTabelle> = emptyList(),
     val categories: List<CategoriesTabelle> = emptyList(),
     val colorsArticlesTabelleModel: List<ColorsArticlesTabelle> = emptyList(),
-    val soldArticles: List<SoldArticlesTabelle> = emptyList(),
+    val soldArticlesList: List<SoldArticlesTabelle> = emptyList(),
     val suppliers: List<SuppliersTabelle> = emptyList(),
     val isLoading: Boolean = false,
     val loadingProgress: Float = 0f,
@@ -113,15 +113,9 @@ open class StartUpNewArticlesViewModels(
                 createNewArrivaleCategoryIfNeeded(categories)
                 updateLoadingProgress(70f)
 
-                // Import colors
-                val colorsSnapshot = refColorsArticles.get().await()
-                updateLoadingProgress(80f)
+                colorIntia(80f)
 
-                val colors = colorsSnapshot.children.mapNotNull { snapshot ->
-                    snapshot.getValue(ColorsArticlesTabelle::class.java)
-                }
-                database.colorsArticlesDao().insertAll(colors)
-                updateLoadingProgress(90f)
+                soldArticlesTabelleIntia(85f)
 
                 // Import articlesBasesStatsModel
                 val articlesSnapshot = refDBJetPackExport.get().await()
@@ -141,6 +135,27 @@ open class StartUpNewArticlesViewModels(
         }
     }
 
+    private suspend fun colorIntia(fl: Float) {
+        // Import colors
+        val colorsSnapshot = refColorsArticles.get().await()
+
+        val colors = colorsSnapshot.children.mapNotNull { snapshot ->
+            snapshot.getValue(ColorsArticlesTabelle::class.java)
+        }
+        database.colorsArticlesDao().insertAll(colors)
+        updateLoadingProgress(fl)
+    }
+    private suspend fun soldArticlesTabelleIntia(fl: Float) {
+
+        val soldArticlesSnapshot = refSoldArticlesTabelle.get().await()
+
+        val soldArticles = soldArticlesSnapshot.children.mapNotNull { snapshot ->
+            snapshot.getValue(SoldArticlesTabelle::class.java)
+        }
+        database.soldArticlesTabelleDao().insertAll(soldArticles)
+        updateLoadingProgress(fl)
+    }
+
     private suspend fun loadData() {
         try {
             setLoading(true)
@@ -155,6 +170,7 @@ open class StartUpNewArticlesViewModels(
             val articles = database.articlesBasesStatsModelDao().getAll()
             val categories = database.categoriesModelDao().getAll()
             val colors = database.colorsArticlesDao().getAllOrdred()
+            val soldArticles = database.soldArticlesTabelleDao().getAll()
 
             // Ensure NewArrivale category exists when loading data
             createNewArrivaleCategoryIfNeeded(categories)
@@ -163,6 +179,7 @@ open class StartUpNewArticlesViewModels(
                 articlesBasesStatTabelles = articles,
                 categories = database.categoriesModelDao().getAll(), // Refresh categories after potential NewArrivale creation
                 colorsArticlesTabelleModel = colors,
+                soldArticlesList = soldArticles
             ) }
         } catch (e: Exception) {
             _uiState.update { it.copy(error = e.message) }
