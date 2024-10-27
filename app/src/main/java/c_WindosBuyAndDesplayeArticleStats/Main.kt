@@ -77,7 +77,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import java.io.File
 
-
 @Composable
 fun WindosBuyAndDesplayeArticleStats(
     uiState: UiState,
@@ -97,7 +96,8 @@ fun WindosBuyAndDesplayeArticleStats(
         }
     }
     Dialog(
-        onDismissRequest = onDismiss,
+        onDismissRequest = onDismiss,   //TODO ajoute un dialoge de confirmation
+        //si depuit ici
         properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
         Box(
@@ -129,6 +129,20 @@ fun WindosBuyAndDesplayeArticleStats(
                             relatedSaleOfArticleToClient=relatedSaleOfArticleToClient
                         )
                     }
+                    //TODO ajoute un button au bottom "confirme buy" a cote gauche autre "anulle" qui au click prendre _currentSale.value article et
+                    // change confimed a true   et
+                //   database.soldArticlesTabelleDao().insert(updatedSale)
+                    //
+                    //
+                    //                    // Update the UI state with the new sale information
+                    //                    _uiState.update { state ->
+                    //                        val updatedSales = state.soldArticlesModel.map {
+                    //                            if (it?.vid == updatedSale.vid) updatedSale else it
+                    //                        }
+                    //                        state.copy(soldArticlesModel = updatedSales)
+                    //                    }
+                    //     et quite le dialoge
+
                 }
             }
         }
@@ -205,22 +219,21 @@ fun ColorItem(
     initialShowPicker: Boolean = false,
     relatedSaleOfArticleToClient: SoldArticlesTabelle?
 ) {
-    // Initialize showPicker based on both initialShowPicker and existing quantities
-    var showPicker by remember {
-        mutableStateOf(
-            initialShowPicker || when (index) {
-                0 -> relatedSaleOfArticleToClient?.color1SoldQuantity
-                1 -> relatedSaleOfArticleToClient?.color2SoldQuantity
-                2 -> relatedSaleOfArticleToClient?.color3SoldQuantity
-                3 -> relatedSaleOfArticleToClient?.color4SoldQuantity
-                else -> null
-            }?.let { it > 0 } ?: false
-        )
-    }
 
     val currentSale by viewModel.currentSale.collectAsState()
     val currentSaleOrRelated = currentSale ?: relatedSaleOfArticleToClient
 
+    var showPicker by remember {
+        mutableStateOf(
+            initialShowPicker || when (index) {
+                0 -> currentSaleOrRelated?.color1SoldQuantity
+                1 -> currentSaleOrRelated?.color2SoldQuantity
+                2 -> currentSaleOrRelated?.color3SoldQuantity
+                3 -> currentSaleOrRelated?.color4SoldQuantity
+                else -> null
+            }?.let { it > 0 } ?: false
+        )
+    }
     // Get quantity with priority to existing sale
     val currentQuantity = remember(currentSaleOrRelated, index) {
         when (index) {

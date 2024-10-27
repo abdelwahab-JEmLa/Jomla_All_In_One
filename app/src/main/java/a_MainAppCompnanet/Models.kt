@@ -79,6 +79,8 @@ data class SoldArticlesTabelle(
     val color3SoldQuantity: Int = 0,
     val color4IdPicked: Long = 0,
     val color4SoldQuantity: Int = 0,
+    val confimed: Boolean = false,
+
     ) {
     constructor() : this(0)
 }
