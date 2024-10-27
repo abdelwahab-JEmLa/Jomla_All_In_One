@@ -2,6 +2,11 @@ package c_WindosBuyAndDesplayeArticleStats
 
 import a_RoomDB.ArticlesBasesStats
 import a_RoomDB.ColorsArticles
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
@@ -206,33 +211,41 @@ fun ColorItem(
                     reloadKey = relodeTigger
                 )
 
-                color?.let { colorData ->
-                    Surface(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .align(Alignment.BottomCenter),
-                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f)
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.BottomCenter)
+                ) {
+                    color?.let { colorData ->
+                        Surface(
+                            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f)
+                        ) {
+                            Text(
+                                text = colorData.nameColore,
+                                modifier = Modifier.padding(8.dp),
+                                style = MaterialTheme.typography.labelLarge,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+
+                    AnimatedVisibility(
+                        visible = !showPicker,
+                        enter = fadeIn(),
+                        exit = fadeOut()
                     ) {
-                        Text(
-                            text = colorData.nameColore,
-                            modifier = Modifier.padding(8.dp),
-                            style = MaterialTheme.typography.labelLarge,
-                            textAlign = TextAlign.Center
-                        )
+                        BuyButton(onClick = { showPicker = true })
                     }
                 }
             }
 
-            Box(
-                modifier = Modifier
-                    .weight(0.3f)
-                    .fillMaxHeight()
+            AnimatedVisibility(
+                visible = showPicker,
+                modifier = Modifier.weight(0.3f),
+                enter = slideInHorizontally(),
+                exit = slideOutHorizontally()
             ) {
-                if (showPicker) {
-                    CompactQuantityPicker(onDismiss = { showPicker = false })
-                } else {
-                    BuyButton(onClick = { showPicker = true })
-                }
+                CompactQuantityPicker(onDismiss = { showPicker = false })
             }
         }
     }
