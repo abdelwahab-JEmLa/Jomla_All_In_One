@@ -86,12 +86,11 @@ fun WindosBuyAndDesplayeArticleStats(
     modifier: Modifier = Modifier,
     indexColorStat: Int
 ) {
+
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
-
-
         Box(
             modifier = modifier
                 .fillMaxSize()
@@ -156,7 +155,7 @@ private fun ColorsCards(
                     index = index,
                     relodeTigger = relodeTigger,
                     viewModel = viewModel ,
-                    initialShowPicker = index == initialShowPickerIndex  // Pass whether this color should show picker
+                    initialShowPicker = index == initialShowPickerIndex
 
                 )
             }
