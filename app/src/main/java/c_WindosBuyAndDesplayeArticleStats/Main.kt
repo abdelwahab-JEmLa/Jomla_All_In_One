@@ -1,7 +1,7 @@
 package c_WindosBuyAndDesplayeArticleStats
 
-import a_RoomDB.ArticlesBasesStats
-import a_RoomDB.ColorsArticles
+import a_RoomDB.ArticlesBasesStatsTabelle
+import a_RoomDB.ColorsArticlesTabelle
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -78,7 +78,7 @@ import java.io.File
 @Composable
 fun WindosBuyAndDesplayeArticleStats(
     uiState: UiState,
-    article: ArticlesBasesStats,
+    article: ArticlesBasesStatsTabelle,
     viewModel: StartUpNewArticlesViewModels,
     onDismiss: () -> Unit,
     onReloadTrigger: () -> Unit,
@@ -90,6 +90,7 @@ fun WindosBuyAndDesplayeArticleStats(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
+
         Box(
             modifier = modifier
                 .fillMaxSize()
@@ -126,13 +127,13 @@ fun WindosBuyAndDesplayeArticleStats(
 
 @Composable
 private fun ColorsCards(
-    article: ArticlesBasesStats,
+    article: ArticlesBasesStatsTabelle,
     viewModel: StartUpNewArticlesViewModels,
     modifier: Modifier = Modifier,
     onDismiss: () -> Unit,
     onReloadTrigger: () -> Unit,
     relodeTigger: Int,
-    uiState: UiState  ,
+    uiState: UiState,
     initialShowPickerIndex: Int
 ) {
     Column(
@@ -146,7 +147,7 @@ private fun ColorsCards(
             article.idcolor3,
             article.idcolor4
         ).forEachIndexed { index, colorId ->
-            val correspondingColor = uiState.colorsArticlesModel.find { it.idColore == colorId }
+            val correspondingColor = uiState.colorsArticlesTabelleModel.find { it.idColore == colorId }
             if (colorId != 0L && correspondingColor != null) {
                 ColorItem(
                     article = article,
@@ -185,8 +186,8 @@ fun BuyButton(
 
 @Composable
 fun ColorItem(
-    article: ArticlesBasesStats,
-    color: ColorsArticles?,
+    article: ArticlesBasesStatsTabelle,
+    color: ColorsArticlesTabelle?,
     index: Int,
     relodeTigger: Int,
     viewModel: StartUpNewArticlesViewModels,
@@ -415,7 +416,7 @@ class PickerState {
 @Composable
 private fun ImageDisplayer(
     modifier: Modifier = Modifier,
-    article: ArticlesBasesStats,
+    article: ArticlesBasesStatsTabelle,
     viewModel: StartUpNewArticlesViewModels,
     indexColor: Int = 0,
     reloadKey: Any = Unit

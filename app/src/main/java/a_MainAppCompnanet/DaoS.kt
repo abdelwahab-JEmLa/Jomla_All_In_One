@@ -1,31 +1,75 @@
 package a_MainAppCompnents
 
-import a_RoomDB.ArticlesBasesStats
-import a_RoomDB.CategoriesModel
-import a_RoomDB.ColorsArticles
+import a_RoomDB.ArticlesBasesStatsTabelle
+import a_RoomDB.CategoriesTabelle
+import a_RoomDB.ColorsArticlesTabelle
+import a_RoomDB.SoldArticlesTabelle
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
-
 @Dao
-interface CategoriesModelDao {
-    @Query("SELECT * FROM CategoriesModel ORDER BY idClassementCategorieInCategoriesTabele")
-    suspend fun getAll(): MutableList<CategoriesModel>
+interface ArticlesBasesStatsModelDao {
+    @Query("SELECT * FROM ArticlesBasesStatsTabelle ORDER BY idCategorie")
+    suspend fun getAll(): MutableList<ArticlesBasesStatsTabelle>
+
+    @Transaction
+    suspend fun transaction(block: suspend ArticlesBasesStatsModelDao.() -> Unit) {
+        block()
+    }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(category: CategoriesModel)
+    suspend fun insert(category: ArticlesBasesStatsTabelle)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(categories: List<CategoriesModel>)
+    suspend fun insertAll(articlesBasesStatTabelles: List<ArticlesBasesStatsTabelle>)
 
-    @Query("DELETE FROM CategoriesModel")
+    @Query("DELETE FROM ArticlesBasesStatsTabelle")
     suspend fun deleteAll()
 
     @Update
-    suspend fun updateAll(categories: List<CategoriesModel>)
+    suspend fun updateAll(articlesBasesStatTabelles: List<ArticlesBasesStatsTabelle>)
+}
+@Dao
+interface ColorsArticlesDao {
+    @Query("SELECT * FROM ColorsArticlesTabelle ORDER BY classementColore")
+    suspend fun getAllOrdred(): MutableList<ColorsArticlesTabelle>
+
+    @Transaction
+    suspend fun transaction(block: suspend ColorsArticlesDao.() -> Unit) {
+        block()
+    }
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(category: ColorsArticlesTabelle)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(colorsArticleTabelles: List<ColorsArticlesTabelle>)
+
+    @Query("DELETE FROM ColorsArticlesTabelle")
+    suspend fun deleteAll()
+
+    @Update
+    suspend fun updateAll(colorsArticleTabelles: List<ColorsArticlesTabelle>)
+}
+@Dao
+interface CategoriesModelDao {
+    @Query("SELECT * FROM CategoriesTabelle ORDER BY idClassementCategorieInCategoriesTabele")
+    suspend fun getAll(): MutableList<CategoriesTabelle>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(category: CategoriesTabelle)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(categories: List<CategoriesTabelle>)
+
+    @Query("DELETE FROM CategoriesTabelle")
+    suspend fun deleteAll()
+
+    @Update
+    suspend fun updateAll(categories: List<CategoriesTabelle>)
 
     @Transaction
     suspend fun transaction(block: suspend CategoriesModelDao.() -> Unit) {
@@ -34,48 +78,27 @@ interface CategoriesModelDao {
 }
 
 @Dao
-interface ArticlesBasesStatsModelDao {
-    @Query("SELECT * FROM ArticlesBasesStats ORDER BY idCategorie")
-    suspend fun getAll(): MutableList<ArticlesBasesStats>
-
-    @Transaction
-    suspend fun transaction(block: suspend ArticlesBasesStatsModelDao.() -> Unit) {
-        block()
-    }
+interface SoldArticlesTabelleDao{
+    @Query("SELECT * FROM SoldArticlesTabelle ORDER BY vid")
+    suspend fun getAll(): MutableList<SoldArticlesTabelle>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(category: ArticlesBasesStats)
+    suspend fun insert(soldArticle: SoldArticlesTabelle)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(articlesBasesStats: List<ArticlesBasesStats>)
+    suspend fun insertAll(soldArticles: List<SoldArticlesTabelle>)
 
-    @Query("DELETE FROM ArticlesBasesStats")
+    @Query("DELETE FROM SoldArticlesTabelle")
     suspend fun deleteAll()
 
     @Update
-    suspend fun updateAll(articlesBasesStats: List<ArticlesBasesStats>)
-}
-
-
-@Dao
-interface ColorsArticlesDao {
-    @Query("SELECT * FROM ColorsArticles ORDER BY classementColore")
-    suspend fun getAllOrdred(): MutableList<ColorsArticles>
+    suspend fun updateAll(soldArticles: List<SoldArticlesTabelle>)
 
     @Transaction
-    suspend fun transaction(block: suspend ColorsArticlesDao.() -> Unit) {
+    suspend fun transaction(block: suspend SoldArticlesTabelleDao.() -> Unit) {
         block()
     }
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(category: ColorsArticles)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(colorsArticles: List<ColorsArticles>)
-
-    @Query("DELETE FROM ColorsArticles")
-    suspend fun deleteAll()
-
-    @Update
-    suspend fun updateAll(colorsArticles: List<ColorsArticles>)
 }
+
+
+

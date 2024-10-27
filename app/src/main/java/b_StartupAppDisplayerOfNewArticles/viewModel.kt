@@ -1,11 +1,11 @@
 package b_StartupAppDisplayerOfNewArticles
 
-import a_RoomDB.ArticlesBasesStats
-import a_RoomDB.ArticlesSelled
-import a_RoomDB.CategoriesModel
-import a_RoomDB.ColorsArticles
+import a_RoomDB.ArticlesBasesStatsTabelle
+import a_RoomDB.CategoriesTabelle
+import a_RoomDB.ColorsArticlesTabelle
 import a_RoomDB.Objects
-import a_RoomDB.Suppliers
+import a_RoomDB.SoldArticlesTabelle
+import a_RoomDB.SuppliersTabelle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.database.FirebaseDatabase
@@ -20,11 +20,11 @@ import java.io.File
 
 // UiState.kt
 data class UiState(
-    val articlesBasesStats: List<ArticlesBasesStats> = emptyList(),
-    val categories: List<CategoriesModel> = emptyList(),
-    val colorsArticlesModel: List<ColorsArticles> = emptyList(),
-    val soldArticles: List<ArticlesSelled> = emptyList(),
-    val suppliers: List<Suppliers> = emptyList(),
+    val articlesBasesStatTabelles: List<ArticlesBasesStatsTabelle> = emptyList(),
+    val categories: List<CategoriesTabelle> = emptyList(),
+    val colorsArticlesTabelleModel: List<ColorsArticlesTabelle> = emptyList(),
+    val soldArticles: List<SoldArticlesTabelle> = emptyList(),
+    val suppliers: List<SuppliersTabelle> = emptyList(),
     val isLoading: Boolean = false,
     val loadingProgress: Float = 0f,
     val error: String? = null
@@ -37,7 +37,7 @@ open class StartUpNewArticlesViewModels(
     private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()
 
-    private val _currentArticle = MutableStateFlow<ArticlesBasesStats?>(null)
+    private val _currentArticle = MutableStateFlow<ArticlesBasesStatsTabelle?>(null)
     val currentArticle = _currentArticle.asStateFlow()
 
     // Ensure the directory exists when initializing the path
@@ -50,8 +50,9 @@ open class StartUpNewArticlesViewModels(
     private val refDBJetPackExport = firebaseDatabase.getReference("e_DBJetPackExport")
     private val refCategorieModel = firebaseDatabase.getReference("H_CategorieTabele")
     private val refColorsArticles = firebaseDatabase.getReference("H_ColorsArticles")
+    private val refSoldArticlesTabelle = firebaseDatabase.getReference("O_SoldArticlesTabelle")
 
-    fun updateCurrentArticle(article: ArticlesBasesStats) {
+    fun updateCurrentArticle(article: ArticlesBasesStatsTabelle) {
         _currentArticle.value= article
     }
 
@@ -73,7 +74,7 @@ open class StartUpNewArticlesViewModels(
 
     }
 
-    private suspend fun createNewArrivaleCategoryIfNeeded(existingCategories: List<CategoriesModel>) {
+    private suspend fun createNewArrivaleCategoryIfNeeded(existingCategories: List<CategoriesTabelle>) {
         val hasNewArrivale = existingCategories.any {
             it.nomCategorieInCategoriesTabele == "NewArrivale"
         }
@@ -83,7 +84,7 @@ open class StartUpNewArticlesViewModels(
                 it.idCategorieInCategoriesTabele
             } ?: 0
 
-            val newArrivaleCategory = CategoriesModel(
+            val newArrivaleCategory = CategoriesTabelle(
                 idCategorieInCategoriesTabele = maxId + 1,
                 nomCategorieInCategoriesTabele = "NewArrivale",
                 idClassementCategorieInCategoriesTabele = 1
@@ -104,7 +105,7 @@ open class StartUpNewArticlesViewModels(
                 updateLoadingProgress(40f)
 
                 val categories = categoriesSnapshot.children.mapNotNull { snapshot ->
-                    snapshot.getValue(CategoriesModel::class.java)
+                    snapshot.getValue(CategoriesTabelle::class.java)
                 }
                 database.categoriesModelDao().insertAll(categories)
 
@@ -117,7 +118,7 @@ open class StartUpNewArticlesViewModels(
                 updateLoadingProgress(80f)
 
                 val colors = colorsSnapshot.children.mapNotNull { snapshot ->
-                    snapshot.getValue(ColorsArticles::class.java)
+                    snapshot.getValue(ColorsArticlesTabelle::class.java)
                 }
                 database.colorsArticlesDao().insertAll(colors)
                 updateLoadingProgress(90f)
@@ -125,7 +126,7 @@ open class StartUpNewArticlesViewModels(
                 // Import articlesBasesStatsModel
                 val articlesSnapshot = refDBJetPackExport.get().await()
                 val articles = articlesSnapshot.children.mapNotNull { snapshot ->
-                    snapshot.getValue(ArticlesBasesStats::class.java)
+                    snapshot.getValue(ArticlesBasesStatsTabelle::class.java)
                 }
                 database.articlesBasesStatsModelDao().insertAll(articles)
                 updateLoadingProgress(100f)
@@ -159,9 +160,9 @@ open class StartUpNewArticlesViewModels(
             createNewArrivaleCategoryIfNeeded(categories)
 
             _uiState.update { it.copy(
-                articlesBasesStats = articles,
+                articlesBasesStatTabelles = articles,
                 categories = database.categoriesModelDao().getAll(), // Refresh categories after potential NewArrivale creation
-                colorsArticlesModel = colors,
+                colorsArticlesTabelleModel = colors,
             ) }
         } catch (e: Exception) {
             _uiState.update { it.copy(error = e.message) }

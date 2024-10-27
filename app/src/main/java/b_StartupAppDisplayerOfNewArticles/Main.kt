@@ -1,7 +1,7 @@
 package b_StartupAppDisplayerOfNewArticles
 
-import a_RoomDB.ArticlesBasesStats
-import a_RoomDB.CategoriesModel
+import a_RoomDB.ArticlesBasesStatsTabelle
+import a_RoomDB.CategoriesTabelle
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -54,7 +54,7 @@ fun StartupAppDisplayerOfNewArticles(
     viewModel: StartUpNewArticlesViewModels,
     onToggleNavBar: () -> Unit,
     reloadTrigger: Int,
-    modifier: Modifier = Modifier, onClickToOpenWindos: (ArticlesBasesStats, Int) -> Unit
+    modifier: Modifier = Modifier, onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit
 ) {
     var gridColumnsForNewArticels by remember { mutableStateOf(2) }
     var showFilter by remember { mutableStateOf(false) }
@@ -91,10 +91,10 @@ private fun ArticleDisplayScreen(
     onToggleFilter: () -> Unit,
     onChangeGridColumns: (Int) -> Unit,
     onToggleNavBar: () -> Unit,
-    onArticleClick: (ArticlesBasesStats) -> Unit,
+    onArticleClick: (ArticlesBasesStatsTabelle) -> Unit,
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
-    modifier: Modifier = Modifier, onClickToOpenWindos: (ArticlesBasesStats, Int) -> Unit
+    modifier: Modifier = Modifier, onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         Column {
@@ -137,10 +137,10 @@ private fun ArticleGrid(
     filterText: String,
     showFilter: Boolean,  // Added showFilter parameter
     gridState: LazyGridState,
-    onArticleClick: (ArticlesBasesStats) -> Unit,
+    onArticleClick: (ArticlesBasesStatsTabelle) -> Unit,
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
-    modifier: Modifier = Modifier, onClickToOpenWindos: (ArticlesBasesStats, Int) -> Unit
+    modifier: Modifier = Modifier, onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(
@@ -171,7 +171,7 @@ private fun ArticleGrid(
         }
 
         newArrivaleCategory?.let { category ->
-            val newArrivaleArticles = uiState.articlesBasesStats.filter { article ->
+            val newArrivaleArticles = uiState.articlesBasesStatTabelles.filter { article ->
                 article.itsNewArrivale && matchesFilter(article, filterText)
             }
 
@@ -186,7 +186,7 @@ private fun ArticleGrid(
         uiState.categories
             .filter { it.nomCategorieInCategoriesTabele != "NewArrivale" }
             .forEach { category ->
-                val articlesInCategory = uiState.articlesBasesStats.filter { article ->
+                val articlesInCategory = uiState.articlesBasesStatTabelles.filter { article ->
                     article.nomCategorie == category.nomCategorieInCategoriesTabele &&
                             !article.itsNewArrivale &&
                             matchesFilter(article, filterText)
@@ -201,12 +201,12 @@ private fun ArticleGrid(
     }
 }
 private fun LazyGridScope.categorySection(
-    category: CategoriesModel,
-    articles: List<ArticlesBasesStats>,
+    category: CategoriesTabelle,
+    articles: List<ArticlesBasesStatsTabelle>,
     gridColumns: Int,
-    onArticleClick: (ArticlesBasesStats) -> Unit,
+    onArticleClick: (ArticlesBasesStatsTabelle) -> Unit,
     viewModel: StartUpNewArticlesViewModels,
-    reloadTrigger: Int, onClickToOpenWindos: (ArticlesBasesStats, Int) -> Unit
+    reloadTrigger: Int, onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit
 ) {
     // En-tête de la catégorie
     item(span = { GridItemSpan(gridColumns) }) {
@@ -234,11 +234,11 @@ private fun LazyGridScope.categorySection(
 
 @Composable
 private fun ArticleItem(
-    article: ArticlesBasesStats,
+    article: ArticlesBasesStatsTabelle,
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
-    onArticleClick: (ArticlesBasesStats) -> Unit,
-    modifier: Modifier = Modifier, onClickToOpenWindos: (ArticlesBasesStats, Int) -> Unit
+    onArticleClick: (ArticlesBasesStatsTabelle) -> Unit,
+    modifier: Modifier = Modifier, onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit
 ) {
     val hasThreeColors = countColors(article) == 3
 
@@ -272,10 +272,10 @@ private fun ArticleItem(
 
 @Composable
 fun DisplayeArticleWhithOneColore(
-    article: ArticlesBasesStats,
+    article: ArticlesBasesStatsTabelle,
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
-    modifier: Modifier, onClickToOpenWindos: (ArticlesBasesStats, Int) -> Unit
+    modifier: Modifier, onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit
 ) {
     Card(
         modifier = modifier
@@ -305,10 +305,10 @@ fun DisplayeArticleWhithOneColore(
 
 @Composable
 private fun ThreeColorArticleDisplay(
-    article: ArticlesBasesStats,
+    article: ArticlesBasesStatsTabelle,
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
-    modifier: Modifier = Modifier, onClickToOpenWindos: (ArticlesBasesStats, Int) -> Unit
+    modifier: Modifier = Modifier, onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit
 ) {
     Card(
         modifier = modifier
@@ -408,11 +408,11 @@ private fun SearchFilter(
 @Composable
 fun ImageDisplayer(
     modifier: Modifier = Modifier,
-    article: ArticlesBasesStats,
+    article: ArticlesBasesStatsTabelle,
     viewModel: StartUpNewArticlesViewModels,
     indexColor: Int = 0,
     reloadKey: Any = Unit,
-    onClickToOpenWindos: (ArticlesBasesStats, Int) -> Unit
+    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit
 ) {
     val context = LocalContext.current
     val viewModelImagesPath = viewModel.viewModelImagesPath
@@ -460,18 +460,18 @@ fun ImageDisplayer(
         )
     }
 }
-private fun calculateSpan(article: ArticlesBasesStats, gridColumns: Int): GridItemSpan {
+private fun calculateSpan(article: ArticlesBasesStatsTabelle, gridColumns: Int): GridItemSpan {
     return when {
         countColors(article) == 3 && !article.funChangeImagsDimention -> GridItemSpan(gridColumns)
         else -> GridItemSpan(1)
     }
 }
 
-private fun matchesFilter(article: ArticlesBasesStats, filterText: String): Boolean {
+private fun matchesFilter(article: ArticlesBasesStatsTabelle, filterText: String): Boolean {
     return filterText.isEmpty() || article.nomArticleFinale.contains(filterText, ignoreCase = true)
 }
 
-private fun countColors(article: ArticlesBasesStats): Int {
+private fun countColors(article: ArticlesBasesStatsTabelle): Int {
     return listOf(
         article.couleur1,
         article.couleur2,

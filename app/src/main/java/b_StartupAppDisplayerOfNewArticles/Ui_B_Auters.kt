@@ -1,6 +1,6 @@
 package b_StartupAppDisplayerOfNewArticles
 
-import a_RoomDB.CategoriesModel
+import a_RoomDB.CategoriesTabelle
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -116,7 +116,7 @@ fun ScrolleAdBanner(
 //CategoryHeaderECB
 @Composable
 fun CategoryHeader(
-    category: CategoriesModel,
+    category: CategoriesTabelle,
 ) {
     Box(
         modifier = Modifier

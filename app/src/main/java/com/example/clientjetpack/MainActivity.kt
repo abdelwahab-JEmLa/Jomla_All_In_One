@@ -1,6 +1,6 @@
 package com.example.clientjetpack
 
-import a_RoomDB.ArticlesBasesStats
+import a_RoomDB.ArticlesBasesStatsTabelle
 import a_RoomDB.Objects
 import android.app.Application
 import android.os.Bundle
@@ -198,7 +198,7 @@ fun AppNavHost(
     val uiState by appViewModels.startUpNewArticlesViewModels.uiState.collectAsState()
     val currentEditedArticle by appViewModels.startUpNewArticlesViewModels.currentArticle.collectAsState()
 
-    var windosBuyAndDesplayeArticleStats by remember { mutableStateOf<ArticlesBasesStats?>(null) }
+    var windosBuyAndDesplayeArticleStats by remember { mutableStateOf<ArticlesBasesStatsTabelle?>(null) }
     var indexColorStat by remember { mutableStateOf(0) }
 
     var reloadTrigger by remember { mutableIntStateOf(0) }
