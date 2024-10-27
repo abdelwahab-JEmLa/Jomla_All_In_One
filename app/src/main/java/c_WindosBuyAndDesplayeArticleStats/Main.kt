@@ -157,7 +157,6 @@ private fun ColorsCards(
     }
 }
 
-// Fixed TODO for IconButton in ColorItem
 @Composable
 fun BuyButton(
     onClick: () -> Unit,
@@ -308,8 +307,6 @@ fun CompactQuantityPicker(
     }
 }
 
-
-
 @Composable
 fun Picker(
     items: List<String>,
@@ -385,7 +382,6 @@ fun Picker(
         )
 
     }
-
 }
 
 private fun Modifier.fadingEdge(brush: Brush) = this
