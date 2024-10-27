@@ -55,6 +55,7 @@ open class StartUpNewArticlesViewModels(
     private val refSoldArticlesTabelle = firebaseDatabase.getReference("O_SoldArticlesTabelle")
     private val refClientsTabelle = firebaseDatabase.getReference("G_Clients")
 
+
     fun updateCurrentArticle(article: ArticlesBasesStatsTabelle) {
         _currentArticle.value= article
     }

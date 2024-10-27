@@ -95,8 +95,6 @@ fun WindosBuyAndDesplayeArticleStats(
         }
     }
 
-    val currentSale by viewModel.currentSale.collectAsState()
-
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false)

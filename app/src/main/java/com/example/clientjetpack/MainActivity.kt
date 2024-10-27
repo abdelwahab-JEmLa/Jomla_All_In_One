@@ -48,6 +48,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -275,7 +276,7 @@ fun AppNavHost(
     val currentEditedArticle by appViewModels.startUpNewArticlesViewModels.currentArticle.collectAsState()
 
     var windosBuyAndDesplayeArticleStats by remember { mutableStateOf<ArticlesBasesStatsTabelle?>(null) }
-    var clientBuyerNow by remember { mutableStateOf<ClientsModel?>(null) }
+    var clientBuyerNow by rememberSaveable() { mutableStateOf<ClientsModel?>(null) }
     var showClientSelection by remember { mutableStateOf(false) }
     var pendingArticle by remember { mutableStateOf<ArticlesBasesStatsTabelle?>(null) }
     var pendingIndexColor by remember { mutableIntStateOf(0) }
@@ -316,7 +317,7 @@ fun AppNavHost(
             }
         }
 
-        if (showClientSelection) {
+        if (showClientSelection && clientBuyerNow!=null) {
             ClientSelectionDialog(
                 clients = uiState.clientsModel,
                 onClientSelected = { client ->
@@ -336,7 +337,6 @@ fun AppNavHost(
                 viewModel = appViewModels.startUpNewArticlesViewModels,
                 onDismiss = {
                     windosBuyAndDesplayeArticleStats = null
-                    clientBuyerNow = null
                 },
                 onReloadTrigger = { reloadTrigger += 1 },
                 reloadTrigger = reloadTrigger,
