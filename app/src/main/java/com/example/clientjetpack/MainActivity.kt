@@ -231,12 +231,13 @@ fun AppNavHost(
 
         windosBuyAndDesplayeArticleStats?.let { article ->
             WindosBuyAndDesplayeArticleStats(
+                modifier = Modifier.padding(horizontal = 3.dp),
                 article = article,
                 viewModel = appViewModels.startUpNewArticlesViewModels,
                 onDismiss = { windosBuyAndDesplayeArticleStats = null },
                 onReloadTrigger = { reloadTrigger += 1 },
-                reloadTrigger = reloadTrigger,
-                modifier = Modifier.padding(horizontal = 3.dp)
+                reloadTrigger = reloadTrigger  ,
+                uiState = uiState
             )
         }
     }
