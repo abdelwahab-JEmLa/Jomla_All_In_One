@@ -271,7 +271,6 @@ fun AppNavHost(
     modifier: Modifier = Modifier
 ) {
     val uiState by appViewModels.startUpNewArticlesViewModels.uiState.collectAsState()
-    val currentEditedArticle by appViewModels.startUpNewArticlesViewModels.currentArticle.collectAsState()
 
     var windosBuyAndDesplayeArticleStats by remember { mutableStateOf<ArticlesBasesStatsTabelle?>(null) }
     var clientBuyerNow by rememberSaveable() { mutableStateOf<ClientsModel?>(null) }

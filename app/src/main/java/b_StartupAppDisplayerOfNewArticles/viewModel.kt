@@ -7,6 +7,7 @@ import a_RoomDB.ColorsArticlesTabelle
 import a_RoomDB.Objects
 import a_RoomDB.SoldArticlesTabelle
 import a_RoomDB.SuppliersTabelle
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.database.FirebaseDatabase
@@ -147,10 +148,21 @@ open class StartUpNewArticlesViewModels(
     fun saveSaleTransaction(article: ArticlesBasesStatsTabelle) {
         viewModelScope.launch {
             val currentSelections = _selectedQuantities.value
-            if (currentSelections.isEmpty() || currentClientId == 0L) return@launch
+            Log.d("ViewModel", """
+                |Saving Sale Transaction:
+                |Article ID: ${article.idArticle}
+                |Client ID: $currentClientId
+                |Current Sale ID: $currentSaleId
+                |Selected Quantities: $currentSelections
+            """.trimMargin())
+
+            if (currentSelections.isEmpty() || currentClientId == 0L) {
+                Log.d("ViewModel", "Aborting save - No selections or no client")
+                return@launch
+            }
 
             val newSale = if (currentSaleId != null) {
-                // Update existing sale
+                Log.d("ViewModel", "Updating existing sale: $currentSaleId")
                 _currentSale.value?.copy(
                     color1IdPicked = currentSelections[0]?.colorId ?: 0,
                     color1SoldQuantity = currentSelections[0]?.quantity ?: 0,
@@ -162,7 +174,7 @@ open class StartUpNewArticlesViewModels(
                     color4SoldQuantity = currentSelections[3]?.quantity ?: 0
                 )
             } else {
-                // Create new sale
+                Log.d("ViewModel", "Creating new sale")
                 val maxId = _uiState.value.soldArticlesModel.maxOfOrNull { it.vid } ?: 0
                 SoldArticlesTabelle(
                     vid = maxId + 1,
@@ -182,6 +194,15 @@ open class StartUpNewArticlesViewModels(
             }
 
             newSale?.let { sale ->
+                Log.d("ViewModel", """
+                    |Saving sale to database:
+                    |Sale ID: ${sale.vid}
+                    |Color1: ${sale.color1SoldQuantity}
+                    |Color2: ${sale.color2SoldQuantity}
+                    |Color3: ${sale.color3SoldQuantity}
+                    |Color4: ${sale.color4SoldQuantity}
+                """.trimMargin())
+
                 database.soldArticlesTabelleDao().insert(sale)
                 _currentSale.value = sale
                 currentSaleId = sale.vid
@@ -200,7 +221,6 @@ open class StartUpNewArticlesViewModels(
             }
         }
     }
-
 
     data class ColorSelection(
         val colorId: Long,

@@ -3,6 +3,7 @@ package c_WindosBuyAndDesplayeArticleStats
 import a_RoomDB.ArticlesBasesStatsTabelle
 import a_RoomDB.ClientsModel
 import a_RoomDB.ColorsArticlesTabelle
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -94,7 +95,6 @@ fun WindosBuyAndDesplayeArticleStats(
             viewModel.setCurrentClientAndArticle(clientBuyerNow, article)
         }
     }
-
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false)
@@ -203,20 +203,46 @@ fun ColorItem(
 ) {
     var showPicker by remember { mutableStateOf(initialShowPicker) }
     val currentSale by viewModel.currentSale.collectAsState()
+    val selectedQuantities by viewModel.selectedQuantities.collectAsState()
 
-    // Get the current quantity for this color from the sale
-    val currentQuantity = remember(currentSale) {
-        when (index) {
+    // Get quantity with priority to existing sale
+    val currentQuantity = remember(currentSale, selectedQuantities, index) {
+        // First check existing sale
+        val existingSaleQuantity = when (index) {
             0 -> currentSale?.color1SoldQuantity
             1 -> currentSale?.color2SoldQuantity
             2 -> currentSale?.color3SoldQuantity
             3 -> currentSale?.color4SoldQuantity
             else -> null
-        } ?: 0
+        }
+
+        // If no existing sale quantity, then check selected quantities
+        existingSaleQuantity ?: selectedQuantities[index]?.quantity?.takeIf { it > 0 } ?: 0
+    }
+
+    // Debug logs for state tracking
+    LaunchedEffect(currentSale, selectedQuantities) {
+        Log.d("ColorItem", """
+            |State Debug for Color Index: $index
+            |Article ID: ${article.idArticle}
+            |Color ID: ${color?.idColore}
+            |Current Sale ID: ${currentSale?.vid}
+            |Selected Quantities: ${selectedQuantities[index]}
+            |Sale Color${index + 1} Quantity: ${when (index) {
+            0 -> currentSale?.color1SoldQuantity
+            1 -> currentSale?.color2SoldQuantity
+            2 -> currentSale?.color3SoldQuantity
+            3 -> currentSale?.color4SoldQuantity
+            else -> null
+        }}
+            |Current Quantity: $currentQuantity
+        """.trimMargin())
     }
 
     LaunchedEffect(showPicker) {
+        Log.d("ColorItem", "Picker visibility changed: $showPicker for color index: $index")
         if (!showPicker) {
+            Log.d("ColorItem", "Attempting to save transaction for article: ${article.idArticle}")
             viewModel.saveSaleTransaction(article)
         }
     }
