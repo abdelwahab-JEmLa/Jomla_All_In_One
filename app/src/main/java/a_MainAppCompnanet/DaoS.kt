@@ -2,6 +2,7 @@ package a_MainAppCompnents
 
 import a_RoomDB.ArticlesBasesStatsTabelle
 import a_RoomDB.CategoriesTabelle
+import a_RoomDB.ClientsModel
 import a_RoomDB.ColorsArticlesTabelle
 import a_RoomDB.SoldArticlesTabelle
 import androidx.room.Dao
@@ -82,9 +83,6 @@ interface SoldArticlesTabelleDao{
     @Query("SELECT * FROM SoldArticlesTabelle ORDER BY vid")
     suspend fun getAll(): MutableList<SoldArticlesTabelle>
 
-    @Query("SELECT MAX(vid) FROM SoldArticlesTabelle")
-    suspend fun getMaxId(): Long?
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(soldArticlesTabelle: SoldArticlesTabelle)
 
@@ -101,6 +99,18 @@ interface SoldArticlesTabelleDao{
     suspend fun transaction(block: suspend SoldArticlesTabelleDao.() -> Unit) {
         block()
     }
+}
+
+@Dao
+interface ClientsModelDao{
+    @Query("SELECT * FROM ClientsModel ORDER BY vidSu")
+    suspend fun getAll(): MutableList<ClientsModel>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(clientsModel: ClientsModel)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(clientsModel: List<ClientsModel>)
 }
 
 

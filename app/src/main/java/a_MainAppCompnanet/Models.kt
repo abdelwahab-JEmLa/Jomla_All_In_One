@@ -83,6 +83,19 @@ data class SoldArticlesTabelle(
     constructor() : this(0)
 }
 
+@Entity
+data class ClientsModel(
+    @PrimaryKey(autoGenerate = true) val vidSu: Long = 0,
+    var idClientsSu: Long = 0,
+    var nomClientsSu: String = "",
+    var bonDuClientsSu: String = "",
+    val couleurSu: String = "#FFFFFF",
+    var currentCreditBalance: Double = 0.0,
+) {
+    constructor() : this(0)
+}
+
+
 data class ArticlesRecived(
     val aa_vid: Long = 0,
     var a_c_idarticle_c: Long = 0,
@@ -193,15 +206,3 @@ data class TabelleSupplierArticlesRecived(
 ) {
     constructor() : this(0L)
 }
-
-data class ClientsModel(
-    val vidSu: Long = 0,
-    var idClientsSu: Long = 0,
-    var nomClientsSu: String = "",
-    var bonDuClientsSu: String = "",
-    val couleurSu: String = "#FFFFFF", // Default color
-    var currentCreditBalance: Double = 0.0, // New field for current credit balance
-) {
-    constructor() : this(0)
-}
-

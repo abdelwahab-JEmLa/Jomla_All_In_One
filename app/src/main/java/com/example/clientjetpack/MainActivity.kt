@@ -1,6 +1,7 @@
 package com.example.clientjetpack
 
 import a_RoomDB.ArticlesBasesStatsTabelle
+import a_RoomDB.ClientsModel
 import a_RoomDB.Objects
 import android.app.Application
 import android.os.Bundle
@@ -17,19 +18,29 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EditRoad
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -46,6 +57,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavHostController
@@ -187,7 +199,71 @@ fun CustomNavigationBar(
     }
 }
 
-// AppNavHost.kt
+// Add this composable for client selection
+@Composable
+fun ClientSelectionDialog(
+    clients: List<ClientsModel>,
+    onClientSelected: (ClientsModel) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var searchQuery by remember { mutableStateOf("") }
+    val filteredClients = remember(searchQuery, clients) {
+        if (searchQuery.length >= 3) {
+            clients.filter { it.nomClientsSu.contains(searchQuery, ignoreCase = true) }
+        } else {
+            emptyList()
+        }
+    }
+
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    "Select Client",
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    label = { Text("Search Client") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                if (searchQuery.length >= 3) {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(max = 200.dp)
+                    ) {
+                        items(filteredClients) { client ->
+                            TextButton(
+                                onClick = {
+                                    onClientSelected(client)
+                                    onDismiss()
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(client.nomClientsSu ?: "Unknown")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Update AppNavHost to include client selection
 @Composable
 fun AppNavHost(
     appViewModels: AppViewModels,
@@ -199,8 +275,12 @@ fun AppNavHost(
     val currentEditedArticle by appViewModels.startUpNewArticlesViewModels.currentArticle.collectAsState()
 
     var windosBuyAndDesplayeArticleStats by remember { mutableStateOf<ArticlesBasesStatsTabelle?>(null) }
-    var indexColorStat by remember { mutableStateOf(0) }
+    var clientBuyerNow by remember { mutableStateOf<ClientsModel?>(null) }
+    var showClientSelection by remember { mutableStateOf(false) }
+    var pendingArticle by remember { mutableStateOf<ArticlesBasesStatsTabelle?>(null) }
+    var pendingIndexColor by remember { mutableIntStateOf(0) }
 
+    var indexColorStat by remember { mutableIntStateOf(0) }
     var reloadTrigger by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(currentEditedArticle) {
@@ -219,9 +299,10 @@ fun AppNavHost(
                         viewModel = appViewModels.startUpNewArticlesViewModels,
                         onToggleNavBar = onToggleNavBar,
                         reloadTrigger = reloadTrigger,
-                        onClickToOpenWindos = {article,indexColor->
-                            windosBuyAndDesplayeArticleStats=article
-                            indexColorStat=indexColor
+                        onClickToOpenWindos = { article, indexColor ->
+                            pendingArticle = article
+                            pendingIndexColor = indexColor
+                            showClientSelection = true
                         }
                     )
 
@@ -235,16 +316,32 @@ fun AppNavHost(
             }
         }
 
+        if (showClientSelection) {
+            ClientSelectionDialog(
+                clients = uiState.clientsModel,
+                onClientSelected = { client ->
+                    clientBuyerNow = client
+                    windosBuyAndDesplayeArticleStats = pendingArticle
+                    indexColorStat = pendingIndexColor
+                },
+                onDismiss = { showClientSelection = false }
+            )
+        }
+
         windosBuyAndDesplayeArticleStats?.let { article ->
             WindosBuyAndDesplayeArticleStats(
                 modifier = Modifier.padding(horizontal = 3.dp),
                 article = article,
+                clientBuyerNow = clientBuyerNow,
                 viewModel = appViewModels.startUpNewArticlesViewModels,
-                onDismiss = { windosBuyAndDesplayeArticleStats = null },
+                onDismiss = {
+                    windosBuyAndDesplayeArticleStats = null
+                    clientBuyerNow = null
+                },
                 onReloadTrigger = { reloadTrigger += 1 },
-                reloadTrigger = reloadTrigger  ,
-                uiState = uiState ,
-                indexColorStat=indexColorStat
+                reloadTrigger = reloadTrigger,
+                uiState = uiState,
+                indexColorStat = indexColorStat
             )
         }
     }

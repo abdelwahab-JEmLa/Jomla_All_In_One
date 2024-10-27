@@ -1,6 +1,7 @@
 package c_WindosBuyAndDesplayeArticleStats
 
 import a_RoomDB.ArticlesBasesStatsTabelle
+import a_RoomDB.ClientsModel
 import a_RoomDB.ColorsArticlesTabelle
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -40,6 +41,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -84,8 +86,16 @@ fun WindosBuyAndDesplayeArticleStats(
     onReloadTrigger: () -> Unit,
     reloadTrigger: Int,
     modifier: Modifier = Modifier,
-    indexColorStat: Int
+    indexColorStat: Int,
+    clientBuyerNow: ClientsModel?
 ) {
+    LaunchedEffect(clientBuyerNow, article) {
+        if (clientBuyerNow != null) {
+            viewModel.setCurrentClientAndArticle(clientBuyerNow, article)
+        }
+    }
+
+    val currentSale by viewModel.currentSale.collectAsState()
 
     Dialog(
         onDismissRequest = onDismiss,
@@ -194,12 +204,25 @@ fun ColorItem(
     initialShowPicker: Boolean = false
 ) {
     var showPicker by remember { mutableStateOf(initialShowPicker) }
+    val currentSale by viewModel.currentSale.collectAsState()
+
+    // Get the current quantity for this color from the sale
+    val currentQuantity = remember(currentSale) {
+        when (index) {
+            0 -> currentSale?.color1SoldQuantity
+            1 -> currentSale?.color2SoldQuantity
+            2 -> currentSale?.color3SoldQuantity
+            3 -> currentSale?.color4SoldQuantity
+            else -> null
+        } ?: 0
+    }
 
     LaunchedEffect(showPicker) {
         if (!showPicker) {
             viewModel.saveSaleTransaction(article)
         }
     }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -232,7 +255,7 @@ fun ColorItem(
                             color = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f)
                         ) {
                             Text(
-                                text = colorData.nameColore,
+                                text = "${colorData.nameColore}${if (currentQuantity > 0) " ($currentQuantity)" else ""}",
                                 modifier = Modifier.padding(8.dp),
                                 style = MaterialTheme.typography.labelLarge,
                                 textAlign = TextAlign.Center
@@ -261,20 +284,22 @@ fun ColorItem(
                         onDismiss = { showPicker = false },
                         colorId = color.idColore,
                         colorIndex = index,
-                        viewModel = viewModel
+                        viewModel = viewModel,
+                        initialQuantity = currentQuantity
                     )
                 }
             }
         }
     }
 }
-// CompactQuantityPicker.kt updates:
+
 @Composable
 fun CompactQuantityPicker(
     onDismiss: () -> Unit,
     colorId: Long,
     colorIndex: Int,
-    viewModel: StartUpNewArticlesViewModels
+    viewModel: StartUpNewArticlesViewModels,
+    initialQuantity: Int = 0
 ) {
     Card(
         modifier = Modifier.fillMaxSize(),
@@ -292,7 +317,11 @@ fun CompactQuantityPicker(
                         (20..25).map { it.toString() } +
                         listOf("30", "40", "50")
             }
-            val valuesPickerState = rememberPickerState()
+
+            // Initialize picker state with the current quantity
+            val valuesPickerState = rememberPickerState().apply {
+                selectedItem = initialQuantity.toString()
+            }
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -305,11 +334,11 @@ fun CompactQuantityPicker(
                     state = valuesPickerState,
                     visibleItemsCount = 3,
                     textModifier = Modifier.padding(8.dp),
-                    textStyle = TextStyle(fontSize = 24.sp)
+                    textStyle = TextStyle(fontSize = 24.sp),
+                    startIndex = values.indexOfFirst { it == initialQuantity.toString() }.coerceAtLeast(0)
                 )
             }
 
-            // Update the color selection when the value changes
             LaunchedEffect(valuesPickerState.selectedItem) {
                 val quantity = valuesPickerState.selectedItem.toIntOrNull() ?: 0
                 viewModel.updateColorSelection(colorIndex, colorId, quantity)
