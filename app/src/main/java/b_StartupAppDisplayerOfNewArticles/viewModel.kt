@@ -192,7 +192,8 @@ open class StartUpNewArticlesViewModels(
             val newArrivaleCategory = CategoriesTabelle(
                 idCategorieInCategoriesTabele = maxId + 1,
                 nomCategorieInCategoriesTabele = "NewArrivale",
-                idClassementCategorieInCategoriesTabele = 1
+                idClassementCategorieInCategoriesTabele = 1,
+                displayedHeader = true
             )
 
             database.categoriesModelDao().insert(newArrivaleCategory)

@@ -173,7 +173,7 @@ private fun ArticleGrid(
                 article.itsNewArrivale && matchesFilter(article, filterText)
             }
 
-            if (newArrivaleArticles.isNotEmpty()) {
+            if (newArrivaleArticles.isNotEmpty() && category.displayedHeader) {
                 categorySection(category, newArrivaleArticles, gridColumns, viewModel, reloadTrigger,
                     onClickToOpenWindos
                 )

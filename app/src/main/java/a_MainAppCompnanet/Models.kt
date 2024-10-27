@@ -65,6 +65,18 @@ data class ColorsArticlesTabelle(
 }
 
 @Entity
+data class CategoriesTabelle(
+    @PrimaryKey(autoGenerate = true)
+    val idCategorieInCategoriesTabele: Long = 0,
+    val nomCategorieInCategoriesTabele: String = "",
+    var idClassementCategorieInCategoriesTabele: Int = 0 ,
+    var displayedHeader: Boolean = false,
+
+    ) {
+    constructor() : this(0, "", 0)
+}
+
+@Entity
 data class SoldArticlesTabelle(
     @PrimaryKey(autoGenerate = true) val vid: Long = 0,
     val idArticle: Long = 0,
@@ -145,15 +157,7 @@ data class SuppliersTabelle(
 }
 
 
-@Entity
-data class CategoriesTabelle(
-    @PrimaryKey(autoGenerate = true)
-    val idCategorieInCategoriesTabele: Long = 0,
-    val nomCategorieInCategoriesTabele: String = "",
-    var idClassementCategorieInCategoriesTabele: Int = 0
-) {
-    constructor() : this(0, "", 0)
-}
+
 
 
 data class EntreBonsGrosTabele(
