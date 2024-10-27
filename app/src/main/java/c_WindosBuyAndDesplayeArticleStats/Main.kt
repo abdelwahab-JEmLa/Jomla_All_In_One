@@ -91,6 +91,7 @@ fun WindosBuyAndDesplayeArticleStats(
         properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
 
+
         Box(
             modifier = modifier
                 .fillMaxSize()
@@ -193,9 +194,13 @@ fun ColorItem(
     viewModel: StartUpNewArticlesViewModels,
     initialShowPicker: Boolean = false
 ) {
-    var showPicker by remember { mutableStateOf(initialShowPicker) }  // Initialize based on passed parameter
+    var showPicker by remember { mutableStateOf(initialShowPicker) }
 
-
+    LaunchedEffect(showPicker) {
+        if (!showPicker) {
+            viewModel.saveSaleTransaction(article)
+        }
+    }
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -252,15 +257,25 @@ fun ColorItem(
                 enter = slideInHorizontally(),
                 exit = slideOutHorizontally()
             ) {
-                CompactQuantityPicker(onDismiss = { showPicker = false })
+                if (showPicker && color != null) {
+                    CompactQuantityPicker(
+                        onDismiss = { showPicker = false },
+                        colorId = color.idColore,
+                        colorIndex = index,
+                        viewModel = viewModel
+                    )
+                }
             }
         }
     }
 }
-
+// CompactQuantityPicker.kt updates:
 @Composable
 fun CompactQuantityPicker(
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    colorId: Long,
+    colorIndex: Int,
+    viewModel: StartUpNewArticlesViewModels
 ) {
     Card(
         modifier = Modifier.fillMaxSize(),
@@ -280,14 +295,11 @@ fun CompactQuantityPicker(
             }
             val valuesPickerState = rememberPickerState()
 
-            var selectedValue by remember { mutableStateOf("1") }
-
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-
                 Picker(
                     modifier = Modifier,
                     items = values,
@@ -298,12 +310,17 @@ fun CompactQuantityPicker(
                 )
             }
 
+            // Update the color selection when the value changes
             LaunchedEffect(valuesPickerState.selectedItem) {
-                selectedValue = valuesPickerState.selectedItem
+                val quantity = valuesPickerState.selectedItem.toIntOrNull() ?: 0
+                viewModel.updateColorSelection(colorIndex, colorId, quantity)
             }
 
             IconButton(
-                onClick = onDismiss,
+                onClick = {
+                    viewModel.resetColorSelection(colorIndex)
+                    onDismiss()
+                },
                 modifier = Modifier.padding(top = 8.dp)
             ) {
                 Icon(
@@ -314,7 +331,6 @@ fun CompactQuantityPicker(
         }
     }
 }
-
 @Composable
 fun Picker(
     modifier: Modifier = Modifier,

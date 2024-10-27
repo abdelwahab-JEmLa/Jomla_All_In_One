@@ -23,7 +23,7 @@ data class UiState(
     val articlesBasesStatTabelles: List<ArticlesBasesStatsTabelle> = emptyList(),
     val categories: List<CategoriesTabelle> = emptyList(),
     val colorsArticlesTabelleModel: List<ColorsArticlesTabelle> = emptyList(),
-    val soldArticlesList: List<SoldArticlesTabelle> = emptyList(),
+    val soldArticlesModel: List<SoldArticlesTabelle> = emptyList(),
     val suppliers: List<SuppliersTabelle> = emptyList(),
     val isLoading: Boolean = false,
     val loadingProgress: Float = 0f,
@@ -72,6 +72,63 @@ open class StartUpNewArticlesViewModels(
             loadData()
         }
 
+    }
+    data class ColorSelection(
+        val colorId: Long = 0,
+        val quantity: Int = 0
+    )
+
+    private val _selectedQuantities = MutableStateFlow<Map<Int, ColorSelection>>(emptyMap())
+    val selectedQuantities = _selectedQuantities.asStateFlow()
+
+    // Used by CompactQuantityPicker when user selects quantity
+    fun updateColorSelection(colorIndex: Int, colorId: Long, quantity: Int) {
+        _selectedQuantities.update { current ->
+            current + (colorIndex to ColorSelection(colorId, quantity))
+        }
+    }
+
+    fun saveSaleTransaction(article: ArticlesBasesStatsTabelle) {
+        viewModelScope.launch {
+            val currentSelections = _selectedQuantities.value
+            if (currentSelections.isEmpty()) return@launch
+
+            // Get max ID from uiState's soldArticlesModel instead of DAO
+            val maxId = _uiState.value.soldArticlesModel
+                .maxOfOrNull { it.vid }
+                ?: 0
+
+            val newSale = SoldArticlesTabelle(
+                vid = maxId + 1,
+                idArticle = article.idArticle.toLong(),
+                nameArticle = article.nomArticleFinale,
+                date = System.currentTimeMillis().toString(),
+                color1IdPicked = currentSelections[0]?.colorId ?: 0,
+                color1SoldQuantity = currentSelections[0]?.quantity ?: 0,
+                color2IdPicked = currentSelections[1]?.colorId ?: 0,
+                color2SoldQuantity = currentSelections[1]?.quantity ?: 0,
+                color3IdPicked = currentSelections[2]?.colorId ?: 0,
+                color3SoldQuantity = currentSelections[2]?.quantity ?: 0,
+                color4IdPicked = currentSelections[3]?.colorId ?: 0,
+                color4SoldQuantity = currentSelections[3]?.quantity ?: 0
+            )
+
+            database.soldArticlesTabelleDao().insert(newSale)
+
+            // Update uiState with new sale
+            _uiState.update { currentState ->
+                currentState.copy(
+                    soldArticlesModel = currentState.soldArticlesModel + newSale
+                )
+            }
+
+            _selectedQuantities.value = emptyMap() // Reset selections after saving
+        }
+    }
+    fun resetColorSelection(colorIndex: Int) {
+        _selectedQuantities.update { current ->
+            current + (colorIndex to ColorSelection(colorId = 0, quantity = 0))
+        }
     }
 
     private suspend fun createNewArrivaleCategoryIfNeeded(existingCategories: List<CategoriesTabelle>) {
@@ -179,7 +236,7 @@ open class StartUpNewArticlesViewModels(
                 articlesBasesStatTabelles = articles,
                 categories = database.categoriesModelDao().getAll(), // Refresh categories after potential NewArrivale creation
                 colorsArticlesTabelleModel = colors,
-                soldArticlesList = soldArticles
+                soldArticlesModel = soldArticles
             ) }
         } catch (e: Exception) {
             _uiState.update { it.copy(error = e.message) }

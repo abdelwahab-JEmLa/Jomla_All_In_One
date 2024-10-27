@@ -82,8 +82,11 @@ interface SoldArticlesTabelleDao{
     @Query("SELECT * FROM SoldArticlesTabelle ORDER BY vid")
     suspend fun getAll(): MutableList<SoldArticlesTabelle>
 
+    @Query("SELECT MAX(vid) FROM SoldArticlesTabelle")
+    suspend fun getMaxId(): Long?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(soldArticle: SoldArticlesTabelle)
+    suspend fun insert(soldArticlesTabelle: SoldArticlesTabelle)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(soldArticles: List<SoldArticlesTabelle>)
