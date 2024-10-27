@@ -1,6 +1,6 @@
 package com.example.clientjetpack
 
-import a_RoomDB.ArticlesBasesStatsModel
+import a_RoomDB.ArticlesBasesStats
 import a_RoomDB.Objects
 import android.app.Application
 import android.os.Bundle
@@ -198,7 +198,7 @@ fun AppNavHost(
     val uiState by appViewModels.startUpNewArticlesViewModels.uiState.collectAsState()
     val currentEditedArticle by appViewModels.startUpNewArticlesViewModels.currentArticle.collectAsState()
 
-    var windosBuyAndDesplayeArticleStats by remember { mutableStateOf<ArticlesBasesStatsModel?>(null) }
+    var windosBuyAndDesplayeArticleStats by remember { mutableStateOf<ArticlesBasesStats?>(null) }
     var reloadTrigger by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(currentEditedArticle) {
@@ -232,11 +232,11 @@ fun AppNavHost(
         windosBuyAndDesplayeArticleStats?.let { article ->
             WindosBuyAndDesplayeArticleStats(
                 article = article,
-                onDismiss = { windosBuyAndDesplayeArticleStats = null },
                 viewModel = appViewModels.startUpNewArticlesViewModels,
-                modifier = Modifier.padding(horizontal = 3.dp),
+                onDismiss = { windosBuyAndDesplayeArticleStats = null },
                 onReloadTrigger = { reloadTrigger += 1 },
-                reloadTrigger = reloadTrigger
+                reloadTrigger = reloadTrigger,
+                modifier = Modifier.padding(horizontal = 3.dp)
             )
         }
     }

@@ -1,6 +1,6 @@
 package b_StartupAppDisplayerOfNewArticles
 
-import a_RoomDB.ArticlesBasesStatsModel
+import a_RoomDB.ArticlesBasesStats
 import a_RoomDB.ArticlesSelled
 import a_RoomDB.CategoriesModel
 import a_RoomDB.ColorsArticles
@@ -20,7 +20,7 @@ import java.io.File
 
 // UiState.kt
 data class UiState(
-    val articlesBasesStatsModel: List<ArticlesBasesStatsModel> = emptyList(),
+    val articlesBasesStats: List<ArticlesBasesStats> = emptyList(),
     val categories: List<CategoriesModel> = emptyList(),
     val colors: List<ColorsArticles> = emptyList(),
     val soldArticles: List<ArticlesSelled> = emptyList(),
@@ -37,7 +37,7 @@ open class StartUpNewArticlesViewModels(
     private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()
 
-    private val _currentArticle = MutableStateFlow<ArticlesBasesStatsModel?>(null)
+    private val _currentArticle = MutableStateFlow<ArticlesBasesStats?>(null)
     val currentArticle = _currentArticle.asStateFlow()
 
     // Ensure the directory exists when initializing the path
@@ -51,7 +51,7 @@ open class StartUpNewArticlesViewModels(
     private val refCategorieModel = firebaseDatabase.getReference("H_CategorieTabele")
     private val refColorsArticles = firebaseDatabase.getReference("H_ColorsArticles")
 
-    fun updateCurrentArticle(article: ArticlesBasesStatsModel) {
+    fun updateCurrentArticle(article: ArticlesBasesStats) {
         _currentArticle.value= article
     }
 
@@ -125,7 +125,7 @@ open class StartUpNewArticlesViewModels(
                 // Import articlesBasesStatsModel
                 val articlesSnapshot = refDBJetPackExport.get().await()
                 val articles = articlesSnapshot.children.mapNotNull { snapshot ->
-                    snapshot.getValue(ArticlesBasesStatsModel::class.java)
+                    snapshot.getValue(ArticlesBasesStats::class.java)
                 }
                 database.articlesBasesStatsModelDao().insertAll(articles)
                 updateLoadingProgress(100f)
@@ -159,7 +159,7 @@ open class StartUpNewArticlesViewModels(
             createNewArrivaleCategoryIfNeeded(categories)
 
             _uiState.update { it.copy(
-                articlesBasesStatsModel = articles,
+                articlesBasesStats = articles,
                 categories = database.categoriesModelDao().getAll(), // Refresh categories after potential NewArrivale creation
                 colors = colors,
             ) }

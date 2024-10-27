@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
-data class ArticlesBasesStatsModel(
+data class ArticlesBasesStats(
     @PrimaryKey var idArticle: Int = 0,
     var nomArticleFinale: String = "",
     var classementCate: Double = 0.0,

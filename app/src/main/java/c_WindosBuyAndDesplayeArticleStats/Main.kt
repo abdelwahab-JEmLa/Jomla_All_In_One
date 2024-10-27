@@ -1,6 +1,6 @@
 package c_WindosBuyAndDesplayeArticleStats
 
-import a_RoomDB.ArticlesBasesStatsModel
+import a_RoomDB.ArticlesBasesStats
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -37,12 +37,12 @@ import java.io.File
 
 @Composable
 fun WindosBuyAndDesplayeArticleStats(
-    article: ArticlesBasesStatsModel,
-    onDismiss: () -> Unit,
+    article: ArticlesBasesStats,
     viewModel: StartUpNewArticlesViewModels,
-    modifier: Modifier = Modifier,
+    onDismiss: () -> Unit,
     onReloadTrigger: () -> Unit,
-    reloadTrigger: Int
+    reloadTrigger: Int,
+    modifier: Modifier = Modifier
 ) {
 
     Dialog(     //TODO fait que il ya un petite espace de 15dp entre layaute et windos
@@ -63,9 +63,7 @@ fun WindosBuyAndDesplayeArticleStats(
                             .fillMaxSize()
                             .verticalScroll(rememberScrollState())
                     ) {
-
-
-                        DisplayColorsCards(
+                        ColorsCards(
                             article = article,
                             viewModel = viewModel,
                             onDismiss = onDismiss,
@@ -81,10 +79,12 @@ fun WindosBuyAndDesplayeArticleStats(
 
 
 @Composable
-private fun DisplayColorsCards(article: ArticlesBasesStatsModel, viewModel: StartUpNewArticlesViewModels, modifier: Modifier = Modifier,
-                       onDismiss: () -> Unit,
-                       onReloadTrigger: () -> Unit,  //TODO regle le
-                       relodeTigger: Int
+private fun ColorsCards(
+    article: ArticlesBasesStats,
+    viewModel: StartUpNewArticlesViewModels, modifier: Modifier = Modifier,
+    onDismiss: () -> Unit,
+    onReloadTrigger: () -> Unit,  //TODO regle le
+    relodeTigger: Int
 ) {
 
     LazyRow(       //TODO fait que ca soit un lazy column
@@ -127,7 +127,7 @@ private fun DisplayColorsCards(article: ArticlesBasesStatsModel, viewModel: Star
 
 @Composable
 private fun ColorCard(
-    article: ArticlesBasesStatsModel,
+    article: ArticlesBasesStats,
     index: Int,
     relodeTigger: Int,
     viewModel: StartUpNewArticlesViewModels,
@@ -164,7 +164,7 @@ private fun ColorCard(
 
 @Composable
 private fun ImageDisplayer(
-    article: ArticlesBasesStatsModel,
+    article: ArticlesBasesStats,
     viewModel: StartUpNewArticlesViewModels,
     indexColor: Int = 0,
     reloadKey: Any = Unit,

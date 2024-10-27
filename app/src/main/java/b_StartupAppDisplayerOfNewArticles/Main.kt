@@ -1,6 +1,6 @@
 package b_StartupAppDisplayerOfNewArticles
 
-import a_RoomDB.ArticlesBasesStatsModel
+import a_RoomDB.ArticlesBasesStats
 import a_RoomDB.CategoriesModel
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -91,7 +91,7 @@ private fun ArticleDisplayScreen(
     onToggleFilter: () -> Unit,
     onChangeGridColumns: (Int) -> Unit,
     onToggleNavBar: () -> Unit,
-    onArticleClick: (ArticlesBasesStatsModel) -> Unit,
+    onArticleClick: (ArticlesBasesStats) -> Unit,
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
     modifier: Modifier = Modifier
@@ -137,7 +137,7 @@ private fun ArticleGrid(
     filterText: String,
     showFilter: Boolean,  // Added showFilter parameter
     gridState: LazyGridState,
-    onArticleClick: (ArticlesBasesStatsModel) -> Unit,
+    onArticleClick: (ArticlesBasesStats) -> Unit,
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
     modifier: Modifier = Modifier
@@ -171,7 +171,7 @@ private fun ArticleGrid(
         }
 
         newArrivaleCategory?.let { category ->
-            val newArrivaleArticles = uiState.articlesBasesStatsModel.filter { article ->
+            val newArrivaleArticles = uiState.articlesBasesStats.filter { article ->
                 article.itsNewArrivale && matchesFilter(article, filterText)
             }
 
@@ -184,7 +184,7 @@ private fun ArticleGrid(
         uiState.categories
             .filter { it.nomCategorieInCategoriesTabele != "NewArrivale" }
             .forEach { category ->
-                val articlesInCategory = uiState.articlesBasesStatsModel.filter { article ->
+                val articlesInCategory = uiState.articlesBasesStats.filter { article ->
                     article.nomCategorie == category.nomCategorieInCategoriesTabele &&
                             !article.itsNewArrivale &&
                             matchesFilter(article, filterText)
@@ -198,9 +198,9 @@ private fun ArticleGrid(
 }
 private fun LazyGridScope.categorySection(
     category: CategoriesModel,
-    articles: List<ArticlesBasesStatsModel>,
+    articles: List<ArticlesBasesStats>,
     gridColumns: Int,
-    onArticleClick: (ArticlesBasesStatsModel) -> Unit,
+    onArticleClick: (ArticlesBasesStats) -> Unit,
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int
 ) {
@@ -230,10 +230,10 @@ private fun LazyGridScope.categorySection(
 
 @Composable
 private fun ArticleItem(
-    article: ArticlesBasesStatsModel,
+    article: ArticlesBasesStats,
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
-    onArticleClick: (ArticlesBasesStatsModel) -> Unit,
+    onArticleClick: (ArticlesBasesStats) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val hasThreeColors = countColors(article) == 3
@@ -268,7 +268,7 @@ private fun ArticleItem(
 
 @Composable
 fun DisplayeArticleWhithOneColore(
-    article: ArticlesBasesStatsModel,
+    article: ArticlesBasesStats,
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
     modifier: Modifier
@@ -300,7 +300,7 @@ fun DisplayeArticleWhithOneColore(
 
 @Composable
 private fun ThreeColorArticleDisplay(
-    article: ArticlesBasesStatsModel,
+    article: ArticlesBasesStats,
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
     modifier: Modifier = Modifier
@@ -399,7 +399,7 @@ private fun SearchFilter(
 // 3. Make image width match container
 @Composable
 fun ImageDisplayer(
-    article: ArticlesBasesStatsModel,
+    article: ArticlesBasesStats,
     viewModel: StartUpNewArticlesViewModels,
     indexColor: Int = 0,
     reloadKey: Any = Unit,
@@ -450,18 +450,18 @@ fun ImageDisplayer(
         )
     }
 }
-private fun calculateSpan(article: ArticlesBasesStatsModel, gridColumns: Int): GridItemSpan {
+private fun calculateSpan(article: ArticlesBasesStats, gridColumns: Int): GridItemSpan {
     return when {
         countColors(article) == 3 && !article.funChangeImagsDimention -> GridItemSpan(gridColumns)
         else -> GridItemSpan(1)
     }
 }
 
-private fun matchesFilter(article: ArticlesBasesStatsModel, filterText: String): Boolean {
+private fun matchesFilter(article: ArticlesBasesStats, filterText: String): Boolean {
     return filterText.isEmpty() || article.nomArticleFinale.contains(filterText, ignoreCase = true)
 }
 
-private fun countColors(article: ArticlesBasesStatsModel): Int {
+private fun countColors(article: ArticlesBasesStats): Int {
     return listOf(
         article.couleur1,
         article.couleur2,

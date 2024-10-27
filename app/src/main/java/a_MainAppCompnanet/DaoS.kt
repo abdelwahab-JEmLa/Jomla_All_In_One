@@ -1,6 +1,6 @@
 package a_MainAppCompnents
 
-import a_RoomDB.ArticlesBasesStatsModel
+import a_RoomDB.ArticlesBasesStats
 import a_RoomDB.CategoriesModel
 import a_RoomDB.ColorsArticles
 import androidx.room.Dao
@@ -35,8 +35,8 @@ interface CategoriesModelDao {
 
 @Dao
 interface ArticlesBasesStatsModelDao {
-    @Query("SELECT * FROM ArticlesBasesStatsModel ORDER BY idCategorie")
-    suspend fun getAll(): MutableList<ArticlesBasesStatsModel>
+    @Query("SELECT * FROM ArticlesBasesStats ORDER BY idCategorie")
+    suspend fun getAll(): MutableList<ArticlesBasesStats>
 
     @Transaction
     suspend fun transaction(block: suspend ArticlesBasesStatsModelDao.() -> Unit) {
@@ -44,16 +44,16 @@ interface ArticlesBasesStatsModelDao {
     }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(category: ArticlesBasesStatsModel)
+    suspend fun insert(category: ArticlesBasesStats)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(articlesBasesStatsModel: List<ArticlesBasesStatsModel>)
+    suspend fun insertAll(articlesBasesStats: List<ArticlesBasesStats>)
 
-    @Query("DELETE FROM ArticlesBasesStatsModel")
+    @Query("DELETE FROM ArticlesBasesStats")
     suspend fun deleteAll()
 
     @Update
-    suspend fun updateAll(articlesBasesStatsModel: List<ArticlesBasesStatsModel>)
+    suspend fun updateAll(articlesBasesStats: List<ArticlesBasesStats>)
 }
 
 

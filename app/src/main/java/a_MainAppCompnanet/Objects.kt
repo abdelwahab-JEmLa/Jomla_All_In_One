@@ -10,7 +10,7 @@ import androidx.room.RoomDatabase
 
 @Database(
     entities = [
-        ArticlesBasesStatsModel::class,
+        ArticlesBasesStats::class,
         CategoriesModel::class,
         ColorsArticles::class,
     ],
