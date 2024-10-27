@@ -205,11 +205,23 @@ fun ColorItem(
     initialShowPicker: Boolean = false,
     relatedSaleOfArticleToClient: SoldArticlesTabelle?
 ) {
-    var showPicker by remember { mutableStateOf(initialShowPicker) }
+    // Initialize showPicker based on both initialShowPicker and existing quantities
+    var showPicker by remember {
+        mutableStateOf(
+            initialShowPicker || when (index) {
+                0 -> relatedSaleOfArticleToClient?.color1SoldQuantity
+                1 -> relatedSaleOfArticleToClient?.color2SoldQuantity
+                2 -> relatedSaleOfArticleToClient?.color3SoldQuantity
+                3 -> relatedSaleOfArticleToClient?.color4SoldQuantity
+                else -> null
+            }?.let { it > 0 } ?: false
+        )
+    }
+
     val currentSale by viewModel.currentSale.collectAsState()
     val currentSaleOrRelated = currentSale ?: relatedSaleOfArticleToClient
 
-// Get quantity with priority to existing sale
+    // Get quantity with priority to existing sale
     val currentQuantity = remember(currentSaleOrRelated, index) {
         when (index) {
             0 -> currentSaleOrRelated?.color1SoldQuantity
@@ -219,7 +231,6 @@ fun ColorItem(
             else -> null
         } ?: 0
     }
-
 
     LaunchedEffect(showPicker) {
         if (!showPicker) {
