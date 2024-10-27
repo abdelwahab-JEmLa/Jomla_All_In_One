@@ -232,7 +232,6 @@ fun AppNavHost(
         windosBuyAndDesplayeArticleStats?.let { article ->
             WindosBuyAndDesplayeArticleStats(
                 article = article,
-                uiState = uiState,
                 onDismiss = { windosBuyAndDesplayeArticleStats = null },
                 viewModel = appViewModels.startUpNewArticlesViewModels,
                 modifier = Modifier.padding(horizontal = 3.dp),

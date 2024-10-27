@@ -98,7 +98,7 @@ private fun ArticleDisplayScreen(
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         Column {
-            SearchFilter(
+            SearchFilter(       //TODO regle pk le clavie et focuse ne s affiche pas quend showFilter est active
                 showFilter = showFilter,
                 filterText = filterText,
                 onFilterTextChange = onFilterTextChange
@@ -145,7 +145,7 @@ private fun ArticleGrid(
     LazyVerticalGrid(
         columns = GridCells.Fixed(
             when {
-                uiState.categories.find { it.nomCategorieInCategoriesTabele == "NewArrivale" } != null -> gridColumns
+                uiState.categories.find { it.nomCategorieInCategoriesTabele == "NewArrivale" } != null -> gridColumns        //TODO le mettre du gridColumns quil  ne soit pas pour les autres categorie ne marche pas
                 else -> 2
             }
         ),
