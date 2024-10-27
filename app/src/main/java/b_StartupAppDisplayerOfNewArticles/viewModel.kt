@@ -22,7 +22,7 @@ import java.io.File
 data class UiState(
     val articlesBasesStats: List<ArticlesBasesStats> = emptyList(),
     val categories: List<CategoriesModel> = emptyList(),
-    val colors: List<ColorsArticles> = emptyList(),
+    val colorsArticlesModel: List<ColorsArticles> = emptyList(),
     val soldArticles: List<ArticlesSelled> = emptyList(),
     val suppliers: List<Suppliers> = emptyList(),
     val isLoading: Boolean = false,
@@ -161,7 +161,7 @@ open class StartUpNewArticlesViewModels(
             _uiState.update { it.copy(
                 articlesBasesStats = articles,
                 categories = database.categoriesModelDao().getAll(), // Refresh categories after potential NewArrivale creation
-                colors = colors,
+                colorsArticlesModel = colors,
             ) }
         } catch (e: Exception) {
             _uiState.update { it.copy(error = e.message) }

@@ -1,22 +1,21 @@
 package c_WindosBuyAndDesplayeArticleStats
 
 import a_RoomDB.ArticlesBasesStats
+import a_RoomDB.ColorsArticles
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,10 +24,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import b_StartupAppDisplayerOfNewArticles.StartUpNewArticlesViewModels
+import b_StartupAppDisplayerOfNewArticles.UiState
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
@@ -37,6 +38,7 @@ import java.io.File
 
 @Composable
 fun WindosBuyAndDesplayeArticleStats(
+    uiState:UiState,
     article: ArticlesBasesStats,
     viewModel: StartUpNewArticlesViewModels,
     onDismiss: () -> Unit,
@@ -44,16 +46,19 @@ fun WindosBuyAndDesplayeArticleStats(
     reloadTrigger: Int,
     modifier: Modifier = Modifier
 ) {
-
-    Dialog(     //TODO fait que il ya un petite espace de 15dp entre layaute et windos
+    Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
-        Surface(
-            modifier = modifier.fillMaxSize(),
-            shape = MaterialTheme.shapes.large
+        Box(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(15.dp)
         ) {
-            Box(modifier = Modifier.fillMaxSize()) {
+            Surface(
+                modifier = Modifier.fillMaxSize(),
+                shape = MaterialTheme.shapes.large
+            ) {
                 Card(
                     modifier = Modifier.fillMaxSize(),
                     elevation = CardDefaults.cardElevation(4.dp)
@@ -64,6 +69,7 @@ fun WindosBuyAndDesplayeArticleStats(
                             .verticalScroll(rememberScrollState())
                     ) {
                         ColorsCards(
+                            uiState = uiState,
                             article = article,
                             viewModel = viewModel,
                             onDismiss = onDismiss,
@@ -77,98 +83,100 @@ fun WindosBuyAndDesplayeArticleStats(
     }
 }
 
-
 @Composable
 private fun ColorsCards(
     article: ArticlesBasesStats,
-    viewModel: StartUpNewArticlesViewModels, modifier: Modifier = Modifier,
+    viewModel: StartUpNewArticlesViewModels,
+    modifier: Modifier = Modifier,
     onDismiss: () -> Unit,
-    onReloadTrigger: () -> Unit,  //TODO regle le
-    relodeTigger: Int
+    onReloadTrigger: () -> Unit,
+    relodeTigger: Int,
+    uiState: UiState
 ) {
-
-    LazyRow(       //TODO fait que ca soit un lazy column
-        verticalAlignment = Alignment.CenterVertically,
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier.fillMaxWidth()
     ) {
         if (article.articleHaveUniteImages) {
-            item {
-                ColorCard(
-                    viewModel = viewModel,
-                    article = article,
-                    index = -1,
-                    relodeTigger = relodeTigger
-                )
-            }
+            ColorItem(
+                article = article,
+                color = null,  // No color for unite image
+                index = -1,
+                relodeTigger = relodeTigger,
+                viewModel = viewModel
+            )
         }
 
-        val couleursList = listOf(
-            article.couleur1,
-            article.couleur2,
-            article.couleur3,
-            article.couleur4
-        ).filterNot { it.isNullOrEmpty() }
-
-        itemsIndexed(couleursList) { index, couleur ->
-            if (couleur != null) {
-                ColorCard(
+        // Find corresponding colors from uiState.colors
+        listOf(
+            article.idcolor1,
+            article.idcolor2,
+            article.idcolor3,
+            article.idcolor4
+        ).forEachIndexed { index, colorId ->
+            val correspondingColor = uiState.colorsArticlesModel.find { it.idColore == colorId }
+            if (colorId != 0L && correspondingColor != null) {
+                ColorItem(
                     article = article,
+                    color = correspondingColor,
                     index = index,
                     relodeTigger = relodeTigger,
                     viewModel = viewModel
                 )
             }
         }
-
-
     }
 }
 
-
 @Composable
-private fun ColorCard(
+private fun ColorItem(
     article: ArticlesBasesStats,
+    color: ColorsArticles?,
     index: Int,
     relodeTigger: Int,
     viewModel: StartUpNewArticlesViewModels,
 ) {
-
     Card(
         modifier = Modifier
             .size(200.dp)
             .padding(4.dp)
     ) {
-        Box(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            // Background Image
+        Box(modifier = Modifier.fillMaxSize()) {
             ImageDisplayer(
-                viewModel = viewModel,
+                modifier = Modifier.fillMaxSize(),
                 article = article,
+                viewModel = viewModel,
                 indexColor = index,
-                reloadKey = relodeTigger,
-                modifier = Modifier.fillMaxSize()
+                reloadKey = relodeTigger
             )
 
-            // Overlay content
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.SpaceBetween
-            ) {
-
+            // Only show color name overlay if color exists
+            color?.let { colorData ->
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.BottomCenter),
+                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f)
+                ) {
+                    Text(
+                        text = colorData.nameColore,
+                        modifier = Modifier.padding(8.dp),
+                        style = MaterialTheme.typography.labelLarge,
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
         }
     }
-
 }
 
 @Composable
 private fun ImageDisplayer(
+    modifier: Modifier = Modifier,
     article: ArticlesBasesStats,
     viewModel: StartUpNewArticlesViewModels,
     indexColor: Int = 0,
-    reloadKey: Any = Unit,
-    modifier: Modifier = Modifier
+    reloadKey: Any = Unit
 ) {
     val context = LocalContext.current
     val viewModelImagesPath = viewModel.viewModelImagesPath
