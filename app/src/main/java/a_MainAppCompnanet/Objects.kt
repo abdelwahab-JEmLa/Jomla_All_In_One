@@ -10,6 +10,9 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverter
+import androidx.room.TypeConverters
+import java.util.Date
 
 @Database(
     entities = [
@@ -18,12 +21,14 @@ import androidx.room.RoomDatabase
         ColorsArticlesTabelle::class,
         SoldArticlesTabelle::class,
         ClientsModel::class,
-        AppSettingsSaverModel    ::class,
+        AppSettingsSaverModel::class
     ],
     version = 1,
     exportSchema = false
 )
-abstract class Objects : RoomDatabase() {
+@TypeConverters(DateConverter::class)
+abstract class AppDatabase : RoomDatabase() {
+    // All DAOs
     abstract fun articlesBasesStatsModelDao(): ArticlesBasesStatsModelDao
     abstract fun categoriesModelDao(): CategoriesModelDao
     abstract fun colorsArticlesDao(): ColorsArticlesDao
@@ -31,20 +36,34 @@ abstract class Objects : RoomDatabase() {
     abstract fun clientsModelDao(): ClientsModelDao
     abstract fun appSettingsSaverModelDao(): AppSettingsSaverModelDao
 
-
-
-    companion object {
+    // DatabaseModule.kt
+    object DatabaseModule {
         @Volatile
-        private var instance: Objects? = null
+        private var INSTANCE: AppDatabase? = null
 
-        fun getInstance(context: Context): Objects {
-            return instance ?: synchronized(this) {
-                Room.databaseBuilder(
+        fun getDatabase(context: Context): AppDatabase {
+            return INSTANCE ?: synchronized(this) {
+                val instance = Room.databaseBuilder(
                     context.applicationContext,
-                    Objects::class.java,
+                    AppDatabase::class.java,
                     "app_database"
-                ).build().also { instance = it }
+                ).build()
+                INSTANCE = instance
+                instance
             }
         }
+    }
+}
+
+// First, let's properly set up the DateConverter
+class DateConverter {
+    @TypeConverter
+    fun toDate(timestamp: Long?): Date? {
+        return timestamp?.let { Date(it) }
+    }
+
+    @TypeConverter
+    fun fromDate(date: Date?): Long? {
+        return date?.time
     }
 }

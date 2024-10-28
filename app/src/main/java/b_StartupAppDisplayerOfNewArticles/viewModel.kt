@@ -1,11 +1,11 @@
 package b_StartupAppDisplayerOfNewArticles
 
+import a_RoomDB.AppDatabase
 import a_RoomDB.AppSettingsSaverModel
 import a_RoomDB.ArticlesBasesStatsTabelle
 import a_RoomDB.CategoriesTabelle
 import a_RoomDB.ClientsModel
 import a_RoomDB.ColorsArticlesTabelle
-import a_RoomDB.Objects
 import a_RoomDB.SoldArticlesTabelle
 import a_RoomDB.SuppliersTabelle
 import androidx.lifecycle.ViewModel
@@ -35,9 +35,9 @@ data class UiState(
     val error: String? = null
 )
 
-// HeadOfViewModels.kt
-open class StartUpNewArticlesViewModels(
-    private val database: Objects
+// StartUpNewArticlesViewModels.kt
+class StartUpNewArticlesViewModels(
+    private val database: AppDatabase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()
@@ -89,7 +89,7 @@ open class StartUpNewArticlesViewModels(
                 // Only proceed if article is found
                 articleToDelete?.let { article ->
                     // Delete from database
-                    database.soldArticlesTabelleDao().delete(article)
+                    database.soldArticlesTabelleDao().delete(article)   //TODO fix Unresolved reference: soldArticlesTabelleDao
 
                     // Update the UI state
                     _uiState.update { state ->

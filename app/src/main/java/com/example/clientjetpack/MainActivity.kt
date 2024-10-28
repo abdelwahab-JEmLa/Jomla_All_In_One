@@ -1,8 +1,8 @@
 package com.example.clientjetpack
 
+import a_RoomDB.AppDatabase
 import a_RoomDB.ArticlesBasesStatsTabelle
 import a_RoomDB.ClientsModel
-import a_RoomDB.Objects
 import a_RoomDB.SoldArticlesTabelle
 import android.app.Application
 import android.os.Bundle
@@ -77,8 +77,12 @@ import d_SoldCartScreen.SoldCartScreen
 
 // Application.kt
 class MyApplication : Application() {
+    lateinit var database: AppDatabase
+        private set
+
     override fun onCreate() {
         super.onCreate()
+        database = AppDatabase.DatabaseModule.getDatabase(this)
         FirebaseApp.initializeApp(this)
         FirebaseDatabase.getInstance().setPersistenceEnabled(true)
     }
@@ -89,7 +93,7 @@ data class AppViewModels(
 )
 
 class MainActivity : ComponentActivity() {
-    private val database by lazy { Objects.getInstance(this) }
+    private val database by lazy { (application as MyApplication).database }
     private val permissionHandler by lazy { PermissionHandler(this) }
     private val startUpNewArticlesViewModels: StartUpNewArticlesViewModels by viewModels {
         ViewModelFactory(database)
@@ -107,7 +111,7 @@ class MainActivity : ComponentActivity() {
 
 // ViewModelFactory.kt
 class ViewModelFactory(
-    private val database: Objects
+    private val database: AppDatabase
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when {
@@ -320,7 +324,7 @@ fun AppNavHost(
                             pendingArticle = article
                             pendingIndexColor = indexColor
 
-                            if (currentClientId.toLong() == 0L) {
+                            if (currentClientId == 0L) {
                                 showClientSelection = true
                             } else {
                                 relatedSaleOfArticleToClient = uiState.soldArticlesModel.find { soldArticle ->
