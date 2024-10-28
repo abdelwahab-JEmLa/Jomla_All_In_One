@@ -348,7 +348,8 @@ fun AppNavHost(
                                 windowsSaleAndDisplayArticleStats = article
                                 navController.navigate(Screen.EditDatabaseWithCreateNewArticles.route)
                             }
-                        }
+                        }  ,
+                        onConfirmOrder={clientBuyerNow=null}
                     )
                 }
             }
