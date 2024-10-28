@@ -23,14 +23,13 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import b_StartupAppDisplayerOfNewArticles.ImageDisplayer
 import b_StartupAppDisplayerOfNewArticles.StartUpNewArticlesViewModels
+import b_StartupAppDisplayerOfNewArticles.UiState
 
 @Composable
 fun SoldCartScreen(
@@ -38,9 +37,8 @@ fun SoldCartScreen(
     onConfirmOrder: () -> Unit,
     modifier: Modifier = Modifier,
     clientBuyerNow: ClientsModel? = null  // Add this parameter
-    , onOpenArticleStats: (ArticlesBasesStatsTabelle, Int) -> Unit
+    , onOpenArticleStats: (ArticlesBasesStatsTabelle, Int) -> Unit, uiState: UiState
 ) {
-    val uiState by viewModel.uiState.collectAsState()
 
     // Filter articles by clientBuyerNow.id
     val filteredSoldArticles = uiState.soldArticlesModel.filterNotNull().filter { soldArticle ->
@@ -77,9 +75,9 @@ fun SoldCartScreen(
                     colors = uiState.colorsArticlesTabelleModel,
                     baseArticle = baseArticle,
                     onDelete = { viewModel.deleteSoldArticle(soldArticle.vid) },
-                    viewModel = viewModel   ,
-                    onOpenArticleStats=onOpenArticleStats
-
+                    viewModel = viewModel,
+                    onOpenArticleStats=onOpenArticleStats,
+                    uiState =uiState
                 )
             }
         }
@@ -105,8 +103,10 @@ fun SoldArticleCard(
     modifier: Modifier = Modifier,
     viewModel: StartUpNewArticlesViewModels,
     clientBuyerNow: ClientsModel? = null,
-    onOpenArticleStats: (ArticlesBasesStatsTabelle, Int) -> Unit ,
-) {
+    onOpenArticleStats: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    uiState: UiState,
+
+    ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -132,7 +132,8 @@ fun SoldArticleCard(
                         reloadKey = Unit,
                         onClickToOpenWindos = { clickedArticle, indexColor ->
                             onOpenArticleStats(clickedArticle, indexColor)
-                        }
+                        } ,
+                        uiState  =uiState
                     )
                 }
             }

@@ -2,6 +2,7 @@ package b_StartupAppDisplayerOfNewArticles
 
 import a_RoomDB.ArticlesBasesStatsTabelle
 import a_RoomDB.CategoriesTabelle
+import a_RoomDB.ColorsArticlesTabelle
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -44,12 +45,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
@@ -202,7 +205,7 @@ private fun LazyGridScope.displayCategories(
                     gridColumns = gridColumns,
                     viewModel = viewModel,
                     reloadTrigger = reloadTrigger,
-                    onClickToOpenWindos = onClickToOpenWindos
+                    onClickToOpenWindos = onClickToOpenWindos, uiState
                 )
             }
         }
@@ -223,7 +226,7 @@ private fun LazyGridScope.displayCategories(
                     gridColumns = gridColumns,
                     viewModel = viewModel,
                     reloadTrigger = reloadTrigger,
-                    onClickToOpenWindos = onClickToOpenWindos
+                    onClickToOpenWindos = onClickToOpenWindos, uiState
                 )
             }
         }
@@ -235,7 +238,7 @@ private fun LazyGridScope.displayCategoryContent(
     gridColumns: Int,
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
-    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit
+    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit, uiState: UiState
 ) {
     // Only show header if displayedHeader is true
     if (category.displayedHeader) {
@@ -257,7 +260,7 @@ private fun LazyGridScope.displayCategoryContent(
             article = article,
             viewModel = viewModel,
             reloadTrigger = reloadTrigger,
-            onClickToOpenWindos = onClickToOpenWindos
+            onClickToOpenWindos = onClickToOpenWindos, uiState = uiState
         )
     }
 }
@@ -314,7 +317,8 @@ private fun ArticleItem(
     article: ArticlesBasesStatsTabelle,
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
-    modifier: Modifier = Modifier, onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit
+    modifier: Modifier = Modifier, onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    uiState: UiState
 ) {
     val hasThreeColors = countColors(article) == 3
 
@@ -331,14 +335,16 @@ private fun ArticleItem(
             ThreeColorArticleDisplay(
                 article = article,
                 viewModel = viewModel,
-                reloadTrigger = reloadTrigger, onClickToOpenWindos = onClickToOpenWindos
+                reloadTrigger = reloadTrigger, onClickToOpenWindos = onClickToOpenWindos, uiState = uiState
             )
         } else {
             DisplayeArticleWhithOneColore(
                 article = article,
                 viewModel = viewModel,
                 reloadTrigger = reloadTrigger,
-                modifier = Modifier, onClickToOpenWindos = onClickToOpenWindos
+                modifier = Modifier,
+                onClickToOpenWindos = onClickToOpenWindos ,
+                uiState
             )
         }
     }
@@ -351,7 +357,9 @@ fun DisplayeArticleWhithOneColore(
     article: ArticlesBasesStatsTabelle,
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
-    modifier: Modifier, onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit
+    modifier: Modifier,
+    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    uiState: UiState
 ) {
     Card(
         modifier = modifier
@@ -371,7 +379,8 @@ fun DisplayeArticleWhithOneColore(
                     viewModel = viewModel,
                     indexColor = 0,
                     reloadKey = reloadTrigger,
-                    onClickToOpenWindos
+                    onClickToOpenWindos,
+                    uiState
                 )
             }
             ArticleDetails(article)
@@ -385,7 +394,7 @@ private fun ThreeColorArticleDisplay(
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
     modifier: Modifier = Modifier,
-    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit
+    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit, uiState: UiState
 ) {
     Card(
         modifier = modifier
@@ -405,7 +414,7 @@ private fun ThreeColorArticleDisplay(
                 colorIndex = 0,
                 reloadTrigger = reloadTrigger,
                 modifier = Modifier.height(500.dp),
-                onClickToOpenWindos = onClickToOpenWindos
+                onClickToOpenWindos = onClickToOpenWindos, uiState = uiState
             )
 
             // Secondary images in a loop
@@ -416,7 +425,7 @@ private fun ThreeColorArticleDisplay(
                     colorIndex = index + 1,
                     reloadTrigger = reloadTrigger,
                     modifier = Modifier.height(150.dp),
-                    onClickToOpenWindos = onClickToOpenWindos
+                    onClickToOpenWindos = onClickToOpenWindos, uiState = uiState
                 )
             }
 
@@ -435,7 +444,8 @@ private fun ColorImageWithDetails(
     colorIndex: Int,
     reloadTrigger: Int,
     modifier: Modifier = Modifier,
-    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit
+    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    uiState: UiState
 ) {
     Box(
         modifier = modifier.fillMaxWidth()
@@ -446,24 +456,28 @@ private fun ColorImageWithDetails(
             viewModel = viewModel,
             indexColor = colorIndex,
             reloadKey = reloadTrigger,
-            onClickToOpenWindos = onClickToOpenWindos
+            onClickToOpenWindos = onClickToOpenWindos ,
+            uiState
         )
 
-        // Display color emoji/icon if available
-        article.getColorForIndex(colorIndex)?.let { color ->
-            ColorIndicator(
-                colorName = color,
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(8.dp)
-            )
+        // Get color ID for the current index
+        article.getColorIdForIndex(colorIndex)?.let { colorId ->
+            // Find matching color from uiState
+            uiState.colorsArticlesTabelleModel.find { it.idColore == colorId }?.let { color ->
+                ColorIndicator(
+                    iconColore = color.iconColore,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(8.dp)
+                )
+            }
         }
     }
 }
 
 @Composable
 private fun ColorIndicator(
-    colorName: String,
+    iconColore: String,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -471,11 +485,13 @@ private fun ColorIndicator(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Text(
-            text = colorName,
+            text = iconColore,
             modifier = Modifier.padding(4.dp)
         )
     }
 }
+
+
 
 @Composable
 private fun ArticleDetails(
@@ -497,16 +513,7 @@ private fun ArticleDetails(
     }
 }
 
-// Extension function to get color based on index
-private fun ArticlesBasesStatsTabelle.getColorForIndex(index: Int): String? {
-    return when (index) {
-        0 -> couleur1
-        1 -> couleur2
-        2 -> couleur3
-        3 -> couleur4
-        else -> null
-    }
-}
+
 
 @Composable
 fun ImageDisplayer(
@@ -515,7 +522,8 @@ fun ImageDisplayer(
     viewModel: StartUpNewArticlesViewModels,
     indexColor: Int = 0,
     reloadKey: Any = Unit,
-    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit
+    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    uiState: UiState
 ) {
     val context = LocalContext.current
     val viewModelImagesPath = viewModel.viewModelImagesPath
@@ -544,12 +552,16 @@ fun ImageDisplayer(
         "${article.idArticle}_${if (indexColor == -1) "Unite" else indexColor}_$reloadKey"
     }
 
-    Box(modifier = modifier.fillMaxWidth()
-        .clickable { onClickToOpenWindos(article,indexColor) }) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable { onClickToOpenWindos(article, indexColor) }
+    ) {
+        // Background image with reduced opacity when no actual image exists
         val painter = rememberAsyncImagePainter(
             ImageRequest.Builder(context)
                 .data(imageSource)
-                .size(Size.ORIGINAL)  // Use original size to maintain aspect ratio
+                .size(Size.ORIGINAL)
                 .crossfade(true)
                 .setParameter("key", requestKey, memoryCacheKey = requestKey)
                 .build()
@@ -558,11 +570,59 @@ fun ImageDisplayer(
         Image(
             painter = painter,
             contentDescription = "Article image ${article.idArticle} color ${indexColor + 1}",
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .then(if (imageExist == null) Modifier.alpha(0.7f) else Modifier),
             contentScale = ContentScale.FillWidth
+        )
+
+        // Show color overlay when no actual image exists
+        if (imageExist == null) {
+            article.getColorIdForIndex(indexColor)?.let { colorId ->
+                uiState.colorsArticlesTabelleModel.find { it.idColore == colorId }?.let { color ->
+                    ColorOverlay(color = color)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ColorOverlay(
+    color: ColorsArticlesTabelle,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = color.iconColore,
+            style = MaterialTheme.typography.displayLarge,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        Text(
+            text = color.nameColore,
+            style = MaterialTheme.typography.bodyMedium,
+            textAlign = TextAlign.Center
         )
     }
 }
+
+private fun ArticlesBasesStatsTabelle.getColorIdForIndex(index: Int): Long? {
+    return when (index) {
+        0 -> idcolor1.takeIf { it != 0L }
+        1 -> idcolor2.takeIf { it != 0L }
+        2 -> idcolor3.takeIf { it != 0L }
+        3 -> idcolor4.takeIf { it != 0L }
+        else -> null
+    }
+}
+
 private fun calculateSpan(article: ArticlesBasesStatsTabelle, gridColumns: Int): GridItemSpan {
     return when {
         countColors(article) == 3 && !article.funChangeImagsDimention -> GridItemSpan(gridColumns)
