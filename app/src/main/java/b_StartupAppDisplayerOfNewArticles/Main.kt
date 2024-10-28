@@ -357,7 +357,7 @@ private fun ArticleItem(
 
 
 @Composable
-fun DisplayeArticleWhithOneColore(
+private fun DisplayeArticleWhithOneColore(
     article: ArticlesBasesStatsTabelle,
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
@@ -378,7 +378,7 @@ fun DisplayeArticleWhithOneColore(
                 contentAlignment = Alignment.Center
             ) {
                 ImageDisplayer(
-                    modifier=modifier,
+                    modifier =modifier,
                     article = article,
                     viewModel = viewModel,
                     indexColor = 0,
@@ -547,7 +547,7 @@ private fun ArticleDetails(
 
 
 @Composable
-fun ImageDisplayer(
+private fun ImageDisplayer(
     modifier: Modifier = Modifier,
     article: ArticlesBasesStatsTabelle,
     viewModel: StartUpNewArticlesViewModels,
