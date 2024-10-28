@@ -279,6 +279,8 @@ fun ClientSelectionDialog(
     }
 }
 
+
+// In AppNavHost.kt update the client selection handling:
 @Composable
 fun AppNavHost(
     appViewModels: AppViewModels,
@@ -288,9 +290,13 @@ fun AppNavHost(
 ) {
     val uiState by appViewModels.startUpNewArticlesViewModels.uiState.collectAsState()
 
+    // Get current client from settings
+    val currentClientId = uiState.appSettingsSaverModel
+        .find { it.name == "clientBuyerNowId" }?.valueLong ?: 0
+    val currentClient = uiState.clientsModel.find { it.idClientsSu == currentClientId }
+
     // Existing state management
     var windowsSaleAndDisplayArticleStats by rememberSaveable { mutableStateOf<ArticlesBasesStatsTabelle?>(null) }
-    var clientBuyerNow by rememberSaveable { mutableStateOf<ClientsModel?>(null) }
     var relatedSaleOfArticleToClient by rememberSaveable { mutableStateOf<SoldArticlesTabelle?>(null) }
     var showClientSelection by rememberSaveable { mutableStateOf(false) }
     var pendingArticle by rememberSaveable { mutableStateOf<ArticlesBasesStatsTabelle?>(null) }
@@ -314,12 +320,12 @@ fun AppNavHost(
                             pendingArticle = article
                             pendingIndexColor = indexColor
 
-                            if (clientBuyerNow == null) {
+                            if (currentClientId.toLong() == 0L) {
                                 showClientSelection = true
                             } else {
                                 relatedSaleOfArticleToClient = uiState.soldArticlesModel.find { soldArticle ->
                                     soldArticle?.let {
-                                        it.clientSoldToItId == clientBuyerNow?.idClientsSu &&
+                                        it.clientSoldToItId== currentClientId &&
                                                 it.idArticle == article.idArticle.toLong()
                                     } ?: false
                                 }
@@ -340,25 +346,23 @@ fun AppNavHost(
 
             composable(Screen.SoldCart.route) {
                 Box(modifier = Modifier.fillMaxSize()) {
-                    composable(Screen.SoldCart.route) {
-                        Box(modifier = Modifier.fillMaxSize()) {
-                            SoldCartScreen(
-                                viewModel = appViewModels.startUpNewArticlesViewModels,
-                                onConfirmOrder = { clientBuyerNow = null },
-                                clientBuyerNow = clientBuyerNow
-                            )
-                        }
-                    }
+                    SoldCartScreen(
+                        viewModel = appViewModels.startUpNewArticlesViewModels,
+                        onConfirmOrder = {
+                            appViewModels.startUpNewArticlesViewModels.updateCurrentClient(0)
+                        },
+                        clientBuyerNow = currentClient
+                    )
                 }
             }
         }
 
         // Overlay dialogs and windows
-        if (showClientSelection && clientBuyerNow == null) {
+        if (showClientSelection && currentClientId == 0L) {
             ClientSelectionDialog(
                 clients = uiState.clientsModel,
                 onClientSelected = { client ->
-                    clientBuyerNow = client
+                    appViewModels.startUpNewArticlesViewModels.updateCurrentClient(client.idClientsSu)
                     windowsSaleAndDisplayArticleStats = pendingArticle
                     indexColorStat = pendingIndexColor
                     showClientSelection = false
@@ -373,7 +377,7 @@ fun AppNavHost(
             WindosBuyAndDesplayeArticleStats(
                 modifier = Modifier.padding(horizontal = 3.dp),
                 article = article,
-                clientBuyerNow = clientBuyerNow,
+                clientBuyerNow = currentClient,
                 relatedSaleOfArticleToClient = relatedSaleOfArticleToClient,
                 viewModel = appViewModels.startUpNewArticlesViewModels,
                 onDismiss = {

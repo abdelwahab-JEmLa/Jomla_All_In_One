@@ -1,5 +1,6 @@
 package b_StartupAppDisplayerOfNewArticles
 
+import a_RoomDB.AppSettingsSaverModel
 import a_RoomDB.ArticlesBasesStatsTabelle
 import a_RoomDB.CategoriesTabelle
 import a_RoomDB.ClientsModel
@@ -21,6 +22,7 @@ import java.io.File
 
 // UiState.kt
 data class UiState(
+    val appSettingsSaverModel: List<AppSettingsSaverModel> = emptyList(),
     val articlesBasesStatTabelles: List<ArticlesBasesStatsTabelle> = emptyList(),
     val categories: List<CategoriesTabelle> = emptyList(),
     val colorsArticlesTabelleModel: List<ColorsArticlesTabelle> = emptyList(),
@@ -46,6 +48,7 @@ open class StartUpNewArticlesViewModels(
         }
     }
     private val firebaseDatabase = FirebaseDatabase.getInstance()
+    private val refAppSettingsSaverModel = firebaseDatabase.getReference("A_AppSettingsSaverModel")
     private val refDBJetPackExport = firebaseDatabase.getReference("e_DBJetPackExport")
     private val refCategorieModel = firebaseDatabase.getReference("H_CategorieTabele")
     private val refColorsArticles = firebaseDatabase.getReference("H_ColorsArticles")
@@ -228,9 +231,65 @@ open class StartUpNewArticlesViewModels(
         }
     }
 
+    fun importFromFirebase() {
+        viewModelScope.launch {
+            try {
+                setLoading(true)
+                updateLoadingProgress(10f)
 
 
-    private suspend fun colorIntia(fl: Float) {
+                appSettingsSaverModelInitialize(15f)
+
+
+                updateLoadingProgress(20f)
+
+                val categoriesSnapshot = refCategorieModel.get().await()
+                updateLoadingProgress(40f)
+
+                val categories = categoriesSnapshot.children.mapNotNull { snapshot ->
+                    snapshot.getValue(CategoriesTabelle::class.java)
+                }
+                database.categoriesModelDao().insertAll(categories)
+
+                createNewArrivaleCategoryIfNeeded(categories)
+                updateLoadingProgress(70f)
+
+                colorInitialize(80f)
+                clientsInitialize(82f)
+                soldArticlesTabelleIntia(85f)
+
+                val articlesSnapshot = refDBJetPackExport.get().await()
+                val articles = articlesSnapshot.children.mapNotNull { snapshot ->
+                    snapshot.getValue(ArticlesBasesStatsTabelle::class.java)
+                }
+                database.articlesBasesStatsModelDao().insertAll(articles)
+                updateLoadingProgress(100f)
+
+                loadData()
+            } catch (e: Exception) {
+                _uiState.update { it.copy(error = e.message) }
+            } finally {
+                setLoading(false)
+            }
+        }
+    }
+    private suspend fun appSettingsSaverModelInitialize(fl: Float) {
+        val appSettingsSaverModelSnapshot = refAppSettingsSaverModel.get().await()
+        val appSettingsSaverModel = appSettingsSaverModelSnapshot.children.mapNotNull { snapshot ->
+            snapshot.getValue(AppSettingsSaverModel::class.java)
+        }
+        database.appSettingsSaverModelDao().insertAll(appSettingsSaverModel)
+        updateLoadingProgress(fl)
+    }
+    private suspend fun clientsInitialize(fl: Float) {
+        val clientsSnapshot = refClientsTabelle.get().await()
+        val clients = clientsSnapshot.children.mapNotNull { snapshot ->
+            snapshot.getValue(ClientsModel::class.java)
+        }
+        database.clientsModelDao().insertAll(clients)
+        updateLoadingProgress(fl)
+    }
+    private suspend fun colorInitialize(fl: Float) {
         // Import colors
         val colorsSnapshot = refColorsArticles.get().await()
 
@@ -252,7 +311,6 @@ open class StartUpNewArticlesViewModels(
     }
 
 
-    // Update HeadOfViewModels.kt to include clients initialization
     private suspend fun loadData() {
         try {
             setLoading(true)
@@ -264,6 +322,18 @@ open class StartUpNewArticlesViewModels(
                 delay(100)
             }
 
+            // Load all settings including client setting
+            val settings = database.appSettingsSaverModelDao().getAll()
+            if (!settings.any { it.name == "clientBuyerNowId" }) {
+                database.appSettingsSaverModelDao().insert(
+                    AppSettingsSaverModel(
+                        id = System.currentTimeMillis(),
+                        name = "clientBuyerNowId",
+                        valueLong = 0
+                    )
+                )
+            }
+
             val articles = database.articlesBasesStatsModelDao().getAll()
             val categories = database.categoriesModelDao().getAll()
             val colors = database.colorsArticlesDao().getAllOrdred()
@@ -273,8 +343,9 @@ open class StartUpNewArticlesViewModels(
             createNewArrivaleCategoryIfNeeded(categories)
 
             _uiState.update { it.copy(
+                appSettingsSaverModel = database.appSettingsSaverModelDao().getAll(),
                 articlesBasesStatTabelles = articles,
-                categories = database.categoriesModelDao().getAll(),
+                categories = categories,
                 colorsArticlesTabelleModel = colors,
                 soldArticlesModel = soldArticles,
                 clientsModel = clients
@@ -286,48 +357,28 @@ open class StartUpNewArticlesViewModels(
         }
     }
 
-    private suspend fun clientsIntia(fl: Float) {
-        val clientsSnapshot = refClientsTabelle.get().await()
-        val clients = clientsSnapshot.children.mapNotNull { snapshot ->
-            snapshot.getValue(ClientsModel::class.java)
-        }
-        database.clientsModelDao().insertAll(clients)
-        updateLoadingProgress(fl)
-    }
-
-    fun importFromFirebase() {
+    fun updateCurrentClient(clientId: Long) {
         viewModelScope.launch {
             try {
-                setLoading(true)
-                updateLoadingProgress(10f)
+                val currentSetting = _uiState.value.appSettingsSaverModel.find { it.name == "clientBuyerNowId" }
+                    ?.copy(valueLong = clientId)
+                    ?: AppSettingsSaverModel(
+                        id = System.currentTimeMillis(),
+                        name = "clientBuyerNowId",
+                        valueLong = clientId
+                    )
 
-                val categoriesSnapshot = refCategorieModel.get().await()
-                updateLoadingProgress(40f)
+                database.appSettingsSaverModelDao().insert(currentSetting)
 
-                val categories = categoriesSnapshot.children.mapNotNull { snapshot ->
-                    snapshot.getValue(CategoriesTabelle::class.java)
+                _uiState.update { state ->
+                    state.copy(
+                        appSettingsSaverModel = state.appSettingsSaverModel.map {
+                            if (it.name == "clientBuyerNowId") currentSetting else it
+                        }
+                    )
                 }
-                database.categoriesModelDao().insertAll(categories)
-
-                createNewArrivaleCategoryIfNeeded(categories)
-                updateLoadingProgress(70f)
-
-                colorIntia(80f)
-                clientsIntia(82f)  // Added clients initialization
-                soldArticlesTabelleIntia(85f)
-
-                val articlesSnapshot = refDBJetPackExport.get().await()
-                val articles = articlesSnapshot.children.mapNotNull { snapshot ->
-                    snapshot.getValue(ArticlesBasesStatsTabelle::class.java)
-                }
-                database.articlesBasesStatsModelDao().insertAll(articles)
-                updateLoadingProgress(100f)
-
-                loadData()
             } catch (e: Exception) {
                 _uiState.update { it.copy(error = e.message) }
-            } finally {
-                setLoading(false)
             }
         }
     }

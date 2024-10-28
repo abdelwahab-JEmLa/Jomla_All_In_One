@@ -1,5 +1,6 @@
 package a_MainAppCompnents
 
+import a_RoomDB.AppSettingsSaverModel
 import a_RoomDB.ArticlesBasesStatsTabelle
 import a_RoomDB.CategoriesTabelle
 import a_RoomDB.ClientsModel
@@ -118,4 +119,16 @@ interface ClientsModelDao{
 }
 
 
+@Dao
+interface AppSettingsSaverModelDao{
+    @Query("SELECT * FROM AppSettingsSaverModel ORDER BY id")
+    suspend fun getAll(): MutableList<AppSettingsSaverModel>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(item: AppSettingsSaverModel)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(items: List<AppSettingsSaverModel>)
+
+}
 

@@ -1,5 +1,6 @@
 package a_RoomDB
 
+import a_MainAppCompnents.AppSettingsSaverModelDao
 import a_MainAppCompnents.ArticlesBasesStatsModelDao
 import a_MainAppCompnents.CategoriesModelDao
 import a_MainAppCompnents.ClientsModelDao
@@ -17,6 +18,7 @@ import androidx.room.RoomDatabase
         ColorsArticlesTabelle::class,
         SoldArticlesTabelle::class,
         ClientsModel::class,
+        AppSettingsSaverModel    ::class,
     ],
     version = 1,
     exportSchema = false
@@ -27,6 +29,7 @@ abstract class Objects : RoomDatabase() {
     abstract fun colorsArticlesDao(): ColorsArticlesDao
     abstract fun soldArticlesTabelleDao(): SoldArticlesTabelleDao
     abstract fun clientsModelDao(): ClientsModelDao
+    abstract fun appSettingsSaverModelDao(): AppSettingsSaverModelDao
 
 
 
