@@ -7,28 +7,19 @@ package b_StartupAppDisplayerOfNewArticles
 // File operations
 
 // Your models/state classes (make sure these match your project structure)
+// Required imports for the ImageDisplayer.kt file
 import a_RoomDB.ArticlesBasesStatsTabelle
 import a_RoomDB.CategoriesTabelle
 import a_RoomDB.ColorsArticlesTabelle
+import android.content.Context
+import android.graphics.drawable.Drawable
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridScope
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
@@ -42,45 +33,48 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
-import coil.compose.AsyncImagePainter
-import coil.imageLoader
-import coil.request.ImageRequest
-import coil.size.Scale
-import coil.size.Size
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingSource
+import androidx.paging.PagingState
+import androidx.paging.compose.collectAsLazyPagingItems
+import com.bumptech.glide.GlideBuilder
+import com.bumptech.glide.Priority
+import com.bumptech.glide.annotation.GlideModule
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.load.engine.cache.DiskLruCacheFactory
+import com.bumptech.glide.load.engine.cache.MemoryCache
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.bumptech.glide.module.AppGlideModule
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.Target
+import com.bumptech.glide.signature.ObjectKey
 import com.example.clientjetpack.LoadingOverlay
 import com.example.clientjetpack.R
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+
 
 @Composable
 fun StartupAppDisplayerOfNewArticles(
@@ -158,6 +152,38 @@ private fun SearchFilter(
     }
 }
 
+
+class ArticlePagingSource(
+    private val articles: List<ArticlesBasesStatsTabelle>,
+    private val filterText: String
+) : PagingSource<Int, ArticlesBasesStatsTabelle>() {
+    override fun getRefreshKey(state: PagingState<Int, ArticlesBasesStatsTabelle>): Int? {
+        return state.anchorPosition?.let { anchorPosition ->
+            val anchorPage = state.closestPageToPosition(anchorPosition)
+            anchorPage?.prevKey?.plus(1) ?: anchorPage?.nextKey?.minus(1)
+        }
+    }
+
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ArticlesBasesStatsTabelle> {
+        val page = params.key ?: 0
+        val pageSize = params.loadSize
+
+        val filteredArticles = articles.filter { article ->
+            filterText.isEmpty() || article.nomArticleFinale.contains(filterText, ignoreCase = true)
+        }
+
+        val start = page * pageSize
+        val items = filteredArticles.drop(start).take(pageSize)
+
+        return LoadResult.Page(
+            data = items,
+            prevKey = if (page == 0) null else page - 1,
+            nextKey = if (items.isEmpty()) null else page + 1
+        )
+    }
+}
+
+// Update ArticleGrid to use paging
 @Composable
 private fun ArticleGrid(
     uiState: UiState,
@@ -170,21 +196,30 @@ private fun ArticleGrid(
     modifier: Modifier = Modifier,
     onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit
 ) {
-    val isNewArrivalsCategory = uiState.categories.any {
-        it.nomCategorieInCategoriesTabele == "NewArrivale"
+    val pagingConfig = PagingConfig(
+        pageSize = 20,
+        enablePlaceholders = false,
+        prefetchDistance = 2
+    )
+
+    val pager = remember(uiState.articlesBasesStatTabelles, filterText) {
+        Pager(pagingConfig) {
+            ArticlePagingSource(uiState.articlesBasesStatTabelles, filterText)
+        }
     }
 
-    val effectiveGridColumns = if (isNewArrivalsCategory) gridColumns else 2
+    val lazyPagingItems = pager.flow.collectAsLazyPagingItems()
 
     LazyVerticalStaggeredGrid(
-        columns = StaggeredGridCells.Fixed(effectiveGridColumns),
+        columns = StaggeredGridCells.Fixed(if (uiState.categories.any {
+                it.nomCategorieInCategoriesTabele == "NewArrivale"
+            }) gridColumns else 2),
         state = gridState,
         contentPadding = PaddingValues(8.dp),
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalItemSpacing = 8.dp
     ) {
-        // Banner logic
         if (!showFilter) {
             item(span = StaggeredGridItemSpan.FullLine) {
                 ScrolleAdBanner(
@@ -195,15 +230,28 @@ private fun ArticleGrid(
             }
         }
 
-        // Categories display
-        displayCategories(
-            uiState = uiState,
-            filterText = filterText,
-            gridColumns = effectiveGridColumns,
-            viewModel = viewModel,
-            reloadTrigger = reloadTrigger,
-            onClickToOpenWindos = onClickToOpenWindos
-        )
+        items(
+            count = lazyPagingItems.itemCount,
+            span = { index ->
+                val article = lazyPagingItems[index]
+                if (article?.imageDimention == "Demi") {
+                    StaggeredGridItemSpan.FullLine
+                } else {
+                    StaggeredGridItemSpan.SingleLane
+                }
+            }
+        ) { index ->
+            val article = lazyPagingItems[index]
+            article?.let {
+                ArticleItem(
+                    article = it,
+                    viewModel = viewModel,
+                    reloadTrigger = reloadTrigger,
+                    onClickToOpenWindos = onClickToOpenWindos,
+                    uiState = uiState
+                )
+            }
+        }
     }
 }
 
@@ -429,7 +477,7 @@ private fun DemiDiplayerMultiColor(
                         reloadTrigger = reloadTrigger,
                         modifier = Modifier
                             .weight(1f)
-                            .height(70.dp),
+                            .height(350.dp),
                         onClickToOpenWindos = onClickToOpenWindos,
                         uiState = uiState
                     )
@@ -438,9 +486,6 @@ private fun DemiDiplayerMultiColor(
         }
     }
 }
-
-
-
 
 @Composable
 private fun ArticleDiplayerHave1Color(
@@ -477,6 +522,8 @@ private fun ArticleDiplayerHave1Color(
         }
     }
 }
+
+
 @Composable
 private fun SmalleDiplayerHave3Color(
     article: ArticlesBasesStatsTabelle,
@@ -529,7 +576,6 @@ private fun SmalleDiplayerHave3Color(
     }
 }
 
-
 @Composable
 private fun ColorIndicator(
     iconColore: String,
@@ -563,8 +609,6 @@ private fun checkImageExists(
     }
 }
 
-
-
 @Composable
 private fun ArticleDetails(
     article: ArticlesBasesStatsTabelle,
@@ -584,8 +628,6 @@ private fun ArticleDetails(
         )
     }
 }
-
-
 
 @Composable
 private fun ColorImageWithDetails(
@@ -634,6 +676,7 @@ private fun ColorImageWithDetails(
     }
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 private fun ImageDisplayer(
     modifier: Modifier = Modifier,
@@ -645,10 +688,7 @@ private fun ImageDisplayer(
     uiState: UiState
 ) {
     val context = LocalContext.current
-    val scope = rememberCoroutineScope()
     val viewModelImagesPath = viewModel.viewModelImagesPath
-
-    // État pour suivre la qualité actuelle (de 25 à 100)
     var currentQuality by remember { mutableStateOf(25f) }
 
     val baseImagePath = remember(viewModelImagesPath, article.idArticle, indexColor) {
@@ -667,113 +707,43 @@ private fun ImageDisplayer(
         }
     }
 
-    // Animation de la qualité
-    LaunchedEffect(imageExist, article.idArticle, indexColor) {
-        currentQuality = 25f // Reset à 25%
-        // Progression sur 1.5 secondes
-        val steps = 75 // Nombre de pas pour aller de 25 à 100
-        val delayPerStep = 1500L / steps // Temps entre chaque pas
-        val incrementPerStep = 75f / steps // Augmentation par pas
-
-        // Animation progressive
-        repeat(steps) {
-            delay(delayPerStep)
-            currentQuality = (currentQuality + incrementPerStep).coerceAtMost(100f)
+    GlideImage(
+        model = imageExist?.let { File(it) } ?: R.drawable.baked_goods_1,
+        contentDescription = "Article image ${article.idArticle}",
+        modifier = modifier.clickable {
+            onClickToOpenWindos(article, indexColor)
         }
-    }
-
-    // Calcul de la taille basée sur la qualité actuelle
-    val currentSize = remember(currentQuality) {
-        // Interpolation linéaire entre 128 (25%) et 512 (100%)
-        val size = (128 + (512 - 128) * (currentQuality - 25) / 75).toInt()
-        Size(size, size)
-    }
-
-    // Image request avec la qualité actuelle
-    val imageRequest = remember(imageExist, article.idArticle, indexColor, currentSize) {
-        ImageRequest.Builder(context)
-            .data(imageExist?.let { File(it) } ?: R.drawable.baked_goods_1)
-            .size(currentSize)
-            .scale(Scale.FILL)
-            .crossfade(true)
-            .memoryCacheKey("${article.idArticle}_${indexColor}_${currentQuality}")
-            .diskCacheKey("${article.idArticle}_${indexColor}_${currentQuality}")
-            .build()
-    }
-
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable { onClickToOpenWindos(article, indexColor) }
     ) {
-        var isLoading by remember { mutableStateOf(true) }
-
-        AsyncImage(
-            model = imageRequest,
-            contentDescription = "Article image ${article.idArticle} color ${indexColor + 1}",
-            modifier = Modifier
-                .fillMaxWidth()
-                .then(if (imageExist == null) Modifier.alpha(0.7f) else Modifier),
-            contentScale = ContentScale.FillWidth,
-            onState = { state ->
-                isLoading = state is AsyncImagePainter.State.Loading
-            }
-        )
-
-        // Indicateur de chargement
-        if (isLoading) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(24.dp),
-                    progress = (currentQuality - 25f) / 75f // Progression basée sur la qualité
-                )
-            }
-        }
-
-        // Overlay pour images manquantes
-        if (imageExist == null) {
-            article.getColorIdForIndex(indexColor)?.let { colorId ->
-                uiState.colorsArticlesTabelleModel.find { it.idColore == colorId }?.let { color ->
-                    ColorOverlay(color = color)
+        it
+            .thumbnail(0.25f)
+            .transition(DrawableTransitionOptions.withCrossFade())
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .priority(Priority.HIGH)
+            .signature(ObjectKey("${article.idArticle}_${indexColor}_${currentQuality}"))
+            .listener(object : RequestListener<Drawable> {
+                //Object is not abstract and does not implement abstract member public abstract fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable!>, isFirstResource: Boolean): Boolean defined in com.bumptech.glide.request.RequestListener
+                override fun onLoadFailed(
+                    e: GlideException?,
+                    model: Any?,
+                    target: Target<Drawable>,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    return false
                 }
-            }
-        }
 
-        // Préchargement de l'image suivante
-        LaunchedEffect(article.idArticle, indexColor) {
-            scope.launch(Dispatchers.IO) {
-                val nextIndex = (indexColor + 1) % 4
-                val nextImagePath = File(
-                    viewModelImagesPath,
-                    "${article.idArticle}_${if (nextIndex == -1) "Unite" else (nextIndex + 1)}"
-                ).absolutePath
-
-                // Précharger plusieurs qualités de la prochaine image
-                listOf(128, 256, 384, 512).forEach { size ->
-                    ImageRequest.Builder(context)
-                        .data(nextImagePath)
-                        .size(Size(size, size))
-                        .scale(Scale.FILL)
-                        .build()
-                        .let { request ->
-                            context.imageLoader.enqueue(request)
-                        }
+                override fun onResourceReady(
+                    resource: Drawable,
+                    model: Any,
+                    target: Target<Drawable>?,
+                    dataSource: DataSource,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    if (isFirstResource && currentQuality < 100f) {
+                        currentQuality = 100f
+                    }
+                    return false
                 }
-            }
-        }
-
-        // Affichage du pourcentage de qualité (à des fins de débogage, à supprimer en production)
-        Text(
-            text = "${currentQuality.toInt()}%",
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(8.dp),
-            color = MaterialTheme.colorScheme.primary,
-            style = MaterialTheme.typography.labelSmall
-        )
+            })
     }
 }
 
@@ -812,6 +782,9 @@ private fun ColorOverlay(
         )
     }
 }
+
+
+
 
 private fun ArticlesBasesStatsTabelle.getColorIdForIndex(index: Int): Long? {
     return when (index) {

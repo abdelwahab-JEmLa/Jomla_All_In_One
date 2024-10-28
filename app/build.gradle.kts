@@ -101,9 +101,16 @@ dependencies {
     implementation(libs.kotlin.reflect)
     implementation(libs.androidx.material.icons.extended)
 
-    implementation (libs.compose)
     implementation( libs.gson)
 
+    implementation  (libs.androidx.paging.runtime )
+    implementation (libs.androidx.paging.compose)
+    // Glide core dependencies
+    implementation(libs.glide)
+    kapt(libs.compiler)
+
+    // Glide Compose integration
+    implementation(libs.compose.v100beta01)
 }
 
 apply(plugin = "com.google.gms.google-services")

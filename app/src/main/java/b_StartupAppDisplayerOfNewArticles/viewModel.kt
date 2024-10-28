@@ -70,7 +70,7 @@ class StartUpNewArticlesViewModels(
 
     init {
         viewModelScope.launch {
-            loadData()
+            loadDataOfUiStateFromRoom()
         }
     }
 
@@ -89,7 +89,7 @@ class StartUpNewArticlesViewModels(
                 // Only proceed if article is found
                 articleToDelete?.let { article ->
                     // Delete from database
-                    database.soldArticlesTabelleDao().delete(article)   //TODO fix Unresolved reference: soldArticlesTabelleDao
+                    database.soldArticlesTabelleDao().delete(article)
 
                     // Update the UI state
                     _uiState.update { state ->
@@ -266,7 +266,7 @@ class StartUpNewArticlesViewModels(
                 database.articlesBasesStatsModelDao().insertAll(articles)
                 updateLoadingProgress(100f)
 
-                loadData()
+                loadDataOfUiStateFromRoom()
             } catch (e: Exception) {
                 _uiState.update { it.copy(error = e.message) }
             } finally {
@@ -312,7 +312,7 @@ class StartUpNewArticlesViewModels(
     }
 
 
-    private suspend fun loadData() {
+    private suspend fun loadDataOfUiStateFromRoom() {
         try {
             setLoading(true)
             var progress = 0f
