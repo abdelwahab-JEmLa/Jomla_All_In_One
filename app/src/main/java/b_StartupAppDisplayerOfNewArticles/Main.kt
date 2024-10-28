@@ -209,7 +209,6 @@ private fun LazyStaggeredGridScope.displayCategories(
                 displayCategoryContent(
                     category = category,
                     articles = articles,
-                    gridColumns = gridColumns,
                     viewModel = viewModel,
                     reloadTrigger = reloadTrigger,
                     onClickToOpenWindos = onClickToOpenWindos,
@@ -231,7 +230,6 @@ private fun LazyStaggeredGridScope.displayCategories(
                 displayCategoryContent(
                     category = category,
                     articles = articles,
-                    gridColumns = gridColumns,
                     viewModel = viewModel,
                     reloadTrigger = reloadTrigger,
                     onClickToOpenWindos = onClickToOpenWindos,
@@ -244,7 +242,6 @@ private fun LazyStaggeredGridScope.displayCategories(
 private fun LazyStaggeredGridScope.displayCategoryContent(
     category: CategoriesTabelle,
     articles: List<ArticlesBasesStatsTabelle>,
-    gridColumns: Int,
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
     onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
@@ -257,8 +254,17 @@ private fun LazyStaggeredGridScope.displayCategoryContent(
         }
     }
 
-    // Display articles
-    items(articles) { article ->
+    items(
+        items = articles,
+        span = { article ->
+            // If the article has "Demi" imageDimension, make it span full width
+            if (article.imageDimention == "Demi") {
+                StaggeredGridItemSpan.FullLine
+            } else {
+                StaggeredGridItemSpan.SingleLane
+            }
+        }
+    ) { article ->
         ArticleItem(
             article = article,
             viewModel = viewModel,
@@ -321,7 +327,8 @@ private fun ArticleItem(
     article: ArticlesBasesStatsTabelle,
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
-    modifier: Modifier = Modifier, onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    modifier: Modifier = Modifier,
+    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
     uiState: UiState
 ) {
     val hasThreeColors = countColors(article) == 3
@@ -329,8 +336,7 @@ private fun ArticleItem(
     Card(
         modifier = modifier
             .padding(4.dp)
-            .fillMaxWidth()
-            ,
+            .fillMaxWidth(),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 2.dp
         )
@@ -339,7 +345,9 @@ private fun ArticleItem(
             ThreeColorArticleDisplay(
                 article = article,
                 viewModel = viewModel,
-                reloadTrigger = reloadTrigger, onClickToOpenWindos = onClickToOpenWindos, uiState = uiState
+                reloadTrigger = reloadTrigger,
+                onClickToOpenWindos = onClickToOpenWindos,
+                uiState = uiState
             )
         } else {
             DisplayeArticleWhithOneColore(
@@ -347,15 +355,12 @@ private fun ArticleItem(
                 viewModel = viewModel,
                 reloadTrigger = reloadTrigger,
                 modifier = Modifier,
-                onClickToOpenWindos = onClickToOpenWindos ,
+                onClickToOpenWindos = onClickToOpenWindos,
                 uiState
             )
         }
     }
 }
-
-
-
 @Composable
 private fun DisplayeArticleWhithOneColore(
     article: ArticlesBasesStatsTabelle,

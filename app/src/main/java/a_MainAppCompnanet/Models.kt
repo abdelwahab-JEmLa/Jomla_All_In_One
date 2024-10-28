@@ -64,6 +64,8 @@ data class ArticlesBasesStatsTabelle(
     //Stats
     var articleHaveUniteImages: Boolean = false,
     var itsNewArrivale: Boolean = false,
+    var imageDimention: String = "",
+
 ) {
     // No-argument constructor for Firebase
     constructor() : this(0)
