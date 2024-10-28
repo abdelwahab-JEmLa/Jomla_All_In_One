@@ -30,95 +30,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import b_StartupAppDisplayerOfNewArticles.StartUpNewArticlesViewModels
 
-// Create SoldCartScreen.kt
-@Composable
-fun SoldCartScreen(
-    viewModel: StartUpNewArticlesViewModels,
-    modifier: Modifier = Modifier
-) {
-    val uiState by viewModel.uiState.collectAsState()
-
-    LazyColumn(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        items(uiState.soldArticlesModel.filterNotNull()) { soldArticle ->
-            SoldArticleCard(
-                soldArticle = soldArticle,
-                colors = uiState.colorsArticlesTabelleModel,
-                onDelete = { viewModel.deleteSoldArticle(soldArticle.vid) }
-            )
-        }
-    }
-}
-
-@Composable
-private fun SoldArticleCard(
-    soldArticle: SoldArticlesTabelle,
-    colors: List<ColorsArticlesTabelle>,
-    onDelete: () -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        elevation = CardDefaults.cardElevation(4.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(16.dp)
-        ) {
-            Text(
-                text = soldArticle.nameArticle,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Display color quantities
-            listOf(
-                Triple(soldArticle.color1IdPicked, soldArticle.color1SoldQuantity, "Color 1"),
-                Triple(soldArticle.color2IdPicked, soldArticle.color2SoldQuantity, "Color 2"),
-                Triple(soldArticle.color3IdPicked, soldArticle.color3SoldQuantity, "Color 3"),
-                Triple(soldArticle.color4IdPicked, soldArticle.color4SoldQuantity, "Color 4")
-            ).forEach { (colorId, quantity, label) ->
-                if (colorId != 0L && quantity > 0) {
-                    val colorName = colors.find { it.idColore == colorId }?.nameColore ?: "Unknown"
-                    Text(
-                        text = "$label: $colorName - Quantity: $quantity",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = "Total Quantity: ${
-                    soldArticle.run {
-                        color1SoldQuantity + color2SoldQuantity + color3SoldQuantity + color4SoldQuantity
-                    }
-                }",
-                fontWeight = FontWeight.Bold
-            )
-
-            IconButton(
-                onClick = onDelete,
-                modifier = Modifier.align(Alignment.End)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "Delete",
-                    tint = Color.Red
-                )
-            }
-        }
-    }
-}
-
-// Updated SoldCartScreen to include navigation callback
 @Composable
 fun SoldCartScreen(
     viewModel: StartUpNewArticlesViewModels,
@@ -127,17 +38,83 @@ fun SoldCartScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    LazyColumn(
+    Column(
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        items(uiState.soldArticlesModel.filterNotNull()) { soldArticle ->
-            SoldArticleCard(
-                soldArticle = soldArticle,
-                colors = uiState.colorsArticlesTabelleModel,
-                onDelete = { viewModel.deleteSoldArticle(soldArticle.vid) },
-                onArticleClick = { onNavigateToArticle(soldArticle.idArticle) }
+        LazyColumn(
+            modifier = Modifier
+                .weight(1f)
+        ) {
+            items(uiState.soldArticlesModel.filterNotNull()) { soldArticle ->
+                SoldArticleCard(
+                    soldArticle = soldArticle,
+                    colors = uiState.colorsArticlesTabelleModel,
+                    onDelete = { viewModel.deleteSoldArticle(soldArticle.vid) },
+                    onArticleClick = { onNavigateToArticle(soldArticle.idArticle) }
+                )
+            }
+        }
+
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            elevation = CardDefaults.cardElevation(4.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
+                val currentClient = uiState.clientsModel.find {
+                    it.idClientsSu == uiState.soldArticlesModel.firstOrNull()?.clientSoldToItId
+                }
+
+                Text(
+                    text = "Client: ${currentClient?.nomClientsSu ?: "Unknown"}",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+
+                val total = uiState.soldArticlesModel.sumOf { sale ->
+                    sale?.run {
+                        color1SoldQuantity + color2SoldQuantity +
+                                color3SoldQuantity + color4SoldQuantity
+                    } ?: 0
+                }
+
+                Text(
+                    text = "Total Items: $total",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
+        }
+    }
+}
+
+// Fixed SoldArticleCard color display
+@Composable
+private fun ColorQuantityItem(
+    colorId: Long,
+    quantity: Int,
+    colors: List<ColorsArticlesTabelle>
+) {
+    if (colorId != 0L && quantity > 0) {
+        val colorName = colors.find { it.idColore == colorId }?.nameColore ?: "Unknown"
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = colorName,
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Text(
+                text = quantity.toString(),
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Bold
             )
         }
     }
@@ -172,7 +149,6 @@ private fun SoldArticleCard(
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.weight(1f)
                 )
-
                 IconButton(onClick = onDelete) {
                     Icon(
                         imageVector = Icons.Default.Delete,
@@ -184,28 +160,18 @@ private fun SoldArticleCard(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Color quantities section
-            listOf(
-                Triple(soldArticle.color1IdPicked, soldArticle.color1SoldQuantity, "Color 1"),
-                Triple(soldArticle.color2IdPicked, soldArticle.color2SoldQuantity, "Color 2"),
-                Triple(soldArticle.color3IdPicked, soldArticle.color3SoldQuantity, "Color 3"),
-                Triple(soldArticle.color4IdPicked, soldArticle.color4SoldQuantity, "Color 4")
-            ).forEach { (colorId, quantity, label) ->
-                if (colorId != 0L && quantity > 0) {
-                    val colorName = colors.find { it.idColore == colorId }?.nameColore ?: "Unknown"
-                    Text(
-                        text = "$label: $colorName - Quantity: $quantity",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-            }
+            ColorQuantityItem(soldArticle.color1IdPicked, soldArticle.color1SoldQuantity, colors)
+            ColorQuantityItem(soldArticle.color2IdPicked, soldArticle.color2SoldQuantity, colors)
+            ColorQuantityItem(soldArticle.color3IdPicked, soldArticle.color3SoldQuantity, colors)
+            ColorQuantityItem(soldArticle.color4IdPicked, soldArticle.color4SoldQuantity, colors)
 
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Total Quantity: ${
+                text = "Total: ${
                     soldArticle.run {
-                        color1SoldQuantity + color2SoldQuantity + color3SoldQuantity + color4SoldQuantity
+                        color1SoldQuantity + color2SoldQuantity +
+                                color3SoldQuantity + color4SoldQuantity
                     }
                 }",
                 fontWeight = FontWeight.Bold

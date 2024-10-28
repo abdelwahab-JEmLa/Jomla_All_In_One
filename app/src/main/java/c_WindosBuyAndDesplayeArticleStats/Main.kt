@@ -30,6 +30,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -38,8 +41,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -95,9 +100,31 @@ fun WindosBuyAndDesplayeArticleStats(
             viewModel.createNewSaleIfNotExist(article, clientBuyerNow)
         }
     }
+    var showConfirmDialog by remember { mutableStateOf(false) }
+
+    if (showConfirmDialog) {
+        AlertDialog(
+            onDismissRequest = { showConfirmDialog = false },
+            title = { Text("Confirm Exit") },
+            text = { Text("Do you want to save changes before leaving?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.saveSaleTransaction()
+                    onDismiss()
+                }) {
+                    Text("Save & Exit")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = onDismiss) {
+                    Text("Discard")
+                }
+            }
+        )
+    }
+
     Dialog(
-        onDismissRequest = onDismiss,   //TODO ajoute un dialoge de confirmation
-        //si depuit ici
+        onDismissRequest = { showConfirmDialog = true },
         properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
         Box(
@@ -109,46 +136,62 @@ fun WindosBuyAndDesplayeArticleStats(
                 modifier = Modifier.fillMaxSize(),
                 shape = MaterialTheme.shapes.large
             ) {
-                Card(
-                    modifier = Modifier.fillMaxSize(),
-                    elevation = CardDefaults.cardElevation(4.dp)
+                Column(
+                    modifier = Modifier.fillMaxSize()
                 ) {
-                    Column(
+                    Card(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .verticalScroll(rememberScrollState())
+                            .weight(1f)
+                            .fillMaxWidth(),
+                        elevation = CardDefaults.cardElevation(4.dp)
                     ) {
-                        ColorsCards(
-                            uiState = uiState,
-                            article = article,
-                            viewModel = viewModel,
-                            onDismiss = onDismiss,
-                            onReloadTrigger = onReloadTrigger,
-                            relodeTigger = reloadTrigger,
-                            initialShowPickerIndex = indexColorStat,
-                            relatedSaleOfArticleToClient=relatedSaleOfArticleToClient
-                        )
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .verticalScroll(rememberScrollState())
+                        ) {
+                            ColorsCards(
+                                uiState = uiState,
+                                article = article,
+                                viewModel = viewModel,
+                                onDismiss = onDismiss,
+                                onReloadTrigger = onReloadTrigger,
+                                relodeTigger = reloadTrigger,
+                                initialShowPickerIndex = indexColorStat,
+                                relatedSaleOfArticleToClient = relatedSaleOfArticleToClient
+                            )
+                        }
                     }
-                    //TODO ajoute un button au bottom "confirme buy" a cote gauche autre "anulle" qui au click prendre _currentSale.value article et
-                    // change confimed a true   et
-                //   database.soldArticlesTabelleDao().insert(updatedSale)
-                    //
-                    //
-                    //                    // Update the UI state with the new sale information
-                    //                    _uiState.update { state ->
-                    //                        val updatedSales = state.soldArticlesModel.map {
-                    //                            if (it?.vid == updatedSale.vid) updatedSale else it
-                    //                        }
-                    //                        state.copy(soldArticlesModel = updatedSales)
-                    //                    }
-                    //     et quite le dialoge
 
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Button(
+                            onClick = {
+                                viewModel.saveSaleTransaction()
+                                onDismiss()
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary
+                            )
+                        ) {
+                            Text("Confirm Purchase")
+                        }
+
+                        OutlinedButton(
+                            onClick = { showConfirmDialog = true }
+                        ) {
+                            Text("Cancel")
+                        }
+                    }
                 }
             }
         }
     }
 }
-
 @Composable
 private fun ColorsCards(
     article: ArticlesBasesStatsTabelle,
