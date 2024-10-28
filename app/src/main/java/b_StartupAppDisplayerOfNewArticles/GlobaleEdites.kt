@@ -59,7 +59,7 @@ fun FloatingActionButtonGroup(
         ) {
             viewModel.importFromFirebase()
         },
-        FabButton(
+        FabButton(                 //TODO enleve
             Icons.Default.EditCalendar,
             "Filter"
         ) {

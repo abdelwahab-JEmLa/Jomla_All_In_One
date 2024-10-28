@@ -379,6 +379,99 @@ fun DisplayeArticleWhithOneColore(
 
 @Composable
 private fun ThreeColorArticleDisplay(
+    //   @Entity
+    //data class ArticlesBasesStatsTabelle(
+    //    @PrimaryKey var idArticle: Int = 0,
+    //    var nomArticleFinale: String = "",
+    //    var classementCate: Double = 0.0,
+    //    var nomArab: String = "",
+    //    var autreNomDarticle: String? = null,
+    //    var nmbrCat: Int = 0,
+    //    var couleur1: String? = null,
+    //    var idcolor1: Long = 0,
+    //    var couleur2: String? = null,
+    //    var idcolor2: Long = 0,
+    //    var couleur3: String? = null,
+    //    var idcolor3: Long = 0,
+    //    var couleur4: String? = null,
+    //    var idcolor4: Long = 0,
+    //    var nomCategorie2: String? = null,
+    //    var nmbrUnite: Int = 0,
+    //    var nmbrCaron: Int = 0,
+    //    var affichageUniteState: Boolean = false,
+    //    var commmentSeVent: String? = null,
+    //    var afficheBoitSiUniter: String? = null,
+    //    var monPrixAchat: Double = 0.0,
+    //    var clienPrixVentUnite: Double = 0.0,
+    //    var minQuan: Int = 0,
+    //    var monBenfice: Double = 0.0,
+    //    var monPrixVent: Double = 0.0,
+    //    var diponibilityState: String = "",
+    //    var neaon2: String = "",
+    //    var idCategorie: Double = 0.0,
+    //    var funChangeImagsDimention: Boolean = false, //imgStatIsSmall
+    //    var nomCategorie: String = "",
+    //    var neaon1: Double = 0.0,
+    //    var lastUpdateState: String = "",
+    //    var cartonState: String = "",
+    //    var dateCreationCategorie: String = "",
+    //    var prixDeVentTotaleChezClient: Double = 0.0,
+    //    var benficeTotaleEntreMoiEtClien: Double = 0.0,
+    //    var benificeTotaleEn2: Double = 0.0,
+    //    var monPrixAchatUniter: Double = 0.0,
+    //    var monPrixVentUniter: Double = 0.0,
+    //    var benificeClient: Double = 0.0,
+    //    var monBeneficeUniter: Double = 0.0,
+    //    //Stats
+    //    var articleHaveUniteImages: Boolean = false,
+    //    var itsNewArrivale: Boolean = false,
+    //) {
+    //    // No-argument constructor for Firebase
+    //    constructor() : this(0)
+    //}
+    //@Entity
+    //data class ColorsArticlesTabelle(
+    //    @PrimaryKey var idColore: Long = 0,
+    //    val nameColore: String = "",
+    //    val iconColore: String = "",
+    //    var classementColore: Int = 0
+    //){
+    //    // No-argument constructor for Firebase
+    //    constructor() : this(0)
+    //}
+    //
+    //@Entity
+    //data class CategoriesTabelle(
+    //    @PrimaryKey(autoGenerate = true)
+    //    val idCategorieInCategoriesTabele: Long = 0,
+    //    val nomCategorieInCategoriesTabele: String = "",
+    //    var idClassementCategorieInCategoriesTabele: Int = 0 ,
+    //    var displayedHeader: Boolean = false,
+    //
+    //    ) {
+    //    constructor() : this(0, "", 0)
+    //}
+    //
+    //@Entity
+    //data class SoldArticlesTabelle(
+    //    @PrimaryKey(autoGenerate = true) val vid: Long = 0,
+    //    val idArticle: Long = 0,
+    //    val nameArticle: String = "",
+    //    val clientSoldToItId: Long = 0,
+    //    val date: String = "",
+    //    val color1IdPicked: Long = 0,
+    //    val color1SoldQuantity: Int = 0,
+    //    val color2IdPicked: Long = 0,
+    //    val color2SoldQuantity: Int = 0,
+    //    val color3IdPicked: Long = 0,
+    //    val color3SoldQuantity: Int = 0,
+    //    val color4IdPicked: Long = 0,
+    //    val color4SoldQuantity: Int = 0,
+    //    val confimed: Boolean = false,
+    //
+    //    ) {
+    //    constructor() : this(0)
+    //}
     article: ArticlesBasesStatsTabelle,
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
@@ -412,7 +505,7 @@ private fun ThreeColorArticleDisplay(
             }
 
             // Deuxième image
-            Box(
+            Box(     //TODO ffait que ca soit on loop don un box divise par 1f pour chacune son heit 300 divise par eu
                 modifier = Modifier
                     .height(150.dp)
                     .fillMaxWidth()
@@ -433,7 +526,8 @@ private fun ThreeColorArticleDisplay(
                     .height(150.dp)
                     .fillMaxWidth()
             ) {
-                ImageDisplayer(
+                ImageDisplayer(      //TODO au lieu ImageDisplayer fait que ca soit dont une funtion contie au dessu end
+                    //          on trouve le rlated color in color tableau affiche le imoji
                     modifier = Modifier.fillMaxSize(),
                     article = article,
                     viewModel = viewModel,
@@ -442,12 +536,15 @@ private fun ThreeColorArticleDisplay(
                     onClickToOpenWindos
                 )
             }
+            //TODO imptrove la visibility du code
+            //cree desplaye de nom article
+            //cree desplye prix   article.prixVent
+
         }
     }
 }
 
 
-// 3. Make image width match container
 @Composable
 fun ImageDisplayer(
     modifier: Modifier = Modifier,

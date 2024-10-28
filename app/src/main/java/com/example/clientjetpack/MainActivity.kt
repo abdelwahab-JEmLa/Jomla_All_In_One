@@ -192,7 +192,7 @@ object NavigationItems {
 
 
 @Composable
-fun CustomNavigationBar(
+fun CustomNavigationBar(     //TODo ajout un button au milieur comme floating un cercle qui au click    onToggleOutlineFilter()
     items: List<Screen>,
     currentRoute: String?,
     onNavigate: (String) -> Unit,

@@ -51,7 +51,7 @@ fun SoldCartScreen(
     }
 
     val totalPrice = filteredSoldArticles.sumOf { soldArticle ->
-        uiState.articlesBasesStatTabelles
+        uiState.articlesBasesStatTabelles//TODO ajout un filter de soldArticle. confimed  = true
             .find { it.idArticle.toLong() == soldArticle.idArticle }
             ?.monPrixVent?.times(
                 soldArticle.color1SoldQuantity + soldArticle.color2SoldQuantity +
@@ -156,7 +156,7 @@ fun SoldArticleCard(
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
-
+                            //TODO ajout displaye du prix et prix uniter
                 // Color quantities
                 Column {
                     if (soldArticle.color1SoldQuantity > 0) {
