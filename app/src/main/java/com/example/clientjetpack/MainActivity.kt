@@ -340,17 +340,15 @@ fun AppNavHost(
 
             composable(Screen.SoldCart.route) {
                 Box(modifier = Modifier.fillMaxSize()) {
-                    SoldCartScreen(
-                        viewModel = appViewModels.startUpNewArticlesViewModels,
-                        onNavigateToArticle = { articleId ->
-                            // Find the article and navigate back to edit screen
-                            uiState.articlesBasesStatTabelles.find { it.idArticle.toLong() == articleId }?.let { article ->
-                                windowsSaleAndDisplayArticleStats = article
-                                navController.navigate(Screen.EditDatabaseWithCreateNewArticles.route)
-                            }
-                        }  ,
-                        onConfirmOrder={clientBuyerNow=null}
-                    )
+                    composable(Screen.SoldCart.route) {
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            SoldCartScreen(
+                                viewModel = appViewModels.startUpNewArticlesViewModels,
+                                onConfirmOrder = { clientBuyerNow = null },
+                                clientBuyerNow = clientBuyerNow
+                            )
+                        }
+                    }
                 }
             }
         }
