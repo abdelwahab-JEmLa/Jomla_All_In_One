@@ -2,6 +2,11 @@ package b_StartupAppDisplayerOfNewArticles
 
 import a_RoomDB.ArticlesBasesStatsTabelle
 import a_RoomDB.CategoriesTabelle
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,6 +35,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,6 +43,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -79,7 +87,179 @@ fun StartupAppDisplayerOfNewArticles(
     )
 }
 
+@Composable
+private fun SearchFilter(
+    showFilter: Boolean,
+    filterText: String,
+    onFilterTextChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusRequester = remember { FocusRequester() }
 
+    AnimatedVisibility(
+        visible = showFilter,
+        enter = fadeIn() + expandVertically(),
+        exit = fadeOut() + shrinkVertically()
+    ) {
+        OutlinedTextField(
+            value = filterText,
+            onValueChange = onFilterTextChange,
+            label = { Text("Filter Articles") },
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+                .focusRequester(focusRequester),
+            leadingIcon = {
+                Icon(Icons.Default.Search, contentDescription = "Search")
+            },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    keyboardController?.hide()
+                }
+            )
+        )
+    }
+
+    LaunchedEffect(showFilter) {
+        if (showFilter) {
+            focusRequester.requestFocus()
+            keyboardController?.show()
+        }
+    }
+}
+
+@Composable
+private fun ArticleGrid(
+    uiState: UiState,
+    gridColumns: Int,
+    filterText: String,
+    showFilter: Boolean,
+    gridState: LazyGridState,
+    viewModel: StartUpNewArticlesViewModels,
+    reloadTrigger: Int,
+    modifier: Modifier = Modifier,
+    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit
+) {
+    val isNewArrivalsCategory = uiState.categories.any {
+        it.nomCategorieInCategoriesTabele == "NewArrivale"
+    }
+
+    val effectiveGridColumns = if (isNewArrivalsCategory) gridColumns else 2
+
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(effectiveGridColumns),
+        state = gridState,
+        contentPadding = PaddingValues(8.dp),
+        modifier = modifier.fillMaxWidth()
+    ) {
+        // Banner logic remains the same
+        if (!showFilter) {
+            item(span = { GridItemSpan(effectiveGridColumns) }) {
+                ScrolleAdBanner(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp)
+                )
+            }
+        }
+
+        // Categories display
+        displayCategories(
+            uiState = uiState,
+            filterText = filterText,
+            gridColumns = effectiveGridColumns,
+            viewModel = viewModel,
+            reloadTrigger = reloadTrigger,
+            onClickToOpenWindos = onClickToOpenWindos
+        )
+    }
+}
+private fun LazyGridScope.displayCategories(
+    uiState: UiState,
+    filterText: String,
+    gridColumns: Int,
+    viewModel: StartUpNewArticlesViewModels,
+    reloadTrigger: Int,
+    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit
+) {
+    // New Arrivals category
+    uiState.categories
+        .find { it.nomCategorieInCategoriesTabele == "NewArrivale" }
+        ?.let { category ->
+            val articles = uiState.articlesBasesStatTabelles.filter {
+                it.itsNewArrivale && matchesFilter(it, filterText)
+            }
+            if (articles.isNotEmpty()) {
+                displayCategoryContent(
+                    category = category,
+                    articles = articles,
+                    gridColumns = gridColumns,
+                    viewModel = viewModel,
+                    reloadTrigger = reloadTrigger,
+                    onClickToOpenWindos = onClickToOpenWindos
+                )
+            }
+        }
+
+    // Other categories
+    uiState.categories
+        .filter { it.nomCategorieInCategoriesTabele != "NewArrivale" }
+        .forEach { category ->
+            val articles = uiState.articlesBasesStatTabelles.filter {
+                it.nomCategorie == category.nomCategorieInCategoriesTabele &&
+                        !it.itsNewArrivale &&
+                        matchesFilter(it, filterText)
+            }
+            if (articles.isNotEmpty()) {
+                displayCategoryContent(
+                    category = category,
+                    articles = articles,
+                    gridColumns = gridColumns,
+                    viewModel = viewModel,
+                    reloadTrigger = reloadTrigger,
+                    onClickToOpenWindos = onClickToOpenWindos
+                )
+            }
+        }
+}
+
+private fun LazyGridScope.displayCategoryContent(
+    category: CategoriesTabelle,
+    articles: List<ArticlesBasesStatsTabelle>,
+    gridColumns: Int,
+    viewModel: StartUpNewArticlesViewModels,
+    reloadTrigger: Int,
+    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit
+) {
+    // Only show header if displayedHeader is true
+    if (category.displayedHeader) {
+        item(span = { GridItemSpan(gridColumns) }) {
+            CategoryHeader(category)
+        }
+    }
+
+    // Always show articles, regardless of displayedHeader
+    items(
+        count = articles.size,
+        span = { index ->
+            val article = articles[index]
+            calculateSpan(article, gridColumns)
+        }
+    ) { index ->
+        val article = articles[index]
+        ArticleItem(
+            article = article,
+            viewModel = viewModel,
+            reloadTrigger = reloadTrigger,
+            onClickToOpenWindos = onClickToOpenWindos
+        )
+    }
+}
 @Composable
 private fun ArticleDisplayScreen(
     uiState: UiState,
@@ -98,7 +278,7 @@ private fun ArticleDisplayScreen(
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         Column {
-            SearchFilter(       //TODO regle pk le clavie et focuse ne s affiche pas quend showFilter est active
+            SearchFilter(
                 showFilter = showFilter,
                 filterText = filterText,
                 onFilterTextChange = onFilterTextChange
@@ -127,107 +307,6 @@ private fun ArticleDisplayScreen(
         }
     }
 }
-
-
-@Composable
-private fun ArticleGrid(
-    uiState: UiState,
-    gridColumns: Int,
-    filterText: String,
-    showFilter: Boolean,  // Added showFilter parameter
-    gridState: LazyGridState,
-    viewModel: StartUpNewArticlesViewModels,
-    reloadTrigger: Int,
-    modifier: Modifier = Modifier,
-    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit
-) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(
-            when {
-                uiState.categories.find { it.nomCategorieInCategoriesTabele == "NewArrivale" } != null -> gridColumns        //TODO le mettre du gridColumns quil  ne soit pas pour les autres categorie ne marche pas
-                else -> 2
-            }
-        ),
-        state = gridState,
-        contentPadding = PaddingValues(8.dp),
-        modifier = modifier.fillMaxSize()
-    ) {
-        // Only show banner when filter is not active
-        if (!showFilter) {
-            item(span = { GridItemSpan(gridColumns) }) {
-                ScrolleAdBanner(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 8.dp)
-                )
-            }
-        }
-
-        // Afficher d'abord la catégorie NewArrivale si elle existe
-        val newArrivaleCategory = uiState.categories.find {
-            it.nomCategorieInCategoriesTabele == "NewArrivale"
-        }
-
-        newArrivaleCategory?.let { category ->
-            val newArrivaleArticles = uiState.articlesBasesStatTabelles.filter { article ->
-                article.itsNewArrivale && matchesFilter(article, filterText)
-            }
-
-            if (newArrivaleArticles.isNotEmpty() && category.displayedHeader) {
-                categorySection(category, newArrivaleArticles, gridColumns, viewModel, reloadTrigger,
-                    onClickToOpenWindos
-                )
-            }
-        }
-
-        // Afficher les autres catégories
-        uiState.categories
-            .filter { it.nomCategorieInCategoriesTabele != "NewArrivale" }
-            .forEach { category ->
-                val articlesInCategory = uiState.articlesBasesStatTabelles.filter { article ->
-                    article.nomCategorie == category.nomCategorieInCategoriesTabele &&
-                            !article.itsNewArrivale &&
-                            matchesFilter(article, filterText)
-                }
-
-                if (articlesInCategory.isNotEmpty()) {
-                    categorySection(category, articlesInCategory, gridColumns, viewModel, reloadTrigger,
-                        onClickToOpenWindos
-                    )
-                }
-            }
-    }
-}
-private fun LazyGridScope.categorySection(
-    category: CategoriesTabelle,
-    articles: List<ArticlesBasesStatsTabelle>,
-    gridColumns: Int,
-    viewModel: StartUpNewArticlesViewModels,
-    reloadTrigger: Int, onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit
-) {
-    // En-tête de la catégorie
-    item(span = { GridItemSpan(gridColumns) }) {
-        CategoryHeader(category)
-    }
-
-    // Articles
-    items(
-        count = articles.size,
-        span = { index ->
-            val article = articles[index]
-            calculateSpan(article, gridColumns)
-        }
-    ) { index ->
-        val article = articles[index]
-        ArticleItem(
-            article = article,
-            viewModel = viewModel,
-            reloadTrigger = reloadTrigger,
-             onClickToOpenWindos = onClickToOpenWindos
-        )
-    }
-}
-
 
 @Composable
 private fun ArticleItem(
@@ -367,38 +446,7 @@ private fun ThreeColorArticleDisplay(
     }
 }
 
-@Composable
-private fun SearchFilter(
-    showFilter: Boolean,
-    filterText: String,
-    onFilterTextChange: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val keyboardController = LocalSoftwareKeyboardController.current
 
-    if (showFilter) {
-        OutlinedTextField(
-            value = filterText,
-            onValueChange = onFilterTextChange,
-            label = { Text("Filter Articles") },
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            leadingIcon = {
-                Icon(Icons.Default.Search, contentDescription = "Search")
-            },
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    keyboardController?.hide()
-                }
-            )
-        )
-    }
-}
 // 3. Make image width match container
 @Composable
 fun ImageDisplayer(
