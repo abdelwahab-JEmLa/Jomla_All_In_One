@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.io.File
+import java.util.Date
 
 
 // UiState.kt
@@ -357,23 +358,37 @@ open class StartUpNewArticlesViewModels(
         }
     }
 
-    fun updateCurrentClient(clientId: Long) {
+    fun updateLongAppSetting(name: String, value: Long) {
         viewModelScope.launch {
             try {
-                val currentSetting = _uiState.value.appSettingsSaverModel.find { it.name == "clientBuyerNowId" }
-                    ?.copy(valueLong = clientId)
+                val existingSettings = _uiState.value.appSettingsSaverModel
+                val maxId = existingSettings.maxOfOrNull { it.id } ?: 0
+
+                val currentSetting = existingSettings.find { it.name == name }
+                    ?.copy(
+                        valueLong = value,
+                        date = Date()
+                    )
                     ?: AppSettingsSaverModel(
-                        id = System.currentTimeMillis(),
-                        name = "clientBuyerNowId",
-                        valueLong = clientId
+                        id = maxId + 1,
+                        name = name,
+                        valueLong = value,
+                        date = Date()
                     )
 
+                // Update local database
                 database.appSettingsSaverModelDao().insert(currentSetting)
+
+                // Update Firebase
+                firebaseDatabase.getReference("A_AppSettingsSaverModel")
+                    .child(currentSetting.id.toString())
+                    .setValue(currentSetting)
+                    .await()
 
                 _uiState.update { state ->
                     state.copy(
                         appSettingsSaverModel = state.appSettingsSaverModel.map {
-                            if (it.name == "clientBuyerNowId") currentSetting else it
+                            if (it.name == name) currentSetting else it
                         }
                     )
                 }

@@ -2,18 +2,22 @@ package a_RoomDB
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.util.Date
 
 
+// AppSettingsSaverModel.kt
 @Entity
 data class AppSettingsSaverModel(
     @PrimaryKey var id: Long = 0,
     val name: String = "",
     val valueBoolean: Boolean = false,
     val valueLong: Long = 0,
-    ){
+    val date: Date = Date(),  // Default value for date field
+) {
     // No-argument constructor for Firebase
     constructor() : this(0)
 }
+
 @Entity
 data class ArticlesBasesStatsTabelle(
     @PrimaryKey var idArticle: Int = 0,

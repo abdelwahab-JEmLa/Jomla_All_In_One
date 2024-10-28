@@ -349,7 +349,7 @@ fun AppNavHost(
                     SoldCartScreen(
                         viewModel = appViewModels.startUpNewArticlesViewModels,
                         onConfirmOrder = {
-                            appViewModels.startUpNewArticlesViewModels.updateCurrentClient(0)
+                            appViewModels.startUpNewArticlesViewModels.updateLongAppSetting("clientBuyerNowId",0)
                         },
                         clientBuyerNow = currentClient
                     )
@@ -362,7 +362,7 @@ fun AppNavHost(
             ClientSelectionDialog(
                 clients = uiState.clientsModel,
                 onClientSelected = { client ->
-                    appViewModels.startUpNewArticlesViewModels.updateCurrentClient(client.idClientsSu)
+                    appViewModels.startUpNewArticlesViewModels.updateLongAppSetting("clientBuyerNowId",client.idClientsSu)
                     windowsSaleAndDisplayArticleStats = pendingArticle
                     indexColorStat = pendingIndexColor
                     showClientSelection = false
