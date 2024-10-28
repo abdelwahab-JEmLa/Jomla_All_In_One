@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridScope
@@ -53,6 +54,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
@@ -476,7 +478,7 @@ private fun ColorImageWithDetails(
 }
 
 @Composable
-private fun ColorIndicator(
+private fun ColorIndicator(  //TODo ne l affiche pas si l image n exist pas
     iconColore: String,
     modifier: Modifier = Modifier
 ) {
@@ -602,12 +604,22 @@ private fun ColorOverlay(
         Text(
             text = color.iconColore,
             style = MaterialTheme.typography.displayLarge,
-            modifier = Modifier.padding(bottom = 8.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(0.8f)
+                .wrapContentHeight(),
+            textAlign = TextAlign.Center,
+            fontSize = MaterialTheme.typography.displayLarge.fontSize,
+            overflow = TextOverflow.Visible,
+            softWrap = true
         )
 
         Text(
             text = color.nameColore,
             style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(0.2f),
             textAlign = TextAlign.Center
         )
     }

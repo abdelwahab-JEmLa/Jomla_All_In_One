@@ -359,7 +359,7 @@ fun AppNavHost(
                         onOpenArticleStats = {  article, indexColor ->
                             pendingArticle = article
                             pendingIndexColor = indexColor
-                        }, uiState = _
+                        }, uiState = uiState
                     )
                 }
             }
