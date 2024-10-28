@@ -1,5 +1,12 @@
 package b_StartupAppDisplayerOfNewArticles
 
+// Coil imports
+
+// Coroutines
+
+// File operations
+
+// Your models/state classes (make sure these match your project structure)
 import a_RoomDB.ArticlesBasesStatsTabelle
 import a_RoomDB.CategoriesTabelle
 import a_RoomDB.ColorsArticlesTabelle
@@ -8,20 +15,20 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridScope
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
@@ -35,6 +42,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -44,7 +52,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,11 +68,18 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
+import coil.compose.AsyncImagePainter
+import coil.imageLoader
 import coil.request.ImageRequest
+import coil.size.Scale
 import coil.size.Size
 import com.example.clientjetpack.LoadingOverlay
 import com.example.clientjetpack.R
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 
 @Composable
@@ -321,7 +338,6 @@ private fun ArticleDisplayScreen(
         }
     }
 }
-
 @Composable
 private fun ArticleItem(
     article: ArticlesBasesStatsTabelle,
@@ -331,7 +347,7 @@ private fun ArticleItem(
     onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
     uiState: UiState
 ) {
-    val hasThreeColors = countColors(article) == 3
+    val colorCount = countColors(article)
 
     Card(
         modifier = modifier
@@ -341,28 +357,93 @@ private fun ArticleItem(
             defaultElevation = 2.dp
         )
     ) {
-        if (hasThreeColors) {
-            ThreeColorArticleDisplay(
-                article = article,
-                viewModel = viewModel,
-                reloadTrigger = reloadTrigger,
-                onClickToOpenWindos = onClickToOpenWindos,
-                uiState = uiState
-            )
-        } else {
-            DisplayeArticleWhithOneColore(
-                article = article,
-                viewModel = viewModel,
-                reloadTrigger = reloadTrigger,
-                modifier = Modifier,
-                onClickToOpenWindos = onClickToOpenWindos,
-                uiState
-            )
+        when {
+            article.imageDimention == "Demi" && colorCount > 1 -> {
+                DemiDiplayerMultiColor(
+                    article = article,
+                    viewModel = viewModel,
+                    reloadTrigger = reloadTrigger,
+                    onClickToOpenWindos = onClickToOpenWindos,
+                    uiState = uiState
+                )
+            }
+            colorCount == 3 -> {
+                SmalleDiplayerHave3Color(
+                    article = article,
+                    viewModel = viewModel,
+                    reloadTrigger = reloadTrigger,
+                    onClickToOpenWindos = onClickToOpenWindos,
+                    uiState = uiState
+                )
+            }
+            else -> {
+                ArticleDiplayerHave1Color(
+                    article = article,
+                    viewModel = viewModel,
+                    reloadTrigger = reloadTrigger,
+                    modifier = Modifier,
+                    onClickToOpenWindos = onClickToOpenWindos,
+                    uiState = uiState
+                )
+            }
         }
     }
 }
+
 @Composable
-private fun DisplayeArticleWhithOneColore(
+private fun DemiDiplayerMultiColor(
+    article: ArticlesBasesStatsTabelle,
+    viewModel: StartUpNewArticlesViewModels,
+    reloadTrigger: Int,
+    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    uiState: UiState
+) {
+    Column(modifier = Modifier.padding(8.dp)) {
+        ArticleDetails(article)
+        ColorImageWithDetails(
+            article = article,
+            viewModel = viewModel,
+            colorIndex = 0,
+            reloadTrigger = reloadTrigger,
+            modifier = Modifier.height(300.dp),
+            onClickToOpenWindos = onClickToOpenWindos,
+            uiState = uiState
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(2f),
+            contentAlignment = Alignment.Center
+        ) {
+            Row {
+                // Calculate available colors excluding the first one (index 0)
+                val availableColors = (1..3).filter { index ->
+                    article.getColorIdForIndex(index) != null
+                }
+
+                availableColors.forEach { index ->
+                    ColorImageWithDetails(
+                        article = article,
+                        viewModel = viewModel,
+                        colorIndex = index,
+                        reloadTrigger = reloadTrigger,
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(70.dp),
+                        onClickToOpenWindos = onClickToOpenWindos,
+                        uiState = uiState
+                    )
+                }
+            }
+        }
+    }
+}
+
+
+
+
+@Composable
+private fun ArticleDiplayerHave1Color(
     article: ArticlesBasesStatsTabelle,
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
@@ -397,7 +478,7 @@ private fun DisplayeArticleWhithOneColore(
     }
 }
 @Composable
-private fun ThreeColorArticleDisplay(
+private fun SmalleDiplayerHave3Color(
     article: ArticlesBasesStatsTabelle,
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
@@ -448,51 +529,6 @@ private fun ThreeColorArticleDisplay(
     }
 }
 
-@Composable
-private fun ColorImageWithDetails(
-    article: ArticlesBasesStatsTabelle,
-    viewModel: StartUpNewArticlesViewModels,
-    colorIndex: Int,
-    reloadTrigger: Int,
-    modifier: Modifier = Modifier,
-    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
-    uiState: UiState
-) {
-    Box(
-        modifier = modifier.fillMaxWidth()
-    ) {
-        val imageExists = checkImageExists(
-            viewModel = viewModel,
-            article = article,
-            colorIndex = colorIndex,
-            reloadTrigger = reloadTrigger
-        )
-
-        ImageDisplayer(
-            modifier = Modifier.fillMaxSize(),
-            article = article,
-            viewModel = viewModel,
-            indexColor = colorIndex,
-            reloadKey = reloadTrigger,
-            onClickToOpenWindos = onClickToOpenWindos,
-            uiState = uiState
-        )
-
-        // Only show color indicator if the image exists
-        if (imageExists) {
-            article.getColorIdForIndex(colorIndex)?.let { colorId ->
-                uiState.colorsArticlesTabelleModel.find { it.idColore == colorId }?.let { color ->
-                    ColorIndicator(
-                        iconColore = color.iconColore,
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .padding(8.dp)
-                    )
-                }
-            }
-        }
-    }
-}
 
 @Composable
 private fun ColorIndicator(
@@ -552,6 +588,53 @@ private fun ArticleDetails(
 
 
 @Composable
+private fun ColorImageWithDetails(
+    article: ArticlesBasesStatsTabelle,
+    viewModel: StartUpNewArticlesViewModels,
+    colorIndex: Int,
+    reloadTrigger: Int,
+    modifier: Modifier = Modifier,
+    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    uiState: UiState
+) {
+    Box(
+        modifier = modifier.fillMaxWidth()
+    ) {
+        val imageExists = remember(article.idArticle, colorIndex, reloadTrigger) {
+            checkImageExists(
+                viewModel = viewModel,
+                article = article,
+                colorIndex = colorIndex,
+                reloadTrigger = reloadTrigger
+            )
+        }
+
+        ImageDisplayer(
+            modifier = Modifier.fillMaxSize(),
+            article = article,
+            viewModel = viewModel,
+            indexColor = colorIndex,
+            reloadKey = reloadTrigger,
+            onClickToOpenWindos = onClickToOpenWindos,
+            uiState = uiState
+        )
+
+        if (imageExists) {
+            article.getColorIdForIndex(colorIndex)?.let { colorId ->
+                uiState.colorsArticlesTabelleModel.find { it.idColore == colorId }?.let { color ->
+                    ColorIndicator(
+                        iconColore = color.iconColore,
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(8.dp)
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
 private fun ImageDisplayer(
     modifier: Modifier = Modifier,
     article: ArticlesBasesStatsTabelle,
@@ -562,30 +645,60 @@ private fun ImageDisplayer(
     uiState: UiState
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val viewModelImagesPath = viewModel.viewModelImagesPath
+
+    // État pour suivre la qualité actuelle (de 25 à 100)
+    var currentQuality by remember { mutableStateOf(25f) }
 
     val baseImagePath = remember(viewModelImagesPath, article.idArticle, indexColor) {
         File(viewModelImagesPath, "${article.idArticle}_${if (indexColor == -1) "Unite" else (indexColor + 1)}")
             .absolutePath
     }
 
-    val imageExist by remember(baseImagePath, reloadKey) {
-        mutableStateOf(
+    val imageExist by produceState<String?>(null, baseImagePath, reloadKey) {
+        value = withContext(Dispatchers.IO) {
             listOf("jpg", "webp").firstNotNullOfOrNull { extension ->
                 val file = File("$baseImagePath.$extension")
                 if (file.exists() && file.canRead()) {
                     file.absolutePath
                 } else null
             }
-        )
+        }
     }
 
-    val imageSource = remember(imageExist) {
-        imageExist?.let { File(it) } ?: R.drawable.baked_goods_1
+    // Animation de la qualité
+    LaunchedEffect(imageExist, article.idArticle, indexColor) {
+        currentQuality = 25f // Reset à 25%
+        // Progression sur 1.5 secondes
+        val steps = 75 // Nombre de pas pour aller de 25 à 100
+        val delayPerStep = 1500L / steps // Temps entre chaque pas
+        val incrementPerStep = 75f / steps // Augmentation par pas
+
+        // Animation progressive
+        repeat(steps) {
+            delay(delayPerStep)
+            currentQuality = (currentQuality + incrementPerStep).coerceAtMost(100f)
+        }
     }
 
-    val requestKey = remember(article.idArticle, indexColor, reloadKey) {
-        "${article.idArticle}_${if (indexColor == -1) "Unite" else indexColor}_$reloadKey"
+    // Calcul de la taille basée sur la qualité actuelle
+    val currentSize = remember(currentQuality) {
+        // Interpolation linéaire entre 128 (25%) et 512 (100%)
+        val size = (128 + (512 - 128) * (currentQuality - 25) / 75).toInt()
+        Size(size, size)
+    }
+
+    // Image request avec la qualité actuelle
+    val imageRequest = remember(imageExist, article.idArticle, indexColor, currentSize) {
+        ImageRequest.Builder(context)
+            .data(imageExist?.let { File(it) } ?: R.drawable.baked_goods_1)
+            .size(currentSize)
+            .scale(Scale.FILL)
+            .crossfade(true)
+            .memoryCacheKey("${article.idArticle}_${indexColor}_${currentQuality}")
+            .diskCacheKey("${article.idArticle}_${indexColor}_${currentQuality}")
+            .build()
     }
 
     Box(
@@ -593,26 +706,34 @@ private fun ImageDisplayer(
             .fillMaxWidth()
             .clickable { onClickToOpenWindos(article, indexColor) }
     ) {
-        // Background image with reduced opacity when no actual image exists
-        val painter = rememberAsyncImagePainter(
-            ImageRequest.Builder(context)
-                .data(imageSource)
-                .size(Size.ORIGINAL)
-                .crossfade(true)
-                .setParameter("key", requestKey, memoryCacheKey = requestKey)
-                .build()
-        )
+        var isLoading by remember { mutableStateOf(true) }
 
-        Image(
-            painter = painter,
+        AsyncImage(
+            model = imageRequest,
             contentDescription = "Article image ${article.idArticle} color ${indexColor + 1}",
             modifier = Modifier
                 .fillMaxWidth()
                 .then(if (imageExist == null) Modifier.alpha(0.7f) else Modifier),
-            contentScale = ContentScale.FillWidth
+            contentScale = ContentScale.FillWidth,
+            onState = { state ->
+                isLoading = state is AsyncImagePainter.State.Loading
+            }
         )
 
-        // Show color overlay when no actual image exists
+        // Indicateur de chargement
+        if (isLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    progress = (currentQuality - 25f) / 75f // Progression basée sur la qualité
+                )
+            }
+        }
+
+        // Overlay pour images manquantes
         if (imageExist == null) {
             article.getColorIdForIndex(indexColor)?.let { colorId ->
                 uiState.colorsArticlesTabelleModel.find { it.idColore == colorId }?.let { color ->
@@ -620,6 +741,39 @@ private fun ImageDisplayer(
                 }
             }
         }
+
+        // Préchargement de l'image suivante
+        LaunchedEffect(article.idArticle, indexColor) {
+            scope.launch(Dispatchers.IO) {
+                val nextIndex = (indexColor + 1) % 4
+                val nextImagePath = File(
+                    viewModelImagesPath,
+                    "${article.idArticle}_${if (nextIndex == -1) "Unite" else (nextIndex + 1)}"
+                ).absolutePath
+
+                // Précharger plusieurs qualités de la prochaine image
+                listOf(128, 256, 384, 512).forEach { size ->
+                    ImageRequest.Builder(context)
+                        .data(nextImagePath)
+                        .size(Size(size, size))
+                        .scale(Scale.FILL)
+                        .build()
+                        .let { request ->
+                            context.imageLoader.enqueue(request)
+                        }
+                }
+            }
+        }
+
+        // Affichage du pourcentage de qualité (à des fins de débogage, à supprimer en production)
+        Text(
+            text = "${currentQuality.toInt()}%",
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(8.dp),
+            color = MaterialTheme.colorScheme.primary,
+            style = MaterialTheme.typography.labelSmall
+        )
     }
 }
 
@@ -669,12 +823,7 @@ private fun ArticlesBasesStatsTabelle.getColorIdForIndex(index: Int): Long? {
     }
 }
 
-private fun calculateSpan(article: ArticlesBasesStatsTabelle, gridColumns: Int): GridItemSpan {
-    return when {
-        countColors(article) == 3 && !article.funChangeImagsDimention -> GridItemSpan(gridColumns)
-        else -> GridItemSpan(1)
-    }
-}
+
 
 private fun matchesFilter(article: ArticlesBasesStatsTabelle, filterText: String): Boolean {
     return filterText.isEmpty() || article.nomArticleFinale.contains(filterText, ignoreCase = true)
