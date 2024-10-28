@@ -355,7 +355,11 @@ fun AppNavHost(
                         onConfirmOrder = {
                             appViewModels.startUpNewArticlesViewModels.updateLongAppSetting("clientBuyerNowId",0)
                         },
-                        clientBuyerNow = currentClient
+                        clientBuyerNow = currentClient,
+                        onOpenArticleStats = {  article, indexColor ->
+                            pendingArticle = article
+                            pendingIndexColor = indexColor
+                        }
                     )
                 }
             }

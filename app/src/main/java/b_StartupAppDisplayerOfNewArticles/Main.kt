@@ -32,6 +32,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -373,109 +374,18 @@ fun DisplayeArticleWhithOneColore(
                     onClickToOpenWindos
                 )
             }
+            ArticleDetails(article)
         }
     }
 }
 
 @Composable
 private fun ThreeColorArticleDisplay(
-    //   @Entity
-    //data class ArticlesBasesStatsTabelle(
-    //    @PrimaryKey var idArticle: Int = 0,
-    //    var nomArticleFinale: String = "",
-    //    var classementCate: Double = 0.0,
-    //    var nomArab: String = "",
-    //    var autreNomDarticle: String? = null,
-    //    var nmbrCat: Int = 0,
-    //    var couleur1: String? = null,
-    //    var idcolor1: Long = 0,
-    //    var couleur2: String? = null,
-    //    var idcolor2: Long = 0,
-    //    var couleur3: String? = null,
-    //    var idcolor3: Long = 0,
-    //    var couleur4: String? = null,
-    //    var idcolor4: Long = 0,
-    //    var nomCategorie2: String? = null,
-    //    var nmbrUnite: Int = 0,
-    //    var nmbrCaron: Int = 0,
-    //    var affichageUniteState: Boolean = false,
-    //    var commmentSeVent: String? = null,
-    //    var afficheBoitSiUniter: String? = null,
-    //    var monPrixAchat: Double = 0.0,
-    //    var clienPrixVentUnite: Double = 0.0,
-    //    var minQuan: Int = 0,
-    //    var monBenfice: Double = 0.0,
-    //    var monPrixVent: Double = 0.0,
-    //    var diponibilityState: String = "",
-    //    var neaon2: String = "",
-    //    var idCategorie: Double = 0.0,
-    //    var funChangeImagsDimention: Boolean = false, //imgStatIsSmall
-    //    var nomCategorie: String = "",
-    //    var neaon1: Double = 0.0,
-    //    var lastUpdateState: String = "",
-    //    var cartonState: String = "",
-    //    var dateCreationCategorie: String = "",
-    //    var prixDeVentTotaleChezClient: Double = 0.0,
-    //    var benficeTotaleEntreMoiEtClien: Double = 0.0,
-    //    var benificeTotaleEn2: Double = 0.0,
-    //    var monPrixAchatUniter: Double = 0.0,
-    //    var monPrixVentUniter: Double = 0.0,
-    //    var benificeClient: Double = 0.0,
-    //    var monBeneficeUniter: Double = 0.0,
-    //    //Stats
-    //    var articleHaveUniteImages: Boolean = false,
-    //    var itsNewArrivale: Boolean = false,
-    //) {
-    //    // No-argument constructor for Firebase
-    //    constructor() : this(0)
-    //}
-    //@Entity
-    //data class ColorsArticlesTabelle(
-    //    @PrimaryKey var idColore: Long = 0,
-    //    val nameColore: String = "",
-    //    val iconColore: String = "",
-    //    var classementColore: Int = 0
-    //){
-    //    // No-argument constructor for Firebase
-    //    constructor() : this(0)
-    //}
-    //
-    //@Entity
-    //data class CategoriesTabelle(
-    //    @PrimaryKey(autoGenerate = true)
-    //    val idCategorieInCategoriesTabele: Long = 0,
-    //    val nomCategorieInCategoriesTabele: String = "",
-    //    var idClassementCategorieInCategoriesTabele: Int = 0 ,
-    //    var displayedHeader: Boolean = false,
-    //
-    //    ) {
-    //    constructor() : this(0, "", 0)
-    //}
-    //
-    //@Entity
-    //data class SoldArticlesTabelle(
-    //    @PrimaryKey(autoGenerate = true) val vid: Long = 0,
-    //    val idArticle: Long = 0,
-    //    val nameArticle: String = "",
-    //    val clientSoldToItId: Long = 0,
-    //    val date: String = "",
-    //    val color1IdPicked: Long = 0,
-    //    val color1SoldQuantity: Int = 0,
-    //    val color2IdPicked: Long = 0,
-    //    val color2SoldQuantity: Int = 0,
-    //    val color3IdPicked: Long = 0,
-    //    val color3SoldQuantity: Int = 0,
-    //    val color4IdPicked: Long = 0,
-    //    val color4SoldQuantity: Int = 0,
-    //    val confimed: Boolean = false,
-    //
-    //    ) {
-    //    constructor() : this(0)
-    //}
     article: ArticlesBasesStatsTabelle,
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
-    modifier: Modifier = Modifier, onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit
+    modifier: Modifier = Modifier,
+    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit
 ) {
     Card(
         modifier = modifier
@@ -488,62 +398,115 @@ private fun ThreeColorArticleDisplay(
                 .fillMaxHeight(),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            // Première image
-            Box(
-                modifier = Modifier
-                    .height(500.dp)
-                    .fillMaxWidth()
-            ) {
-                ImageDisplayer(
-                    modifier = Modifier.fillMaxSize(),
+            // Main large image
+            ColorImageWithDetails(
+                article = article,
+                viewModel = viewModel,
+                colorIndex = 0,
+                reloadTrigger = reloadTrigger,
+                modifier = Modifier.height(500.dp),
+                onClickToOpenWindos = onClickToOpenWindos
+            )
+
+            // Secondary images in a loop
+            repeat(2) { index ->
+                ColorImageWithDetails(
                     article = article,
                     viewModel = viewModel,
-                    indexColor = 0,
-                    reloadKey = reloadTrigger,
-                    onClickToOpenWindos
+                    colorIndex = index + 1,
+                    reloadTrigger = reloadTrigger,
+                    modifier = Modifier.height(150.dp),
+                    onClickToOpenWindos = onClickToOpenWindos
                 )
             }
 
-            // Deuxième image
-            Box(     //TODO ffait que ca soit on loop don un box divise par 1f pour chacune son heit 300 divise par eu
-                modifier = Modifier
-                    .height(150.dp)
-                    .fillMaxWidth()
-            ) {
-                ImageDisplayer(
-                    modifier = Modifier.fillMaxSize(),
-                    article = article,
-                    viewModel = viewModel,
-                    indexColor = 1,
-                    reloadKey = reloadTrigger,
-                    onClickToOpenWindos
-                )
-            }
-
-            // Troisième image
-            Box(
-                modifier = Modifier
-                    .height(150.dp)
-                    .fillMaxWidth()
-            ) {
-                ImageDisplayer(      //TODO au lieu ImageDisplayer fait que ca soit dont une funtion contie au dessu end
-                    //          on trouve le rlated color in color tableau affiche le imoji
-                    modifier = Modifier.fillMaxSize(),
-                    article = article,
-                    viewModel = viewModel,
-                    indexColor = 2,
-                    reloadKey = reloadTrigger,
-                    onClickToOpenWindos
-                )
-            }
-            //TODO imptrove la visibility du code
-            //cree desplaye de nom article
-            //cree desplye prix   article.prixVent
-
+            ArticleDetails(
+                article = article,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+            )
         }
     }
 }
 
+@Composable
+private fun ColorImageWithDetails(
+    article: ArticlesBasesStatsTabelle,
+    viewModel: StartUpNewArticlesViewModels,
+    colorIndex: Int,
+    reloadTrigger: Int,
+    modifier: Modifier = Modifier,
+    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit
+) {
+    Box(
+        modifier = modifier.fillMaxWidth()
+    ) {
+        ImageDisplayer(
+            modifier = Modifier.fillMaxSize(),
+            article = article,
+            viewModel = viewModel,
+            indexColor = colorIndex,
+            reloadKey = reloadTrigger,
+            onClickToOpenWindos = onClickToOpenWindos
+        )
+
+        // Display color emoji/icon if available
+        article.getColorForIndex(colorIndex)?.let { color ->
+            ColorIndicator(
+                colorName = color,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(8.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun ColorIndicator(
+    colorName: String,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier,
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Text(
+            text = colorName,
+            modifier = Modifier.padding(4.dp)
+        )
+    }
+}
+
+@Composable
+private fun ArticleDetails(
+    article: ArticlesBasesStatsTabelle,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        Text(
+            text = article.nomArticleFinale,
+            style = MaterialTheme.typography.titleMedium
+        )
+        Text(
+            text = "Prix: ${article.monPrixVent}",
+            style = MaterialTheme.typography.bodyMedium
+        )
+    }
+}
+
+// Extension function to get color based on index
+private fun ArticlesBasesStatsTabelle.getColorForIndex(index: Int): String? {
+    return when (index) {
+        0 -> couleur1
+        1 -> couleur2
+        2 -> couleur3
+        3 -> couleur4
+        else -> null
+    }
+}
 
 @Composable
 fun ImageDisplayer(

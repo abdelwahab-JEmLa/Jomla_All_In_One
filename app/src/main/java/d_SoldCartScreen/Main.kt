@@ -38,6 +38,7 @@ fun SoldCartScreen(
     onConfirmOrder: () -> Unit,
     modifier: Modifier = Modifier,
     clientBuyerNow: ClientsModel? = null  // Add this parameter
+    , onOpenArticleStats: (ArticlesBasesStatsTabelle, Int) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -76,7 +77,9 @@ fun SoldCartScreen(
                     colors = uiState.colorsArticlesTabelleModel,
                     baseArticle = baseArticle,
                     onDelete = { viewModel.deleteSoldArticle(soldArticle.vid) },
-                    viewModel = viewModel
+                    viewModel = viewModel   ,
+                    onOpenArticleStats=onOpenArticleStats
+
                 )
             }
         }
@@ -102,7 +105,7 @@ fun SoldArticleCard(
     modifier: Modifier = Modifier,
     viewModel: StartUpNewArticlesViewModels,
     clientBuyerNow: ClientsModel? = null,
-    onOpenArticleStats: (ArticlesBasesStatsTabelle, Int) -> Unit = { _, _ -> }
+    onOpenArticleStats: (ArticlesBasesStatsTabelle, Int) -> Unit ,
 ) {
     Card(
         modifier = modifier
