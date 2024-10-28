@@ -11,7 +11,6 @@ package b_StartupAppDisplayerOfNewArticles
 import a_RoomDB.ArticlesBasesStatsTabelle
 import a_RoomDB.CategoriesTabelle
 import a_RoomDB.ColorsArticlesTabelle
-import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -19,7 +18,19 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridScope
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
@@ -37,12 +48,18 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
@@ -53,20 +70,14 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.bumptech.glide.GlideBuilder
 import com.bumptech.glide.Priority
-import com.bumptech.glide.annotation.GlideModule
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.load.engine.cache.DiskLruCacheFactory
-import com.bumptech.glide.load.engine.cache.MemoryCache
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.bumptech.glide.module.AppGlideModule
 import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.signature.ObjectKey
 import com.example.clientjetpack.LoadingOverlay
@@ -197,9 +208,9 @@ private fun ArticleGrid(
     onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit
 ) {
     val pagingConfig = PagingConfig(
-        pageSize = 20,
+        pageSize = 6,
         enablePlaceholders = false,
-        prefetchDistance = 2
+        prefetchDistance = 20
     )
 
     val pager = remember(uiState.articlesBasesStatTabelles, filterText) {
@@ -454,7 +465,7 @@ private fun DemiDiplayerMultiColor(
             colorIndex = 0,
             reloadTrigger = reloadTrigger,
             modifier = Modifier.height(300.dp),
-            onClickToOpenWindos = onClickToOpenWindos,
+            onClickToOpenWindow = onClickToOpenWindos,
             uiState = uiState
         )
         Box(
@@ -478,7 +489,7 @@ private fun DemiDiplayerMultiColor(
                         modifier = Modifier
                             .weight(1f)
                             .height(350.dp),
-                        onClickToOpenWindos = onClickToOpenWindos,
+                        onClickToOpenWindow = onClickToOpenWindos,
                         uiState = uiState
                     )
                 }
@@ -551,7 +562,7 @@ private fun SmalleDiplayerHave3Color(
                 colorIndex = 0,
                 reloadTrigger = reloadTrigger,
                 modifier = Modifier.height(200.dp),
-                onClickToOpenWindos = onClickToOpenWindos,
+                onClickToOpenWindow = onClickToOpenWindos,
                 uiState = uiState
             )
 
@@ -563,7 +574,7 @@ private fun SmalleDiplayerHave3Color(
                     colorIndex = index + 1,
                     reloadTrigger = reloadTrigger,
                     modifier = Modifier.height(70.dp),
-                    onClickToOpenWindos = onClickToOpenWindos,
+                    onClickToOpenWindow = onClickToOpenWindos,
                     uiState = uiState
                 )
             }
@@ -636,7 +647,7 @@ private fun ColorImageWithDetails(
     colorIndex: Int,
     reloadTrigger: Int,
     modifier: Modifier = Modifier,
-    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    onClickToOpenWindow: (ArticlesBasesStatsTabelle, Int) -> Unit,
     uiState: UiState
 ) {
     Box(
@@ -657,7 +668,7 @@ private fun ColorImageWithDetails(
             viewModel = viewModel,
             indexColor = colorIndex,
             reloadKey = reloadTrigger,
-            onClickToOpenWindos = onClickToOpenWindos,
+            onClickToOpenWindow = onClickToOpenWindow,
             uiState = uiState
         )
 
@@ -678,58 +689,68 @@ private fun ColorImageWithDetails(
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-private fun ImageDisplayer(
+fun ImageDisplayer(
     modifier: Modifier = Modifier,
     article: ArticlesBasesStatsTabelle,
     viewModel: StartUpNewArticlesViewModels,
     indexColor: Int = 0,
     reloadKey: Any = Unit,
-    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    onClickToOpenWindow: (ArticlesBasesStatsTabelle, Int) -> Unit,
     uiState: UiState
 ) {
-    val context = LocalContext.current
     val viewModelImagesPath = viewModel.viewModelImagesPath
     var currentQuality by remember { mutableStateOf(25f) }
 
     val baseImagePath = remember(viewModelImagesPath, article.idArticle, indexColor) {
-        File(viewModelImagesPath, "${article.idArticle}_${if (indexColor == -1) "Unite" else (indexColor + 1)}")
-            .absolutePath
+        File(
+            viewModelImagesPath,
+            "${article.idArticle}_${if (indexColor == -1) "Unite" else (indexColor + 1)}"
+        ).absolutePath
     }
 
-    val imageExist by produceState<String?>(null, baseImagePath, reloadKey) {
+    val imageExist by produceState<String?>(
+        initialValue = null,
+        key1 = baseImagePath,
+        key2 = reloadKey
+    ) {
         value = withContext(Dispatchers.IO) {
             listOf("jpg", "webp").firstNotNullOfOrNull { extension ->
                 val file = File("$baseImagePath.$extension")
-                if (file.exists() && file.canRead()) {
-                    file.absolutePath
-                } else null
+                if (file.exists() && file.canRead()) file.absolutePath else null
             }
         }
     }
 
+    val imageDimension = 200.dp
+    val blurRadius = 25
+    val dimensionPx = imageDimension.value.toInt()
+
     GlideImage(
         model = imageExist?.let { File(it) } ?: R.drawable.baked_goods_1,
         contentDescription = "Article image ${article.idArticle}",
-        modifier = modifier.clickable {
-            onClickToOpenWindos(article, indexColor)
-        }
+        modifier = modifier
+            .size(imageDimension)
+            .clickable { onClickToOpenWindow(article, indexColor) }
     ) {
         it
-            .thumbnail(0.25f)
+            .override(dimensionPx, dimensionPx)
+            .fitCenter()
+            .thumbnail(
+                it.clone()
+                    .override(dimensionPx, dimensionPx)
+                    .transform(jp.wasabeef.glide.transformations.BlurTransformation(blurRadius))
+            )
             .transition(DrawableTransitionOptions.withCrossFade())
             .diskCacheStrategy(DiskCacheStrategy.ALL)
             .priority(Priority.HIGH)
             .signature(ObjectKey("${article.idArticle}_${indexColor}_${currentQuality}"))
             .listener(object : RequestListener<Drawable> {
-                //Object is not abstract and does not implement abstract member public abstract fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable!>, isFirstResource: Boolean): Boolean defined in com.bumptech.glide.request.RequestListener
                 override fun onLoadFailed(
                     e: GlideException?,
                     model: Any?,
                     target: Target<Drawable>,
                     isFirstResource: Boolean
-                ): Boolean {
-                    return false
-                }
+                ): Boolean = false
 
                 override fun onResourceReady(
                     resource: Drawable,
@@ -746,7 +767,6 @@ private fun ImageDisplayer(
             })
     }
 }
-
 @Composable
 private fun ColorOverlay(
     color: ColorsArticlesTabelle,

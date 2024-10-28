@@ -5,6 +5,7 @@ composeVersion = "1.0.0-beta01"
 firebaseBom = "33.5.1"
 foundation = "1.7.4"
 glide = "4.16.0"
+glideTransformations = "4.3.0"
 gradleVersion = "8.6.1"
 gson = "2.8.9"
 kotlin = "1.9.24"
@@ -55,6 +56,7 @@ compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glide
 compose-v100beta01 = { module = "com.github.bumptech.glide:compose", version.ref = "composeVersion" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
+glide-transformations = { module = "jp.wasabeef:glide-transformations", version.ref = "glideTransformations" }
 gradle-v800 = { module = "com.android.tools.build:gradle", version.ref = "gradleVersion" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }

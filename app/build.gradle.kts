@@ -111,6 +111,7 @@ dependencies {
 
     // Glide Compose integration
     implementation(libs.compose.v100beta01)
+    implementation (libs.glide.transformations)
 }
 
 apply(plugin = "com.google.gms.google-services")
