@@ -21,12 +21,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyGridScope
-import androidx.compose.foundation.lazy.grid.LazyGridState
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridScope
+import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
+import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -74,7 +76,7 @@ fun StartupAppDisplayerOfNewArticles(
     var gridColumnsForNewArticels by remember { mutableStateOf(2) }
     var showFilter by remember { mutableStateOf(false) }
     var filterText by remember { mutableStateOf("") }
-    val gridState = rememberLazyGridState()
+    val gridState = rememberLazyStaggeredGridState()
     val uiState by viewModel.uiState.collectAsState()
 
     ArticleDisplayScreen(
@@ -145,7 +147,7 @@ private fun ArticleGrid(
     gridColumns: Int,
     filterText: String,
     showFilter: Boolean,
-    gridState: LazyGridState,
+    gridState: LazyStaggeredGridState,
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
     modifier: Modifier = Modifier,
@@ -157,15 +159,16 @@ private fun ArticleGrid(
 
     val effectiveGridColumns = if (isNewArrivalsCategory) gridColumns else 2
 
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(effectiveGridColumns),
+    LazyVerticalStaggeredGrid(
+        columns = StaggeredGridCells.Fixed(effectiveGridColumns),
         state = gridState,
         contentPadding = PaddingValues(8.dp),
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        // Banner logic remains the same
+        // Banner logic
         if (!showFilter) {
-            item(span = { GridItemSpan(effectiveGridColumns) }) {
+            item(span = StaggeredGridItemSpan.FullLine) {
                 ScrolleAdBanner(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -185,7 +188,8 @@ private fun ArticleGrid(
         )
     }
 }
-private fun LazyGridScope.displayCategories(
+
+private fun LazyStaggeredGridScope.displayCategories(
     uiState: UiState,
     filterText: String,
     gridColumns: Int,
@@ -207,7 +211,8 @@ private fun LazyGridScope.displayCategories(
                     gridColumns = gridColumns,
                     viewModel = viewModel,
                     reloadTrigger = reloadTrigger,
-                    onClickToOpenWindos = onClickToOpenWindos, uiState
+                    onClickToOpenWindos = onClickToOpenWindos,
+                    uiState = uiState
                 )
             }
         }
@@ -228,41 +233,37 @@ private fun LazyGridScope.displayCategories(
                     gridColumns = gridColumns,
                     viewModel = viewModel,
                     reloadTrigger = reloadTrigger,
-                    onClickToOpenWindos = onClickToOpenWindos, uiState
+                    onClickToOpenWindos = onClickToOpenWindos,
+                    uiState = uiState
                 )
             }
         }
 }
 
-private fun LazyGridScope.displayCategoryContent(
+private fun LazyStaggeredGridScope.displayCategoryContent(
     category: CategoriesTabelle,
     articles: List<ArticlesBasesStatsTabelle>,
     gridColumns: Int,
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
-    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit, uiState: UiState
+    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    uiState: UiState
 ) {
     // Only show header if displayedHeader is true
     if (category.displayedHeader) {
-        item(span = { GridItemSpan(gridColumns) }) {
+        item(span = StaggeredGridItemSpan.FullLine) {
             CategoryHeader(category)
         }
     }
 
-    // Always show articles, regardless of displayedHeader
-    items(
-        count = articles.size,
-        span = { index ->
-            val article = articles[index]
-            calculateSpan(article, gridColumns)
-        }
-    ) { index ->
-        val article = articles[index]
+    // Display articles
+    items(articles) { article ->
         ArticleItem(
             article = article,
             viewModel = viewModel,
             reloadTrigger = reloadTrigger,
-            onClickToOpenWindos = onClickToOpenWindos, uiState = uiState
+            onClickToOpenWindos = onClickToOpenWindos,
+            uiState = uiState
         )
     }
 }
@@ -272,7 +273,7 @@ private fun ArticleDisplayScreen(
     gridColumns: Int,
     showFilter: Boolean,
     filterText: String,
-    gridState: LazyGridState,
+    gridState: LazyStaggeredGridState,
     onFilterTextChange: (String) -> Unit,
     onToggleFilter: () -> Unit,
     onChangeGridColumns: (Int) -> Unit,
@@ -415,7 +416,7 @@ private fun ThreeColorArticleDisplay(
                 viewModel = viewModel,
                 colorIndex = 0,
                 reloadTrigger = reloadTrigger,
-                modifier = Modifier.height(500.dp),
+                modifier = Modifier.height(200.dp),
                 onClickToOpenWindos = onClickToOpenWindos, uiState = uiState
             )
 
@@ -426,7 +427,7 @@ private fun ThreeColorArticleDisplay(
                     viewModel = viewModel,
                     colorIndex = index + 1,
                     reloadTrigger = reloadTrigger,
-                    modifier = Modifier.height(150.dp),
+                    modifier = Modifier.height(70.dp),
                     onClickToOpenWindos = onClickToOpenWindos, uiState = uiState
                 )
             }
