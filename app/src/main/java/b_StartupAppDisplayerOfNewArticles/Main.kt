@@ -165,6 +165,7 @@ private fun ArticleGrid(
         contentPadding = PaddingValues(8.dp),
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalItemSpacing = 8.dp
     ) {
         // Banner logic
         if (!showFilter) {
@@ -390,14 +391,14 @@ fun DisplayeArticleWhithOneColore(
         }
     }
 }
-
 @Composable
 private fun ThreeColorArticleDisplay(
     article: ArticlesBasesStatsTabelle,
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
     modifier: Modifier = Modifier,
-    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit, uiState: UiState
+    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    uiState: UiState
 ) {
     Card(
         modifier = modifier
@@ -417,7 +418,8 @@ private fun ThreeColorArticleDisplay(
                 colorIndex = 0,
                 reloadTrigger = reloadTrigger,
                 modifier = Modifier.height(200.dp),
-                onClickToOpenWindos = onClickToOpenWindos, uiState = uiState
+                onClickToOpenWindos = onClickToOpenWindos,
+                uiState = uiState
             )
 
             // Secondary images in a loop
@@ -428,7 +430,8 @@ private fun ThreeColorArticleDisplay(
                     colorIndex = index + 1,
                     reloadTrigger = reloadTrigger,
                     modifier = Modifier.height(70.dp),
-                    onClickToOpenWindos = onClickToOpenWindos, uiState = uiState
+                    onClickToOpenWindos = onClickToOpenWindos,
+                    uiState = uiState
                 )
             }
 
@@ -453,33 +456,41 @@ private fun ColorImageWithDetails(
     Box(
         modifier = modifier.fillMaxWidth()
     ) {
+        val imageExists = checkImageExists(
+            viewModel = viewModel,
+            article = article,
+            colorIndex = colorIndex,
+            reloadTrigger = reloadTrigger
+        )
+
         ImageDisplayer(
             modifier = Modifier.fillMaxSize(),
             article = article,
             viewModel = viewModel,
             indexColor = colorIndex,
             reloadKey = reloadTrigger,
-            onClickToOpenWindos = onClickToOpenWindos ,
-            uiState
+            onClickToOpenWindos = onClickToOpenWindos,
+            uiState = uiState
         )
 
-        // Get color ID for the current index
-        article.getColorIdForIndex(colorIndex)?.let { colorId ->
-            // Find matching color from uiState
-            uiState.colorsArticlesTabelleModel.find { it.idColore == colorId }?.let { color ->
-                ColorIndicator(
-                    iconColore = color.iconColore,
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(8.dp)
-                )
+        // Only show color indicator if the image exists
+        if (imageExists) {
+            article.getColorIdForIndex(colorIndex)?.let { colorId ->
+                uiState.colorsArticlesTabelleModel.find { it.idColore == colorId }?.let { color ->
+                    ColorIndicator(
+                        iconColore = color.iconColore,
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(8.dp)
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-private fun ColorIndicator(  //TODo ne l affiche pas si l image n exist pas
+private fun ColorIndicator(
     iconColore: String,
     modifier: Modifier = Modifier
 ) {
@@ -491,6 +502,23 @@ private fun ColorIndicator(  //TODo ne l affiche pas si l image n exist pas
             text = iconColore,
             modifier = Modifier.padding(4.dp)
         )
+    }
+}
+
+private fun checkImageExists(
+    viewModel: StartUpNewArticlesViewModels,
+    article: ArticlesBasesStatsTabelle,
+    colorIndex: Int,
+    reloadTrigger: Int
+): Boolean {
+    val baseImagePath = File(
+        viewModel.viewModelImagesPath,
+        "${article.idArticle}_${if (colorIndex == -1) "Unite" else (colorIndex + 1)}"
+    ).absolutePath
+
+    return listOf("jpg", "webp").any { extension ->
+        val file = File("$baseImagePath.$extension")
+        file.exists() && file.canRead()
     }
 }
 
