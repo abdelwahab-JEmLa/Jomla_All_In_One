@@ -6,6 +6,7 @@ import a_RoomDB.ClientsModel
 import a_RoomDB.ColorsArticlesTabelle
 import a_RoomDB.SoldArticlesTabelle
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -88,6 +89,9 @@ interface SoldArticlesTabelleDao{
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(soldArticles: List<SoldArticlesTabelle>)
+
+    @Delete
+    suspend fun delete(item: SoldArticlesTabelle)
 
     @Query("DELETE FROM SoldArticlesTabelle")
     suspend fun deleteAll()

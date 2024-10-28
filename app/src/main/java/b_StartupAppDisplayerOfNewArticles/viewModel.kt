@@ -72,7 +72,35 @@ open class StartUpNewArticlesViewModels(
 
     private val _currentSale = MutableStateFlow<SoldArticlesTabelle?>(null)
     val currentSale = _currentSale.asStateFlow()
+    // Add to StartUpNewArticlesViewModels.kt
+// In StartUpNewArticlesViewModels.kt
+    fun deleteSoldArticle(vid: Long) {
+        viewModelScope.launch {
+            try {
+                // Find the article to delete
+                val articleToDelete = _uiState.value.soldArticlesModel.find {
+                    it?.vid == vid
+                }
 
+                // Only proceed if article is found
+                articleToDelete?.let { article ->
+                    // Delete from database
+                    database.soldArticlesTabelleDao().delete(article)
+
+                    // Update the UI state
+                    _uiState.update { state ->
+                        state.copy(
+                            soldArticlesModel = state.soldArticlesModel.filterNotNull().filter {
+                                it.vid != vid
+                            }
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(error = "Failed to delete sale: ${e.message}") }
+            }
+        }
+    }
     fun updateColorSelection(colorIndex: Int, colorId: Long, quantity: Int) {
         viewModelScope.launch {
             _currentSale.value?.let { sale ->
@@ -303,5 +331,4 @@ open class StartUpNewArticlesViewModels(
             }
         }
     }
-
 }

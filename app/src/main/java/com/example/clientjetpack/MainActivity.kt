@@ -29,6 +29,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EditRoad
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -72,6 +73,7 @@ import b_StartupAppDisplayerOfNewArticles.StartupAppDisplayerOfNewArticles
 import c_WindosBuyAndDesplayeArticleStats.WindosBuyAndDesplayeArticleStats
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.FirebaseDatabase
+import d_SoldCartScreen.SoldCartScreen
 
 // Application.kt
 class MyApplication : Application() {
@@ -154,6 +156,7 @@ private fun MainScreen(appViewModels: AppViewModels) {
     }
 }
 
+// Add to Screen.kt
 sealed class Screen(
     val route: String,
     val icon: ImageVector,
@@ -166,11 +169,23 @@ sealed class Screen(
         title = "Create New Articles",
         color = Color(0xFFE30E0E)
     )
+
+    data object SoldCart : Screen(
+        route = "sold_cart",
+        icon = Icons.Default.ShoppingCart,
+        title = "Panier Sold",
+        color = Color(0xFF4CAF50)
+    )
 }
 
+// Update NavigationItems.kt
 object NavigationItems {
-    fun getItems() = listOf(Screen.EditDatabaseWithCreateNewArticles)
+    fun getItems() = listOf(
+        Screen.EditDatabaseWithCreateNewArticles,
+        Screen.SoldCart
+    )
 }
+
 
 @Composable
 fun CustomNavigationBar(
@@ -273,14 +288,13 @@ fun AppNavHost(
 ) {
     val uiState by appViewModels.startUpNewArticlesViewModels.uiState.collectAsState()
 
+    // Existing state management
     var windowsSaleAndDisplayArticleStats by rememberSaveable { mutableStateOf<ArticlesBasesStatsTabelle?>(null) }
     var clientBuyerNow by rememberSaveable { mutableStateOf<ClientsModel?>(null) }
     var relatedSaleOfArticleToClient by rememberSaveable { mutableStateOf<SoldArticlesTabelle?>(null) }
-
     var showClientSelection by rememberSaveable { mutableStateOf(false) }
     var pendingArticle by rememberSaveable { mutableStateOf<ArticlesBasesStatsTabelle?>(null) }
     var pendingIndexColor by rememberSaveable { mutableIntStateOf(0) }
-
     var indexColorStat by rememberSaveable { mutableIntStateOf(0) }
     var reloadTrigger by rememberSaveable { mutableIntStateOf(0) }
 
@@ -303,7 +317,6 @@ fun AppNavHost(
                             if (clientBuyerNow == null) {
                                 showClientSelection = true
                             } else {
-                                // Safely find matching sale with null checks
                                 relatedSaleOfArticleToClient = uiState.soldArticlesModel.find { soldArticle ->
                                     soldArticle?.let {
                                         it.clientSoldToItId == clientBuyerNow?.idClientsSu &&
@@ -324,8 +337,24 @@ fun AppNavHost(
                     }
                 }
             }
+
+            composable(Screen.SoldCart.route) {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    SoldCartScreen(
+                        viewModel = appViewModels.startUpNewArticlesViewModels,
+                        onNavigateToArticle = { articleId ->
+                            // Find the article and navigate back to edit screen
+                            uiState.articlesBasesStatTabelles.find { it.idArticle.toLong() == articleId }?.let { article ->
+                                windowsSaleAndDisplayArticleStats = article
+                                navController.navigate(Screen.EditDatabaseWithCreateNewArticles.route)
+                            }
+                        }
+                    )
+                }
+            }
         }
 
+        // Overlay dialogs and windows
         if (showClientSelection && clientBuyerNow == null) {
             ClientSelectionDialog(
                 clients = uiState.clientsModel,
@@ -359,6 +388,8 @@ fun AppNavHost(
         }
     }
 }
+
+
 @Composable
 fun LoadingOverlay(
     progress: Float,
