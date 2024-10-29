@@ -27,6 +27,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -47,15 +48,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -596,9 +597,9 @@ fun ImageDisplayer(
     onClickToOpenWindow: (ArticlesBasesStatsTabelle, Int) -> Unit,
     uiState: UiState,
     showOverlay: Boolean,
+    cornerRadius: Dp = 8.dp  // Added parameter for customizable corner radius
 ) {
     var currentQuality by remember { mutableStateOf(25f) }
-    var imagePixelSize by remember { mutableStateOf<IntSize?>(null) }
 
     val baseImagePath = remember(viewModel.viewModelImagesPath, article.idArticle, indexColor) {
         File(
@@ -626,8 +627,8 @@ fun ImageDisplayer(
             contentDescription = "Article image ${article.idArticle}",
             modifier = modifier
                 .fillMaxSize()
+                .clip(RoundedCornerShape(cornerRadius))  // Properly implemented corner rounding
                 .clickable { onClickToOpenWindow(article, indexColor) }
-                .onSizeChanged { imagePixelSize = it }
         ) {
             it
                 .thumbnail(
@@ -666,7 +667,9 @@ fun ImageDisplayer(
                 uiState.colorsArticlesTabelleModel.find { it.idColore == colorId }?.let { color ->
                     GlideImage(
                         model = imageExist?.let { File(it) } ?: R.drawable.baked_goods_1,
-                        modifier = modifier.fillMaxSize() ,
+                        modifier = modifier
+                            .fillMaxSize()
+                            .clip(RoundedCornerShape(cornerRadius)),  // Added corner rounding to overlay
                         contentDescription = null
                     ) {
                         it
@@ -675,6 +678,9 @@ fun ImageDisplayer(
                     }
                     ColorOverlay(
                         color = color,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(RoundedCornerShape(cornerRadius))  // Added corner rounding to color overlay
                     )
                 }
             }
