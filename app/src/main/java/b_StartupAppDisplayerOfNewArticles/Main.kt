@@ -366,7 +366,7 @@ private fun ArticleItem(
     ) {
         when {
             article.imageDimention == "Demi" && colorCount > 2 -> {
-                DemiDiplayerMultiColor(
+                DemiDiplayerCounteColorPlus2(
                     article = article,
                     viewModel = viewModel,
                     reloadTrigger = reloadTrigger,
@@ -473,11 +473,11 @@ private fun DemiDiplayer2Color(
             article = article,
             viewModel = viewModel,
             colorIndex = 1,
-            modifier = Modifier.height(70.dp),
+            modifier = Modifier.height(40.dp),   //TODO pk ici ca be redemontion pas
             reloadTrigger = reloadTrigger,
             onClickToOpenWindow = onClickToOpenWindos,
             uiState = uiState,
-            imageScale =  ContentScale.FillWidth
+            imageScale =  ContentScale.Crop
         )
 
     }
@@ -535,7 +535,7 @@ private fun SmalleDiplayerHave3Color(
 
 
 @Composable
-private fun DemiDiplayerMultiColor(
+private fun DemiDiplayerCounteColorPlus2(
     article: ArticlesBasesStatsTabelle,
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
@@ -718,13 +718,13 @@ fun ImageDisplayer(
                 uiState.colorsArticlesTabelleModel.find { it.idColore == colorId }?.let { color ->
                     GlideImage(
                         model = imageExist?.let { File(it) } ?: R.drawable.baked_goods_1,
+                        contentScale = imageScale,
                         modifier = Modifier
                             .fillMaxSize()
                             .clip(RoundedCornerShape(cornerRadius)),
                         contentDescription = null
                     ) {
                         it
-
                             .transform(jp.wasabeef.glide.transformations.BlurTransformation(25))
                     }
                     ColorOverlay(
