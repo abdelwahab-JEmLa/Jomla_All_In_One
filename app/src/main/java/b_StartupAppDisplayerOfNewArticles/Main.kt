@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
@@ -364,8 +365,17 @@ private fun ArticleItem(
         )
     ) {
         when {
-            article.imageDimention == "Demi" && colorCount > 1 -> {
+            article.imageDimention == "Demi" && colorCount > 2 -> {
                 DemiDiplayerMultiColor(
+                    article = article,
+                    viewModel = viewModel,
+                    reloadTrigger = reloadTrigger,
+                    onClickToOpenWindos = onClickToOpenWindos,
+                    uiState = uiState
+                )
+            }
+            article.imageDimention == "Demi" && colorCount ==2 -> {
+                DemiDiplayer2Color(
                     article = article,
                     viewModel = viewModel,
                     reloadTrigger = reloadTrigger,
@@ -432,6 +442,46 @@ private fun ArticleDiplayerHave1Color(
     }
 }
 
+@Composable
+private fun DemiDiplayer2Color(
+    article: ArticlesBasesStatsTabelle,
+    viewModel: StartUpNewArticlesViewModels,
+    reloadTrigger: Int,
+    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    uiState: UiState,
+    modifier: Modifier = Modifier
+) {
+
+    Column (
+        modifier = modifier
+            .padding(8.dp)
+    ) {
+
+        ArticleDetails(article)
+        ColorImageWithDetails(
+            article = article,
+            viewModel = viewModel,
+            colorIndex = 0,
+            modifier = Modifier,
+            reloadTrigger = reloadTrigger,
+            onClickToOpenWindow = onClickToOpenWindos,
+            uiState = uiState,
+            imageScale =  ContentScale.Fit
+        )
+
+        ColorImageWithDetails(
+            article = article,
+            viewModel = viewModel,
+            colorIndex = 1,
+            modifier = Modifier.height(70.dp),
+            reloadTrigger = reloadTrigger,
+            onClickToOpenWindow = onClickToOpenWindos,
+            uiState = uiState,
+            imageScale =  ContentScale.FillWidth
+        )
+
+    }
+}
 
 @Composable
 private fun SmalleDiplayerHave3Color(
@@ -545,6 +595,7 @@ private fun ColorImageWithDetails(
     modifier: Modifier = Modifier,
     onClickToOpenWindow: (ArticlesBasesStatsTabelle, Int) -> Unit,
     uiState: UiState,
+    imageScale: ContentScale = ContentScale.Fit
 
 ) {
     Box(modifier = Modifier) {
@@ -566,6 +617,7 @@ private fun ColorImageWithDetails(
             onClickToOpenWindow = onClickToOpenWindow,
             uiState = uiState,
             showOverlay = !imageExists,
+            imageScale=imageScale
         )
 
         if (imageExists) {
