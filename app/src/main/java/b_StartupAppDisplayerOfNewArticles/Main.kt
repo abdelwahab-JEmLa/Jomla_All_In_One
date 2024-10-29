@@ -47,10 +47,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
@@ -461,7 +464,8 @@ private fun SmalleDiplayerHave3Color(
                 reloadTrigger = reloadTrigger,
                 modifier = Modifier.height(200.dp),
                 onClickToOpenWindow = onClickToOpenWindos,
-                uiState = uiState
+                uiState = uiState,
+                zoomInImage = 1.5f
             )
 
             // Secondary images in a loop
@@ -473,7 +477,8 @@ private fun SmalleDiplayerHave3Color(
                     reloadTrigger = reloadTrigger,
                     modifier = Modifier.height(70.dp),
                     onClickToOpenWindow = onClickToOpenWindos,
-                    uiState = uiState
+                    uiState = uiState,
+                    zoomInImage = 1.5f
                 )
             }
 
@@ -508,7 +513,8 @@ private fun DemiDiplayerMultiColor(
                 reloadTrigger = reloadTrigger,
                 modifier = modifier,
                 onClickToOpenWindow = onClickToOpenWindos,
-                uiState = uiState
+                uiState = uiState,
+                zoomInImage = 1.5f
             )
 
 
@@ -531,7 +537,10 @@ private fun DemiDiplayerMultiColor(
                         reloadTrigger = reloadTrigger,
                         modifier = modifier.fillMaxSize(),
                         onClickToOpenWindow = onClickToOpenWindos,
-                        uiState = uiState
+                        uiState = uiState  ,
+                        zoomInImage = 1.5f
+
+
                     )
 
             }
@@ -548,6 +557,7 @@ private fun ColorImageWithDetails(
     modifier: Modifier = Modifier,
     onClickToOpenWindow: (ArticlesBasesStatsTabelle, Int) -> Unit,
     uiState: UiState,
+    zoomInImage: Float,
 ) {
     Box(modifier = modifier) {
         val imageExists = remember(article.idArticle, colorIndex, reloadTrigger) {
@@ -568,6 +578,7 @@ private fun ColorImageWithDetails(
             onClickToOpenWindow = onClickToOpenWindow,
             uiState = uiState,
             showOverlay = !imageExists,
+            zoomInImage=zoomInImage
         )
 
         if (imageExists) {
@@ -596,6 +607,7 @@ fun ImageDisplayer(
     onClickToOpenWindow: (ArticlesBasesStatsTabelle, Int) -> Unit,
     uiState: UiState,
     showOverlay: Boolean,
+    zoomInImage: Float = 1f
 ) {
     var currentQuality by remember { mutableStateOf(25f) }
     var imagePixelSize by remember { mutableStateOf<IntSize?>(null) }
@@ -621,13 +633,18 @@ fun ImageDisplayer(
     }
 
     Box(modifier = modifier) {
-
-
         GlideImage(
             model = imageExist?.let { File(it) } ?: R.drawable.baked_goods_1,
             contentDescription = "Article image ${article.idArticle}",
             modifier = modifier
                 .fillMaxSize()
+                .graphicsLayer {
+                    scaleX = zoomInImage
+                    scaleY = zoomInImage
+                    // Center the scaling
+                    transformOrigin = TransformOrigin(0.5f, 0.5f)
+                }
+                .clipToBounds() // Clip the image when zoomed
                 .clickable { onClickToOpenWindow(article, indexColor) }
                 .onSizeChanged { imagePixelSize = it }
         ) {
@@ -636,6 +653,7 @@ fun ImageDisplayer(
                     it.clone()
                         .transform(jp.wasabeef.glide.transformations.BlurTransformation(25))
                 )
+                .centerCrop() // Ensure the image fills the bounds when zoomed
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .priority(Priority.HIGH)
@@ -668,7 +686,14 @@ fun ImageDisplayer(
                 uiState.colorsArticlesTabelleModel.find { it.idColore == colorId }?.let { color ->
                     GlideImage(
                         model = imageExist?.let { File(it) } ?: R.drawable.baked_goods_1,
-                        modifier = modifier.fillMaxSize() ,
+                        modifier = modifier
+                            .fillMaxSize()
+                            .graphicsLayer {
+                                scaleX = zoomInImage
+                                scaleY = zoomInImage
+                                transformOrigin = TransformOrigin(0.5f, 0.5f)
+                            }
+                            .clipToBounds(),
                         contentDescription = null
                     ) {
                         it
