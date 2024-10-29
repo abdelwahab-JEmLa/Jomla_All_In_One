@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -53,6 +52,7 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
@@ -415,7 +415,7 @@ private fun ArticleDiplayerHave1Color(
             Box(
                 modifier = modifier
                     .fillMaxWidth()
-                    .aspectRatio(1f),
+                    .height(50.dp),
                 contentAlignment = Alignment.Center
             ) {
                 ImageDisplayer(
@@ -501,13 +501,14 @@ private fun DemiDiplayerMultiColor(
         modifier = modifier
             .padding(8.dp)
     ) {
+
         ArticleDetails(article)
             ColorImageWithDetails(
                 article = article,
                 viewModel = viewModel,
                 colorIndex = 0,
                 reloadTrigger = reloadTrigger,
-                modifier = modifier.height(400.dp),
+                modifier = modifier.height(100.dp),
                 onClickToOpenWindow = onClickToOpenWindos,
                 uiState = uiState
             )
@@ -550,7 +551,7 @@ private fun ColorImageWithDetails(
     onClickToOpenWindow: (ArticlesBasesStatsTabelle, Int) -> Unit,
     uiState: UiState,
 ) {
-    Box(modifier = modifier) {
+    Box(modifier = Modifier) {
         val imageExists = remember(article.idArticle, colorIndex, reloadTrigger) {
             checkImageExists(
                 viewModel = viewModel,
@@ -561,7 +562,7 @@ private fun ColorImageWithDetails(
         }
 
         ImageDisplayer(
-            modifier = modifier,
+            modifier = Modifier,
             article = article,
             viewModel = viewModel,
             indexColor = colorIndex,
@@ -585,7 +586,6 @@ private fun ColorImageWithDetails(
         }
     }
 }
-
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun ImageDisplayer(
@@ -597,7 +597,8 @@ fun ImageDisplayer(
     onClickToOpenWindow: (ArticlesBasesStatsTabelle, Int) -> Unit,
     uiState: UiState,
     showOverlay: Boolean,
-    cornerRadius: Dp = 8.dp  // Added parameter for customizable corner radius
+    cornerRadius: Dp = 8.dp,
+    contentScale: ContentScale = ContentScale.Fit // Added parameter for flexible scaling
 ) {
     var currentQuality by remember { mutableStateOf(25f) }
 
@@ -625,14 +626,17 @@ fun ImageDisplayer(
         GlideImage(
             model = imageExist?.let { File(it) } ?: R.drawable.baked_goods_1,
             contentDescription = "Article image ${article.idArticle}",
-            modifier = modifier
+            contentScale = ContentScale.FillWidth,
+            modifier = Modifier
                 .fillMaxSize()
-                .clip(RoundedCornerShape(cornerRadius))  // Properly implemented corner rounding
+                .clip(RoundedCornerShape(cornerRadius))
                 .clickable { onClickToOpenWindow(article, indexColor) }
         ) {
             it
+                .override(400, 400)
                 .thumbnail(
                     it.clone()
+                        .override(100, 100)
                         .transform(jp.wasabeef.glide.transformations.BlurTransformation(25))
                 )
                 .transition(DrawableTransitionOptions.withCrossFade())
@@ -667,20 +671,28 @@ fun ImageDisplayer(
                 uiState.colorsArticlesTabelleModel.find { it.idColore == colorId }?.let { color ->
                     GlideImage(
                         model = imageExist?.let { File(it) } ?: R.drawable.baked_goods_1,
-                        modifier = modifier
+                        modifier = Modifier
                             .fillMaxSize()
-                            .clip(RoundedCornerShape(cornerRadius)),  // Added corner rounding to overlay
+                            .clip(RoundedCornerShape(cornerRadius)),
                         contentDescription = null
                     ) {
                         it
-                            .centerCrop()
+                            .override(200, 200)
+                            .apply {
+                                when (contentScale) {
+                                    ContentScale.Crop -> centerCrop()
+                                    ContentScale.Fit -> fitCenter()
+                                    ContentScale.Inside -> centerInside()
+                                    else -> centerCrop()
+                                }
+                            }
                             .transform(jp.wasabeef.glide.transformations.BlurTransformation(25))
                     }
                     ColorOverlay(
                         color = color,
                         modifier = Modifier
                             .fillMaxSize()
-                            .clip(RoundedCornerShape(cornerRadius))  // Added corner rounding to color overlay
+                            .clip(RoundedCornerShape(cornerRadius))
                     )
                 }
             }
