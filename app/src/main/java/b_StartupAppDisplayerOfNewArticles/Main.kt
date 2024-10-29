@@ -17,8 +17,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
@@ -413,9 +413,7 @@ private fun ArticleDiplayerHave1Color(
     ) {
         Column(modifier = modifier.padding(8.dp)) {
             Box(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .height(50.dp),
+                modifier = modifier,
                 contentAlignment = Alignment.Center
             ) {
                 ImageDisplayer(
@@ -460,9 +458,8 @@ private fun SmalleDiplayerHave3Color(
                 viewModel = viewModel,
                 colorIndex = 0,
                 reloadTrigger = reloadTrigger,
-                modifier = Modifier.height(200.dp),
                 onClickToOpenWindow = onClickToOpenWindos,
-                uiState = uiState
+                uiState = uiState  ,
             )
 
             // Secondary images in a loop
@@ -472,9 +469,9 @@ private fun SmalleDiplayerHave3Color(
                     viewModel = viewModel,
                     colorIndex = index + 1,
                     reloadTrigger = reloadTrigger,
-                    modifier = Modifier.height(70.dp),
+                    modifier = Modifier.width(150.dp),
                     onClickToOpenWindow = onClickToOpenWindos,
-                    uiState = uiState
+                    uiState = uiState,
                 )
             }
 
@@ -508,11 +505,9 @@ private fun DemiDiplayerMultiColor(
                 viewModel = viewModel,
                 colorIndex = 0,
                 reloadTrigger = reloadTrigger,
-                modifier = modifier.height(100.dp),
                 onClickToOpenWindow = onClickToOpenWindos,
-                uiState = uiState
+                uiState = uiState,
             )
-
 
         LazyRow(
             modifier = modifier
@@ -533,7 +528,7 @@ private fun DemiDiplayerMultiColor(
                         reloadTrigger = reloadTrigger,
                         modifier = modifier.fillMaxSize(),
                         onClickToOpenWindow = onClickToOpenWindos,
-                        uiState = uiState
+                        uiState = uiState,
                     )
 
             }
@@ -550,6 +545,7 @@ private fun ColorImageWithDetails(
     modifier: Modifier = Modifier,
     onClickToOpenWindow: (ArticlesBasesStatsTabelle, Int) -> Unit,
     uiState: UiState,
+
 ) {
     Box(modifier = Modifier) {
         val imageExists = remember(article.idArticle, colorIndex, reloadTrigger) {
@@ -598,7 +594,7 @@ fun ImageDisplayer(
     uiState: UiState,
     showOverlay: Boolean,
     cornerRadius: Dp = 8.dp,
-    contentScale: ContentScale = ContentScale.Fit // Added parameter for flexible scaling
+    imageScale: ContentScale = ContentScale.Fit
 ) {
     var currentQuality by remember { mutableStateOf(25f) }
 
@@ -626,14 +622,13 @@ fun ImageDisplayer(
         GlideImage(
             model = imageExist?.let { File(it) } ?: R.drawable.baked_goods_1,
             contentDescription = "Article image ${article.idArticle}",
-            contentScale = ContentScale.FillWidth,
+            contentScale = imageScale,
             modifier = Modifier
                 .fillMaxSize()
                 .clip(RoundedCornerShape(cornerRadius))
                 .clickable { onClickToOpenWindow(article, indexColor) }
         ) {
             it
-                .override(400, 400)
                 .thumbnail(
                     it.clone()
                         .override(100, 100)
@@ -677,15 +672,7 @@ fun ImageDisplayer(
                         contentDescription = null
                     ) {
                         it
-                            .override(200, 200)
-                            .apply {
-                                when (contentScale) {
-                                    ContentScale.Crop -> centerCrop()
-                                    ContentScale.Fit -> fitCenter()
-                                    ContentScale.Inside -> centerInside()
-                                    else -> centerCrop()
-                                }
-                            }
+
                             .transform(jp.wasabeef.glide.transformations.BlurTransformation(25))
                     }
                     ColorOverlay(
