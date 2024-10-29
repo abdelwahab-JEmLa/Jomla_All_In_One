@@ -1,13 +1,6 @@
 package b_StartupAppDisplayerOfNewArticles
 
-// Coil imports
 
-// Coroutines
-
-// File operations
-
-// Your models/state classes (make sure these match your project structure)
-// Required imports for the ImageDisplayer.kt file
 import a_RoomDB.ArticlesBasesStatsTabelle
 import a_RoomDB.CategoriesTabelle
 import a_RoomDB.ColorsArticlesTabelle
@@ -31,12 +24,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridScope
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
-import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -69,6 +60,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.bumptech.glide.Priority
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -194,7 +186,6 @@ class ArticlePagingSource(
     }
 }
 
-// Update ArticleGrid to use paging
 @Composable
 private fun ArticleGrid(
     uiState: UiState,
@@ -213,13 +204,34 @@ private fun ArticleGrid(
         prefetchDistance = 20
     )
 
-    val pager = remember(uiState.articlesBasesStatTabelles, filterText) {
-        Pager(pagingConfig) {
-            ArticlePagingSource(uiState.articlesBasesStatTabelles, filterText)
+    // Create separate pagers for each category
+    val categoryPagers = remember(uiState.categories, filterText) {
+        uiState.categories.associate { category ->
+            category to Pager(pagingConfig) {
+                ArticlePagingSource(
+                    articles = if (category.nomCategorieInCategoriesTabele == "NewArrivale") {
+                        uiState.articlesBasesStatTabelles.filter { it.itsNewArrivale }
+                    } else {
+                        uiState.articlesBasesStatTabelles.filter {
+                            it.nomCategorie == category.nomCategorieInCategoriesTabele && !it.itsNewArrivale
+                        }
+                    },
+                    filterText = filterText
+                )
+            }
         }
     }
 
-    val lazyPagingItems = pager.flow.collectAsLazyPagingItems()
+    // Create a map of category to their respective LazyPagingItems
+    val categoryPagingItems = remember(categoryPagers) {
+        mutableMapOf<CategoriesTabelle, LazyPagingItems<ArticlesBasesStatsTabelle>>()
+    }
+
+    // Collect paging items for each category
+    categoryPagers.forEach { (category, pager) ->
+        val pagingItems = pager.flow.collectAsLazyPagingItems()
+        categoryPagingItems[category] = pagingItems
+    }
 
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Fixed(if (uiState.categories.any {
@@ -241,115 +253,48 @@ private fun ArticleGrid(
             }
         }
 
-        items(
-            count = lazyPagingItems.itemCount,
-            span = { index ->
-                val article = lazyPagingItems[index]
-                if (article?.imageDimention == "Demi") {
-                    StaggeredGridItemSpan.FullLine
-                } else {
-                    StaggeredGridItemSpan.SingleLane
+        // Display categories in order, with NewArrivale first
+        uiState.categories.sortedBy {
+            if (it.nomCategorieInCategoriesTabele == "NewArrivale") 0 else 1
+        }.forEach { category ->
+            val lazyPagingItems = categoryPagingItems[category]
+
+            if (lazyPagingItems != null && lazyPagingItems.itemCount > 0) {
+                // Show category header if needed
+                if (category.displayedHeader) {
+                    item(span = StaggeredGridItemSpan.FullLine) {
+                        CategoryHeader(category)
+                    }
+                }
+
+                // Display category items
+                items(
+                    count = lazyPagingItems.itemCount,
+                    span = { index ->
+                        val article = lazyPagingItems[index]
+                        if (article?.imageDimention == "Demi") {
+                            StaggeredGridItemSpan.FullLine
+                        } else {
+                            StaggeredGridItemSpan.SingleLane
+                        }
+                    }
+                ) { index ->
+                    val article = lazyPagingItems[index]
+                    article?.let {
+                        ArticleItem(
+                            article = it,
+                            viewModel = viewModel,
+                            reloadTrigger = reloadTrigger,
+                            onClickToOpenWindos = onClickToOpenWindos,
+                            uiState = uiState
+                        )
+                    }
                 }
             }
-        ) { index ->
-            val article = lazyPagingItems[index]
-            article?.let {
-                ArticleItem(
-                    article = it,
-                    viewModel = viewModel,
-                    reloadTrigger = reloadTrigger,
-                    onClickToOpenWindos = onClickToOpenWindos,
-                    uiState = uiState
-                )
-            }
         }
     }
 }
 
-private fun LazyStaggeredGridScope.displayCategories(
-    uiState: UiState,
-    filterText: String,
-    gridColumns: Int,
-    viewModel: StartUpNewArticlesViewModels,
-    reloadTrigger: Int,
-    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit
-) {
-    // New Arrivals category
-    uiState.categories
-        .find { it.nomCategorieInCategoriesTabele == "NewArrivale" }
-        ?.let { category ->
-            val articles = uiState.articlesBasesStatTabelles.filter {
-                it.itsNewArrivale && matchesFilter(it, filterText)
-            }
-            if (articles.isNotEmpty()) {
-                displayCategoryContent(
-                    category = category,
-                    articles = articles,
-                    viewModel = viewModel,
-                    reloadTrigger = reloadTrigger,
-                    onClickToOpenWindos = onClickToOpenWindos,
-                    uiState = uiState
-                )
-            }
-        }
-
-    // Other categories
-    uiState.categories
-        .filter { it.nomCategorieInCategoriesTabele != "NewArrivale" }
-        .forEach { category ->
-            val articles = uiState.articlesBasesStatTabelles.filter {
-                it.nomCategorie == category.nomCategorieInCategoriesTabele &&
-                        !it.itsNewArrivale &&
-                        matchesFilter(it, filterText)
-            }
-            if (articles.isNotEmpty()) {
-                displayCategoryContent(
-                    category = category,
-                    articles = articles,
-                    viewModel = viewModel,
-                    reloadTrigger = reloadTrigger,
-                    onClickToOpenWindos = onClickToOpenWindos,
-                    uiState = uiState
-                )
-            }
-        }
-}
-
-private fun LazyStaggeredGridScope.displayCategoryContent(
-    category: CategoriesTabelle,
-    articles: List<ArticlesBasesStatsTabelle>,
-    viewModel: StartUpNewArticlesViewModels,
-    reloadTrigger: Int,
-    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
-    uiState: UiState
-) {
-    // Only show header if displayedHeader is true
-    if (category.displayedHeader) {
-        item(span = StaggeredGridItemSpan.FullLine) {
-            CategoryHeader(category)
-        }
-    }
-
-    items(
-        items = articles,
-        span = { article ->
-            // If the article has "Demi" imageDimension, make it span full width
-            if (article.imageDimention == "Demi") {
-                StaggeredGridItemSpan.FullLine
-            } else {
-                StaggeredGridItemSpan.SingleLane
-            }
-        }
-    ) { article ->
-        ArticleItem(
-            article = article,
-            viewModel = viewModel,
-            reloadTrigger = reloadTrigger,
-            onClickToOpenWindos = onClickToOpenWindos,
-            uiState = uiState
-        )
-    }
-}
 @Composable
 private fun ArticleDisplayScreen(
     uiState: UiState,
