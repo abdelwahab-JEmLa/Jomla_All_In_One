@@ -16,14 +16,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
@@ -51,12 +47,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -396,52 +395,6 @@ private fun ArticleItem(
     }
 }
 
-@Composable
-private fun DemiDiplayerMultiColor(
-    article: ArticlesBasesStatsTabelle,
-    viewModel: StartUpNewArticlesViewModels,
-    reloadTrigger: Int,
-    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
-    uiState: UiState
-) {
-    Column(modifier = Modifier.padding(8.dp)) {
-        ArticleDetails(article)
-        ColorImageWithDetails(
-            article = article,
-            viewModel = viewModel,
-            colorIndex = 0,
-            reloadTrigger = reloadTrigger,
-            modifier = Modifier.height(300.dp),
-            onClickToOpenWindow = onClickToOpenWindos,
-            uiState = uiState
-        )
-
-        LazyRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(350.dp)
-                .padding(vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            // Calculate available colors excluding the first one
-            val availableColors = (1..3).filter { index ->
-                article.getColorIdForIndex(index) != null
-            }
-
-            items(availableColors) { index ->
-                ColorImageWithDetails(
-                    article = article,
-                    viewModel = viewModel,
-                    colorIndex = index,
-                    reloadTrigger = reloadTrigger,
-                    modifier = Modifier.width(200.dp),
-                    onClickToOpenWindow = onClickToOpenWindos,
-                    uiState = uiState
-                )
-            }
-        }
-    }
-}
 
 @Composable
 private fun ArticleDiplayerHave1Color(
@@ -471,7 +424,8 @@ private fun ArticleDiplayerHave1Color(
                     indexColor = 0,
                     reloadKey = reloadTrigger,
                     onClickToOpenWindos,
-                    uiState
+                    uiState ,
+                    false ,
                 )
             }
             ArticleDetails(article)
@@ -491,13 +445,12 @@ private fun SmalleDiplayerHave3Color(
 ) {
     Card(
         modifier = modifier
-            .fillMaxWidth()
             .padding(4.dp)
+
     ) {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(),
+            ,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             // Main large image
@@ -531,6 +484,239 @@ private fun SmalleDiplayerHave3Color(
         }
     }
 }
+
+
+@Composable
+private fun DemiDiplayerMultiColor(
+    article: ArticlesBasesStatsTabelle,
+    viewModel: StartUpNewArticlesViewModels,
+    reloadTrigger: Int,
+    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    uiState: UiState,
+    modifier: Modifier = Modifier
+) {
+
+    Column(
+        modifier = modifier
+            .padding(8.dp)
+    ) {
+        ArticleDetails(article)
+            ColorImageWithDetails(
+                article = article,
+                viewModel = viewModel,
+                colorIndex = 0,
+                reloadTrigger = reloadTrigger,
+                modifier = modifier,
+                onClickToOpenWindow = onClickToOpenWindos,
+                uiState = uiState
+            )
+
+
+        LazyRow(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            val availableColors = (1..3).filter { index ->
+                article.getColorIdForIndex(index) != null
+            }
+
+            items(availableColors) { index ->
+
+                    ColorImageWithDetails(
+                        article = article,
+                        viewModel = viewModel,
+                        colorIndex = index,
+                        reloadTrigger = reloadTrigger,
+                        modifier = modifier.fillMaxSize(),
+                        onClickToOpenWindow = onClickToOpenWindos,
+                        uiState = uiState
+                    )
+
+            }
+        }
+    }
+}
+
+@Composable
+private fun ColorImageWithDetails(
+    article: ArticlesBasesStatsTabelle,
+    viewModel: StartUpNewArticlesViewModels,
+    colorIndex: Int,
+    reloadTrigger: Int,
+    modifier: Modifier = Modifier,
+    onClickToOpenWindow: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    uiState: UiState,
+) {
+    Box(modifier = modifier) {
+        val imageExists = remember(article.idArticle, colorIndex, reloadTrigger) {
+            checkImageExists(
+                viewModel = viewModel,
+                article = article,
+                colorIndex = colorIndex,
+                reloadTrigger = reloadTrigger
+            )
+        }
+
+        ImageDisplayer(
+            modifier = modifier,
+            article = article,
+            viewModel = viewModel,
+            indexColor = colorIndex,
+            reloadKey = reloadTrigger,
+            onClickToOpenWindow = onClickToOpenWindow,
+            uiState = uiState,
+            showOverlay = !imageExists,
+        )
+
+        if (imageExists) {
+            article.getColorIdForIndex(colorIndex)?.let { colorId ->
+                uiState.colorsArticlesTabelleModel.find { it.idColore == colorId }?.let { color ->
+                    ColorIndicator(
+                        iconColore = color.iconColore,
+                        modifier = modifier
+                            .align(Alignment.TopEnd)
+                            .padding(8.dp)
+                    )
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+fun ImageDisplayer(
+    modifier: Modifier = Modifier,
+    article: ArticlesBasesStatsTabelle,
+    viewModel: StartUpNewArticlesViewModels,
+    indexColor: Int = 0,
+    reloadKey: Any = Unit,
+    onClickToOpenWindow: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    uiState: UiState,
+    showOverlay: Boolean,
+) {
+    var currentQuality by remember { mutableStateOf(25f) }
+    var imagePixelSize by remember { mutableStateOf<IntSize?>(null) }
+
+    val baseImagePath = remember(viewModel.viewModelImagesPath, article.idArticle, indexColor) {
+        File(
+            viewModel.viewModelImagesPath,
+            "${article.idArticle}_${if (indexColor == -1) "Unite" else (indexColor + 1)}"
+        ).absolutePath
+    }
+
+    val imageExist by produceState<String?>(
+        initialValue = null,
+        key1 = baseImagePath,
+        key2 = reloadKey
+    ) {
+        value = withContext(Dispatchers.IO) {
+            listOf("jpg", "webp").firstNotNullOfOrNull { extension ->
+                val file = File("$baseImagePath.$extension")
+                if (file.exists() && file.canRead()) file.absolutePath else null
+            }
+        }
+    }
+
+    Box(modifier = modifier) {
+
+
+        GlideImage(
+            model = imageExist?.let { File(it) } ?: R.drawable.baked_goods_1,
+            contentDescription = "Article image ${article.idArticle}",
+            modifier = modifier
+                .fillMaxSize()
+                .clickable { onClickToOpenWindow(article, indexColor) }
+                .onSizeChanged { imagePixelSize = it }
+        ) {
+            it
+                .thumbnail(
+                    it.clone()
+                        .transform(jp.wasabeef.glide.transformations.BlurTransformation(25))
+                )
+                .transition(DrawableTransitionOptions.withCrossFade())
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .priority(Priority.HIGH)
+                .signature(ObjectKey("${article.idArticle}_${indexColor}_${currentQuality}"))
+                .listener(object : RequestListener<Drawable> {
+                    override fun onLoadFailed(
+                        e: GlideException?,
+                        model: Any?,
+                        target: Target<Drawable>,
+                        isFirstResource: Boolean
+                    ): Boolean = false
+
+                    override fun onResourceReady(
+                        resource: Drawable,
+                        model: Any,
+                        target: Target<Drawable>?,
+                        dataSource: DataSource,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        if (isFirstResource && currentQuality < 100f) {
+                            currentQuality = 100f
+                        }
+                        return false
+                    }
+                })
+        }
+
+        if (showOverlay) {
+            article.getColorIdForIndex(indexColor)?.let { colorId ->
+                uiState.colorsArticlesTabelleModel.find { it.idColore == colorId }?.let { color ->
+                    GlideImage(
+                        model = imageExist?.let { File(it) } ?: R.drawable.baked_goods_1,
+                        modifier = modifier.fillMaxSize() ,
+                        contentDescription = null
+                    ) {
+                        it
+                            .centerCrop()
+                            .transform(jp.wasabeef.glide.transformations.BlurTransformation(25))
+                    }
+                    ColorOverlay(
+                        color = color,
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ColorOverlay(
+    color: ColorsArticlesTabelle,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .padding(16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            AutoResizedTextClas(
+                text = color.iconColore,
+                modifier = modifier
+                    .fillMaxWidth()
+                    .weight(0.8f),
+                color = Color.White
+            )
+
+            AutoResizedTextClas(
+                text = color.nameColore,
+                modifier = modifier
+                    .fillMaxWidth()
+                    .weight(0.2f),
+                color = Color.White
+            )
+        }
+    }
+}
+
 
 @Composable
 private fun ColorIndicator(
@@ -585,169 +771,38 @@ private fun ArticleDetails(
     }
 }
 
+
+
+
+
+
 @Composable
-private fun ColorImageWithDetails(
-    article: ArticlesBasesStatsTabelle,
-    viewModel: StartUpNewArticlesViewModels,
-    colorIndex: Int,
-    reloadTrigger: Int,
+fun AutoResizedTextClas(
+    text: String,
     modifier: Modifier = Modifier,
-    onClickToOpenWindow: (ArticlesBasesStatsTabelle, Int) -> Unit,
-    uiState: UiState
+    color: Color = MaterialTheme.colorScheme.onSurface,
+    maxLines: Int = Int.MAX_VALUE
 ) {
-    Box(
-        modifier = modifier.fillMaxWidth()
-    ) {
-        val imageExists = remember(article.idArticle, colorIndex, reloadTrigger) {
-            checkImageExists(
-                viewModel = viewModel,
-                article = article,
-                colorIndex = colorIndex,
-                reloadTrigger = reloadTrigger
-            )
-        }
+    val initialFontSize = MaterialTheme.typography.bodyMedium.fontSize
+    var fontSize by remember { mutableStateOf(initialFontSize) }
+    var readyToDraw by remember { mutableStateOf(false) }
 
-        ImageDisplayer(
-            modifier = Modifier.fillMaxSize(),
-            article = article,
-            viewModel = viewModel,
-            indexColor = colorIndex,
-            reloadKey = reloadTrigger,
-            onClickToOpenWindow = onClickToOpenWindow,
-            uiState = uiState
-        )
-
-        if (imageExists) {
-            article.getColorIdForIndex(colorIndex)?.let { colorId ->
-                uiState.colorsArticlesTabelleModel.find { it.idColore == colorId }?.let { color ->
-                    ColorIndicator(
-                        iconColore = color.iconColore,
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .padding(8.dp)
-                    )
-                }
+    Text(
+        text = text,
+        color = color,
+        fontSize = fontSize,
+        maxLines = maxLines,
+        overflow = TextOverflow.Ellipsis,
+        modifier = modifier.drawWithContent { if (readyToDraw) drawContent() },
+        onTextLayout = { textLayoutResult ->
+            if (textLayoutResult.didOverflowHeight) {
+                fontSize *= 0.9f
+            } else {
+                readyToDraw = true
             }
         }
-    }
+    )
 }
-
-@OptIn(ExperimentalGlideComposeApi::class)
-@Composable
-fun ImageDisplayer(
-    modifier: Modifier = Modifier,
-    article: ArticlesBasesStatsTabelle,
-    viewModel: StartUpNewArticlesViewModels,
-    indexColor: Int = 0,
-    reloadKey: Any = Unit,
-    onClickToOpenWindow: (ArticlesBasesStatsTabelle, Int) -> Unit,
-    uiState: UiState
-) {
-    val viewModelImagesPath = viewModel.viewModelImagesPath
-    var currentQuality by remember { mutableStateOf(25f) }
-
-    val baseImagePath = remember(viewModelImagesPath, article.idArticle, indexColor) {
-        File(
-            viewModelImagesPath,
-            "${article.idArticle}_${if (indexColor == -1) "Unite" else (indexColor + 1)}"
-        ).absolutePath
-    }
-
-    val imageExist by produceState<String?>(
-        initialValue = null,
-        key1 = baseImagePath,
-        key2 = reloadKey
-    ) {
-        value = withContext(Dispatchers.IO) {
-            listOf("jpg", "webp").firstNotNullOfOrNull { extension ->
-                val file = File("$baseImagePath.$extension")
-                if (file.exists() && file.canRead()) file.absolutePath else null
-            }
-        }
-    }
-
-    val imageDimension = 200.dp
-    val blurRadius = 25
-    val dimensionPx = imageDimension.value.toInt()
-
-    GlideImage(
-        model = imageExist?.let { File(it) } ?: R.drawable.baked_goods_1,
-        contentDescription = "Article image ${article.idArticle}",
-        modifier = modifier
-            .size(imageDimension)
-            .clickable { onClickToOpenWindow(article, indexColor) }
-    ) {
-        it
-            .override(dimensionPx, dimensionPx)
-            .fitCenter()
-            .thumbnail(
-                it.clone()
-                    .override(dimensionPx, dimensionPx)
-                    .transform(jp.wasabeef.glide.transformations.BlurTransformation(blurRadius))
-            )
-            .transition(DrawableTransitionOptions.withCrossFade())
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
-            .priority(Priority.HIGH)
-            .signature(ObjectKey("${article.idArticle}_${indexColor}_${currentQuality}"))
-            .listener(object : RequestListener<Drawable> {
-                override fun onLoadFailed(
-                    e: GlideException?,
-                    model: Any?,
-                    target: Target<Drawable>,
-                    isFirstResource: Boolean
-                ): Boolean = false
-
-                override fun onResourceReady(
-                    resource: Drawable,
-                    model: Any,
-                    target: Target<Drawable>?,
-                    dataSource: DataSource,
-                    isFirstResource: Boolean
-                ): Boolean {
-                    if (isFirstResource && currentQuality < 100f) {
-                        currentQuality = 100f
-                    }
-                    return false
-                }
-            })
-    }
-}
-@Composable
-private fun ColorOverlay(
-    color: ColorsArticlesTabelle,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = color.iconColore,
-            style = MaterialTheme.typography.displayLarge,
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(0.8f)
-                .wrapContentHeight(),
-            textAlign = TextAlign.Center,
-            fontSize = MaterialTheme.typography.displayLarge.fontSize,
-            overflow = TextOverflow.Visible,
-            softWrap = true
-        )
-
-        Text(
-            text = color.nameColore,
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(0.2f),
-            textAlign = TextAlign.Center
-        )
-    }
-}
-
 
 
 
@@ -761,11 +816,6 @@ private fun ArticlesBasesStatsTabelle.getColorIdForIndex(index: Int): Long? {
     }
 }
 
-
-
-private fun matchesFilter(article: ArticlesBasesStatsTabelle, filterText: String): Boolean {
-    return filterText.isEmpty() || article.nomArticleFinale.contains(filterText, ignoreCase = true)
-}
 
 private fun countColors(article: ArticlesBasesStatsTabelle): Int {
     return listOf(
