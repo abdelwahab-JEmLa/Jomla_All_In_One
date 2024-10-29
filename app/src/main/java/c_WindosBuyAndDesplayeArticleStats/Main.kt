@@ -182,7 +182,7 @@ fun WindosBuyAndDesplayeArticleStats(
                         }
 
                         OutlinedButton(
-                            onClick = { showConfirmDialog = true }
+                            onClick = onDismiss
                         ) {
                             Text("Cancel")
                         }

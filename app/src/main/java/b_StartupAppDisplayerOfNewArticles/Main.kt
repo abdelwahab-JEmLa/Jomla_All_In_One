@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,7 +22,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
@@ -413,31 +415,29 @@ private fun DemiDiplayerMultiColor(
             onClickToOpenWindow = onClickToOpenWindos,
             uiState = uiState
         )
-        Box(
+
+        LazyRow(
             modifier = Modifier
                 .fillMaxWidth()
-                .aspectRatio(2f),
-            contentAlignment = Alignment.Center
+                .height(350.dp)
+                .padding(vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Row {
-                // Calculate available colors excluding the first one (index 0)
-                val availableColors = (1..3).filter { index ->
-                    article.getColorIdForIndex(index) != null
-                }
+            // Calculate available colors excluding the first one
+            val availableColors = (1..3).filter { index ->
+                article.getColorIdForIndex(index) != null
+            }
 
-                availableColors.forEach { index ->
-                    ColorImageWithDetails(
-                        article = article,
-                        viewModel = viewModel,
-                        colorIndex = index,
-                        reloadTrigger = reloadTrigger,
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(350.dp),
-                        onClickToOpenWindow = onClickToOpenWindos,
-                        uiState = uiState
-                    )
-                }
+            items(availableColors) { index ->
+                ColorImageWithDetails(
+                    article = article,
+                    viewModel = viewModel,
+                    colorIndex = index,
+                    reloadTrigger = reloadTrigger,
+                    modifier = Modifier.width(200.dp),
+                    onClickToOpenWindow = onClickToOpenWindos,
+                    uiState = uiState
+                )
             }
         }
     }
