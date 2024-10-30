@@ -383,6 +383,15 @@ private fun ArticleItem(
                     uiState = uiState
                 )
             }
+            article.imageDimention == "" && colorCount >1 -> {
+                DemiDiplayer2Color(
+                    article = article,
+                    viewModel = viewModel,
+                    reloadTrigger = reloadTrigger,
+                    onClickToOpenWindos = onClickToOpenWindos,
+                    uiState = uiState
+                )
+            }
             colorCount == 3 -> {
                 SmalleDiplayerHave3Color(
                     article = article,
@@ -402,42 +411,6 @@ private fun ArticleItem(
                     uiState = uiState
                 )
             }
-        }
-    }
-}
-
-
-@Composable
-private fun ArticleDiplayerHave1Color(
-    article: ArticlesBasesStatsTabelle,
-    viewModel: StartUpNewArticlesViewModels,
-    reloadTrigger: Int,
-    modifier: Modifier,
-    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
-    uiState: UiState
-) {
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(4.dp)
-    ) {
-        Column(modifier = modifier.padding(8.dp)) {
-            Box(
-                modifier = modifier,
-                contentAlignment = Alignment.Center
-            ) {
-                ImageDisplayer(
-                    modifier =modifier,
-                    article = article,
-                    viewModel = viewModel,
-                    indexColor = 0,
-                    reloadKey = reloadTrigger,
-                    onClickToOpenWindos,
-                    uiState ,
-                    false ,
-                )
-            }
-            ArticleDetails(article)
         }
     }
 }
@@ -482,7 +455,89 @@ private fun DemiDiplayer2Color(
 
     }
 }
+@Composable
+private fun DemiDiplayerCounteColorPlus2(
+    article: ArticlesBasesStatsTabelle,
+    viewModel: StartUpNewArticlesViewModels,
+    reloadTrigger: Int,
+    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    uiState: UiState,
+    modifier: Modifier = Modifier
+) {
 
+    Column(
+        modifier = modifier
+            .padding(8.dp)
+    ) {
+
+        ArticleDetails(article)
+        ColorImageWithDetails(
+            article = article,
+            viewModel = viewModel,
+            colorIndex = 0,
+            reloadTrigger = reloadTrigger,
+            onClickToOpenWindow = onClickToOpenWindos,
+            uiState = uiState,
+        )
+
+        LazyRow(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            val availableColors = (1..3).filter { index ->
+                article.getColorIdForIndex(index) != null
+            }
+            items(availableColors) { index ->
+                ColorImageWithDetails(
+                    article = article,
+                    viewModel = viewModel,
+                    colorIndex = index,
+                    reloadTrigger = reloadTrigger,
+                    modifier = modifier.width(150.dp),
+                    onClickToOpenWindow = onClickToOpenWindos,
+                    uiState = uiState,
+                )
+
+            }
+        }
+    }
+}
+@Composable
+private fun ArticleDiplayerHave1Color(
+    article: ArticlesBasesStatsTabelle,
+    viewModel: StartUpNewArticlesViewModels,
+    reloadTrigger: Int,
+    modifier: Modifier,
+    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    uiState: UiState
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(4.dp)
+    ) {
+        Column(modifier = modifier.padding(8.dp)) {
+            Box(
+                modifier = modifier,
+                contentAlignment = Alignment.Center
+            ) {
+                ImageDisplayer(
+                    modifier =modifier,
+                    article = article,
+                    viewModel = viewModel,
+                    indexColor = 0,
+                    reloadKey = reloadTrigger,
+                    onClickToOpenWindos,
+                    uiState ,
+                    false ,
+                )
+            }
+            ArticleDetails(article)
+        }
+    }
+}
 @Composable
 private fun SmalleDiplayerHave3Color(
     article: ArticlesBasesStatsTabelle,
@@ -519,9 +574,10 @@ private fun SmalleDiplayerHave3Color(
                     viewModel = viewModel,
                     colorIndex = index + 1,
                     reloadTrigger = reloadTrigger,
-                    modifier = Modifier.width(150.dp),
+                    modifier = Modifier.height(40.dp),
                     onClickToOpenWindow = onClickToOpenWindos,
                     uiState = uiState,
+                    imageScale = ContentScale.Crop
                 )
             }
 
@@ -534,57 +590,6 @@ private fun SmalleDiplayerHave3Color(
 }
 
 
-@Composable
-private fun DemiDiplayerCounteColorPlus2(
-    article: ArticlesBasesStatsTabelle,
-    viewModel: StartUpNewArticlesViewModels,
-    reloadTrigger: Int,
-    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
-    uiState: UiState,
-    modifier: Modifier = Modifier
-) {
-
-    Column(
-        modifier = modifier
-            .padding(8.dp)
-    ) {
-
-        ArticleDetails(article)
-            ColorImageWithDetails(
-                article = article,
-                viewModel = viewModel,
-                colorIndex = 0,
-                reloadTrigger = reloadTrigger,
-                onClickToOpenWindow = onClickToOpenWindos,
-                uiState = uiState,
-            )
-
-        LazyRow(
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            val availableColors = (1..3).filter { index ->
-                article.getColorIdForIndex(index) != null
-            }
-
-            items(availableColors) { index ->
-
-                    ColorImageWithDetails(
-                        article = article,
-                        viewModel = viewModel,
-                        colorIndex = index,
-                        reloadTrigger = reloadTrigger,
-                        modifier = modifier.fillMaxSize(),
-                        onClickToOpenWindow = onClickToOpenWindos,
-                        uiState = uiState,
-                    )
-
-            }
-        }
-    }
-}
 
 @Composable
 private fun ColorImageWithDetails(
