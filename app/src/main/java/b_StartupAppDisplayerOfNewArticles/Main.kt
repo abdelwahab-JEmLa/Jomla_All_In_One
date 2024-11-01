@@ -424,6 +424,7 @@ private fun ArticleItem(
     }
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 private fun DemiDiplayer2Color(
     article: ArticlesBasesStatsTabelle,
@@ -450,17 +451,50 @@ private fun DemiDiplayer2Color(
             uiState = uiState,
             imageScale =  ContentScale.Fit
         )
-
-        ColorImageWithDetails(
-            article = article,
-            viewModel = viewModel,
-            colorIndex = 1,
-            modifier = Modifier.height(40.dp),   //TODO pk ici ca be redemontion pas
-            reloadTrigger = reloadTrigger,
-            onClickToOpenWindow = onClickToOpenWindos,
-            uiState = uiState,
-            imageScale =  ContentScale.Crop
-        )
+        val imageExists = remember(article.idArticle, 1, reloadTrigger) {
+            checkImageExists(
+                viewModel = viewModel,
+                article = article,
+                colorIndex = 1,
+                reloadTrigger = reloadTrigger
+            )
+        }
+        if (imageExists) {
+            ColorImageWithDetails(
+                article = article,
+                viewModel = viewModel,
+                colorIndex = 1,
+                modifier = Modifier.height(40.dp),
+                reloadTrigger = reloadTrigger,
+                onClickToOpenWindow = onClickToOpenWindos,
+                uiState = uiState,
+                imageScale = ContentScale.Crop
+            )
+        }  else {
+            Box(modifier = Modifier.height(40.dp)) {
+            article.getColorIdForIndex(1)?.let { colorId ->
+                uiState.colorsArticlesTabelleModel.find { it.idColore == colorId }?.let { color ->
+                    GlideImage(
+                        model = R.drawable.baked_goods_1,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(RoundedCornerShape(8.dp)),
+                        contentDescription = null
+                    ) {
+                        it
+                            .transform(jp.wasabeef.glide.transformations.BlurTransformation(25))
+                    }
+                    ColorOverlay(
+                        color = color,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(RoundedCornerShape(8.dp))
+                    )
+                }
+            }
+        }
+        }
     }
 }
 
@@ -562,8 +596,7 @@ private fun SmalleDiplayerHave3Color(
 
     ) {
         Column(
-            modifier = Modifier
-            ,
+            modifier = Modifier,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             // Main large image
@@ -660,7 +693,8 @@ fun ImageDisplayer(
     uiState: UiState,
     showOverlay: Boolean,
     cornerRadius: Dp = 8.dp,
-    imageScale: ContentScale = ContentScale.Fit
+    imageScale: ContentScale  = ContentScale.Fit
+
 ) {
     var currentQuality by remember { mutableStateOf(25f) }
 
@@ -686,7 +720,7 @@ fun ImageDisplayer(
 
     Box(modifier = modifier) {
         GlideImage(
-            model = imageExist?.let { File(it) } ?: R.drawable.baked_goods_1,
+            model = imageExist?.let { File(it) } ,
             contentDescription = "Article image ${article.idArticle}",
             contentScale = imageScale,
             modifier = Modifier
@@ -730,8 +764,8 @@ fun ImageDisplayer(
             article.getColorIdForIndex(indexColor)?.let { colorId ->
                 uiState.colorsArticlesTabelleModel.find { it.idColore == colorId }?.let { color ->
                     GlideImage(
-                        model = imageExist?.let { File(it) } ?: R.drawable.baked_goods_1,
-                        contentScale = imageScale,
+                        model = R.drawable.baked_goods_1,
+                        contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .fillMaxSize()
                             .clip(RoundedCornerShape(cornerRadius)),
