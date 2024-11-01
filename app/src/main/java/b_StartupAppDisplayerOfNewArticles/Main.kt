@@ -9,6 +9,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,6 +30,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -60,6 +62,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -532,7 +535,7 @@ private fun SmallDisplayerDualColor(
             viewModel = viewModel,
             colorIndex = 1,
             reloadTrigger = reloadTrigger,
-            modifier = Modifier.height(70.dp),
+            modifier = Modifier.height(130.dp),
             onClickToOpenWindow = onClickToOpenWindos,
             uiState = uiState,
             contentScale = ContentScale.Crop
@@ -863,6 +866,43 @@ fun AutoResizedText(
         }
     )
 }
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+private fun ColorOverlayWithBlur(
+    color: ColorsArticlesTabelle,
+    cornerRadius: Dp,
+    modifier: Modifier = Modifier
+) {
+    Box {
+        // Blurred background image
+        GlideImage(
+            model = R.drawable.logo,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(RoundedCornerShape(cornerRadius)),
+            contentDescription = null
+        ) {
+            it.transform(jp.wasabeef.glide.transformations.BlurTransformation(25))
+        }
+
+        // Semi-transparent black overlay
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(RoundedCornerShape(cornerRadius))
+                .background(Color.Black.copy(alpha = 0.4f))
+        )
+
+        // Color overlay with content
+        ColorOverlay(
+            color = color,
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(RoundedCornerShape(cornerRadius))
+        )
+    }
+}
 
 @Composable
 private fun ColorOverlay(
@@ -878,28 +918,50 @@ private fun ColorOverlay(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(IntrinsicSize.Min),  // Changé ici
+                .height(IntrinsicSize.Min),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            AutoResizedText(
-                text = color.nameColore,
+            Box(
                 modifier = Modifier
                     .weight(0.6f)
-                    .wrapContentHeight(),  // Changé ici
-                color = Color.White
-            )
+                    .wrapContentHeight(),
+                contentAlignment = Alignment.Center
+            ) {
+                // White circle background with alpha
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .background(
+                            color = Color.White.copy(alpha = 0.15f),
+                            shape = CircleShape
+                        )
+                )
+
+                AutoResizedText(
+                    text = color.nameColore,
+                    modifier = Modifier
+                        .padding(vertical = 8.dp, horizontal = 16.dp),
+                    color = Color.White,
+                    style = MaterialTheme.typography.headlineMedium.copy(
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+            }
+
             AutoResizedText(
                 text = color.iconColore,
                 modifier = Modifier
                     .weight(0.4f)
-                    .wrapContentHeight(),  // Changé ici
-                color = Color.White
+                    .wrapContentHeight(),
+                color = Color.White,
+                style = MaterialTheme.typography.headlineMedium.copy(
+                    fontWeight = FontWeight.Bold
+                )
             )
         }
     }
 }
-
 @Composable
 private fun ArticleImageWithOverlay(
     article: ArticlesBasesStatsTabelle,
@@ -992,34 +1054,6 @@ private fun RequestBuilder<Drawable>.applyImageOptions(
             return false
         }
     })
-
-@OptIn(ExperimentalGlideComposeApi::class)
-@Composable
-private fun ColorOverlayWithBlur(
-    color: ColorsArticlesTabelle,
-    cornerRadius: Dp,
-    modifier: Modifier = Modifier
-) {
-    Box {
-        GlideImage(
-            model = R.drawable.logo,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxSize()
-                .clip(RoundedCornerShape(cornerRadius)),
-            contentDescription = null
-        ) {
-            it.transform(jp.wasabeef.glide.transformations.BlurTransformation(25))
-        }
-
-        ColorOverlay(
-            color = color,
-            modifier = Modifier
-                .fillMaxSize()
-                .clip(RoundedCornerShape(cornerRadius))
-        )
-    }
-}
 
 
 
