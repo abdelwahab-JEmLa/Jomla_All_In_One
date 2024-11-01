@@ -156,7 +156,6 @@ private fun SearchFilter(
     }
 }
 
-
 class ArticlePagingSource(
     private val articles: List<ArticlesBasesStatsTabelle>,
     private val filterText: String
