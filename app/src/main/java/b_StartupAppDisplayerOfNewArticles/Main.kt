@@ -13,6 +13,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,6 +21,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
@@ -37,10 +39,12 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
@@ -55,6 +59,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -726,6 +731,164 @@ private fun countColors(article: ArticlesBasesStatsTabelle): Int {
         article.couleur4
     ).count { !it.isNullOrEmpty() }
 }
+@Composable
+private fun ColorIndicator(
+    iconColore: String,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(4.dp),
+        tonalElevation = 4.dp,
+        shadowElevation = 4.dp
+    ) {
+        Text(
+            text = iconColore,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            style = MaterialTheme.typography.labelLarge
+        )
+    }
+}
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+private fun ImageDisplayer(
+    modifier: Modifier = Modifier,
+    article: ArticlesBasesStatsTabelle,
+    viewModel: StartUpNewArticlesViewModels,
+    indexColor: Int,
+    reloadKey: Any,
+    onClickToOpenWindow: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    uiState: UiState,
+    showOverlay: Boolean,
+    imageScale: ContentScale = ContentScale.Fit,
+    cornerRadius: Dp = 8.dp
+) {
+    var currentQuality by remember { mutableStateOf(25f) }
+
+    val imagePath by remember(viewModel.viewModelImagesPath, article.idArticle, indexColor) {
+        derivedStateOf {
+            val baseFileName = "${article.idArticle}_${if (indexColor == -1) "Unite" else (indexColor + 1)}"
+            File(viewModel.viewModelImagesPath, baseFileName)
+        }
+    }
+
+    val imageFile by produceState<File?>(
+        initialValue = null,
+        key1 = imagePath,
+        key2 = reloadKey
+    ) {
+        value = withContext(Dispatchers.IO) {
+            listOf("jpg", "webp")
+                .asSequence()
+                .map { ext -> File("${imagePath.absolutePath}.$ext") }
+                .firstOrNull { it.exists() && it.canRead() }
+        }
+    }
+
+    Box(modifier = modifier) {
+        imageFile?.let { file ->
+            GlideImage(
+                model = file,
+                contentDescription = "Article image ${article.idArticle}",
+                contentScale = imageScale,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(cornerRadius))
+                    .clickable { onClickToOpenWindow(article, indexColor) }
+            ) {
+                it.applyImageOptions(article, indexColor, currentQuality) { isFirstResource ->
+                    if (isFirstResource && currentQuality < 100f) {
+                        currentQuality = 100f
+                    }
+                }
+            }
+        }
+
+        if (showOverlay) {
+            article.getColorIdForIndex(indexColor)?.let { colorId ->
+                uiState.colorsArticlesTabelleModel.find { it.idColore == colorId }?.let { color ->
+                    ColorOverlayWithBlur(
+                        color = color,
+                        cornerRadius = cornerRadius,
+                        modifier = Modifier.matchParentSize()
+                    )
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
+fun AutoResizedText(
+    text: String,
+    modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colorScheme.onSurface,
+    style: TextStyle = MaterialTheme.typography.headlineMedium,
+    maxLines: Int = Int.MAX_VALUE
+) {
+    var fontSize by remember(text) {
+        mutableStateOf(style.fontSize)
+    }
+
+    var previousFontSize by remember {
+        mutableStateOf(fontSize)
+    }
+
+    Text(
+        text = text,
+        color = color,
+        fontSize = fontSize,
+        maxLines = maxLines,
+        overflow = TextOverflow.Ellipsis,
+        modifier = modifier,
+        onTextLayout = { textLayoutResult ->
+            if (textLayoutResult.hasVisualOverflow) {
+                previousFontSize = fontSize
+                fontSize = fontSize * 0.9f
+            } else if (fontSize != previousFontSize) {
+                previousFontSize = fontSize
+            }
+        }
+    )
+}
+
+@Composable
+private fun ColorOverlay(
+    color: ColorsArticlesTabelle,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .padding(16.dp)
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(IntrinsicSize.Min),  // Changé ici
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            AutoResizedText(
+                text = color.nameColore,
+                modifier = Modifier
+                    .weight(0.6f)
+                    .wrapContentHeight(),  // Changé ici
+                color = Color.White
+            )
+            AutoResizedText(
+                text = color.iconColore,
+                modifier = Modifier
+                    .weight(0.4f)
+                    .wrapContentHeight(),  // Changé ici
+                color = Color.White
+            )
+        }
+    }
+}
 
 @Composable
 private fun ArticleImageWithOverlay(
@@ -784,82 +947,7 @@ private fun ArticlesBasesStatsTabelle.getColorForIndex(index: Int): String? {
         else -> null
     }
 }
-@Composable
-private fun ColorIndicator(
-    iconColore: String,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier,
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        Text(
-            text = iconColore,
-            modifier = Modifier.padding(4.dp)
-        )
-    }
-}
 
-
-@OptIn(ExperimentalGlideComposeApi::class)
-@Composable
-private fun ImageDisplayer(
-    article: ArticlesBasesStatsTabelle,
-    viewModel: StartUpNewArticlesViewModels,
-    indexColor: Int,
-    reloadKey: Any,
-    onClickToOpenWindow: (ArticlesBasesStatsTabelle, Int) -> Unit,
-    uiState: UiState,
-    showOverlay: Boolean,
-    imageScale: ContentScale = ContentScale.Fit,
-    cornerRadius: Dp = 8.dp,
-    modifier: Modifier = Modifier
-) {
-    var currentQuality by remember { mutableStateOf(25f) }
-    val baseImagePath = remember(viewModel.viewModelImagesPath, article.idArticle, indexColor) {
-        File(
-            viewModel.viewModelImagesPath,
-            "${article.idArticle}_${if (indexColor == -1) "Unite" else (indexColor + 1)}"
-        ).absolutePath
-    }
-
-    val imageExist by produceState<String?>(
-        initialValue = null,
-        key1 = baseImagePath,
-        key2 = reloadKey
-    ) {
-        value = withContext(Dispatchers.IO) {
-            listOf("jpg", "webp").firstNotNullOfOrNull { extension ->
-                val file = File("$baseImagePath.$extension")
-                if (file.exists() && file.canRead()) file.absolutePath else null
-            }
-        }
-    }
-
-    Box(modifier = modifier) {
-        GlideImage(
-            model = imageExist?.let { File(it) },
-            contentDescription = "Article image ${article.idArticle}",
-            contentScale = imageScale,
-            modifier = Modifier
-                .fillMaxSize()
-                .clip(RoundedCornerShape(cornerRadius))
-                .clickable { onClickToOpenWindow(article, indexColor) }
-        ) {
-            it.applyImageOptions(article, indexColor, currentQuality) {
-                if (it && currentQuality < 100f) currentQuality = 100f
-            }
-        }
-
-        if (showOverlay) {
-            article.getColorIdForIndex(indexColor)?.let { colorId ->
-                uiState.colorsArticlesTabelleModel.find { it.idColore == colorId }?.let { color ->
-                    ColorOverlayWithBlur(color = color, cornerRadius = cornerRadius)
-                }
-            }
-        }
-    }
-}
 
 private fun RequestBuilder<Drawable>.applyImageOptions(
     article: ArticlesBasesStatsTabelle,
@@ -924,36 +1012,7 @@ private fun ColorOverlayWithBlur(
 }
 
 
-@Composable
-private fun ColorOverlay(
-    color: ColorsArticlesTabelle,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .padding(16.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Row(
-            modifier = Modifier,
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically  // Changed from verticalArrangement
-        ) {
-            AutoResizedTextClas(
-                text = color.nameColore,
-                modifier = Modifier  // Use fresh Modifier instead of passed modifier
-                    .weight(0.6f),
-                color = Color.White
-            )
-            AutoResizedTextClas(
-                text = color.iconColore,
-                modifier = Modifier  // Use fresh Modifier instead of passed modifier
-                    .weight(0.4f),
-                color = Color.White
-            )
-        }
-    }
-}
+
 
 
 @Composable
