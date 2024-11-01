@@ -428,7 +428,6 @@ class ArticlePagingSource(
 // Update the ArticleLayout sealed class to include all required layouts
 sealed class ArticleLayout {
     data object SingleGrid : ArticleLayout() // Single item in grid
-    data object SingleFull : ArticleLayout() // Single item full width
     data object DemiDual : ArticleLayout() // Half-width dual color
     data object DemiMulti : ArticleLayout() // Half-width multi color
     data object SmallDual : ArticleLayout() // Small dual color
@@ -445,10 +444,6 @@ sealed class ArticleLayout {
     ) {
         when (this) {
             is SingleGrid -> SingleColorDisplayer(
-                article, viewModel, reloadTrigger, onClickToOpenWindos, uiState,
-                modifier.fillMaxWidth()
-            )
-            is SingleFull -> SingleColorDisplayer(
                 article, viewModel, reloadTrigger, onClickToOpenWindos, uiState,
                 modifier.fillMaxWidth()
             )
@@ -487,11 +482,10 @@ private fun ArticleItem(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         val layout = when {
-            article.imageDimention == "Demi" && colorCount > 2 -> ArticleLayout.DemiMulti
             article.imageDimention == "Demi" && colorCount == 2 -> ArticleLayout.DemiDual
-            colorCount > 2 -> ArticleLayout.SmallMulti
+            article.imageDimention == "Demi" && colorCount > 2 -> ArticleLayout.DemiMulti
             colorCount == 2 -> ArticleLayout.SmallDual
-            article.imageDimention == "Full" -> ArticleLayout.SingleFull
+            colorCount > 2 -> ArticleLayout.SmallMulti
             else -> ArticleLayout.SingleGrid
         }
 
