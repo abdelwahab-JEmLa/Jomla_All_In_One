@@ -334,6 +334,32 @@ class ArticlePagingSource(
         }
     }
 
+    private fun countArticleColors(article: ArticlesBasesStatsTabelle): Int {
+        return listOf(
+            article.couleur1,
+            article.couleur2,
+            article.couleur3,
+            article.couleur4
+        ).count { !it.isNullOrEmpty() }
+    }
+
+    private fun matchesLayoutCriteria(article: ArticlesBasesStatsTabelle): Boolean {
+        val colorCount = countArticleColors(article)
+        return when {
+            // Empty imageDimension cases
+            article.imageDimention == "" && colorCount == 1 -> true
+            article.imageDimention == "" && colorCount == 2 -> true
+            article.imageDimention == "" && colorCount == 3 -> true
+            article.imageDimention == "" && colorCount == 4 -> true
+            // Demi imageDimension cases
+            article.imageDimention == "Demi" && colorCount == 1 -> true
+            article.imageDimention == "Demi" && colorCount == 2 -> true
+            article.imageDimention == "Demi" && colorCount == 3 -> true
+            article.imageDimention == "Demi" && colorCount == 4 -> true
+            else -> false
+        }
+    }
+
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ArticlesBasesStatsTabelle> {
         val page = params.key ?: 0
         val pageSize = params.loadSize
@@ -342,16 +368,13 @@ class ArticlePagingSource(
             when {
                 !modeFilterToTest -> true // Show all articles when modeFilterToTest is false
                 filterText.isEmpty() -> {
-                    article.nomArticleFinale.startsWith("car", ignoreCase = true)
-                            article.nomArticleFinale.startsWith("may", ignoreCase = true)  ||
-                    article.nomArticleFinale.startsWith("pup", ignoreCase = true)
+                    // First filter by layout criteria
+                    matchesLayoutCriteria(article)
                 }
                 else -> {
-                    (article.nomArticleFinale.startsWith("car", ignoreCase = true) ||
-                            article.nomArticleFinale.startsWith("may", ignoreCase = true)) ||
-                            article.nomArticleFinale.startsWith("pup", ignoreCase = true)   &&
-
-                    article.nomArticleFinale.contains(filterText, ignoreCase = true)
+                    // When there's filter text, combine all conditions
+                    matchesLayoutCriteria(article) &&
+                            article.nomArticleFinale.contains(filterText, ignoreCase = true)
                 }
             }
         }
@@ -366,7 +389,6 @@ class ArticlePagingSource(
         )
     }
 }
-
 
 // Update the ArticleLayout sealed class to include all required layouts
 sealed class ArticleLayout {
