@@ -390,9 +390,9 @@ private fun ArticleItem(
 
 sealed class ArticleLayout {
     data object DemiMultiColor : ArticleLayout()
-    object DemiDualColor : ArticleLayout()
-    object Small : ArticleLayout()
-    object Single : ArticleLayout()
+    data object DemiDualColor : ArticleLayout()
+    data  object Small : ArticleLayout()
+    data object Single : ArticleLayout()
 
     @Composable
     fun Content(
@@ -404,6 +404,9 @@ sealed class ArticleLayout {
         modifier: Modifier = Modifier
     ) {
         when (this) {
+            is Single -> SingleColorDisplayer(
+                article, viewModel, reloadTrigger, onClickToOpenWindos, uiState, modifier
+            )
             is DemiDualColor -> DemiDisplayerDualColor(
                 article, viewModel, reloadTrigger, onClickToOpenWindos, uiState, modifier
             )
@@ -411,9 +414,6 @@ sealed class ArticleLayout {
                 article, viewModel, reloadTrigger, onClickToOpenWindos, uiState, modifier
             )
             is Small -> SmallDisplayerThreeColor(
-                article, viewModel, reloadTrigger, onClickToOpenWindos, uiState, modifier
-            )
-            is Single -> SingleColorDisplayer(
                 article, viewModel, reloadTrigger, onClickToOpenWindos, uiState, modifier
             )
         }
