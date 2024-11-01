@@ -859,7 +859,7 @@ fun AutoResizedText(
         onTextLayout = { textLayoutResult ->
             if (textLayoutResult.hasVisualOverflow) {
                 previousFontSize = fontSize
-                fontSize = fontSize * 0.9f
+                fontSize *= 0.9f
             } else if (fontSize != previousFontSize) {
                 previousFontSize = fontSize
             }
@@ -942,10 +942,11 @@ private fun ColorOverlay(
                     text = color.nameColore,
                     modifier = Modifier
                         .padding(vertical = 8.dp, horizontal = 16.dp),
-                    color = Color.White,
+                    color = Color.White.copy(alpha = 0.9f),  // Added alpha to text
                     style = MaterialTheme.typography.headlineMedium.copy(
                         fontWeight = FontWeight.Bold
-                    )
+                    ),
+                    maxLines = 1
                 )
             }
 
@@ -954,10 +955,11 @@ private fun ColorOverlay(
                 modifier = Modifier
                     .weight(0.4f)
                     .wrapContentHeight(),
-                color = Color.White,
+                color = Color.White.copy(alpha = 0.4f),  // Added matching alpha to maintain consistency
                 style = MaterialTheme.typography.headlineMedium.copy(
                     fontWeight = FontWeight.Bold
-                )
+                ),
+                maxLines = 1
             )
         }
     }
