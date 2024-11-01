@@ -56,7 +56,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
@@ -124,52 +123,111 @@ fun StartupAppDisplayerOfNewArticles(
         modeFilterToTest=modeFilterToTest
     )
 }
+class ArticlePagingSource(
+    private val articles: List<ArticlesBasesStatsTabelle>,
+    private val filterText: String,
+    private val modeFilterToTest: Boolean
+) : PagingSource<Int, ArticlesBasesStatsTabelle>() {
 
-@Composable
-private fun SearchFilter(
-    showFilter: Boolean,
-    filterText: String,
-    onFilterTextChange: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val keyboardController = LocalSoftwareKeyboardController.current
-    val focusRequester = remember { FocusRequester() }
+    // Configuration class to make the criteria clearer
+    private data class ArticleConfiguration(
+        val imageDimension: String,
+        val colorCount: Int,
+        val description: String
+    )
 
-    AnimatedVisibility(
-        visible = showFilter,
-        enter = fadeIn() + expandVertically(),
-        exit = fadeOut() + shrinkVertically()
-    ) {
-        OutlinedTextField(
-            value = filterText,
-            onValueChange = onFilterTextChange,
-            label = { Text("Filter Articles") },
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-                .focusRequester(focusRequester),
-            leadingIcon = {
-                Icon(Icons.Default.Search, contentDescription = "Search")
-            },
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    keyboardController?.hide()
-                }
-            )
-        )
-    }
+    // Define all 8 required configurations
+    private val requiredConfigurations = listOf(
+        ArticleConfiguration("", 1, "Empty dimension with 1 color"),
+        ArticleConfiguration("", 2, "Empty dimension with 2 colors"),
+        ArticleConfiguration("", 3, "Empty dimension with 3 colors"),
+        ArticleConfiguration("", 4, "Empty dimension with 4 colors"),
+        ArticleConfiguration("Demi", 1, "Demi dimension with 1 color"),
+        ArticleConfiguration("Demi", 2, "Demi dimension with 2 colors"),
+        ArticleConfiguration("Demi", 3, "Demi dimension with 3 colors"),
+        ArticleConfiguration("Demi", 4, "Demi dimension with 4 colors")
+    )
 
-    LaunchedEffect(showFilter) {
-        if (showFilter) {
-            focusRequester.requestFocus()
-            keyboardController?.show()
+    override fun getRefreshKey(state: PagingState<Int, ArticlesBasesStatsTabelle>): Int? {
+        return state.anchorPosition?.let { anchorPosition ->
+            val anchorPage = state.closestPageToPosition(anchorPosition)
+            anchorPage?.prevKey?.plus(1) ?: anchorPage?.nextKey?.minus(1)
         }
     }
+
+    private fun countArticleColors(article: ArticlesBasesStatsTabelle): Int {
+        return listOf(
+            article.couleur1,
+            article.couleur2,
+            article.couleur3,
+            article.couleur4
+        ).count { !it.isNullOrEmpty() }
+    }
+
+    private fun findArticleForConfiguration(
+        config: ArticleConfiguration,
+        excludedIds: Set<Int>
+    ): ArticlesBasesStatsTabelle? {
+        return articles.firstOrNull { article ->
+            article.idArticle !in excludedIds &&
+                    article.imageDimention == config.imageDimension &&
+                    countArticleColors(article) == config.colorCount &&
+                    (filterText.isEmpty() || article.nomArticleFinale.contains(filterText, ignoreCase = true))
+        }
+    }
+
+    private fun findAllConfigurationMatches(): List<ArticlesBasesStatsTabelle> {
+        val matchingArticles = mutableListOf<ArticlesBasesStatsTabelle>()
+        val usedIds = mutableSetOf<Int>()
+        var missingConfigurations = mutableListOf<ArticleConfiguration>()
+
+        // Try to find one article for each configuration
+        for (config in requiredConfigurations) {
+            val match = findArticleForConfiguration(config, usedIds)
+            if (match != null) {
+                matchingArticles.add(match)
+                usedIds.add(match.idArticle)
+            } else {
+                missingConfigurations.add(config)
+            }
+        }
+
+        // Log missing configurations for debugging if needed
+        if (missingConfigurations.isNotEmpty()) {
+            println("Warning: Could not find articles for the following configurations:")
+            missingConfigurations.forEach { config ->
+                println("- ${config.description}")
+            }
+        }
+
+        return matchingArticles
+    }
+
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ArticlesBasesStatsTabelle> {
+        val page = params.key ?: 0
+        val pageSize = params.loadSize
+
+        val filteredArticles = when {
+            !modeFilterToTest -> articles // Show all articles when modeFilterToTest is false
+            else -> findAllConfigurationMatches() // Find exactly one article per configuration
+        }
+
+        val start = page * pageSize
+        val items = filteredArticles.drop(start).take(pageSize)
+
+        // For debugging: verify we have the expected number of articles
+        if (modeFilterToTest && filteredArticles.size != requiredConfigurations.size) {
+            println("Warning: Found ${filteredArticles.size} articles instead of expected ${requiredConfigurations.size}")
+        }
+
+        return LoadResult.Page(
+            data = items,
+            prevKey = if (page == 0) null else page - 1,
+            nextKey = if (items.isEmpty()) null else page + 1
+        )
+    }
 }
+
 
 @Composable
 private fun ArticleGrid(
@@ -332,110 +390,6 @@ private fun ArticleDisplayScreen(
     }
 }
 
-class ArticlePagingSource(
-    private val articles: List<ArticlesBasesStatsTabelle>,
-    private val filterText: String,
-    private val modeFilterToTest: Boolean
-) : PagingSource<Int, ArticlesBasesStatsTabelle>() {
-
-    // Configuration class to make the criteria clearer
-    private data class ArticleConfiguration(
-        val imageDimension: String,
-        val colorCount: Int,
-        val description: String
-    )
-
-    // Define all 8 required configurations
-    private val requiredConfigurations = listOf(
-        ArticleConfiguration("", 1, "Empty dimension with 1 color"),
-        ArticleConfiguration("", 2, "Empty dimension with 2 colors"),
-        ArticleConfiguration("", 3, "Empty dimension with 3 colors"),
-        ArticleConfiguration("", 4, "Empty dimension with 4 colors"),
-        ArticleConfiguration("Demi", 1, "Demi dimension with 1 color"),
-        ArticleConfiguration("Demi", 2, "Demi dimension with 2 colors"),
-        ArticleConfiguration("Demi", 3, "Demi dimension with 3 colors"),
-        ArticleConfiguration("Demi", 4, "Demi dimension with 4 colors")
-    )
-
-    override fun getRefreshKey(state: PagingState<Int, ArticlesBasesStatsTabelle>): Int? {
-        return state.anchorPosition?.let { anchorPosition ->
-            val anchorPage = state.closestPageToPosition(anchorPosition)
-            anchorPage?.prevKey?.plus(1) ?: anchorPage?.nextKey?.minus(1)
-        }
-    }
-
-    private fun countArticleColors(article: ArticlesBasesStatsTabelle): Int {
-        return listOf(
-            article.couleur1,
-            article.couleur2,
-            article.couleur3,
-            article.couleur4
-        ).count { !it.isNullOrEmpty() }
-    }
-
-    private fun findArticleForConfiguration(
-        config: ArticleConfiguration,
-        excludedIds: Set<Int>
-    ): ArticlesBasesStatsTabelle? {
-        return articles.firstOrNull { article ->
-            article.idArticle !in excludedIds &&
-                    article.imageDimention == config.imageDimension &&
-                    countArticleColors(article) == config.colorCount &&
-                    (filterText.isEmpty() || article.nomArticleFinale.contains(filterText, ignoreCase = true))
-        }
-    }
-
-    private fun findAllConfigurationMatches(): List<ArticlesBasesStatsTabelle> {
-        val matchingArticles = mutableListOf<ArticlesBasesStatsTabelle>()
-        val usedIds = mutableSetOf<Int>()
-        var missingConfigurations = mutableListOf<ArticleConfiguration>()
-
-        // Try to find one article for each configuration
-        for (config in requiredConfigurations) {
-            val match = findArticleForConfiguration(config, usedIds)
-            if (match != null) {
-                matchingArticles.add(match)
-                usedIds.add(match.idArticle)
-            } else {
-                missingConfigurations.add(config)
-            }
-        }
-
-        // Log missing configurations for debugging if needed
-        if (missingConfigurations.isNotEmpty()) {
-            println("Warning: Could not find articles for the following configurations:")
-            missingConfigurations.forEach { config ->
-                println("- ${config.description}")
-            }
-        }
-
-        return matchingArticles
-    }
-
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ArticlesBasesStatsTabelle> {
-        val page = params.key ?: 0
-        val pageSize = params.loadSize
-
-        val filteredArticles = when {
-            !modeFilterToTest -> articles // Show all articles when modeFilterToTest is false
-            else -> findAllConfigurationMatches() // Find exactly one article per configuration
-        }
-
-        val start = page * pageSize
-        val items = filteredArticles.drop(start).take(pageSize)
-
-        // For debugging: verify we have the expected number of articles
-        if (modeFilterToTest && filteredArticles.size != requiredConfigurations.size) {
-            println("Warning: Found ${filteredArticles.size} articles instead of expected ${requiredConfigurations.size}")
-        }
-
-        return LoadResult.Page(
-            data = items,
-            prevKey = if (page == 0) null else page - 1,
-            nextKey = if (items.isEmpty()) null else page + 1
-        )
-    }
-}
 
 // Update the ArticleLayout sealed class to include all required layouts
 sealed class ArticleLayout {
@@ -712,66 +666,53 @@ private fun SingleColorDisplayer(
         ArticleDetails(article)
     }
 }
-
-// Utility functions
-private fun checkImageExists(
-    viewModel: StartUpNewArticlesViewModels,
-    article: ArticlesBasesStatsTabelle,
-    colorIndex: Int,
-    reloadTrigger: Int
-): Boolean {
-    val baseImagePath = File(
-        viewModel.viewModelImagesPath,
-        "${article.idArticle}_${if (colorIndex == -1) "Unite" else (colorIndex + 1)}"
-    ).absolutePath
-
-    return listOf("jpg", "webp").any { extension ->
-        val file = File("$baseImagePath.$extension")
-        file.exists() && file.canRead()
-    }
-}
-private fun ArticlesBasesStatsTabelle.getColorIdForIndex(index: Int): Long? {
-    return when (index) {
-        0 -> idcolor1.takeIf { it != 0L }
-        1 -> idcolor2.takeIf { it != 0L }
-        2 -> idcolor3.takeIf { it != 0L }
-        3 -> idcolor4.takeIf { it != 0L }
-        else -> null
-    }
-}
-
-private fun countColors(article: ArticlesBasesStatsTabelle): Int {
-    return listOf(
-        article.couleur1,
-        article.couleur2,
-        article.couleur3,
-        article.couleur4
-    ).count { !it.isNullOrEmpty() }
-}
 @Composable
-private fun ColorIndicator(
-    iconColore: String,
-    modifier: Modifier = Modifier
+private fun ArticleImageWithOverlay(
+    article: ArticlesBasesStatsTabelle,
+    viewModel: StartUpNewArticlesViewModels,
+    colorIndex: Int,
+    reloadTrigger: Int,
+    uiState: UiState,
+    modifier: Modifier = Modifier,
+    contentScale: ContentScale = ContentScale.Fit,
+    onClickToOpenWindow: (ArticlesBasesStatsTabelle, Int) -> Unit
 ) {
-    Surface(
-        modifier = modifier,
-        shape = CircleShape,
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f),
-        tonalElevation = 4.dp,
-        shadowElevation = 4.dp
-    ) {
-        Text(
-            text = iconColore,
-            modifier = Modifier
-                .padding(horizontal = 12.dp, vertical = 8.dp),
-            style = MaterialTheme.typography.titleLarge.copy(
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold
-            ),
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+    Box(modifier = modifier) {
+        val imageExists = remember(article.idArticle, colorIndex, reloadTrigger) {
+            checkImageExists(viewModel, article, colorIndex, reloadTrigger)
+        }
+
+        ImageDisplayer(
+            article = article,
+            viewModel = viewModel,
+            indexColor = colorIndex,
+            reloadKey = reloadTrigger,
+            onClickToOpenWindow = onClickToOpenWindow,
+            uiState = uiState,
+            showOverlay = !imageExists,
+            imageScale = contentScale
         )
+
+        if (imageExists &&
+            countColors(article) > 1 &&
+            article.getColorForIndex(colorIndex)?.let { color ->
+                color != "©" && color != "💯"
+            } == true
+        ) {
+            article.getColorIdForIndex(colorIndex)?.let { colorId ->
+                uiState.colorsArticlesTabelleModel.find { it.idColore == colorId }?.let { color ->
+                    ColorIndicator(
+                        iconColore = color.iconColore,
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(8.dp)
+                    )
+                }
+            }
+        }
     }
 }
+
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -843,39 +784,7 @@ private fun ImageDisplayer(
 }
 
 
-@Composable
-fun AutoResizedText(
-    text: String,
-    modifier: Modifier = Modifier,
-    color: Color = MaterialTheme.colorScheme.onSurface,
-    style: TextStyle = MaterialTheme.typography.headlineMedium,
-    maxLines: Int = Int.MAX_VALUE
-) {
-    var fontSize by remember(text) {
-        mutableStateOf(style.fontSize)
-    }
 
-    var previousFontSize by remember {
-        mutableStateOf(fontSize)
-    }
-
-    Text(
-        text = text,
-        color = color,
-        fontSize = fontSize,
-        maxLines = maxLines,
-        overflow = TextOverflow.Ellipsis,
-        modifier = modifier,
-        onTextLayout = { textLayoutResult ->
-            if (textLayoutResult.hasVisualOverflow) {
-                previousFontSize = fontSize
-                fontSize *= 0.9f
-            } else if (fontSize != previousFontSize) {
-                previousFontSize = fontSize
-            }
-        }
-    )
-}
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 private fun ColorOverlayWithBlur(
@@ -974,7 +883,7 @@ private fun ColorOverlay(
                     text = color.iconColore,
                     modifier = Modifier,
                     color = Color.White,
-                    style = MaterialTheme.typography.headlineMedium.copy(
+                    style = MaterialTheme.typography.headlineLarge.copy(
                         fontWeight = FontWeight.Bold
                     ),
                     maxLines = 1
@@ -983,52 +892,99 @@ private fun ColorOverlay(
         }
     }
 }
-@Composable
-private fun ArticleImageWithOverlay(
-    article: ArticlesBasesStatsTabelle,
+// Utility functions
+private fun checkImageExists(
     viewModel: StartUpNewArticlesViewModels,
+    article: ArticlesBasesStatsTabelle,
     colorIndex: Int,
-    reloadTrigger: Int,
-    uiState: UiState,
-    modifier: Modifier = Modifier,
-    contentScale: ContentScale = ContentScale.Fit,
-    onClickToOpenWindow: (ArticlesBasesStatsTabelle, Int) -> Unit
-) {
-    Box(modifier = modifier) {
-        val imageExists = remember(article.idArticle, colorIndex, reloadTrigger) {
-            checkImageExists(viewModel, article, colorIndex, reloadTrigger)
-        }
+    reloadTrigger: Int
+): Boolean {
+    val baseImagePath = File(
+        viewModel.viewModelImagesPath,
+        "${article.idArticle}_${if (colorIndex == -1) "Unite" else (colorIndex + 1)}"
+    ).absolutePath
 
-        ImageDisplayer(
-            article = article,
-            viewModel = viewModel,
-            indexColor = colorIndex,
-            reloadKey = reloadTrigger,
-            onClickToOpenWindow = onClickToOpenWindow,
-            uiState = uiState,
-            showOverlay = !imageExists,
-            imageScale = contentScale
-        )
-
-        if (imageExists &&
-            countColors(article) > 1 &&
-            article.getColorForIndex(colorIndex)?.let { color ->
-                color != "©" && color != "💯"
-            } == true
-        ) {
-            article.getColorIdForIndex(colorIndex)?.let { colorId ->
-                uiState.colorsArticlesTabelleModel.find { it.idColore == colorId }?.let { color ->
-                    ColorIndicator(
-                        iconColore = color.iconColore,
-                        modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .padding(8.dp)
-                    )
-                }
-            }
-        }
+    return listOf("jpg", "webp").any { extension ->
+        val file = File("$baseImagePath.$extension")
+        file.exists() && file.canRead()
     }
 }
+private fun ArticlesBasesStatsTabelle.getColorIdForIndex(index: Int): Long? {
+    return when (index) {
+        0 -> idcolor1.takeIf { it != 0L }
+        1 -> idcolor2.takeIf { it != 0L }
+        2 -> idcolor3.takeIf { it != 0L }
+        3 -> idcolor4.takeIf { it != 0L }
+        else -> null
+    }
+}
+
+private fun countColors(article: ArticlesBasesStatsTabelle): Int {
+    return listOf(
+        article.couleur1,
+        article.couleur2,
+        article.couleur3,
+        article.couleur4
+    ).count { !it.isNullOrEmpty() }
+}
+@Composable
+private fun ColorIndicator(
+    iconColore: String,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier,
+        shape = CircleShape,
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f),
+        tonalElevation = 4.dp,
+        shadowElevation = 4.dp
+    ) {
+        Text(
+            text = iconColore,
+            modifier = Modifier
+                .padding(horizontal = 12.dp, vertical = 8.dp),
+            style = MaterialTheme.typography.titleLarge.copy(
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold
+            ),
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+@Composable
+fun AutoResizedText(
+    text: String,
+    modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colorScheme.onSurface,
+    style: TextStyle = MaterialTheme.typography.headlineMedium,
+    maxLines: Int = Int.MAX_VALUE
+) {
+    var fontSize by remember(text) {
+        mutableStateOf(style.fontSize)
+    }
+
+    var previousFontSize by remember {
+        mutableStateOf(fontSize)
+    }
+
+    Text(
+        text = text,
+        color = color,
+        fontSize = fontSize,
+        maxLines = maxLines,
+        overflow = TextOverflow.Ellipsis,
+        modifier = modifier,
+        onTextLayout = { textLayoutResult ->
+            if (textLayoutResult.hasVisualOverflow) {
+                previousFontSize = fontSize
+                fontSize *= 0.9f
+            } else if (fontSize != previousFontSize) {
+                previousFontSize = fontSize
+            }
+        }
+    )
+}
+
 
 // Helper function to get the color string for an index
 private fun ArticlesBasesStatsTabelle.getColorForIndex(index: Int): String? {
@@ -1099,34 +1055,54 @@ private fun ArticleDetails(
         )
     }
 }
-
 @Composable
-fun AutoResizedTextClas(
-    text: String,
-    modifier: Modifier = Modifier,
-    color: Color = MaterialTheme.colorScheme.onSurface,
-    maxLines: Int = Int.MAX_VALUE
+private fun SearchFilter(
+    showFilter: Boolean,
+    filterText: String,
+    onFilterTextChange: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    val initialFontSize = MaterialTheme.typography.bodyMedium.fontSize
-    var fontSize by remember { mutableStateOf(initialFontSize) }
-    var readyToDraw by remember { mutableStateOf(false) }
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusRequester = remember { FocusRequester() }
 
-    Text(
-        text = text,
-        color = color,
-        fontSize = fontSize,
-        maxLines = maxLines,
-        overflow = TextOverflow.Ellipsis,
-        modifier = modifier.drawWithContent { if (readyToDraw) drawContent() },
-        onTextLayout = { textLayoutResult ->
-            if (textLayoutResult.didOverflowHeight) {
-                fontSize *= 0.9f
-            } else {
-                readyToDraw = true
-            }
+    AnimatedVisibility(
+        visible = showFilter,
+        enter = fadeIn() + expandVertically(),
+        exit = fadeOut() + shrinkVertically()
+    ) {
+        OutlinedTextField(
+            value = filterText,
+            onValueChange = onFilterTextChange,
+            label = { Text("Filter Articles") },
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+                .focusRequester(focusRequester),
+            leadingIcon = {
+                Icon(Icons.Default.Search, contentDescription = "Search")
+            },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    keyboardController?.hide()
+                }
+            )
+        )
+    }
+
+    LaunchedEffect(showFilter) {
+        if (showFilter) {
+            focusRequester.requestFocus()
+            keyboardController?.show()
         }
-    )
+    }
 }
+
+
+
 
 
 
