@@ -373,8 +373,8 @@ private fun ArticleItem(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         when {
-            article.imageDimention == "Demi" && colorCount > 2 -> ArticleLayout.DemiMultiColor
             article.imageDimention == "Demi" && colorCount == 2 -> ArticleLayout.DemiDualColor
+            article.imageDimention == "Demi" && colorCount > 2 -> ArticleLayout.DemiMultiColor
             article.imageDimention == "" && colorCount > 1 -> ArticleLayout.DemiDualColor
             colorCount == 3 -> ArticleLayout.Small
             else -> ArticleLayout.Single
@@ -404,10 +404,10 @@ sealed class ArticleLayout {
         modifier: Modifier = Modifier
     ) {
         when (this) {
-            is DemiMultiColor -> DemiDisplayerMultiColor(
+            is DemiDualColor -> DemiDisplayerDualColor(
                 article, viewModel, reloadTrigger, onClickToOpenWindos, uiState, modifier
             )
-            is DemiDualColor -> DemiDisplayerDualColor(
+            is DemiMultiColor -> DemiDisplayerMultiColor(
                 article, viewModel, reloadTrigger, onClickToOpenWindos, uiState, modifier
             )
             is Small -> SmallDisplayerThreeColor(
@@ -438,15 +438,6 @@ private fun DemiDisplayerDualColor(
             onClickToOpenWindow = onClickToOpenWindos,
             uiState = uiState
         )
-
-        val imageExists = remember(article.idArticle, 1, reloadTrigger) {
-            checkImageExists(
-                viewModel = viewModel,
-                article = article,
-                colorIndex = 1,
-                reloadTrigger = reloadTrigger
-            )
-        }
 
         Box(modifier = Modifier.height(40.dp)) {
             ArticleImageWithOverlay(
