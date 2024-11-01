@@ -1,6 +1,5 @@
 package b_StartupAppDisplayerOfNewArticles
 
-
 import a_RoomDB.ArticlesBasesStatsTabelle
 import a_RoomDB.CategoriesTabelle
 import a_RoomDB.ColorsArticlesTabelle
@@ -80,7 +79,6 @@ import com.example.clientjetpack.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
-
 
 @Composable
 fun StartupAppDisplayerOfNewArticles(
