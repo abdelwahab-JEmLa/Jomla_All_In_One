@@ -87,7 +87,8 @@ fun StartupAppDisplayerOfNewArticles(
     onToggleNavBar: () -> Unit,
     reloadTrigger: Int,
     modifier: Modifier = Modifier,
-    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit
+    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    modeFilterToTest:Boolean =true,
 ) {
     var gridColumnsForNewArticels by remember { mutableStateOf(2) }
     var showFilter by remember { mutableStateOf(false) }
@@ -108,6 +109,7 @@ fun StartupAppDisplayerOfNewArticles(
         viewModel = viewModel,
         reloadTrigger = reloadTrigger,
         modifier = modifier, onClickToOpenWindos = onClickToOpenWindos
+        ,modeFilterToTest=modeFilterToTest
     )
 }
 
@@ -157,47 +159,7 @@ private fun SearchFilter(
     }
 }
 
-class ArticlePagingSource(
-    private val articles: List<ArticlesBasesStatsTabelle>,
-    private val filterText: String
-) : PagingSource<Int, ArticlesBasesStatsTabelle>() {
-    override fun getRefreshKey(state: PagingState<Int, ArticlesBasesStatsTabelle>): Int? {
-        return state.anchorPosition?.let { anchorPosition ->
-            val anchorPage = state.closestPageToPosition(anchorPosition)
-            anchorPage?.prevKey?.plus(1) ?: anchorPage?.nextKey?.minus(1)
-        }
-    }
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ArticlesBasesStatsTabelle> {
-        val page = params.key ?: 0
-        val pageSize = params.loadSize
-
-        val filteredArticles = articles.filter { article ->
-            when {
-                filterText.isEmpty() -> {
-                    // When no filter is applied, only show articles containing "car" or "may"
-                    article.nomArticleFinale.contains("car", ignoreCase = true) ||
-                            article.nomArticleFinale.contains("may", ignoreCase = true)
-                }
-                else -> {
-                    // When filter is applied, combine both conditions
-                    (article.nomArticleFinale.contains("car", ignoreCase = true) ||
-                            article.nomArticleFinale.contains("may", ignoreCase = true)) &&
-                            article.nomArticleFinale.contains(filterText, ignoreCase = true)
-                }
-            }
-        }
-
-        val start = page * pageSize
-        val items = filteredArticles.drop(start).take(pageSize)
-
-        return LoadResult.Page(
-            data = items,
-            prevKey = if (page == 0) null else page - 1,
-            nextKey = if (items.isEmpty()) null else page + 1
-        )
-    }
-}
 
 @Composable
 private fun ArticleGrid(
@@ -209,7 +171,8 @@ private fun ArticleGrid(
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
     modifier: Modifier = Modifier,
-    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit
+    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    modeFilterToTest: Boolean
 ) {
     val pagingConfig = PagingConfig(
         pageSize = 6,
@@ -229,7 +192,8 @@ private fun ArticleGrid(
                             it.nomCategorie == category.nomCategorieInCategoriesTabele && !it.itsNewArrivale
                         }
                     },
-                    filterText = filterText
+                    filterText = filterText,
+                    modeFilterToTest=modeFilterToTest
                 )
             }
         }
@@ -322,7 +286,8 @@ private fun ArticleDisplayScreen(
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
     modifier: Modifier = Modifier,
-    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit
+    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    modeFilterToTest: Boolean
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         Column {
@@ -336,10 +301,11 @@ private fun ArticleDisplayScreen(
                 uiState = uiState,
                 gridColumns = gridColumns,
                 filterText = filterText,
-                showFilter = showFilter,  // Pass showFilter to ArticleGrid
+                showFilter = showFilter,
                 gridState = gridState,
                 viewModel = viewModel,
                 reloadTrigger = reloadTrigger, onClickToOpenWindos = onClickToOpenWindos
+                        ,modeFilterToTest=modeFilterToTest
             )
         }
 
@@ -355,6 +321,97 @@ private fun ArticleDisplayScreen(
         }
     }
 }
+
+class ArticlePagingSource(
+    private val articles: List<ArticlesBasesStatsTabelle>,
+    private val filterText: String,
+    private val modeFilterToTest: Boolean
+) : PagingSource<Int, ArticlesBasesStatsTabelle>() {
+    override fun getRefreshKey(state: PagingState<Int, ArticlesBasesStatsTabelle>): Int? {
+        return state.anchorPosition?.let { anchorPosition ->
+            val anchorPage = state.closestPageToPosition(anchorPosition)
+            anchorPage?.prevKey?.plus(1) ?: anchorPage?.nextKey?.minus(1)
+        }
+    }
+
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ArticlesBasesStatsTabelle> {
+        val page = params.key ?: 0
+        val pageSize = params.loadSize
+
+        val filteredArticles = articles.filter { article ->
+            when {
+                !modeFilterToTest -> true // Show all articles when modeFilterToTest is false
+                filterText.isEmpty() -> {
+                    article.nomArticleFinale.startsWith("car", ignoreCase = true)
+                            article.nomArticleFinale.startsWith("may", ignoreCase = true)  ||
+                    article.nomArticleFinale.startsWith("pup", ignoreCase = true)
+                }
+                else -> {
+                    (article.nomArticleFinale.startsWith("car", ignoreCase = true) ||
+                            article.nomArticleFinale.startsWith("may", ignoreCase = true)) ||
+                            article.nomArticleFinale.startsWith("pup", ignoreCase = true)   &&
+
+                    article.nomArticleFinale.contains(filterText, ignoreCase = true)
+                }
+            }
+        }
+
+        val start = page * pageSize
+        val items = filteredArticles.drop(start).take(pageSize)
+
+        return LoadResult.Page(
+            data = items,
+            prevKey = if (page == 0) null else page - 1,
+            nextKey = if (items.isEmpty()) null else page + 1
+        )
+    }
+}
+
+
+// Update the ArticleLayout sealed class to include all required layouts
+sealed class ArticleLayout {
+    data object SingleGrid : ArticleLayout() // Single item in grid
+    data object SingleFull : ArticleLayout() // Single item full width
+    data object DemiDual : ArticleLayout() // Half-width dual color
+    data object DemiMulti : ArticleLayout() // Half-width multi color
+    data object SmallDual : ArticleLayout() // Small dual color
+    data object SmallMulti : ArticleLayout() // Small multi color
+
+    @Composable
+    fun Content(
+        article: ArticlesBasesStatsTabelle,
+        viewModel: StartUpNewArticlesViewModels,
+        reloadTrigger: Int,
+        onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
+        uiState: UiState,
+        modifier: Modifier = Modifier
+    ) {
+        when (this) {
+            is SingleGrid -> SingleColorDisplayer(
+                article, viewModel, reloadTrigger, onClickToOpenWindos, uiState,
+                modifier.fillMaxWidth()
+            )
+            is SingleFull -> SingleColorDisplayer(
+                article, viewModel, reloadTrigger, onClickToOpenWindos, uiState,
+                modifier.fillMaxWidth()
+            )
+            is DemiDual -> DemiDisplayerDualColor(
+                article, viewModel, reloadTrigger, onClickToOpenWindos, uiState, modifier
+            )
+            is DemiMulti -> DemiDisplayerMultiColor(
+                article, viewModel, reloadTrigger, onClickToOpenWindos, uiState, modifier
+            )
+            is SmallDual -> SmallDisplayerDualColor(
+                article, viewModel, reloadTrigger, onClickToOpenWindos, uiState, modifier
+            )
+            is SmallMulti -> SmallDisplayerMultiColor(
+                article, viewModel, reloadTrigger, onClickToOpenWindos, uiState, modifier
+            )
+        }
+    }
+}
+
+// Update the ArticleItem to use the new layout logic
 @Composable
 private fun ArticleItem(
     article: ArticlesBasesStatsTabelle,
@@ -372,13 +429,16 @@ private fun ArticleItem(
             .fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        when {
-            article.imageDimention == "Demi" && colorCount == 2 -> ArticleLayout.DemiDualColor
-            article.imageDimention == "Demi" && colorCount > 2 -> ArticleLayout.DemiMultiColor
-            article.imageDimention == "" && colorCount > 1 -> ArticleLayout.DemiDualColor
-            colorCount == 3 -> ArticleLayout.Small
-            else -> ArticleLayout.Single
-        }.Content(
+        val layout = when {
+            article.imageDimention == "Demi" && colorCount > 2 -> ArticleLayout.DemiMulti
+            article.imageDimention == "Demi" && colorCount == 2 -> ArticleLayout.DemiDual
+            colorCount > 2 -> ArticleLayout.SmallMulti
+            colorCount == 2 -> ArticleLayout.SmallDual
+            article.imageDimention == "Full" -> ArticleLayout.SingleFull
+            else -> ArticleLayout.SingleGrid
+        }
+
+        layout.Content(
             article = article,
             viewModel = viewModel,
             reloadTrigger = reloadTrigger,
@@ -388,37 +448,97 @@ private fun ArticleItem(
     }
 }
 
-sealed class ArticleLayout {
-    data object DemiMultiColor : ArticleLayout()
-    data object DemiDualColor : ArticleLayout()
-    data  object Small : ArticleLayout()
-    data object Single : ArticleLayout()
-
-    @Composable
-    fun Content(
-        article: ArticlesBasesStatsTabelle,
-        viewModel: StartUpNewArticlesViewModels,
-        reloadTrigger: Int,
-        onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
-        uiState: UiState,
-        modifier: Modifier = Modifier
+// Add new layout components
+@Composable
+private fun SmallDisplayerDualColor(
+    article: ArticlesBasesStatsTabelle,
+    viewModel: StartUpNewArticlesViewModels,
+    reloadTrigger: Int,
+    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    uiState: UiState,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.padding(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        when (this) {
-            is Single -> SingleColorDisplayer(
-                article, viewModel, reloadTrigger, onClickToOpenWindos, uiState, modifier
-            )
-            is DemiDualColor -> DemiDisplayerDualColor(
-                article, viewModel, reloadTrigger, onClickToOpenWindos, uiState, modifier
-            )
-            is DemiMultiColor -> DemiDisplayerMultiColor(
-                article, viewModel, reloadTrigger, onClickToOpenWindos, uiState, modifier
-            )
-            is Small -> SmallDisplayerThreeColor(
-                article, viewModel, reloadTrigger, onClickToOpenWindos, uiState, modifier
-            )
-        }
+        ArticleImageWithOverlay(
+            article = article,
+            viewModel = viewModel,
+            colorIndex = 0,
+            reloadTrigger = reloadTrigger,
+            onClickToOpenWindow = onClickToOpenWindos,
+            uiState = uiState
+        )
+
+        ArticleImageWithOverlay(
+            article = article,
+            viewModel = viewModel,
+            colorIndex = 1,
+            reloadTrigger = reloadTrigger,
+            modifier = Modifier.height(40.dp),
+            onClickToOpenWindow = onClickToOpenWindos,
+            uiState = uiState,
+            contentScale = ContentScale.Crop
+        )
+
+        ArticleDetails(
+            article = article,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
     }
 }
+
+@Composable
+private fun SmallDisplayerMultiColor(
+    article: ArticlesBasesStatsTabelle,
+    viewModel: StartUpNewArticlesViewModels,
+    reloadTrigger: Int,
+    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    uiState: UiState,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.padding(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        ArticleImageWithOverlay(
+            article = article,
+            viewModel = viewModel,
+            colorIndex = 0,
+            reloadTrigger = reloadTrigger,
+            onClickToOpenWindow = onClickToOpenWindos,
+            uiState = uiState
+        )
+
+        LazyRow(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            val availableColors = (1..3).filter { article.getColorIdForIndex(it) != null }
+            items(availableColors) { index ->
+                ArticleImageWithOverlay(
+                    article = article,
+                    viewModel = viewModel,
+                    colorIndex = index,
+                    reloadTrigger = reloadTrigger,
+                    modifier = Modifier
+                        .width(100.dp)
+                        .height(40.dp),
+                    onClickToOpenWindow = onClickToOpenWindos,
+                    uiState = uiState,
+                    contentScale = ContentScale.Crop
+                )
+            }
+        }
+
+        ArticleDetails(
+            article = article,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+    }
+}
+
 @Composable
 private fun DemiDisplayerDualColor(
     article: ArticlesBasesStatsTabelle,
@@ -450,50 +570,6 @@ private fun DemiDisplayerDualColor(
                 contentScale = ContentScale.Crop
             )
         }
-    }
-}
-
-@Composable
-private fun SmallDisplayerThreeColor(
-    article: ArticlesBasesStatsTabelle,
-    viewModel: StartUpNewArticlesViewModels,
-    reloadTrigger: Int,
-    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
-    uiState: UiState,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier.padding(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        // Main large image
-        ArticleImageWithOverlay(
-            article = article,
-            viewModel = viewModel,
-            colorIndex = 0,
-            reloadTrigger = reloadTrigger,
-            onClickToOpenWindow = onClickToOpenWindos,
-            uiState = uiState
-        )
-
-        // Secondary images
-        repeat(2) { index ->
-            ArticleImageWithOverlay(
-                article = article,
-                viewModel = viewModel,
-                colorIndex = index + 1,
-                reloadTrigger = reloadTrigger,
-                modifier = Modifier.height(40.dp),
-                onClickToOpenWindow = onClickToOpenWindos,
-                uiState = uiState,
-                contentScale = ContentScale.Crop
-            )
-        }
-
-        ArticleDetails(
-            article = article,
-            modifier = Modifier.padding(horizontal = 16.dp)
-        )
     }
 }
 
