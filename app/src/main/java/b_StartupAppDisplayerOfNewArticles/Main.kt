@@ -604,6 +604,8 @@ private fun DemiDisplayerMultiColor(
 ) {
     Column(modifier = modifier.padding(8.dp)) {
         ArticleDetails(article)
+
+        // Main image display
         ArticleImageWithOverlay(
             article = article,
             viewModel = viewModel,
@@ -613,6 +615,7 @@ private fun DemiDisplayerMultiColor(
             uiState = uiState
         )
 
+        // Secondary images row
         LazyRow(
             modifier = Modifier
                 .fillMaxWidth()
@@ -621,12 +624,19 @@ private fun DemiDisplayerMultiColor(
         ) {
             val availableColors = (1..3).filter { article.getColorIdForIndex(it) != null }
             items(availableColors) { index ->
+                val imageExists = remember(article.idArticle, index, reloadTrigger) {
+                    checkImageExists(viewModel, article, index, reloadTrigger)
+                }
+
                 ArticleImageWithOverlay(
                     article = article,
                     viewModel = viewModel,
                     colorIndex = index,
                     reloadTrigger = reloadTrigger,
-                    modifier = Modifier.width(250.dp),
+                    modifier = Modifier
+                        .width(250.dp)
+                        .height(if (!imageExists) 70.dp else 250.dp),
+                    contentScale = if (!imageExists) ContentScale.Crop else ContentScale.Fit,
                     onClickToOpenWindow = onClickToOpenWindos,
                     uiState = uiState
                 )
