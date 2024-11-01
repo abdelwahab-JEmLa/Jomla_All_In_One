@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -759,7 +760,7 @@ private fun ArticleImageWithOverlay(
                     ColorIndicator(
                         iconColore = color.iconColore,
                         modifier = Modifier
-                            .align(Alignment.TopEnd)
+                            .align(Alignment.BottomEnd)
                             .padding(8.dp)
                     )
                 }
@@ -887,7 +888,7 @@ private fun ColorOverlayWithBlur(
 ) {
     Box {
         GlideImage(
-            model = R.drawable.baked_goods_1,
+            model = R.drawable.logo,
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxSize()
@@ -917,29 +918,26 @@ private fun ColorOverlay(
             .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+        Row(
+            modifier = Modifier,
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically  // Changed from verticalArrangement
         ) {
             AutoResizedTextClas(
-                text = color.iconColore,
-                modifier = modifier
-                    .fillMaxWidth()
-                    .weight(0.8f),
+                text = color.nameColore,
+                modifier = Modifier  // Use fresh Modifier instead of passed modifier
+                    .weight(0.6f),
                 color = Color.White
             )
-
             AutoResizedTextClas(
-                text = color.nameColore,
-                modifier = modifier
-                    .fillMaxWidth()
-                    .weight(0.2f),
+                text = color.iconColore,
+                modifier = Modifier  // Use fresh Modifier instead of passed modifier
+                    .weight(0.4f),
                 color = Color.White
             )
         }
     }
 }
-
 
 
 @Composable
@@ -961,11 +959,6 @@ private fun ArticleDetails(
         )
     }
 }
-
-
-
-
-
 
 @Composable
 fun AutoResizedTextClas(
