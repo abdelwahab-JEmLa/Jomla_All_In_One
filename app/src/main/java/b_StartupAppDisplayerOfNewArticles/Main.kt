@@ -9,6 +9,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -67,6 +68,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingSource
@@ -117,7 +119,9 @@ fun StartupAppDisplayerOfNewArticles(
         onToggleNavBar = onToggleNavBar,
         viewModel = viewModel,
         reloadTrigger = reloadTrigger,
-        modifier = modifier, onClickToOpenWindos = onClickToOpenWindos
+        modifier = modifier,
+        onClickToOpenWindos = onClickToOpenWindos ,
+        modeFilterToTest=modeFilterToTest
     )
 }
 
@@ -188,8 +192,8 @@ private fun ArticleGrid(
 
     // Create separate pagers for each category
     val categoryPagers = remember(uiState.categories, filterText) {
-        uiState.categories.associate { category ->
-            category to Pager(pagingConfig) {
+        uiState.categories.associateWith { category ->
+            Pager(pagingConfig) {
                 ArticlePagingSource(
                     articles = if (category.nomCategorieInCategoriesTabele == "NewArrivale") {
                         uiState.articlesBasesStatTabelles.filter { it.itsNewArrivale }
@@ -668,7 +672,7 @@ private fun DemiDisplayerDualColor(
             uiState = uiState
         )
 
-        Box(modifier = Modifier.height(40.dp)) {
+        Box(modifier = Modifier.height(100.dp)) {
             ArticleImageWithOverlay(
                 article = article,
                 viewModel = viewModel,
@@ -751,14 +755,20 @@ private fun ColorIndicator(
 ) {
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(4.dp),
+        shape = CircleShape,
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f),
         tonalElevation = 4.dp,
         shadowElevation = 4.dp
     ) {
         Text(
             text = iconColore,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-            style = MaterialTheme.typography.labelLarge
+            modifier = Modifier
+                .padding(horizontal = 12.dp, vertical = 8.dp),
+            style = MaterialTheme.typography.titleLarge.copy(
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold
+            ),
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }
@@ -911,7 +921,7 @@ private fun ColorOverlay(
 ) {
     Box(
         modifier = modifier
-            .padding(16.dp)
+            .padding(3.dp)
             .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
@@ -919,30 +929,26 @@ private fun ColorOverlay(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(IntrinsicSize.Min),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Color name with circular background
             Box(
                 modifier = Modifier
                     .weight(0.6f)
                     .wrapContentHeight(),
                 contentAlignment = Alignment.Center
             ) {
-                // White circle background with alpha
-                Box(
-                    modifier = Modifier
-                        .matchParentSize()
-                        .background(
-                            color = Color.White.copy(alpha = 0.15f),
-                            shape = CircleShape
-                        )
-                )
+                Surface(
+                    modifier = Modifier.matchParentSize(),
+                    shape = CircleShape,
+                    color = Color.White.copy(alpha = 0.7f),
+                    border = BorderStroke(1.dp, Color.White.copy(alpha = 0.9f))
+                ) {}
 
                 AutoResizedText(
                     text = color.nameColore,
-                    modifier = Modifier
-                        .padding(vertical = 8.dp, horizontal = 16.dp),
-                    color = Color.White.copy(alpha = 0.9f),  // Added alpha to text
+                    modifier = Modifier,
+                    color = Color.White,
                     style = MaterialTheme.typography.headlineMedium.copy(
                         fontWeight = FontWeight.Bold
                     ),
@@ -950,17 +956,30 @@ private fun ColorOverlay(
                 )
             }
 
-            AutoResizedText(
-                text = color.iconColore,
+            // Icon with circular background
+            Box(
                 modifier = Modifier
                     .weight(0.4f)
                     .wrapContentHeight(),
-                color = Color.White.copy(alpha = 0.4f),  // Added matching alpha to maintain consistency
-                style = MaterialTheme.typography.headlineMedium.copy(
-                    fontWeight = FontWeight.Bold
-                ),
-                maxLines = 1
-            )
+                contentAlignment = Alignment.Center
+            ) {
+                Surface(
+                    modifier = Modifier.matchParentSize(),
+                    shape = CircleShape,
+                    color = Color.White.copy(alpha = 0.8f),
+                    border = BorderStroke(1.dp, Color.White.copy(alpha = 0.95f))
+                ) {}
+
+                AutoResizedText(
+                    text = color.iconColore,
+                    modifier = Modifier,
+                    color = Color.White,
+                    style = MaterialTheme.typography.headlineMedium.copy(
+                        fontWeight = FontWeight.Bold
+                    ),
+                    maxLines = 1
+                )
+            }
         }
     }
 }
