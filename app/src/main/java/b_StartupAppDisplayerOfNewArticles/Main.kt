@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
@@ -553,6 +552,7 @@ private fun SmallDisplayerMultiColor(
         modifier = modifier.padding(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
+        // Main image
         ArticleImageWithOverlay(
             article = article,
             viewModel = viewModel,
@@ -562,32 +562,31 @@ private fun SmallDisplayerMultiColor(
             uiState = uiState
         )
 
-        LazyColumn (
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            val availableColors = (1..3).filter { article.getColorIdForIndex(it) != null }
-            items(availableColors) { index ->
-                ArticleImageWithOverlay(
-                    article = article,
-                    viewModel = viewModel,
-                    colorIndex = index,
-                    reloadTrigger = reloadTrigger,
-                    modifier = Modifier
-                        .height(70.dp),
-                    onClickToOpenWindow = onClickToOpenWindos,
-                    uiState = uiState,
-                    contentScale = ContentScale.Crop
-                )
-            }
+        // Replace LazyColumn with Column since we have a small fixed number of items
+        val availableColors = (1..3).filter { article.getColorIdForIndex(it) != null }
+        availableColors.forEach { index ->
+            ArticleImageWithOverlay(
+                article = article,
+                viewModel = viewModel,
+                colorIndex = index,
+                reloadTrigger = reloadTrigger,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(70.dp),
+                onClickToOpenWindow = onClickToOpenWindos,
+                uiState = uiState,
+                contentScale = ContentScale.Crop
+            )
         }
 
+        // Details
         ArticleDetails(
             article = article,
             modifier = Modifier.padding(horizontal = 16.dp)
         )
     }
 }
+
 @Composable
 private fun DemiDisplayerMultiColor(
     article: ArticlesBasesStatsTabelle,
@@ -768,6 +767,21 @@ private fun ArticleImageWithOverlay(
         }
     }
 }
+@Composable
+private fun ColorIndicator(
+    iconColore: String,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier,
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Text(
+            text = iconColore,
+            modifier = Modifier.padding(4.dp)
+        )
+    }
+}
 
 
 @OptIn(ExperimentalGlideComposeApi::class)
@@ -926,21 +940,6 @@ private fun ColorOverlay(
     }
 }
 
-@Composable
-private fun ColorIndicator(
-    iconColore: String,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier,
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        Text(
-            text = iconColore,
-            modifier = Modifier.padding(4.dp)
-        )
-    }
-}
 
 
 @Composable
