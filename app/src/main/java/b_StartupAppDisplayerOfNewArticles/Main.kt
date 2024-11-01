@@ -172,7 +172,19 @@ class ArticlePagingSource(
         val pageSize = params.loadSize
 
         val filteredArticles = articles.filter { article ->
-            filterText.isEmpty() || article.nomArticleFinale.contains(filterText, ignoreCase = true)
+            when {
+                filterText.isEmpty() -> {
+                    // When no filter is applied, only show articles containing "car" or "may"
+                    article.nomArticleFinale.contains("car", ignoreCase = true) ||
+                            article.nomArticleFinale.contains("may", ignoreCase = true)
+                }
+                else -> {
+                    // When filter is applied, combine both conditions
+                    (article.nomArticleFinale.contains("car", ignoreCase = true) ||
+                            article.nomArticleFinale.contains("may", ignoreCase = true)) &&
+                            article.nomArticleFinale.contains(filterText, ignoreCase = true)
+                }
+            }
         }
 
         val start = page * pageSize
@@ -449,9 +461,9 @@ private fun DemiDiplayer2Color(
             uiState = uiState,
             imageScale =  ContentScale.Crop
         )
-
     }
 }
+
 @Composable
 private fun DemiDiplayerCounteColorPlus2(
     article: ArticlesBasesStatsTabelle,
@@ -685,7 +697,7 @@ fun ImageDisplayer(
             it
                 .thumbnail(
                     it.clone()
-                        .transform(jp.wasabeef.glide.transformations.BlurTransformation(25))
+                        .transform(jp.wasabeef.glide.transformations.BlurTransformation(10))
                 )
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
