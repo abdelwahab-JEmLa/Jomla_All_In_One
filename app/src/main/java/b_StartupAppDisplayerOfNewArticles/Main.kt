@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
@@ -532,7 +533,7 @@ private fun SmallDisplayerDualColor(
             viewModel = viewModel,
             colorIndex = 1,
             reloadTrigger = reloadTrigger,
-            modifier = Modifier.height(40.dp),
+            modifier = Modifier.height(70.dp),
             onClickToOpenWindow = onClickToOpenWindos,
             uiState = uiState,
             contentScale = ContentScale.Crop
@@ -567,9 +568,9 @@ private fun SmallDisplayerMultiColor(
             uiState = uiState
         )
 
-        LazyRow(
+        LazyColumn (
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             val availableColors = (1..3).filter { article.getColorIdForIndex(it) != null }
             items(availableColors) { index ->
@@ -579,8 +580,7 @@ private fun SmallDisplayerMultiColor(
                     colorIndex = index,
                     reloadTrigger = reloadTrigger,
                     modifier = Modifier
-                        .width(100.dp)
-                        .height(40.dp),
+                        .height(70.dp),
                     onClickToOpenWindow = onClickToOpenWindos,
                     uiState = uiState,
                     contentScale = ContentScale.Crop
@@ -592,6 +592,47 @@ private fun SmallDisplayerMultiColor(
             article = article,
             modifier = Modifier.padding(horizontal = 16.dp)
         )
+    }
+}
+@Composable
+private fun DemiDisplayerMultiColor(
+    article: ArticlesBasesStatsTabelle,
+    viewModel: StartUpNewArticlesViewModels,
+    reloadTrigger: Int,
+    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    uiState: UiState,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier.padding(8.dp)) {
+        ArticleDetails(article)
+        ArticleImageWithOverlay(
+            article = article,
+            viewModel = viewModel,
+            colorIndex = 0,
+            reloadTrigger = reloadTrigger,
+            onClickToOpenWindow = onClickToOpenWindos,
+            uiState = uiState
+        )
+
+        LazyRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            val availableColors = (1..3).filter { article.getColorIdForIndex(it) != null }
+            items(availableColors) { index ->
+                ArticleImageWithOverlay(
+                    article = article,
+                    viewModel = viewModel,
+                    colorIndex = index,
+                    reloadTrigger = reloadTrigger,
+                    modifier = Modifier.width(250.dp),
+                    onClickToOpenWindow = onClickToOpenWindos,
+                    uiState = uiState
+                )
+            }
+        }
     }
 }
 
@@ -734,47 +775,6 @@ private fun ArticleImageWithOverlay(
     }
 }
 
-@Composable
-private fun DemiDisplayerMultiColor(
-    article: ArticlesBasesStatsTabelle,
-    viewModel: StartUpNewArticlesViewModels,
-    reloadTrigger: Int,
-    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
-    uiState: UiState,
-    modifier: Modifier = Modifier
-) {
-    Column(modifier = modifier.padding(8.dp)) {
-        ArticleDetails(article)
-        ArticleImageWithOverlay(
-            article = article,
-            viewModel = viewModel,
-            colorIndex = 0,
-            reloadTrigger = reloadTrigger,
-            onClickToOpenWindow = onClickToOpenWindos,
-            uiState = uiState
-        )
-
-        LazyRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            val availableColors = (1..3).filter { article.getColorIdForIndex(it) != null }
-            items(availableColors) { index ->
-                ArticleImageWithOverlay(
-                    article = article,
-                    viewModel = viewModel,
-                    colorIndex = index,
-                    reloadTrigger = reloadTrigger,
-                    modifier = Modifier.width(250.dp),
-                    onClickToOpenWindow = onClickToOpenWindos,
-                    uiState = uiState
-                )
-            }
-        }
-    }
-}
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
