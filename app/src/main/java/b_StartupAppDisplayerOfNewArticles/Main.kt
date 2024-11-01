@@ -708,7 +708,6 @@ private fun checkImageExists(
         file.exists() && file.canRead()
     }
 }
-
 private fun ArticlesBasesStatsTabelle.getColorIdForIndex(index: Int): Long? {
     return when (index) {
         0 -> idcolor1.takeIf { it != 0L }
@@ -727,6 +726,7 @@ private fun countColors(article: ArticlesBasesStatsTabelle): Int {
         article.couleur4
     ).count { !it.isNullOrEmpty() }
 }
+
 @Composable
 private fun ArticleImageWithOverlay(
     article: ArticlesBasesStatsTabelle,
@@ -754,7 +754,12 @@ private fun ArticleImageWithOverlay(
             imageScale = contentScale
         )
 
-        if (imageExists) {
+        if (imageExists &&
+            countColors(article) > 1 &&
+            article.getColorForIndex(colorIndex)?.let { color ->
+                color != "©" && color != "💯"
+            } == true
+        ) {
             article.getColorIdForIndex(colorIndex)?.let { colorId ->
                 uiState.colorsArticlesTabelleModel.find { it.idColore == colorId }?.let { color ->
                     ColorIndicator(
@@ -766,6 +771,17 @@ private fun ArticleImageWithOverlay(
                 }
             }
         }
+    }
+}
+
+// Helper function to get the color string for an index
+private fun ArticlesBasesStatsTabelle.getColorForIndex(index: Int): String? {
+    return when (index) {
+        0 -> couleur1
+        1 -> couleur2
+        2 -> couleur3
+        3 -> couleur4
+        else -> null
     }
 }
 @Composable
