@@ -857,7 +857,7 @@ private fun ColorOverlay(
                 AutoResizedText(
                     text = color.nameColore,
                     modifier = Modifier,
-                    color = Color.White,
+                    color = Color.Black,
                     style = MaterialTheme.typography.headlineMedium.copy(
                         fontWeight = FontWeight.Bold
                     ),
