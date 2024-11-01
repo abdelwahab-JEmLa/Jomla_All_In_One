@@ -685,7 +685,6 @@ fun ImageDisplayer(
             it
                 .thumbnail(
                     it.clone()
-                        .override(100, 100)
                         .transform(jp.wasabeef.glide.transformations.BlurTransformation(25))
                 )
                 .transition(DrawableTransitionOptions.withCrossFade())
