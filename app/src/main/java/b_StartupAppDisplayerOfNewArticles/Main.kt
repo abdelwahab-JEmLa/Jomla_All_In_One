@@ -109,7 +109,6 @@ fun StartupAppDisplayerOfNewArticles(
         viewModel = viewModel,
         reloadTrigger = reloadTrigger,
         modifier = modifier, onClickToOpenWindos = onClickToOpenWindos
-        ,modeFilterToTest=modeFilterToTest
     )
 }
 
@@ -158,8 +157,6 @@ private fun SearchFilter(
         }
     }
 }
-
-
 
 @Composable
 private fun ArticleGrid(
@@ -287,7 +284,7 @@ private fun ArticleDisplayScreen(
     reloadTrigger: Int,
     modifier: Modifier = Modifier,
     onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
-    modeFilterToTest: Boolean
+    modeFilterToTest: Boolean =false
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         Column {
@@ -327,6 +324,26 @@ class ArticlePagingSource(
     private val filterText: String,
     private val modeFilterToTest: Boolean
 ) : PagingSource<Int, ArticlesBasesStatsTabelle>() {
+
+    // Configuration class to make the criteria clearer
+    private data class ArticleConfiguration(
+        val imageDimension: String,
+        val colorCount: Int,
+        val description: String
+    )
+
+    // Define all 8 required configurations
+    private val requiredConfigurations = listOf(
+        ArticleConfiguration("", 1, "Empty dimension with 1 color"),
+        ArticleConfiguration("", 2, "Empty dimension with 2 colors"),
+        ArticleConfiguration("", 3, "Empty dimension with 3 colors"),
+        ArticleConfiguration("", 4, "Empty dimension with 4 colors"),
+        ArticleConfiguration("Demi", 1, "Demi dimension with 1 color"),
+        ArticleConfiguration("Demi", 2, "Demi dimension with 2 colors"),
+        ArticleConfiguration("Demi", 3, "Demi dimension with 3 colors"),
+        ArticleConfiguration("Demi", 4, "Demi dimension with 4 colors")
+    )
+
     override fun getRefreshKey(state: PagingState<Int, ArticlesBasesStatsTabelle>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
             val anchorPage = state.closestPageToPosition(anchorPosition)
@@ -343,44 +360,61 @@ class ArticlePagingSource(
         ).count { !it.isNullOrEmpty() }
     }
 
-    private fun matchesLayoutCriteria(article: ArticlesBasesStatsTabelle): Boolean {
-        val colorCount = countArticleColors(article)
-        return when {
-            // Empty imageDimension cases
-            article.imageDimention == "" && colorCount == 1 -> true
-            article.imageDimention == "" && colorCount == 2 -> true
-            article.imageDimention == "" && colorCount == 3 -> true
-            article.imageDimention == "" && colorCount == 4 -> true
-            // Demi imageDimension cases
-            article.imageDimention == "Demi" && colorCount == 1 -> true
-            article.imageDimention == "Demi" && colorCount == 2 -> true
-            article.imageDimention == "Demi" && colorCount == 3 -> true
-            article.imageDimention == "Demi" && colorCount == 4 -> true
-            else -> false
+    private fun findArticleForConfiguration(
+        config: ArticleConfiguration,
+        excludedIds: Set<Int>
+    ): ArticlesBasesStatsTabelle? {
+        return articles.firstOrNull { article ->
+            article.idArticle !in excludedIds &&
+                    article.imageDimention == config.imageDimension &&
+                    countArticleColors(article) == config.colorCount &&
+                    (filterText.isEmpty() || article.nomArticleFinale.contains(filterText, ignoreCase = true))
         }
+    }
+
+    private fun findAllConfigurationMatches(): List<ArticlesBasesStatsTabelle> {
+        val matchingArticles = mutableListOf<ArticlesBasesStatsTabelle>()
+        val usedIds = mutableSetOf<Int>()
+        var missingConfigurations = mutableListOf<ArticleConfiguration>()
+
+        // Try to find one article for each configuration
+        for (config in requiredConfigurations) {
+            val match = findArticleForConfiguration(config, usedIds)
+            if (match != null) {
+                matchingArticles.add(match)
+                usedIds.add(match.idArticle)
+            } else {
+                missingConfigurations.add(config)
+            }
+        }
+
+        // Log missing configurations for debugging if needed
+        if (missingConfigurations.isNotEmpty()) {
+            println("Warning: Could not find articles for the following configurations:")
+            missingConfigurations.forEach { config ->
+                println("- ${config.description}")
+            }
+        }
+
+        return matchingArticles
     }
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ArticlesBasesStatsTabelle> {
         val page = params.key ?: 0
         val pageSize = params.loadSize
 
-        val filteredArticles = articles.filter { article ->
-            when {
-                !modeFilterToTest -> true // Show all articles when modeFilterToTest is false
-                filterText.isEmpty() -> {
-                    // First filter by layout criteria
-                    matchesLayoutCriteria(article)
-                }
-                else -> {
-                    // When there's filter text, combine all conditions
-                    matchesLayoutCriteria(article) &&
-                            article.nomArticleFinale.contains(filterText, ignoreCase = true)
-                }
-            }
+        val filteredArticles = when {
+            !modeFilterToTest -> articles // Show all articles when modeFilterToTest is false
+            else -> findAllConfigurationMatches() // Find exactly one article per configuration
         }
 
         val start = page * pageSize
         val items = filteredArticles.drop(start).take(pageSize)
+
+        // For debugging: verify we have the expected number of articles
+        if (modeFilterToTest && filteredArticles.size != requiredConfigurations.size) {
+            println("Warning: Found ${filteredArticles.size} articles instead of expected ${requiredConfigurations.size}")
+        }
 
         return LoadResult.Page(
             data = items,
