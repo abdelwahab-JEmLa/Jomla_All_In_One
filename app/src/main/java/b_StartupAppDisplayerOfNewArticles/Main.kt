@@ -10,6 +10,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,9 +22,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
@@ -61,10 +65,12 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -666,6 +672,47 @@ private fun SingleColorDisplayer(
         ArticleDetails(article)
     }
 }
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+private fun ColorIndicator(
+    iconColore: String,
+    modifier: Modifier = Modifier,
+    handIcon: Int = R.drawable.hand
+) {
+    Box(modifier = modifier) {  // Déplacé le modifier ici
+        Surface(
+            shape = CircleShape,
+            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f),
+            tonalElevation = 4.dp,
+            shadowElevation = 4.dp
+        ) {
+            Text(
+                text = iconColore,
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),  // Ajouté padding pour le texte
+                style = MaterialTheme.typography.titleLarge.copy(
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold
+                ),
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+
+        Box(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .offset(x = (20).dp, y = 25.dp)
+                .size(38.dp)
+        ) {
+            GlideImage(
+                model = handIcon,
+                contentDescription = "Click indicator",
+                contentScale = ContentScale.Fit
+            )
+        }
+    }
+}
+
 @Composable
 private fun ArticleImageWithOverlay(
     article: ArticlesBasesStatsTabelle,
@@ -706,13 +753,13 @@ private fun ArticleImageWithOverlay(
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
                             .padding(8.dp)
+                            .wrapContentSize()  // Ajouté pour s'assurer que le Box prend la taille minimale nécessaire
                     )
                 }
             }
         }
     }
 }
-
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -774,7 +821,6 @@ private fun ImageDisplayer(
                     ColorOverlayWithBlur(
                         color = color,
                         cornerRadius = cornerRadius,
-                        modifier = Modifier.matchParentSize() ,
                         onClickToOpenWindow={ onClickToOpenWindow(article, indexColor) }
                     )
                 }
@@ -790,7 +836,6 @@ private fun ImageDisplayer(
 private fun ColorOverlayWithBlur(
     color: ColorsArticlesTabelle,
     cornerRadius: Dp,
-    modifier: Modifier = Modifier,
     onClickToOpenWindow: () -> Unit,
     ) {
     Box {
@@ -825,12 +870,13 @@ private fun ColorOverlayWithBlur(
     }
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 private fun ColorOverlay(
     color: ColorsArticlesTabelle,
-    modifier: Modifier = Modifier ,
+    modifier: Modifier = Modifier,
     onClickToOpenWindow: () -> Unit,
-    ) {
+) {
     Box(
         modifier = modifier
             .padding(3.dp)
@@ -847,15 +893,13 @@ private fun ColorOverlay(
             Box(
                 modifier = Modifier
                     .weight(0.6f)
-                    .wrapContentHeight()
-                        ,
+                    .wrapContentHeight(),
                 contentAlignment = Alignment.Center
             ) {
                 Surface(
                     modifier = Modifier
                         .matchParentSize()
-                        .clickable { onClickToOpenWindow() }
-                    ,
+                        .clickable { onClickToOpenWindow() },
                     shape = CircleShape,
                     color = Color.White.copy(alpha = 0.7f),
                     border = BorderStroke(1.dp, Color.White.copy(alpha = 0.9f))
@@ -872,7 +916,6 @@ private fun ColorOverlay(
                 )
             }
 
-            // Icon with circular background
             Box(
                 modifier = Modifier
                     .weight(0.4f)
@@ -885,6 +928,20 @@ private fun ColorOverlay(
                     color = Color.White.copy(alpha = 0.8f),
                     border = BorderStroke(1.dp, Color.White.copy(alpha = 0.95f))
                 ) {}
+
+                // Fixed hand icon positioning
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .offset(x = (20).dp, y = 25.dp)
+                        .size(38.dp)
+                ) {
+                    GlideImage(
+                        model = R.drawable.hand,
+                        contentDescription = "Click indicator",
+                        contentScale = ContentScale.Fit
+                    )
+                }
 
                 AutoResizedText(
                     text = color.iconColore,
@@ -899,6 +956,52 @@ private fun ColorOverlay(
         }
     }
 }
+
+// Alternative: Preview avec une image par défaut en utilisant Image au lieu de GlideImage
+@Preview(showBackground = true)
+@Composable
+fun ColorIndicatorPreviewWithDefaultHand() {
+    MaterialTheme {
+        Box {
+            Surface(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .wrapContentSize(),
+                shape = CircleShape,
+                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f),
+                tonalElevation = 4.dp,
+                shadowElevation = 4.dp
+            ) {
+                Text(
+                    text = "👍",
+                    modifier = Modifier
+                        .padding(horizontal = 12.dp, vertical = 8.dp),
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            Box(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .offset(x = (20).dp, y = 25.dp)
+                    .size(38.dp)
+            ) {
+                // Using standard Image composable for preview
+                Image(
+                    painter = painterResource(id = R.drawable.hand),
+                    contentDescription = "Click indicator",
+                    contentScale = ContentScale.Fit
+                )
+            }
+        }
+    }
+}
+
+
 // Utility functions
 private fun checkImageExists(
     viewModel: StartUpNewArticlesViewModels,
@@ -934,30 +1037,7 @@ private fun countColors(article: ArticlesBasesStatsTabelle): Int {
         article.couleur4
     ).count { !it.isNullOrEmpty() }
 }
-@Composable
-private fun ColorIndicator(
-    iconColore: String,
-    modifier: Modifier = Modifier
-) {
-    Surface(
-        modifier = modifier,
-        shape = CircleShape,
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f),
-        tonalElevation = 4.dp,
-        shadowElevation = 4.dp
-    ) {
-        Text(
-            text = iconColore,
-            modifier = Modifier
-                .padding(horizontal = 12.dp, vertical = 8.dp),
-            style = MaterialTheme.typography.titleLarge.copy(
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold
-            ),
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-    }
-}
+
 @Composable
 fun AutoResizedText(
     text: String,
