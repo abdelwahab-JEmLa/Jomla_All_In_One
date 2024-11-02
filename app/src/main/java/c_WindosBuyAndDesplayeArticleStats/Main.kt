@@ -21,11 +21,14 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -174,7 +177,7 @@ fun WindosBuyAndDesplayeArticleStats(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                        .padding(horizontal = 4.dp, vertical = 4.dp),
                     elevation = CardDefaults.elevatedCardElevation(
                         defaultElevation = 4.dp
                     )
@@ -255,7 +258,7 @@ private fun ActionsButtonRow(
         }
     }
 }
-
+//TODO ajoute un verificateur du dipo de color 2 si non
 @Composable
 private fun ColorsCards(
     article: ArticlesBasesStatsTabelle,
@@ -277,102 +280,88 @@ private fun ColorsCards(
         } else null
     }
 
-    when (colors.size) {
-        1 -> {
-            // Single color - full width
-            Box(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
-            ) {
-                ColorItem(
-                    article = article,
-                    color = colors[0],
-                    index = 0,
-                    relodeTigger = relodeTigger,
-                    viewModel = viewModel,
-                    initialShowPicker = 0 == initialShowPickerIndex,
-                    relatedSaleOfArticleToClient = relatedSaleOfArticleToClient,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .heightIn(min = 100.dp, max = 600.dp) // Provide height constraints
+    ) {
+        when (colors.size) {
+            1 -> SingleColorLayout(
+                article = article,
+                color = colors[0],
+                viewModel = viewModel,
+                relodeTigger = relodeTigger,
+                initialShowPickerIndex = initialShowPickerIndex,
+                relatedSaleOfArticleToClient = relatedSaleOfArticleToClient
+            )
+            else -> MultipleColorsLayout(
+                article = article,
+                colors = colors,
+                viewModel = viewModel,
+                relodeTigger = relodeTigger,
+                initialShowPickerIndex = initialShowPickerIndex,
+                relatedSaleOfArticleToClient = relatedSaleOfArticleToClient
+            )
         }
-        2 -> {
-            // Two colors - row with equal width
-            Row(
-                modifier = modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
+    }
+}
+
+@Composable
+private fun SingleColorLayout(
+    article: ArticlesBasesStatsTabelle,
+    color: ColorsArticlesTabelle,
+    viewModel: StartUpNewArticlesViewModels,
+    relodeTigger: Int,
+    initialShowPickerIndex: Int,
+    relatedSaleOfArticleToClient: SoldArticlesTabelle?
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(4.dp)
+    ) {
+        ColorItem(
+            article = article,
+            color = color,
+            index = 0,
+            relodeTigger = relodeTigger,
+            viewModel = viewModel,
+            initialShowPicker = 0 == initialShowPickerIndex,
+            relatedSaleOfArticleToClient = relatedSaleOfArticleToClient,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+        )
+    }
+}
+
+@Composable
+private fun MultipleColorsLayout(
+    article: ArticlesBasesStatsTabelle,
+    colors: List<ColorsArticlesTabelle>,
+    viewModel: StartUpNewArticlesViewModels,
+    relodeTigger: Int,
+    initialShowPickerIndex: Int,
+    relatedSaleOfArticleToClient: SoldArticlesTabelle?
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(4.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        colors.chunked(2).forEach { rowColors ->
+            LazyRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                colors.forEachIndexed { index, color ->
-                    ColorItem(
-                        article = article,
-                        color = color,
-                        index = index,
-                        relodeTigger = relodeTigger,
-                        viewModel = viewModel,
-                        initialShowPicker = index == initialShowPickerIndex,
-                        relatedSaleOfArticleToClient = relatedSaleOfArticleToClient,
+                items(rowColors) { color ->
+                    val index = colors.indexOf(color)
+                    Box(
                         modifier = Modifier
                             .width(250.dp)
-                            .padding(8.dp)
-                    )
-                }
-            }
-        }
-        3 -> {
-            // Three colors - one on top, two below
-            Column(
-                modifier = modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                // First color full width
-                ColorItem(
-                    article = article,
-                    color = colors[0],
-                    index = 0,
-                    relodeTigger = relodeTigger,
-                    viewModel = viewModel,
-                    initialShowPicker = 0 == initialShowPickerIndex,
-                    relatedSaleOfArticleToClient = relatedSaleOfArticleToClient,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                )
-
-                // Two colors in a row
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    colors.drop(1).forEachIndexed { index, color ->
-                        ColorItem(
-                            article = article,
-                            color = color,
-                            index = index + 1,
-                            relodeTigger = relodeTigger,
-                            viewModel = viewModel,
-                            initialShowPicker = (index + 1) == initialShowPickerIndex,
-                            relatedSaleOfArticleToClient = relatedSaleOfArticleToClient,
-                            modifier = Modifier
-                                .width(250.dp)
-                                .padding(8.dp)
-                        )
-                    }
-                }
-            }
-        }
-        4 -> {
-            // Four colors - two rows of two
-            Column(
-                modifier = modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                // First row
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    colors.take(2).forEachIndexed { index, color ->
+                            .height(250.dp)
+                    ) {
                         ColorItem(
                             article = article,
                             color = color,
@@ -381,30 +370,7 @@ private fun ColorsCards(
                             viewModel = viewModel,
                             initialShowPicker = index == initialShowPickerIndex,
                             relatedSaleOfArticleToClient = relatedSaleOfArticleToClient,
-                            modifier = Modifier
-                                .width(250.dp)
-                                .padding(8.dp)
-                        )
-                    }
-                }
-
-                // Second row
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    colors.drop(2).forEachIndexed { index, color ->
-                        ColorItem(
-                            article = article,
-                            color = color,
-                            index = index + 2,
-                            relodeTigger = relodeTigger,
-                            viewModel = viewModel,
-                            initialShowPicker = (index + 2) == initialShowPickerIndex,
-                            relatedSaleOfArticleToClient = relatedSaleOfArticleToClient,
-                            modifier = Modifier
-                                .width(250.dp)
-                                .padding(8.dp)
+                            modifier = Modifier.fillMaxSize()
                         )
                     }
                 }
@@ -412,6 +378,7 @@ private fun ColorsCards(
         }
     }
 }
+
 @Composable
 fun BuyButton(
     onClick: () -> Unit,
