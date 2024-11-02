@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,6 +24,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
@@ -30,11 +32,15 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.ShoppingCart
+import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -44,7 +50,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -65,6 +70,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -95,142 +101,317 @@ fun WindosBuyAndDesplayeArticleStats(
     clientBuyerNow: ClientsModel?,
     relatedSaleOfArticleToClient: SoldArticlesTabelle?
 ) {
+    // Handle sale creation when client is available
     LaunchedEffect(article, clientBuyerNow) {
         if (relatedSaleOfArticleToClient == null && clientBuyerNow != null) {
             viewModel.createNewSaleIfNotExist(article, clientBuyerNow)
         }
     }
+
     var showConfirmDialog by remember { mutableStateOf(false) }
 
+    // Confirmation Dialog
     if (showConfirmDialog) {
         AlertDialog(
             onDismissRequest = { showConfirmDialog = false },
-            title = { Text("Confirm Exit") },
-            text = { Text("Do you want to save changes before leaving?") },
+            icon = { Icon(Icons.Outlined.Warning, contentDescription = null) },
+            title = {
+                Text(
+                    text = stringResource(R.string.confirm_exit_title),
+                    style = MaterialTheme.typography.headlineSmall
+                )
+            },
+            text = {
+                Text(
+                    text = stringResource(R.string.save_changes_message),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            },
             confirmButton = {
-                TextButton(onClick = {
-                    viewModel.saveSaleTransaction()
-                    onDismiss()
-                }) {
-                    Text("Save & Exit")
+                FilledTonalButton(
+                    onClick = {
+                        viewModel.saveSaleTransaction()
+                        onDismiss()
+                    }
+                ) {
+                    Text(stringResource(R.string.confirm_order_button))
                 }
             },
             dismissButton = {
-                TextButton(onClick = onDismiss) {
-                    Text("Discard")
+                OutlinedButton(
+                    onClick = {
+                        viewModel.deleteSaleTransaction()
+                        onDismiss()
+                    }
+                ) {
+                    Text(stringResource(R.string.discard_button))
                 }
             }
         )
     }
 
+    // Main Purchase Dialog
     Dialog(
         onDismissRequest = { showConfirmDialog = true },
-        properties = DialogProperties(usePlatformDefaultWidth = false)
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false,
+            decorFitsSystemWindows = true
+        )
     ) {
-        Box(
+        Surface(
             modifier = modifier
                 .fillMaxSize()
-                .padding(15.dp)
+                .padding(16.dp),
+            shape = MaterialTheme.shapes.large,
+            tonalElevation = 2.dp
         ) {
-            Surface(
+            Column(
                 modifier = Modifier.fillMaxSize(),
-                shape = MaterialTheme.shapes.large
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
-                Column(
-                    modifier = Modifier.fillMaxSize()
+                // Product Details Card
+                ElevatedCard(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    elevation = CardDefaults.elevatedCardElevation(
+                        defaultElevation = 4.dp
+                    )
                 ) {
-                    Card(
+                    Column(
                         modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth(),
-                        elevation = CardDefaults.cardElevation(4.dp)
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
                     ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .verticalScroll(rememberScrollState())
-                        ) {
-                            ColorsCards(
-                                uiState = uiState,
-                                article = article,
-                                viewModel = viewModel,
-                                onDismiss = onDismiss,
-                                onReloadTrigger = onReloadTrigger,
-                                relodeTigger = reloadTrigger,
-                                initialShowPickerIndex = indexColorStat,
-                                relatedSaleOfArticleToClient = relatedSaleOfArticleToClient
-                            )
-                        }
-                    }
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Button(
-                            onClick = {
-                                viewModel.saveSaleTransaction()
-                                onDismiss()
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.primary
-                            )
-                        ) {
-                            Text("Confirm Purchase")
-                        }
-
-                        OutlinedButton(
-                            onClick = onDismiss
-                        ) {
-                            Text("Cancel")
-                        }
+                        ColorsCards(
+                            article = article,
+                            viewModel = viewModel,
+                            relodeTigger = reloadTrigger,
+                            uiState = uiState,
+                            initialShowPickerIndex = indexColorStat,
+                            relatedSaleOfArticleToClient = relatedSaleOfArticleToClient
+                        )
                     }
                 }
-            }
-        }
-    }
-}
-@Composable
-private fun ColorsCards(
-    article: ArticlesBasesStatsTabelle,
-    viewModel: StartUpNewArticlesViewModels,
-    modifier: Modifier = Modifier,
-    onDismiss: () -> Unit,
-    onReloadTrigger: () -> Unit,
-    relodeTigger: Int,
-    uiState: UiState,
-    initialShowPickerIndex: Int,
-    relatedSaleOfArticleToClient: SoldArticlesTabelle?
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier.fillMaxWidth()
-    ) {
-        // Find corresponding colors from uiState.colors
-        listOf(
-            article.idcolor1,
-            article.idcolor2,
-            article.idcolor3,
-            article.idcolor4
-        ).forEachIndexed { index, colorId ->
-            val correspondingColor = uiState.colorsArticlesTabelleModel.find { it.idColore == colorId }
-            if (colorId != 0L && correspondingColor != null) {
-                ColorItem(
-                    article = article,
-                    color = correspondingColor,
-                    index = index,
-                    relodeTigger = relodeTigger,
-                    viewModel = viewModel ,
-                    initialShowPicker = index == initialShowPickerIndex ,
-                    relatedSaleOfArticleToClient =relatedSaleOfArticleToClient
+
+                // Action Buttons
+                ActionsButtonRow(
+                    onConfirm = {
+                        viewModel.saveSaleTransaction()
+                        onDismiss()
+                    },
+                    onCancel = onDismiss  ,
+                    viewModel
                 )
             }
         }
     }
 }
 
+@Composable
+private fun ActionsButtonRow(
+    onConfirm: () -> Unit,
+    onCancel: () -> Unit,
+    viewModel: StartUpNewArticlesViewModels,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End)
+    ) {
+        OutlinedButton(
+            onClick = {
+                viewModel.deleteSaleTransaction()
+                onCancel()
+            },
+            modifier = Modifier.weight(1f),
+            colors = ButtonDefaults.outlinedButtonColors(
+                containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.1f)
+            )
+        ) {
+            Icon(
+                Icons.Outlined.Delete,
+                contentDescription = null,
+                modifier = Modifier.size(18.dp)
+            )
+            Spacer(Modifier.width(4.dp))
+            Text(stringResource(R.string.cancel_button))
+        }
+
+        FilledTonalButton(
+            onClick = onConfirm,
+            modifier = Modifier.weight(1f)
+        ) {
+            Icon(
+                Icons.Outlined.ShoppingCart,
+                contentDescription = null,
+                modifier = Modifier.size(18.dp)
+            )
+            Spacer(Modifier.width(4.dp))
+            Text(stringResource(R.string.confirm_purchase_button))
+        }
+    }
+}
+
+@Composable
+private fun ColorsCards(
+    article: ArticlesBasesStatsTabelle,
+    viewModel: StartUpNewArticlesViewModels,
+    modifier: Modifier = Modifier,
+    relodeTigger: Int,
+    uiState: UiState,
+    initialShowPickerIndex: Int,
+    relatedSaleOfArticleToClient: SoldArticlesTabelle?
+) {
+    val colors = listOf(
+        article.idcolor1,
+        article.idcolor2,
+        article.idcolor3,
+        article.idcolor4
+    ).mapNotNull { colorId ->
+        if (colorId != 0L) {
+            uiState.colorsArticlesTabelleModel.find { it.idColore == colorId }
+        } else null
+    }
+
+    when (colors.size) {
+        1 -> {
+            // Single color - full width
+            Box(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+            ) {
+                ColorItem(
+                    article = article,
+                    color = colors[0],
+                    index = 0,
+                    relodeTigger = relodeTigger,
+                    viewModel = viewModel,
+                    initialShowPicker = 0 == initialShowPickerIndex,
+                    relatedSaleOfArticleToClient = relatedSaleOfArticleToClient,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
+        2 -> {
+            // Two colors - row with equal width
+            Row(
+                modifier = modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                colors.forEachIndexed { index, color ->
+                    ColorItem(
+                        article = article,
+                        color = color,
+                        index = index,
+                        relodeTigger = relodeTigger,
+                        viewModel = viewModel,
+                        initialShowPicker = index == initialShowPickerIndex,
+                        relatedSaleOfArticleToClient = relatedSaleOfArticleToClient,
+                        modifier = Modifier
+                            .width(250.dp)
+                            .padding(8.dp)
+                    )
+                }
+            }
+        }
+        3 -> {
+            // Three colors - one on top, two below
+            Column(
+                modifier = modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // First color full width
+                ColorItem(
+                    article = article,
+                    color = colors[0],
+                    index = 0,
+                    relodeTigger = relodeTigger,
+                    viewModel = viewModel,
+                    initialShowPicker = 0 == initialShowPickerIndex,
+                    relatedSaleOfArticleToClient = relatedSaleOfArticleToClient,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                )
+
+                // Two colors in a row
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    colors.drop(1).forEachIndexed { index, color ->
+                        ColorItem(
+                            article = article,
+                            color = color,
+                            index = index + 1,
+                            relodeTigger = relodeTigger,
+                            viewModel = viewModel,
+                            initialShowPicker = (index + 1) == initialShowPickerIndex,
+                            relatedSaleOfArticleToClient = relatedSaleOfArticleToClient,
+                            modifier = Modifier
+                                .width(250.dp)
+                                .padding(8.dp)
+                        )
+                    }
+                }
+            }
+        }
+        4 -> {
+            // Four colors - two rows of two
+            Column(
+                modifier = modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // First row
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    colors.take(2).forEachIndexed { index, color ->
+                        ColorItem(
+                            article = article,
+                            color = color,
+                            index = index,
+                            relodeTigger = relodeTigger,
+                            viewModel = viewModel,
+                            initialShowPicker = index == initialShowPickerIndex,
+                            relatedSaleOfArticleToClient = relatedSaleOfArticleToClient,
+                            modifier = Modifier
+                                .width(250.dp)
+                                .padding(8.dp)
+                        )
+                    }
+                }
+
+                // Second row
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    colors.drop(2).forEachIndexed { index, color ->
+                        ColorItem(
+                            article = article,
+                            color = color,
+                            index = index + 2,
+                            relodeTigger = relodeTigger,
+                            viewModel = viewModel,
+                            initialShowPicker = (index + 2) == initialShowPickerIndex,
+                            relatedSaleOfArticleToClient = relatedSaleOfArticleToClient,
+                            modifier = Modifier
+                                .width(250.dp)
+                                .padding(8.dp)
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
 @Composable
 fun BuyButton(
     onClick: () -> Unit,
@@ -254,6 +435,7 @@ fun BuyButton(
 
 @Composable
 fun ColorItem(
+    modifier: Modifier,
     article: ArticlesBasesStatsTabelle,
     color: ColorsArticlesTabelle?,
     index: Int,

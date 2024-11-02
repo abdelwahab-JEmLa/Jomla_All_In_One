@@ -8,4 +8,10 @@
     <string name="image2_description">Cookies</string>
     <string name="image3_description">Cake</string>
     <string name="results_placeholder">(Results will appear here)</string>
+    <string name="confirm_exit_title">تأكيد الخروج</string>
+    <string name="save_changes_message">هل تريد حفظ التغييرات قبل المغادرة؟</string>
+    <string name="confirm_order_button">تأكيد الطلب</string>
+    <string name="discard_button">تجاهل</string>
+    <string name="confirm_purchase_button">تأكيد الشراء</string>
+    <string name="cancel_button">إلغاء</string>
 </resources>

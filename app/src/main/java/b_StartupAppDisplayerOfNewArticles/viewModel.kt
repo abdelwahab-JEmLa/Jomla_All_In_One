@@ -76,8 +76,52 @@ class StartUpNewArticlesViewModels(
 
     private val _currentSale = MutableStateFlow<SoldArticlesTabelle?>(null)
     val currentSale = _currentSale.asStateFlow()
+
+
     // Add to StartUpNewArticlesViewModels.kt
-// In StartUpNewArticlesViewModels.kt
+
+    fun deleteSaleTransaction() {
+        viewModelScope.launch {
+            try {
+                _currentSale.value?.let { sale ->
+                    // Delete from Room database
+                    database.soldArticlesTabelleDao().delete(sale)
+
+                    // Update UI state by removing the sale
+                    _uiState.update { state ->
+                        state.copy(
+                            soldArticlesModel = state.soldArticlesModel.filterNotNull().filter {
+                                it.vid != sale.vid
+                            }
+                        )
+                    }
+
+                    // Reset current sale
+                    _currentSale.value = null
+
+                } ?: run {
+                    // If there's no current sale, just reset the current sale state
+                    _currentSale.value = null
+                }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(
+                    error = "فشل في حذف عملية البيع: ${e.message}"  // Failed to delete sale transaction
+                ) }
+            }
+        }
+    }
+
+    // Optional: Add a function to check if there are unsaved changes
+    fun hasUnsavedChanges(): Boolean {
+        return _currentSale.value?.let { currentSale ->
+            // Check if any color quantities are set
+            currentSale.color1SoldQuantity > 0 ||
+                    currentSale.color2SoldQuantity > 0 ||
+                    currentSale.color3SoldQuantity > 0 ||
+                    currentSale.color4SoldQuantity > 0
+        } ?: false
+    }
+
     fun deleteSoldArticle(vid: Long) {
         viewModelScope.launch {
             try {
