@@ -10,7 +10,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -65,12 +64,10 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -678,8 +675,10 @@ private fun SingleColorDisplayer(
 private fun ColorIndicator(
     iconColore: String,
     modifier: Modifier = Modifier,
-    handIcon: Int = R.drawable.hand
-) {
+    handIcon: Int = R.drawable.hand ,
+    onClickToOpenWindow: () -> Unit,
+
+    ) {
     Box(modifier = modifier) {  // Déplacé le modifier ici
         Surface(
             shape = CircleShape,
@@ -689,7 +688,8 @@ private fun ColorIndicator(
         ) {
             Text(
                 text = iconColore,
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),  // Ajouté padding pour le texte
+                modifier = Modifier
+                    .clickable { onClickToOpenWindow() },  // Ajouté padding pour le texte
                 style = MaterialTheme.typography.titleLarge.copy(
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold
@@ -703,6 +703,7 @@ private fun ColorIndicator(
                 .align(Alignment.Center)
                 .offset(x = (18).dp, y = 22.dp)
                 .size(40.dp)
+                .clickable { onClickToOpenWindow() }
         ) {
             GlideImage(
                 model = handIcon,
@@ -753,7 +754,8 @@ private fun ArticleImageWithOverlay(
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
                             .padding(8.dp)
-                            .wrapContentSize()  // Ajouté pour s'assurer que le Box prend la taille minimale nécessaire
+                            .wrapContentSize()   ,
+                        onClickToOpenWindow={ onClickToOpenWindow(article, colorIndex) }
                     )
                 }
             }
@@ -864,7 +866,8 @@ private fun ColorOverlayWithBlur(
             color = color,
             modifier = Modifier
                 .fillMaxSize()
-                .clip(RoundedCornerShape(cornerRadius)) ,
+                .clip(RoundedCornerShape(cornerRadius))
+            ,
             onClickToOpenWindow= onClickToOpenWindow
         )
     }
@@ -898,8 +901,7 @@ private fun ColorOverlay(
             ) {
                 Surface(
                     modifier = Modifier
-                        .matchParentSize()
-                        .clickable { onClickToOpenWindow() },
+                        .matchParentSize(),
                     shape = CircleShape,
                     color = Color.White.copy(alpha = 0.7f),
                     border = BorderStroke(1.dp, Color.White.copy(alpha = 0.9f))
@@ -907,7 +909,7 @@ private fun ColorOverlay(
 
                 AutoResizedText(
                     text = color.nameColore,
-                    modifier = Modifier,
+                    modifier = Modifier.clickable { onClickToOpenWindow() },
                     color = Color.Black,
                     style = MaterialTheme.typography.headlineMedium.copy(
                         fontWeight = FontWeight.Bold
@@ -934,7 +936,7 @@ private fun ColorOverlay(
                     modifier = Modifier
                         .align(Alignment.Center)
                         .offset(x = (18).dp, y = 22.dp)
-                        .size(40.dp)
+                        .size(40.dp).clickable { onClickToOpenWindow() }
                 ) {
                     GlideImage(
                         model = R.drawable.hand,
@@ -945,7 +947,7 @@ private fun ColorOverlay(
 
                 AutoResizedText(
                     text = color.iconColore,
-                    modifier = Modifier,
+                    modifier = Modifier.clickable { onClickToOpenWindow() },
                     color = Color.White,
                     style = MaterialTheme.typography.headlineLarge.copy(
                         fontWeight = FontWeight.Bold
@@ -957,49 +959,7 @@ private fun ColorOverlay(
     }
 }
 
-// Alternative: Preview avec une image par défaut en utilisant Image au lieu de GlideImage
-@Preview(showBackground = true)
-@Composable
-fun ColorIndicatorPreviewWithDefaultHand() {
-    MaterialTheme {
-        Box {
-            Surface(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .wrapContentSize(),
-                shape = CircleShape,
-                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f),
-                tonalElevation = 4.dp,
-                shadowElevation = 4.dp
-            ) {
-                Text(
-                    text = "👍",
-                    modifier = Modifier
-                        .padding(horizontal = 12.dp, vertical = 8.dp),
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
-                    ),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
 
-            Box(
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .offset(x = (20).dp, y = 25.dp)
-                    .size(38.dp)
-            ) {
-                // Using standard Image composable for preview
-                Image(
-                    painter = painterResource(id = R.drawable.hand),
-                    contentDescription = "Click indicator",
-                    contentScale = ContentScale.Fit
-                )
-            }
-        }
-    }
-}
 
 
 // Utility functions
