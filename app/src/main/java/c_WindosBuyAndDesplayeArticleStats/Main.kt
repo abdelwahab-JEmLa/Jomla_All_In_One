@@ -37,6 +37,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.ShoppingCart
@@ -110,7 +111,6 @@ fun WindosBuyAndDesplayeArticleStats(
     clientBuyerNow: ClientsModel?,
     relatedSaleOfArticleToClient: SoldArticlesTabelle?
 ) {
-    // Handle sale creation when client is available
     LaunchedEffect(article, clientBuyerNow) {
         if (relatedSaleOfArticleToClient == null && clientBuyerNow != null) {
             viewModel.createNewSaleIfNotExist(article, clientBuyerNow)
@@ -119,7 +119,6 @@ fun WindosBuyAndDesplayeArticleStats(
 
     var showConfirmDialog by remember { mutableStateOf(false) }
 
-    // Confirmation Dialog
     if (showConfirmDialog) {
         AlertDialog(
             onDismissRequest = { showConfirmDialog = false },
@@ -153,13 +152,22 @@ fun WindosBuyAndDesplayeArticleStats(
                         onDismiss()
                     }
                 ) {
-                    Text(stringResource(R.string.discard_button))
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            Icons.Outlined.Delete,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Text(stringResource(R.string.discard_button))
+                    }
                 }
             }
         )
     }
 
-    // Main Purchase Dialog
     Dialog(
         onDismissRequest = { showConfirmDialog = true },
         properties = DialogProperties(
@@ -178,7 +186,6 @@ fun WindosBuyAndDesplayeArticleStats(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                // Product Details Card
                 ElevatedCard(
                     modifier = Modifier
                         .weight(1f)
@@ -193,6 +200,10 @@ fun WindosBuyAndDesplayeArticleStats(
                             .fillMaxSize()
                             .verticalScroll(rememberScrollState())
                     ) {
+                        // Product Details Section
+                        ProductDetailsSection(article)
+
+                        // Colors Selection
                         ColorsCards(
                             article = article,
                             viewModel = viewModel,
@@ -204,20 +215,107 @@ fun WindosBuyAndDesplayeArticleStats(
                     }
                 }
 
-                // Action Buttons
                 ActionsButtonRow(
                     onConfirm = {
                         viewModel.saveSaleTransaction()
                         onDismiss()
                     },
-                    onCancel = onDismiss  ,
-                    viewModel
+                    onCancel = onDismiss,
+                    viewModel = viewModel
                 )
             }
         }
     }
 }
 
+@Composable
+private fun ProductDetailsSection(article: ArticlesBasesStatsTabelle) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        // Product Name
+        Text(
+            text = article.nomArticleFinale,
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        if (article.nomArab.isNotEmpty()) {
+            Text(
+                text = article.nomArab,
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+        }
+
+        // Units Information
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = "عدد الحبات",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Icon(
+                    Icons.Default.ArrowForward,
+                    contentDescription = null,
+                    modifier = Modifier.padding(horizontal = 4.dp)
+                )
+                Text(
+                    text = "${article.nmbrUnite} وحدة",
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
+        }
+
+        // Carton Information
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = "في الكرتون",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Icon(
+                    Icons.Default.ArrowForward,
+                    contentDescription = null,
+                    modifier = Modifier.padding(horizontal = 4.dp)
+                )
+                Text(
+                    text = "${article.nmbrCaron} علبة",
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
+        }
+
+        // Price Information
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "${article.monPrixVent} دج /للوحدة",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
+    }
+}
 @Composable
 private fun ActionsButtonRow(
     onConfirm: () -> Unit,
