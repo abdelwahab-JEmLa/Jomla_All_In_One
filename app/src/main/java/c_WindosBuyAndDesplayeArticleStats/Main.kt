@@ -293,8 +293,6 @@ private fun ProductNameSection(article: ArticlesBasesStatsTabelle) {
                 }
             }
         }
-
-
     }
 }
 
@@ -463,7 +461,6 @@ private fun ActionsButtonRow(
         }
     }
 }
-//TODO ajoute un verificateur du dipo de color 2 si non
 @Composable
 private fun ColorsCards(
     article: ArticlesBasesStatsTabelle,
