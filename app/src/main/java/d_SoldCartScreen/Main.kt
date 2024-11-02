@@ -248,11 +248,11 @@ fun SoldArticleCard(
                         .padding(16.dp)
                 ) {
                     Text(
-                        text = "Quantity: $totalQuantity × ${baseArticle?.monPrixVent ?: 0.0}Da",
+                        text = "$totalQuantity × ${baseArticle?.monPrixVent ?: 0.0}Da",
                         style = MaterialTheme.typography.bodyLarge
                     )
                     Text(
-                        text = "Subtotal: ${(baseArticle?.monPrixVent ?: 0.0) * totalQuantity} Da",
+                        text = "${(baseArticle?.monPrixVent ?: 0.0) * totalQuantity} Da",
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Bold
                     )
