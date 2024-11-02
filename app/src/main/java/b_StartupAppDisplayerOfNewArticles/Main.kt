@@ -701,8 +701,8 @@ private fun ColorIndicator(
         Box(
             modifier = Modifier
                 .align(Alignment.Center)
-                .offset(x = (20).dp, y = 25.dp)
-                .size(38.dp)
+                .offset(x = (18).dp, y = 22.dp)
+                .size(40.dp)
         ) {
             GlideImage(
                 model = handIcon,
@@ -933,8 +933,8 @@ private fun ColorOverlay(
                 Box(
                     modifier = Modifier
                         .align(Alignment.Center)
-                        .offset(x = (20).dp, y = 25.dp)
-                        .size(38.dp)
+                        .offset(x = (18).dp, y = 22.dp)
+                        .size(40.dp)
                 ) {
                     GlideImage(
                         model = R.drawable.hand,
