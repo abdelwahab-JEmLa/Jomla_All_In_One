@@ -11,7 +11,6 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
@@ -39,7 +38,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material.icons.outlined.Warning
@@ -81,7 +79,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -388,26 +385,7 @@ private fun MultipleColorsLayout(
     }
 }
 
-@Composable
-fun BuyButton(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    IconButton(
-        onClick = onClick,
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.error)
-    ) {
-        Icon(
-            imageVector = Icons.Default.Edit,
-            contentDescription = "Edit quantity",
-            tint = Color.White,
-            modifier = Modifier
-                .size(24.dp)
-        )
-    }
-}
+
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -479,18 +457,7 @@ fun ColorItem(
                         .fillMaxWidth()
                         .align(Alignment.BottomCenter)
                 ) {
-                    color?.let { colorData ->
-                        Surface(
-                            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f)
-                        ) {
-                            Text(
-                                text = "${colorData.nameColore}${if (currentQuantity > 0) " ($currentQuantity)" else ""}",
-                                modifier = Modifier.padding(8.dp),
-                                style = MaterialTheme.typography.labelLarge,
-                                textAlign = TextAlign.Center
-                            )
-                        }
-                    }
+
 
                     AnimatedVisibility(
                         visible = !showPicker,
