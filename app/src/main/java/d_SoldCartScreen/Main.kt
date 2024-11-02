@@ -5,36 +5,46 @@ import a_RoomDB.ClientsModel
 import a_RoomDB.ColorsArticlesTabelle
 import a_RoomDB.SoldArticlesTabelle
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import b_StartupAppDisplayerOfNewArticles.StartUpNewArticlesViewModels
 import b_StartupAppDisplayerOfNewArticles.UiState
 import coil.compose.rememberAsyncImagePainter
@@ -48,7 +58,7 @@ fun SoldCartScreen(
     viewModel: StartUpNewArticlesViewModels,
     onConfirmOrder: () -> Unit,
     modifier: Modifier = Modifier,
-    clientBuyerNow: ClientsModel? = null  // Add this parameter
+    clientBuyerNow: ClientsModel? = null
     , onOpenArticleStats: (ArticlesBasesStatsTabelle, Int) -> Unit, uiState: UiState
 ) {
 
@@ -57,12 +67,12 @@ fun SoldCartScreen(
         if (clientBuyerNow != null) {
             soldArticle.clientSoldToItId == clientBuyerNow.idClientsSu
         } else {
-            false  // If no client selected, show nothing
+            false
         }
     }
 
     val totalPrice = filteredSoldArticles.sumOf { soldArticle ->
-        uiState.articlesBasesStatTabelles//TODO ajout un filter de soldArticle. confimed  = true
+        uiState.articlesBasesStatTabelles
             .find { it.idArticle.toLong() == soldArticle.idArticle }
             ?.monPrixVent?.times(
                 soldArticle.color1SoldQuantity + soldArticle.color2SoldQuantity +
@@ -86,7 +96,7 @@ fun SoldCartScreen(
                     soldArticle = soldArticle,
                     colors = uiState.colorsArticlesTabelleModel,
                     baseArticle = baseArticle,
-                    onDelete = { viewModel.deleteSoldArticle(soldArticle.vid) },
+                    onDeleteArticle = { viewModel.deleteSoldArticle(soldArticle.vid) },
                     viewModel = viewModel,
                     onOpenArticleStats=onOpenArticleStats,
                     uiState =uiState
@@ -111,116 +121,140 @@ fun SoldArticleCard(
     soldArticle: SoldArticlesTabelle,
     colors: List<ColorsArticlesTabelle>,
     baseArticle: ArticlesBasesStatsTabelle?,
-    onDelete: () -> Unit,
-    modifier: Modifier = Modifier,
+    onDeleteArticle: () -> Unit,
     viewModel: StartUpNewArticlesViewModels,
-    clientBuyerNow: ClientsModel? = null,
     onOpenArticleStats: (ArticlesBasesStatsTabelle, Int) -> Unit,
     uiState: UiState,
+    modifier: Modifier = Modifier
+) {
+    val totalQuantity = soldArticle.run {
+        color1SoldQuantity + color2SoldQuantity +
+                color3SoldQuantity + color4SoldQuantity
+    }
 
-    ) {
-    Card(
+    ElevatedCard(
         modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp),
-        elevation = CardDefaults.cardElevation(4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            // Image with click handler
-            baseArticle?.let { article ->
-                Box(
-                    modifier = Modifier
-                        .size(80.dp)
-                        .clip(MaterialTheme.shapes.small)
-                        .clickable { onOpenArticleStats(article, 0) }
-                ) {
-                    ImageDisplayer(
-                        modifier = Modifier.fillMaxSize(),
-                        article = article,
-                        viewModel = viewModel,
-                        reloadKey = Unit,
-                        onClickToOpenWindos = { clickedArticle, indexColor ->
-                            onOpenArticleStats(clickedArticle, indexColor)
-                        } ,
-                        uiState  =uiState
-                    )
+        Column {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = baseArticle?.nomArticleFinale ?: "",
+                    style = MaterialTheme.typography.titleMedium
+                )
+                if (totalQuantity == 0) {
+                    IconButton(
+                        onClick = onDeleteArticle,
+                        modifier = Modifier
+                            .background(
+                                color = MaterialTheme.colorScheme.error,
+                                shape = CircleShape
+                            )
+                            .size(32.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Delete article",
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
                 }
             }
 
-            Column(modifier = Modifier.weight(1f)) {
-                // Header with article name and delete button
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+            Row {
+                Box(
+                    modifier = Modifier.weight(0.7f)
                 ) {
-                    Text(
-                        text = soldArticle.nameArticle,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Button(
-                        onClick = onDelete,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.error
-                        )
+                    LazyRow(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        contentPadding = PaddingValues(8.dp)
                     ) {
-                        Text("Remove")
+                        // Color 1
+                        if (soldArticle.color1SoldQuantity > 0) {
+                            item {
+                                ColorItemWithQuantity(
+                                    article = baseArticle!!,
+                                    colorIndex = 0,
+                                    quantity = soldArticle.color1SoldQuantity,
+                                    onDelete = { viewModel.resetColorSelection(0) },
+                                    viewModel = viewModel,
+                                    onOpenArticleStats = onOpenArticleStats,
+                                    uiState = uiState,
+                                    colors = colors
+                                )
+                            }
+                        }
+                        // Color 2
+                        if (soldArticle.color2SoldQuantity > 0) {
+                            item {
+                                ColorItemWithQuantity(
+                                    article = baseArticle!!,
+                                    colorIndex = 1,
+                                    quantity = soldArticle.color2SoldQuantity,
+                                    onDelete = { viewModel.resetColorSelection(1) },
+                                    viewModel = viewModel,
+                                    onOpenArticleStats = onOpenArticleStats,
+                                    uiState = uiState,
+                                    colors = colors
+                                )
+                            }
+                        }
+                        // Color 3
+                        if (soldArticle.color3SoldQuantity > 0) {
+                            item {
+                                ColorItemWithQuantity(
+                                    article = baseArticle!!,
+                                    colorIndex = 2,
+                                    quantity = soldArticle.color3SoldQuantity,
+                                    onDelete = { viewModel.resetColorSelection(2) },
+                                    viewModel = viewModel,
+                                    onOpenArticleStats = onOpenArticleStats,
+                                    uiState = uiState,
+                                    colors = colors
+                                )
+                            }
+                        }
+                        // Color 4
+                        if (soldArticle.color4SoldQuantity > 0) {
+                            item {
+                                ColorItemWithQuantity(
+                                    article = baseArticle!!,
+                                    colorIndex = 3,
+                                    quantity = soldArticle.color4SoldQuantity,
+                                    onDelete = { viewModel.resetColorSelection(3) },
+                                    viewModel = viewModel,
+                                    onOpenArticleStats = onOpenArticleStats,
+                                    uiState = uiState,
+                                    colors = colors
+                                )
+                            }
+                        }
                     }
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
-                            //TODO ajout displaye du prix et prix uniter
-                // Color quantities
-                Column {
-                    if (soldArticle.color1SoldQuantity > 0) {
-                        ColorQuantityRow(
-                            colorName = colors.find { it.idColore == soldArticle.color1IdPicked }?.nameColore ?: "Unknown",
-                            quantity = soldArticle.color1SoldQuantity
-                        )
-                    }
-                    if (soldArticle.color2SoldQuantity > 0) {
-                        ColorQuantityRow(
-                            colorName = colors.find { it.idColore == soldArticle.color2IdPicked }?.nameColore ?: "Unknown",
-                            quantity = soldArticle.color2SoldQuantity
-                        )
-                    }
-                    if (soldArticle.color3SoldQuantity > 0) {
-                        ColorQuantityRow(
-                            colorName = colors.find { it.idColore == soldArticle.color3IdPicked }?.nameColore ?: "Unknown",
-                            quantity = soldArticle.color3SoldQuantity
-                        )
-                    }
-                    if (soldArticle.color4SoldQuantity > 0) {
-                        ColorQuantityRow(
-                            colorName = colors.find { it.idColore == soldArticle.color4IdPicked }?.nameColore ?: "Unknown",
-                            quantity = soldArticle.color4SoldQuantity
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Total section
-                val totalQuantity = soldArticle.run {
-                    color1SoldQuantity + color2SoldQuantity +
-                            color3SoldQuantity + color4SoldQuantity
-                }
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                Column(
+                    modifier = Modifier
+                        .weight(0.3f)
+                        .padding(16.dp)
                 ) {
                     Text(
-                        text = "Total Quantity: $totalQuantity",
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.Medium
+                        text = "Quantity: $totalQuantity × ${baseArticle?.monPrixVent ?: 0.0}Da",
+                        style = MaterialTheme.typography.bodyLarge
                     )
                     Text(
-                        text = "Price: $${String.format("%.2f", (baseArticle?.monPrixVent ?: 0.0) * totalQuantity)}",
+                        text = "Subtotal: ${(baseArticle?.monPrixVent ?: 0.0) * totalQuantity} Da",
                         style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.Medium
+                        fontWeight = FontWeight.Bold
                     )
                 }
             }
@@ -229,26 +263,86 @@ fun SoldArticleCard(
 }
 
 @Composable
-private fun ColorQuantityRow(
-    colorName: String,
+private fun ColorItemWithQuantity(
+    article: ArticlesBasesStatsTabelle,
+    colorIndex: Int,
     quantity: Int,
+    onDelete: () -> Unit,
+    viewModel: StartUpNewArticlesViewModels,
+    onOpenArticleStats: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    uiState: UiState,
+    colors: List<ColorsArticlesTabelle>,
     modifier: Modifier = Modifier
 ) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
+    Box(
+        modifier = modifier
+            .width(150.dp)
+            .height(200.dp)
     ) {
-        Text(
-            text = colorName,
-            style = MaterialTheme.typography.bodyMedium
+        // Delete Button
+        IconButton(
+            onClick = onDelete,
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .zIndex(1f)
+                .background(
+                    color = MaterialTheme.colorScheme.error,
+                    shape = CircleShape
+                )
+                .padding(4.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Delete,
+                contentDescription = "Delete color",
+                tint = Color.White
+            )
+        }
+
+        // Image with Quantity Overlay
+        ImageDisplayer(
+            modifier = Modifier.fillMaxSize(),
+            article = article,
+            viewModel = viewModel,
+            indexColor = colorIndex,
+            onClickToOpenWindos = onOpenArticleStats,
+            uiState = uiState
         )
-        Text(
-            text = "x$quantity",
-            style = MaterialTheme.typography.bodyMedium
-        )
+
+        // Color info overlay
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .background(
+                    color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
+                )
+                .padding(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Get color name
+            val colorId = when (colorIndex) {
+                0 -> article.idcolor1
+                1 -> article.idcolor2
+                2 -> article.idcolor3
+                3 -> article.idcolor4
+                else -> 0L
+            }
+            val colorName = colors.find { it.idColore == colorId }?.nameColore ?: ""
+
+            Text(
+                text = colorName,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+            Text(
+                text = "×$quantity",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                fontWeight = FontWeight.Bold
+            )
+        }
     }
 }
-
 @Composable
 private fun OrderSummaryCard(
     currentClient: ClientsModel?,
@@ -291,105 +385,6 @@ private fun OrderSummaryCard(
                 Text("Confirm Order")
             }
         }
-    }
-}
-@Composable
-private fun ArticleHeader(
-    name: String,
-    onDelete: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(
-            text = name,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold
-        )
-        Button(onClick = onDelete) {
-            Text("Remove")
-        }
-    }
-}
-
-@Composable
-private fun ColorQuantityList(
-    soldArticle: SoldArticlesTabelle,
-    colors: List<ColorsArticlesTabelle>,
-    modifier: Modifier = Modifier
-) {
-    Column(modifier = modifier) {
-        // Only show colors with quantities > 0
-        if (soldArticle.color1SoldQuantity > 0) {
-            ColorQuantityItem(
-                colorName = colors.find { it.idColore == soldArticle.color1IdPicked }?.nameColore ?: "Unknown",
-                quantity = soldArticle.color1SoldQuantity
-            )
-        }
-        if (soldArticle.color2SoldQuantity > 0) {
-            ColorQuantityItem(
-                colorName = colors.find { it.idColore == soldArticle.color2IdPicked }?.nameColore ?: "Unknown",
-                quantity = soldArticle.color2SoldQuantity
-            )
-        }
-        if (soldArticle.color3SoldQuantity > 0) {
-            ColorQuantityItem(
-                colorName = colors.find { it.idColore == soldArticle.color3IdPicked }?.nameColore ?: "Unknown",
-                quantity = soldArticle.color3SoldQuantity
-            )
-        }
-        if (soldArticle.color4SoldQuantity > 0) {
-            ColorQuantityItem(
-                colorName = colors.find { it.idColore == soldArticle.color4IdPicked }?.nameColore ?: "Unknown",
-                quantity = soldArticle.color4SoldQuantity
-            )
-        }
-    }
-}
-
-@Composable
-private fun ColorQuantityItem(
-    colorName: String,
-    quantity: Int,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(
-            text = colorName,
-            style = MaterialTheme.typography.bodyMedium
-        )
-        Text(
-            text = "x$quantity",
-            style = MaterialTheme.typography.bodyMedium
-        )
-    }
-}
-
-@Composable
-private fun ArticleTotal(
-    quantity: Int,
-    price: Double?,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(
-            text = "Total Quantity: $quantity",
-            style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.Medium
-        )
-        Text(
-            text = "Price: $${String.format("%.2f", (price ?: 0.0) * quantity)}",
-            style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.Medium
-        )
     }
 }
 
