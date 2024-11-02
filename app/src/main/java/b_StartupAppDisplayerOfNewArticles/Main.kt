@@ -759,7 +759,6 @@ private fun ImageDisplayer(
                 modifier = Modifier
                     .fillMaxSize()
                     .clip(RoundedCornerShape(cornerRadius))
-                    .clickable { onClickToOpenWindow(article, indexColor) }
             ) {
                 it.applyImageOptions(article, indexColor, currentQuality) { isFirstResource ->
                     if (isFirstResource && currentQuality < 100f) {
@@ -775,7 +774,8 @@ private fun ImageDisplayer(
                     ColorOverlayWithBlur(
                         color = color,
                         cornerRadius = cornerRadius,
-                        modifier = Modifier.matchParentSize()
+                        modifier = Modifier.matchParentSize() ,
+                        onClickToOpenWindow={ onClickToOpenWindow(article, indexColor) }
                     )
                 }
             }
@@ -790,8 +790,9 @@ private fun ImageDisplayer(
 private fun ColorOverlayWithBlur(
     color: ColorsArticlesTabelle,
     cornerRadius: Dp,
-    modifier: Modifier = Modifier
-) {
+    modifier: Modifier = Modifier,
+    onClickToOpenWindow: () -> Unit,
+    ) {
     Box {
         // Blurred background image
         GlideImage(
@@ -818,7 +819,8 @@ private fun ColorOverlayWithBlur(
             color = color,
             modifier = Modifier
                 .fillMaxSize()
-                .clip(RoundedCornerShape(cornerRadius))
+                .clip(RoundedCornerShape(cornerRadius)) ,
+            onClickToOpenWindow= onClickToOpenWindow
         )
     }
 }
@@ -826,8 +828,9 @@ private fun ColorOverlayWithBlur(
 @Composable
 private fun ColorOverlay(
     color: ColorsArticlesTabelle,
-    modifier: Modifier = Modifier
-) {
+    modifier: Modifier = Modifier ,
+    onClickToOpenWindow: () -> Unit,
+    ) {
     Box(
         modifier = modifier
             .padding(3.dp)
@@ -844,11 +847,15 @@ private fun ColorOverlay(
             Box(
                 modifier = Modifier
                     .weight(0.6f)
-                    .wrapContentHeight(),
+                    .wrapContentHeight()
+                        ,
                 contentAlignment = Alignment.Center
             ) {
                 Surface(
-                    modifier = Modifier.matchParentSize(),
+                    modifier = Modifier
+                        .matchParentSize()
+                        .clickable { onClickToOpenWindow() }
+                    ,
                     shape = CircleShape,
                     color = Color.White.copy(alpha = 0.7f),
                     border = BorderStroke(1.dp, Color.White.copy(alpha = 0.9f))
