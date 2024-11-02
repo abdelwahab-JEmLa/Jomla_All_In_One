@@ -9,12 +9,15 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -26,11 +29,13 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -75,17 +80,21 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import b_StartupAppDisplayerOfNewArticles.AutoResizedText
 import b_StartupAppDisplayerOfNewArticles.StartUpNewArticlesViewModels
 import b_StartupAppDisplayerOfNewArticles.UiState
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import com.example.clientjetpack.R
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -400,6 +409,7 @@ fun BuyButton(
     }
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun ColorItem(
     modifier: Modifier,
@@ -411,7 +421,6 @@ fun ColorItem(
     initialShowPicker: Boolean = false,
     relatedSaleOfArticleToClient: SoldArticlesTabelle?
 ) {
-
     val currentSale by viewModel.currentSale.collectAsState()
     val currentSaleOrRelated = currentSale ?: relatedSaleOfArticleToClient
 
@@ -426,7 +435,7 @@ fun ColorItem(
             }?.let { it > 0 } ?: false
         )
     }
-    // Get quantity with priority to existing sale
+
     val currentQuantity = remember(currentSaleOrRelated, index) {
         when (index) {
             0 -> currentSaleOrRelated?.color1SoldQuantity
@@ -488,7 +497,84 @@ fun ColorItem(
                         enter = fadeIn(),
                         exit = fadeOut()
                     ) {
-                        BuyButton(onClick = { showPicker = true })
+                        color?.let { colorData ->
+                            Box(
+                                modifier = Modifier
+                                    .padding(3.dp)
+                                    .fillMaxWidth(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(IntrinsicSize.Min),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    // Color name with circular background
+                                    Box(
+                                        modifier = Modifier
+                                            .weight(0.6f)
+                                            .wrapContentHeight(),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Surface(
+                                            modifier = Modifier.matchParentSize(),
+                                            shape = CircleShape,
+                                            color = Color.White.copy(alpha = 0.7f),
+                                            border = BorderStroke(1.dp, Color.White.copy(alpha = 0.9f))
+                                        ) {}
+
+                                        AutoResizedText(
+                                            text = colorData.nameColore,
+                                            modifier = Modifier.clickable { showPicker = true },
+                                            color = Color.Black,
+                                            style = MaterialTheme.typography.headlineMedium.copy(
+                                                fontWeight = FontWeight.Bold
+                                            ),
+                                            maxLines = 1
+                                        )
+                                    }
+
+                                    Box(
+                                        modifier = Modifier
+                                            .weight(0.4f)
+                                            .wrapContentHeight(),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Surface(
+                                            modifier = Modifier.matchParentSize(),
+                                            shape = CircleShape,
+                                            color = Color.White.copy(alpha = 0.8f),
+                                            border = BorderStroke(1.dp, Color.White.copy(alpha = 0.95f))
+                                        ) {}
+
+                                        Box(
+                                            modifier = Modifier
+                                                .align(Alignment.Center)
+                                                .offset(x = 18.dp, y = 22.dp)
+                                                .size(40.dp)
+                                                .clickable { showPicker = true }
+                                        ) {
+                                            GlideImage(
+                                                model = R.drawable.hand,
+                                                contentDescription = "Click indicator",
+                                                contentScale = ContentScale.Fit
+                                            )
+                                        }
+
+                                        AutoResizedText(
+                                            text = colorData.iconColore,
+                                            modifier = Modifier.clickable { showPicker = true },
+                                            color = Color.White,
+                                            style = MaterialTheme.typography.headlineLarge.copy(
+                                                fontWeight = FontWeight.Bold
+                                            ),
+                                            maxLines = 1
+                                        )
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
