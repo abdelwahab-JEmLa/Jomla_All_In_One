@@ -184,7 +184,6 @@ class StartUpNewArticlesViewModels(
             }
         }
     }
-
     fun resetColorSelection(colorIndex: Int) {
         viewModelScope.launch {
             _currentSale.value?.let { sale ->
@@ -197,16 +196,38 @@ class StartUpNewArticlesViewModels(
                 }
 
                 try {
-
                     // Update current sale state
                     _currentSale.value = updatedSale
 
+                    // Update UI state's soldArticlesModel
+                    _uiState.update { state ->
+                        state.copy(
+                            soldArticlesModel = state.soldArticlesModel.map { article ->
+                                if (article?.vid == updatedSale.vid) {
+                                    updatedSale
+                                } else {
+                                    article
+                                }
+                            }
+                        )
+                    }
+
+                    // If all quantities are 0, delete the article
+                    if (updatedSale.getTotalQuantity() == 0) {
+                        deleteSoldArticle(updatedSale.vid)
+                    }
 
                 } catch (e: Exception) {
                     _uiState.update { it.copy(error = "Failed to reset sale: ${e.message}") }
                 }
             }
         }
+    }
+
+    // Helper extension function to get total quantity
+    private fun SoldArticlesTabelle.getTotalQuantity(): Int {
+        return color1SoldQuantity + color2SoldQuantity +
+                color3SoldQuantity + color4SoldQuantity
     }
 
     fun saveSaleTransaction() {

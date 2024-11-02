@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -58,25 +57,36 @@ fun SoldCartScreen(
     viewModel: StartUpNewArticlesViewModels,
     onConfirmOrder: () -> Unit,
     modifier: Modifier = Modifier,
-    clientBuyerNow: ClientsModel? = null
-    , onOpenArticleStats: (ArticlesBasesStatsTabelle, Int) -> Unit, uiState: UiState
+    clientBuyerNow: ClientsModel? = null,
+    onOpenArticleStats: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    uiState: UiState
 ) {
+    // Filter articles by clientBuyerNow.id and non-zero quantity
+    val filteredSoldArticles = uiState.soldArticlesModel
+        .filterNotNull()
+        .filter { soldArticle ->
+            val hasQuantity = (
+                    soldArticle.color1SoldQuantity +
+                            soldArticle.color2SoldQuantity +
+                            soldArticle.color3SoldQuantity +
+                            soldArticle.color4SoldQuantity
+                    ) > 0
 
-    // Filter articles by clientBuyerNow.id
-    val filteredSoldArticles = uiState.soldArticlesModel.filterNotNull().filter { soldArticle ->
-        if (clientBuyerNow != null) {
-            soldArticle.clientSoldToItId == clientBuyerNow.idClientsSu
-        } else {
-            false
+            if (clientBuyerNow != null) {
+                soldArticle.clientSoldToItId == clientBuyerNow.idClientsSu && hasQuantity
+            } else {
+                false
+            }
         }
-    }
 
     val totalPrice = filteredSoldArticles.sumOf { soldArticle ->
         uiState.articlesBasesStatTabelles
             .find { it.idArticle.toLong() == soldArticle.idArticle }
             ?.monPrixVent?.times(
-                soldArticle.color1SoldQuantity + soldArticle.color2SoldQuantity +
-                        soldArticle.color3SoldQuantity + soldArticle.color4SoldQuantity
+                soldArticle.color1SoldQuantity +
+                        soldArticle.color2SoldQuantity +
+                        soldArticle.color3SoldQuantity +
+                        soldArticle.color4SoldQuantity
             ) ?: 0.0
     }
 
@@ -85,24 +95,43 @@ fun SoldCartScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        LazyColumn(
-            modifier = Modifier.weight(1f)
-        ) {
-            items(filteredSoldArticles) { soldArticle ->
-                val baseArticle = uiState.articlesBasesStatTabelles
-                    .find { it.idArticle.toLong() == soldArticle.idArticle }
-
-                SoldArticleCard(
-                    soldArticle = soldArticle,
-                    colors = uiState.colorsArticlesTabelleModel,
-                    baseArticle = baseArticle,
-                    onDeleteArticle = { viewModel.deleteSoldArticle(soldArticle.vid) },
-                    viewModel = viewModel,
-                    onOpenArticleStats=onOpenArticleStats,
-                    uiState =uiState
+        if (filteredSoldArticles.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "No articles in cart",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
+        } else {
+            LazyColumn(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(
+                    items = filteredSoldArticles,
+                    key = { it.vid }  // Add key for better performance
+                ) { soldArticle ->
+                    val baseArticle = uiState.articlesBasesStatTabelles
+                        .find { it.idArticle.toLong() == soldArticle.idArticle }
+
+                    SoldArticleCard(
+                        soldArticle = soldArticle,
+                        colors = uiState.colorsArticlesTabelleModel,
+                        baseArticle = baseArticle,
+                        viewModel = viewModel,
+                        onOpenArticleStats = onOpenArticleStats,
+                        uiState = uiState
+                    )
+                }
+            }
         }
+
 
         OrderSummaryCard(
             currentClient = clientBuyerNow,
@@ -115,13 +144,11 @@ fun SoldCartScreen(
         )
     }
 }
-
 @Composable
 fun SoldArticleCard(
     soldArticle: SoldArticlesTabelle,
     colors: List<ColorsArticlesTabelle>,
     baseArticle: ArticlesBasesStatsTabelle?,
-    onDeleteArticle: () -> Unit,
     viewModel: StartUpNewArticlesViewModels,
     onOpenArticleStats: (ArticlesBasesStatsTabelle, Int) -> Unit,
     uiState: UiState,
@@ -150,24 +177,6 @@ fun SoldArticleCard(
                     text = baseArticle?.nomArticleFinale ?: "",
                     style = MaterialTheme.typography.titleMedium
                 )
-                if (totalQuantity == 0) {
-                    IconButton(
-                        onClick = onDeleteArticle,
-                        modifier = Modifier
-                            .background(
-                                color = MaterialTheme.colorScheme.error,
-                                shape = CircleShape
-                            )
-                            .size(32.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = "Delete article",
-                            tint = Color.White,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                }
             }
 
             Row {
