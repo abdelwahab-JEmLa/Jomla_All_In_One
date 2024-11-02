@@ -5,6 +5,7 @@ import a_RoomDB.ClientsModel
 import a_RoomDB.ColorsArticlesTabelle
 import a_RoomDB.SoldArticlesTabelle
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
@@ -16,6 +17,7 @@ import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -37,8 +39,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material.icons.outlined.Warning
@@ -46,6 +48,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
@@ -80,7 +83,9 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -118,6 +123,11 @@ fun WindosBuyAndDesplayeArticleStats(
     }
 
     var showConfirmDialog by remember { mutableStateOf(false) }
+    var isDetailsVisible by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        isDetailsVisible = true
+    }
 
     if (showConfirmDialog) {
         AlertDialog(
@@ -183,38 +193,53 @@ fun WindosBuyAndDesplayeArticleStats(
             tonalElevation = 2.dp
         ) {
             Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.SpaceBetween
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
             ) {
-                ElevatedCard(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
-                        .padding(horizontal = 4.dp, vertical = 4.dp),
-                    elevation = CardDefaults.elevatedCardElevation(
-                        defaultElevation = 4.dp
-                    )
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .verticalScroll(rememberScrollState())
-                    ) {
-                        // Product Details Section
-                        ProductDetailsSection(article)
+                // Product Details Section
+                ProductNameSection(article)
 
-                        // Colors Selection
-                        ColorsCards(
-                            article = article,
-                            viewModel = viewModel,
-                            relodeTigger = reloadTrigger,
-                            uiState = uiState,
-                            initialShowPickerIndex = indexColorStat,
-                            relatedSaleOfArticleToClient = relatedSaleOfArticleToClient
-                        )
-                    }
+                // Visual Divider with Label
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Divider(
+                        modifier = Modifier.weight(1f),
+                        color = MaterialTheme.colorScheme.outlineVariant
+                    )
+                    Text(
+                        text = "اختر اللون",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(horizontal = 8.dp)
+                    )
+                    Divider(
+                        modifier = Modifier.weight(1f),
+                        color = MaterialTheme.colorScheme.outlineVariant
+                    )
                 }
 
+                // Colors Selection with Animation
+                AnimatedVisibility(
+                    visible = true,
+                    enter = fadeIn() + expandVertically()
+                ) {
+                    ColorsCards(
+                        article = article,
+                        viewModel = viewModel,
+                        relodeTigger = reloadTrigger,
+                        uiState = uiState,
+                        initialShowPickerIndex = indexColorStat,
+                        relatedSaleOfArticleToClient = relatedSaleOfArticleToClient,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                }
+                // Details Card with Animation
+                Details(isDetailsVisible, article)
                 ActionsButtonRow(
                     onConfirm = {
                         viewModel.saveSaleTransaction()
@@ -229,91 +254,167 @@ fun WindosBuyAndDesplayeArticleStats(
 }
 
 @Composable
-private fun ProductDetailsSection(article: ArticlesBasesStatsTabelle) {
+private fun ProductNameSection(article: ArticlesBasesStatsTabelle) {
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Product Name
+        // Product Name Card
+        ElevatedCard(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
+            elevation = CardDefaults.elevatedCardElevation(defaultElevation = 6.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = article.nomArticleFinale,
+                    style = MaterialTheme.typography.headlineMedium.copy(
+                        fontWeight = FontWeight.Bold
+                    ),
+                    textAlign = TextAlign.Center
+                )
+
+                if (article.nomArab.isNotEmpty()) {
+                    Text(
+                        text = article.nomArab,
+                        style = MaterialTheme.typography.bodyLarge,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+                }
+            }
+        }
+
+
+    }
+}
+
+@Composable
+private fun ColumnScope.Details(
+    isDetailsVisible: Boolean,
+    article: ArticlesBasesStatsTabelle
+) {
+    AnimatedVisibility(
+        visible = isDetailsVisible,
+        enter = fadeIn() + expandVertically(),
+        modifier = Modifier.padding(top = 8.dp)
+    ) {
+        ElevatedCard(
+            modifier = Modifier.fillMaxWidth(),
+            elevation = CardDefaults.elevatedCardElevation(defaultElevation = 3.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                // Price Section
+                InfoRow(
+                    label = "السعر للوحدة",
+                    value = "${article.monPrixVent} ",
+                    unite = "دج"
+                )
+
+                InfoRow(
+                    label = "السعر بالجملة",
+                    value = "${
+                        String.format(
+                            "%.2f",
+                            article.monPrixVent / article.nmbrUnite.toFloat()
+                        )
+                    } ",
+                    unite = "دج"
+                )
+
+                Divider(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp)
+                )
+
+                // Units Information
+                InfoRow(
+                    label = "عدد الحبات",
+                    value = "${article.nmbrUnite} ",
+                    unite = "وحدة"
+                )
+
+                // Carton Information
+                InfoRow(
+                    label = "في الكرتون",
+                    value = "${article.nmbrCaron} ",
+                    unite = "علبة"
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun InfoRow(
+    label: String,
+    value: String,
+    unite: String,
+
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        horizontalArrangement = Arrangement.End,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Text(
-            text = article.nomArticleFinale,
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.padding(bottom = 8.dp)
+            text = unite,
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(end = 8.dp)
+        )
+        Text(
+            text = value,
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(end = 8.dp)
         )
 
-        if (article.nomArab.isNotEmpty()) {
-            Text(
-                text = article.nomArab,
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(bottom = 16.dp)
+        Icon(
+            Icons.Default.KeyboardArrowLeft,
+            contentDescription = null,
+            modifier = Modifier.size(20.dp),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ProductDetailsSectionPreview() {
+    MaterialTheme {
+        ProductNameSection(
+            ArticlesBasesStatsTabelle(
+                nomArticleFinale = "Product Name",
+                nomArab = "اسم المنتج",
+                nmbrUnite = 12,
+                nmbrCaron = 24,
+                monPrixVent = 1200.0
             )
-        }
-
-        // Units Information
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = "عدد الحبات",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Icon(
-                    Icons.Default.ArrowForward,
-                    contentDescription = null,
-                    modifier = Modifier.padding(horizontal = 4.dp)
-                )
-                Text(
-                    text = "${article.nmbrUnite} وحدة",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-            }
-        }
-
-        // Carton Information
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = "في الكرتون",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Icon(
-                    Icons.Default.ArrowForward,
-                    contentDescription = null,
-                    modifier = Modifier.padding(horizontal = 4.dp)
-                )
-                Text(
-                    text = "${article.nmbrCaron} علبة",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-            }
-        }
-
-        // Price Information
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "${article.monPrixVent} دج /للوحدة",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary
-            )
-        }
+        )
     }
 }
 @Composable
