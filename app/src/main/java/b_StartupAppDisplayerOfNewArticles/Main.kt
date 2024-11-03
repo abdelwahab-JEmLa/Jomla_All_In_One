@@ -403,11 +403,10 @@ sealed class ArticleLayout {
     data object SmallMulti : ArticleLayout()
 
     // Define size configurations for different layouts
-    val imageSize: DpSize
+    private val imageSize: DpSize
         get() = when (this) {
-            is DemiUno -> DpSize(width = 300.dp, height = 300.dp)
-            is DemiDual, is DemiMulti -> DpSize(width = 200.dp, height = 200.dp)
-            is SmallUno, is SmallDual, is SmallMulti -> DpSize(width = 150.dp, height = 150.dp)
+            is DemiUno,DemiDual, is DemiMulti -> DpSize(width = 350.dp, height = 350.dp)
+            is SmallUno, is SmallDual, is SmallMulti -> DpSize(width = 170.dp, height = 170.dp)
         }
 
     @Composable
@@ -462,7 +461,7 @@ private fun ArticleItem(
     reloadTrigger: Int,
     modifier: Modifier = Modifier,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
-    uiState: UiState ,
+    uiState: UiState,
 ) {
     val colorCount = countColors(article)
 
