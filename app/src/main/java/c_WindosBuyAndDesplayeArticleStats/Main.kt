@@ -1,7 +1,6 @@
 package c_WindosBuyAndDesplayeArticleStats
 
 import a_RoomDB.ArticlesBasesStatsTable
-import a_RoomDB.ClientsModel
 import a_RoomDB.ColorsArticlesTabelle
 import a_RoomDB.SoldArticlesTabelle
 import android.annotation.SuppressLint
@@ -49,7 +48,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
@@ -105,21 +103,17 @@ import kotlinx.coroutines.flow.map
 import java.io.File
 
 @Composable
-fun WindosBuyAndDesplayeArticleStats(
+fun SaleWindows(
     uiState: UiState,
-    article: ArticlesBasesStatsTable,
     viewModel: StartUpNewArticlesViewModels,
     onDismiss: () -> Unit,
-    onReloadTrigger: () -> Unit,
     reloadTrigger: Int,
     modifier: Modifier = Modifier,
-    indexColorStat: Int,
-    clientBuyerNow: ClientsModel?,
-    relatedSaleOfArticleToClient: SoldArticlesTabelle?
 ) {
-    LaunchedEffect(article, clientBuyerNow) {
-        if (relatedSaleOfArticleToClient == null && clientBuyerNow != null) {
-            viewModel.createNewSaleIfNotExist(article, clientBuyerNow)
+    val currentSale = viewModel.currentSaleInWindows.collectAsState().value
+    val articlesBaseStats = currentSale?.let { sale ->
+        uiState.articlesBasesStatTables.find {
+            it.idArticle.toLong() == sale.idArticle
         }
     }
 
@@ -149,7 +143,7 @@ fun WindosBuyAndDesplayeArticleStats(
             confirmButton = {
                 FilledTonalButton(
                     onClick = {
-                        viewModel.saveSaleTransaction()
+                        viewModel.saveSaleTransactionToSoldAriclesList()
                         onDismiss()
                     }
                 ) {
@@ -159,7 +153,7 @@ fun WindosBuyAndDesplayeArticleStats(
             dismissButton = {
                 OutlinedButton(
                     onClick = {
-                        viewModel.deleteSaleTransaction()
+
                         onDismiss()
                     }
                 ) {
@@ -198,17 +192,17 @@ fun WindosBuyAndDesplayeArticleStats(
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
             ) {
-                // Product Details Section
-                ProductNameSection(article)
+                articlesBaseStats?.let { stats ->
+                    ProductNameSection(stats)
 
-                // Visual Divider with Label
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Divider(
+                    // Visual Divider with Label
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                    HorizontalDivider(
                         modifier = Modifier.weight(1f),
                         color = MaterialTheme.colorScheme.outlineVariant
                     )
@@ -218,36 +212,37 @@ fun WindosBuyAndDesplayeArticleStats(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(horizontal = 8.dp)
                     )
-                    Divider(
+                    HorizontalDivider(
                         modifier = Modifier.weight(1f),
                         color = MaterialTheme.colorScheme.outlineVariant
                     )
                 }
 
-                // Colors Selection with Animation
-                AnimatedVisibility(
-                    visible = true,
-                    enter = fadeIn() + expandVertically()
-                ) {
-                    ColorsCards(
-                        article = article,
-                        viewModel = viewModel,
-                        relodeTigger = reloadTrigger,
-                        uiState = uiState,
-                        initialShowPickerIndex = indexColorStat,
-                        relatedSaleOfArticleToClient = relatedSaleOfArticleToClient,
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    )
+                    // Colors Selection with Animation
+                    AnimatedVisibility(
+                        visible = true,
+                        enter = fadeIn() + expandVertically()
+                    ) {
+                        ColorsCards(
+                            currentSale = currentSale,
+                            articlesBasesStatsTable = stats,
+                            viewModel = viewModel,
+                            relodeTigger = reloadTrigger,
+                            uiState = uiState,
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                        )
+                    }
+
+                    // Details Card with Animation
+                    Details(isDetailsVisible, stats)
                 }
-                // Details Card with Animation
-                Details(isDetailsVisible, article)
+
                 ActionsButtonRow(
                     onConfirm = {
-                        viewModel.saveSaleTransaction()
+                        viewModel.saveSaleTransactionToSoldAriclesList()
                         onDismiss()
                     },
                     onCancel = onDismiss,
-                    viewModel = viewModel
                 )
             }
         }
@@ -421,7 +416,6 @@ private fun ProductDetailsSectionPreview() {
 private fun ActionsButtonRow(
     onConfirm: () -> Unit,
     onCancel: () -> Unit,
-    viewModel: StartUpNewArticlesViewModels,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -432,7 +426,6 @@ private fun ActionsButtonRow(
     ) {
         OutlinedButton(
             onClick = {
-                viewModel.deleteSaleTransaction()
                 onCancel()
             },
             modifier = Modifier.weight(1f),
@@ -465,19 +458,18 @@ private fun ActionsButtonRow(
 }
 @Composable
 private fun ColorsCards(
-    article: ArticlesBasesStatsTable,
+    currentSale: SoldArticlesTabelle?,
+    articlesBasesStatsTable: ArticlesBasesStatsTable,
     viewModel: StartUpNewArticlesViewModels,
     modifier: Modifier = Modifier,
     relodeTigger: Int,
     uiState: UiState,
-    initialShowPickerIndex: Int,
-    relatedSaleOfArticleToClient: SoldArticlesTabelle?
 ) {
     val colors = listOf(
-        article.idcolor1,
-        article.idcolor2,
-        article.idcolor3,
-        article.idcolor4
+        articlesBasesStatsTable.idcolor1,
+        articlesBasesStatsTable.idcolor2,
+        articlesBasesStatsTable.idcolor3,
+        articlesBasesStatsTable.idcolor4
     ).mapNotNull { colorId ->
         if (colorId != 0L) {
             uiState.colorsArticlesTabelleModel.find { it.idColore == colorId }
@@ -491,20 +483,18 @@ private fun ColorsCards(
     ) {
         when (colors.size) {
             1 -> SingleColorLayout(
-                article = article,
+                currentSale=currentSale,
+                article = articlesBasesStatsTable,
                 color = colors[0],
                 viewModel = viewModel,
                 relodeTigger = relodeTigger,
-                initialShowPickerIndex = initialShowPickerIndex,
-                relatedSaleOfArticleToClient = relatedSaleOfArticleToClient
             )
             else -> MultipleColorsLayout(
-                article = article,
+                currentSale=currentSale,
+                article = articlesBasesStatsTable,
                 colors = colors,
                 viewModel = viewModel,
                 relodeTigger = relodeTigger,
-                initialShowPickerIndex = initialShowPickerIndex,
-                relatedSaleOfArticleToClient = relatedSaleOfArticleToClient
             )
         }
     }
@@ -512,12 +502,11 @@ private fun ColorsCards(
 
 @Composable
 private fun SingleColorLayout(
+    currentSale: SoldArticlesTabelle?,
     article: ArticlesBasesStatsTable,
     color: ColorsArticlesTabelle,
     viewModel: StartUpNewArticlesViewModels,
     relodeTigger: Int,
-    initialShowPickerIndex: Int,
-    relatedSaleOfArticleToClient: SoldArticlesTabelle?
 ) {
     Box(
         modifier = Modifier
@@ -525,28 +514,26 @@ private fun SingleColorLayout(
             .padding(4.dp)
     ) {
         ColorItem(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp),
+            currentSale = currentSale,
             article = article,
             color = color,
             index = 0,
             relodeTigger = relodeTigger,
             viewModel = viewModel,
-            initialShowPicker = 0 == initialShowPickerIndex,
-            relatedSaleOfArticleToClient = relatedSaleOfArticleToClient,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp)
         )
     }
 }
 
 @Composable
 private fun MultipleColorsLayout(
+    currentSale: SoldArticlesTabelle?,
     article: ArticlesBasesStatsTable,
     colors: List<ColorsArticlesTabelle>,
     viewModel: StartUpNewArticlesViewModels,
     relodeTigger: Int,
-    initialShowPickerIndex: Int,
-    relatedSaleOfArticleToClient: SoldArticlesTabelle?
 ) {
     Column(
         modifier = Modifier
@@ -567,14 +554,13 @@ private fun MultipleColorsLayout(
                             .height(250.dp)
                     ) {
                         ColorItem(
+                            modifier = Modifier.fillMaxSize(),
+                            currentSale=currentSale,
                             article = article,
                             color = color,
                             index = index,
                             relodeTigger = relodeTigger,
-                            viewModel = viewModel,
-                            initialShowPicker = index == initialShowPickerIndex,
-                            relatedSaleOfArticleToClient = relatedSaleOfArticleToClient,
-                            modifier = Modifier.fillMaxSize()
+                            viewModel = viewModel
                         )
                     }
                 }
@@ -589,42 +575,38 @@ private fun MultipleColorsLayout(
 @Composable
 fun ColorItem(
     modifier: Modifier,
+    currentSale: SoldArticlesTabelle?,
     article: ArticlesBasesStatsTable,
     color: ColorsArticlesTabelle?,
     index: Int,
     relodeTigger: Int,
     viewModel: StartUpNewArticlesViewModels,
-    initialShowPicker: Boolean = false,
-    relatedSaleOfArticleToClient: SoldArticlesTabelle?
 ) {
-    val currentSale by viewModel.currentSale.collectAsState()
-    val currentSaleOrRelated = currentSale ?: relatedSaleOfArticleToClient
-
     var showPicker by remember {
         mutableStateOf(
-            initialShowPicker || when (index) {
-                0 -> currentSaleOrRelated?.color1SoldQuantity
-                1 -> currentSaleOrRelated?.color2SoldQuantity
-                2 -> currentSaleOrRelated?.color3SoldQuantity
-                3 -> currentSaleOrRelated?.color4SoldQuantity
+            when (index) {
+                0 -> currentSale?.color1SoldQuantity
+                1 -> currentSale?.color2SoldQuantity
+                2 -> currentSale?.color3SoldQuantity
+                3 -> currentSale?.color4SoldQuantity
                 else -> null
             }?.let { it > 0 } ?: false
         )
     }
 
-    val currentQuantity = remember(currentSaleOrRelated, index) {
+    val currentQuantity = remember(index, currentSale) {
         when (index) {
-            0 -> currentSaleOrRelated?.color1SoldQuantity
-            1 -> currentSaleOrRelated?.color2SoldQuantity
-            2 -> currentSaleOrRelated?.color3SoldQuantity
-            3 -> currentSaleOrRelated?.color4SoldQuantity
+            0 -> currentSale?.color1SoldQuantity
+            1 -> currentSale?.color2SoldQuantity
+            2 -> currentSale?.color3SoldQuantity
+            3 -> currentSale?.color4SoldQuantity
             else -> null
         } ?: 0
     }
 
     LaunchedEffect(showPicker) {
         if (!showPicker) {
-            viewModel.saveSaleTransaction()
+            viewModel.saveSaleTransactionToSoldAriclesList()
         }
     }
 
@@ -753,7 +735,6 @@ fun ColorItem(
                 if (showPicker && color != null) {
                     CompactQuantityPicker(
                         onDismiss = { showPicker = false },
-                        colorId = color.idColore,
                         colorIndex = index,
                         viewModel = viewModel,
                         initialQuantity = currentQuantity
@@ -767,7 +748,6 @@ fun ColorItem(
 @Composable
 fun CompactQuantityPicker(
     onDismiss: () -> Unit,
-    colorId: Long,
     colorIndex: Int,
     viewModel: StartUpNewArticlesViewModels,
     initialQuantity: Int = 0
@@ -807,13 +787,13 @@ fun CompactQuantityPicker(
                     textModifier = Modifier.padding(8.dp),
                     textStyle = TextStyle(fontSize = 24.sp),
                     startIndex = values.indexOfFirst { it == initialQuantity.toString() }.coerceAtLeast(0),
-                    onItemStat = {viewModel.updateColorSelection(colorIndex, colorId, it.toInt())}
+                    onItemStat = {viewModel.updateColorSelection(colorIndex, it.toInt())}
                 )
             }
 
             IconButton(
                 onClick = {
-                    viewModel.resetColorSelection(colorIndex)
+                    viewModel.updateColorSelection(colorIndex,0)
                     onDismiss()
                 },
                 modifier = Modifier.padding(top = 8.dp)
@@ -830,7 +810,7 @@ fun CompactQuantityPicker(
 fun Picker(
     modifier: Modifier = Modifier,
     items: List<String>,
-    state: PickerState = rememberPickerState(),
+    state: c_WindosBuyAndDesplayeArticleStats.PickerState = rememberPickerState(),
     startIndex: Int = 0,
     visibleItemsCount: Int = 3,
     textModifier: Modifier = Modifier,

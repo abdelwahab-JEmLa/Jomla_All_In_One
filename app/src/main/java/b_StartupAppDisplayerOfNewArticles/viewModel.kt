@@ -74,42 +74,96 @@ class StartUpNewArticlesViewModels(
         }
     }
 
-    private val _currentSale = MutableStateFlow<SoldArticlesTabelle?>(null)
-    val currentSale = _currentSale.asStateFlow()
+    private val _currentSaleInWindows = MutableStateFlow<SoldArticlesTabelle?>(null)
+    val currentSaleInWindows = _currentSaleInWindows.asStateFlow()
 
 
-    // Add to StartUpNewArticlesViewModels.kt
-
-    fun deleteSaleTransaction() {
+    fun updateOpenWindosNewSale(
+        relatedArticleDataBaseId: Long,
+        currentClient: Long,
+        indexColor: Int,
+    ) {
         viewModelScope.launch {
             try {
-                _currentSale.value?.let { sale ->
-                    // Delete from Room database
-                    database.soldArticlesTabelleDao().delete(sale)
+                val maxId = _uiState.value.soldArticlesModel
+                    .filterNotNull()
+                    .maxOfOrNull { it.vid } ?: 0
 
-                    // Update UI state by removing the sale
-                    _uiState.update { state ->
-                        state.copy(
-                            soldArticlesModel = state.soldArticlesModel.filterNotNull().filter {
-                                it.vid != sale.vid
-                            }
-                        )
+                val article = _uiState.value.articlesBasesStatTables
+                    .find { it.idArticle.toLong() == relatedArticleDataBaseId }
+
+                val newSale = SoldArticlesTabelle(
+                    vid = maxId + 1,
+                    idArticle = relatedArticleDataBaseId,
+                    nameArticle = article?.nomArticleFinale ?: "",
+                    clientSoldToItId = currentClient,
+                    date = System.currentTimeMillis().toString()
+                ).let { sale ->
+                    when (indexColor) {
+                        0 -> sale.copy(color1IdPicked = article?.idcolor1 ?: 0, color1SoldQuantity = 1)
+                        1 -> sale.copy(color2IdPicked = article?.idcolor2 ?: 0, color2SoldQuantity = 1)
+                        2 -> sale.copy(color3IdPicked = article?.idcolor3 ?: 0, color3SoldQuantity = 1)
+                        3 -> sale.copy(color4IdPicked = article?.idcolor4 ?: 0, color4SoldQuantity = 1)
+                        else -> sale
                     }
-
-                    // Reset current sale
-                    _currentSale.value = null
-
-                } ?: run {
-                    // If there's no current sale, just reset the current sale state
-                    _currentSale.value = null
                 }
+
+                _currentSaleInWindows.value = newSale
             } catch (e: Exception) {
-                _uiState.update { it.copy(
-                    error = "فشل في حذف عملية البيع: ${e.message}"  // Failed to delete sale transaction
-                ) }
+                _uiState.update { it.copy(error = "Failed to update sale: ${e.message}") }
             }
         }
     }
+
+    fun updateColorSelection(colorIndex: Int, quantity: Int) {
+        viewModelScope.launch {
+            _currentSaleInWindows.value?.let { sale ->
+                val article = _uiState.value.articlesBasesStatTables
+                    .find { it.idArticle.toLong() == sale.idArticle }
+
+                val updatedSale = when (colorIndex) {
+                    0 -> sale.copy(
+                        color1IdPicked = article?.idcolor1?.takeIf { it != 0L } ?: sale.color1IdPicked,
+                        color1SoldQuantity = quantity
+                    )
+                    1 -> sale.copy(
+                        color2IdPicked = article?.idcolor2?.takeIf { it != 0L } ?: sale.color2IdPicked,
+                        color2SoldQuantity = quantity
+                    )
+                    2 -> sale.copy(
+                        color3IdPicked = article?.idcolor3?.takeIf { it != 0L } ?: sale.color3IdPicked,
+                        color3SoldQuantity = quantity
+                    )
+                    3 -> sale.copy(
+                        color4IdPicked = article?.idcolor4?.takeIf { it != 0L } ?: sale.color4IdPicked,
+                        color4SoldQuantity = quantity
+                    )
+                    else -> sale
+                }
+
+                try {
+                    val totalQuantity = updatedSale.run {
+                        color1SoldQuantity + color2SoldQuantity +
+                                color3SoldQuantity + color4SoldQuantity
+                    }
+
+                    if (totalQuantity == 0) {
+                        deleteSoldArticle(updatedSale.vid)
+                        clearCurrentSale()
+                    } else {
+                        _currentSaleInWindows.value = updatedSale
+                    }
+                } catch (e: Exception) {
+                    _uiState.update { it.copy(error = "Failed to update sale: ${e.message}") }
+                }
+            }
+        }
+    }
+    
+    fun clearCurrentSale() {
+        _currentSaleInWindows.value=null
+    }
+
 
 
     private fun deleteSoldArticle(vid: Long) {
@@ -139,149 +193,10 @@ class StartUpNewArticlesViewModels(
             }
         }
     }
-    fun updateColorSelection(colorIndex: Int, colorId: Long, quantity: Int) {
+    
+    fun saveSaleTransactionToSoldAriclesList() {
         viewModelScope.launch {
-            _currentSale.value?.let { sale ->
-                val updatedSale = when (colorIndex) {
-                    0 -> sale.copy(
-                        color1IdPicked = colorId,
-                        color1SoldQuantity = quantity
-                    )
-                    1 -> sale.copy(
-                        color2IdPicked = colorId,
-                        color2SoldQuantity = quantity
-                    )
-                    2 -> sale.copy(
-                        color3IdPicked = colorId,
-                        color3SoldQuantity = quantity
-                    )
-                    3 -> sale.copy(
-                        color4IdPicked = colorId,
-                        color4SoldQuantity = quantity
-                    )
-                    else -> sale
-                }
-
-                try {
-
-                    // Update current sale state
-                    _currentSale.value = updatedSale
-                    updateLocaleAndFireBaseSoldArticlesModel(updatedSale)
-
-                } catch (e: Exception) {
-                    _uiState.update { it.copy(error = "Failed to update sale: ${e.message}") }
-                }
-            }
-        }
-    }
-    private fun updateLocaleAndFireBaseSoldArticlesModel(updatedSale: SoldArticlesTabelle) {
-        viewModelScope.launch {
-            try {
-                updatedSale.let { sale ->
-                    // Update Room database
-                    database.soldArticlesTabelleDao().insert(sale)
-
-                    // Update Firebase
-                    firebaseDatabase.getReference("O_SoldArticlesTabelle")
-                        .child(sale.vid.toString())
-                        .setValue(sale)
-                        .await()
-
-                    // Update UI state
-                    _uiState.update { state ->
-                        state.copy(
-                            soldArticlesModel = state.soldArticlesModel.map { article ->
-                                if (article?.vid == sale.vid) sale else article
-                            }
-                        )
-                    }
-                }
-            } catch (e: Exception) {
-                _uiState.update { it.copy(error = "Failed to update sale: ${e.message}") }
-            }
-        }
-    }
-    fun resetColorSelection(colorIndex: Int) {
-        viewModelScope.launch {
-            _currentSale.value?.let { sale ->
-                val updatedSale = when (colorIndex) {
-                    0 -> sale.copy(color1IdPicked = 0, color1SoldQuantity = 0)
-                    1 -> sale.copy(color2IdPicked = 0, color2SoldQuantity = 0)
-                    2 -> sale.copy(color3IdPicked = 0, color3SoldQuantity = 0)
-                    3 -> sale.copy(color4IdPicked = 0, color4SoldQuantity = 0)
-                    else -> sale
-                }
-
-                try {
-                    // Update current sale state
-                    _currentSale.value = updatedSale
-
-                    // Update UI state's soldArticlesModel
-                    _uiState.update { state ->
-                        state.copy(
-                            soldArticlesModel = state.soldArticlesModel.map { article ->
-                                if (article?.vid == updatedSale.vid) {
-                                    updatedSale
-                                } else {
-                                    article
-                                }
-                            }
-                        )
-                    }
-
-                    // If all quantities are 0, delete the article
-                    if (updatedSale.getTotalQuantity() == 0) {
-                        deleteSoldArticle(updatedSale.vid)
-                    }
-
-                } catch (e: Exception) {
-                    _uiState.update { it.copy(error = "Failed to reset sale: ${e.message}") }
-                }
-            }
-        }
-    }
-    fun deleteUnconfirmedSoldArticle(vid: Long) {
-        viewModelScope.launch {
-            try {
-                // Find the article to delete
-                val articleToDelete = _uiState.value.soldArticlesModel.find {
-                    it?.vid == vid
-                }
-
-                articleToDelete?.let { article ->
-                    // Delete from Room database
-                    database.soldArticlesTabelleDao().delete(article)
-
-                    // Update UI state by removing the article
-                    _uiState.update { state ->
-                        state.copy(
-                            soldArticlesModel = state.soldArticlesModel.filterNotNull().filter {
-                                it.vid != vid
-                            }
-                        )
-                    }
-
-                    // If this was the current sale, reset it
-                    if (_currentSale.value?.vid == vid) {
-                        _currentSale.value = null
-                    }
-                }
-            } catch (e: Exception) {
-                _uiState.update { it.copy(
-                    error = "فشل في حذف المنتج غير المؤكد: ${e.message}"  // Failed to delete unconfirmed article
-                ) }
-            }
-        }
-    }
-    // Helper extension function to get total quantity
-    fun SoldArticlesTabelle.getTotalQuantity(): Int {
-        return color1SoldQuantity + color2SoldQuantity +
-                color3SoldQuantity + color4SoldQuantity
-    }
-
-    fun saveSaleTransaction() {
-        viewModelScope.launch {
-            _currentSale.value?.let { sale ->
+            _currentSaleInWindows.value?.let { sale ->
                 try {
                     // Update the sale in the database
                     database.soldArticlesTabelleDao().insert(sale)
@@ -293,6 +208,12 @@ class StartUpNewArticlesViewModels(
                         }
                         state.copy(soldArticlesModel = updatedSales)
                     }
+                    // Update Firebase
+                    firebaseDatabase.getReference("O_SoldArticlesTabelle")
+                        .child(sale.vid.toString())
+                        .setValue(sale)
+                        .await()
+
                 } catch (e: Exception) {
                     _uiState.update { it.copy(error = "Failed to save sale: ${e.message}") }
                 }
@@ -300,36 +221,6 @@ class StartUpNewArticlesViewModels(
         }
     }
 
-    fun createNewSaleIfNotExist(article: ArticlesBasesStatsTable, clientBuyerNow: ClientsModel) {
-        viewModelScope.launch {
-
-            val maxId = _uiState.value.soldArticlesModel.maxOfOrNull { it?.vid ?: 1 } ?: 0
-
-            val newSale = SoldArticlesTabelle(
-                    vid = maxId + 1,
-                    idArticle = article.idArticle.toLong(),
-                    nameArticle = article.nomArticleFinale,
-                    clientSoldToItId = clientBuyerNow.idClientsSu,
-                    date = System.currentTimeMillis().toString(),
-                )
-
-            try {
-                database.soldArticlesTabelleDao().insert(newSale)
-                _currentSale.value = newSale
-                _uiState.update { state ->
-                    state.copy(soldArticlesModel = state.soldArticlesModel + newSale)
-                }
-                // Update Firebase
-                firebaseDatabase.getReference("O_SoldArticlesTabelle")
-                    .child(newSale.vid.toString())
-                    .setValue(newSale)
-                    .await()
-
-            } catch (e: Exception) {
-                _uiState.update { it.copy(error = "Failed to create sale: ${e.message}") }
-            }
-        }
-    }
 
     private suspend fun createNewArrivaleCategoryIfNeeded(existingCategories: List<CategoriesTabelle>) {
         val hasNewArrivale = existingCategories.any {

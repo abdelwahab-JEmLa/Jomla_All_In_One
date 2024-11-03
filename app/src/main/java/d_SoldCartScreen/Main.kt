@@ -64,6 +64,107 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
 
+@Composable
+fun SoldCartScreen(
+    viewModel: StartUpNewArticlesViewModels,
+    modifier: Modifier = Modifier,
+    clientBuyerNow: ClientsModel? = null,
+    uiState: UiState
+) {
+    var showOrderSuccess by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+
+    // Filter articles logic
+    val filteredSoldArticles = uiState.soldArticlesModel
+        .filterNotNull()
+        .filter { soldArticle ->
+            val hasQuantity = (
+                    soldArticle.color1SoldQuantity +
+                            soldArticle.color2SoldQuantity +
+                            soldArticle.color3SoldQuantity +
+                            soldArticle.color4SoldQuantity
+                    ) > 0
+
+            clientBuyerNow?.let { client ->
+                soldArticle.clientSoldToItId == client.idClientsSu && hasQuantity
+            } ?: false
+        }
+
+    val totalPrice = filteredSoldArticles.sumOf { soldArticle ->
+        uiState.articlesBasesStatTables
+            .find { it.idArticle.toLong() == soldArticle.idArticle }
+            ?.monPrixVent?.times(
+                soldArticle.color1SoldQuantity +
+                        soldArticle.color2SoldQuantity +
+                        soldArticle.color3SoldQuantity +
+                        soldArticle.color4SoldQuantity
+            ) ?: 0.0
+    }
+
+    Box(modifier = modifier.fillMaxSize()) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            // Summary Card as header item
+            item {
+                CartSummaryCard(
+                    client = clientBuyerNow,
+                    itemCount = filteredSoldArticles.sumOf { it.getTotalQuantity() },
+                    totalPrice = totalPrice,
+                    onConfirmOrder = {
+                        scope.launch {
+                            showOrderSuccess = true
+                            delay(3000)
+                            showOrderSuccess = false
+                        }
+                    }
+                )
+            }
+
+            // Empty state or cart items
+            if (filteredSoldArticles.isEmpty()) {
+                item {
+                    EmptyCartMessage()
+                }
+            } else {
+                items(
+                    items = filteredSoldArticles,
+                    key = { it.vid }
+                ) { soldArticle ->
+                    val baseArticle = uiState.articlesBasesStatTables.find {
+                        it.idArticle.toLong() == soldArticle.idArticle
+                    }
+
+                    if (baseArticle != null) {
+                        CartItem(
+                            soldArticle = soldArticle,
+                            baseArticle = baseArticle,
+                            colors = uiState.colorsArticlesTabelleModel,
+                            viewModel = viewModel,
+                            onOpenArticleStats = {_,_->},
+                            uiState = uiState
+                        )
+                    }
+                }
+            }
+        }
+
+        // Success Animation Overlay
+        AnimatedVisibility(
+            visible = showOrderSuccess,
+            enter = fadeIn() + slideInVertically(),
+            exit = fadeOut() + slideOutVertically(),
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = 16.dp)
+        ) {
+            OrderSuccessMessage()
+        }
+    }
+}
 // First, let's add the missing extension function for SoldArticlesTabelle
 fun SoldArticlesTabelle.getTotalQuantity(): Int {
     return color1SoldQuantity + color2SoldQuantity + color3SoldQuantity + color4SoldQuantity
@@ -183,116 +284,7 @@ fun ImageDisplayer(
 }
 
 
-@Composable
-fun SoldCartScreen(
-    viewModel: StartUpNewArticlesViewModels,
-    modifier: Modifier = Modifier,
-    clientBuyerNow: ClientsModel? = null,
-    onOpenArticleStats: (ArticlesBasesStatsTable, Int) -> Unit,
-    uiState: UiState
-) {
-    var showOrderSuccess by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
 
-    // Filter articles logic
-    val filteredSoldArticles = uiState.soldArticlesModel
-        .filterNotNull()
-        .filter { soldArticle ->
-            val hasQuantity = (
-                    soldArticle.color1SoldQuantity +
-                            soldArticle.color2SoldQuantity +
-                            soldArticle.color3SoldQuantity +
-                            soldArticle.color4SoldQuantity
-                    ) > 0
-
-            clientBuyerNow?.let { client ->
-                soldArticle.clientSoldToItId == client.idClientsSu && hasQuantity
-            } ?: false
-        }
-
-    val totalPrice = filteredSoldArticles.sumOf { soldArticle ->
-        uiState.articlesBasesStatTables
-            .find { it.idArticle.toLong() == soldArticle.idArticle }
-            ?.monPrixVent?.times(
-                soldArticle.color1SoldQuantity +
-                        soldArticle.color2SoldQuantity +
-                        soldArticle.color3SoldQuantity +
-                        soldArticle.color4SoldQuantity
-            ) ?: 0.0
-    }
-
-    Box(modifier = modifier.fillMaxSize()) {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            // Summary Card as header item
-            item {
-                CartSummaryCard(
-                    client = clientBuyerNow,
-                    itemCount = filteredSoldArticles.sumOf { it.getTotalQuantity() },
-                    totalPrice = totalPrice,
-                    onConfirmOrder = {
-                        scope.launch {
-                            viewModel.apply {
-                                // Clean up zero quantity items
-                                filteredSoldArticles
-                                    .filter { it.getTotalQuantity() == 0 }
-                                    .forEach { deleteUnconfirmedSoldArticle(it.vid) }
-                                // Reset client
-                                updateLongAppSetting("clientBuyerNowId", 0)
-                            }
-                            showOrderSuccess = true
-                            delay(3000)
-                            showOrderSuccess = false
-                        }
-                    }
-                )
-            }
-
-            // Empty state or cart items
-            if (filteredSoldArticles.isEmpty()) {
-                item {
-                    EmptyCartMessage()
-                }
-            } else {
-                items(
-                    items = filteredSoldArticles,
-                    key = { it.vid }
-                ) { soldArticle ->
-                    val baseArticle = uiState.articlesBasesStatTables.find {
-                        it.idArticle.toLong() == soldArticle.idArticle
-                    }
-
-                    if (baseArticle != null) {
-                        CartItem(
-                            soldArticle = soldArticle,
-                            baseArticle = baseArticle,
-                            colors = uiState.colorsArticlesTabelleModel,
-                            viewModel = viewModel,
-                            onOpenArticleStats = onOpenArticleStats,
-                            uiState = uiState
-                        )
-                    }
-                }
-            }
-        }
-
-        // Success Animation Overlay
-        AnimatedVisibility(
-            visible = showOrderSuccess,
-            enter = fadeIn() + slideInVertically(),
-            exit = fadeOut() + slideOutVertically(),
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .padding(top = 16.dp)
-        ) {
-            OrderSuccessMessage()
-        }
-    }
-}
 
 
 @Composable
@@ -352,7 +344,7 @@ fun CartItem(
                                 article = baseArticle,
                                 colorIndex = index,
                                 quantity = quantity,
-                                onDelete = { viewModel.resetColorSelection(index) },
+                                onDelete = { viewModel.updateColorSelection(index,0) },
                                 viewModel = viewModel,
                                 onOpenArticleStats = onOpenArticleStats,
                                 uiState = uiState,

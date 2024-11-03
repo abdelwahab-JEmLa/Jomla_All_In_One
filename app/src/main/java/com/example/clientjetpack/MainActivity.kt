@@ -3,7 +3,6 @@ package com.example.clientjetpack
 import a_RoomDB.AppDatabase
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ClientsModel
-import a_RoomDB.SoldArticlesTabelle
 import android.app.Application
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -70,7 +69,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.wear.compose.material.ContentAlpha
 import b_StartupAppDisplayerOfNewArticles.StartUpNewArticlesViewModels
 import b_StartupAppDisplayerOfNewArticles.StartupAppDisplayerOfNewArticles
-import c_WindosBuyAndDesplayeArticleStats.WindosBuyAndDesplayeArticleStats
+import c_WindosBuyAndDesplayeArticleStats.SaleWindows
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.FirebaseDatabase
 import d_SoldCartScreen.SoldCartScreen
@@ -300,13 +299,11 @@ fun AppNavHost(
     val currentClient = uiState.clientsModel.find { it.idClientsSu == currentClientId }
 
     // Existing state management
-    var windowsSaleAndDisplayArticleStats by rememberSaveable { mutableStateOf<ArticlesBasesStatsTable?>(null) }
-    var relatedSaleOfArticleToClient by rememberSaveable { mutableStateOf<SoldArticlesTabelle?>(null) }
+    var opnerSaleWindows by rememberSaveable { mutableStateOf(false) }
     var showClientSelection by rememberSaveable { mutableStateOf(false) }
-    var pendingArticle by rememberSaveable { mutableStateOf<ArticlesBasesStatsTable?>(null) }
+    var relatedArticleBaseStats by rememberSaveable { mutableStateOf<ArticlesBasesStatsTable?>(null) }
     var pendingIndexColor by rememberSaveable { mutableIntStateOf(0) }
-    var indexColorStat by rememberSaveable { mutableIntStateOf(0) }
-    var reloadTrigger by rememberSaveable { mutableIntStateOf(0) }
+    val reloadTrigger by rememberSaveable { mutableIntStateOf(0) }
 
     Box(modifier = modifier.fillMaxSize()) {
         NavHost(
@@ -320,21 +317,18 @@ fun AppNavHost(
                         viewModel = appViewModels.startUpNewArticlesViewModels,
                         onToggleNavBar = onToggleNavBar,
                         reloadTrigger = reloadTrigger,
-                        onClickToOpenWindos = { article, indexColor ->
-                            pendingArticle = article
+                        onClickToOpenWindos = { articleDataBase, indexColor ->
+                            relatedArticleBaseStats = articleDataBase
                             pendingIndexColor = indexColor
 
                             if (currentClientId == 0L) {
                                 showClientSelection = true
                             } else {
-                                relatedSaleOfArticleToClient = uiState.soldArticlesModel.find { soldArticle ->
-                                    soldArticle?.let {
-                                        it.clientSoldToItId== currentClientId &&
-                                                it.idArticle == article.idArticle.toLong()
-                                    } ?: false
-                                }
-                                indexColorStat = indexColor
-                                windowsSaleAndDisplayArticleStats = article
+                                appViewModels.startUpNewArticlesViewModels.updateOpenWindosNewSale(
+                                    relatedArticleBaseStats!!.idArticle.toLong(),
+                                    currentClientId,
+                                    pendingIndexColor)
+                                opnerSaleWindows=true
                             }
                         }
                     )
@@ -353,10 +347,6 @@ fun AppNavHost(
                     SoldCartScreen(
                         viewModel = appViewModels.startUpNewArticlesViewModels,
                         clientBuyerNow = currentClient,
-                        onOpenArticleStats = {  article, indexColor ->
-                            pendingArticle = article
-                            pendingIndexColor = indexColor
-                        },
                         uiState = uiState
                     )
                 }
@@ -369,8 +359,13 @@ fun AppNavHost(
                 clients = uiState.clientsModel,
                 onClientSelected = { client ->
                     appViewModels.startUpNewArticlesViewModels.updateLongAppSetting("clientBuyerNowId",client.idClientsSu)
-                    windowsSaleAndDisplayArticleStats = pendingArticle
-                    indexColorStat = pendingIndexColor
+
+                    appViewModels.startUpNewArticlesViewModels.updateOpenWindosNewSale(
+                        relatedArticleBaseStats!!.idArticle.toLong(),
+                        client.idClientsSu,
+                        pendingIndexColor)
+                    opnerSaleWindows=true
+
                     showClientSelection = false
                 },
                 onDismiss = {
@@ -379,20 +374,16 @@ fun AppNavHost(
             )
         }
 
-        windowsSaleAndDisplayArticleStats?.let { article ->
-            WindosBuyAndDesplayeArticleStats(
+        if (opnerSaleWindows) {
+            SaleWindows(
                 modifier = Modifier.padding(horizontal = 3.dp),
-                article = article,
-                clientBuyerNow = currentClient,
-                relatedSaleOfArticleToClient = relatedSaleOfArticleToClient,
+                uiState = uiState,
                 viewModel = appViewModels.startUpNewArticlesViewModels,
                 onDismiss = {
-                    windowsSaleAndDisplayArticleStats = null
+                    appViewModels.startUpNewArticlesViewModels.clearCurrentSale()
+                    opnerSaleWindows=false
                 },
-                onReloadTrigger = { reloadTrigger++ },
                 reloadTrigger = reloadTrigger,
-                uiState = uiState,
-                indexColorStat = indexColorStat
             )
         }
     }
