@@ -352,14 +352,12 @@ fun AppNavHost(
                 Box(modifier = Modifier.fillMaxSize()) {
                     SoldCartScreen(
                         viewModel = appViewModels.startUpNewArticlesViewModels,
-                        onConfirmOrder = {
-                            appViewModels.startUpNewArticlesViewModels.updateLongAppSetting("clientBuyerNowId",0)
-                        },
                         clientBuyerNow = currentClient,
                         onOpenArticleStats = {  article, indexColor ->
                             pendingArticle = article
                             pendingIndexColor = indexColor
-                        }, uiState = uiState
+                        },
+                        uiState = uiState
                     )
                 }
             }

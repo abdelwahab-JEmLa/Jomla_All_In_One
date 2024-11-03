@@ -4,6 +4,11 @@ import a_RoomDB.ArticlesBasesStatsTabelle
 import a_RoomDB.ClientsModel
 import a_RoomDB.ColorsArticlesTabelle
 import a_RoomDB.SoldArticlesTabelle
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -12,29 +17,37 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -42,6 +55,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import b_StartupAppDisplayerOfNewArticles.StartUpNewArticlesViewModels
@@ -50,348 +64,60 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
 import com.example.clientjetpack.R
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.io.File
 
-@Composable
-fun SoldCartScreen(
-    viewModel: StartUpNewArticlesViewModels,
-    onConfirmOrder: () -> Unit,
-    modifier: Modifier = Modifier,
-    clientBuyerNow: ClientsModel? = null,
-    onOpenArticleStats: (ArticlesBasesStatsTabelle, Int) -> Unit,
-    uiState: UiState
-) {
-    // Filter articles by clientBuyerNow.id and non-zero quantity
-    val filteredSoldArticles = uiState.soldArticlesModel
-        .filterNotNull()
-        .filter { soldArticle ->
-            val hasQuantity = (
-                    soldArticle.color1SoldQuantity +
-                            soldArticle.color2SoldQuantity +
-                            soldArticle.color3SoldQuantity +
-                            soldArticle.color4SoldQuantity
-                    ) > 0
-
-            if (clientBuyerNow != null) {
-                soldArticle.clientSoldToItId == clientBuyerNow.idClientsSu && hasQuantity
-            } else {
-                false
-            }
-        }
-
-    val totalPrice = filteredSoldArticles.sumOf { soldArticle ->
-        uiState.articlesBasesStatTabelles
-            .find { it.idArticle.toLong() == soldArticle.idArticle }
-            ?.monPrixVent?.times(
-                soldArticle.color1SoldQuantity +
-                        soldArticle.color2SoldQuantity +
-                        soldArticle.color3SoldQuantity +
-                        soldArticle.color4SoldQuantity
-            ) ?: 0.0
-    }
-
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        if (filteredSoldArticles.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "No articles in cart",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        } else {
-            LazyColumn(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(
-                    items = filteredSoldArticles,
-                    key = { it.vid }  // Add key for better performance
-                ) { soldArticle ->
-                    val baseArticle = uiState.articlesBasesStatTabelles
-                        .find { it.idArticle.toLong() == soldArticle.idArticle }
-
-                    SoldArticleCard(
-                        soldArticle = soldArticle,
-                        colors = uiState.colorsArticlesTabelleModel,
-                        baseArticle = baseArticle,
-                        viewModel = viewModel,
-                        onOpenArticleStats = onOpenArticleStats,
-                        uiState = uiState
-                    )
-                }
-            }
-        }
-
-
-        OrderSummaryCard(
-            currentClient = clientBuyerNow,
-            itemCount = filteredSoldArticles.sumOf { sale ->
-                sale.color1SoldQuantity + sale.color2SoldQuantity +
-                        sale.color3SoldQuantity + sale.color4SoldQuantity
-            },
-            totalPrice = totalPrice,
-            onConfirmOrder = onConfirmOrder
-        )
-    }
-}
-@Composable
-fun SoldArticleCard(
-    soldArticle: SoldArticlesTabelle,
-    colors: List<ColorsArticlesTabelle>,
-    baseArticle: ArticlesBasesStatsTabelle?,
-    viewModel: StartUpNewArticlesViewModels,
-    onOpenArticleStats: (ArticlesBasesStatsTabelle, Int) -> Unit,
-    uiState: UiState,
-    modifier: Modifier = Modifier
-) {
-    val totalQuantity = soldArticle.run {
-        color1SoldQuantity + color2SoldQuantity +
-                color3SoldQuantity + color4SoldQuantity
-    }
-
-    ElevatedCard(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        Column {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = baseArticle?.nomArticleFinale ?: "",
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
-
-            Row {
-                Box(
-                    modifier = Modifier.weight(0.7f)
-                ) {
-                    LazyRow(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        contentPadding = PaddingValues(8.dp)
-                    ) {
-                        // Color 1
-                        if (soldArticle.color1SoldQuantity > 0) {
-                            item {
-                                ColorItemWithQuantity(
-                                    article = baseArticle!!,
-                                    colorIndex = 0,
-                                    quantity = soldArticle.color1SoldQuantity,
-                                    onDelete = { viewModel.resetColorSelection(0) },
-                                    viewModel = viewModel,
-                                    onOpenArticleStats = onOpenArticleStats,
-                                    uiState = uiState,
-                                    colors = colors
-                                )
-                            }
-                        }
-                        // Color 2
-                        if (soldArticle.color2SoldQuantity > 0) {
-                            item {
-                                ColorItemWithQuantity(
-                                    article = baseArticle!!,
-                                    colorIndex = 1,
-                                    quantity = soldArticle.color2SoldQuantity,
-                                    onDelete = { viewModel.resetColorSelection(1) },
-                                    viewModel = viewModel,
-                                    onOpenArticleStats = onOpenArticleStats,
-                                    uiState = uiState,
-                                    colors = colors
-                                )
-                            }
-                        }
-                        // Color 3
-                        if (soldArticle.color3SoldQuantity > 0) {
-                            item {
-                                ColorItemWithQuantity(
-                                    article = baseArticle!!,
-                                    colorIndex = 2,
-                                    quantity = soldArticle.color3SoldQuantity,
-                                    onDelete = { viewModel.resetColorSelection(2) },
-                                    viewModel = viewModel,
-                                    onOpenArticleStats = onOpenArticleStats,
-                                    uiState = uiState,
-                                    colors = colors
-                                )
-                            }
-                        }
-                        // Color 4
-                        if (soldArticle.color4SoldQuantity > 0) {
-                            item {
-                                ColorItemWithQuantity(
-                                    article = baseArticle!!,
-                                    colorIndex = 3,
-                                    quantity = soldArticle.color4SoldQuantity,
-                                    onDelete = { viewModel.resetColorSelection(3) },
-                                    viewModel = viewModel,
-                                    onOpenArticleStats = onOpenArticleStats,
-                                    uiState = uiState,
-                                    colors = colors
-                                )
-                            }
-                        }
-                    }
-                }
-
-                Column(
-                    modifier = Modifier
-                        .weight(0.3f)
-                        .padding(16.dp)
-                ) {
-                    Text(
-                        text = "$totalQuantity × ${baseArticle?.monPrixVent ?: 0.0}Da",
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                    Text(
-                        text = "${(baseArticle?.monPrixVent ?: 0.0) * totalQuantity} Da",
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            }
-        }
-    }
+// First, let's add the missing extension function for SoldArticlesTabelle
+fun SoldArticlesTabelle.getTotalQuantity(): Int {
+    return color1SoldQuantity + color2SoldQuantity + color3SoldQuantity + color4SoldQuantity
 }
 
 @Composable
-private fun ColorItemWithQuantity(
-    article: ArticlesBasesStatsTabelle,
-    colorIndex: Int,
-    quantity: Int,
-    onDelete: () -> Unit,
-    viewModel: StartUpNewArticlesViewModels,
-    onOpenArticleStats: (ArticlesBasesStatsTabelle, Int) -> Unit,
-    uiState: UiState,
-    colors: List<ColorsArticlesTabelle>,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .width(150.dp)
-            .height(200.dp)
-    ) {
-        // Delete Button
-        IconButton(
-            onClick = onDelete,
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .zIndex(1f)
-                .background(
-                    color = MaterialTheme.colorScheme.error,
-                    shape = CircleShape
-                )
-                .padding(4.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Delete,
-                contentDescription = "Delete color",
-                tint = Color.White
-            )
-        }
-
-        // Image with Quantity Overlay
-        ImageDisplayer(
-            modifier = Modifier.fillMaxSize(),
-            article = article,
-            viewModel = viewModel,
-            indexColor = colorIndex,
-            onClickToOpenWindos = onOpenArticleStats,
-            uiState = uiState
-        )
-
-        // Color info overlay
-        Column(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .background(
-                    color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
-                )
-                .padding(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            // Get color name
-            val colorId = when (colorIndex) {
-                0 -> article.idcolor1
-                1 -> article.idcolor2
-                2 -> article.idcolor3
-                3 -> article.idcolor4
-                else -> 0L
-            }
-            val colorName = colors.find { it.idColore == colorId }?.nameColore ?: ""
-
-            Text(
-                text = colorName,
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
-            )
-            Text(
-                text = "×$quantity",
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
-                fontWeight = FontWeight.Bold
-            )
-        }
-    }
-}
-@Composable
-private fun OrderSummaryCard(
-    currentClient: ClientsModel?,
+fun CartSummaryCard(
+    client: ClientsModel?,
     itemCount: Int,
     totalPrice: Double,
     onConfirmOrder: () -> Unit
 ) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        elevation = CardDefaults.cardElevation(4.dp)
+    ElevatedCard(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp)
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Text(
-                text = "Client: ${currentClient?.nomClientsSu ?: "Unknown"}",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
+            // Client Info
+            client?.let {
+                Text(
+                    text = "العميل: ${it.nomClientsSu}",
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
 
-            Text(
-                text = "Total Items: $itemCount",
-                style = MaterialTheme.typography.titleMedium
-            )
-
-            Text(
-                text = "Total Price: $${String.format("%.2f", totalPrice)}",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
-            )
+            // Order Summary
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "عدد المنتجات: $itemCount",
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                Text(
+                    text = "المجموع: $totalPrice دج",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
 
             Button(
                 onClick = onConfirmOrder,
                 modifier = Modifier.fillMaxWidth(),
-                enabled = currentClient != null && itemCount > 0
+                enabled = itemCount > 0
             ) {
-                Text("Confirm Order")
+                Text("تأكيد الطلب")
             }
         }
     }
@@ -459,3 +185,348 @@ fun ImageDisplayer(
         )
     }
 }
+@Composable
+fun SoldCartScreen(
+    viewModel: StartUpNewArticlesViewModels,
+    modifier: Modifier = Modifier,
+    clientBuyerNow: ClientsModel? = null,
+    onOpenArticleStats: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    uiState: UiState
+) {
+    var showOrderSuccess by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+
+    // Filter articles logic
+    val filteredSoldArticles = uiState.soldArticlesModel
+        .filterNotNull()
+        .filter { soldArticle ->
+            val hasQuantity = (
+                    soldArticle.color1SoldQuantity +
+                            soldArticle.color2SoldQuantity +
+                            soldArticle.color3SoldQuantity +
+                            soldArticle.color4SoldQuantity
+                    ) > 0
+
+            clientBuyerNow?.let { client ->
+                soldArticle.clientSoldToItId == client.idClientsSu && hasQuantity
+            } ?: false
+        }
+
+    val totalPrice = filteredSoldArticles.sumOf { soldArticle ->
+        uiState.articlesBasesStatTabelles
+            .find { it.idArticle.toLong() == soldArticle.idArticle }
+            ?.monPrixVent?.times(
+                soldArticle.color1SoldQuantity +
+                        soldArticle.color2SoldQuantity +
+                        soldArticle.color3SoldQuantity +
+                        soldArticle.color4SoldQuantity
+            ) ?: 0.0
+    }
+
+    Box(modifier = modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState())
+        ) {
+            // Order Summary Section
+            CartSummaryCard(
+                client = clientBuyerNow,
+                itemCount = filteredSoldArticles.sumOf { it.getTotalQuantity() },
+                totalPrice = totalPrice,
+                onConfirmOrder = {
+                    scope.launch {
+                        viewModel.apply {
+                            // Clean up zero quantity items
+                            filteredSoldArticles
+                                .filter { it.getTotalQuantity() == 0 }
+                                .forEach { deleteUnconfirmedSoldArticle(it.vid) }
+                            // Reset client
+                            updateLongAppSetting("clientBuyerNowId", 0)
+                        }
+                        showOrderSuccess = true
+                        delay(3000)
+                        showOrderSuccess = false
+                    }
+                }
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Cart Items Section
+            if (filteredSoldArticles.isEmpty()) {
+                EmptyCartMessage()
+            } else {
+                CartItemsList(
+                    soldArticles = filteredSoldArticles,
+                    colors = uiState.colorsArticlesTabelleModel,
+                    baseArticles = uiState.articlesBasesStatTabelles,
+                    viewModel = viewModel,
+                    onOpenArticleStats = onOpenArticleStats,
+                    uiState = uiState
+                )
+            }
+        }
+
+        // Success Animation Overlay
+        AnimatedVisibility(
+            visible = showOrderSuccess,
+            enter = fadeIn() + slideInVertically(),
+            exit = fadeOut() + slideOutVertically(),
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = 16.dp)
+        ) {
+            OrderSuccessMessage()
+        }
+    }
+}
+
+
+
+
+@Composable
+ fun CartItemsList(
+    soldArticles: List<SoldArticlesTabelle>,
+    colors: List<ColorsArticlesTabelle>,
+    baseArticles: List<ArticlesBasesStatsTabelle>,
+    viewModel: StartUpNewArticlesViewModels,
+    onOpenArticleStats: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    uiState: UiState
+) {
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        contentPadding = PaddingValues(bottom = 16.dp)
+    ) {
+        items(
+            items = soldArticles,
+            key = { it.vid }
+        ) { soldArticle ->
+            val baseArticle = baseArticles.find {
+                it.idArticle.toLong() == soldArticle.idArticle
+            }
+
+            if (baseArticle != null) {
+                CartItem(
+                    soldArticle = soldArticle,
+                    baseArticle = baseArticle,
+                    colors = colors,
+                    viewModel = viewModel,
+                    onOpenArticleStats = onOpenArticleStats,
+                    uiState = uiState
+                )
+            }
+        }
+    }
+}
+
+@Composable
+ fun CartItem(
+    soldArticle: SoldArticlesTabelle,
+    baseArticle: ArticlesBasesStatsTabelle,
+    colors: List<ColorsArticlesTabelle>,
+    viewModel: StartUpNewArticlesViewModels,
+    onOpenArticleStats: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    uiState: UiState
+) {
+    ElevatedCard(
+        elevation = CardDefaults.elevatedCardElevation(
+            defaultElevation = 2.dp
+        ),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            // Product Name and Total
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = baseArticle.nomArticleFinale,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold
+                )
+
+                Text(
+                    text = "${baseArticle.monPrixVent} دج",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+
+            // Color Variants
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                // Color 1
+                if (soldArticle.color1SoldQuantity > 0) {
+                    item {
+                        ColorItemWithQuantity(
+                            article = baseArticle,
+                            colorIndex = 0,
+                            quantity = soldArticle.color1SoldQuantity,
+                            onDelete = { viewModel.resetColorSelection(0) },
+                            viewModel = viewModel,
+                            onOpenArticleStats = onOpenArticleStats,
+                            uiState = uiState,
+                            colors = colors
+                        )
+                    }
+                }
+                // Add similar items for colors 2-4
+                // ... 
+            }
+        }
+    }
+}
+
+@Composable
+ fun EmptyCartMessage() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(32.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.ShoppingCart,
+                contentDescription = null,
+                modifier = Modifier.size(48.dp),
+                tint = MaterialTheme.colorScheme.outline
+            )
+            Text(
+                text = "سلة المشتريات فارغة",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.outline,
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+}
+
+@Composable
+ fun OrderSuccessMessage() {
+    Surface(
+        color = MaterialTheme.colorScheme.primaryContainer,
+        shape = MaterialTheme.shapes.medium,
+        tonalElevation = 4.dp,
+        modifier = Modifier.padding(horizontal = 16.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Default.CheckCircle,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary
+            )
+            Text(
+                text = "تم ارسال الطلب ستصلك الطلبية ان شاء الله قبل 24 ساعة",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+        }
+    }
+}
+
+
+
+@Composable
+private fun ColorItemWithQuantity(
+    article: ArticlesBasesStatsTabelle,
+    colorIndex: Int,
+    quantity: Int,
+    onDelete: () -> Unit,
+    viewModel: StartUpNewArticlesViewModels,
+    onOpenArticleStats: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    uiState: UiState,
+    colors: List<ColorsArticlesTabelle>,
+    modifier: Modifier = Modifier
+) {
+    ElevatedCard(
+        modifier = modifier
+            .width(150.dp)
+            .height(200.dp),
+        shape = MaterialTheme.shapes.medium
+    ) {
+        Box(
+            modifier = Modifier.fillMaxSize()
+        )  {
+        // Delete Button
+        IconButton(
+            onClick = onDelete,
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .zIndex(1f)
+                .background(
+                    color = MaterialTheme.colorScheme.error,
+                    shape = CircleShape
+                )
+                .padding(4.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Delete,
+                contentDescription = "Delete color",
+                tint = Color.White
+            )
+        }
+
+        // Image with Quantity Overlay
+        ImageDisplayer(
+            modifier = Modifier.fillMaxSize(),
+            article = article,
+            viewModel = viewModel,
+            indexColor = colorIndex,
+            onClickToOpenWindos = onOpenArticleStats,
+            uiState = uiState
+        )
+
+        // Color info overlay
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .background(
+                    color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
+                )
+                .padding(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Get color name
+            val colorId = when (colorIndex) {
+                0 -> article.idcolor1
+                1 -> article.idcolor2
+                2 -> article.idcolor3
+                3 -> article.idcolor4
+                else -> 0L
+            }
+            val colorName = colors.find { it.idColore == colorId }?.nameColore ?: ""
+
+            Text(
+                text = colorName,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+            Text(
+                text = "×$quantity",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+    }
+}
+

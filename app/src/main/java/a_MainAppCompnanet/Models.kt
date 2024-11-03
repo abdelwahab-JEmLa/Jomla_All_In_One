@@ -122,7 +122,9 @@ data class ClientsModel(
     var bonDuClientsSu: String = "",
     val couleurSu: String = "#FFFFFF",
     var currentCreditBalance: Double = 0.0,
-) {
+    val numberTelephoney: String = "",
+
+    ) {
     constructor() : this(0)
 }
 

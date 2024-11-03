@@ -223,9 +223,41 @@ class StartUpNewArticlesViewModels(
             }
         }
     }
+    fun deleteUnconfirmedSoldArticle(vid: Long) {
+        viewModelScope.launch {
+            try {
+                // Find the article to delete
+                val articleToDelete = _uiState.value.soldArticlesModel.find {
+                    it?.vid == vid
+                }
 
+                articleToDelete?.let { article ->
+                    // Delete from Room database
+                    database.soldArticlesTabelleDao().delete(article)
+
+                    // Update UI state by removing the article
+                    _uiState.update { state ->
+                        state.copy(
+                            soldArticlesModel = state.soldArticlesModel.filterNotNull().filter {
+                                it.vid != vid
+                            }
+                        )
+                    }
+
+                    // If this was the current sale, reset it
+                    if (_currentSale.value?.vid == vid) {
+                        _currentSale.value = null
+                    }
+                }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(
+                    error = "فشل في حذف المنتج غير المؤكد: ${e.message}"  // Failed to delete unconfirmed article
+                ) }
+            }
+        }
+    }
     // Helper extension function to get total quantity
-    private fun SoldArticlesTabelle.getTotalQuantity(): Int {
+    fun SoldArticlesTabelle.getTotalQuantity(): Int {
         return color1SoldQuantity + color2SoldQuantity +
                 color3SoldQuantity + color4SoldQuantity
     }
@@ -426,6 +458,7 @@ class StartUpNewArticlesViewModels(
     fun updateLongAppSetting(name: String, value: Long) {
         viewModelScope.launch {
             try {
+
                 val existingSettings = _uiState.value.appSettingsSaverModel
                 val maxId = existingSettings.maxOfOrNull { it.id } ?: 0
 
