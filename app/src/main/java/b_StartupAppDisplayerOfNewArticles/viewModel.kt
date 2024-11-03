@@ -111,18 +111,8 @@ class StartUpNewArticlesViewModels(
         }
     }
 
-    // Optional: Add a function to check if there are unsaved changes
-    fun hasUnsavedChanges(): Boolean {
-        return _currentSale.value?.let { currentSale ->
-            // Check if any color quantities are set
-            currentSale.color1SoldQuantity > 0 ||
-                    currentSale.color2SoldQuantity > 0 ||
-                    currentSale.color3SoldQuantity > 0 ||
-                    currentSale.color4SoldQuantity > 0
-        } ?: false
-    }
 
-    fun deleteSoldArticle(vid: Long) {
+    private fun deleteSoldArticle(vid: Long) {
         viewModelScope.launch {
             try {
                 // Find the article to delete
@@ -176,11 +166,38 @@ class StartUpNewArticlesViewModels(
 
                     // Update current sale state
                     _currentSale.value = updatedSale
-
+                    updateLocaleAndFireBaseSoldArticlesModel(updatedSale)
 
                 } catch (e: Exception) {
                     _uiState.update { it.copy(error = "Failed to update sale: ${e.message}") }
                 }
+            }
+        }
+    }
+    private fun updateLocaleAndFireBaseSoldArticlesModel(updatedSale: SoldArticlesTabelle) {
+        viewModelScope.launch {
+            try {
+                updatedSale.let { sale ->
+                    // Update Room database
+                    database.soldArticlesTabelleDao().insert(sale)
+
+                    // Update Firebase
+                    firebaseDatabase.getReference("O_SoldArticlesTabelle")
+                        .child(sale.vid.toString())
+                        .setValue(sale)
+                        .await()
+
+                    // Update UI state
+                    _uiState.update { state ->
+                        state.copy(
+                            soldArticlesModel = state.soldArticlesModel.map { article ->
+                                if (article?.vid == sale.vid) sale else article
+                            }
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(error = "Failed to update sale: ${e.message}") }
             }
         }
     }
@@ -302,6 +319,12 @@ class StartUpNewArticlesViewModels(
                 _uiState.update { state ->
                     state.copy(soldArticlesModel = state.soldArticlesModel + newSale)
                 }
+                // Update Firebase
+                firebaseDatabase.getReference("O_SoldArticlesTabelle")
+                    .child(newSale.vid.toString())
+                    .setValue(newSale)
+                    .await()
+
             } catch (e: Exception) {
                 _uiState.update { it.copy(error = "Failed to create sale: ${e.message}") }
             }
@@ -326,6 +349,7 @@ class StartUpNewArticlesViewModels(
             )
 
             database.categoriesModelDao().insert(newArrivaleCategory)
+
         }
     }
 

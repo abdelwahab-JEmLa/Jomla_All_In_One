@@ -4,6 +4,7 @@ import a_RoomDB.ArticlesBasesStatsTabelle
 import a_RoomDB.ClientsModel
 import a_RoomDB.ColorsArticlesTabelle
 import a_RoomDB.SoldArticlesTabelle
+import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -296,6 +297,7 @@ private fun ProductNameSection(article: ArticlesBasesStatsTabelle) {
     }
 }
 
+@SuppressLint("DefaultLocale")
 @Composable
 private fun ColumnScope.Details(
     isDetailsVisible: Boolean,
@@ -333,7 +335,7 @@ private fun ColumnScope.Details(
                     unite = "دج"
                 )
 
-                Divider(
+                HorizontalDivider(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 12.dp)
