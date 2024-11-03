@@ -738,13 +738,13 @@ private fun ColorIndicator(
                 GlideImage(
                     model = R.drawable.logo,
                     contentDescription = "Logo",
-                    modifier = Modifier.size(30.dp)
+                    modifier = Modifier.size(40.dp)
                 )
             } else {
                 Text(
                     text = iconColore,
                     style = MaterialTheme.typography.titleLarge.copy(
-                        fontSize = 24.sp,
+                        fontSize = 35.sp,
                         fontWeight = FontWeight.Bold
                     ),
                     color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -755,8 +755,8 @@ private fun ColorIndicator(
         Box(
             modifier = Modifier
                 .align(Alignment.Center)
-                .offset(x = (18).dp, y = 22.dp)
-                .size(40.dp)
+                .offset(x = (14).dp, y = 18.dp)
+                .size(70.dp)
                 .clickable { onClickToOpenWindow() }
         ) {
             GlideImage(
@@ -999,7 +999,14 @@ private fun ColorOverlay(
                     color = Color.White.copy(alpha = 0.8f),
                     border = BorderStroke(1.dp, Color.White.copy(alpha = 0.95f))
                 ) {}
-
+                Text(
+                    text = color.iconColore,
+                    fontSize = 50.sp,
+                    fontWeight = FontWeight.Bold ,
+                    modifier = Modifier.clickable { onClickToOpenWindow() },
+                    color = Color.White,
+                    maxLines = 1
+                )
                 // Fixed hand icon positioning
                 Box(
                     modifier = Modifier
@@ -1015,14 +1022,7 @@ private fun ColorOverlay(
                     )
                 }
 
-                Text(
-                    text = color.iconColore,
-                    fontSize = 40.sp,
-                    fontWeight = FontWeight.Bold ,
-                    modifier = Modifier.clickable { onClickToOpenWindow() },
-                    color = Color.White,
-                    maxLines = 1
-                )
+
             }
         }
     }
