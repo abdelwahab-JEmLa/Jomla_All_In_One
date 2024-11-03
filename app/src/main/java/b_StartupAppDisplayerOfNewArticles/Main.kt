@@ -14,7 +14,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
@@ -27,6 +26,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
@@ -42,7 +42,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -73,7 +72,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingSource
@@ -249,9 +247,9 @@ private fun ArticleGrid(
     modeFilterToTest: Boolean
 ) {
     val pagingConfig = PagingConfig(
-        pageSize = 6,
-        enablePlaceholders = false,
-        prefetchDistance = 20
+        pageSize = 3,
+        enablePlaceholders = true,
+        prefetchDistance = 2
     )
 
     // Create separate pagers for each category
@@ -289,10 +287,10 @@ private fun ArticleGrid(
                 it.nomCategorieInCategoriesTabele == "NewArrivale"
             }) gridColumns else 2),
         state = gridState,
-        contentPadding = PaddingValues(8.dp),
+        contentPadding = PaddingValues(3.dp),
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalItemSpacing = 8.dp
+        horizontalArrangement = Arrangement.spacedBy(3.dp),
+        verticalItemSpacing = 3.dp
     ) {
         if (!showFilter) {
             item(span = StaggeredGridItemSpan.FullLine) {
@@ -471,7 +469,7 @@ private fun ArticleItem(
         modifier = modifier
             .padding(4.dp)
             .fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         val layout = when {
             article.imageDimention == "Demi" && colorCount == 1 -> ArticleLayout.DemiUno
@@ -504,8 +502,8 @@ private fun SmallDisplayerDualColor(
     modifier: Modifier = Modifier, imageSize: DpSize
 ) {
     Column(
-        modifier = modifier.padding(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        modifier = modifier.padding(3.dp),
+        verticalArrangement = Arrangement.spacedBy(3.dp)
     ) {
         ArticleImageWithOverlay(
             article = article,
@@ -529,7 +527,7 @@ private fun SmallDisplayerDualColor(
 
         ArticleDetails(
             article = article,
-            modifier = Modifier.padding(horizontal = 16.dp)
+            modifier = Modifier.padding(horizontal = 3.dp)
         )
     }
 }
@@ -545,8 +543,8 @@ private fun SmallDisplayerMultiColor(
     imageSize: DpSize
 ) {
     Column(
-        modifier = modifier.padding(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        modifier = modifier.padding(3.dp),
+        verticalArrangement = Arrangement.spacedBy(3.dp)
     ) {
         // Main image
         ArticleImageWithOverlay(
@@ -578,7 +576,7 @@ private fun SmallDisplayerMultiColor(
         // Details
         ArticleDetails(
             article = article,
-            modifier = Modifier.padding(horizontal = 16.dp)
+            modifier = Modifier.padding(horizontal = 3.dp)
         )
     }
 }
@@ -592,7 +590,7 @@ private fun DemiDisplayerMultiColor(
     uiState: UiState,
     modifier: Modifier = Modifier, imageSize: DpSize
 ) {
-    Column(modifier = modifier.padding(8.dp)) {
+    Column(modifier = modifier.padding(3.dp)) {
         ArticleDetails(article)
 
         // Main image display
@@ -609,8 +607,8 @@ private fun DemiDisplayerMultiColor(
         LazyRow(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                .padding(vertical = 3.dp),
+            horizontalArrangement = Arrangement.spacedBy(3.dp)
         ) {
             val availableColors = (1..3).filter { article.getColorIdForIndex(it) != null }
             items(availableColors) { index ->
@@ -644,7 +642,7 @@ private fun DemiDisplayerDualColor(
     uiState: UiState,
     modifier: Modifier = Modifier, imageSize: DpSize
 ) {
-    Column(modifier = modifier.padding(8.dp)) {
+    Column(modifier = modifier.padding(3.dp)) {
         ArticleDetails(article)
         ArticleImageWithOverlay(
             article = article,
@@ -668,8 +666,32 @@ private fun DemiDisplayerDualColor(
         }
     }
 }
-
-
+@Composable
+private fun SmallSingleColorDisplayer(
+    article: ArticlesBasesStatsTable,
+    viewModel: StartUpNewArticlesViewModels,
+    reloadTrigger: Int,
+    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
+    uiState: UiState,
+    modifier: Modifier = Modifier, imageSize: DpSize
+) {
+    Column(modifier = modifier.padding(3.dp)) {
+        Box(
+            modifier = Modifier,
+            contentAlignment = Alignment.Center
+        ) {
+            ArticleImageWithOverlay(
+                article = article,
+                viewModel = viewModel,
+                colorIndex = 0,
+                reloadTrigger = reloadTrigger,
+                onClickToOpenWindow = onClickToOpenWindos,
+                uiState = uiState, imageSize = imageSize
+            )
+        }
+        ArticleDetails(article)
+    }
+}
 @Composable
 private fun DemiSingleColorDisplayer(
     article: ArticlesBasesStatsTable,
@@ -679,7 +701,7 @@ private fun DemiSingleColorDisplayer(
     uiState: UiState,
     modifier: Modifier = Modifier, imageSize: DpSize
 ) {
-    Column(modifier = modifier.padding(8.dp)) {
+    Column(modifier = modifier.padding(3.dp)) {
         Box(
             modifier = Modifier,
             contentAlignment = Alignment.Center
@@ -702,64 +724,50 @@ private fun DemiSingleColorDisplayer(
 private fun ColorIndicator(
     iconColore: String,
     modifier: Modifier = Modifier,
-    showHandIcon: Boolean = true,
     onClickToOpenWindow: () -> Unit,
-) {
-    Box(
-        modifier = modifier
-            .padding(4.dp)
-            .offset(y = (-16).dp)
+
     ) {
-        ElevatedCard(
+    Box(modifier = modifier) {
+        Surface(
             shape = CircleShape,
-            modifier = Modifier.clickable(onClick = onClickToOpenWindow)
+            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f),
+            tonalElevation = 4.dp,
+            shadowElevation = 4.dp
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(8.dp)
-            ) {
-                if (shouldShowLogo(iconColore)) {
-                    GlideImage(
-                        model = R.drawable.logo,
-                        contentDescription = "Logo",
-                        modifier = Modifier.size(30.dp)
-                    )
-                } else {
-                    Text(
-                        text = iconColore,
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold
-                        ),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
+            if (iconColore == "©" || iconColore == "💯") {
+                GlideImage(
+                    model = R.drawable.logo,
+                    contentDescription = "Logo",
+                    modifier = Modifier.size(30.dp)
+                )
+            } else {
+                Text(
+                    text = iconColore,
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         }
 
-        // Only show hand icon if specified
-        if (showHandIcon) {
-            Box(
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .offset(x = 12.dp, y = 16.dp)
-                    .size(32.dp)
-                    .clickable(onClick = onClickToOpenWindow)
-            ) {
-                GlideImage(
-                    model = R.drawable.hand,
-                    contentDescription = "Click indicator",
-                    contentScale = ContentScale.Fit
-                )
-            }
+        Box(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .offset(x = (18).dp, y = 22.dp)
+                .size(40.dp)
+                .clickable { onClickToOpenWindow() }
+        ) {
+            GlideImage(
+                model =  R.drawable.hand ,
+                contentDescription = "Click indicator",
+                contentScale = ContentScale.Fit
+            )
         }
     }
 }
 
-// Helper function to check if we should show logo instead of icon
-private fun shouldShowLogo(iconColore: String): Boolean {
-    return iconColore == "©" || iconColore == "💯"
-}
 
 @Composable
 private fun ArticleImageWithOverlay(
@@ -773,11 +781,17 @@ private fun ArticleImageWithOverlay(
     onClickToOpenWindow: (ArticlesBasesStatsTable, Int) -> Unit,
     imageSize: DpSize
 ) {
-    ElevatedCard(
+    Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(8.dp)
+        shape = MaterialTheme.shapes.medium,
+        tonalElevation = 2.dp,
+        shadowElevation = 4.dp
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(
+            modifier = Modifier
+                .clickable { onClickToOpenWindow(article, colorIndex) }
+                .fillMaxSize()
+        ) {
             val imageExists = remember(article.idArticle, colorIndex, reloadTrigger) {
                 checkImageExists(viewModel, article, colorIndex, reloadTrigger)
             }
@@ -794,16 +808,15 @@ private fun ArticleImageWithOverlay(
                 imageSize = imageSize
             )
 
-            // Show color indicator based on specified conditions
-            if (imageExists ) {
+            if (imageExists) {
                 article.getColorIdForIndex(colorIndex)?.let { colorId ->
                     uiState.colorsArticlesTabelleModel.find { it.idColore == colorId }?.let { color ->
                         ColorIndicator(
                             iconColore = color.iconColore,
                             modifier = Modifier
-                                .align(Alignment.TopEnd)
-                                .padding(8.dp),
-                            showHandIcon = countColors(article) > 1,
+                                .align(Alignment.BottomEnd)
+                                .padding(3.dp)
+                                .wrapContentSize(),
                             onClickToOpenWindow = { onClickToOpenWindow(article, colorIndex) }
                         )
                     }
@@ -813,146 +826,6 @@ private fun ArticleImageWithOverlay(
     }
 }
 
-
-@OptIn(ExperimentalGlideComposeApi::class)
-@Composable
-private fun ColorOverlay(
-    color: ColorsArticlesTabelle,
-    modifier: Modifier = Modifier,
-    onClickToOpenWindow: () -> Unit,
-) {
-    Box(
-        modifier = modifier
-            .padding(3.dp)
-            .fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(IntrinsicSize.Min),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            // Color name with circular background
-            Box(
-                modifier = Modifier
-                    .weight(0.6f)
-                    .wrapContentHeight(),
-                contentAlignment = Alignment.Center
-            ) {
-                Surface(
-                    modifier = Modifier.matchParentSize(),
-                    shape = CircleShape,
-                    color = Color.White.copy(alpha = 0.7f),
-                    border = BorderStroke(1.dp, Color.White.copy(alpha = 0.9f))
-                ) {}
-
-                AutoResizedText(
-                    text = color.nameColore,
-                    modifier = Modifier.clickable { onClickToOpenWindow() },
-                    color = Color.Black,
-                    style = MaterialTheme.typography.headlineMedium.copy(
-                        fontWeight = FontWeight.Bold
-                    ),
-                    maxLines = 1
-                )
-            }
-
-            // Color icon circle
-            Box(
-                modifier = Modifier
-                    .weight(0.4f)
-                    .wrapContentHeight(),
-                contentAlignment = Alignment.Center
-            ) {
-                Surface(
-                    modifier = Modifier.matchParentSize(),
-                    shape = CircleShape,
-                    color = Color.White.copy(alpha = 0.8f),
-                    border = BorderStroke(1.dp, Color.White.copy(alpha = 0.95f))
-                ) {}
-
-                AutoResizedText(
-                    text = color.iconColore,
-                    modifier = Modifier.clickable { onClickToOpenWindow() },
-                    color = Color.Black,
-                    style = MaterialTheme.typography.headlineLarge.copy(
-                        fontWeight = FontWeight.Bold
-                    ),
-                    maxLines = 1
-                )
-            }
-        }
-
-        // Hand icon positioned above both boxes
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .offset(y = (-20).dp, x = 20.dp)
-                .size(40.dp)
-                .zIndex(1f) // Ensures the hand stays on top
-                .clickable { onClickToOpenWindow() }
-        ) {
-            GlideImage(
-                model = R.drawable.hand,
-                contentDescription = "Click indicator",
-                contentScale = ContentScale.Fit,
-                modifier = Modifier.fillMaxSize()
-            )
-        }
-    }
-}
-// Example usage in SmallSingleColorDisplayer
-@Composable
-private fun SmallSingleColorDisplayer(
-    article: ArticlesBasesStatsTable,
-    viewModel: StartUpNewArticlesViewModels,
-    reloadTrigger: Int,
-    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
-    uiState: UiState,
-    modifier: Modifier = Modifier,
-    imageSize: DpSize
-) {
-    ArticleCard(modifier = modifier) {
-        Column(modifier = Modifier.padding(8.dp)) {
-            Box(
-                modifier = Modifier,
-                contentAlignment = Alignment.Center
-            ) {
-                ArticleImageWithOverlay(
-                    article = article,
-                    viewModel = viewModel,
-                    colorIndex = 0,
-                    reloadTrigger = reloadTrigger,
-                    onClickToOpenWindow = onClickToOpenWindos,
-                    uiState = uiState,
-                    imageSize = imageSize
-                )
-            }
-            ArticleDetails(article)
-        }
-    }
-}
-// Extension for SmallSingleColorDisplayer and other card layouts
-@Composable
-private fun ArticleCard(
-    modifier: Modifier = Modifier,
-    content: @Composable BoxScope.() -> Unit
-) {
-    ElevatedCard(
-        modifier = modifier,
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(4.dp)
-        ) {
-            content()
-        }
-    }
-}
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 private fun ImageDisplayer(
@@ -965,11 +838,11 @@ private fun ImageDisplayer(
     uiState: UiState,
     showOverlay: Boolean,
     imageScale: ContentScale = ContentScale.Fit,
-    cornerRadius: Dp = 8.dp,
+    cornerRadius: Dp = 4.dp,
     imageSize: DpSize,
 ) {
      
-    var currentQuality by remember { mutableStateOf(25f) }
+    var currentQuality by remember { mutableStateOf(15f) }
 
     val imagePath by remember(viewModel.viewModelImagesPath, article.idArticle, indexColor) {
         derivedStateOf {
@@ -1045,6 +918,7 @@ private fun ColorOverlayWithBlur(
         ) {
             it.transform(jp.wasabeef.glide.transformations.BlurTransformation(25))
         }
+
         // Semi-transparent black overlay
         Box(
             modifier = Modifier
@@ -1065,6 +939,92 @@ private fun ColorOverlayWithBlur(
     }
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+private fun ColorOverlay(
+    color: ColorsArticlesTabelle,
+    modifier: Modifier = Modifier,
+    onClickToOpenWindow: () -> Unit,
+) {
+    Box(
+        modifier = modifier
+            .padding(3.dp)
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(IntrinsicSize.Min),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Color name with circular background
+            Box(
+                modifier = Modifier
+                    .weight(0.6f)
+                    .wrapContentHeight(),
+                contentAlignment = Alignment.Center
+            ) {
+                Surface(
+                    modifier = Modifier
+                        .matchParentSize(),
+                    shape = CircleShape,
+                    color = Color.White.copy(alpha = 0.7f),
+                    border = BorderStroke(1.dp, Color.White.copy(alpha = 0.9f))
+                ) {}
+
+                AutoResizedText(
+                    text = color.nameColore,
+                    modifier = Modifier.clickable { onClickToOpenWindow() },
+                    color = Color.Black,
+                    style = MaterialTheme.typography.headlineMedium.copy(
+                        fontWeight = FontWeight.Bold
+                    ),
+                    maxLines = 1
+                )
+            }
+
+            Box(
+                modifier = Modifier
+                    .weight(0.4f)
+                    .wrapContentHeight(),
+                contentAlignment = Alignment.Center
+            ) {
+                Surface(
+                    modifier = Modifier.matchParentSize(),
+                    shape = CircleShape,
+                    color = Color.White.copy(alpha = 0.8f),
+                    border = BorderStroke(1.dp, Color.White.copy(alpha = 0.95f))
+                ) {}
+
+                // Fixed hand icon positioning
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .offset(x = (18).dp, y = 22.dp)
+                        .size(40.dp)
+                        .clickable { onClickToOpenWindow() }
+                ) {
+                    GlideImage(
+                        model = R.drawable.hand,
+                        contentDescription = "Click indicator",
+                        contentScale = ContentScale.Fit
+                    )
+                }
+
+                AutoResizedText(
+                    text = color.iconColore,
+                    modifier = Modifier.clickable { onClickToOpenWindow() },
+                    color = Color.White,
+                    style = MaterialTheme.typography.headlineLarge.copy(
+                        fontWeight = FontWeight.Bold
+                    ),
+                    maxLines = 1
+                )
+            }
+        }
+    }
+}
 
 
 
@@ -1230,7 +1190,7 @@ private fun SearchFilter(
             label = { Text("Filter Articles") },
             modifier = modifier
                 .fillMaxWidth()
-                .padding(8.dp)
+                .padding(3.dp)
                 .focusRequester(focusRequester),
             leadingIcon = {
                 Icon(Icons.Default.Search, contentDescription = "Search")
