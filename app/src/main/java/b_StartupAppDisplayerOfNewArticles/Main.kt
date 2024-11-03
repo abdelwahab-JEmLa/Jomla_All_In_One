@@ -817,7 +817,7 @@ private fun ArticleImageWithOverlay(
                                 .padding(3.dp)
                                 .align(Alignment.BottomEnd)
                                 .wrapContentSize()
-                                .offset(x = (-3).dp, y = (-5).dp)
+                                .offset(x = (-10).dp, y = (-15).dp)
                             ,
                             onClickToOpenWindow = { onClickToOpenWindow(article, colorIndex) }
                         )
@@ -950,7 +950,6 @@ private fun ColorOverlay(
 ) {
     Box(
         modifier = modifier
-            .padding(3.dp)
             .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
@@ -977,7 +976,9 @@ private fun ColorOverlay(
 
                 AutoResizedText(
                     text = color.nameColore,
-                    modifier = Modifier.clickable { onClickToOpenWindow() },
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .clickable { onClickToOpenWindow() },
                     color = Color.Black,
                     style = MaterialTheme.typography.headlineMedium.copy(
                         fontWeight = FontWeight.Bold
@@ -1003,8 +1004,8 @@ private fun ColorOverlay(
                 Box(
                     modifier = Modifier
                         .align(Alignment.Center)
-                        .offset(x = (18).dp, y = 22.dp)
-                        .size(40.dp)
+                        .offset(x = (14).dp, y = 18.dp)
+                        .size(60.dp)
                         .clickable { onClickToOpenWindow() }
                 ) {
                     GlideImage(
@@ -1014,13 +1015,12 @@ private fun ColorOverlay(
                     )
                 }
 
-                AutoResizedText(
+                Text(
                     text = color.iconColore,
+                    fontSize = 40.sp,
+                    fontWeight = FontWeight.Bold ,
                     modifier = Modifier.clickable { onClickToOpenWindow() },
                     color = Color.White,
-                    style = MaterialTheme.typography.headlineLarge.copy(
-                        fontWeight = FontWeight.Bold
-                    ),
                     maxLines = 1
                 )
             }
@@ -1099,16 +1099,7 @@ fun AutoResizedText(
 }
 
 
-// Helper function to get the color string for an index
-private fun ArticlesBasesStatsTable.getColorForIndex(index: Int): String? {
-    return when (index) {
-        0 -> couleur1
-        1 -> couleur2
-        2 -> couleur3
-        3 -> couleur4
-        else -> null
-    }
-}
+
 
 
 private fun RequestBuilder<Drawable>.applyImageOptions(
