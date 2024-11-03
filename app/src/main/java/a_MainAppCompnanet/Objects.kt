@@ -16,7 +16,7 @@ import java.util.Date
 
 @Database(
     entities = [
-        ArticlesBasesStatsTabelle::class,
+        ArticlesBasesStatsTable::class,
         CategoriesTabelle::class,
         ColorsArticlesTabelle::class,
         SoldArticlesTabelle::class,

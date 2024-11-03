@@ -19,7 +19,7 @@ data class AppSettingsSaverModel(
 }
 
 @Entity
-data class ArticlesBasesStatsTabelle(
+data class ArticlesBasesStatsTable(
     @PrimaryKey var idArticle: Int = 0,
     var nomArticleFinale: String = "",
     var classementCate: Double = 0.0,

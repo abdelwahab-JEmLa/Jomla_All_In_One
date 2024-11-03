@@ -1,7 +1,7 @@
 package a_MainAppCompnents
 
 import a_RoomDB.AppSettingsSaverModel
-import a_RoomDB.ArticlesBasesStatsTabelle
+import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.CategoriesTabelle
 import a_RoomDB.ClientsModel
 import a_RoomDB.ColorsArticlesTabelle
@@ -15,8 +15,8 @@ import androidx.room.Transaction
 import androidx.room.Update
 @Dao
 interface ArticlesBasesStatsModelDao {
-    @Query("SELECT * FROM ArticlesBasesStatsTabelle ORDER BY idCategorie")
-    suspend fun getAll(): MutableList<ArticlesBasesStatsTabelle>
+    @Query("SELECT * FROM ArticlesBasesStatsTable ORDER BY idCategorie")
+    suspend fun getAll(): MutableList<ArticlesBasesStatsTable>
 
     @Transaction
     suspend fun transaction(block: suspend ArticlesBasesStatsModelDao.() -> Unit) {
@@ -24,16 +24,16 @@ interface ArticlesBasesStatsModelDao {
     }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(category: ArticlesBasesStatsTabelle)
+    suspend fun insert(category: ArticlesBasesStatsTable)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(articlesBasesStatTabelles: List<ArticlesBasesStatsTabelle>)
+    suspend fun insertAll(articlesBasesStatTabelles: List<ArticlesBasesStatsTable>)
 
-    @Query("DELETE FROM ArticlesBasesStatsTabelle")
+    @Query("DELETE FROM ArticlesBasesStatsTable")
     suspend fun deleteAll()
 
     @Update
-    suspend fun updateAll(articlesBasesStatTabelles: List<ArticlesBasesStatsTabelle>)
+    suspend fun updateAll(articlesBasesStatTabelles: List<ArticlesBasesStatsTable>)
 }
 @Dao
 interface ColorsArticlesDao {

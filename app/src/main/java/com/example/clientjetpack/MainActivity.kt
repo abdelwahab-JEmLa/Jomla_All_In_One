@@ -1,7 +1,7 @@
 package com.example.clientjetpack
 
 import a_RoomDB.AppDatabase
-import a_RoomDB.ArticlesBasesStatsTabelle
+import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ClientsModel
 import a_RoomDB.SoldArticlesTabelle
 import android.app.Application
@@ -300,10 +300,10 @@ fun AppNavHost(
     val currentClient = uiState.clientsModel.find { it.idClientsSu == currentClientId }
 
     // Existing state management
-    var windowsSaleAndDisplayArticleStats by rememberSaveable { mutableStateOf<ArticlesBasesStatsTabelle?>(null) }
+    var windowsSaleAndDisplayArticleStats by rememberSaveable { mutableStateOf<ArticlesBasesStatsTable?>(null) }
     var relatedSaleOfArticleToClient by rememberSaveable { mutableStateOf<SoldArticlesTabelle?>(null) }
     var showClientSelection by rememberSaveable { mutableStateOf(false) }
-    var pendingArticle by rememberSaveable { mutableStateOf<ArticlesBasesStatsTabelle?>(null) }
+    var pendingArticle by rememberSaveable { mutableStateOf<ArticlesBasesStatsTable?>(null) }
     var pendingIndexColor by rememberSaveable { mutableIntStateOf(0) }
     var indexColorStat by rememberSaveable { mutableIntStateOf(0) }
     var reloadTrigger by rememberSaveable { mutableIntStateOf(0) }

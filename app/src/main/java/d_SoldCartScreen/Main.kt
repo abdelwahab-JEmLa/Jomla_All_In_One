@@ -1,6 +1,6 @@
 package d_SoldCartScreen
 
-import a_RoomDB.ArticlesBasesStatsTabelle
+import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ClientsModel
 import a_RoomDB.ColorsArticlesTabelle
 import a_RoomDB.SoldArticlesTabelle
@@ -122,11 +122,11 @@ fun CartSummaryCard(
 @Composable
 fun ImageDisplayer(
     modifier: Modifier = Modifier,
-    article: ArticlesBasesStatsTabelle,
+    article: ArticlesBasesStatsTable,
     viewModel: StartUpNewArticlesViewModels,
     indexColor: Int = 0,
     reloadKey: Any = Unit,
-    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     uiState: UiState
 ) {
     val context = LocalContext.current
@@ -188,7 +188,7 @@ fun SoldCartScreen(
     viewModel: StartUpNewArticlesViewModels,
     modifier: Modifier = Modifier,
     clientBuyerNow: ClientsModel? = null,
-    onOpenArticleStats: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    onOpenArticleStats: (ArticlesBasesStatsTable, Int) -> Unit,
     uiState: UiState
 ) {
     var showOrderSuccess by remember { mutableStateOf(false) }
@@ -211,7 +211,7 @@ fun SoldCartScreen(
         }
 
     val totalPrice = filteredSoldArticles.sumOf { soldArticle ->
-        uiState.articlesBasesStatTabelles
+        uiState.articlesBasesStatTables
             .find { it.idArticle.toLong() == soldArticle.idArticle }
             ?.monPrixVent?.times(
                 soldArticle.color1SoldQuantity +
@@ -262,7 +262,7 @@ fun SoldCartScreen(
                     items = filteredSoldArticles,
                     key = { it.vid }
                 ) { soldArticle ->
-                    val baseArticle = uiState.articlesBasesStatTabelles.find {
+                    val baseArticle = uiState.articlesBasesStatTables.find {
                         it.idArticle.toLong() == soldArticle.idArticle
                     }
 
@@ -298,10 +298,10 @@ fun SoldCartScreen(
 @Composable
 fun CartItem(
     soldArticle: SoldArticlesTabelle,
-    baseArticle: ArticlesBasesStatsTabelle,
+    baseArticle: ArticlesBasesStatsTable,
     colors: List<ColorsArticlesTabelle>,
     viewModel: StartUpNewArticlesViewModels,
-    onOpenArticleStats: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    onOpenArticleStats: (ArticlesBasesStatsTable, Int) -> Unit,
     uiState: UiState
 ) {
     ElevatedCard(
@@ -425,12 +425,12 @@ fun CartItem(
 
 @Composable
 private fun ColorItemWithQuantity(
-    article: ArticlesBasesStatsTabelle,
+    article: ArticlesBasesStatsTable,
     colorIndex: Int,
     quantity: Int,
     onDelete: () -> Unit,
     viewModel: StartUpNewArticlesViewModels,
-    onOpenArticleStats: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    onOpenArticleStats: (ArticlesBasesStatsTable, Int) -> Unit,
     uiState: UiState,
     colors: List<ColorsArticlesTabelle>,
     modifier: Modifier = Modifier

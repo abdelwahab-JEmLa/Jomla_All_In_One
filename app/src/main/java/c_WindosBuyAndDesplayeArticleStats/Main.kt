@@ -1,6 +1,6 @@
 package c_WindosBuyAndDesplayeArticleStats
 
-import a_RoomDB.ArticlesBasesStatsTabelle
+import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ClientsModel
 import a_RoomDB.ColorsArticlesTabelle
 import a_RoomDB.SoldArticlesTabelle
@@ -107,7 +107,7 @@ import java.io.File
 @Composable
 fun WindosBuyAndDesplayeArticleStats(
     uiState: UiState,
-    article: ArticlesBasesStatsTabelle,
+    article: ArticlesBasesStatsTable,
     viewModel: StartUpNewArticlesViewModels,
     onDismiss: () -> Unit,
     onReloadTrigger: () -> Unit,
@@ -255,7 +255,7 @@ fun WindosBuyAndDesplayeArticleStats(
 }
 
 @Composable
-private fun ProductNameSection(article: ArticlesBasesStatsTabelle) {
+private fun ProductNameSection(article: ArticlesBasesStatsTable) {
 
     Column(
         modifier = Modifier
@@ -301,7 +301,7 @@ private fun ProductNameSection(article: ArticlesBasesStatsTabelle) {
 @Composable
 private fun ColumnScope.Details(
     isDetailsVisible: Boolean,
-    article: ArticlesBasesStatsTabelle
+    article: ArticlesBasesStatsTable
 ) {
     AnimatedVisibility(
         visible = isDetailsVisible,
@@ -407,7 +407,7 @@ private fun InfoRow(
 private fun ProductDetailsSectionPreview() {
     MaterialTheme {
         ProductNameSection(
-            ArticlesBasesStatsTabelle(
+            ArticlesBasesStatsTable(
                 nomArticleFinale = "Product Name",
                 nomArab = "اسم المنتج",
                 nmbrUnite = 12,
@@ -465,7 +465,7 @@ private fun ActionsButtonRow(
 }
 @Composable
 private fun ColorsCards(
-    article: ArticlesBasesStatsTabelle,
+    article: ArticlesBasesStatsTable,
     viewModel: StartUpNewArticlesViewModels,
     modifier: Modifier = Modifier,
     relodeTigger: Int,
@@ -512,7 +512,7 @@ private fun ColorsCards(
 
 @Composable
 private fun SingleColorLayout(
-    article: ArticlesBasesStatsTabelle,
+    article: ArticlesBasesStatsTable,
     color: ColorsArticlesTabelle,
     viewModel: StartUpNewArticlesViewModels,
     relodeTigger: Int,
@@ -541,7 +541,7 @@ private fun SingleColorLayout(
 
 @Composable
 private fun MultipleColorsLayout(
-    article: ArticlesBasesStatsTabelle,
+    article: ArticlesBasesStatsTable,
     colors: List<ColorsArticlesTabelle>,
     viewModel: StartUpNewArticlesViewModels,
     relodeTigger: Int,
@@ -589,7 +589,7 @@ private fun MultipleColorsLayout(
 @Composable
 fun ColorItem(
     modifier: Modifier,
-    article: ArticlesBasesStatsTabelle,
+    article: ArticlesBasesStatsTable,
     color: ColorsArticlesTabelle?,
     index: Int,
     relodeTigger: Int,
@@ -930,7 +930,7 @@ class PickerState {
 @Composable
 private fun ImageDisplayer(
     modifier: Modifier = Modifier,
-    article: ArticlesBasesStatsTabelle,
+    article: ArticlesBasesStatsTable,
     viewModel: StartUpNewArticlesViewModels,
     indexColor: Int = 0,
     reloadKey: Any = Unit

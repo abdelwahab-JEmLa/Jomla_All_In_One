@@ -2,7 +2,7 @@ package b_StartupAppDisplayerOfNewArticles
 
 import a_RoomDB.AppDatabase
 import a_RoomDB.AppSettingsSaverModel
-import a_RoomDB.ArticlesBasesStatsTabelle
+import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.CategoriesTabelle
 import a_RoomDB.ClientsModel
 import a_RoomDB.ColorsArticlesTabelle
@@ -24,7 +24,7 @@ import java.util.Date
 // UiState.kt
 data class UiState(
     val appSettingsSaverModel: List<AppSettingsSaverModel> = emptyList(),
-    val articlesBasesStatTabelles: List<ArticlesBasesStatsTabelle> = emptyList(),
+    val articlesBasesStatTables: List<ArticlesBasesStatsTable> = emptyList(),
     val categories: List<CategoriesTabelle> = emptyList(),
     val colorsArticlesTabelleModel: List<ColorsArticlesTabelle> = emptyList(),
     val soldArticlesModel: List<SoldArticlesTabelle?> = emptyList(),
@@ -300,7 +300,7 @@ class StartUpNewArticlesViewModels(
         }
     }
 
-    fun createNewSaleIfNotExist(article: ArticlesBasesStatsTabelle, clientBuyerNow: ClientsModel) {
+    fun createNewSaleIfNotExist(article: ArticlesBasesStatsTable, clientBuyerNow: ClientsModel) {
         viewModelScope.launch {
 
             val maxId = _uiState.value.soldArticlesModel.maxOfOrNull { it?.vid ?: 1 } ?: 0
@@ -382,7 +382,7 @@ class StartUpNewArticlesViewModels(
 
                 val articlesSnapshot = refDBJetPackExport.get().await()
                 val articles = articlesSnapshot.children.mapNotNull { snapshot ->
-                    snapshot.getValue(ArticlesBasesStatsTabelle::class.java)
+                    snapshot.getValue(ArticlesBasesStatsTable::class.java)
                 }
                 database.articlesBasesStatsModelDao().insertAll(articles)
                 updateLoadingProgress(100f)
@@ -466,7 +466,7 @@ class StartUpNewArticlesViewModels(
 
             _uiState.update { it.copy(
                 appSettingsSaverModel = database.appSettingsSaverModelDao().getAll(),
-                articlesBasesStatTabelles = articles,
+                articlesBasesStatTables = articles,
                 categories = categories,
                 colorsArticlesTabelleModel = colors,
                 soldArticlesModel = soldArticles,

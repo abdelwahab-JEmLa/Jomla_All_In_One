@@ -1,6 +1,6 @@
 package b_StartupAppDisplayerOfNewArticles
 
-import a_RoomDB.ArticlesBasesStatsTabelle
+import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.CategoriesTabelle
 import a_RoomDB.ColorsArticlesTabelle
 import android.graphics.drawable.Drawable
@@ -100,7 +100,7 @@ fun StartupAppDisplayerOfNewArticles(
     onToggleNavBar: () -> Unit,
     reloadTrigger: Int,
     modifier: Modifier = Modifier,
-    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     modeFilterToTest:Boolean =true,
 ) {
     var gridColumnsForNewArticels by remember { mutableStateOf(2) }
@@ -127,10 +127,10 @@ fun StartupAppDisplayerOfNewArticles(
     )
 }
 class ArticlePagingSource(
-    private val articles: List<ArticlesBasesStatsTabelle>,
+    private val articles: List<ArticlesBasesStatsTable>,
     private val filterText: String,
     private val modeFilterToTest: Boolean
-) : PagingSource<Int, ArticlesBasesStatsTabelle>() {
+) : PagingSource<Int, ArticlesBasesStatsTable>() {
 
     // Configuration class to make the criteria clearer
     private data class ArticleConfiguration(
@@ -151,14 +151,14 @@ class ArticlePagingSource(
         ArticleConfiguration("Demi", 4, "Demi dimension with 4 colors")
     )
 
-    override fun getRefreshKey(state: PagingState<Int, ArticlesBasesStatsTabelle>): Int? {
+    override fun getRefreshKey(state: PagingState<Int, ArticlesBasesStatsTable>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
             val anchorPage = state.closestPageToPosition(anchorPosition)
             anchorPage?.prevKey?.plus(1) ?: anchorPage?.nextKey?.minus(1)
         }
     }
 
-    private fun countArticleColors(article: ArticlesBasesStatsTabelle): Int {
+    private fun countArticleColors(article: ArticlesBasesStatsTable): Int {
         return listOf(
             article.couleur1,
             article.couleur2,
@@ -170,7 +170,7 @@ class ArticlePagingSource(
     private fun findArticleForConfiguration(
         config: ArticleConfiguration,
         excludedIds: Set<Int>
-    ): ArticlesBasesStatsTabelle? {
+    ): ArticlesBasesStatsTable? {
         return articles.firstOrNull { article ->
             article.idArticle !in excludedIds &&
                     article.imageDimention == config.imageDimension &&
@@ -179,8 +179,8 @@ class ArticlePagingSource(
         }
     }
 
-    private fun findAllConfigurationMatches(): List<ArticlesBasesStatsTabelle> {
-        val matchingArticles = mutableListOf<ArticlesBasesStatsTabelle>()
+    private fun findAllConfigurationMatches(): List<ArticlesBasesStatsTable> {
+        val matchingArticles = mutableListOf<ArticlesBasesStatsTable>()
         val usedIds = mutableSetOf<Int>()
         var missingConfigurations = mutableListOf<ArticleConfiguration>()
 
@@ -206,7 +206,7 @@ class ArticlePagingSource(
         return matchingArticles
     }
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ArticlesBasesStatsTabelle> {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ArticlesBasesStatsTable> {
         val page = params.key ?: 0
         val pageSize = params.loadSize
 
@@ -242,7 +242,7 @@ private fun ArticleGrid(
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
     modifier: Modifier = Modifier,
-    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     modeFilterToTest: Boolean
 ) {
     val pagingConfig = PagingConfig(
@@ -257,9 +257,9 @@ private fun ArticleGrid(
             Pager(pagingConfig) {
                 ArticlePagingSource(
                     articles = if (category.nomCategorieInCategoriesTabele == "NewArrivale") {
-                        uiState.articlesBasesStatTabelles.filter { it.itsNewArrivale }
+                        uiState.articlesBasesStatTables.filter { it.itsNewArrivale }
                     } else {
-                        uiState.articlesBasesStatTabelles.filter {
+                        uiState.articlesBasesStatTables.filter {
                             it.nomCategorie == category.nomCategorieInCategoriesTabele && !it.itsNewArrivale
                         }
                     },
@@ -272,7 +272,7 @@ private fun ArticleGrid(
 
     // Create a map of category to their respective LazyPagingItems
     val categoryPagingItems = remember(categoryPagers) {
-        mutableMapOf<CategoriesTabelle, LazyPagingItems<ArticlesBasesStatsTabelle>>()
+        mutableMapOf<CategoriesTabelle, LazyPagingItems<ArticlesBasesStatsTable>>()
     }
 
     // Collect paging items for each category
@@ -357,7 +357,7 @@ private fun ArticleDisplayScreen(
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
     modifier: Modifier = Modifier,
-    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     modeFilterToTest: Boolean =false
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -404,10 +404,10 @@ sealed class ArticleLayout {
 
     @Composable
     fun Content(
-        article: ArticlesBasesStatsTabelle,
+        article: ArticlesBasesStatsTable,
         viewModel: StartUpNewArticlesViewModels,
         reloadTrigger: Int,
-        onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
+        onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
         uiState: UiState,
         modifier: Modifier = Modifier
     ) {
@@ -435,11 +435,11 @@ sealed class ArticleLayout {
 // Update the ArticleItem to use the new layout logic
 @Composable
 private fun ArticleItem(
-    article: ArticlesBasesStatsTabelle,
+    article: ArticlesBasesStatsTable,
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
     modifier: Modifier = Modifier,
-    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     uiState: UiState
 ) {
     val colorCount = countColors(article)
@@ -471,10 +471,10 @@ private fun ArticleItem(
 // Add new layout components
 @Composable
 private fun SmallDisplayerDualColor(
-    article: ArticlesBasesStatsTabelle,
+    article: ArticlesBasesStatsTable,
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
-    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     uiState: UiState,
     modifier: Modifier = Modifier
 ) {
@@ -511,10 +511,10 @@ private fun SmallDisplayerDualColor(
 
 @Composable
 private fun SmallDisplayerMultiColor(
-    article: ArticlesBasesStatsTabelle,
+    article: ArticlesBasesStatsTable,
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
-    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     uiState: UiState,
     modifier: Modifier = Modifier
 ) {
@@ -559,10 +559,10 @@ private fun SmallDisplayerMultiColor(
 
 @Composable
 private fun DemiDisplayerMultiColor(
-    article: ArticlesBasesStatsTabelle,
+    article: ArticlesBasesStatsTable,
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
-    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     uiState: UiState,
     modifier: Modifier = Modifier
 ) {
@@ -611,10 +611,10 @@ private fun DemiDisplayerMultiColor(
 
 @Composable
 private fun DemiDisplayerDualColor(
-    article: ArticlesBasesStatsTabelle,
+    article: ArticlesBasesStatsTable,
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
-    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     uiState: UiState,
     modifier: Modifier = Modifier
 ) {
@@ -645,10 +645,10 @@ private fun DemiDisplayerDualColor(
 
 @Composable
 private fun SingleColorDisplayer(
-    article: ArticlesBasesStatsTabelle,
+    article: ArticlesBasesStatsTable,
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
-    onClickToOpenWindos: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     uiState: UiState,
     modifier: Modifier = Modifier
 ) {
@@ -716,14 +716,14 @@ private fun ColorIndicator(
 
 @Composable
 private fun ArticleImageWithOverlay(
-    article: ArticlesBasesStatsTabelle,
+    article: ArticlesBasesStatsTable,
     viewModel: StartUpNewArticlesViewModels,
     colorIndex: Int,
     reloadTrigger: Int,
     uiState: UiState,
     modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.Fit,
-    onClickToOpenWindow: (ArticlesBasesStatsTabelle, Int) -> Unit
+    onClickToOpenWindow: (ArticlesBasesStatsTable, Int) -> Unit
 ) {
     Box(modifier = modifier) {
         val imageExists = remember(article.idArticle, colorIndex, reloadTrigger) {
@@ -767,11 +767,11 @@ private fun ArticleImageWithOverlay(
 @Composable
 private fun ImageDisplayer(
     modifier: Modifier = Modifier,
-    article: ArticlesBasesStatsTabelle,
+    article: ArticlesBasesStatsTable,
     viewModel: StartUpNewArticlesViewModels,
     indexColor: Int,
     reloadKey: Any,
-    onClickToOpenWindow: (ArticlesBasesStatsTabelle, Int) -> Unit,
+    onClickToOpenWindow: (ArticlesBasesStatsTable, Int) -> Unit,
     uiState: UiState,
     showOverlay: Boolean,
     imageScale: ContentScale = ContentScale.Fit,
@@ -965,7 +965,7 @@ private fun ColorOverlay(
 // Utility functions
 private fun checkImageExists(
     viewModel: StartUpNewArticlesViewModels,
-    article: ArticlesBasesStatsTabelle,
+    article: ArticlesBasesStatsTable,
     colorIndex: Int,
     reloadTrigger: Int
 ): Boolean {
@@ -979,7 +979,7 @@ private fun checkImageExists(
         file.exists() && file.canRead()
     }
 }
-private fun ArticlesBasesStatsTabelle.getColorIdForIndex(index: Int): Long? {
+private fun ArticlesBasesStatsTable.getColorIdForIndex(index: Int): Long? {
     return when (index) {
         0 -> idcolor1.takeIf { it != 0L }
         1 -> idcolor2.takeIf { it != 0L }
@@ -989,7 +989,7 @@ private fun ArticlesBasesStatsTabelle.getColorIdForIndex(index: Int): Long? {
     }
 }
 
-private fun countColors(article: ArticlesBasesStatsTabelle): Int {
+private fun countColors(article: ArticlesBasesStatsTable): Int {
     return listOf(
         article.couleur1,
         article.couleur2,
@@ -1034,7 +1034,7 @@ fun AutoResizedText(
 
 
 // Helper function to get the color string for an index
-private fun ArticlesBasesStatsTabelle.getColorForIndex(index: Int): String? {
+private fun ArticlesBasesStatsTable.getColorForIndex(index: Int): String? {
     return when (index) {
         0 -> couleur1
         1 -> couleur2
@@ -1046,7 +1046,7 @@ private fun ArticlesBasesStatsTabelle.getColorForIndex(index: Int): String? {
 
 
 private fun RequestBuilder<Drawable>.applyImageOptions(
-    article: ArticlesBasesStatsTabelle,
+    article: ArticlesBasesStatsTable,
     indexColor: Int,
     quality: Float,
     onResourceReady: (Boolean) -> Unit
@@ -1085,7 +1085,7 @@ private fun RequestBuilder<Drawable>.applyImageOptions(
 
 @Composable
 private fun ArticleDetails(
-    article: ArticlesBasesStatsTabelle,
+    article: ArticlesBasesStatsTable,
     modifier: Modifier = Modifier
 ) {
     Column(
