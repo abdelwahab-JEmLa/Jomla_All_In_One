@@ -5,6 +5,7 @@ import a_RoomDB.ColorsArticlesTabelle
 import a_RoomDB.SoldArticlesTabelle
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -25,7 +26,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -97,6 +97,7 @@ import coil.request.ImageRequest
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.clientjetpack.R
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import java.io.File
@@ -181,7 +182,7 @@ fun SaleWindows(
         Surface(
             modifier = modifier
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(4.dp),
             shape = MaterialTheme.shapes.large,
             tonalElevation = 2.dp
         ) {
@@ -197,7 +198,7 @@ fun SaleWindows(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                            .padding(horizontal = 3.dp, vertical = 3.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                     HorizontalDivider(
@@ -208,7 +209,7 @@ fun SaleWindows(
                         text = "اختر اللون",
                         style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(horizontal = 8.dp)
+                        modifier = Modifier.padding(horizontal = 4.dp)
                     )
                     HorizontalDivider(
                         modifier = Modifier.weight(1f),
@@ -227,7 +228,7 @@ fun SaleWindows(
                             viewModel = viewModel,
                             relodeTigger = reloadTrigger,
                             uiState = uiState,
-                            modifier = Modifier.padding(horizontal = 16.dp),
+                            modifier = Modifier.padding(horizontal = 4.dp),
                         )
                     }
 
@@ -258,20 +259,20 @@ private fun ProductNameSection(article: ArticlesBasesStatsTable) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(4.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Product Name Card
         ElevatedCard(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 16.dp),
+                .padding(bottom = 4.dp),
             elevation = CardDefaults.elevatedCardElevation(defaultElevation = 6.dp)
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
+                    .padding(4.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
@@ -287,7 +288,7 @@ private fun ProductNameSection(article: ArticlesBasesStatsTable) {
                         text = article.nomArab,
                         style = MaterialTheme.typography.bodyLarge,
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(top = 8.dp)
+                        modifier = Modifier.padding(top = 4.dp)
                     )
                 }
             }
@@ -304,7 +305,7 @@ private fun ColumnScope.Details(
     AnimatedVisibility(
         visible = isDetailsVisible,
         enter = fadeIn() + expandVertically(),
-        modifier = Modifier.padding(top = 8.dp)
+        modifier = Modifier.padding(top = 4.dp)
     ) {
         ElevatedCard(
             modifier = Modifier.fillMaxWidth(),
@@ -313,7 +314,7 @@ private fun ColumnScope.Details(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(4.dp)
             ) {
                 // Price Section
                 InfoRow(
@@ -336,7 +337,7 @@ private fun ColumnScope.Details(
                 HorizontalDivider(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 12.dp)
+                        .padding(vertical = 4.dp)
                 )
 
                 // Units Information
@@ -425,7 +426,7 @@ private fun ActionsButtonRow(
         modifier = modifier
             .fillMaxWidth()
             .padding(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End)
+        horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.End)
     ) {
         OutlinedButton(
             onClick = {
@@ -482,7 +483,6 @@ private fun ColorsCards(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .heightIn (min = 100.dp, max = 600.dp)
     ) {
         when (colors.size) {
             1 -> SingleColorLayout(
@@ -707,8 +707,11 @@ fun ColorItem(
                                                 GlideImage(
                                                     model = R.drawable.logo,
                                                     contentDescription = "Logo",
-                                                    modifier = Modifier.size( 38.dp
-                                                    ).clickable { showPicker = true }
+                                                    modifier = Modifier
+                                                        .size(
+                                                            38.dp
+                                                        )
+                                                        .clickable { showPicker = true }
                                                 )
                                             } else {
                                                 Text(
@@ -749,7 +752,7 @@ fun ColorItem(
             ) {
                 if (showPicker && color != null) {
                     CompactQuantityPicker(
-                        onDismiss = { showPicker = false },
+                        onClosePick = { showPicker = false },
                         colorIndex = index,
                         viewModel = viewModel,
                         initialQuantity = currentQuantity
@@ -762,63 +765,97 @@ fun ColorItem(
 
 @Composable
 fun CompactQuantityPicker(
-    onDismiss: () -> Unit,
+    onClosePick: () -> Unit,
     colorIndex: Int,
     viewModel: StartUpNewArticlesViewModels,
     initialQuantity: Int = 0
 ) {
+    var isRed by remember { mutableStateOf(true) }
+
+    LaunchedEffect(Unit) {
+        while(true) {
+            delay(2000)
+            isRed = !isRed
+        }
+    }
+
     Card(
-        modifier = Modifier.fillMaxSize(),
-        elevation = CardDefaults.cardElevation(4.dp)
+        modifier = Modifier
+            .fillMaxSize()
+            .wrapContentHeight(), // Fixed height issue
+        elevation = CardDefaults.cardElevation(4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = animateColorAsState(
+                if (isRed) Color.Red else Color.White,
+                label = "backgroundColor"
+            ).value
+        )
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(4.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Top
         ) {
+            // Rest of the code remains the same until Picker component
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(4.dp),
+                contentAlignment = Alignment.TopEnd
+            ) {
+                IconButton(
+                    onClick = {
+                        viewModel.updateColorSelection(colorIndex, 0)
+                        onClosePick()
+                    },
+                    modifier = Modifier.size(48.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Close picker",
+                        tint = animateColorAsState(
+                            if (isRed) Color.White else Color.Red,
+                            label = "textColor"
+                        ).value
+                    )
+                }
+            }
+
             val values = remember {
                 (1..15).map { it.toString() } +
                         (20..25).map { it.toString() } +
                         listOf("30", "40", "50")
             }
 
-            // Initialize picker state with the current quantity
             val valuesPickerState = rememberPickerState().apply {
                 selectedItem = initialQuantity.toString()
             }
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(
-                    onClick = {
-                        viewModel.updateColorSelection(colorIndex,0)
-                        onDismiss()
-                    },
-                    modifier = Modifier.padding(top = 8.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "Close picker"
-                    )
-                }
-                Picker(
-                    modifier = Modifier,
-                    items = values,
-                    state = valuesPickerState,
-                    visibleItemsCount = 3,
-                    textModifier = Modifier.padding(8.dp),
-                    textStyle = TextStyle(fontSize = 20.sp),
-                    startIndex = values.indexOfFirst { it == initialQuantity.toString() }.coerceAtLeast(0),
-                    onItemStat = {viewModel.updateColorSelection(colorIndex, it.toInt())}
-                )
-            }
-
-
+            Picker(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 4.dp),
+                items = values,
+                state = valuesPickerState,
+                visibleItemsCount = 3,
+                textModifier = Modifier.padding(4.dp),
+                textStyle = TextStyle(
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = animateColorAsState(
+                        if (isRed) Color.White else Color.Red,
+                        label = "textColor"
+                    ).value
+                ),
+                dividerColor = animateColorAsState(  // Fixed divider color syntax
+                    if (isRed) Color.White else Color.Red,
+                    label = "dividerColor"
+                ).value,
+                startIndex = values.indexOfFirst { it == initialQuantity.toString() }.coerceAtLeast(0),
+                onItemStat = { viewModel.updateColorSelection(colorIndex, it.toInt()) }
+            )
         }
     }
 }
