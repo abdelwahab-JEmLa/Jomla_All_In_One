@@ -919,7 +919,7 @@ fun Picker(
     dividerColor: Color = LocalContentColor.current,
     onItemStat: (String) -> Unit,
 ) {
-    var minusToReglePosition by remember { mutableStateOf(0.0) }
+    var minusToReglePosition by remember { mutableStateOf(7.0) }
 
     val centerPosition = 1
     val listScrollCount = Integer.MAX_VALUE
