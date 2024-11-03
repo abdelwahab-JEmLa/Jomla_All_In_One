@@ -69,6 +69,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.paging.Pager
@@ -393,15 +394,21 @@ private fun ArticleDisplayScreen(
     }
 }
 
-
-// Update the ArticleLayout sealed class to include all required layouts
 sealed class ArticleLayout {
-    data object DemiUno : ArticleLayout() // Single item in grid
-    data object DemiDual : ArticleLayout() // Half-width dual color
-    data object DemiMulti : ArticleLayout() // Half-width multi color
-    data object SmallUno : ArticleLayout() // Single item in grid
-    data object SmallDual : ArticleLayout() // Small dual color
-    data object SmallMulti : ArticleLayout() // Small multi color
+    data object DemiUno : ArticleLayout()
+    data object DemiDual : ArticleLayout()
+    data object DemiMulti : ArticleLayout()
+    data object SmallUno : ArticleLayout()
+    data object SmallDual : ArticleLayout()
+    data object SmallMulti : ArticleLayout()
+
+    // Define size configurations for different layouts
+    val imageSize: DpSize
+        get() = when (this) {
+            is DemiUno -> DpSize(width = 300.dp, height = 300.dp)
+            is DemiDual, is DemiMulti -> DpSize(width = 200.dp, height = 200.dp)
+            is SmallUno, is SmallDual, is SmallMulti -> DpSize(width = 150.dp, height = 150.dp)
+        }
 
     @Composable
     fun Content(
@@ -410,28 +417,38 @@ sealed class ArticleLayout {
         reloadTrigger: Int,
         onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
         uiState: UiState,
-        modifier: Modifier = Modifier
+        modifier: Modifier = Modifier,
     ) {
         when (this) {
             is DemiUno -> SmallSingleColorDisplayer(
                 article, viewModel, reloadTrigger, onClickToOpenWindos, uiState,
-                modifier.fillMaxWidth()
+                imageSize = this.imageSize,
+                modifier = modifier
             )
             is DemiDual -> DemiDisplayerDualColor(
-                article, viewModel, reloadTrigger, onClickToOpenWindos, uiState, modifier
+                article, viewModel, reloadTrigger, onClickToOpenWindos, uiState,
+                imageSize = this.imageSize,
+                modifier = modifier
             )
             is DemiMulti -> DemiDisplayerMultiColor(
-                article, viewModel, reloadTrigger, onClickToOpenWindos, uiState, modifier
+                article, viewModel, reloadTrigger, onClickToOpenWindos, uiState,
+                imageSize = this.imageSize,
+                modifier = modifier
             )
             is SmallUno -> DemiSingleColorDisplayer(
                 article, viewModel, reloadTrigger, onClickToOpenWindos, uiState,
-                modifier.fillMaxWidth()
+                imageSize = this.imageSize,
+                modifier = modifier
             )
             is SmallDual -> SmallDisplayerDualColor(
-                article, viewModel, reloadTrigger, onClickToOpenWindos, uiState, modifier
+                article, viewModel, reloadTrigger, onClickToOpenWindos, uiState,
+                imageSize = this.imageSize,
+                modifier = modifier
             )
             is SmallMulti -> SmallDisplayerMultiColor(
-                article, viewModel, reloadTrigger, onClickToOpenWindos, uiState, modifier
+                article, viewModel, reloadTrigger, onClickToOpenWindos, uiState,
+                imageSize = this.imageSize,
+                modifier = modifier
             )
         }
     }
@@ -445,7 +462,7 @@ private fun ArticleItem(
     reloadTrigger: Int,
     modifier: Modifier = Modifier,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
-    uiState: UiState
+    uiState: UiState ,
 ) {
     val colorCount = countColors(article)
 
@@ -483,7 +500,7 @@ private fun SmallDisplayerDualColor(
     reloadTrigger: Int,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     uiState: UiState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier, imageSize: DpSize
 ) {
     Column(
         modifier = modifier.padding(8.dp),
@@ -495,7 +512,7 @@ private fun SmallDisplayerDualColor(
             colorIndex = 0,
             reloadTrigger = reloadTrigger,
             onClickToOpenWindow = onClickToOpenWindos,
-            uiState = uiState
+            uiState = uiState, imageSize = imageSize
         )
 
         ArticleImageWithOverlay(
@@ -506,7 +523,7 @@ private fun SmallDisplayerDualColor(
             modifier = Modifier.height(130.dp),
             onClickToOpenWindow = onClickToOpenWindos,
             uiState = uiState,
-            contentScale = ContentScale.Crop
+            contentScale = ContentScale.Crop, imageSize = imageSize
         )
 
         ArticleDetails(
@@ -523,7 +540,7 @@ private fun SmallDisplayerMultiColor(
     reloadTrigger: Int,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     uiState: UiState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier, imageSize: DpSize
 ) {
     Column(
         modifier = modifier.padding(8.dp),
@@ -536,7 +553,7 @@ private fun SmallDisplayerMultiColor(
             colorIndex = 0,
             reloadTrigger = reloadTrigger,
             onClickToOpenWindow = onClickToOpenWindos,
-            uiState = uiState
+            uiState = uiState, imageSize = imageSize
         )
 
         // Replace LazyColumn with Column since we have a small fixed number of items
@@ -552,7 +569,7 @@ private fun SmallDisplayerMultiColor(
                     .height(70.dp),
                 onClickToOpenWindow = onClickToOpenWindos,
                 uiState = uiState,
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop, imageSize = imageSize
             )
         }
 
@@ -571,7 +588,7 @@ private fun DemiDisplayerMultiColor(
     reloadTrigger: Int,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     uiState: UiState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier, imageSize: DpSize
 ) {
     Column(modifier = modifier.padding(8.dp)) {
         ArticleDetails(article)
@@ -583,7 +600,7 @@ private fun DemiDisplayerMultiColor(
             colorIndex = 0,
             reloadTrigger = reloadTrigger,
             onClickToOpenWindow = onClickToOpenWindos,
-            uiState = uiState
+            uiState = uiState, imageSize = imageSize
         )
 
         // Secondary images row
@@ -609,7 +626,7 @@ private fun DemiDisplayerMultiColor(
                         .height(if (!imageExists) 70.dp else 250.dp),
                     contentScale = if (!imageExists) ContentScale.Crop else ContentScale.Fit,
                     onClickToOpenWindow = onClickToOpenWindos,
-                    uiState = uiState
+                    uiState = uiState, imageSize = imageSize
                 )
             }
         }
@@ -623,7 +640,7 @@ private fun DemiDisplayerDualColor(
     reloadTrigger: Int,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     uiState: UiState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier, imageSize: DpSize
 ) {
     Column(modifier = modifier.padding(8.dp)) {
         ArticleDetails(article)
@@ -633,7 +650,7 @@ private fun DemiDisplayerDualColor(
             colorIndex = 0,
             reloadTrigger = reloadTrigger,
             onClickToOpenWindow = onClickToOpenWindos,
-            uiState = uiState
+            uiState = uiState, imageSize = imageSize
         )
 
         Box(modifier = Modifier.height(100.dp)) {
@@ -644,7 +661,7 @@ private fun DemiDisplayerDualColor(
                 reloadTrigger = reloadTrigger,
                 onClickToOpenWindow = onClickToOpenWindos,
                 uiState = uiState,
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop, imageSize = imageSize
             )
         }
     }
@@ -656,7 +673,7 @@ private fun SmallSingleColorDisplayer(
     reloadTrigger: Int,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     uiState: UiState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier, imageSize: DpSize
 ) {
     Column(modifier = modifier.padding(8.dp)) {
         Box(
@@ -669,7 +686,7 @@ private fun SmallSingleColorDisplayer(
                 colorIndex = 0,
                 reloadTrigger = reloadTrigger,
                 onClickToOpenWindow = onClickToOpenWindos,
-                uiState = uiState
+                uiState = uiState, imageSize = imageSize
             )
         }
         ArticleDetails(article)
@@ -682,7 +699,7 @@ private fun DemiSingleColorDisplayer(
     reloadTrigger: Int,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     uiState: UiState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier, imageSize: DpSize
 ) {
     Column(modifier = modifier.padding(8.dp)) {
         Box(
@@ -695,7 +712,7 @@ private fun DemiSingleColorDisplayer(
                 colorIndex = 0,
                 reloadTrigger = reloadTrigger,
                 onClickToOpenWindow = onClickToOpenWindos,
-                uiState = uiState
+                uiState = uiState, imageSize = imageSize
             )
         }
         ArticleDetails(article)
@@ -755,7 +772,8 @@ private fun ArticleImageWithOverlay(
     uiState: UiState,
     modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.Fit,
-    onClickToOpenWindow: (ArticlesBasesStatsTable, Int) -> Unit
+    onClickToOpenWindow: (ArticlesBasesStatsTable, Int) -> Unit,
+    imageSize: DpSize
 ) {
     Box(modifier = modifier) {
         val imageExists = remember(article.idArticle, colorIndex, reloadTrigger) {
@@ -770,7 +788,8 @@ private fun ArticleImageWithOverlay(
             onClickToOpenWindow = onClickToOpenWindow,
             uiState = uiState,
             showOverlay = !imageExists,
-            imageScale = contentScale
+            imageScale = contentScale,
+            imageSize= imageSize
         )
 
         if (imageExists &&
@@ -807,8 +826,10 @@ private fun ImageDisplayer(
     uiState: UiState,
     showOverlay: Boolean,
     imageScale: ContentScale = ContentScale.Fit,
-    cornerRadius: Dp = 8.dp
+    cornerRadius: Dp = 8.dp,
+    imageSize: DpSize,
 ) {
+     
     var currentQuality by remember { mutableStateOf(25f) }
 
     val imagePath by remember(viewModel.viewModelImagesPath, article.idArticle, indexColor) {
@@ -831,7 +852,8 @@ private fun ImageDisplayer(
         }
     }
 
-    Box(modifier = modifier) {
+    Box(modifier = modifier.size(width = imageSize.width, height = imageSize.height))
+    {
         imageFile?.let { file ->
             GlideImage(
                 model = file,
