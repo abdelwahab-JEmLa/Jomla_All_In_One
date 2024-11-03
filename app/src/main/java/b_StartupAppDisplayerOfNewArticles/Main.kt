@@ -758,7 +758,7 @@ private fun ColorIndicator(
             modifier = Modifier
                 .align(Alignment.Center)
                 .offset(x = (14).dp, y = 18.dp)
-                .size( if (demiSizeImage) 70.dp else 40.dp)
+                .size( if (demiSizeImage) 70.dp else 50.dp)
                 .clickable { onClickToOpenWindow() }
         ) {
             GlideImage(
