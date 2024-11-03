@@ -206,7 +206,7 @@ class StartUpNewArticlesViewModels(
 
 
 
-    private fun deleteSoldArticle(vid: Long) {
+    fun deleteSoldArticle(vid: Long) {
         viewModelScope.launch {
             try {
                 // Find the article to delete

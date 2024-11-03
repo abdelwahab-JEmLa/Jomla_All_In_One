@@ -241,7 +241,12 @@ fun SaleWindows(
                         viewModel.saveSaleTransactionToSoldAriclesList()
                         onDismiss()
                     },
-                    onCancel = onDismiss,
+                    onCancel = {
+                        if (currentSale != null) {
+                            viewModel.deleteSoldArticle(currentSale.vid)
+                        }
+                        onDismiss()
+                               },
                 )
             }
         }
@@ -809,7 +814,7 @@ fun CompactQuantityPicker(
 fun Picker(
     modifier: Modifier = Modifier,
     items: List<String>,
-    state: c_WindosBuyAndDesplayeArticleStats.PickerState = rememberPickerState(),
+    state: PickerState = rememberPickerState(),
     startIndex: Int = 0,
     visibleItemsCount: Int = 3,
     textModifier: Modifier = Modifier,

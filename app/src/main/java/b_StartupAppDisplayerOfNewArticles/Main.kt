@@ -14,6 +14,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
@@ -26,7 +27,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
@@ -42,6 +42,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -72,6 +73,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingSource
@@ -666,32 +668,8 @@ private fun DemiDisplayerDualColor(
         }
     }
 }
-@Composable
-private fun SmallSingleColorDisplayer(
-    article: ArticlesBasesStatsTable,
-    viewModel: StartUpNewArticlesViewModels,
-    reloadTrigger: Int,
-    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
-    uiState: UiState,
-    modifier: Modifier = Modifier, imageSize: DpSize
-) {
-    Column(modifier = modifier.padding(8.dp)) {
-        Box(
-            modifier = Modifier,
-            contentAlignment = Alignment.Center
-        ) {
-            ArticleImageWithOverlay(
-                article = article,
-                viewModel = viewModel,
-                colorIndex = 0,
-                reloadTrigger = reloadTrigger,
-                onClickToOpenWindow = onClickToOpenWindos,
-                uiState = uiState, imageSize = imageSize
-            )
-        }
-        ArticleDetails(article)
-    }
-}
+
+
 @Composable
 private fun DemiSingleColorDisplayer(
     article: ArticlesBasesStatsTable,
@@ -724,43 +702,63 @@ private fun DemiSingleColorDisplayer(
 private fun ColorIndicator(
     iconColore: String,
     modifier: Modifier = Modifier,
-    handIcon: Int = R.drawable.hand ,
+    showHandIcon: Boolean = true,
     onClickToOpenWindow: () -> Unit,
-
+) {
+    Box(
+        modifier = modifier
+            .padding(4.dp)
+            .offset(y = (-16).dp)
     ) {
-    Box(modifier = modifier) {  // Déplacé le modifier ici
-        Surface(
+        ElevatedCard(
             shape = CircleShape,
-            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f),
-            tonalElevation = 4.dp,
-            shadowElevation = 4.dp
+            modifier = Modifier.clickable(onClick = onClickToOpenWindow)
         ) {
-            Text(
-                text = iconColore,
-                modifier = Modifier
-                    .clickable { onClickToOpenWindow() },  // Ajouté padding pour le texte
-                style = MaterialTheme.typography.titleLarge.copy(
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold
-                ),
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(8.dp)
+            ) {
+                if (shouldShowLogo(iconColore)) {
+                    GlideImage(
+                        model = R.drawable.logo,
+                        contentDescription = "Logo",
+                        modifier = Modifier.size(30.dp)
+                    )
+                } else {
+                    Text(
+                        text = iconColore,
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold
+                        ),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
         }
 
-        Box(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .offset(x = (18).dp, y = 22.dp)
-                .size(40.dp)
-                .clickable { onClickToOpenWindow() }
-        ) {
-            GlideImage(
-                model = handIcon,
-                contentDescription = "Click indicator",
-                contentScale = ContentScale.Fit
-            )
+        // Only show hand icon if specified
+        if (showHandIcon) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .offset(x = 12.dp, y = 16.dp)
+                    .size(32.dp)
+                    .clickable(onClick = onClickToOpenWindow)
+            ) {
+                GlideImage(
+                    model = R.drawable.hand,
+                    contentDescription = "Click indicator",
+                    contentScale = ContentScale.Fit
+                )
+            }
         }
     }
+}
+
+// Helper function to check if we should show logo instead of icon
+private fun shouldShowLogo(iconColore: String): Boolean {
+    return iconColore == "©" || iconColore == "💯"
 }
 
 @Composable
@@ -775,45 +773,186 @@ private fun ArticleImageWithOverlay(
     onClickToOpenWindow: (ArticlesBasesStatsTable, Int) -> Unit,
     imageSize: DpSize
 ) {
-    Box(modifier = modifier) {
-        val imageExists = remember(article.idArticle, colorIndex, reloadTrigger) {
-            checkImageExists(viewModel, article, colorIndex, reloadTrigger)
-        }
+    ElevatedCard(
+        modifier = modifier,
+        shape = RoundedCornerShape(8.dp)
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            val imageExists = remember(article.idArticle, colorIndex, reloadTrigger) {
+                checkImageExists(viewModel, article, colorIndex, reloadTrigger)
+            }
 
-        ImageDisplayer(
-            article = article,
-            viewModel = viewModel,
-            indexColor = colorIndex,
-            reloadKey = reloadTrigger,
-            onClickToOpenWindow = onClickToOpenWindow,
-            uiState = uiState,
-            showOverlay = !imageExists,
-            imageScale = contentScale,
-            imageSize= imageSize
-        )
+            ImageDisplayer(
+                article = article,
+                viewModel = viewModel,
+                indexColor = colorIndex,
+                reloadKey = reloadTrigger,
+                onClickToOpenWindow = onClickToOpenWindow,
+                uiState = uiState,
+                showOverlay = !imageExists,
+                imageScale = contentScale,
+                imageSize = imageSize
+            )
 
-        if (imageExists &&
-            countColors(article) > 1 &&
-            article.getColorForIndex(colorIndex)?.let { color ->
-                color != "©" && color != "💯"
-            } == true
-        ) {
-            article.getColorIdForIndex(colorIndex)?.let { colorId ->
-                uiState.colorsArticlesTabelleModel.find { it.idColore == colorId }?.let { color ->
-                    ColorIndicator(
-                        iconColore = color.iconColore,
-                        modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .padding(8.dp)
-                            .wrapContentSize()   ,
-                        onClickToOpenWindow={ onClickToOpenWindow(article, colorIndex) }
-                    )
+            // Show color indicator based on specified conditions
+            if (imageExists ) {
+                article.getColorIdForIndex(colorIndex)?.let { colorId ->
+                    uiState.colorsArticlesTabelleModel.find { it.idColore == colorId }?.let { color ->
+                        ColorIndicator(
+                            iconColore = color.iconColore,
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(8.dp),
+                            showHandIcon = countColors(article) > 1,
+                            onClickToOpenWindow = { onClickToOpenWindow(article, colorIndex) }
+                        )
+                    }
                 }
             }
         }
     }
 }
 
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+private fun ColorOverlay(
+    color: ColorsArticlesTabelle,
+    modifier: Modifier = Modifier,
+    onClickToOpenWindow: () -> Unit,
+) {
+    Box(
+        modifier = modifier
+            .padding(3.dp)
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(IntrinsicSize.Min),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            // Color name with circular background
+            Box(
+                modifier = Modifier
+                    .weight(0.6f)
+                    .wrapContentHeight(),
+                contentAlignment = Alignment.Center
+            ) {
+                Surface(
+                    modifier = Modifier.matchParentSize(),
+                    shape = CircleShape,
+                    color = Color.White.copy(alpha = 0.7f),
+                    border = BorderStroke(1.dp, Color.White.copy(alpha = 0.9f))
+                ) {}
+
+                AutoResizedText(
+                    text = color.nameColore,
+                    modifier = Modifier.clickable { onClickToOpenWindow() },
+                    color = Color.Black,
+                    style = MaterialTheme.typography.headlineMedium.copy(
+                        fontWeight = FontWeight.Bold
+                    ),
+                    maxLines = 1
+                )
+            }
+
+            // Color icon circle
+            Box(
+                modifier = Modifier
+                    .weight(0.4f)
+                    .wrapContentHeight(),
+                contentAlignment = Alignment.Center
+            ) {
+                Surface(
+                    modifier = Modifier.matchParentSize(),
+                    shape = CircleShape,
+                    color = Color.White.copy(alpha = 0.8f),
+                    border = BorderStroke(1.dp, Color.White.copy(alpha = 0.95f))
+                ) {}
+
+                AutoResizedText(
+                    text = color.iconColore,
+                    modifier = Modifier.clickable { onClickToOpenWindow() },
+                    color = Color.Black,
+                    style = MaterialTheme.typography.headlineLarge.copy(
+                        fontWeight = FontWeight.Bold
+                    ),
+                    maxLines = 1
+                )
+            }
+        }
+
+        // Hand icon positioned above both boxes
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .offset(y = (-20).dp, x = 20.dp)
+                .size(40.dp)
+                .zIndex(1f) // Ensures the hand stays on top
+                .clickable { onClickToOpenWindow() }
+        ) {
+            GlideImage(
+                model = R.drawable.hand,
+                contentDescription = "Click indicator",
+                contentScale = ContentScale.Fit,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+    }
+}
+// Example usage in SmallSingleColorDisplayer
+@Composable
+private fun SmallSingleColorDisplayer(
+    article: ArticlesBasesStatsTable,
+    viewModel: StartUpNewArticlesViewModels,
+    reloadTrigger: Int,
+    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
+    uiState: UiState,
+    modifier: Modifier = Modifier,
+    imageSize: DpSize
+) {
+    ArticleCard(modifier = modifier) {
+        Column(modifier = Modifier.padding(8.dp)) {
+            Box(
+                modifier = Modifier,
+                contentAlignment = Alignment.Center
+            ) {
+                ArticleImageWithOverlay(
+                    article = article,
+                    viewModel = viewModel,
+                    colorIndex = 0,
+                    reloadTrigger = reloadTrigger,
+                    onClickToOpenWindow = onClickToOpenWindos,
+                    uiState = uiState,
+                    imageSize = imageSize
+                )
+            }
+            ArticleDetails(article)
+        }
+    }
+}
+// Extension for SmallSingleColorDisplayer and other card layouts
+@Composable
+private fun ArticleCard(
+    modifier: Modifier = Modifier,
+    content: @Composable BoxScope.() -> Unit
+) {
+    ElevatedCard(
+        modifier = modifier,
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(4.dp)
+        ) {
+            content()
+        }
+    }
+}
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 private fun ImageDisplayer(
@@ -906,7 +1045,6 @@ private fun ColorOverlayWithBlur(
         ) {
             it.transform(jp.wasabeef.glide.transformations.BlurTransformation(25))
         }
-
         // Semi-transparent black overlay
         Box(
             modifier = Modifier
@@ -927,92 +1065,6 @@ private fun ColorOverlayWithBlur(
     }
 }
 
-@OptIn(ExperimentalGlideComposeApi::class)
-@Composable
-private fun ColorOverlay(
-    color: ColorsArticlesTabelle,
-    modifier: Modifier = Modifier,
-    onClickToOpenWindow: () -> Unit,
-) {
-    Box(
-        modifier = modifier
-            .padding(3.dp)
-            .fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(IntrinsicSize.Min),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Color name with circular background
-            Box(
-                modifier = Modifier
-                    .weight(0.6f)
-                    .wrapContentHeight(),
-                contentAlignment = Alignment.Center
-            ) {
-                Surface(
-                    modifier = Modifier
-                        .matchParentSize(),
-                    shape = CircleShape,
-                    color = Color.White.copy(alpha = 0.7f),
-                    border = BorderStroke(1.dp, Color.White.copy(alpha = 0.9f))
-                ) {}
-
-                AutoResizedText(
-                    text = color.nameColore,
-                    modifier = Modifier.clickable { onClickToOpenWindow() },
-                    color = Color.Black,
-                    style = MaterialTheme.typography.headlineMedium.copy(
-                        fontWeight = FontWeight.Bold
-                    ),
-                    maxLines = 1
-                )
-            }
-
-            Box(
-                modifier = Modifier
-                    .weight(0.4f)
-                    .wrapContentHeight(),
-                contentAlignment = Alignment.Center
-            ) {
-                Surface(
-                    modifier = Modifier.matchParentSize(),
-                    shape = CircleShape,
-                    color = Color.White.copy(alpha = 0.8f),
-                    border = BorderStroke(1.dp, Color.White.copy(alpha = 0.95f))
-                ) {}
-
-                // Fixed hand icon positioning
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .offset(x = (18).dp, y = 22.dp)
-                        .size(40.dp)
-                        .clickable { onClickToOpenWindow() }
-                ) {
-                    GlideImage(
-                        model = R.drawable.hand,
-                        contentDescription = "Click indicator",
-                        contentScale = ContentScale.Fit
-                    )
-                }
-
-                AutoResizedText(
-                    text = color.iconColore,
-                    modifier = Modifier.clickable { onClickToOpenWindow() },
-                    color = Color.White,
-                    style = MaterialTheme.typography.headlineLarge.copy(
-                        fontWeight = FontWeight.Bold
-                    ),
-                    maxLines = 1
-                )
-            }
-        }
-    }
-}
 
 
 
