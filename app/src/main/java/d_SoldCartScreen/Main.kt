@@ -15,9 +15,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -27,9 +25,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
@@ -185,6 +181,8 @@ fun ImageDisplayer(
         )
     }
 }
+
+
 @Composable
 fun SoldCartScreen(
     viewModel: StartUpNewArticlesViewModels,
@@ -224,48 +222,61 @@ fun SoldCartScreen(
     }
 
     Box(modifier = modifier.fillMaxSize()) {
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState())
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Order Summary Section
-            CartSummaryCard(
-                client = clientBuyerNow,
-                itemCount = filteredSoldArticles.sumOf { it.getTotalQuantity() },
-                totalPrice = totalPrice,
-                onConfirmOrder = {
-                    scope.launch {
-                        viewModel.apply {
-                            // Clean up zero quantity items
-                            filteredSoldArticles
-                                .filter { it.getTotalQuantity() == 0 }
-                                .forEach { deleteUnconfirmedSoldArticle(it.vid) }
-                            // Reset client
-                            updateLongAppSetting("clientBuyerNowId", 0)
+            // Summary Card as header item
+            item {
+                CartSummaryCard(
+                    client = clientBuyerNow,
+                    itemCount = filteredSoldArticles.sumOf { it.getTotalQuantity() },
+                    totalPrice = totalPrice,
+                    onConfirmOrder = {
+                        scope.launch {
+                            viewModel.apply {
+                                // Clean up zero quantity items
+                                filteredSoldArticles
+                                    .filter { it.getTotalQuantity() == 0 }
+                                    .forEach { deleteUnconfirmedSoldArticle(it.vid) }
+                                // Reset client
+                                updateLongAppSetting("clientBuyerNowId", 0)
+                            }
+                            showOrderSuccess = true
+                            delay(3000)
+                            showOrderSuccess = false
                         }
-                        showOrderSuccess = true
-                        delay(3000)
-                        showOrderSuccess = false
+                    }
+                )
+            }
+
+            // Empty state or cart items
+            if (filteredSoldArticles.isEmpty()) {
+                item {
+                    EmptyCartMessage()
+                }
+            } else {
+                items(
+                    items = filteredSoldArticles,
+                    key = { it.vid }
+                ) { soldArticle ->
+                    val baseArticle = uiState.articlesBasesStatTabelles.find {
+                        it.idArticle.toLong() == soldArticle.idArticle
+                    }
+
+                    if (baseArticle != null) {
+                        CartItem(
+                            soldArticle = soldArticle,
+                            baseArticle = baseArticle,
+                            colors = uiState.colorsArticlesTabelleModel,
+                            viewModel = viewModel,
+                            onOpenArticleStats = onOpenArticleStats,
+                            uiState = uiState
+                        )
                     }
                 }
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Cart Items Section
-            if (filteredSoldArticles.isEmpty()) {
-                EmptyCartMessage()
-            } else {
-                CartItemsList(
-                    soldArticles = filteredSoldArticles,
-                    colors = uiState.colorsArticlesTabelleModel,
-                    baseArticles = uiState.articlesBasesStatTabelles,
-                    viewModel = viewModel,
-                    onOpenArticleStats = onOpenArticleStats,
-                    uiState = uiState
-                )
             }
         }
 
@@ -284,45 +295,8 @@ fun SoldCartScreen(
 }
 
 
-
-
 @Composable
- fun CartItemsList(
-    soldArticles: List<SoldArticlesTabelle>,
-    colors: List<ColorsArticlesTabelle>,
-    baseArticles: List<ArticlesBasesStatsTabelle>,
-    viewModel: StartUpNewArticlesViewModels,
-    onOpenArticleStats: (ArticlesBasesStatsTabelle, Int) -> Unit,
-    uiState: UiState
-) {
-    LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        contentPadding = PaddingValues(bottom = 16.dp)
-    ) {
-        items(
-            items = soldArticles,
-            key = { it.vid }
-        ) { soldArticle ->
-            val baseArticle = baseArticles.find {
-                it.idArticle.toLong() == soldArticle.idArticle
-            }
-
-            if (baseArticle != null) {
-                CartItem(
-                    soldArticle = soldArticle,
-                    baseArticle = baseArticle,
-                    colors = colors,
-                    viewModel = viewModel,
-                    onOpenArticleStats = onOpenArticleStats,
-                    uiState = uiState
-                )
-            }
-        }
-    }
-}
-
-@Composable
- fun CartItem(
+fun CartItem(
     soldArticle: SoldArticlesTabelle,
     baseArticle: ArticlesBasesStatsTabelle,
     colors: List<ColorsArticlesTabelle>,
@@ -363,28 +337,34 @@ fun SoldCartScreen(
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // Color 1
-                if (soldArticle.color1SoldQuantity > 0) {
-                    item {
-                        ColorItemWithQuantity(
-                            article = baseArticle,
-                            colorIndex = 0,
-                            quantity = soldArticle.color1SoldQuantity,
-                            onDelete = { viewModel.resetColorSelection(0) },
-                            viewModel = viewModel,
-                            onOpenArticleStats = onOpenArticleStats,
-                            uiState = uiState,
-                            colors = colors
-                        )
+                // Using a list of color quantities with their indices
+                val colorQuantities = listOf(
+                    soldArticle.color1SoldQuantity,
+                    soldArticle.color2SoldQuantity,
+                    soldArticle.color3SoldQuantity,
+                    soldArticle.color4SoldQuantity
+                )
+
+                colorQuantities.forEachIndexed { index, quantity ->
+                    if (quantity > 0) {
+                        item {
+                            ColorItemWithQuantity(
+                                article = baseArticle,
+                                colorIndex = index,
+                                quantity = quantity,
+                                onDelete = { viewModel.resetColorSelection(index) },
+                                viewModel = viewModel,
+                                onOpenArticleStats = onOpenArticleStats,
+                                uiState = uiState,
+                                colors = colors
+                            )
+                        }
                     }
                 }
-                // Add similar items for colors 2-4
-                // ... 
             }
         }
     }
 }
-
 @Composable
  fun EmptyCartMessage() {
     Box(
