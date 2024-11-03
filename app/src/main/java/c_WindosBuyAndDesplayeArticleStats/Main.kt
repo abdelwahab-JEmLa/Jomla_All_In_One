@@ -245,7 +245,7 @@ fun SaleWindows(
                             viewModel.deleteSoldArticle(currentSale.vid)
                         }
                         onDismiss()
-                               },
+                    },
                 )
             }
         }
@@ -519,7 +519,7 @@ private fun SingleColorLayout(
         ColorItem(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(200.dp),
+                .height(100.dp),
             currentSale = currentSale,
             article = article,
             color = color,
@@ -553,8 +553,8 @@ private fun MultipleColorsLayout(
                     val index = colors.indexOf(color)
                     Box(
                         modifier = Modifier
-                            .width(250.dp)
-                            .height(250.dp)
+                            .width(150.dp)
+                            .height(150.dp)
                     ) {
                         ColorItem(
                             modifier = Modifier.fillMaxSize(),
