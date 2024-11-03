@@ -249,7 +249,31 @@ fun SaleWindows(
                     Details(isDetailsVisible, stats)
                 }
 
-                ActionsButtonRow(
+                ActionsButtonRow(      //TODO fait que ca soit s affiche toutjoure au base du dialoge
+                    //comme button bar et fait anime infenie du button طلب
+                    //comme    LaunchedEffect(Unit) {
+                    //        while(true) {
+                    //            if(isRed) {
+                    //                delay(700)
+                    //                isRed = false
+                    //            }  else {
+                    //                delay(6000)
+                    //                isRed = true
+                    //            }
+                    //        }
+                    //    }
+                    //
+                    //    Card(
+                    //        modifier = Modifier
+                    //            .fillMaxSize()
+                    //            .wrapContentHeight(),
+                    //        elevation = CardDefaults.cardElevation(4.dp),
+                    //        colors = CardDefaults.cardColors(
+                    //            containerColor = animateColorAsState(
+                    //                if (isRed) Color.Red else Color.White,
+                    //                label = "backgroundColor"
+                    //            ).value
+                    //        )
                     onConfirm = {
                         viewModel.saveSaleTransactionToSoldAriclesList()
                         onDismiss()
@@ -895,7 +919,7 @@ fun Picker(
     dividerColor: Color = LocalContentColor.current,
     onItemStat: (String) -> Unit,
 ) {
-    var minusToReglePosition by remember { mutableStateOf(-3.0) }
+    var minusToReglePosition by remember { mutableStateOf(0.0) }
 
     val centerPosition = 1
     val listScrollCount = Integer.MAX_VALUE
