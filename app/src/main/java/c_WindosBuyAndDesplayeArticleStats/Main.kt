@@ -796,7 +796,7 @@ fun CompactQuantityPicker(
     LaunchedEffect(Unit) {
         while(true) {
             if(isRed) {
-                delay(1500)
+                delay(700)
                 isRed = false
             }  else {
                 delay(6000)
@@ -827,7 +827,7 @@ fun CompactQuantityPicker(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(4.dp),
+                    .padding(4.dp),//TODo fait que ca a un rond backgrin blan
                 contentAlignment = Alignment.TopEnd
             ) {
                 IconButton(
@@ -895,6 +895,8 @@ fun Picker(
     dividerColor: Color = LocalContentColor.current,
     onItemStat: (String) -> Unit,
 ) {
+    var minusToReglePosition by remember { mutableStateOf(0.0) }
+
     val centerPosition = 3
     val listScrollCount = Integer.MAX_VALUE
     val listScrollMiddle = listScrollCount / 2
@@ -926,6 +928,7 @@ fun Picker(
             .collect { item ->
                 state.selectedItem = item
                 onItemStat(item)
+                minusToReglePosition = 2.7
             }
     }
 
@@ -986,14 +989,14 @@ fun Picker(
             }
         }
 
-        val minusDp = 1.dp
+        val minusDp = (minusToReglePosition).dp
         HorizontalDivider(
-            modifier = Modifier.offset(y = (itemHeightDp- minusDp) * 3),
+            modifier = Modifier.offset(y = (itemHeightDp- minusDp) * 2),
             color = dividerColor
         )
 
         HorizontalDivider(
-            modifier = Modifier.offset(y = (itemHeightDp-minusDp) * 4),
+            modifier = Modifier.offset(y = (itemHeightDp-minusDp) * 3),
             color = dividerColor
         )
     }
