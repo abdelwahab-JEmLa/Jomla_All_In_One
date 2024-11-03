@@ -11,6 +11,7 @@ import a_RoomDB.SuppliersTabelle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.database.FirebaseDatabase
+import d_SoldCartScreen.getTotalQuantity
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -78,7 +79,7 @@ class StartUpNewArticlesViewModels(
     val currentSaleInWindows = _currentSaleInWindows.asStateFlow()
 
 
-    fun updateOpenWindosNewSale(
+    fun openWindowsNewSaleWithUpdateCurrent(
         relatedArticleDataBaseId: Long,
         currentClient: Long,
         indexColor: Int,
@@ -159,7 +160,46 @@ class StartUpNewArticlesViewModels(
             }
         }
     }
-    
+    fun resetColorSelectionFromSoldArt(soldArticle: SoldArticlesTabelle, colorIndex: Int) {
+        viewModelScope.launch {
+            try {
+                // Create updated sale with reset color quantities
+                val updatedSale = when (colorIndex) {
+                    0 -> soldArticle.copy(color1IdPicked = 0, color1SoldQuantity = 0)
+                    1 -> soldArticle.copy(color2IdPicked = 0, color2SoldQuantity = 0)
+                    2 -> soldArticle.copy(color3IdPicked = 0, color3SoldQuantity = 0)
+                    3 -> soldArticle.copy(color4IdPicked = 0, color4SoldQuantity = 0)
+                    else -> soldArticle
+                }
+
+                if (updatedSale.getTotalQuantity() == 0) {
+                    // If no quantities remain, delete the article completely
+                    deleteSoldArticle(updatedSale.vid)
+                } else {
+                    // Update Room database
+                    database.soldArticlesTabelleDao().insert(updatedSale)
+
+                    // Update Firebase
+                    firebaseDatabase.getReference("O_SoldArticlesTabelle")
+                        .child(updatedSale.vid.toString())
+                        .setValue(updatedSale)
+                        .await()
+
+                    // Update UI state
+                    _uiState.update { state ->
+                        state.copy(
+                            soldArticlesModel = state.soldArticlesModel.map { article ->
+                                if (article?.vid == updatedSale.vid) updatedSale else article
+                            }
+                        )
+                    }
+
+                }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(error = "Failed to reset sale: ${e.message}") }
+            }
+        }
+    }
     fun clearCurrentSale() {
         _currentSaleInWindows.value=null
     }
@@ -193,7 +233,7 @@ class StartUpNewArticlesViewModels(
             }
         }
     }
-    
+
     fun saveSaleTransactionToSoldAriclesList() {
         viewModelScope.launch {
             _currentSaleInWindows.value?.let { sale ->
@@ -203,11 +243,19 @@ class StartUpNewArticlesViewModels(
 
                     // Update the UI state
                     _uiState.update { state ->
-                        val updatedSales = state.soldArticlesModel.map {
-                            if (it?.vid == sale.vid) sale else it
+                        val existingSale = state.soldArticlesModel.find { it?.vid == sale.vid }
+                        val updatedSales = if (existingSale != null) {
+                            // Update existing sale
+                            state.soldArticlesModel.map {
+                                if (it?.vid == sale.vid) sale else it
+                            }
+                        } else {
+                            // Add new sale to the list
+                            state.soldArticlesModel + sale
                         }
                         state.copy(soldArticlesModel = updatedSales)
                     }
+
                     // Update Firebase
                     firebaseDatabase.getReference("O_SoldArticlesTabelle")
                         .child(sale.vid.toString())
@@ -220,7 +268,6 @@ class StartUpNewArticlesViewModels(
             }
         }
     }
-
 
     private suspend fun createNewArrivaleCategoryIfNeeded(existingCategories: List<CategoriesTabelle>) {
         val hasNewArrivale = existingCategories.any {

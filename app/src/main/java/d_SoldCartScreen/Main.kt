@@ -344,7 +344,7 @@ fun CartItem(
                                 article = baseArticle,
                                 colorIndex = index,
                                 quantity = quantity,
-                                onDelete = { viewModel.updateColorSelection(index,0) },
+                                onDelete = { viewModel.resetColorSelectionFromSoldArt(soldArticle,index) },
                                 viewModel = viewModel,
                                 onOpenArticleStats = onOpenArticleStats,
                                 uiState = uiState,

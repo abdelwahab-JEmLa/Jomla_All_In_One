@@ -324,7 +324,7 @@ fun AppNavHost(
                             if (currentClientId == 0L) {
                                 showClientSelection = true
                             } else {
-                                appViewModels.startUpNewArticlesViewModels.updateOpenWindosNewSale(
+                                appViewModels.startUpNewArticlesViewModels.openWindowsNewSaleWithUpdateCurrent(
                                     relatedArticleBaseStats!!.idArticle.toLong(),
                                     currentClientId,
                                     pendingIndexColor)
@@ -360,7 +360,7 @@ fun AppNavHost(
                 onClientSelected = { client ->
                     appViewModels.startUpNewArticlesViewModels.updateLongAppSetting("clientBuyerNowId",client.idClientsSu)
 
-                    appViewModels.startUpNewArticlesViewModels.updateOpenWindosNewSale(
+                    appViewModels.startUpNewArticlesViewModels.openWindowsNewSaleWithUpdateCurrent(
                         relatedArticleBaseStats!!.idArticle.toLong(),
                         client.idClientsSu,
                         pendingIndexColor)

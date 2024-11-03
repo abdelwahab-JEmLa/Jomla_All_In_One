@@ -153,7 +153,6 @@ fun SaleWindows(
             dismissButton = {
                 OutlinedButton(
                     onClick = {
-
                         onDismiss()
                     }
                 ) {
