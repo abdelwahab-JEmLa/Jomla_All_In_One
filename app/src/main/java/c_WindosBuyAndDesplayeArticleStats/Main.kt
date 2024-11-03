@@ -482,7 +482,7 @@ private fun ColorsCards(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(min = 100.dp, max = 600.dp) // Provide height constraints
+            .heightIn (min = 100.dp, max = 600.dp)
     ) {
         when (colors.size) {
             1 -> SingleColorLayout(
@@ -519,7 +519,7 @@ private fun SingleColorLayout(
         ColorItem(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(100.dp),
+                .height(350.dp),
             currentSale = currentSale,
             article = article,
             color = color,
@@ -553,8 +553,7 @@ private fun MultipleColorsLayout(
                     val index = colors.indexOf(color)
                     Box(
                         modifier = Modifier
-                            .width(150.dp)
-                            .height(150.dp)
+                            .size(250.dp)
                     ) {
                         ColorItem(
                             modifier = Modifier.fillMaxSize(),
@@ -660,7 +659,6 @@ fun ColorItem(
                                         .height(IntrinsicSize.Min),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    // Color name with circular background
                                     Box(
                                         modifier = Modifier
                                             .weight(0.6f)
@@ -796,30 +794,31 @@ fun CompactQuantityPicker(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                IconButton(
+                    onClick = {
+                        viewModel.updateColorSelection(colorIndex,0)
+                        onDismiss()
+                    },
+                    modifier = Modifier.padding(top = 8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Close picker"
+                    )
+                }
                 Picker(
                     modifier = Modifier,
                     items = values,
                     state = valuesPickerState,
                     visibleItemsCount = 3,
                     textModifier = Modifier.padding(8.dp),
-                    textStyle = TextStyle(fontSize = 24.sp),
+                    textStyle = TextStyle(fontSize = 20.sp),
                     startIndex = values.indexOfFirst { it == initialQuantity.toString() }.coerceAtLeast(0),
                     onItemStat = {viewModel.updateColorSelection(colorIndex, it.toInt())}
                 )
             }
 
-            IconButton(
-                onClick = {
-                    viewModel.updateColorSelection(colorIndex,0)
-                    onDismiss()
-                },
-                modifier = Modifier.padding(top = 8.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Close,
-                    contentDescription = "Close picker"
-                )
-            }
+
         }
     }
 }
