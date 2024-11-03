@@ -405,7 +405,7 @@ sealed class ArticleLayout {
     // Define size configurations for different layouts
     private val imageSize: DpSize
         get() = when (this) {
-            is DemiUno,DemiDual, is DemiMulti -> DpSize(width = 400.dp, height = 400.dp)
+            is DemiUno,DemiDual, is DemiMulti -> DpSize(width = 500.dp, height = 500.dp)
             is SmallUno, is SmallDual, is SmallMulti -> DpSize(width = 170.dp, height = 170.dp)
         }
 
@@ -727,14 +727,14 @@ private fun ColorIndicator(
     onClickToOpenWindow: () -> Unit,
 
     ) {
-    Box(modifier = modifier) {
+    Box(modifier = modifier.clickable { onClickToOpenWindow() }) {
         Surface(
             shape = CircleShape,
             color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f),
             tonalElevation = 4.dp,
             shadowElevation = 4.dp
         ) {
-            if (iconColore == "©" || iconColore == "💯") {
+            if (iconColore == "©" || iconColore == "💯"|| iconColore == "") {
                 GlideImage(
                     model = R.drawable.logo,
                     contentDescription = "Logo",
@@ -814,9 +814,11 @@ private fun ArticleImageWithOverlay(
                         ColorIndicator(
                             iconColore = color.iconColore,
                             modifier = Modifier
-                                .align(Alignment.BottomEnd)
                                 .padding(3.dp)
-                                .wrapContentSize(),
+                                .align(Alignment.BottomEnd)
+                                .wrapContentSize()
+                                .offset(x = (-3).dp, y = (-5).dp)
+                            ,
                             onClickToOpenWindow = { onClickToOpenWindow(article, colorIndex) }
                         )
                     }
@@ -1025,9 +1027,6 @@ private fun ColorOverlay(
         }
     }
 }
-
-
-
 
 // Utility functions
 private fun checkImageExists(

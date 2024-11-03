@@ -94,7 +94,6 @@ import b_StartupAppDisplayerOfNewArticles.StartUpNewArticlesViewModels
 import b_StartupAppDisplayerOfNewArticles.UiState
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
-import coil.size.Size
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.clientjetpack.R
@@ -950,7 +949,7 @@ private fun ImageDisplayer(
         val painter = rememberAsyncImagePainter(
             ImageRequest.Builder(context)
                 .data(imageSource)
-                .size(Size.ORIGINAL)  // Use original size to maintain aspect ratio
+                .size(350,350)  // Use original size to maintain aspect ratio
                 .crossfade(true)
                 .setParameter("key", requestKey, memoryCacheKey = requestKey)
                 .build()
