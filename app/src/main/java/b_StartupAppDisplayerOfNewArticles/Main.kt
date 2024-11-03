@@ -396,9 +396,10 @@ private fun ArticleDisplayScreen(
 
 // Update the ArticleLayout sealed class to include all required layouts
 sealed class ArticleLayout {
-    data object SingleGrid : ArticleLayout() // Single item in grid
+    data object DemiUno : ArticleLayout() // Single item in grid
     data object DemiDual : ArticleLayout() // Half-width dual color
     data object DemiMulti : ArticleLayout() // Half-width multi color
+    data object SmallUno : ArticleLayout() // Single item in grid
     data object SmallDual : ArticleLayout() // Small dual color
     data object SmallMulti : ArticleLayout() // Small multi color
 
@@ -412,7 +413,7 @@ sealed class ArticleLayout {
         modifier: Modifier = Modifier
     ) {
         when (this) {
-            is SingleGrid -> SingleColorDisplayer(
+            is DemiUno -> SmallSingleColorDisplayer(
                 article, viewModel, reloadTrigger, onClickToOpenWindos, uiState,
                 modifier.fillMaxWidth()
             )
@@ -421,6 +422,10 @@ sealed class ArticleLayout {
             )
             is DemiMulti -> DemiDisplayerMultiColor(
                 article, viewModel, reloadTrigger, onClickToOpenWindos, uiState, modifier
+            )
+            is SmallUno -> DemiSingleColorDisplayer(
+                article, viewModel, reloadTrigger, onClickToOpenWindos, uiState,
+                modifier.fillMaxWidth()
             )
             is SmallDual -> SmallDisplayerDualColor(
                 article, viewModel, reloadTrigger, onClickToOpenWindos, uiState, modifier
@@ -451,11 +456,13 @@ private fun ArticleItem(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         val layout = when {
+            article.imageDimention == "Demi" && colorCount == 1 -> ArticleLayout.DemiUno
             article.imageDimention == "Demi" && colorCount == 2 -> ArticleLayout.DemiDual
             article.imageDimention == "Demi" && colorCount > 2 -> ArticleLayout.DemiMulti
+            colorCount == 1 -> ArticleLayout.SmallUno
             colorCount == 2 -> ArticleLayout.SmallDual
             colorCount > 2 -> ArticleLayout.SmallMulti
-            else -> ArticleLayout.SingleGrid
+            else -> ArticleLayout.SmallUno
         }
 
         layout.Content(
@@ -642,9 +649,34 @@ private fun DemiDisplayerDualColor(
         }
     }
 }
-
 @Composable
-private fun SingleColorDisplayer(
+private fun SmallSingleColorDisplayer(
+    article: ArticlesBasesStatsTable,
+    viewModel: StartUpNewArticlesViewModels,
+    reloadTrigger: Int,
+    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
+    uiState: UiState,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier.padding(8.dp)) {
+        Box(
+            modifier = Modifier,
+            contentAlignment = Alignment.Center
+        ) {
+            ArticleImageWithOverlay(
+                article = article,
+                viewModel = viewModel,
+                colorIndex = 0,
+                reloadTrigger = reloadTrigger,
+                onClickToOpenWindow = onClickToOpenWindos,
+                uiState = uiState
+            )
+        }
+        ArticleDetails(article)
+    }
+}
+@Composable
+private fun DemiSingleColorDisplayer(
     article: ArticlesBasesStatsTable,
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
@@ -936,7 +968,8 @@ private fun ColorOverlay(
                     modifier = Modifier
                         .align(Alignment.Center)
                         .offset(x = (18).dp, y = 22.dp)
-                        .size(40.dp).clickable { onClickToOpenWindow() }
+                        .size(40.dp)
+                        .clickable { onClickToOpenWindow() }
                 ) {
                     GlideImage(
                         model = R.drawable.hand,
