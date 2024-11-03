@@ -6,14 +6,21 @@ import a_RoomDB.SoldArticlesTabelle
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.calculateTargetValue
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.animateScrollBy
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -39,7 +46,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.outlined.Delete
@@ -66,16 +72,19 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
@@ -102,7 +111,9 @@ import com.example.clientjetpack.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import java.io.File
+import kotlin.math.roundToInt
 
 @Composable
 fun SaleWindows(
@@ -784,15 +795,20 @@ fun CompactQuantityPicker(
 
     LaunchedEffect(Unit) {
         while(true) {
-            delay(2000)
-            isRed = !isRed
+            if(isRed) {
+                delay(1500)
+                isRed = false
+            }  else {
+                delay(6000)
+                isRed = true
+            }
         }
     }
 
     Card(
         modifier = Modifier
             .fillMaxSize()
-            .wrapContentHeight(), // Fixed height issue
+            .wrapContentHeight(),
         elevation = CardDefaults.cardElevation(4.dp),
         colors = CardDefaults.cardColors(
             containerColor = animateColorAsState(
@@ -808,7 +824,6 @@ fun CompactQuantityPicker(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
-            // Rest of the code remains the same until Picker component
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -825,7 +840,7 @@ fun CompactQuantityPicker(
                     Icon(
                         imageVector = Icons.Default.Delete,
                         contentDescription = "Close picker",
-                        tint =  Color.Black
+                        tint = Color.Black
                     )
                 }
             }
@@ -843,10 +858,11 @@ fun CompactQuantityPicker(
             Picker(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 4.dp).size(height),
+                    .padding(horizontal = 4.dp)
+                    .size(height),
                 items = values,
                 state = valuesPickerState,
-                visibleItemsCount = 4,
+                visibleItemsCount = 8,  // Changed to 3 for better divider alignment
                 textModifier = Modifier.padding(4.dp),
                 textStyle = TextStyle(
                     fontSize = 25.sp,
@@ -856,7 +872,7 @@ fun CompactQuantityPicker(
                         label = "textColor"
                     ).value
                 ),
-                dividerColor = animateColorAsState(  // Fixed divider color syntax
+                dividerColor = animateColorAsState(
                     if (isRed) Color.White else Color.Red,
                     label = "dividerColor"
                 ).value,
@@ -866,28 +882,30 @@ fun CompactQuantityPicker(
         }
     }
 }
+
 @Composable
 fun Picker(
     modifier: Modifier = Modifier,
     items: List<String>,
     state: PickerState = rememberPickerState(),
     startIndex: Int = 0,
-    visibleItemsCount: Int = 3,
+    visibleItemsCount: Int = 8,
     textModifier: Modifier = Modifier,
     textStyle: TextStyle = LocalTextStyle.current,
     dividerColor: Color = LocalContentColor.current,
     onItemStat: (String) -> Unit,
-    ) {
-
-    val visibleItemsMiddle = visibleItemsCount / 2
+) {
+    val centerPosition = 3
     val listScrollCount = Integer.MAX_VALUE
     val listScrollMiddle = listScrollCount / 2
-    val listStartIndex = listScrollMiddle - listScrollMiddle % items.size - visibleItemsMiddle + startIndex
+    val listStartIndex = listScrollMiddle - listScrollMiddle % items.size - centerPosition + startIndex
 
     fun getItem(index: Int) = items[index % items.size]
 
     val listState = rememberLazyListState(initialFirstVisibleItemIndex = listStartIndex)
-    val flingBehavior = rememberSnapFlingBehavior(lazyListState = listState)
+
+    // Simplified fling behavior
+    val flingBehavior = rememberSnapFlingBehavior(listState)
 
     val itemHeightPixels = remember { mutableStateOf(0) }
     val itemHeightDp = pixelsToDp(itemHeightPixels.value)
@@ -895,22 +913,26 @@ fun Picker(
     val fadingEdgeGradient = remember {
         Brush.verticalGradient(
             0f to Color.Transparent,
-            0.5f to Color.Black,
+            0.3f to Color.Black,
+            0.7f to Color.Black,
             1f to Color.Transparent
         )
     }
 
     LaunchedEffect(listState) {
         snapshotFlow { listState.firstVisibleItemIndex }
-            .map { index -> getItem(index + visibleItemsMiddle) }
+            .map { index -> getItem(index + centerPosition) }
             .distinctUntilChanged()
-            .collect { item -> state.selectedItem = item
+            .collect { item ->
+                state.selectedItem = item
                 onItemStat(item)
             }
     }
 
-    Box(modifier = modifier) {
+    val scope = rememberCoroutineScope()
+    val decayAnimationSpec = rememberSplineBasedDecay<Float>()
 
+    Box(modifier = modifier) {
         LazyColumn(
             state = listState,
             flingBehavior = flingBehavior,
@@ -919,6 +941,37 @@ fun Picker(
                 .fillMaxWidth()
                 .height(itemHeightDp * visibleItemsCount)
                 .fadingEdge(fadingEdgeGradient)
+                .pointerInput(Unit) {
+                    var lastDragPosition = Offset.Zero
+                    var totalDragDistance = 0f
+
+                    detectDragGestures(
+                        onDragStart = { lastDragPosition = it },
+                        onDragEnd = {
+                            scope.launch {
+                                val velocity = totalDragDistance * 1.5f
+                                val targetOffset = decayAnimationSpec.calculateTargetValue(0f, velocity)
+                                val targetIndex = (targetOffset / itemHeightPixels.value).roundToInt()
+                                listState.animateScrollBy(
+                                    targetIndex * itemHeightPixels.value.toFloat(),
+                                    spring(
+                                        dampingRatio = Spring.DampingRatioLowBouncy,
+                                        stiffness = Spring.StiffnessLow
+                                    )
+                                )
+                                totalDragDistance = 0f
+                            }
+                        },
+                        onDrag = { change, dragAmount ->
+                            change.consume()
+                            lastDragPosition += dragAmount
+                            totalDragDistance += dragAmount.y
+                            scope.launch {
+                                listState.scrollBy(-dragAmount.y * 1.5f)
+                            }
+                        }
+                    )
+                }
         ) {
             items(listScrollCount) { index ->
                 Text(
@@ -933,16 +986,16 @@ fun Picker(
             }
         }
 
+        val minusDp = 1.dp
         HorizontalDivider(
-            modifier = Modifier.offset(y = itemHeightDp * visibleItemsMiddle),
+            modifier = Modifier.offset(y = (itemHeightDp- minusDp) * 3),
             color = dividerColor
         )
 
         HorizontalDivider(
-            modifier = Modifier.offset(y = itemHeightDp * (visibleItemsMiddle + 1)),
+            modifier = Modifier.offset(y = (itemHeightDp-minusDp) * 4),
             color = dividerColor
         )
-
     }
 }
 
