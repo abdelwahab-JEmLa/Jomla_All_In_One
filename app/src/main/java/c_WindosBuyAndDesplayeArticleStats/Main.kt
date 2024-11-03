@@ -698,10 +698,34 @@ fun ColorItem(
                                             border = BorderStroke(1.dp, Color.White.copy(alpha = 0.95f))
                                         ) {}
 
+
+                                        Surface(
+                                            shape = CircleShape,
+                                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f),
+                                            tonalElevation = 4.dp,
+                                            shadowElevation = 4.dp
+                                        ) {
+                                            if (colorData.iconColore == "©" || colorData.iconColore == "💯"|| colorData.iconColore == "") {
+                                                GlideImage(
+                                                    model = R.drawable.logo,
+                                                    contentDescription = "Logo",
+                                                    modifier = Modifier.size( 38.dp
+                                                    ).clickable { showPicker = true }
+                                                )
+                                            } else {
+                                                Text(
+                                                    text = colorData.iconColore,
+                                                    fontSize =  38.sp,
+                                                    fontWeight = FontWeight.Bold ,
+                                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                    modifier = Modifier.clickable { showPicker = true }
+                                                )
+                                            }
+                                        }
                                         Box(
                                             modifier = Modifier
                                                 .align(Alignment.Center)
-                                                .offset(x = 18.dp, y = 22.dp)
+                                                .offset(x = 15.dp, y = 18.dp)
                                                 .size(40.dp)
                                                 .clickable { showPicker = true }
                                         ) {
@@ -711,16 +735,6 @@ fun ColorItem(
                                                 contentScale = ContentScale.Fit
                                             )
                                         }
-
-                                        AutoResizedText(
-                                            text = colorData.iconColore,
-                                            modifier = Modifier.clickable { showPicker = true },
-                                            color = Color.White,
-                                            style = MaterialTheme.typography.headlineLarge.copy(
-                                                fontWeight = FontWeight.Bold
-                                            ),
-                                            maxLines = 1
-                                        )
                                     }
                                 }
                             }
