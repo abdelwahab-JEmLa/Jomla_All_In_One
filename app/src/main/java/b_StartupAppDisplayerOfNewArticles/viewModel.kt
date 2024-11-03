@@ -11,7 +11,6 @@ import a_RoomDB.SuppliersTabelle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.database.FirebaseDatabase
-import d_SoldCartScreen.getTotalQuantity
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -150,7 +149,6 @@ class StartUpNewArticlesViewModels(
 
                     if (totalQuantity == 0) {
                         deleteSoldArticle(updatedSale.vid)
-                        clearCurrentSale()
                     } else {
                         _currentSaleInWindows.value = updatedSale
                     }
@@ -172,10 +170,7 @@ class StartUpNewArticlesViewModels(
                     else -> soldArticle
                 }
 
-                if (updatedSale.getTotalQuantity() == 0) {
-                    // If no quantities remain, delete the article completely
-                    deleteSoldArticle(updatedSale.vid)
-                } else {
+
                     // Update Room database
                     database.soldArticlesTabelleDao().insert(updatedSale)
 
@@ -194,7 +189,7 @@ class StartUpNewArticlesViewModels(
                         )
                     }
 
-                }
+
             } catch (e: Exception) {
                 _uiState.update { it.copy(error = "Failed to reset sale: ${e.message}") }
             }

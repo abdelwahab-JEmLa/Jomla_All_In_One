@@ -40,6 +40,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.ShoppingCart
@@ -85,6 +86,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -511,6 +513,8 @@ private fun SingleColorLayout(
     viewModel: StartUpNewArticlesViewModels,
     relodeTigger: Int,
 ) {
+    val height = 250.dp
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -519,13 +523,14 @@ private fun SingleColorLayout(
         ColorItem(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(350.dp),
+                .height(height),
             currentSale = currentSale,
             article = article,
             color = color,
             index = 0,
             relodeTigger = relodeTigger,
             viewModel = viewModel,
+            height = height,
         )
     }
 }
@@ -551,9 +556,10 @@ private fun MultipleColorsLayout(
             ) {
                 items(rowColors) { color ->
                     val index = colors.indexOf(color)
+                    val height = 250.dp
                     Box(
                         modifier = Modifier
-                            .size(250.dp)
+                            .size(height)
                     ) {
                         ColorItem(
                             modifier = Modifier.fillMaxSize(),
@@ -562,7 +568,8 @@ private fun MultipleColorsLayout(
                             color = color,
                             index = index,
                             relodeTigger = relodeTigger,
-                            viewModel = viewModel
+                            viewModel = viewModel,
+                            height=height
                         )
                     }
                 }
@@ -583,6 +590,7 @@ fun ColorItem(
     index: Int,
     relodeTigger: Int,
     viewModel: StartUpNewArticlesViewModels,
+    height: Dp,
 ) {
     var showPicker by remember {
         mutableStateOf(
@@ -755,7 +763,8 @@ fun ColorItem(
                         onClosePick = { showPicker = false },
                         colorIndex = index,
                         viewModel = viewModel,
-                        initialQuantity = currentQuantity
+                        initialQuantity = currentQuantity,
+                        height=height
                     )
                 }
             }
@@ -768,7 +777,8 @@ fun CompactQuantityPicker(
     onClosePick: () -> Unit,
     colorIndex: Int,
     viewModel: StartUpNewArticlesViewModels,
-    initialQuantity: Int = 0
+    initialQuantity: Int = 0,
+    height: Dp
 ) {
     var isRed by remember { mutableStateOf(true) }
 
@@ -813,12 +823,9 @@ fun CompactQuantityPicker(
                     modifier = Modifier.size(48.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Close,
+                        imageVector = Icons.Default.Delete,
                         contentDescription = "Close picker",
-                        tint = animateColorAsState(
-                            if (isRed) Color.White else Color.Red,
-                            label = "textColor"
-                        ).value
+                        tint =  Color.Black
                     )
                 }
             }
@@ -836,13 +843,13 @@ fun CompactQuantityPicker(
             Picker(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 4.dp),
+                    .padding(horizontal = 4.dp).size(height),
                 items = values,
                 state = valuesPickerState,
-                visibleItemsCount = 3,
+                visibleItemsCount = 4,
                 textModifier = Modifier.padding(4.dp),
                 textStyle = TextStyle(
-                    fontSize = 20.sp,
+                    fontSize = 25.sp,
                     fontWeight = FontWeight.Bold,
                     color = animateColorAsState(
                         if (isRed) Color.White else Color.Red,
