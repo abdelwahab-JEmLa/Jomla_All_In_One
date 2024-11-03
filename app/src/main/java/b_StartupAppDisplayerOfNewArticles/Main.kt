@@ -725,8 +725,10 @@ private fun ColorIndicator(
     iconColore: String,
     modifier: Modifier = Modifier,
     onClickToOpenWindow: () -> Unit,
+    imageSize: DpSize,
 
     ) {
+    val demiSizeImage = imageSize.width>200.dp
     Box(modifier = modifier.clickable { onClickToOpenWindow() }) {
         Surface(
             shape = CircleShape,
@@ -738,15 +740,15 @@ private fun ColorIndicator(
                 GlideImage(
                     model = R.drawable.logo,
                     contentDescription = "Logo",
-                    modifier = Modifier.size(40.dp)
+                    modifier = Modifier.size(
+                       if (demiSizeImage) 70.dp else 38.dp
+                    )
                 )
             } else {
                 Text(
                     text = iconColore,
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        fontSize = 35.sp,
-                        fontWeight = FontWeight.Bold
-                    ),
+                    fontSize =  if (demiSizeImage) 45.sp else 38.sp,
+                    fontWeight = FontWeight.Bold ,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
@@ -756,7 +758,7 @@ private fun ColorIndicator(
             modifier = Modifier
                 .align(Alignment.Center)
                 .offset(x = (14).dp, y = 18.dp)
-                .size(70.dp)
+                .size( if (demiSizeImage) 70.dp else 40.dp)
                 .clickable { onClickToOpenWindow() }
         ) {
             GlideImage(
@@ -819,6 +821,7 @@ private fun ArticleImageWithOverlay(
                                 .wrapContentSize()
                                 .offset(x = (-10).dp, y = (-15).dp)
                             ,
+                            imageSize = imageSize,
                             onClickToOpenWindow = { onClickToOpenWindow(article, colorIndex) }
                         )
                     }
