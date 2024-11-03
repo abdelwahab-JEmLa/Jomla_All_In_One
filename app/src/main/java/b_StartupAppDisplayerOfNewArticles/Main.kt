@@ -405,7 +405,7 @@ sealed class ArticleLayout {
     // Define size configurations for different layouts
     private val imageSize: DpSize
         get() = when (this) {
-            is DemiUno,DemiDual, is DemiMulti -> DpSize(width = 350.dp, height = 350.dp)
+            is DemiUno,DemiDual, is DemiMulti -> DpSize(width = 400.dp, height = 400.dp)
             is SmallUno, is SmallDual, is SmallMulti -> DpSize(width = 170.dp, height = 170.dp)
         }
 
@@ -519,7 +519,7 @@ private fun SmallDisplayerDualColor(
             viewModel = viewModel,
             colorIndex = 1,
             reloadTrigger = reloadTrigger,
-            modifier = Modifier.height(130.dp),
+            modifier = Modifier.height(100.dp),
             onClickToOpenWindow = onClickToOpenWindos,
             uiState = uiState,
             contentScale = ContentScale.Crop, imageSize = imageSize
@@ -539,7 +539,8 @@ private fun SmallDisplayerMultiColor(
     reloadTrigger: Int,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     uiState: UiState,
-    modifier: Modifier = Modifier, imageSize: DpSize
+    modifier: Modifier = Modifier,
+    imageSize: DpSize
 ) {
     Column(
         modifier = modifier.padding(8.dp),
