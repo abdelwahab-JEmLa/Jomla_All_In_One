@@ -33,13 +33,13 @@ data class GroupeurBonCommendToSupplierTabele(
 )
 
 // Update BakingViewModel with new functionality
-class BakingViewModel : ViewModel() {
+class GenerativeAiViewModel : ViewModel() {
     private val firebaseDatabase = FirebaseDatabase.getInstance()
     private val _uiState = MutableStateFlow<UiState>(UiState.Initial)
     val uiState = _uiState.asStateFlow()
 
     private val gson = Gson()
-    private val model = GenerativeModel(
+    private val generativeAiViewModel = GenerativeModel(
         "gemini-1.5-pro-002",
         apiKey="AIzaSyAojWu_v6fYUYhJB_tNEJ0GmKuinT-aXdo",
         generationConfig = generationConfig {
@@ -102,7 +102,7 @@ class BakingViewModel : ViewModel() {
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val response = model.generateContent(
+                val response = generativeAiViewModel.generateContent(
                     content {
                         bitmaps.forEach { image(it) }
                         text(prompt)
@@ -146,7 +146,7 @@ class BakingViewModel : ViewModel() {
             try {
                 _uiState.value = UiState.Loading
 
-                val chat = model.startChat(chatHistory)
+                val chat = generativeAiViewModel.startChat(chatHistory)
                 val response = chat.sendMessage(
                     content {
                         text("Convert current SoldArticlesTabelle to GroupeurBonCommendToSupplier format")
@@ -201,7 +201,7 @@ class BakingViewModel : ViewModel() {
             try {
                 _uiState.value = UiState.Loading
 
-                val chat = model.startChat()
+                val chat = generativeAiViewModel.startChat()
                 val response = chat.sendMessage(
                     content {
                         text("Convert SoldArticlesTabelle to GroupeurBonCommendToSupplier format")

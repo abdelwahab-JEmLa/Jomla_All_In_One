@@ -12,7 +12,7 @@ data class AppSettingsSaverModel(
     val name: String = "",
     val valueBoolean: Boolean = false,
     val valueLong: Long = 0,
-    val date: Date = Date(),  // Default value for date field
+    val date: Date = Date(),
 ) {
     // No-argument constructor for Firebase
     constructor() : this(0)

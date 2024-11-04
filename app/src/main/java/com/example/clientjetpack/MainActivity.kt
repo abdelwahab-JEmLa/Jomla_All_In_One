@@ -74,8 +74,8 @@ import c_WindosBuyAndDesplayeArticleStats.SaleWindows
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.FirebaseDatabase
 import d_SoldCartScreen.SoldCartScreen
-import z_GeminiAi.BakingScreen
-import z_GeminiAi.BakingViewModel
+import z_GeminiAi.GenerativeAiScreen
+import z_GeminiAi.GenerativeAiViewModel
 
 // Application.kt
 class MyApplication : Application() {
@@ -92,7 +92,7 @@ class MyApplication : Application() {
 
 data class AppViewModels(
     val startUpNewArticlesViewModels: StartUpNewArticlesViewModels,
-    val bakingViewModel: BakingViewModel,
+    val generativeAiViewModel: GenerativeAiViewModel,
     )
 
 // ViewModelFactory.kt
@@ -103,8 +103,8 @@ class ViewModelFactory(
         return when {
             modelClass.isAssignableFrom(StartUpNewArticlesViewModels::class.java) ->
                 StartUpNewArticlesViewModels(database) as T
-            modelClass.isAssignableFrom(BakingViewModel::class.java) ->
-                BakingViewModel() as T
+            modelClass.isAssignableFrom(GenerativeAiViewModel::class.java) ->
+                GenerativeAiViewModel() as T
             else -> throw IllegalArgumentException("Unknown ViewModel: ${modelClass.name}")
         }
     }
@@ -119,14 +119,14 @@ class MainActivity : ComponentActivity() {
         ViewModelFactory(database)
     }
 
-    private val bakingViewModel: BakingViewModel by viewModels {
+    private val generativeAiViewModel: GenerativeAiViewModel by viewModels {
         ViewModelFactory(database)
     }
 
     private val appViewModels by lazy {
         AppViewModels(
             startUpNewArticlesViewModels = startUpNewArticlesViewModels,
-            bakingViewModel = bakingViewModel
+            generativeAiViewModel = generativeAiViewModel
         )
     }
 
@@ -379,8 +379,8 @@ fun AppNavHost(
             }
             composable(Screen.BakingScreen.route) {
                 Box(modifier = Modifier.fillMaxSize()) {
-                    BakingScreen(
-                        bakingViewModel = appViewModels.bakingViewModel,
+                    GenerativeAiScreen(
+                        generativeAiViewModel = appViewModels.generativeAiViewModel,
                     )
                 }
             }

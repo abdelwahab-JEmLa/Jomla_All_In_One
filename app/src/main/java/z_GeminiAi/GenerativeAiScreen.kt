@@ -65,13 +65,13 @@ val imageDescriptions = arrayOf(
 
 
 @Composable
-fun BakingScreen(
-    bakingViewModel: BakingViewModel = viewModel()
+fun GenerativeAiScreen(
+    generativeAiViewModel: GenerativeAiViewModel = viewModel()
 ) {
     val selectedImages = remember { mutableStateListOf<Int>() }
     val placeholderPrompt = stringResource(R.string.prompt_placeholder)
     var prompt by rememberSaveable { mutableStateOf(placeholderPrompt) }
-    val uiState by bakingViewModel.uiState.collectAsState()
+    val uiState by generativeAiViewModel.uiState.collectAsState()
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -79,7 +79,7 @@ fun BakingScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { bakingViewModel.transactionPrompt() },
+                onClick = { generativeAiViewModel.transactionPrompt() },
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer
             ) {
@@ -158,7 +158,7 @@ fun BakingScreen(
                                 images[index]
                             )
                         }
-                        bakingViewModel.sendPrompt(bitmaps, prompt)
+                        generativeAiViewModel.sendPrompt(bitmaps, prompt)
                     },
                     enabled = prompt.isNotEmpty() && selectedImages.size == 2
                 ) {
