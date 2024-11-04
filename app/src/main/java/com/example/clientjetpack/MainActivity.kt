@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CreditScore
 import androidx.compose.material.icons.filled.EditRoad
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Card
@@ -73,6 +74,8 @@ import c_WindosBuyAndDesplayeArticleStats.SaleWindows
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.FirebaseDatabase
 import d_SoldCartScreen.SoldCartScreen
+import z_GeminiAi.BakingScreen
+import z_GeminiAi.BakingViewModel
 
 // Application.kt
 class MyApplication : Application() {
@@ -88,25 +91,9 @@ class MyApplication : Application() {
 }
 
 data class AppViewModels(
-    val startUpNewArticlesViewModels: StartUpNewArticlesViewModels
-)
-
-class MainActivity : ComponentActivity() {
-    private val database by lazy { (application as MyApplication).database }
-    private val permissionHandler by lazy { PermissionHandler(this) }
-    private val startUpNewArticlesViewModels: StartUpNewArticlesViewModels by viewModels {
-        ViewModelFactory(database)
-    }
-    private val appViewModels by lazy { AppViewModels(startUpNewArticlesViewModels) }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        permissionHandler.checkAndRequestPermissions()
-        setContent {
-            MainScreen(appViewModels)
-        }
-    }
-}
+    val startUpNewArticlesViewModels: StartUpNewArticlesViewModels,
+    val bakingViewModel: BakingViewModel,
+    )
 
 // ViewModelFactory.kt
 class ViewModelFactory(
@@ -116,7 +103,38 @@ class ViewModelFactory(
         return when {
             modelClass.isAssignableFrom(StartUpNewArticlesViewModels::class.java) ->
                 StartUpNewArticlesViewModels(database) as T
+            modelClass.isAssignableFrom(BakingViewModel::class.java) ->
+                BakingViewModel() as T
             else -> throw IllegalArgumentException("Unknown ViewModel: ${modelClass.name}")
+        }
+    }
+}
+
+// MainActivity.kt
+class MainActivity : ComponentActivity() {
+    private val database by lazy { (application as MyApplication).database }
+    private val permissionHandler by lazy { PermissionHandler(this) }
+
+    private val startUpNewArticlesViewModels: StartUpNewArticlesViewModels by viewModels {
+        ViewModelFactory(database)
+    }
+
+    private val bakingViewModel: BakingViewModel by viewModels {
+        ViewModelFactory(database)
+    }
+
+    private val appViewModels by lazy {
+        AppViewModels(
+            startUpNewArticlesViewModels = startUpNewArticlesViewModels,
+            bakingViewModel = bakingViewModel
+        )
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        permissionHandler.checkAndRequestPermissions()
+        setContent {
+            MainScreen(appViewModels)
         }
     }
 }
@@ -179,13 +197,21 @@ sealed class Screen(
         title = "Panier Sold",
         color = Color(0xFF4CAF50)
     )
+    data object BakingScreen : Screen(
+        route = "baking_Screen",
+        icon = Icons.Default.CreditScore,
+        title = "baking Screen",
+        color = Color(0xFFE91E63)
+    )
 }
 
 // Update NavigationItems.kt
 object NavigationItems {
     fun getItems() = listOf(
         Screen.EditDatabaseWithCreateNewArticles,
-        Screen.SoldCart
+        Screen.SoldCart,
+        Screen.BakingScreen
+
     )
 }
 
@@ -348,6 +374,13 @@ fun AppNavHost(
                         viewModel = appViewModels.startUpNewArticlesViewModels,
                         clientBuyerNow = currentClient,
                         uiState = uiState
+                    )
+                }
+            }
+            composable(Screen.BakingScreen.route) {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    BakingScreen(
+                        bakingViewModel = appViewModels.bakingViewModel,
                     )
                 }
             }

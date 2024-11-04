@@ -115,7 +115,6 @@ data class SoldArticlesTabelle(
     ) {
     constructor() : this(0)
 }
-
 @Entity
 data class ClientsModel(
     @PrimaryKey(autoGenerate = true) val vidSu: Long = 0,
