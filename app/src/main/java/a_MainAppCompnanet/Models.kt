@@ -70,6 +70,7 @@ data class ArticlesBasesStatsTable(
     // No-argument constructor for Firebase
     constructor() : this(0)
 }
+
 @Entity
 data class ColorsArticlesTabelle(
     @PrimaryKey var idColore: Long = 0,
@@ -80,6 +81,7 @@ data class ColorsArticlesTabelle(
     // No-argument constructor for Firebase
     constructor() : this(0)
 }
+
 
 @Entity
 data class CategoriesTabelle(
