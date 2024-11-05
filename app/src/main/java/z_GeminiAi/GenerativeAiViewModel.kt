@@ -1,5 +1,6 @@
 package z_GeminiAi
 
+import android.graphics.Bitmap
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,6 +18,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import java.io.StringReader
 
@@ -66,7 +68,57 @@ class GenerativeAiViewModel : ViewModel() {
             text("```json\n{\n  \"SoldArticlesTabelle\": [{\n\"clientSoldToItId\": 2,\n\"color1IdPicked\": 0,\n\"color1SoldQuantity\": 30,\n\"color2IdPicked\": 0,\n\"color2SoldQuantity\": 10,\n\"color3IdPicked\": 0,\n\"color3SoldQuantity\": 0,\n\"color4IdPicked\": 0,\n\"color4SoldQuantity\": 0,\n\"confimed\": false,\n\"date\": \"1730656574914\",\n\"idArticle\": 40,\n\"nameArticle\": \"ggg®\",\n\"vid\": 4\n},\n{\n\"clientSoldToItId\": 5,\n\"color1IdPicked\": 0,\n\"color1SoldQuantity\": 0,\n\"color2IdPicked\": 0,\n\"color2SoldQuantity\": 0,\n\"color3IdPicked\": 0,\n\"color3SoldQuantity\": 0,\n\"color4IdPicked\": 0,\n\"color4SoldQuantity\": 10,\n\"confimed\": false,\n\"date\": \"1730658367174\",\n\"idArticle\": 30,\n\"nameArticle\": \"fgg®\",\n\"vid\": 5\n}{\n\"clientSoldToItId\": 2,\n\"color1IdPicked\": 0,\n\"color1SoldQuantity\": 40,\n\"color2IdPicked\": 0,\n\"color2SoldQuantity\": 0,\n\"color3IdPicked\": 0,\n\"color3SoldQuantity\": 0,\n\"color4IdPicked\": 0,\n\"color4SoldQuantity\": 0,\n\"confimed\": false,\n\"date\": \"1730656574914\",\n\"idArticle\": 40,\n\"nameArticle\": \"ggg®\",\n\"vid\": 4\n}\n  ]\n}\n```\n")
         },
     )
+    private suspend fun getNextVid(): Long {
+        return try {
+            val snapshot = firebaseDatabase.getReference("K_GroupeurBonCommendToSupplierRef")
+                .get()
+                .await()
 
+            (snapshot.children.mapNotNull {
+                it.key?.toLongOrNull()
+            }.maxOrNull() ?: 0) + 1
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to get next vid", e)
+            1L // Start from 1 if we can't get the max
+        }
+    }
+
+    private fun parseResponseToTabele(jsonResponse: String): List<GroupeurBonCommendToSupplierTabele> {
+        Log.d(TAG, "Parsing JSON response")
+        try {
+            val reader = JsonReader(StringReader(jsonResponse))
+            reader.isLenient = true
+
+            val jsonObject = JsonParser.parseReader(reader).asJsonObject
+            Log.d(TAG, "JSON parsed successfully")
+
+            val groupeurArray = jsonObject.get("GroupeurBonCommendToSupplier").asJsonArray
+                ?: throw IllegalStateException("GroupeurBonCommendToSupplier array not found")
+
+            return runBlocking {
+                val nextVid = getNextVid()
+                groupeurArray.mapIndexed { index, element ->
+                    val item = element.asJsonObject
+                    GroupeurBonCommendToSupplierTabele(
+                        vid = nextVid + index,
+                        idArticle = item.get("idArticle").asInt,
+                        nameArticle = item.get("nameArticle").asString,
+                        color1SoldQuantity = item.get("color1SoldQuantity").asInt,
+                        color2SoldQuantity = item.get("color2SoldQuantity").asInt,
+                        color3SoldQuantity = item.get("color3SoldQuantity").asInt,
+                        color4SoldQuantity = item.get("color4SoldQuantity").asInt,
+                        clientSoldToItId = item.get("clientSoldToItId").asString
+                    )
+                }
+            }
+        } catch (e: JsonSyntaxException) {
+            Log.e(TAG, "JSON syntax error", e)
+            throw IllegalStateException("Invalid JSON format: ${e.message}")
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to parse JSON response", e)
+            throw IllegalStateException("Failed to parse JSON response: ${e.message}")
+        }
+    }
     fun transactionPrompt() {
         Log.d(TAG, "Starting transaction prompt")
         viewModelScope.launch(Dispatchers.IO) {
@@ -94,6 +146,7 @@ class GenerativeAiViewModel : ViewModel() {
                     Log.d(TAG, "Parsed ${groupedDataList.size} items from response")
 
                     groupedDataList.forEach { groupedData ->
+                        //TODO fait que le     val vid: Long = 0, soitle se genere par fun max +1
                         saveToFirebase(groupedData)
                     }
 
@@ -116,40 +169,6 @@ class GenerativeAiViewModel : ViewModel() {
         return matchResult?.groupValues?.get(1)?.trim() ?: response.trim()
     }
 
-    private fun parseResponseToTabele(jsonResponse: String): List<GroupeurBonCommendToSupplierTabele> {
-        Log.d(TAG, "Parsing JSON response")
-        try {
-            // Create a lenient JsonReader
-            val reader = JsonReader(StringReader(jsonResponse))
-            reader.isLenient = true
-
-            val jsonObject = JsonParser.parseReader(reader).asJsonObject
-            Log.d(TAG, "JSON parsed successfully")
-
-            // Get the array directly from the object
-            val groupeurArray = jsonObject.get("GroupeurBonCommendToSupplier").asJsonArray
-                ?: throw IllegalStateException("GroupeurBonCommendToSupplier array not found")
-
-            return groupeurArray.map { element ->
-                val item = element.asJsonObject
-                GroupeurBonCommendToSupplierTabele(
-                    idArticle = item.get("idArticle").asInt,
-                    nameArticle = item.get("nameArticle").asString,
-                    color1SoldQuantity = item.get("color1SoldQuantity").asInt,
-                    color2SoldQuantity = item.get("color2SoldQuantity").asInt,
-                    color3SoldQuantity = item.get("color3SoldQuantity").asInt,
-                    color4SoldQuantity = item.get("color4SoldQuantity").asInt,
-                    clientSoldToItId = item.get("clientSoldToItId").asString
-                )
-            }
-        } catch (e: JsonSyntaxException) {
-            Log.e(TAG, "JSON syntax error", e)
-            throw IllegalStateException("Invalid JSON format: ${e.message}")
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to parse JSON response", e)
-            throw IllegalStateException("Failed to parse JSON response: ${e.message}")
-        }
-    }
 
     private suspend fun saveToFirebase(data: GroupeurBonCommendToSupplierTabele) {
         Log.d(TAG, "Saving to Firebase - ID: ${data.vid}, Article: ${data.nameArticle}")
@@ -164,4 +183,37 @@ class GenerativeAiViewModel : ViewModel() {
             throw e
         }
     }
+
+    fun sendPrompt(
+        bitmaps: List<Bitmap>,
+        prompt: String
+    ) {
+        Log.d(TAG, "sendPrompt() called with ${bitmaps.size} bitmaps and prompt: $prompt")
+        _uiState.value = UiState.Loading
+        Log.d(TAG, "UI State set to Loading")
+
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                Log.d(TAG, "Generating content with images and prompt")
+                val response = generativeAiViewModel.generateContent(
+                    content {
+                        bitmaps.forEach { image(it) }
+                        text(prompt)
+                    }
+                )
+                response.text?.let { outputContent ->
+                    Log.d(TAG, "Content generated successfully: ${outputContent.take(100)}...")
+                    _uiState.value = UiState.Success(outputContent)
+                } ?: run {
+                    Log.w(TAG, "Generated content was null")
+                    _uiState.value = UiState.Error("Generated content was empty")
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error generating content", e)
+                _uiState.value = UiState.Error(e.localizedMessage ?: "")
+            }
+        }
+    }
+
+
 }
