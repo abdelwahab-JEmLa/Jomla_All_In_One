@@ -1,6 +1,6 @@
 package z_GeminiAi
 
-import android.graphics.Bitmap
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.room.Entity
@@ -11,15 +11,15 @@ import com.google.ai.client.generativeai.type.generationConfig
 import com.google.firebase.database.FirebaseDatabase
 import com.google.gson.Gson
 import com.google.gson.JsonParser
-import com.google.gson.annotations.SerializedName
+import com.google.gson.JsonSyntaxException
+import com.google.gson.stream.JsonReader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import java.io.StringReader
 
-
-// Add this data class to store the grouped data
 @Entity
 data class GroupeurBonCommendToSupplierTabele(
     @PrimaryKey(autoGenerate = true) var vid: Long = 0,
@@ -32,13 +32,13 @@ data class GroupeurBonCommendToSupplierTabele(
     val clientSoldToItId: String
 )
 
-// Update BakingViewModel with new functionality
 class GenerativeAiViewModel : ViewModel() {
+    private val TAG = "GenerativeAiViewModel"
     private val firebaseDatabase = FirebaseDatabase.getInstance()
     private val _uiState = MutableStateFlow<UiState>(UiState.Initial)
     val uiState = _uiState.asStateFlow()
-
     private val gson = Gson()
+
     private val generativeAiViewModel = GenerativeModel(
         "gemini-1.5-pro-002",
         apiKey="AIzaSyAojWu_v6fYUYhJB_tNEJ0GmKuinT-aXdo",
@@ -50,81 +50,87 @@ class GenerativeAiViewModel : ViewModel() {
             responseMimeType = "text/plain"
         },
         systemInstruction = content {
-            text("En tant que modèle linguistique, je fonctionne comme un assistant IA qui traite et génère du texte. Ma logique pour créer le GroupeurBonCommendToSupplier à partir de la SoldArticlesTabelle suit ces étapes :\n\nAnalyser les données d'entrée : Je parcours chaque objet JSON dans le tableau SoldArticlesTabelle. J'identifie les clés importantes pour le regroupement, notamment idArticle, nameArticle, clientSoldToItId, et les quantités de couleur (color1SoldQuantity, color2SoldQuantity, etc.).\n\nCréer une structure de données pour le résultat : J'initialise un tableau vide, GroupeurBonCommendToSupplier, qui contiendra les objets regroupés.\n\nGrouper par article : Pour chaque objet de la SoldArticlesTabelle, je vérifie si un objet avec le même idArticle existe déjà dans GroupeurBonCommendToSupplier.\n\nSi l'article n'existe pas : Je crée un nouvel objet avec les valeurs de idArticle, nameArticle, les quantités de couleur de l'objet courant, et j'initialise clientSoldToItId avec la valeur actuelle de clientSoldToItId. J'ajoute ensuite ce nouvel objet à GroupeurBonCommendToSupplier.\n\nSi l'article existe déjà : Je récupère l'objet existant dans GroupeurBonCommendToSupplier. J'ajoute les quantités de couleur de l'objet courant aux quantités correspondantes de l'objet existant. Je mets à jour le champ clientSoldToItId en ajoutant l'ID client actuel, séparé par une virgule si nécessaire (par exemple, \"2,5\").\n\nGénérer la sortie JSON : Une fois que tous les objets de la SoldArticlesTabelle ont été traités, je renvoie le tableau GroupeurBonCommendToSupplier au format JSON.")
+            text("En tant que modèle linguistique, je fonctionne comme un assistant IA qui traite et génère du texte...")
         }
-    )
+    ).also { Log.d(TAG, "GenerativeModel initialized with config: temperature=1f, topK=40, topP=0.95f") }
 
-    private val chatHistory = listOf(
+    val chatHistory = listOf(
         content("user") {
-            text("""
-                {"SoldArticlesTabelle": [{
-                "clientSoldToItId": 2,
-                "color1IdPicked": 0,
-                "color1SoldQuantity": 15,
-                "color2IdPicked": 0,
-                "color2SoldQuantity": 0,
-                "color3IdPicked": 0,
-                "color3SoldQuantity": 0,
-                "color4IdPicked": 0,
-                "color4SoldQuantity": 0,
-                "confimed": false,
-                "date": "1730656574914",
-                "idArticle": 65,
-                "nameArticle": "Silca®",
-                "vid": 4
-                }]}
-            """)
+            text("```json\n{\n  \"SoldArticlesTabelle\": [\n    {\n\"clientSoldToItId\": 2,\n\"color1IdPicked\": 0,\n\"color1SoldQuantity\": 15,\n\"color2IdPicked\": 0,\n\"color2SoldQuantity\": 0,\n\"color3IdPicked\": 0,\n\"color3SoldQuantity\": 0,\n\"color4IdPicked\": 0,\n\"color4SoldQuantity\": 0,\n\"confimed\": false,\n\"date\": \"1730656574914\",\n\"idArticle\": 65,\n\"nameArticle\": \"Silca®\",\n\"vid\": 4\n},\n{\n\"clientSoldToItId\": 5,\n\"color1IdPicked\": 0,\n\"color1SoldQuantity\": 0,\n\"color2IdPicked\": 0,\n\"color2SoldQuantity\": 0,\n\"color3IdPicked\": 0,\n\"color3SoldQuantity\": 0,\n\"color4IdPicked\": 0,\n\"color4SoldQuantity\": 10,\n\"confimed\": false,\n\"date\": \"1730658367174\",\n\"idArticle\": 65,\n\"nameArticle\": \"Silca®\",\n\"vid\": 5\n},{\n\"clientSoldToItId\": 2,\n\"color1IdPicked\": 0,\n\"color1SoldQuantity\": 0,\n\"color2IdPicked\": 0,\n\"color2SoldQuantity\": 0,\n\"color3IdPicked\": 0,\n\"color3SoldQuantity\": 7,\n\"color4IdPicked\": 0,\n\"color4SoldQuantity\": 0,\n\"confimed\": false,\n\"date\": \"1730658367174\",\n\"idArticle\": 100,\n\"nameArticle\": \"far®\",\n\"vid\": 6\n},{\n\"clientSoldToItId\": 7,\n\"color1IdPicked\": 0,\n\"color1SoldQuantity\": 10,\n\"color2IdPicked\": 0,\n\"color2SoldQuantity\": 0,\n\"color3IdPicked\": 0,\n\"color3SoldQuantity\": 0,\n\"color4IdPicked\": 0,\n\"color4SoldQuantity\": 10,\n\"confimed\": false,\n\"date\": \"1730658367174\",\n\"idArticle\": 65,\n\"nameArticle\": \"Silca®\",\n\"vid\": 7\n}\n]\n}\n```")
             text("GroupeurBonCommendToSupplier")
         },
         content("model") {
-            text("""
-                {
-                  "GroupeurBonCommendToSupplier": [
-                    {
-                      "idArticle": 65,
-                      "nameArticle": "Silca®",
-                      "color1SoldQuantity": 15,
-                      "color2SoldQuantity": 0,
-                      "color3SoldQuantity": 0,
-                      "color4SoldQuantity": 0,
-                      "clientSoldToItId": "2"
-                    }
-                  ]
-                }
-            """)
-        }
+            text("```json\n{\n  \"GroupeurBonCommendToSupplier\": [\n    {\n        \"idArticle\": 65,\n        \"nameArticle\": \"Silca®\",\n        \"color1SoldQuantity\": 15,\n        \"color2SoldQuantity\": 0,\n        \"color3SoldQuantity\": 0,\n        \"color4SoldQuantity\": 10,\n        \"clientSoldToItId\": \"2,5,7\" \n    },\n    {\n        \"idArticle\": 100,\n        \"nameArticle\": \"far®\",\n        \"color1SoldQuantity\": 0,\n        \"color2SoldQuantity\": 0,\n        \"color3SoldQuantity\": 7,\n        \"color4SoldQuantity\": 0,\n        \"clientSoldToItId\": \"2\"\n    }\n  ]\n}\n```\n")
+        },
+        content("user") {
+            text("```json\n{\n  \"SoldArticlesTabelle\": [{\n\"clientSoldToItId\": 2,\n\"color1IdPicked\": 0,\n\"color1SoldQuantity\": 30,\n\"color2IdPicked\": 0,\n\"color2SoldQuantity\": 10,\n\"color3IdPicked\": 0,\n\"color3SoldQuantity\": 0,\n\"color4IdPicked\": 0,\n\"color4SoldQuantity\": 0,\n\"confimed\": false,\n\"date\": \"1730656574914\",\n\"idArticle\": 40,\n\"nameArticle\": \"ggg®\",\n\"vid\": 4\n},\n{\n\"clientSoldToItId\": 5,\n\"color1IdPicked\": 0,\n\"color1SoldQuantity\": 0,\n\"color2IdPicked\": 0,\n\"color2SoldQuantity\": 0,\n\"color3IdPicked\": 0,\n\"color3SoldQuantity\": 0,\n\"color4IdPicked\": 0,\n\"color4SoldQuantity\": 10,\n\"confimed\": false,\n\"date\": \"1730658367174\",\n\"idArticle\": 30,\n\"nameArticle\": \"fgg®\",\n\"vid\": 5\n}{\n\"clientSoldToItId\": 2,\n\"color1IdPicked\": 0,\n\"color1SoldQuantity\": 40,\n\"color2IdPicked\": 0,\n\"color2SoldQuantity\": 0,\n\"color3IdPicked\": 0,\n\"color3SoldQuantity\": 0,\n\"color4IdPicked\": 0,\n\"color4SoldQuantity\": 0,\n\"confimed\": false,\n\"date\": \"1730656574914\",\n\"idArticle\": 40,\n\"nameArticle\": \"ggg®\",\n\"vid\": 4\n}\n  ]\n}\n```\n")
+        },
     )
-    fun sendPrompt(
-        bitmaps: List<Bitmap>,
-        prompt: String
-    ) {
-        _uiState.value = UiState.Loading
 
+    fun transactionPrompt() {
+        Log.d(TAG, "Starting transaction prompt")
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val response = generativeAiViewModel.generateContent(
+                _uiState.value = UiState.Loading
+                Log.d(TAG, "UI State set to Loading")
+
+                Log.d(TAG, "Starting chat with history of ${chatHistory.size} messages")
+                val chat = generativeAiViewModel.startChat(chatHistory)
+
+                val response = chat.sendMessage(
                     content {
-                        bitmaps.forEach { image(it) }
-                        text(prompt)
+                        text("GroupeurBonCommendToSupplier")
                     }
                 )
-                response.text?.let { outputContent ->
-                    _uiState.value = UiState.Success(outputContent)
+
+                response.text?.let { jsonResponse ->
+                    Log.d(TAG, "Received response: $jsonResponse")
+
+                    // Clean the JSON response
+                    val cleanedJson = cleanJsonResponse(jsonResponse)
+                    Log.d(TAG, "Cleaned JSON: $cleanedJson")
+
+                    val groupedDataList = parseResponseToTabele(cleanedJson)
+                    Log.d(TAG, "Parsed ${groupedDataList.size} items from response")
+
+                    groupedDataList.forEach { groupedData ->
+                        saveToFirebase(groupedData)
+                    }
+
+                    _uiState.value = UiState.Success("Transaction processed successfully")
+                } ?: run {
+                    _uiState.value = UiState.Error("Empty response received")
                 }
             } catch (e: Exception) {
-                _uiState.value = UiState.Error(e.localizedMessage ?: "")
+                Log.e(TAG, "Transaction failed", e)
+                _uiState.value = UiState.Error(e.message ?: "Transaction failed")
             }
         }
     }
 
-    private fun parseResponseToTabele(jsonResponse: String): List<GroupeurBonCommendToSupplierTabele> {
-        return try {
-            val jsonObject = JsonParser.parseString(jsonResponse).asJsonObject
-            val groupeurArray = jsonObject
-                .getAsJsonObject("GroupeurBonCommendToSupplier")
-                .asJsonArray
+    private fun cleanJsonResponse(response: String): String {
+        // Extract JSON content from potential code blocks
+        val jsonPattern = "```json\\s*(.+?)\\s*```".toRegex(RegexOption.DOT_MATCHES_ALL)
+        val matchResult = jsonPattern.find(response)
 
-            groupeurArray.map { element ->
+        return matchResult?.groupValues?.get(1)?.trim() ?: response.trim()
+    }
+
+    private fun parseResponseToTabele(jsonResponse: String): List<GroupeurBonCommendToSupplierTabele> {
+        Log.d(TAG, "Parsing JSON response")
+        try {
+            // Create a lenient JsonReader
+            val reader = JsonReader(StringReader(jsonResponse))
+            reader.isLenient = true
+
+            val jsonObject = JsonParser.parseReader(reader).asJsonObject
+            Log.d(TAG, "JSON parsed successfully")
+
+            // Get the array directly from the object
+            val groupeurArray = jsonObject.get("GroupeurBonCommendToSupplier").asJsonArray
+                ?: throw IllegalStateException("GroupeurBonCommendToSupplier array not found")
+
+            return groupeurArray.map { element ->
                 val item = element.asJsonObject
                 GroupeurBonCommendToSupplierTabele(
                     idArticle = item.get("idArticle").asInt,
@@ -136,117 +142,26 @@ class GenerativeAiViewModel : ViewModel() {
                     clientSoldToItId = item.get("clientSoldToItId").asString
                 )
             }
+        } catch (e: JsonSyntaxException) {
+            Log.e(TAG, "JSON syntax error", e)
+            throw IllegalStateException("Invalid JSON format: ${e.message}")
         } catch (e: Exception) {
+            Log.e(TAG, "Failed to parse JSON response", e)
             throw IllegalStateException("Failed to parse JSON response: ${e.message}")
-        }
-    }
-
-    fun transactionPrompt() {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                _uiState.value = UiState.Loading
-
-                val chat = generativeAiViewModel.startChat(chatHistory)
-                val response = chat.sendMessage(
-                    content {
-                        text("Convert current SoldArticlesTabelle to GroupeurBonCommendToSupplier format")
-                    }
-                )
-
-                response.text?.let { jsonResponse ->
-                    val groupedDataList = parseResponseToTabele(jsonResponse)
-                    groupedDataList.forEach { groupedData ->
-                        saveToFirebase(groupedData)
-                    }
-                    _uiState.value = UiState.Success("Transaction processed successfully")
-                }
-            } catch (e: Exception) {
-                _uiState.value = UiState.Error(e.localizedMessage ?: "Transaction failed")
-            }
         }
     }
 
     private suspend fun saveToFirebase(data: GroupeurBonCommendToSupplierTabele) {
-        firebaseDatabase.getReference("K_GroupeurBonCommendToSupplierRef")
-            .child(data.vid.toString())
-            .setValue(data)
-            .await()
-    }
-
-
-    private fun parseResponseToTabele2(jsonResponse: String): List<GroupeurBonCommendToSupplierTabele> {
-        return try {
-            // Parse JSON string to our data class
-            val response = gson.fromJson(jsonResponse, GroupeurResponse::class.java)
-
-            // Convert each item to GroupeurBonCommendToSupplierTabele
-            response.items.map { item ->
-                GroupeurBonCommendToSupplierTabele(
-                    idArticle = item.idArticle,
-                    nameArticle = item.nameArticle,
-                    color1SoldQuantity = item.color1SoldQuantity,
-                    color2SoldQuantity = item.color2SoldQuantity,
-                    color3SoldQuantity = item.color3SoldQuantity,
-                    color4SoldQuantity = item.color4SoldQuantity,
-                    clientSoldToItId = item.clientSoldToItId
-                )
-            }
+        Log.d(TAG, "Saving to Firebase - ID: ${data.vid}, Article: ${data.nameArticle}")
+        try {
+            firebaseDatabase.getReference("K_GroupeurBonCommendToSupplierRef")
+                .child(data.vid.toString())
+                .setValue(data)
+                .await()
+            Log.d(TAG, "Successfully saved item ${data.vid} to Firebase")
         } catch (e: Exception) {
-            throw IllegalStateException("Failed to parse JSON response: ${e.message}")
-        }
-    }
-
-    fun transactionPromptWithouTexr() {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                _uiState.value = UiState.Loading
-
-                val chat = generativeAiViewModel.startChat()
-                val response = chat.sendMessage(
-                    content {
-                        text("Convert SoldArticlesTabelle to GroupeurBonCommendToSupplier format")
-                    }
-                )
-
-                response.text?.let { jsonResponse ->
-                    // Parse JSON and convert to GroupeurBonCommendToSupplierTabele
-                    val groupedDataList = parseResponseToTabele(jsonResponse)
-
-                    // Save each item to Firebase
-                    groupedDataList.forEach { groupedData ->
-                        firebaseDatabase.getReference("K_GroupeurBonCommendToSupplierRef")
-                            .child(groupedData.vid.toString())
-                            .setValue(groupedData)
-                    }
-
-                    _uiState.value = UiState.Success("Transaction processed successfully")
-                }
-            } catch (e: Exception) {
-                _uiState.value = UiState.Error(e.localizedMessage ?: "Transaction failed")
-            }
+            Log.e(TAG, "Failed to save item ${data.vid} to Firebase", e)
+            throw e
         }
     }
 }
-
-// Data class to match JSON structure
-data class GroupeurResponse(
-    @SerializedName("GroupeurBonCommendToSupplier")
-    val items: List<GroupeurItem>
-)
-
-data class GroupeurItem(
-    @SerializedName("idArticle")
-    val idArticle: Int,
-    @SerializedName("nameArticle")
-    val nameArticle: String,
-    @SerializedName("color1SoldQuantity")
-    val color1SoldQuantity: Int,
-    @SerializedName("color2SoldQuantity")
-    val color2SoldQuantity: Int,
-    @SerializedName("color3SoldQuantity")
-    val color3SoldQuantity: Int,
-    @SerializedName("color4SoldQuantity")
-    val color4SoldQuantity: Int,
-    @SerializedName("clientSoldToItId")
-    val clientSoldToItId: String
-)
