@@ -3,6 +3,7 @@ package com.example.clientjetpack
 import a_RoomDB.AppDatabase
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ClientsModel
+import a_RoomDB.SoldArticlesTabelle
 import android.app.Application
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -217,7 +218,7 @@ object NavigationItems {
 
 
 @Composable
-fun CustomNavigationBar(     //TODo ajout un button au milieur comme floating un cercle qui au click    onToggleOutlineFilter()
+fun CustomNavigationBar(
     items: List<Screen>,
     currentRoute: String?,
     onNavigate: (String) -> Unit,
@@ -249,8 +250,10 @@ fun CustomNavigationBar(     //TODo ajout un button au milieur comme floating un
 fun ClientSelectionDialog(
     clients: List<ClientsModel>,
     onClientSelected: (ClientsModel) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    soldArticle: List<SoldArticlesTabelle?>
 ) {
+    //TODO fait que le
     var searchQuery by remember { mutableStateOf("") }
     val filteredClients = remember(searchQuery, clients) {
         if (searchQuery.length >= 3) {
@@ -327,6 +330,7 @@ fun AppNavHost(
     // Existing state management
     var opnerSaleWindows by rememberSaveable { mutableStateOf(false) }
     var showClientSelection by rememberSaveable { mutableStateOf(false) }
+    var showClientSelectionWithoutCondition by rememberSaveable { mutableStateOf(false) }
     var relatedArticleBaseStats by rememberSaveable { mutableStateOf<ArticlesBasesStatsTable?>(null) }
     var pendingIndexColor by rememberSaveable { mutableIntStateOf(0) }
     val reloadTrigger by rememberSaveable { mutableIntStateOf(0) }
@@ -356,6 +360,8 @@ fun AppNavHost(
                                     pendingIndexColor)
                                 opnerSaleWindows=true
                             }
+                        }, onClickToOpenClientsW = {
+                            showClientSelectionWithoutCondition=true
                         }
                     )
 
@@ -391,8 +397,9 @@ fun AppNavHost(
         }
 
         // Overlay dialogs and windows
-        if (showClientSelection && currentClientId == 0L) {
+        if (showClientSelectionWithoutCondition ||(showClientSelection && currentClientId == 0L)) {
             ClientSelectionDialog(
+                soldArticle = uiState.soldArticlesModel,
                 clients = uiState.clientsModel,
                 onClientSelected = { client ->
                     appViewModels.startUpNewArticlesViewModels.updateLongAppSetting("clientBuyerNowId",client.idClientsSu)

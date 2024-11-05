@@ -17,6 +17,7 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -851,7 +852,11 @@ fun CompactQuantityPicker(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(4.dp),//TODo fait que ca a un rond backgrin blan
+                    .padding(4.dp)
+                    .background(
+                        color = Color.White,
+                        shape = CircleShape
+                    ),
                 contentAlignment = Alignment.TopEnd
             ) {
                 IconButton(
@@ -875,9 +880,12 @@ fun CompactQuantityPicker(
                         listOf("30", "40", "50")
             }
 
-            val valuesPickerState = rememberPickerState().apply {
-                selectedItem="50"
-                selectedItem = initialQuantity.toString()
+            val valuesPickerState = rememberPickerState()
+
+            LaunchedEffect(Unit) {
+                valuesPickerState.selectedItem = "50"
+                delay(1000)
+                valuesPickerState.selectedItem = initialQuantity.toString()
             }
 
             Picker(
@@ -887,7 +895,7 @@ fun CompactQuantityPicker(
                     .size(height),
                 items = values,
                 state = valuesPickerState,
-                visibleItemsCount = 8,  // Changed to 3 for better divider alignment
+                visibleItemsCount = 8,
                 textModifier = Modifier.padding(4.dp),
                 textStyle = TextStyle(
                     fontSize = 25.sp,

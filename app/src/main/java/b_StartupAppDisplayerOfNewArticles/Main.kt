@@ -102,7 +102,7 @@ fun StartupAppDisplayerOfNewArticles(
     reloadTrigger: Int,
     modifier: Modifier = Modifier,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
-    modeFilterToTest:Boolean =true,
+    modeFilterToTest:Boolean =true, onClickToOpenClientsW: () -> Unit,
 ) {
     var gridColumnsForNewArticels by remember { mutableStateOf(2) }
     var showFilter by remember { mutableStateOf(false) }
@@ -124,7 +124,7 @@ fun StartupAppDisplayerOfNewArticles(
         reloadTrigger = reloadTrigger,
         modifier = modifier,
         onClickToOpenWindos = onClickToOpenWindos ,
-        modeFilterToTest=modeFilterToTest
+        modeFilterToTest=modeFilterToTest, onClickToOpenClientsW = onClickToOpenClientsW
     )
 }
 class ArticlePagingSource(
@@ -359,7 +359,7 @@ private fun ArticleDisplayScreen(
     reloadTrigger: Int,
     modifier: Modifier = Modifier,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
-    modeFilterToTest: Boolean =false
+    modeFilterToTest: Boolean =false, onClickToOpenClientsW: () -> Unit
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         Column {
@@ -385,6 +385,7 @@ private fun ArticleDisplayScreen(
             onToggleNavBar = onToggleNavBar,
             onToggleOutlineFilter = onToggleFilter,
             onChangeGridColumns = onChangeGridColumns,
+            onClickToOpenClientsW = onClickToOpenClientsW,
             viewModel = viewModel
         )
 
@@ -758,7 +759,7 @@ private fun ColorIndicator(
             modifier = Modifier
                 .align(Alignment.Center)
                 .offset(x = (14).dp, y = 18.dp)
-                .size( if (demiSizeImage) 70.dp else 50.dp)
+                .size(if (demiSizeImage) 70.dp else 50.dp)
                 .clickable { onClickToOpenWindow() }
         ) {
             GlideImage(
