@@ -106,7 +106,7 @@ fun StartupAppDisplayerOfNewArticles(
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     modeFilterToTest: Boolean = true,
     onClickToOpenClientsW: () -> Unit,
-    isFabVisible: Boolean,
+    isFabVisible: Boolean, onClickDonne: () -> Unit,
 ) {
     var gridColumnsForNewArticels by remember { mutableStateOf(2) }
     var showFilter by remember { mutableStateOf(false) }
@@ -129,7 +129,7 @@ fun StartupAppDisplayerOfNewArticles(
         onClickToOpenWindos = onClickToOpenWindos,
         modeFilterToTest=modeFilterToTest,
         onClickToOpenClientsW = onClickToOpenClientsW,
-        isFabVisible=isFabVisible
+        isFabVisible=isFabVisible, onClickDonne = onClickDonne
     )
 }
 @Composable
@@ -148,17 +148,18 @@ fun ArticleDisplayScreen(
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     modeFilterToTest: Boolean = false,
     onClickToOpenClientsW: () -> Unit,
-    isFabVisible: Boolean,
+    isFabVisible: Boolean, onClickDonne: () -> Unit,
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         Column {
             SearchFilter(
-                uiState=uiState,
-                viewModel = viewModel,
                 showFilter = isFabVisible,
                 filterText = filterText,
-                onFilterTextChange = onFilterTextChange ,
-                onAddNotInBaseArticle=onClickToOpenWindos
+                onFilterTextChange = onFilterTextChange,
+                onAddNotInBaseArticle=onClickToOpenWindos,
+                viewModel = viewModel,
+                uiState=uiState,
+                onClickDonne  = onClickDonne
             )
 
             ArticleGrid(
@@ -1194,7 +1195,8 @@ private fun SearchFilter(
     onAddNotInBaseArticle: (ArticlesBasesStatsTable, Int) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: StartUpNewArticlesViewModels,
-    uiState: UiState
+    uiState: UiState,
+    onClickDonne: () -> Unit
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusRequester = remember { FocusRequester() }
@@ -1226,11 +1228,21 @@ private fun SearchFilter(
                 }
             },
             trailingIcon = {
-                Icon(Icons.Default.Search, contentDescription = "Search")
+                IconButton(
+                    onClick = {
+                        viewModel.updataFirtEmptyArticle(filterText)
+                        if (relatedArticlesBasesStatsTable != null) {
+                            onAddNotInBaseArticle(relatedArticlesBasesStatsTable,0)
+                        }
+                    }) {
+                    Icon(Icons.Default.Search, contentDescription = "Search")
+                }
             },
             singleLine = true,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() })
+            keyboardActions = KeyboardActions(onDone = { keyboardController?.hide()
+               onClickDonne()
+            })
         )
     }
 

@@ -201,7 +201,7 @@ private fun MainScreen(appViewModels: AppViewModels) {
                     appViewModels = appViewModels,
                     navController = navController,
                     onToggleNavBar = { isNavBarVisible = !isNavBarVisible },
-                    isFabVisible = isFabVisible
+                    isFabVisible = isFabVisible, onClickDonne = {isFabVisible=false}
                 )
             }
         }
@@ -333,7 +333,7 @@ fun AppNavHost(
     navController: NavHostController,
     onToggleNavBar: () -> Unit,
     modifier: Modifier = Modifier,
-    isFabVisible: Boolean
+    isFabVisible: Boolean, onClickDonne: () -> Unit
 ) {
     val uiState by appViewModels.startUpNewArticlesViewModels.uiState.collectAsState()
 
@@ -379,7 +379,7 @@ fun AppNavHost(
                         onClickToOpenClientsW = {
                             showClientSelectionWithoutCondition=true
                         },
-                        isFabVisible=isFabVisible
+                        isFabVisible=isFabVisible, onClickDonne = onClickDonne
                     )
 
                     if (uiState.isLoading) {
