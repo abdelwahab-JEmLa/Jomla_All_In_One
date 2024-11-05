@@ -1,5 +1,6 @@
 package z_GeminiAi
 
+import a_RoomDB.SoldArticlesTabelle
 import android.graphics.Bitmap
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -27,6 +28,7 @@ class GenerativeAiViewModel : ViewModel() {
     private val firebaseDatabase = FirebaseDatabase.getInstance()
     private val _uiState = MutableStateFlow<UiState>(UiState.Initial)
     val uiState = _uiState.asStateFlow()
+    private val refSoldArticlesTabelle = firebaseDatabase.getReference("O_SoldArticlesTabelle")
 
     private val generativeAiViewModel = GenerativeModel(
         "gemini-1.5-pro-002",
@@ -44,7 +46,7 @@ class GenerativeAiViewModel : ViewModel() {
     ).also { Log.d(TAG, "GenerativeModel initialized with config: temperature=1f, topK=40, topP=0.95f") }
 
     /**transactionPrompt*/
-    val chatHistory = listOf(
+    private val chatHistory = listOf(
         content("user") {
             text("```json\n{\n  \"SoldArticlesTabelle\": [\n    {\n\"clientSoldToItId\": 2,\n\"color1IdPicked\": 0,\n\"color1SoldQuantity\": 15,\n\"color2IdPicked\": 0,\n\"color2SoldQuantity\": 0,\n\"color3IdPicked\": 0,\n\"color3SoldQuantity\": 0,\n\"color4IdPicked\": 0,\n\"color4SoldQuantity\": 0,\n\"confimed\": false,\n\"date\": \"1730656574914\",\n\"idArticle\": 65,\n\"nameArticle\": \"Silca®\",\n\"vid\": 4\n},\n{\n\"clientSoldToItId\": 5,\n\"color1IdPicked\": 0,\n\"color1SoldQuantity\": 0,\n\"color2IdPicked\": 0,\n\"color2SoldQuantity\": 0,\n\"color3IdPicked\": 0,\n\"color3SoldQuantity\": 0,\n\"color4IdPicked\": 0,\n\"color4SoldQuantity\": 10,\n\"confimed\": false,\n\"date\": \"1730658367174\",\n\"idArticle\": 65,\n\"nameArticle\": \"Silca®\",\n\"vid\": 5\n},{\n\"clientSoldToItId\": 2,\n\"color1IdPicked\": 0,\n\"color1SoldQuantity\": 0,\n\"color2IdPicked\": 0,\n\"color2SoldQuantity\": 0,\n\"color3IdPicked\": 0,\n\"color3SoldQuantity\": 7,\n\"color4IdPicked\": 0,\n\"color4SoldQuantity\": 0,\n\"confimed\": false,\n\"date\": \"1730658367174\",\n\"idArticle\": 100,\n\"nameArticle\": \"far®\",\n\"vid\": 6\n},{\n\"clientSoldToItId\": 7,\n\"color1IdPicked\": 0,\n\"color1SoldQuantity\": 10,\n\"color2IdPicked\": 0,\n\"color2SoldQuantity\": 0,\n\"color3IdPicked\": 0,\n\"color3SoldQuantity\": 0,\n\"color4IdPicked\": 0,\n\"color4SoldQuantity\": 10,\n\"confimed\": false,\n\"date\": \"1730658367174\",\n\"idArticle\": 65,\n\"nameArticle\": \"Silca®\",\n\"vid\": 7\n}\n]\n}\n```")
             text("GroupeurBonCommendToSupplier")
@@ -53,9 +55,14 @@ class GenerativeAiViewModel : ViewModel() {
             text("```json\n{\n  \"GroupeurBonCommendToSupplier\": [\n    {\n        \"idArticle\": 65,\n        \"nameArticle\": \"Silca®\",\n        \"color1SoldQuantity\": 15,\n        \"color2SoldQuantity\": 0,\n        \"color3SoldQuantity\": 0,\n        \"color4SoldQuantity\": 10,\n        \"clientSoldToItId\": \"2,5,7\" \n    },\n    {\n        \"idArticle\": 100,\n        \"nameArticle\": \"far®\",\n        \"color1SoldQuantity\": 0,\n        \"color2SoldQuantity\": 0,\n        \"color3SoldQuantity\": 7,\n        \"color4SoldQuantity\": 0,\n        \"clientSoldToItId\": \"2\"\n    }\n  ]\n}\n```\n")
         },
         content("user") {
-            text("```json\n{\n  \"SoldArticlesTabelle\": [{\n\"clientSoldToItId\": 2,\n\"color1IdPicked\": 0,\n\"color1SoldQuantity\": 30,\n\"color2IdPicked\": 0,\n\"color2SoldQuantity\": 10,\n\"color3IdPicked\": 0,\n\"color3SoldQuantity\": 0,\n\"color4IdPicked\": 0,\n\"color4SoldQuantity\": 0,\n\"confimed\": false,\n\"date\": \"1730656574914\",\n\"idArticle\": 40,\n\"nameArticle\": \"ggg®\",\n\"vid\": 4\n},\n{\n\"clientSoldToItId\": 5,\n\"color1IdPicked\": 0,\n\"color1SoldQuantity\": 0,\n\"color2IdPicked\": 0,\n\"color2SoldQuantity\": 0,\n\"color3IdPicked\": 0,\n\"color3SoldQuantity\": 0,\n\"color4IdPicked\": 0,\n\"color4SoldQuantity\": 10,\n\"confimed\": false,\n\"date\": \"1730658367174\",\n\"idArticle\": 30,\n\"nameArticle\": \"fgg®\",\n\"vid\": 5\n}{\n\"clientSoldToItId\": 2,\n\"color1IdPicked\": 0,\n\"color1SoldQuantity\": 40,\n\"color2IdPicked\": 0,\n\"color2SoldQuantity\": 0,\n\"color3IdPicked\": 0,\n\"color3SoldQuantity\": 0,\n\"color4IdPicked\": 0,\n\"color4SoldQuantity\": 0,\n\"confimed\": false,\n\"date\": \"1730656574914\",\n\"idArticle\": 40,\n\"nameArticle\": \"ggg®\",\n\"vid\": 4\n}\n  ]\n}\n```\n")
+            text("```json\n{\n  \"SoldArticlesTabelle\": [{\n\"clientSoldToItId\": 2,\n\"color1IdPicked\": 0,\n\"color1SoldQuantity\": 30,\n\"color2IdPicked\": 0,\n\"color2SoldQuantity\": 10,\n\"color3IdPicked\": 0,\n\"color3SoldQuantity\": 0,\n\"color4IdPicked\": 0,\n\"color4SoldQuantity\": 0,\n\"confimed\": false,\n\"date\": \"1730656574914\",\n\"idArticle\": 40,\n\"nameArticle\": \"ggg®\",\n\"vid\": 4\n},\n{\n\"clientSoldToItId\": 5,\n\"color1IdPicked\": 0,\n\"color1SoldQuantity\": 0,\n\"color2IdPicked\": 0,\n\"color2SoldQuantity\": 0,\n\"color3IdPicked\": 0,\n\"color3SoldQuantity\": 0,\n\"color4IdPicked\": 0,\n\"color4SoldQuantity\": 10,\n\"confimed\": false,\n\"date\": \"1730658367174\",\n\"idArticle\": 30,\n\"nameArticle\": \"fgg®\",\n\"vid\": 5\n}{\n\"clientSoldToItId\":3,\n\"color1IdPicked\": 0,\n\"color1SoldQuantity\": 40,\n\"color2IdPicked\": 0,\n\"color2SoldQuantity\": 0,\n\"color3IdPicked\": 0,\n\"color3SoldQuantity\": 0,\n\"color4IdPicked\": 0,\n\"color4SoldQuantity\": 0,\n\"confimed\": false,\n\"date\": \"1730656574914\",\n\"idArticle\": 40,\n\"nameArticle\": \"ggg®\",\n\"vid\": 4\n}\n  ]\n}\n```\n")
+            text("GroupeurBonCommendToSupplier\n\n\n")
+        },
+        content("model") {
+            text("```json\n{\n  \"GroupeurBonCommendToSupplier\": [\n    {\n      \"idArticle\": 40,\n      \"nameArticle\": \"ggg®\",\n      \"color1SoldQuantity\": 70,\n      \"color2SoldQuantity\": 10,\n      \"color3SoldQuantity\": 0,\n      \"color4SoldQuantity\": 0,\n      \"clientSoldToItId\": \"2,3\"\n    },\n    {\n      \"idArticle\": 30,\n      \"nameArticle\": \"fgg®\",\n      \"color1SoldQuantity\": 0,\n      \"color2SoldQuantity\": 0,\n      \"color3SoldQuantity\": 0,\n      \"color4SoldQuantity\": 10,\n      \"clientSoldToItId\": \"5\"\n    }\n  ]\n}\n```\n")
         },
     )
+
     fun transactionPrompt() {
         Log.d(TAG, "Starting transaction prompt")
         viewModelScope.launch(Dispatchers.IO) {
@@ -63,21 +70,58 @@ class GenerativeAiViewModel : ViewModel() {
                 _uiState.value = UiState.Loading
                 Log.d(TAG, "UI State set to Loading")
 
+                // Fetch data from Firebase
+                val snapshot = refSoldArticlesTabelle.get().await()
+                val soldArticles = snapshot.children.mapNotNull { it.getValue(SoldArticlesTabelle::class.java) }
+
+                // Convert Firebase data to JSON format
+                val jsonData = buildString {
+                    append("```json\n")
+                    append("{\n")
+                    append("  \"SoldArticlesTabelle\": [\n")
+                    soldArticles.forEachIndexed { index, article ->
+                        append("    {\n")
+                        append("      \"clientSoldToItId\": ${article.clientSoldToItId},\n")
+                        append("      \"color1IdPicked\": ${article.color1IdPicked},\n")
+                        append("      \"color1SoldQuantity\": ${article.color1SoldQuantity},\n")
+                        append("      \"color2IdPicked\": ${article.color2IdPicked},\n")
+                        append("      \"color2SoldQuantity\": ${article.color2SoldQuantity},\n")
+                        append("      \"color3IdPicked\": ${article.color3IdPicked},\n")
+                        append("      \"color3SoldQuantity\": ${article.color3SoldQuantity},\n")
+                        append("      \"color4IdPicked\": ${article.color4IdPicked},\n")
+                        append("      \"color4SoldQuantity\": ${article.color4SoldQuantity},\n")
+                        append("      \"confimed\": ${article.confimed},\n")
+                        append("      \"date\": \"${article.date}\",\n")
+                        append("      \"idArticle\": ${article.idArticle},\n")
+                        append("      \"nameArticle\": \"${article.nameArticle}\",\n")
+                        append("      \"vid\": ${article.vid}\n")
+                        append("    }${if (index < soldArticles.size - 1) "," else ""}\n")
+                    }
+                    append("  ]\n")
+                    append("}\n")
+                    append("```\n")
+                }
+
                 Log.d(TAG, "Starting chat with history of ${chatHistory.size} messages")
                 val chat = generativeAiViewModel.startChat(chatHistory)
 
                 val response = chat.sendMessage(
                     content {
+                        text(jsonData)
                         text("GroupeurBonCommendToSupplier")
                     }
                 )
 
                 response.text?.let { jsonResponse ->
                     Log.d(TAG, "Received response: $jsonResponse")
-
-                    // Clean the JSON response
                     val cleanedJson = cleanJsonResponse(jsonResponse)
                     Log.d(TAG, "Cleaned JSON: $cleanedJson")
+
+                    // Delete existing data before saving new data
+                    firebaseDatabase.getReference("K_GroupeurBonCommendToSupplierRef")
+                        .removeValue()
+                        .await()
+                    Log.d(TAG, "Cleared existing GroupeurBonCommendToSupplier data")
 
                     val groupedDataList = parseResponseToTabele(cleanedJson)
                     Log.d(TAG, "Parsed ${groupedDataList.size} items from response")
@@ -96,7 +140,6 @@ class GenerativeAiViewModel : ViewModel() {
             }
         }
     }
-
     private suspend fun getNextVid(): Long {
         return try {
             val snapshot = firebaseDatabase.getReference("K_GroupeurBonCommendToSupplierRef")
@@ -161,6 +204,7 @@ class GenerativeAiViewModel : ViewModel() {
     private suspend fun saveToFirebase(data: GroupeurBonCommendToSupplierTabele) {
         Log.d(TAG, "Saving to Firebase - ID: ${data.vid}, Article: ${data.nameArticle}")
         try {
+
             firebaseDatabase.getReference("K_GroupeurBonCommendToSupplierRef")
                 .child(data.vid.toString())
                 .setValue(data)
