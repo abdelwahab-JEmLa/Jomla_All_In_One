@@ -69,7 +69,8 @@ fun SoldCartScreen(
     viewModel: StartUpNewArticlesViewModels,
     modifier: Modifier = Modifier,
     clientBuyerNow: ClientsModel? = null,
-    uiState: UiState
+    uiState: UiState,
+    onConfirmOrder: () -> Unit
 ) {
     var showOrderSuccess by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
@@ -120,6 +121,7 @@ fun SoldCartScreen(
                             delay(3000)
                             showOrderSuccess = false
                         }
+                        onConfirmOrder()
                     }
                 )
             }

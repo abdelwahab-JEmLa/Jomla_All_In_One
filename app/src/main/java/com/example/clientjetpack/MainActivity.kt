@@ -373,7 +373,11 @@ fun AppNavHost(
                     SoldCartScreen(
                         viewModel = appViewModels.startUpNewArticlesViewModels,
                         clientBuyerNow = currentClient,
-                        uiState = uiState
+                        uiState = uiState,
+                        onConfirmOrder = {
+                            appViewModels.startUpNewArticlesViewModels.updateLongAppSetting("clientBuyerNowId",0)
+
+                        }
                     )
                 }
             }

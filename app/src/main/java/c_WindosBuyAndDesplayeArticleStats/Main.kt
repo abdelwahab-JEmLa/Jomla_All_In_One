@@ -876,6 +876,7 @@ fun CompactQuantityPicker(
             }
 
             val valuesPickerState = rememberPickerState().apply {
+                selectedItem="50"
                 selectedItem = initialQuantity.toString()
             }
 
