@@ -77,7 +77,32 @@ class StartUpNewArticlesViewModels(
     private val _currentSaleInWindows = MutableStateFlow<SoldArticlesTabelle?>(null)
     val currentSaleInWindows = _currentSaleInWindows.asStateFlow()
 
+    fun addNewClient(name: String) {
+        viewModelScope.launch {
+            try {
+                val maxId = _uiState.value.clientsModel.maxOfOrNull { it.idClientsSu } ?: 0
+                val newClient = ClientsModel(
+                    idClientsSu = maxId + 1,
+                    nomClientsSu = name
+                )
 
+                // Add to local state
+                _uiState.update { current ->
+                    current.copy(clientsModel = current.clientsModel + newClient)
+                }
+
+                // Add to Firebase
+                refClientsTabelle.child(newClient.idClientsSu.toString()).setValue(newClient)
+
+                // Add to Room database
+                database.clientsModelDao().insert(newClient)
+
+
+            } catch (e: Exception) {
+                _uiState.update { it.copy(error = "Failed to add client: ${e.message}") }
+            }
+        }
+    }
     fun openWindowsNewSaleWithUpdateCurrent(
         relatedArticleDataBaseId: Long,
         currentClient: Long,
