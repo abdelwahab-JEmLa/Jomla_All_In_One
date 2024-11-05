@@ -149,15 +149,13 @@ fun ArticleDisplayScreen(
     onClickToOpenClientsW: () -> Unit,
     isFabVisible: Boolean,
 ) {
-
     Box(modifier = modifier.fillMaxSize()) {
         Column {
             SearchFilter(
-                viewModel=viewModel,
+                viewModel = viewModel,
                 showFilter = isFabVisible,
                 filterText = filterText,
                 onFilterTextChange = onFilterTextChange
-
             )
 
             ArticleGrid(
@@ -173,6 +171,7 @@ fun ArticleDisplayScreen(
             )
         }
 
+        // Modification ici pour aligner le groupe de boutons flottants en bas à droite
         AnimatedVisibility(
             visible = isFabVisible,
             enter = fadeIn(),
@@ -183,8 +182,8 @@ fun ArticleDisplayScreen(
                 onToggleOutlineFilter = onToggleFilter,
                 onChangeGridColumns = onChangeGridColumns,
                 onClickToOpenClientsListW = onClickToOpenClientsW,
-                viewModel = viewModel ,
-                modifier = Modifier
+                viewModel = viewModel,
+                modifier = Modifier.align(Alignment.BottomEnd)
             )
         }
 
@@ -193,6 +192,7 @@ fun ArticleDisplayScreen(
         }
     }
 }
+
 class ArticlePagingSource(
     private val articles: List<ArticlesBasesStatsTable>,
     private val filterText: String,

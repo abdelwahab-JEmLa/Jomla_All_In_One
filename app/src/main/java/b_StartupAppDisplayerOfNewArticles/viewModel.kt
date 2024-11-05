@@ -83,7 +83,7 @@ class StartUpNewArticlesViewModels(
         viewModelScope.launch {
             try {
                 val maxVid = _uiState.value.soldArticlesModel.maxOfOrNull { it?.vid ?: 0 } ?: 0
-                val maxIdArticle = _uiState.value.articlesBasesStatTables.maxOfOrNull { it.idArticle } ?: 0
+                val maxIdArticle = _uiState.value.soldArticlesModel.maxOfOrNull { it?.idArticle ?: 4000 } ?: 0
 
                 val currentClientId = _uiState.value.appSettingsSaverModel
                     .find { it.name == "clientBuyerNowId" }?.valueLong ?: 0
@@ -93,23 +93,24 @@ class StartUpNewArticlesViewModels(
 
                 val notInBaseArticle = SoldArticlesTabelle(
                     vid = maxVid + 1, // This should work now if your constructor has 'vid'
-                    idArticle = (maxIdArticle + 4000).toLong(),
+                    idArticle = (maxIdArticle + 4000),
                     nameArticle = nameArticleNIB,
                     color1SoldQuantity = 1,
                     date = formattedDate, //  Use the formatted date string
                     clientSoldToItId = currentClientId
                 )
-
-                // Add to Firebase
-                refSoldArticlesTabelle.child(notInBaseArticle.vid.toString()).setValue(notInBaseArticle).await()
-
+                _currentSaleInWindows.value =  notInBaseArticle
                 // Update local state
                 _uiState.update { current ->
                     current.copy(soldArticlesModel = current.soldArticlesModel + notInBaseArticle)
                 }
+                // Add to Firebase
+                refSoldArticlesTabelle.child(notInBaseArticle.vid.toString()).setValue(notInBaseArticle).await()
 
                 // Add to Room (if necessary)
                 database.soldArticlesTabelleDao().insert(notInBaseArticle)
+
+
 
             } catch (exception: Exception) {
                 // Handle any errors here
