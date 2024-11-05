@@ -18,6 +18,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.io.File
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Date
 
 
@@ -76,6 +78,47 @@ class StartUpNewArticlesViewModels(
 
     private val _currentSaleInWindows = MutableStateFlow<SoldArticlesTabelle?>(null)
     val currentSaleInWindows = _currentSaleInWindows.asStateFlow()
+
+    fun addNotInBaseArticle(nameArticleNIB: String) {
+        viewModelScope.launch {
+            try {
+                val maxVid = _uiState.value.soldArticlesModel.maxOfOrNull { it?.vid ?: 0 } ?: 0
+                val maxIdArticle = _uiState.value.articlesBasesStatTables.maxOfOrNull { it.idArticle } ?: 0
+
+                val currentClientId = _uiState.value.appSettingsSaverModel
+                    .find { it.name == "clientBuyerNowId" }?.valueLong ?: 0
+                val now = LocalDateTime.now() // Get the current date and time
+                val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss") // Define your desired format
+                val formattedDate = now.format(formatter)
+
+                val notInBaseArticle = SoldArticlesTabelle(
+                    vid = maxVid + 1, // This should work now if your constructor has 'vid'
+                    idArticle = (maxIdArticle + 4000).toLong(),
+                    nameArticle = nameArticleNIB,
+                    color1SoldQuantity = 1,
+                    date = formattedDate, //  Use the formatted date string
+                    clientSoldToItId = currentClientId
+                )
+
+                // Add to Firebase
+                refSoldArticlesTabelle.child(notInBaseArticle.vid.toString()).setValue(notInBaseArticle).await()
+
+                // Update local state
+                _uiState.update { current ->
+                    current.copy(soldArticlesModel = current.soldArticlesModel + notInBaseArticle)
+                }
+
+                // Add to Room (if necessary)
+                database.soldArticlesTabelleDao().insert(notInBaseArticle)
+
+            } catch (exception: Exception) {
+                // Handle any errors here
+                println("Error creating empty article: ${exception.message}")
+                _uiState.update { it.copy(error = "Error adding article: ${exception.message}") }
+
+            }
+        }
+    }
 
     fun addNewClient(name: String) {
         viewModelScope.launch {
