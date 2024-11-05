@@ -102,7 +102,8 @@ fun StartupAppDisplayerOfNewArticles(
     reloadTrigger: Int,
     modifier: Modifier = Modifier,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
-    modeFilterToTest: Boolean = true, onClickToOpenClientsW: () -> Unit, isFabVisible: Boolean,
+    modeFilterToTest: Boolean = true, onClickToOpenClientsW: () -> Unit,
+    isFabVisible: Boolean,
 ) {
     var gridColumnsForNewArticels by remember { mutableStateOf(2) }
     var showFilter by remember { mutableStateOf(false) }
@@ -113,7 +114,6 @@ fun StartupAppDisplayerOfNewArticles(
     ArticleDisplayScreen(
         uiState = uiState,
         gridColumns = gridColumnsForNewArticels,
-        showFilter = showFilter,
         filterText = filterText,
         gridState = gridState,
         onFilterTextChange = { filterText = it },
@@ -123,9 +123,9 @@ fun StartupAppDisplayerOfNewArticles(
         viewModel = viewModel,
         reloadTrigger = reloadTrigger,
         modifier = modifier,
-        onClickToOpenWindos = onClickToOpenWindos ,
+        onClickToOpenWindos = onClickToOpenWindos,
         modeFilterToTest=modeFilterToTest,
-        onClickToOpenClientsW = onClickToOpenClientsW ,
+        onClickToOpenClientsW = onClickToOpenClientsW,
         isFabVisible=isFabVisible
     )
 }
@@ -133,7 +133,6 @@ fun StartupAppDisplayerOfNewArticles(
 fun ArticleDisplayScreen(
     uiState: UiState,
     gridColumns: Int,
-    showFilter: Boolean,
     filterText: String,
     gridState: LazyStaggeredGridState,
     onFilterTextChange: (String) -> Unit,
@@ -152,7 +151,7 @@ fun ArticleDisplayScreen(
     Box(modifier = modifier.fillMaxSize()) {
         Column {
             SearchFilter(
-                showFilter = showFilter,
+                showFilter = isFabVisible,
                 filterText = filterText,
                 onFilterTextChange = onFilterTextChange
             )
@@ -161,7 +160,7 @@ fun ArticleDisplayScreen(
                 uiState = uiState,
                 gridColumns = gridColumns,
                 filterText = filterText,
-                showFilter = showFilter,
+                showFilter = isFabVisible,
                 gridState = gridState,
                 viewModel = viewModel,
                 reloadTrigger = reloadTrigger,
@@ -180,7 +179,8 @@ fun ArticleDisplayScreen(
                 onToggleOutlineFilter = onToggleFilter,
                 onChangeGridColumns = onChangeGridColumns,
                 onClickToOpenClientsListW = onClickToOpenClientsW,
-                viewModel = viewModel
+                viewModel = viewModel ,
+                modifier = Modifier
             )
         }
 

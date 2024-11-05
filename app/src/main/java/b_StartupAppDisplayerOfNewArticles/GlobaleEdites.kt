@@ -38,7 +38,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun FloatingActionButtonGroup(
+fun FloatingActionButtonGroup(  //TODO fait que ca soit au end Bottton
+    modifier: Modifier,
     onToggleNavBar: () -> Unit,
     onToggleOutlineFilter: () -> Unit,
     onChangeGridColumns: (Int) -> Unit,
@@ -47,7 +48,7 @@ fun FloatingActionButtonGroup(
 ) {
     var currentGridColumns by remember { mutableIntStateOf(2) }
     var showLabels by remember { mutableStateOf(false) }
-    var isExpanded by remember { mutableStateOf(true) }
+    var isExpanded by remember { mutableStateOf(false) }
 
     Column(
         horizontalAlignment = Alignment.End,
