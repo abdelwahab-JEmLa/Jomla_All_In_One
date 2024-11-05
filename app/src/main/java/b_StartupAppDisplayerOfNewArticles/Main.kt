@@ -104,7 +104,8 @@ fun StartupAppDisplayerOfNewArticles(
     reloadTrigger: Int,
     modifier: Modifier = Modifier,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
-    modeFilterToTest: Boolean = true, onClickToOpenClientsW: () -> Unit,
+    modeFilterToTest: Boolean = true,
+    onClickToOpenClientsW: () -> Unit,
     isFabVisible: Boolean,
 ) {
     var gridColumnsForNewArticels by remember { mutableStateOf(2) }
@@ -149,13 +150,15 @@ fun ArticleDisplayScreen(
     onClickToOpenClientsW: () -> Unit,
     isFabVisible: Boolean,
 ) {
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize()) {
         Column {
             SearchFilter(
+                uiState=uiState,
                 viewModel = viewModel,
                 showFilter = isFabVisible,
                 filterText = filterText,
-                onFilterTextChange = onFilterTextChange
+                onFilterTextChange = onFilterTextChange ,
+                onAddNotInBaseArticle=onClickToOpenWindos
             )
 
             ArticleGrid(
@@ -171,7 +174,7 @@ fun ArticleDisplayScreen(
             )
         }
 
-        // Modification ici pour aligner le groupe de boutons flottants en bas à droite
+        // Positionnement en bas à droite avec un léger espace (16.dp) depuis le bord
         AnimatedVisibility(
             visible = isFabVisible,
             enter = fadeIn(),
@@ -183,7 +186,9 @@ fun ArticleDisplayScreen(
                 onChangeGridColumns = onChangeGridColumns,
                 onClickToOpenClientsListW = onClickToOpenClientsW,
                 viewModel = viewModel,
-                modifier = Modifier.align(Alignment.BottomEnd)
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp)  // Ajout d'un padding pour un espace depuis le bord
             )
         }
 
@@ -192,6 +197,7 @@ fun ArticleDisplayScreen(
         }
     }
 }
+
 
 class ArticlePagingSource(
     private val articles: List<ArticlesBasesStatsTable>,
@@ -1185,11 +1191,16 @@ private fun SearchFilter(
     showFilter: Boolean,
     filterText: String,
     onFilterTextChange: (String) -> Unit,
+    onAddNotInBaseArticle: (ArticlesBasesStatsTable, Int) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: StartUpNewArticlesViewModels
+    viewModel: StartUpNewArticlesViewModels,
+    uiState: UiState
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusRequester = remember { FocusRequester() }
+
+    val relatedArticlesBasesStatsTable = uiState.articlesBasesStatTables.find { it.idArticle ==1  }
+
 
     AnimatedVisibility(
         visible = showFilter,
@@ -1207,7 +1218,10 @@ private fun SearchFilter(
             leadingIcon = {
                 IconButton(
                     onClick = {
-                        viewModel.addNotInBaseArticle(filterText)
+                        viewModel.updataFirtEmptyArticle(filterText)
+                        if (relatedArticlesBasesStatsTable != null) {
+                            onAddNotInBaseArticle(relatedArticlesBasesStatsTable,0)
+                        }
                     }) { Icon(Icons.Default.Add, contentDescription = "Add New Article")
                 }
             },

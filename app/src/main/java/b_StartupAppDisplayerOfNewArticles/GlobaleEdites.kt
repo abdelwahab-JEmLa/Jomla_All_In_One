@@ -38,7 +38,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun FloatingActionButtonGroup(  //TODO fait que ca soit au end Bottton
+fun FloatingActionButtonGroup(
     modifier: Modifier,
     onToggleNavBar: () -> Unit,
     onToggleOutlineFilter: () -> Unit,

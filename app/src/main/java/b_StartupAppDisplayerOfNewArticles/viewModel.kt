@@ -18,8 +18,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.io.File
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.util.Date
 
 
@@ -79,44 +77,36 @@ class StartUpNewArticlesViewModels(
     private val _currentSaleInWindows = MutableStateFlow<SoldArticlesTabelle?>(null)
     val currentSaleInWindows = _currentSaleInWindows.asStateFlow()
 
-    fun addNotInBaseArticle(nameArticleNIB: String) {
+    fun updataFirtEmptyArticle(nameArticleNIB: String) {
         viewModelScope.launch {
             try {
-                val maxVid = _uiState.value.soldArticlesModel.maxOfOrNull { it?.vid ?: 0 } ?: 0
-                val maxIdArticle = _uiState.value.soldArticlesModel.maxOfOrNull { it?.idArticle ?: 4000 } ?: 0
+                // Trouver le premier article vide basé sur l'idArticle == 1
+                val firtEmptyArticle = _uiState.value.articlesBasesStatTables.find { it.idArticle == 1 }
 
-                val currentClientId = _uiState.value.appSettingsSaverModel
-                    .find { it.name == "clientBuyerNowId" }?.valueLong ?: 0
-                val now = LocalDateTime.now() // Get the current date and time
-                val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss") // Define your desired format
-                val formattedDate = now.format(formatter)
-
-                val notInBaseArticle = SoldArticlesTabelle(
-                    vid = maxVid + 1, // This should work now if your constructor has 'vid'
-                    idArticle = (maxIdArticle + 4000),
-                    nameArticle = nameArticleNIB,
-                    color1SoldQuantity = 1,
-                    date = formattedDate, //  Use the formatted date string
-                    clientSoldToItId = currentClientId
-                )
-                _currentSaleInWindows.value =  notInBaseArticle
-                // Update local state
-                _uiState.update { current ->
-                    current.copy(soldArticlesModel = current.soldArticlesModel + notInBaseArticle)
+                // Si on ne trouve pas cet article, générer une erreur pour arrêter le processus
+                if (firtEmptyArticle == null) {
+                    throw IllegalStateException("Aucun article avec idArticle == 1 trouvé.")
                 }
-                // Add to Firebase
-                refSoldArticlesTabelle.child(notInBaseArticle.vid.toString()).setValue(notInBaseArticle).await()
 
-                // Add to Room (if necessary)
-                database.soldArticlesTabelleDao().insert(notInBaseArticle)
+                // Récupérer le maximum des idArticle existants dans soldArticlesModel ou assigner 4000 par défaut
+                val maxIdArticle = _uiState.value.soldArticlesModel.maxOfOrNull { it?.idArticle ?: 4000 } ?: 4000
 
+                // Mise à jour de l'article trouvé
+                val updatedArticle = firtEmptyArticle.copy(
+                    idForSearchArticles = maxIdArticle + 4000,
+                    nomArticleFinale = nameArticleNIB
+                )
 
+                // Mettre à jour l'état de _uiState en modifiant la liste articlesBasesStatTables
+                val updatedArticlesBasesStatTables = _uiState.value.articlesBasesStatTables.map {
+                    if (it.idArticle == 1) updatedArticle else it
+                }
+                _uiState.update { it.copy(articlesBasesStatTables = updatedArticlesBasesStatTables) }
 
             } catch (exception: Exception) {
-                // Handle any errors here
-                println("Error creating empty article: ${exception.message}")
-                _uiState.update { it.copy(error = "Error adding article: ${exception.message}") }
-
+                // Gestion des erreurs
+                println("Erreur lors de la création d'un article vide : ${exception.message}")
+                _uiState.update { it.copy(error = "Erreur d'ajout de l'article : ${exception.message}") }
             }
         }
     }
@@ -161,19 +151,22 @@ class StartUpNewArticlesViewModels(
                 val article = _uiState.value.articlesBasesStatTables
                     .find { it.idArticle.toLong() == relatedArticleDataBaseId }
 
-                val newSale = SoldArticlesTabelle(
-                    vid = maxId + 1,
-                    idArticle = relatedArticleDataBaseId,
-                    nameArticle = article?.nomArticleFinale ?: "",
-                    clientSoldToItId = currentClient,
-                    date = System.currentTimeMillis().toString()
-                ).let { sale ->
-                    when (indexColor) {
-                        0 -> sale.copy(color1IdPicked = article?.idcolor1 ?: 0, color1SoldQuantity = 1)
-                        1 -> sale.copy(color2IdPicked = article?.idcolor2 ?: 0, color2SoldQuantity = 1)
-                        2 -> sale.copy(color3IdPicked = article?.idcolor3 ?: 0, color3SoldQuantity = 1)
-                        3 -> sale.copy(color4IdPicked = article?.idcolor4 ?: 0, color4SoldQuantity = 1)
-                        else -> sale
+                val newSale = (if(relatedArticleDataBaseId.toInt() ==1) article?.idForSearchArticles
+                else relatedArticleDataBaseId)?.let {
+                    SoldArticlesTabelle(
+                        vid = maxId + 1,
+                        idArticle = it,
+                        nameArticle = article?.nomArticleFinale ?: "",
+                        clientSoldToItId = currentClient,
+                        date = System.currentTimeMillis().toString()
+                    ).let { sale ->
+                        when (indexColor) {
+                            0 -> sale.copy(color1IdPicked = article?.idcolor1 ?: 0, color1SoldQuantity = 1)
+                            1 -> sale.copy(color2IdPicked = article?.idcolor2 ?: 0, color2SoldQuantity = 1)
+                            2 -> sale.copy(color3IdPicked = article?.idcolor3 ?: 0, color3SoldQuantity = 1)
+                            3 -> sale.copy(color4IdPicked = article?.idcolor4 ?: 0, color4SoldQuantity = 1)
+                            else -> sale
+                        }
                     }
                 }
 

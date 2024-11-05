@@ -375,9 +375,9 @@ fun AppNavHost(
                                     pendingIndexColor)
                                 opnerSaleWindows=true
                             }
-                        }, onClickToOpenClientsW = {
+                        },
+                        onClickToOpenClientsW = {
                             showClientSelectionWithoutCondition=true
-
                         },
                         isFabVisible=isFabVisible
                     )
