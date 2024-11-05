@@ -59,6 +59,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -256,17 +257,17 @@ fun ClientSelectionDialog(
     var searchQuery by remember { mutableStateOf("") }
 
     // Group clients based on whether they have sold articles
-    val groupedClients = remember(searchQuery, clients, soldArticle) {
-        if (searchQuery.length >= 3) {
-            val filteredClients = clients.filter {
+    val groupedClients = remember(clients, soldArticle, searchQuery) {
+        val clientsToGroup = if (searchQuery.length >= 2) {
+            clients.filter {
                 it.nomClientsSu.contains(searchQuery, ignoreCase = true)
             }
-
-            filteredClients.groupBy { client ->
-                soldArticle.any { it?.clientSoldToItId == client.idClientsSu }
-            }
         } else {
-            emptyMap()
+            clients
+        }
+
+        clientsToGroup.groupBy { client ->
+            soldArticle.any { it?.clientSoldToItId == client.idClientsSu }
         }
     }
 
@@ -300,38 +301,39 @@ fun ClientSelectionDialog(
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                if (searchQuery.length >= 3) {
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .heightIn(max = 200.dp)
-                    ) {
-                        // Clients with sold articles
-                        if (!groupedClients[true].isNullOrEmpty()) {
-                            item {
-                                Text(
-                                    "Clients with Articles",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    modifier = Modifier.padding(vertical = 8.dp)
-                                )
-                            }
-                            items(groupedClients[true] ?: emptyList()) { client ->
-                                ClientItem(client, onClientSelected, onDismiss)
-                            }
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(max = 300.dp)
+                        .padding(top = 8.dp)
+                ) {
+                    // Clients with sold articles
+                    if (!groupedClients[true].isNullOrEmpty()) {
+                        item {
+                            Text(
+                                "Clients with Articles",
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier.padding(vertical = 8.dp)
+                            )
                         }
+                        items(groupedClients[true] ?: emptyList()) { client ->
+                            ClientItem(client, onClientSelected, onDismiss)
+                        }
+                    }
 
-                        // Clients without sold articles
-                        if (!groupedClients[false].isNullOrEmpty()) {
-                            item {
-                                Text(
-                                    "Other Clients",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    modifier = Modifier.padding(vertical = 8.dp)
-                                )
-                            }
-                            items(groupedClients[false] ?: emptyList()) { client ->
-                                ClientItem(client, onClientSelected, onDismiss)
-                            }
+                    // Clients without sold articles
+                    if (!groupedClients[false].isNullOrEmpty()) {
+                        item {
+                            Text(
+                                "Other Clients",
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier
+                                    .padding(vertical = 8.dp)
+                                    .padding(top = if (groupedClients[true].isNullOrEmpty()) 0.dp else 16.dp)
+                            )
+                        }
+                        items(groupedClients[false] ?: emptyList()) { client ->
+                            ClientItem(client, onClientSelected, onDismiss)
                         }
                     }
                 }
@@ -351,12 +353,17 @@ private fun ClientItem(
             onClientSelected(client)
             onDismiss()
         },
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 2.dp)
     ) {
-        Text(client.nomClientsSu ?: "Unknown")
+        Text(
+            client.nomClientsSu ?: "Unknown",
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Start
+        )
     }
 }
-
 // In AppNavHost.kt update the client selection handling:
 @Composable
 fun AppNavHost(
