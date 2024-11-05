@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -35,12 +36,13 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Scaffold
@@ -149,37 +151,107 @@ private fun MainScreen(appViewModels: AppViewModels) {
     val navController = rememberNavController()
     val items = NavigationItems.getItems()
     var isNavBarVisible by remember { mutableStateOf(true) }
-    var isFabVisible by remember { mutableStateOf(true) }
+    var isFabVisible by remember { mutableStateOf(false) }
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
-    Scaffold(
-        bottomBar = {
-            AnimatedVisibility(visible = isNavBarVisible) {
-                CustomNavigationBar(
-                    items = items,
-                    currentRoute = currentRoute,
-                    onNavigate = { route ->
-                        navController.navigate(route) {
-                            popUpTo(navController.graph.startDestinationId)
-                            launchSingleTop = true
-                        }
-                    },
-                    isFabVisible = isFabVisible,
-                    onToggleFabVisibility = { isFabVisible = !isFabVisible }
+    Box(modifier = Modifier.fillMaxSize()) {
+        Scaffold(
+            bottomBar = {
+                Box(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    AnimatedVisibility(visible = isNavBarVisible) {
+                        NavigationBarWithFab(
+                            items = items.filter { it != Screen.ToggleFab },
+                            currentRoute = currentRoute,
+                            onNavigate = { route ->
+                                navController.navigate(route) {
+                                    popUpTo(navController.graph.startDestinationId)
+                                    launchSingleTop = true
+                                }
+                            },
+                            isFabVisible = isFabVisible,
+                            onToggleFabVisibility = { isFabVisible = !isFabVisible }
+                        )
+                    }
+                }
+            }
+        ) { padding ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+            ) {
+                AppNavHost(
+                    appViewModels = appViewModels,
+                    navController = navController,
+                    onToggleNavBar = { isNavBarVisible = !isNavBarVisible },
+                    isFabVisible = isFabVisible
                 )
             }
         }
-    ) { padding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
+    }
+}
+
+@Composable
+fun NavigationBarWithFab(
+    items: List<Screen>,
+    currentRoute: String?,
+    onNavigate: (String) -> Unit,
+    isFabVisible: Boolean,
+    onToggleFabVisibility: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier.fillMaxWidth(),
+        contentAlignment = Alignment.BottomCenter
+    ) {
+        NavigationBar(
+            modifier = Modifier.fillMaxWidth(),
+            containerColor = MaterialTheme.colorScheme.surface,
+            tonalElevation = 8.dp
         ) {
-            AppNavHost(
-                appViewModels = appViewModels,
-                navController = navController,
-                onToggleNavBar = { isNavBarVisible = !isNavBarVisible },
-                isFabVisible = isFabVisible
+            // Calculate middle index
+            val middleIndex = items.size / 2
+
+            items.forEachIndexed { index, screen ->
+                if (index == middleIndex) {
+                    // Add empty space for FAB
+                    NavigationBarItem(
+                        selected = false,
+                        onClick = { },
+                        icon = { Box(modifier = Modifier.size(48.dp)) },
+                        enabled = false
+                    )
+                }
+                NavigationBarItem(
+                    icon = {
+                        Icon(
+                            imageVector = screen.icon,
+                            contentDescription = screen.title,
+                            tint = if (currentRoute == screen.route) screen.color
+                            else LocalContentColor.current.copy(alpha = ContentAlpha.medium)
+                        )
+                    },
+                    selected = currentRoute == screen.route,
+                    onClick = { onNavigate(screen.route) }
+                )
+            }
+        }
+
+        // FAB positioned above the navigation bar
+        FloatingActionButton(
+            onClick = onToggleFabVisibility,
+            modifier = Modifier
+                .offset(y = (-28).dp)
+                .size(56.dp),
+            containerColor = MaterialTheme.colorScheme.primary,
+            elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 6.dp)
+        ) {
+            Icon(
+                imageVector = if (isFabVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                contentDescription = "Toggle FAB",
+                tint = MaterialTheme.colorScheme.onPrimary
             )
         }
     }
@@ -230,43 +302,7 @@ sealed class Screen(
     )
 }
 
-@Composable
-fun CustomNavigationBar(
-    items: List<Screen>,
-    currentRoute: String?,
-    onNavigate: (String) -> Unit,
-    onToggleFabVisibility: () -> Unit,
-    isFabVisible: Boolean,
-    modifier: Modifier = Modifier
-) {
-    NavigationBar(modifier = modifier) {
-        items.forEach { screen ->
-            NavigationBarItem(
-                icon = {
-                    Icon(
-                        imageVector = if (screen is Screen.ToggleFab) {
-                            if (isFabVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
-                        } else screen.icon,
-                        contentDescription = screen.title,
-                        tint = screen.color
-                    )
-                },
-                selected = currentRoute == screen.route,
-                onClick = {
-                    if (screen is Screen.ToggleFab) {
-                        onToggleFabVisibility()
-                    } else {
-                        onNavigate(screen.route)
-                    }
-                },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = screen.color,
-                    unselectedIconColor = LocalContentColor.current.copy(alpha = ContentAlpha.medium)
-                )
-            )
-        }
-    }
-}
+
 
 // In AppNavHost.kt update the client selection handling:
 @Composable
