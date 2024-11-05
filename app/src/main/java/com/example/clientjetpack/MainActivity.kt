@@ -61,6 +61,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavHostController
@@ -245,7 +246,6 @@ fun CustomNavigationBar(
     }
 }
 
-// Add this composable for client selection
 @Composable
 fun ClientSelectionDialog(
     clients: List<ClientsModel>,
@@ -253,17 +253,30 @@ fun ClientSelectionDialog(
     onDismiss: () -> Unit,
     soldArticle: List<SoldArticlesTabelle?>
 ) {
-    //TODO fait que le
     var searchQuery by remember { mutableStateOf("") }
-    val filteredClients = remember(searchQuery, clients) {
+
+    // Group clients based on whether they have sold articles
+    val groupedClients = remember(searchQuery, clients, soldArticle) {
         if (searchQuery.length >= 3) {
-            clients.filter { it.nomClientsSu.contains(searchQuery, ignoreCase = true) }
+            val filteredClients = clients.filter {
+                it.nomClientsSu.contains(searchQuery, ignoreCase = true)
+            }
+
+            filteredClients.groupBy { client ->
+                soldArticle.any { it?.clientSoldToItId == client.idClientsSu }
+            }
         } else {
-            emptyList()
+            emptyMap()
         }
     }
 
-    Dialog(onDismissRequest = onDismiss) {
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false,
+            decorFitsSystemWindows = true
+        )
+    ) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -293,15 +306,31 @@ fun ClientSelectionDialog(
                             .fillMaxWidth()
                             .heightIn(max = 200.dp)
                     ) {
-                        items(filteredClients) { client ->
-                            TextButton(
-                                onClick = {
-                                    onClientSelected(client)
-                                    onDismiss()
-                                },
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Text(client.nomClientsSu ?: "Unknown")
+                        // Clients with sold articles
+                        if (!groupedClients[true].isNullOrEmpty()) {
+                            item {
+                                Text(
+                                    "Clients with Articles",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    modifier = Modifier.padding(vertical = 8.dp)
+                                )
+                            }
+                            items(groupedClients[true] ?: emptyList()) { client ->
+                                ClientItem(client, onClientSelected, onDismiss)
+                            }
+                        }
+
+                        // Clients without sold articles
+                        if (!groupedClients[false].isNullOrEmpty()) {
+                            item {
+                                Text(
+                                    "Other Clients",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    modifier = Modifier.padding(vertical = 8.dp)
+                                )
+                            }
+                            items(groupedClients[false] ?: emptyList()) { client ->
+                                ClientItem(client, onClientSelected, onDismiss)
                             }
                         }
                     }
@@ -311,6 +340,22 @@ fun ClientSelectionDialog(
     }
 }
 
+@Composable
+private fun ClientItem(
+    client: ClientsModel,
+    onClientSelected: (ClientsModel) -> Unit,
+    onDismiss: () -> Unit
+) {
+    TextButton(
+        onClick = {
+            onClientSelected(client)
+            onDismiss()
+        },
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(client.nomClientsSu ?: "Unknown")
+    }
+}
 
 // In AppNavHost.kt update the client selection handling:
 @Composable
