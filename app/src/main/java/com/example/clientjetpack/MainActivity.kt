@@ -18,6 +18,7 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,6 +29,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CreditScore
 import androidx.compose.material.icons.filled.EditRoad
@@ -36,8 +38,6 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
@@ -46,6 +46,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -62,6 +63,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -192,7 +194,6 @@ private fun MainScreen(appViewModels: AppViewModels) {
         }
     }
 }
-
 @Composable
 fun NavigationBarWithFab(
     items: List<Screen>,
@@ -239,24 +240,32 @@ fun NavigationBarWithFab(
             }
         }
 
-        // FAB positioned above the navigation bar
-        FloatingActionButton(
-            onClick = onToggleFabVisibility,
+        // Image FAB positioned above the navigation bar
+        Surface(
             modifier = Modifier
                 .offset(y = (-28).dp)
                 .size(56.dp),
-            containerColor = MaterialTheme.colorScheme.primary,
-            elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 6.dp)
+            shape = CircleShape,
         ) {
-            Icon(
-                imageVector = if (isFabVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                contentDescription = "Toggle FAB",
-                tint = MaterialTheme.colorScheme.onPrimary
-            )
+            Box {
+                Image(
+                    painter = painterResource(id = R.drawable.logo),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clickable(onClick = onToggleFabVisibility),
+                    contentScale = ContentScale.Crop
+                )
+                Icon(
+                    imageVector = if (isFabVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                    contentDescription = "Toggle FAB",
+                    modifier = Modifier.align(Alignment.Center),
+                    tint = Color.White // Vous pouvez ajuster la couleur de l'icône pour qu'elle soit bien visible sur votre image
+                )
+            }
         }
     }
 }
-
 // Add this to your project if it's missing
 object NavigationItems {
     fun getItems() = listOf(
@@ -355,6 +364,7 @@ fun AppNavHost(
                             }
                         }, onClickToOpenClientsW = {
                             showClientSelectionWithoutCondition=true
+
                         },
                         isFabVisible=isFabVisible
                     )
@@ -376,7 +386,6 @@ fun AppNavHost(
                         uiState = uiState,
                         onConfirmOrder = {
                             appViewModels.startUpNewArticlesViewModels.updateLongAppSetting("clientBuyerNowId",0)
-
                         }
                     )
                 }
@@ -397,17 +406,21 @@ fun AppNavHost(
                 clients = uiState.clientsModel,
                 onClientSelected = { client ->
                     appViewModels.startUpNewArticlesViewModels.updateLongAppSetting("clientBuyerNowId",client.idClientsSu)
-
-                    appViewModels.startUpNewArticlesViewModels.openWindowsNewSaleWithUpdateCurrent(
-                        relatedArticleBaseStats!!.idArticle.toLong(),
-                        client.idClientsSu,
-                        pendingIndexColor)
-                    opnerSaleWindows=true
-
+                    if(!showClientSelectionWithoutCondition) {
+                        appViewModels.startUpNewArticlesViewModels.openWindowsNewSaleWithUpdateCurrent(
+                            relatedArticleBaseStats!!.idArticle.toLong(),
+                            client.idClientsSu,
+                            pendingIndexColor
+                        )
+                        opnerSaleWindows = true
+                    }
                     showClientSelection = false
+                    showClientSelectionWithoutCondition= false
                 },
                 onDismiss = {
                     showClientSelection = false
+                    showClientSelectionWithoutCondition= false
+
                 }
             )
         }
