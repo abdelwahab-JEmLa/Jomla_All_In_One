@@ -62,8 +62,6 @@ val imageDescriptions = arrayOf(
     R.string.image3_description,
 )
 
-
-
 @Composable
 fun GenerativeAiScreen(
     generativeAiViewModel: GenerativeAiViewModel = viewModel()

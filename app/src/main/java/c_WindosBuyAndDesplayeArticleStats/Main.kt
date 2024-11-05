@@ -884,7 +884,7 @@ fun CompactQuantityPicker(
 
             LaunchedEffect(Unit) {
                 valuesPickerState.selectedItem = "50"
-                delay(1000)
+                delay(3000)
                 valuesPickerState.selectedItem = initialQuantity.toString()
             }
 
@@ -1083,7 +1083,7 @@ private fun ImageDisplayer(
     }
 
     val imageSource = remember(imageExist) {
-        imageExist?.let { File(it) } ?: R.drawable.baked_goods_1
+        imageExist?.let { File(it) } ?: R.drawable.logo
     }
 
     val requestKey = remember(article.idArticle, indexColor, reloadKey) {
