@@ -10,7 +10,6 @@ import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.content
 import com.google.ai.client.generativeai.type.generationConfig
 import com.google.firebase.database.FirebaseDatabase
-import com.google.gson.Gson
 import com.google.gson.JsonParser
 import com.google.gson.JsonSyntaxException
 import com.google.gson.stream.JsonReader
@@ -22,24 +21,12 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import java.io.StringReader
 
-@Entity
-data class GroupeurBonCommendToSupplierTabele(
-    @PrimaryKey(autoGenerate = true) var vid: Long = 0,
-    val idArticle: Int,
-    val nameArticle: String,
-    val color1SoldQuantity: Int,
-    val color2SoldQuantity: Int,
-    val color3SoldQuantity: Int,
-    val color4SoldQuantity: Int,
-    val clientSoldToItId: String
-)
 
 class GenerativeAiViewModel : ViewModel() {
     private val TAG = "GenerativeAiViewModel"
     private val firebaseDatabase = FirebaseDatabase.getInstance()
     private val _uiState = MutableStateFlow<UiState>(UiState.Initial)
     val uiState = _uiState.asStateFlow()
-    private val gson = Gson()
 
     private val generativeAiViewModel = GenerativeModel(
         "gemini-1.5-pro-002",
@@ -56,6 +43,7 @@ class GenerativeAiViewModel : ViewModel() {
         }
     ).also { Log.d(TAG, "GenerativeModel initialized with config: temperature=1f, topK=40, topP=0.95f") }
 
+    /**transactionPrompt*/
     val chatHistory = listOf(
         content("user") {
             text("```json\n{\n  \"SoldArticlesTabelle\": [\n    {\n\"clientSoldToItId\": 2,\n\"color1IdPicked\": 0,\n\"color1SoldQuantity\": 15,\n\"color2IdPicked\": 0,\n\"color2SoldQuantity\": 0,\n\"color3IdPicked\": 0,\n\"color3SoldQuantity\": 0,\n\"color4IdPicked\": 0,\n\"color4SoldQuantity\": 0,\n\"confimed\": false,\n\"date\": \"1730656574914\",\n\"idArticle\": 65,\n\"nameArticle\": \"Silca®\",\n\"vid\": 4\n},\n{\n\"clientSoldToItId\": 5,\n\"color1IdPicked\": 0,\n\"color1SoldQuantity\": 0,\n\"color2IdPicked\": 0,\n\"color2SoldQuantity\": 0,\n\"color3IdPicked\": 0,\n\"color3SoldQuantity\": 0,\n\"color4IdPicked\": 0,\n\"color4SoldQuantity\": 10,\n\"confimed\": false,\n\"date\": \"1730658367174\",\n\"idArticle\": 65,\n\"nameArticle\": \"Silca®\",\n\"vid\": 5\n},{\n\"clientSoldToItId\": 2,\n\"color1IdPicked\": 0,\n\"color1SoldQuantity\": 0,\n\"color2IdPicked\": 0,\n\"color2SoldQuantity\": 0,\n\"color3IdPicked\": 0,\n\"color3SoldQuantity\": 7,\n\"color4IdPicked\": 0,\n\"color4SoldQuantity\": 0,\n\"confimed\": false,\n\"date\": \"1730658367174\",\n\"idArticle\": 100,\n\"nameArticle\": \"far®\",\n\"vid\": 6\n},{\n\"clientSoldToItId\": 7,\n\"color1IdPicked\": 0,\n\"color1SoldQuantity\": 10,\n\"color2IdPicked\": 0,\n\"color2SoldQuantity\": 0,\n\"color3IdPicked\": 0,\n\"color3SoldQuantity\": 0,\n\"color4IdPicked\": 0,\n\"color4SoldQuantity\": 10,\n\"confimed\": false,\n\"date\": \"1730658367174\",\n\"idArticle\": 65,\n\"nameArticle\": \"Silca®\",\n\"vid\": 7\n}\n]\n}\n```")
@@ -68,6 +56,47 @@ class GenerativeAiViewModel : ViewModel() {
             text("```json\n{\n  \"SoldArticlesTabelle\": [{\n\"clientSoldToItId\": 2,\n\"color1IdPicked\": 0,\n\"color1SoldQuantity\": 30,\n\"color2IdPicked\": 0,\n\"color2SoldQuantity\": 10,\n\"color3IdPicked\": 0,\n\"color3SoldQuantity\": 0,\n\"color4IdPicked\": 0,\n\"color4SoldQuantity\": 0,\n\"confimed\": false,\n\"date\": \"1730656574914\",\n\"idArticle\": 40,\n\"nameArticle\": \"ggg®\",\n\"vid\": 4\n},\n{\n\"clientSoldToItId\": 5,\n\"color1IdPicked\": 0,\n\"color1SoldQuantity\": 0,\n\"color2IdPicked\": 0,\n\"color2SoldQuantity\": 0,\n\"color3IdPicked\": 0,\n\"color3SoldQuantity\": 0,\n\"color4IdPicked\": 0,\n\"color4SoldQuantity\": 10,\n\"confimed\": false,\n\"date\": \"1730658367174\",\n\"idArticle\": 30,\n\"nameArticle\": \"fgg®\",\n\"vid\": 5\n}{\n\"clientSoldToItId\": 2,\n\"color1IdPicked\": 0,\n\"color1SoldQuantity\": 40,\n\"color2IdPicked\": 0,\n\"color2SoldQuantity\": 0,\n\"color3IdPicked\": 0,\n\"color3SoldQuantity\": 0,\n\"color4IdPicked\": 0,\n\"color4SoldQuantity\": 0,\n\"confimed\": false,\n\"date\": \"1730656574914\",\n\"idArticle\": 40,\n\"nameArticle\": \"ggg®\",\n\"vid\": 4\n}\n  ]\n}\n```\n")
         },
     )
+    fun transactionPrompt() {
+        Log.d(TAG, "Starting transaction prompt")
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                _uiState.value = UiState.Loading
+                Log.d(TAG, "UI State set to Loading")
+
+                Log.d(TAG, "Starting chat with history of ${chatHistory.size} messages")
+                val chat = generativeAiViewModel.startChat(chatHistory)
+
+                val response = chat.sendMessage(
+                    content {
+                        text("GroupeurBonCommendToSupplier")
+                    }
+                )
+
+                response.text?.let { jsonResponse ->
+                    Log.d(TAG, "Received response: $jsonResponse")
+
+                    // Clean the JSON response
+                    val cleanedJson = cleanJsonResponse(jsonResponse)
+                    Log.d(TAG, "Cleaned JSON: $cleanedJson")
+
+                    val groupedDataList = parseResponseToTabele(cleanedJson)
+                    Log.d(TAG, "Parsed ${groupedDataList.size} items from response")
+
+                    groupedDataList.forEach { groupedData ->
+                        saveToFirebase(groupedData)
+                    }
+
+                    _uiState.value = UiState.Success("Transaction processed successfully")
+                } ?: run {
+                    _uiState.value = UiState.Error("Empty response received")
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Transaction failed", e)
+                _uiState.value = UiState.Error(e.message ?: "Transaction failed")
+            }
+        }
+    }
+
     private suspend fun getNextVid(): Long {
         return try {
             val snapshot = firebaseDatabase.getReference("K_GroupeurBonCommendToSupplierRef")
@@ -117,47 +146,6 @@ class GenerativeAiViewModel : ViewModel() {
         } catch (e: Exception) {
             Log.e(TAG, "Failed to parse JSON response", e)
             throw IllegalStateException("Failed to parse JSON response: ${e.message}")
-        }
-    }
-    fun transactionPrompt() {
-        Log.d(TAG, "Starting transaction prompt")
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                _uiState.value = UiState.Loading
-                Log.d(TAG, "UI State set to Loading")
-
-                Log.d(TAG, "Starting chat with history of ${chatHistory.size} messages")
-                val chat = generativeAiViewModel.startChat(chatHistory)
-
-                val response = chat.sendMessage(
-                    content {
-                        text("GroupeurBonCommendToSupplier")
-                    }
-                )
-
-                response.text?.let { jsonResponse ->
-                    Log.d(TAG, "Received response: $jsonResponse")
-
-                    // Clean the JSON response
-                    val cleanedJson = cleanJsonResponse(jsonResponse)
-                    Log.d(TAG, "Cleaned JSON: $cleanedJson")
-
-                    val groupedDataList = parseResponseToTabele(cleanedJson)
-                    Log.d(TAG, "Parsed ${groupedDataList.size} items from response")
-
-                    groupedDataList.forEach { groupedData ->
-                        //TODO fait que le     val vid: Long = 0, soitle se genere par fun max +1
-                        saveToFirebase(groupedData)
-                    }
-
-                    _uiState.value = UiState.Success("Transaction processed successfully")
-                } ?: run {
-                    _uiState.value = UiState.Error("Empty response received")
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "Transaction failed", e)
-                _uiState.value = UiState.Error(e.message ?: "Transaction failed")
-            }
         }
     }
 
@@ -217,3 +205,14 @@ class GenerativeAiViewModel : ViewModel() {
 
 
 }
+@Entity
+data class GroupeurBonCommendToSupplierTabele(
+    @PrimaryKey(autoGenerate = true) var vid: Long = 0,
+    val idArticle: Int,
+    val nameArticle: String,
+    val color1SoldQuantity: Int,
+    val color2SoldQuantity: Int,
+    val color3SoldQuantity: Int,
+    val color4SoldQuantity: Int,
+    val clientSoldToItId: String
+)
