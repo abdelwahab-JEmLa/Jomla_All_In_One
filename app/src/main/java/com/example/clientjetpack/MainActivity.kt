@@ -31,6 +31,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CreditScore
 import androidx.compose.material.icons.filled.EditRoad
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -142,12 +144,12 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-// MainScreen.kt
 @Composable
 private fun MainScreen(appViewModels: AppViewModels) {
     val navController = rememberNavController()
     val items = NavigationItems.getItems()
     var isNavBarVisible by remember { mutableStateOf(true) }
+    var isFabVisible by remember { mutableStateOf(true) }
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
     Scaffold(
@@ -161,7 +163,9 @@ private fun MainScreen(appViewModels: AppViewModels) {
                             popUpTo(navController.graph.startDestinationId)
                             launchSingleTop = true
                         }
-                    }
+                    },
+                    isFabVisible = isFabVisible,
+                    onToggleFabVisibility = { isFabVisible = !isFabVisible }
                 )
             }
         }
@@ -174,13 +178,23 @@ private fun MainScreen(appViewModels: AppViewModels) {
             AppNavHost(
                 appViewModels = appViewModels,
                 navController = navController,
-                onToggleNavBar = { isNavBarVisible = !isNavBarVisible }
+                onToggleNavBar = { isNavBarVisible = !isNavBarVisible },
+                isFabVisible = isFabVisible
             )
         }
     }
 }
 
-// Add to Screen.kt
+// Add this to your project if it's missing
+object NavigationItems {
+    fun getItems() = listOf(
+        Screen.EditDatabaseWithCreateNewArticles,
+        Screen.SoldCart,
+        Screen.BakingScreen,
+        Screen.ToggleFab
+    )
+}
+
 sealed class Screen(
     val route: String,
     val icon: ImageVector,
@@ -200,30 +214,29 @@ sealed class Screen(
         title = "Panier Sold",
         color = Color(0xFF4CAF50)
     )
+
     data object BakingScreen : Screen(
         route = "baking_Screen",
         icon = Icons.Default.CreditScore,
         title = "baking Screen",
         color = Color(0xFFE91E63)
     )
-}
 
-// Update NavigationItems.kt
-object NavigationItems {
-    fun getItems() = listOf(
-        Screen.EditDatabaseWithCreateNewArticles,
-        Screen.SoldCart,
-        Screen.BakingScreen
-
+    data object ToggleFab : Screen(
+        route = "toggle_fab",
+        icon = Icons.Default.Visibility,
+        title = "Toggle FAB",
+        color = Color(0xFF2196F3)
     )
 }
-
 
 @Composable
 fun CustomNavigationBar(
     items: List<Screen>,
     currentRoute: String?,
     onNavigate: (String) -> Unit,
+    onToggleFabVisibility: () -> Unit,
+    isFabVisible: Boolean,
     modifier: Modifier = Modifier
 ) {
     NavigationBar(modifier = modifier) {
@@ -231,13 +244,21 @@ fun CustomNavigationBar(
             NavigationBarItem(
                 icon = {
                     Icon(
-                        imageVector = screen.icon,
+                        imageVector = if (screen is Screen.ToggleFab) {
+                            if (isFabVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
+                        } else screen.icon,
                         contentDescription = screen.title,
                         tint = screen.color
                     )
                 },
                 selected = currentRoute == screen.route,
-                onClick = { onNavigate(screen.route) },
+                onClick = {
+                    if (screen is Screen.ToggleFab) {
+                        onToggleFabVisibility()
+                    } else {
+                        onNavigate(screen.route)
+                    }
+                },
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = screen.color,
                     unselectedIconColor = LocalContentColor.current.copy(alpha = ContentAlpha.medium)
@@ -247,6 +268,128 @@ fun CustomNavigationBar(
     }
 }
 
+// In AppNavHost.kt update the client selection handling:
+@Composable
+fun AppNavHost(
+    appViewModels: AppViewModels,
+    navController: NavHostController,
+    onToggleNavBar: () -> Unit,
+    modifier: Modifier = Modifier,
+    isFabVisible: Boolean
+) {
+    val uiState by appViewModels.startUpNewArticlesViewModels.uiState.collectAsState()
+
+    // Get current client from settings
+    val currentClientId = uiState.appSettingsSaverModel
+        .find { it.name == "clientBuyerNowId" }?.valueLong ?: 0
+    val currentClient = uiState.clientsModel.find { it.idClientsSu == currentClientId }
+
+    // Existing state management
+    var opnerSaleWindows by rememberSaveable { mutableStateOf(false) }
+    var showClientSelection by rememberSaveable { mutableStateOf(false) }
+    var showClientSelectionWithoutCondition by rememberSaveable { mutableStateOf(false) }
+    var relatedArticleBaseStats by rememberSaveable { mutableStateOf<ArticlesBasesStatsTable?>(null) }
+    var pendingIndexColor by rememberSaveable { mutableIntStateOf(0) }
+    val reloadTrigger by rememberSaveable { mutableIntStateOf(0) }
+
+    Box(modifier = modifier.fillMaxSize()) {
+        NavHost(
+            navController = navController,
+            startDestination = Screen.EditDatabaseWithCreateNewArticles.route,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            composable(Screen.EditDatabaseWithCreateNewArticles.route) {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    StartupAppDisplayerOfNewArticles(
+                        viewModel = appViewModels.startUpNewArticlesViewModels,
+                        onToggleNavBar = onToggleNavBar,
+                        reloadTrigger = reloadTrigger,
+                        onClickToOpenWindos = { articleDataBase, indexColor ->
+                            relatedArticleBaseStats = articleDataBase
+                            pendingIndexColor = indexColor
+
+                            if (currentClientId == 0L) {
+                                showClientSelection = true
+                            } else {
+                                appViewModels.startUpNewArticlesViewModels.openWindowsNewSaleWithUpdateCurrent(
+                                    relatedArticleBaseStats!!.idArticle.toLong(),
+                                    currentClientId,
+                                    pendingIndexColor)
+                                opnerSaleWindows=true
+                            }
+                        }, onClickToOpenClientsW = {
+                            showClientSelectionWithoutCondition=true
+                        },
+                        isFabVisible=isFabVisible
+                    )
+
+                    if (uiState.isLoading) {
+                        LoadingOverlay(
+                            progress = uiState.loadingProgress / 100f,
+                            modifier = Modifier.matchParentSize()
+                        )
+                    }
+                }
+            }
+
+            composable(Screen.SoldCart.route) {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    SoldCartScreen(
+                        viewModel = appViewModels.startUpNewArticlesViewModels,
+                        clientBuyerNow = currentClient,
+                        uiState = uiState,
+                        onConfirmOrder = {
+                            appViewModels.startUpNewArticlesViewModels.updateLongAppSetting("clientBuyerNowId",0)
+
+                        }
+                    )
+                }
+            }
+            composable(Screen.BakingScreen.route) {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    GenerativeAiScreen(
+                        generativeAiViewModel = appViewModels.generativeAiViewModel,
+                    )
+                }
+            }
+        }
+
+        // Overlay dialogs and windows
+        if (showClientSelectionWithoutCondition ||(showClientSelection && currentClientId == 0L)) {
+            ClientSelectionDialog(
+                soldArticle = uiState.soldArticlesModel,
+                clients = uiState.clientsModel,
+                onClientSelected = { client ->
+                    appViewModels.startUpNewArticlesViewModels.updateLongAppSetting("clientBuyerNowId",client.idClientsSu)
+
+                    appViewModels.startUpNewArticlesViewModels.openWindowsNewSaleWithUpdateCurrent(
+                        relatedArticleBaseStats!!.idArticle.toLong(),
+                        client.idClientsSu,
+                        pendingIndexColor)
+                    opnerSaleWindows=true
+
+                    showClientSelection = false
+                },
+                onDismiss = {
+                    showClientSelection = false
+                }
+            )
+        }
+
+        if (opnerSaleWindows) {
+            SaleWindows(
+                modifier = Modifier.padding(horizontal = 3.dp),
+                uiState = uiState,
+                viewModel = appViewModels.startUpNewArticlesViewModels,
+                onDismiss = {
+                    appViewModels.startUpNewArticlesViewModels.clearCurrentSale()
+                    opnerSaleWindows=false
+                },
+                reloadTrigger = reloadTrigger,
+            )
+        }
+    }
+}
 @Composable
 fun ClientSelectionDialog(
     clients: List<ClientsModel>,
@@ -275,7 +418,6 @@ fun ClientSelectionDialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(
             usePlatformDefaultWidth = false,
-            decorFitsSystemWindows = true
         )
     ) {
         Card(
@@ -364,127 +506,6 @@ private fun ClientItem(
         )
     }
 }
-// In AppNavHost.kt update the client selection handling:
-@Composable
-fun AppNavHost(
-    appViewModels: AppViewModels,
-    navController: NavHostController,
-    onToggleNavBar: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val uiState by appViewModels.startUpNewArticlesViewModels.uiState.collectAsState()
-
-    // Get current client from settings
-    val currentClientId = uiState.appSettingsSaverModel
-        .find { it.name == "clientBuyerNowId" }?.valueLong ?: 0
-    val currentClient = uiState.clientsModel.find { it.idClientsSu == currentClientId }
-
-    // Existing state management
-    var opnerSaleWindows by rememberSaveable { mutableStateOf(false) }
-    var showClientSelection by rememberSaveable { mutableStateOf(false) }
-    var showClientSelectionWithoutCondition by rememberSaveable { mutableStateOf(false) }
-    var relatedArticleBaseStats by rememberSaveable { mutableStateOf<ArticlesBasesStatsTable?>(null) }
-    var pendingIndexColor by rememberSaveable { mutableIntStateOf(0) }
-    val reloadTrigger by rememberSaveable { mutableIntStateOf(0) }
-
-    Box(modifier = modifier.fillMaxSize()) {
-        NavHost(
-            navController = navController,
-            startDestination = Screen.EditDatabaseWithCreateNewArticles.route,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            composable(Screen.EditDatabaseWithCreateNewArticles.route) {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    StartupAppDisplayerOfNewArticles(
-                        viewModel = appViewModels.startUpNewArticlesViewModels,
-                        onToggleNavBar = onToggleNavBar,
-                        reloadTrigger = reloadTrigger,
-                        onClickToOpenWindos = { articleDataBase, indexColor ->
-                            relatedArticleBaseStats = articleDataBase
-                            pendingIndexColor = indexColor
-
-                            if (currentClientId == 0L) {
-                                showClientSelection = true
-                            } else {
-                                appViewModels.startUpNewArticlesViewModels.openWindowsNewSaleWithUpdateCurrent(
-                                    relatedArticleBaseStats!!.idArticle.toLong(),
-                                    currentClientId,
-                                    pendingIndexColor)
-                                opnerSaleWindows=true
-                            }
-                        }, onClickToOpenClientsW = {
-                            showClientSelectionWithoutCondition=true
-                        }
-                    )
-
-                    if (uiState.isLoading) {
-                        LoadingOverlay(
-                            progress = uiState.loadingProgress / 100f,
-                            modifier = Modifier.matchParentSize()
-                        )
-                    }
-                }
-            }
-
-            composable(Screen.SoldCart.route) {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    SoldCartScreen(
-                        viewModel = appViewModels.startUpNewArticlesViewModels,
-                        clientBuyerNow = currentClient,
-                        uiState = uiState,
-                        onConfirmOrder = {
-                            appViewModels.startUpNewArticlesViewModels.updateLongAppSetting("clientBuyerNowId",0)
-
-                        }
-                    )
-                }
-            }
-            composable(Screen.BakingScreen.route) {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    GenerativeAiScreen(
-                        generativeAiViewModel = appViewModels.generativeAiViewModel,
-                    )
-                }
-            }
-        }
-
-        // Overlay dialogs and windows
-        if (showClientSelectionWithoutCondition ||(showClientSelection && currentClientId == 0L)) {
-            ClientSelectionDialog(
-                soldArticle = uiState.soldArticlesModel,
-                clients = uiState.clientsModel,
-                onClientSelected = { client ->
-                    appViewModels.startUpNewArticlesViewModels.updateLongAppSetting("clientBuyerNowId",client.idClientsSu)
-
-                    appViewModels.startUpNewArticlesViewModels.openWindowsNewSaleWithUpdateCurrent(
-                        relatedArticleBaseStats!!.idArticle.toLong(),
-                        client.idClientsSu,
-                        pendingIndexColor)
-                    opnerSaleWindows=true
-
-                    showClientSelection = false
-                },
-                onDismiss = {
-                    showClientSelection = false
-                }
-            )
-        }
-
-        if (opnerSaleWindows) {
-            SaleWindows(
-                modifier = Modifier.padding(horizontal = 3.dp),
-                uiState = uiState,
-                viewModel = appViewModels.startUpNewArticlesViewModels,
-                onDismiss = {
-                    appViewModels.startUpNewArticlesViewModels.clearCurrentSale()
-                    opnerSaleWindows=false
-                },
-                reloadTrigger = reloadTrigger,
-            )
-        }
-    }
-}
-
 
 @Composable
 fun LoadingOverlay(

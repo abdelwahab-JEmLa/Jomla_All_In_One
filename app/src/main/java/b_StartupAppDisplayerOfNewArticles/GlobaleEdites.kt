@@ -43,7 +43,7 @@ fun FloatingActionButtonGroup(
     onToggleOutlineFilter: () -> Unit,
     onChangeGridColumns: (Int) -> Unit,
     viewModel: StartUpNewArticlesViewModels,
-    onClickToOpenClientsW: () -> Unit
+    onClickToOpenClientsListW: () -> Unit
 ) {
     var currentGridColumns by remember { mutableIntStateOf(2) }
     var showLabels by remember { mutableStateOf(false) }
@@ -69,7 +69,7 @@ fun FloatingActionButtonGroup(
                         icon = Icons.Default.People,
                         label = "Clients Windows",
                         color = Color(0xFFE91E63), // Pink
-                        onClick = onClickToOpenClientsW
+                        onClick = onClickToOpenClientsListW
                     ),
                     FabData(
                         icon = Icons.Default.CloudDownload,

@@ -102,7 +102,7 @@ fun StartupAppDisplayerOfNewArticles(
     reloadTrigger: Int,
     modifier: Modifier = Modifier,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
-    modeFilterToTest:Boolean =true, onClickToOpenClientsW: () -> Unit,
+    modeFilterToTest: Boolean = true, onClickToOpenClientsW: () -> Unit, isFabVisible: Boolean,
 ) {
     var gridColumnsForNewArticels by remember { mutableStateOf(2) }
     var showFilter by remember { mutableStateOf(false) }
@@ -124,8 +124,70 @@ fun StartupAppDisplayerOfNewArticles(
         reloadTrigger = reloadTrigger,
         modifier = modifier,
         onClickToOpenWindos = onClickToOpenWindos ,
-        modeFilterToTest=modeFilterToTest, onClickToOpenClientsW = onClickToOpenClientsW
+        modeFilterToTest=modeFilterToTest,
+        onClickToOpenClientsW = onClickToOpenClientsW ,
+        isFabVisible=isFabVisible
     )
+}
+@Composable
+fun ArticleDisplayScreen(
+    uiState: UiState,
+    gridColumns: Int,
+    showFilter: Boolean,
+    filterText: String,
+    gridState: LazyStaggeredGridState,
+    onFilterTextChange: (String) -> Unit,
+    onToggleFilter: () -> Unit,
+    onChangeGridColumns: (Int) -> Unit,
+    onToggleNavBar: () -> Unit,
+    viewModel: StartUpNewArticlesViewModels,
+    reloadTrigger: Int,
+    modifier: Modifier = Modifier,
+    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
+    modeFilterToTest: Boolean = false,
+    onClickToOpenClientsW: () -> Unit,
+    isFabVisible: Boolean
+) {
+
+    Box(modifier = modifier.fillMaxSize()) {
+        Column {
+            SearchFilter(
+                showFilter = showFilter,
+                filterText = filterText,
+                onFilterTextChange = onFilterTextChange
+            )
+
+            ArticleGrid(
+                uiState = uiState,
+                gridColumns = gridColumns,
+                filterText = filterText,
+                showFilter = showFilter,
+                gridState = gridState,
+                viewModel = viewModel,
+                reloadTrigger = reloadTrigger,
+                onClickToOpenWindos = onClickToOpenWindos,
+                modeFilterToTest = modeFilterToTest
+            )
+        }
+
+        AnimatedVisibility(
+            visible = isFabVisible,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            FloatingActionButtonGroup(
+                onToggleNavBar = onToggleNavBar,
+                onToggleOutlineFilter = onToggleFilter,
+                onChangeGridColumns = onChangeGridColumns,
+                onClickToOpenClientsListW = onClickToOpenClientsW,
+                viewModel = viewModel
+            )
+        }
+
+        if (uiState.isLoading) {
+            LoadingOverlay(progress = uiState.loadingProgress)
+        }
+    }
 }
 class ArticlePagingSource(
     private val articles: List<ArticlesBasesStatsTable>,
@@ -344,56 +406,7 @@ private fun ArticleGrid(
     }
 }
 
-@Composable
-private fun ArticleDisplayScreen(
-    uiState: UiState,
-    gridColumns: Int,
-    showFilter: Boolean,
-    filterText: String,
-    gridState: LazyStaggeredGridState,
-    onFilterTextChange: (String) -> Unit,
-    onToggleFilter: () -> Unit,
-    onChangeGridColumns: (Int) -> Unit,
-    onToggleNavBar: () -> Unit,
-    viewModel: StartUpNewArticlesViewModels,
-    reloadTrigger: Int,
-    modifier: Modifier = Modifier,
-    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
-    modeFilterToTest: Boolean =false, onClickToOpenClientsW: () -> Unit
-) {
-    Box(modifier = modifier.fillMaxSize()) {
-        Column {
-            SearchFilter(
-                showFilter = showFilter,
-                filterText = filterText,
-                onFilterTextChange = onFilterTextChange
-            )
 
-            ArticleGrid(
-                uiState = uiState,
-                gridColumns = gridColumns,
-                filterText = filterText,
-                showFilter = showFilter,
-                gridState = gridState,
-                viewModel = viewModel,
-                reloadTrigger = reloadTrigger, onClickToOpenWindos = onClickToOpenWindos
-                        ,modeFilterToTest=modeFilterToTest
-            )
-        }
-
-        FloatingActionButtonGroup(
-            onToggleNavBar = onToggleNavBar,
-            onToggleOutlineFilter = onToggleFilter,
-            onChangeGridColumns = onChangeGridColumns,
-            onClickToOpenClientsW = onClickToOpenClientsW,
-            viewModel = viewModel
-        )
-
-        if (uiState.isLoading) {
-            LoadingOverlay(progress = uiState.loadingProgress)
-        }
-    }
-}
 
 sealed class ArticleLayout {
     data object DemiUno : ArticleLayout()
