@@ -1,4 +1,4 @@
-package z_GeminiAi
+package e_AiGroupeForSupplier
 
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.BorderStroke

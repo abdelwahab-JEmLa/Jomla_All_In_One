@@ -1,4 +1,4 @@
-package z_GeminiAi
+package e_AiGroupeForSupplier
 
 import a_RoomDB.SoldArticlesTabelle
 import android.graphics.Bitmap

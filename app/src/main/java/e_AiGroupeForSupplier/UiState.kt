@@ -1,4 +1,4 @@
-package z_GeminiAi
+package e_AiGroupeForSupplier
 
 /**
  * A sealed hierarchy describing the state of the text generation.

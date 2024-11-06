@@ -96,8 +96,8 @@ import c_WindosBuyAndDesplayeArticleStats.SaleWindows
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.FirebaseDatabase
 import d_SoldCartScreen.SoldCartScreen
-import z_GeminiAi.GenerativeAiScreen
-import z_GeminiAi.GenerativeAiViewModel
+import e_AiGroupeForSupplier.GenerativeAiScreen
+import e_AiGroupeForSupplier.GenerativeAiViewModel
 
 // Application.kt
 class MyApplication : Application() {
