@@ -837,6 +837,7 @@ private fun ImageDisplayer(
 ) {
     var currentQuality by remember { mutableStateOf(5f) }
     var isLoading by remember { mutableStateOf(true) }
+    var imageLoaded by remember { mutableStateOf(false) }
 
     val blurRadius by animateFloatAsState(
         targetValue = if (isLoading) 25f else 0f,
@@ -846,10 +847,15 @@ private fun ImageDisplayer(
 
     LaunchedEffect(reloadKey) {
         isLoading = true
+        imageLoaded = false
         currentQuality = 5f
-        delay(300) // Reduced initial delay
-        isLoading = false
+
+        delay(300) // Initial loading delay
         currentQuality = 100f
+        imageLoaded = true
+
+        delay(700) // Keep blur for 700ms after image loads
+        isLoading = false
     }
 
     val imagePath by remember(viewModel.viewModelImagesPath, article.idArticle, indexColor) {
