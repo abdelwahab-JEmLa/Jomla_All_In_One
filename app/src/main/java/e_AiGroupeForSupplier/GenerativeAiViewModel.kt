@@ -161,7 +161,7 @@ class GenerativeAiViewModel : ViewModel() {
         }
     }
 
-    private fun parseResponseToTabele(jsonResponse: String): List<GroupeurBonCommendToSupplierTabele> {
+    fun parseResponseToTabele(jsonResponse: String): List<GroupeurBonCommendToSupplierTabele> {
         Log.d(TAG, "Parsing JSON response")
         try {
             val reader = JsonReader(StringReader(jsonResponse))
@@ -179,13 +179,16 @@ class GenerativeAiViewModel : ViewModel() {
                     val item = element.asJsonObject
                     GroupeurBonCommendToSupplierTabele(
                         vid = nextVid + index,
-                        idArticle = item.get("idArticle").asInt,
-                        nameArticle = item.get("nameArticle").asString,
-                        color1SoldQuantity = item.get("color1SoldQuantity").asInt,
-                        color2SoldQuantity = item.get("color2SoldQuantity").asInt,
-                        color3SoldQuantity = item.get("color3SoldQuantity").asInt,
-                        color4SoldQuantity = item.get("color4SoldQuantity").asInt,
-                        clientSoldToItId = item.get("clientSoldToItId").asString
+                        idArticle = item.get("idArticle")?.asInt
+                            ?: throw IllegalStateException("idArticle is required"),
+                        nameArticle = item.get("nameArticle")?.asString
+                            ?: throw IllegalStateException("nameArticle is required"),
+                        color1SoldQuantity = item.get("color1SoldQuantity")?.asInt ?: 0,
+                        color2SoldQuantity = item.get("color2SoldQuantity")?.asInt ?: 0,
+                        color3SoldQuantity = 0, // Default value since it's not in the input JSON
+                        color4SoldQuantity = 0, // Default value since it's not in the input JSON
+                        clientSoldToItId = item.get("clientSoldToItId")?.asString
+                            ?: throw IllegalStateException("clientSoldToItId is required")
                     )
                 }
             }
@@ -197,7 +200,6 @@ class GenerativeAiViewModel : ViewModel() {
             throw IllegalStateException("Failed to parse JSON response: ${e.message}")
         }
     }
-
     private fun cleanJsonResponse(response: String): String {
         // Extract JSON content from potential code blocks
         val jsonPattern = "```json\\s*(.+?)\\s*```".toRegex(RegexOption.DOT_MATCHES_ALL)
