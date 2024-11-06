@@ -5,6 +5,8 @@ import a_RoomDB.CategoriesTabelle
 import a_RoomDB.ColorsArticlesTabelle
 import android.graphics.drawable.Drawable
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -64,7 +66,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.BlurEffect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TileMode
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
@@ -830,16 +835,20 @@ private fun ImageDisplayer(
     cornerRadius: Dp = 4.dp,
     imageSize: DpSize,
 ) {
-    var currentQuality by remember { mutableStateOf(5f) } // Start with lower quality
+    var currentQuality by remember { mutableStateOf(5f) }
     var isLoading by remember { mutableStateOf(true) }
 
-    LaunchedEffect(Unit) {
-        delay(500) // Initial delay for blur effect
+    val blurRadius by animateFloatAsState(
+        targetValue = if (isLoading) 25f else 0f,
+        animationSpec = tween(700),
+        label = "blur"
+    )
+
+    LaunchedEffect(reloadKey) {
+        isLoading = true
+        currentQuality = 5f
+        delay(300) // Reduced initial delay
         isLoading = false
-        currentQuality = 15f
-        delay(100)
-        currentQuality = 50f
-        delay(100)
         currentQuality = 100f
     }
 
@@ -872,11 +881,17 @@ private fun ImageDisplayer(
                 modifier = Modifier
                     .fillMaxSize()
                     .clip(RoundedCornerShape(cornerRadius))
+                    .graphicsLayer {
+                        if (blurRadius > 0f) {
+                            renderEffect = BlurEffect(
+                                radiusX = blurRadius,
+                                radiusY = blurRadius,
+                                edgeTreatment = TileMode.Decal
+                            )
+                        }
+                    }
             ) {
                 it.apply {
-                    if (isLoading) {
-                        transform(jp.wasabeef.glide.transformations.BlurTransformation(500))
-                    }
                     applyImageOptions(article, indexColor, currentQuality) { isFirstResource ->
                         if (isFirstResource && currentQuality < 100f) {
                             currentQuality = 100f
@@ -900,6 +915,7 @@ private fun ImageDisplayer(
     }
 }
 
+// Also update ColorOverlayWithBlur to use the same blur technique
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 private fun ColorOverlayWithBlur(
@@ -908,17 +924,21 @@ private fun ColorOverlayWithBlur(
     onClickToOpenWindow: () -> Unit,
 ) {
     Box {
-        // Blurred background image with increased blur radius
         GlideImage(
             model = R.drawable.logo,
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxSize()
-                .clip(RoundedCornerShape(cornerRadius)),
+                .clip(RoundedCornerShape(cornerRadius))
+                .graphicsLayer {
+                    renderEffect = BlurEffect(
+                        radiusX = 25f,
+                        radiusY = 25f,
+                        edgeTreatment = TileMode.Decal
+                    )
+                },
             contentDescription = null
-        ) {
-            it.transform(jp.wasabeef.glide.transformations.BlurTransformation(25)) // Increased blur
-        }
+        )
 
         Box(
             modifier = Modifier
@@ -936,6 +956,7 @@ private fun ColorOverlayWithBlur(
         )
     }
 }
+
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
