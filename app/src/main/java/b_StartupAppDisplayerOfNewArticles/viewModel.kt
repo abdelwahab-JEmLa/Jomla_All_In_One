@@ -359,6 +359,47 @@ class StartUpNewArticlesViewModels(
         }
     }
 
+
+    fun updateLongAppSetting(name: String, value: Long) {
+        viewModelScope.launch {
+            try {
+
+                val existingSettings = _uiState.value.appSettingsSaverModel
+                val maxId = existingSettings.maxOfOrNull { it.id } ?: 0
+
+                val currentSetting = existingSettings.find { it.name == name }
+                    ?.copy(
+                        valueLong = value,
+                        date = Date()
+                    )
+                    ?: AppSettingsSaverModel(
+                        id = maxId + 1,
+                        name = name,
+                        valueLong = value,
+                        date = Date()
+                    )
+
+                // Update local database
+                database.appSettingsSaverModelDao().insert(currentSetting)
+
+                // Update Firebase
+                firebaseDatabase.getReference("A_AppSettingsSaverModel")
+                    .child(currentSetting.id.toString())
+                    .setValue(currentSetting)
+                    .await()
+
+                _uiState.update { state ->
+                    state.copy(
+                        appSettingsSaverModel = state.appSettingsSaverModel.map {
+                            if (it.name == name) currentSetting else it
+                        }
+                    )
+                }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(error = e.message) }
+            }
+        }
+    }
     private suspend fun createNewArrivaleCategoryIfNeeded(existingCategories: List<CategoriesTabelle>) {
         val hasNewArrivale = existingCategories.any {
             it.nomCategorieInCategoriesTabele == "NewArrivale"
@@ -507,44 +548,4 @@ class StartUpNewArticlesViewModels(
         }
     }
 
-    fun updateLongAppSetting(name: String, value: Long) {
-        viewModelScope.launch {
-            try {
-
-                val existingSettings = _uiState.value.appSettingsSaverModel
-                val maxId = existingSettings.maxOfOrNull { it.id } ?: 0
-
-                val currentSetting = existingSettings.find { it.name == name }
-                    ?.copy(
-                        valueLong = value,
-                        date = Date()
-                    )
-                    ?: AppSettingsSaverModel(
-                        id = maxId + 1,
-                        name = name,
-                        valueLong = value,
-                        date = Date()
-                    )
-
-                // Update local database
-                database.appSettingsSaverModelDao().insert(currentSetting)
-
-                // Update Firebase
-                firebaseDatabase.getReference("A_AppSettingsSaverModel")
-                    .child(currentSetting.id.toString())
-                    .setValue(currentSetting)
-                    .await()
-
-                _uiState.update { state ->
-                    state.copy(
-                        appSettingsSaverModel = state.appSettingsSaverModel.map {
-                            if (it.name == name) currentSetting else it
-                        }
-                    )
-                }
-            } catch (e: Exception) {
-                _uiState.update { it.copy(error = e.message) }
-            }
-        }
-    }
 }

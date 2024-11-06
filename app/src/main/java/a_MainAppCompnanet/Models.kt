@@ -45,7 +45,6 @@ data class ArticlesBasesStatsTable(
     var minQuan: Int = 0,
     var monBenfice: Double = 0.0,
     var monPrixVent: Double = 0.0,
-    var diponibilityState: String = "",
     var neaon2: String = "",
     var idCategorie: Double = 0.0,
     var funChangeImagsDimention: Boolean = false, //imgStatIsSmall
@@ -62,6 +61,7 @@ data class ArticlesBasesStatsTable(
     var benificeClient: Double = 0.0,
     var monBeneficeUniter: Double = 0.0,
     //Stats
+    var diponibilityState: String = "",  //StatsInIt: "Non Dispo"
     var articleHaveUniteImages: Boolean = false,
     var itsNewArrivale: Boolean = false,
     var imageDimention: String = "",

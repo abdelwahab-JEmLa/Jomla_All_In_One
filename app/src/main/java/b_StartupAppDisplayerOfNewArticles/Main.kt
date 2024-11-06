@@ -233,7 +233,7 @@ class ArticlePagingSource(
 
     private fun filterArticles(): List<ArticlesBasesStatsTable> {
         return if (filterText.isEmpty()) {
-            articles.filter { it.idForSearchArticles <= 0 }
+            articles.filter { it.idForSearchArticles <= 0 && it.diponibilityState==""}
         } else {
             articles.filter { article ->
                 (article.nomArticleFinale.contains(filterText, ignoreCase = true) ||
@@ -373,8 +373,6 @@ private fun ArticleGrid(
         }
     }
 }
-
-
 
 sealed class ArticleLayout {
     data object DemiUno : ArticleLayout()
