@@ -218,35 +218,12 @@ fun ArticleDisplayScreen(
 }
 
 
-class ArticlePagingSource(  //TODO fait que si   artic.idForSearchArticles >0 de ne pas affiche l
-    //article que quan on ecrit au filter
-    //et regle pk le loading de pagin quen 10 article s affichon ne marche
-    //pas normaletn que on arrive a la fin du page ca commence loading
-    // et fait cache les page du top pour une affiche fluid on
-    //liberon du memoir
+class ArticlePagingSource(
     private val articles: List<ArticlesBasesStatsTable>,
     private val filterText: String,
-    private val modeFilterToTest: Boolean
 ) : PagingSource<Int, ArticlesBasesStatsTable>() {
-
-    // Configuration class to make the criteria clearer
-    private data class ArticleConfiguration(
-        val imageDimension: String,
-        val colorCount: Int,
-        val description: String
-    )
-
-    // Define all 8 required configurations
-    private val requiredConfigurations = listOf(
-        ArticleConfiguration("", 1, "Empty dimension with 1 color"),
-        ArticleConfiguration("", 2, "Empty dimension with 2 colors"),
-        ArticleConfiguration("", 3, "Empty dimension with 3 colors"),
-        ArticleConfiguration("", 4, "Empty dimension with 4 colors"),
-        ArticleConfiguration("Demi", 1, "Demi dimension with 1 color"),
-        ArticleConfiguration("Demi", 2, "Demi dimension with 2 colors"),
-        ArticleConfiguration("Demi", 3, "Demi dimension with 3 colors"),
-        ArticleConfiguration("Demi", 4, "Demi dimension with 4 colors")
-    )
+    private val cachedFilteredArticles = mutableMapOf<Int, List<ArticlesBasesStatsTable>>()
+    private val pageSize = 10
 
     override fun getRefreshKey(state: PagingState<Int, ArticlesBasesStatsTable>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
@@ -255,79 +232,39 @@ class ArticlePagingSource(  //TODO fait que si   artic.idForSearchArticles >0 de
         }
     }
 
-    private fun countArticleColors(article: ArticlesBasesStatsTable): Int {
-        return listOf(
-            article.couleur1,
-            article.couleur2,
-            article.couleur3,
-            article.couleur4
-        ).count { !it.isNullOrEmpty() }
-    }
-
-    private fun findArticleForConfiguration(
-        config: ArticleConfiguration,
-        excludedIds: Set<Int>
-    ): ArticlesBasesStatsTable? {
-        return articles.firstOrNull { article ->
-            article.idArticle !in excludedIds &&
-                    article.imageDimention == config.imageDimension &&
-                    countArticleColors(article) == config.colorCount &&
-                    (filterText.isEmpty() || article.nomArticleFinale.contains(filterText, ignoreCase = true))
-        }
-    }
-
-    private fun findAllConfigurationMatches(): List<ArticlesBasesStatsTable> {
-        val matchingArticles = mutableListOf<ArticlesBasesStatsTable>()
-        val usedIds = mutableSetOf<Int>()
-        var missingConfigurations = mutableListOf<ArticleConfiguration>()
-
-        // Try to find one article for each configuration
-        for (config in requiredConfigurations) {
-            val match = findArticleForConfiguration(config, usedIds)
-            if (match != null) {
-                matchingArticles.add(match)
-                usedIds.add(match.idArticle)
-            } else {
-                missingConfigurations.add(config)
+    private fun filterArticles(): List<ArticlesBasesStatsTable> {
+        return if (filterText.isEmpty()) {
+            articles.filter { it.idForSearchArticles <= 0 }
+        } else {
+            articles.filter { article ->
+                (article.nomArticleFinale.contains(filterText, ignoreCase = true) ||
+                        article.idForSearchArticles > 0)
             }
         }
-
-        // Log missing configurations for debugging if needed
-        if (missingConfigurations.isNotEmpty()) {
-            println("Warning: Could not find articles for the following configurations:")
-            missingConfigurations.forEach { config ->
-                println("- ${config.description}")
-            }
-        }
-
-        return matchingArticles
     }
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ArticlesBasesStatsTable> {
         val page = params.key ?: 0
-        val pageSize = params.loadSize
 
-        val filteredArticles = when {
-            !modeFilterToTest -> articles // Show all articles when modeFilterToTest is false
-            else -> findAllConfigurationMatches() // Find exactly one article per configuration
+        return try {
+            val filteredArticles = cachedFilteredArticles.getOrPut(page) {
+                filterArticles().drop(page * pageSize).take(pageSize)
+            }
+
+            LoadResult.Page(
+                data = filteredArticles,
+                prevKey = if (page == 0) null else page - 1,
+                nextKey = if (filteredArticles.size < pageSize) null else page + 1
+            )
+        } catch (e: Exception) {
+            LoadResult.Error(e)
+        } finally {
+            // Clear cache for pages that are no longer needed
+            cachedFilteredArticles.keys.filter { it < page - 1 || it > page + 1 }
+                .forEach { cachedFilteredArticles.remove(it) }
         }
-
-        val start = page * pageSize
-        val items = filteredArticles.drop(start).take(pageSize)
-
-        // For debugging: verify we have the expected number of articles
-        if (modeFilterToTest && filteredArticles.size != requiredConfigurations.size) {
-            println("Warning: Found ${filteredArticles.size} articles instead of expected ${requiredConfigurations.size}")
-        }
-
-        return LoadResult.Page(
-            data = items,
-            prevKey = if (page == 0) null else page - 1,
-            nextKey = if (items.isEmpty()) null else page + 1
-        )
     }
 }
-
 
 @Composable
 private fun ArticleGrid(
@@ -360,8 +297,7 @@ private fun ArticleGrid(
                             it.nomCategorie == category.nomCategorieInCategoriesTabele && !it.itsNewArrivale
                         }
                     },
-                    filterText = filterText,
-                    modeFilterToTest=modeFilterToTest
+                    filterText = filterText
                 )
             }
         }
