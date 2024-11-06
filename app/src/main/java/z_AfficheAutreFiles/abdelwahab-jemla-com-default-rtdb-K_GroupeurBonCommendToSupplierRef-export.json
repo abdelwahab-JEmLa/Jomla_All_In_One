@@ -1,0 +1,83 @@
+[
+  null,
+  {
+    "clientSoldToItId": "1",
+    "color1SoldQuantity": 2,
+    "color2SoldQuantity": 0,
+    "color3SoldQuantity": 0,
+    "color4SoldQuantity": 0,
+    "idArticle": 484,
+    "nameArticle": "Wiwi Halkom®",
+    "vid": 1
+  },
+  {
+    "clientSoldToItId": "1",
+    "color1SoldQuantity": 1,
+    "color2SoldQuantity": 0,
+    "color3SoldQuantity": 0,
+    "color4SoldQuantity": 0,
+    "idArticle": 3557,
+    "nameArticle": "hnina",
+    "vid": 2
+  },
+  {
+    "clientSoldToItId": "3",
+    "color1SoldQuantity": 1,
+    "color2SoldQuantity": 0,
+    "color3SoldQuantity": 0,
+    "color4SoldQuantity": 0,
+    "idArticle": 1072,
+    "nameArticle": "pupg caramel",
+    "vid": 3
+  },
+  {
+    "clientSoldToItId": "1,3",
+    "color1SoldQuantity": 1,
+    "color2SoldQuantity": 1,
+    "color3SoldQuantity": 0,
+    "color4SoldQuantity": 0,
+    "idArticle": 472,
+    "nameArticle": "Kinder Joy®",
+    "vid": 4
+  },
+  {
+    "clientSoldToItId": "3",
+    "color1SoldQuantity": 3,
+    "color2SoldQuantity": 0,
+    "color3SoldQuantity": 0,
+    "color4SoldQuantity": 0,
+    "idArticle": 447,
+    "nameArticle": "Rigolo®",
+    "vid": 5
+  },
+  {
+    "clientSoldToItId": "3",
+    "color1SoldQuantity": 2,
+    "color2SoldQuantity": 0,
+    "color3SoldQuantity": 0,
+    "color4SoldQuantity": 0,
+    "idArticle": 3558,
+    "nameArticle": "hnina",
+    "vid": 6
+  },
+  {
+    "clientSoldToItId": "3",
+    "color1SoldQuantity": 1,
+    "color2SoldQuantity": 0,
+    "color3SoldQuantity": 0,
+    "color4SoldQuantity": 0,
+    "idArticle": 842,
+    "nameArticle": "optilla 1k",
+    "vid": 7
+  },
+  {
+    "clientSoldToItId": "3",
+    "color1SoldQuantity": 1,
+    "color2SoldQuantity": 0,
+    "color3SoldQuantity": 0,
+    "color4SoldQuantity": 0,
+    "idArticle": 3559,
+    "nameArticle": "optil70",
+    "vid": 8
+  }
+]
