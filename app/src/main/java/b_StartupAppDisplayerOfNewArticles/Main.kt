@@ -834,7 +834,7 @@ private fun ImageDisplayer(
 
     val blurRadius by animateFloatAsState(
         targetValue = if (isLoading) 25f else 0f,
-        animationSpec = tween(1500),  //700
+        animationSpec = tween(700),
         label = "blur"
     )
 
@@ -843,11 +843,11 @@ private fun ImageDisplayer(
         imageLoaded = false
         currentQuality = 5f
 
-        delay(1500) // Initial loading delay     300
+        delay(300) // Initial loading delay
         currentQuality = 100f
         imageLoaded = true
 
-        delay(1500) // Keep blur for 700ms after image loads
+        delay(700) // Keep blur for 700ms after image loads
         isLoading = false
     }
 
