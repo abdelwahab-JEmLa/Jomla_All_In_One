@@ -218,7 +218,12 @@ fun ArticleDisplayScreen(
 }
 
 
-class ArticlePagingSource(
+class ArticlePagingSource(  //TODO fait que si   artic.idForSearchArticles >0 de ne pas affiche l
+    //article que quan on ecrit au filter
+    //et regle pk le loading de pagin quen 10 article s affichon ne marche
+    //pas normaletn que on arrive a la fin du page ca commence loading
+    // et fait cache les page du top pour une affiche fluid on
+    //liberon du memoir
     private val articles: List<ArticlesBasesStatsTable>,
     private val filterText: String,
     private val modeFilterToTest: Boolean
@@ -976,10 +981,9 @@ private fun ColorOverlayWithBlur(
                 .clip(RoundedCornerShape(cornerRadius)),
             contentDescription = null
         ) {
-            it.transform(jp.wasabeef.glide.transformations.BlurTransformation(500)) // Increased blur
+            it.transform(jp.wasabeef.glide.transformations.BlurTransformation(25)) // Increased blur
         }
 
-        // Rest of the overlay components remain the same...
         Box(
             modifier = Modifier
                 .fillMaxSize()

@@ -105,7 +105,7 @@ class StartUpNewArticlesViewModels(
         firebaseDatabase.getReference("K_GroupeurBonCommendToSupplierRef").removeValue()
 
     }
-     fun addNewEmptyArticle(nameArticleNIB: String): ArticlesBasesStatsTable? {
+     suspend fun addNewEmptyArticle(nameArticleNIB: String): ArticlesBasesStatsTable? {
         return try {
             val currentState = _uiState.value
 
@@ -133,7 +133,11 @@ class StartUpNewArticlesViewModels(
 
             // Update state with the new list
             _uiState.update { it.copy(articlesBasesStatTables = updatedArticles) }
+            // Add to Firebase
+            refDBJetPackExport.child(newArticle.idArticle.toString()).setValue(newArticle)
 
+            // Add to Room database
+            database.articlesBasesStatsModelDao().insert(newArticle)
             newArticle
 
         } catch (exception: Exception) {
