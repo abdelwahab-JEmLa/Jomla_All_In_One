@@ -1249,6 +1249,7 @@ private fun SearchFilter(
     LaunchedEffect(showFilter) {
         if (showFilter) {
             focusRequester.requestFocus()
+            onFilterTextChange("")
             keyboardController?.show()
         }
     }
