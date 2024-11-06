@@ -6,10 +6,14 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -52,84 +56,103 @@ fun FloatingActionButtonGroup(
 
     Column(
         horizontalAlignment = Alignment.End,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
     ) {
         AnimatedVisibility(
             visible = isExpanded,
             enter = fadeIn() + expandHorizontally(),
             exit = fadeOut() + shrinkHorizontally()
         ) {
-            Column(
-                horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.verticalScroll(rememberScrollState())
+            Surface(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .padding(bottom = 8.dp),
+                color = Color.Transparent
             ) {
-                listOf(
-
-                    FabData(
-                        icon = Icons.Default.People,
-                        label = "Clients Windows",
-                        color = Color(0xFFE91E63), // Pink
-                        onClick = onClickToOpenClientsListW
-                    ),
-                    FabData(
-                        icon = Icons.Default.CloudDownload,
-                        label = "Import from Firebase",
-                        color = Color(0xFFE91E63), // Pink
-                        onClick = { viewModel.importFromFirebase() }
-                    ),
-                    FabData(
-                        icon = Icons.Default.EditCalendar,
-                        label = "Filter",
-                        color = Color(0xFF2196F3), // Blue
-                        onClick = { onToggleOutlineFilter() }
-                    ),
-                    FabData(
-                        icon = Icons.Default.GridView,
-                        label = "Grid",
-                        color = Color(0xFF4CAF50), // Green
-                        onClick = {
-                            currentGridColumns = (currentGridColumns % 4) + 1
-                            onChangeGridColumns(currentGridColumns)
-                        }
-                    ),
-                    FabData(
-                        icon = if (showLabels) Icons.Default.Close else Icons.Default.Details,
-                        label = if (showLabels) "Hide Labels" else "Show Labels",
-                        color = Color(0xFFFFC107), // Amber
-                        onClick = { showLabels = !showLabels }
-                    ),
-                    FabData(
-                        icon = Icons.Default.Home,
-                        label = "Home",
-                        color = Color(0xFF9C27B0), // Purple
-                        onClick = { onToggleNavBar() }
-                    )
-                ).forEach { fabData ->
-                    FabButton(
-                        icon = fabData.icon,
-                        label = fabData.label,
-                        color = fabData.color,
-                        showLabel = showLabels,
-                        onClick = fabData.onClick
-                    )
+                Column(
+                    horizontalAlignment = Alignment.End,
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier
+                        .verticalScroll(rememberScrollState())
+                        .padding(bottom = 56.dp) // Add padding to avoid overlap with main FAB
+                ) {
+                    listOf(
+                        FabData(
+                            icon = Icons.Default.People,
+                            label = "Clients Windows",
+                            color = Color(0xFFE91E63),
+                            onClick = onClickToOpenClientsListW
+                        ),
+                        FabData(
+                            icon = Icons.Default.CloudDownload,
+                            label = "Import from Firebase",
+                            color = Color(0xFFE91E63),
+                            onClick = { viewModel.importFromFirebase() }
+                        ),
+                        FabData(
+                            icon = Icons.Default.EditCalendar,
+                            label = "Filter",
+                            color = Color(0xFF2196F3),
+                            onClick = { onToggleOutlineFilter() }
+                        ),
+                        FabData(
+                            icon = Icons.Default.GridView,
+                            label = "Grid",
+                            color = Color(0xFF4CAF50),
+                            onClick = {
+                                currentGridColumns = (currentGridColumns % 4) + 1
+                                onChangeGridColumns(currentGridColumns)
+                            }
+                        ),
+                        FabData(
+                            icon = if (showLabels) Icons.Default.Close else Icons.Default.Details,
+                            label = if (showLabels) "Hide Labels" else "Show Labels",
+                            color = Color(0xFFFFC107),
+                            onClick = { showLabels = !showLabels }
+                        ),
+                        FabData(
+                            icon = Icons.Default.Home,
+                            label = "Home",
+                            color = Color(0xFF9C27B0),
+                            onClick = { onToggleNavBar() }
+                        )
+                    ).forEach { fabData ->
+                        FabButton(
+                            icon = fabData.icon,
+                            label = fabData.label,
+                            color = fabData.color,
+                            showLabel = showLabels,
+                            onClick = fabData.onClick
+                        )
+                    }
                 }
             }
         }
 
-        FloatingActionButton(
-            onClick = { isExpanded = !isExpanded },
-            modifier = Modifier.size(48.dp),
-            containerColor = Color(0xFF3F51B5) // Indigo
+        // Main FAB
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(end = 16.dp)
         ) {
-            Icon(
-                imageVector = if (isExpanded) Icons.Default.Close else Icons.Default.Details,
-                contentDescription = if (isExpanded) "Collapse" else "Expand"
-            )
+            FloatingActionButton(
+                onClick = { isExpanded = !isExpanded },
+                modifier = Modifier
+                    .size(48.dp)
+                    .align(Alignment.BottomEnd),
+                containerColor = Color(0xFF3F51B5)
+            ) {
+                Icon(
+                    imageVector = if (isExpanded) Icons.Default.Close else Icons.Default.Details,
+                    contentDescription = if (isExpanded) "Collapse" else "Expand"
+                )
+            }
         }
     }
 }
-
 private data class FabData(
     val icon: ImageVector,
     val label: String,

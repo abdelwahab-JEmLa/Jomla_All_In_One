@@ -148,38 +148,51 @@ fun ArticleDisplayScreen(
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     modeFilterToTest: Boolean = false,
     onClickToOpenClientsW: () -> Unit,
-    isFabVisible: Boolean, onClickDonne: () -> Unit,
+    isFabVisible: Boolean,
+    onClickDonne: () -> Unit,
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        Column {
-            SearchFilter(
-                showFilter = isFabVisible,
-                filterText = filterText,
-                onFilterTextChange = onFilterTextChange,
-                onAddNotInBaseArticle=onClickToOpenWindos,
-                viewModel = viewModel,
-                uiState=uiState,
-                onClickDonne  = onClickDonne
-            )
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        // Main content in a Box to constrain its height
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = if (isFabVisible) 80.dp else 0.dp) // Add padding at bottom when FAB is visible
+        ) {
+            Column {
+                SearchFilter(
+                    showFilter = isFabVisible,
+                    filterText = filterText,
+                    onFilterTextChange = onFilterTextChange,
+                    onAddNotInBaseArticle = onClickToOpenWindos,
+                    viewModel = viewModel,
+                    uiState = uiState,
+                    onClickDonne = onClickDonne
+                )
 
-            ArticleGrid(
-                uiState = uiState,
-                gridColumns = gridColumns,
-                filterText = filterText,
-                showFilter = isFabVisible,
-                gridState = gridState,
-                viewModel = viewModel,
-                reloadTrigger = reloadTrigger,
-                onClickToOpenWindos = onClickToOpenWindos,
-                modeFilterToTest = modeFilterToTest
-            )
+                ArticleGrid(
+                    uiState = uiState,
+                    gridColumns = gridColumns,
+                    filterText = filterText,
+                    showFilter = isFabVisible,
+                    gridState = gridState,
+                    viewModel = viewModel,
+                    reloadTrigger = reloadTrigger,
+                    onClickToOpenWindos = onClickToOpenWindos,
+                    modeFilterToTest = modeFilterToTest
+                )
+            }
         }
 
-        // Positionnement en bas à droite avec un léger espace (16.dp) depuis le bord
+        // FAB positioned at the bottom
         AnimatedVisibility(
             visible = isFabVisible,
             enter = fadeIn(),
-            exit = fadeOut()
+            exit = fadeOut(),
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp)
         ) {
             FloatingActionButtonGroup(
                 onToggleNavBar = onToggleNavBar,
@@ -188,13 +201,15 @@ fun ArticleDisplayScreen(
                 onClickToOpenClientsListW = onClickToOpenClientsW,
                 viewModel = viewModel,
                 modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(16.dp)  // Ajout d'un padding pour un espace depuis le bord
             )
         }
 
+        // Loading overlay
         if (uiState.isLoading) {
-            LoadingOverlay(progress = uiState.loadingProgress)
+            LoadingOverlay(
+                progress = uiState.loadingProgress,
+                modifier = Modifier.align(Alignment.Center)
+            )
         }
     }
 }
