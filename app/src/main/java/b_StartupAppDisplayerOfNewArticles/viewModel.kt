@@ -116,13 +116,16 @@ class StartUpNewArticlesViewModels(
             // Calculate new ID (max existing ID + 1)
             val maxIdArticle = currentState.articlesBasesStatTables
                 .maxOfOrNull { it.idArticle } ?: 0
-
+            // Calculate new ID (max existing ID + 1)
+            val maxidForSearchArticles = currentState.articlesBasesStatTables
+                .maxOfOrNull { it.idForSearchArticles } ?: 0
             // Create new article with incremented ID
             val newArticle = ArticlesBasesStatsTable(
                 idArticle = maxIdArticle + 1,
                 nomArticleFinale = nameArticleNIB,
                 idcolor1 = 1,
-                dateCreationCategorie = formattedDate
+                dateCreationCategorie = formattedDate,
+                idForSearchArticles = maxidForSearchArticles
             )
 
             // Add the new article to the existing list

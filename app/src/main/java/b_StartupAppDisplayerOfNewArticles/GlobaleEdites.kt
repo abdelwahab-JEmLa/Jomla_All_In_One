@@ -56,11 +56,18 @@ fun FloatingActionButtonGroup(
     var showLabels by remember { mutableStateOf(true) }
     var isExpanded by remember { mutableStateOf(false) }
     var clearDataClickCount by remember { mutableIntStateOf(0) }
+    var clearDataGrouprurClickCount by remember { mutableIntStateOf(0) }
 
     // Reset click count when FAB is collapsed
     LaunchedEffect(isExpanded) {
         if (!isExpanded) {
             clearDataClickCount = 0
+        }
+    }
+    // Reset click count when FAB is collapsed
+    LaunchedEffect(isExpanded) {
+        if (!isExpanded) {
+            clearDataGrouprurClickCount = 0
         }
     }
 
@@ -92,15 +99,27 @@ fun FloatingActionButtonGroup(
                     listOf(
                         FabData(
                             icon = Icons.Default.Delete,
-                            label = if (clearDataClickCount == 0) "Clear Data" else "Confirm Clear",
+                            label = if (clearDataClickCount == 0) "clearSoldArticlesData" else "Confirm Clear",
                             color = Color(0xFFFF5722),
                             onClick = {
                                 if (clearDataClickCount == 0) {
-                                    viewModel.clearSoldArticlesData()
                                     clearDataClickCount++
                                 } else {
                                     viewModel.clearSupAICommend()
                                     clearDataClickCount = 0
+                                }
+                            }
+                        ),
+                        FabData(
+                            icon = Icons.Default.Delete,
+                            label = if (clearDataGrouprurClickCount == 0) "Clear clearSoldArticlesData" else "Confirm Clear",
+                            color = Color(0xFFFF5722),
+                            onClick = {
+                                if (clearDataGrouprurClickCount == 0) {
+                                    clearDataGrouprurClickCount++
+                                } else {
+                                    viewModel.clearSoldArticlesData()
+                                    clearDataGrouprurClickCount = 0
                                 }
                             }
                         ),
