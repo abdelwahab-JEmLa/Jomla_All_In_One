@@ -32,7 +32,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun articlesBasesStatsModelDao(): ArticlesBasesStatsModelDao
     abstract fun categoriesModelDao(): CategoriesModelDao
     abstract fun colorsArticlesDao(): ColorsArticlesDao
-    abstract fun soldArticlesTabelleDao(): SoldArticlesTabelleDao
+    abstract fun soldArticlesModelDao(): SoldArticlesTabelleDao
     abstract fun clientsModelDao(): ClientsModelDao
     abstract fun appSettingsSaverModelDao(): AppSettingsSaverModelDao
 

@@ -18,6 +18,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.io.File
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Date
 
 
@@ -77,40 +79,67 @@ class StartUpNewArticlesViewModels(
     private val _currentSaleInWindows = MutableStateFlow<SoldArticlesTabelle?>(null)
     val currentSaleInWindows = _currentSaleInWindows.asStateFlow()
 
-    fun updataFirtEmptyArticle(nameArticleNIB: String) {
+    fun clearSoldArticlesData() {
         viewModelScope.launch {
             try {
-                // Trouver le premier article vide basé sur l'idArticle == 1
-                val firtEmptyArticle = _uiState.value.articlesBasesStatTables.find { it.idArticle == 1 }
+                setLoading(true)
 
-                // Si on ne trouve pas cet article, générer une erreur pour arrêter le processus
-                if (firtEmptyArticle == null) {
-                    throw IllegalStateException("Aucun article avec idArticle == 1 trouvé.")
-                }
+                // Clear Room database
+                database.soldArticlesModelDao().deleteAll()
 
-                // Récupérer le maximum des idArticle existants dans soldArticlesModel ou assigner 4000 par défaut
-                val maxIdArticle = _uiState.value.soldArticlesModel.maxOfOrNull { it?.idArticle ?: 4000 } ?: 4000
 
-                // Mise à jour de l'article trouvé
-                val updatedArticle = firtEmptyArticle.copy(
-                    idForSearchArticles = maxIdArticle + 4000,
-                    nomArticleFinale = nameArticleNIB
-                )
+                refSoldArticlesTabelle.removeValue()
 
-                // Mettre à jour l'état de _uiState en modifiant la liste articlesBasesStatTables
-                val updatedArticlesBasesStatTables = _uiState.value.articlesBasesStatTables.map {
-                    if (it.idArticle == 1) updatedArticle else it
-                }
-                _uiState.update { it.copy(articlesBasesStatTables = updatedArticlesBasesStatTables) }
+                // Reset UI state for sold articles
+                _uiState.update { it.copy(soldArticlesModel = emptyList()) }
 
-            } catch (exception: Exception) {
-                // Gestion des erreurs
-                println("Erreur lors de la création d'un article vide : ${exception.message}")
-                _uiState.update { it.copy(error = "Erreur d'ajout de l'article : ${exception.message}") }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(error = "Failed to clear data: ${e.message}") }
+            } finally {
+                setLoading(false)
             }
         }
     }
+    fun clearSupAICommend(): Unit {
+        // Clear Firebase reference
+        firebaseDatabase.getReference("K_GroupeurBonCommendToSupplierRef").removeValue()
 
+    }
+     fun addNewEmptyArticle(nameArticleNIB: String): ArticlesBasesStatsTable? {
+        return try {
+            val currentState = _uiState.value
+
+            val now = LocalDateTime.now() // Get the current date and time
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss") // Define your desired format
+            val formattedDate = now.format(formatter)
+
+            // Calculate new ID (max existing ID + 1)
+            val maxIdArticle = currentState.articlesBasesStatTables
+                .maxOfOrNull { it.idArticle } ?: 0
+
+            // Create new article with incremented ID
+            val newArticle = ArticlesBasesStatsTable(
+                idArticle = maxIdArticle + 1,
+                nomArticleFinale = nameArticleNIB,
+                idcolor1 = 1,
+                dateCreationCategorie = formattedDate
+            )
+
+            // Add the new article to the existing list
+            val updatedArticles = currentState.articlesBasesStatTables + newArticle
+
+            // Update state with the new list
+            _uiState.update { it.copy(articlesBasesStatTables = updatedArticles) }
+
+            newArticle
+
+        } catch (exception: Exception) {
+            _uiState.update {
+                it.copy(error = "Failed to add article: ${exception.message}")
+            }
+            null
+        }
+    }
     fun addNewClient(name: String) {
         viewModelScope.launch {
             try {
@@ -151,11 +180,9 @@ class StartUpNewArticlesViewModels(
                 val article = _uiState.value.articlesBasesStatTables
                     .find { it.idArticle.toLong() == relatedArticleDataBaseId }
 
-                val newSale = (if(relatedArticleDataBaseId.toInt() ==1) article?.idForSearchArticles
-                else relatedArticleDataBaseId)?.let {
-                    SoldArticlesTabelle(
-                        vid = maxId + 1,
-                        idArticle = it,
+                val newSale = SoldArticlesTabelle(
+                    vid = maxId + 1,
+                    idArticle = relatedArticleDataBaseId,
                         nameArticle = article?.nomArticleFinale ?: "",
                         clientSoldToItId = currentClient,
                         date = System.currentTimeMillis().toString()
@@ -168,7 +195,6 @@ class StartUpNewArticlesViewModels(
                             else -> sale
                         }
                     }
-                }
 
                 _currentSaleInWindows.value = newSale
             } catch (e: Exception) {
@@ -234,7 +260,7 @@ class StartUpNewArticlesViewModels(
 
 
                     // Update Room database
-                    database.soldArticlesTabelleDao().insert(updatedSale)
+                    database.soldArticlesModelDao().insert(updatedSale)
 
                     // Update Firebase
                     firebaseDatabase.getReference("O_SoldArticlesTabelle")
@@ -274,7 +300,7 @@ class StartUpNewArticlesViewModels(
                 // Only proceed if article is found
                 articleToDelete?.let { article ->
                     // Delete from database
-                    database.soldArticlesTabelleDao().delete(article)
+                    database.soldArticlesModelDao().delete(article)
 
                     // Update the UI state
                     _uiState.update { state ->
@@ -296,7 +322,7 @@ class StartUpNewArticlesViewModels(
             _currentSaleInWindows.value?.let { sale ->
                 try {
                     // Update the sale in the database
-                    database.soldArticlesTabelleDao().insert(sale)
+                    database.soldArticlesModelDao().insert(sale)
 
                     // Update the UI state
                     _uiState.update { state ->
@@ -423,7 +449,7 @@ class StartUpNewArticlesViewModels(
         val soldArticles = soldArticlesSnapshot.children.mapNotNull { snapshot ->
             snapshot.getValue(SoldArticlesTabelle::class.java)
         }
-        database.soldArticlesTabelleDao().insertAll(soldArticles)
+        database.soldArticlesModelDao().insertAll(soldArticles)
         updateLoadingProgress(fl)
     }
 
@@ -454,7 +480,7 @@ class StartUpNewArticlesViewModels(
             val articles = database.articlesBasesStatsModelDao().getAll()
             val categories = database.categoriesModelDao().getAll()
             val colors = database.colorsArticlesDao().getAllOrdred()
-            val soldArticles = database.soldArticlesTabelleDao().getAll()
+            val soldArticles = database.soldArticlesModelDao().getAll()
             val clients = database.clientsModelDao().getAll()
 
             createNewArrivaleCategoryIfNeeded(categories)

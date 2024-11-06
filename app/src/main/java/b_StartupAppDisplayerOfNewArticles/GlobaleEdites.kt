@@ -19,6 +19,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.CloudDownload
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Details
 import androidx.compose.material.icons.filled.EditCalendar
 import androidx.compose.material.icons.filled.GridView
@@ -30,6 +31,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -51,8 +53,16 @@ fun FloatingActionButtonGroup(
     onClickToOpenClientsListW: () -> Unit
 ) {
     var currentGridColumns by remember { mutableIntStateOf(2) }
-    var showLabels by remember { mutableStateOf(false) }
+    var showLabels by remember { mutableStateOf(true) }
     var isExpanded by remember { mutableStateOf(false) }
+    var clearDataClickCount by remember { mutableIntStateOf(0) }
+
+    // Reset click count when FAB is collapsed
+    LaunchedEffect(isExpanded) {
+        if (!isExpanded) {
+            clearDataClickCount = 0
+        }
+    }
 
     Column(
         horizontalAlignment = Alignment.End,
@@ -77,9 +87,23 @@ fun FloatingActionButtonGroup(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier
                         .verticalScroll(rememberScrollState())
-                        .padding(bottom = 56.dp) // Add padding to avoid overlap with main FAB
+                        .padding(bottom = 56.dp)
                 ) {
                     listOf(
+                        FabData(
+                            icon = Icons.Default.Delete,
+                            label = if (clearDataClickCount == 0) "Clear Data" else "Confirm Clear",
+                            color = Color(0xFFFF5722),
+                            onClick = {
+                                if (clearDataClickCount == 0) {
+                                    viewModel.clearSoldArticlesData()
+                                    clearDataClickCount++
+                                } else {
+                                    viewModel.clearSupAICommend()
+                                    clearDataClickCount = 0
+                                }
+                            }
+                        ),
                         FabData(
                             icon = Icons.Default.People,
                             label = "Clients Windows",
@@ -132,7 +156,7 @@ fun FloatingActionButtonGroup(
             }
         }
 
-        // Main FAB
+        // Main FAB remains unchanged
         Box(
             modifier = Modifier
                 .fillMaxWidth()

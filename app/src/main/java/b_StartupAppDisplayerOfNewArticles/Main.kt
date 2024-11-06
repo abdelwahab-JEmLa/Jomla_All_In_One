@@ -57,6 +57,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -95,6 +96,7 @@ import com.example.clientjetpack.LoadingOverlay
 import com.example.clientjetpack.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 
@@ -1226,9 +1228,7 @@ private fun SearchFilter(
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusRequester = remember { FocusRequester() }
-
-    val relatedArticlesBasesStatsTable = uiState.articlesBasesStatTables.find { it.idArticle ==1  }
-
+    val scope = rememberCoroutineScope()
 
     AnimatedVisibility(
         visible = showFilter,
@@ -1246,29 +1246,37 @@ private fun SearchFilter(
             leadingIcon = {
                 IconButton(
                     onClick = {
-                        viewModel.updataFirtEmptyArticle(filterText)
-                        if (relatedArticlesBasesStatsTable != null) {
-                            onAddNotInBaseArticle(relatedArticlesBasesStatsTable,0)
+                        scope.launch {
+                            viewModel.addNewEmptyArticle(filterText)?.let { newArticle ->
+                                onAddNotInBaseArticle(newArticle, 0)
+                            }
                         }
-                    }) { Icon(Icons.Default.Add, contentDescription = "Add New Article")
+                    }
+                ) {
+                    Icon(Icons.Default.Add, contentDescription = "Add New Article")
                 }
             },
             trailingIcon = {
                 IconButton(
                     onClick = {
-                        viewModel.updataFirtEmptyArticle(filterText)
-                        if (relatedArticlesBasesStatsTable != null) {
-                            onAddNotInBaseArticle(relatedArticlesBasesStatsTable,0)
+                        scope.launch {
+                            viewModel.addNewEmptyArticle(filterText)?.let { newArticle ->
+                                onAddNotInBaseArticle(newArticle, 0)
+                            }
                         }
-                    }) {
+                    }
+                ) {
                     Icon(Icons.Default.Search, contentDescription = "Search")
                 }
             },
             singleLine = true,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(onDone = { keyboardController?.hide()
-               onClickDonne()
-            })
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    keyboardController?.hide()
+                    onClickDonne()
+                }
+            )
         )
     }
 
@@ -1280,8 +1288,3 @@ private fun SearchFilter(
         }
     }
 }
-
-
-
-
-

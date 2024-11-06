@@ -137,7 +137,7 @@ fun SoldCartScreen(
                     key = { it.vid }
                 ) { soldArticle ->
                     val baseArticle = uiState.articlesBasesStatTables.find {
-                        it.idArticle.toLong() == if (soldArticle.idArticle>3500) 1 else  soldArticle.idArticle
+                        it.idArticle.toLong() ==  soldArticle.idArticle
                     }
 
                     if (baseArticle != null) {

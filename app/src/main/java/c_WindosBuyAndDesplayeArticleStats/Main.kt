@@ -127,7 +127,7 @@ fun SaleWindows(
     val currentSale = viewModel.currentSaleInWindows.collectAsState().value
     val articlesBaseStats = currentSale?.let { sale ->
         uiState.articlesBasesStatTables.find {
-            it.idArticle.toLong() == if (sale.idArticle>3500) 1 else  sale.idArticle
+            it.idArticle.toLong() ==   sale.idArticle
         }
     }
 
