@@ -1,8 +1,30 @@
+```kotlin
 package b_StartupAppDisplayerOfNewArticles
 
+// Core Compose imports
+
+// Coil imports for image loading
+
+// Paging imports
+
+// Coroutines
+
+// Android specific
+
+// Custom imports (your model classes)
+
+// Optional - for logging
+
+// Extensions pour Coil (facultatif mais recommandé)
+
+// Pour la gestion des événements du cycle de vie
+
+// Pour les animations et transitions
+
+// Pour les mesures de performances
 import a_RoomDB.ArticlesBasesStatsTable
-import a_RoomDB.CategoriesTabelle
 import a_RoomDB.ColorsArticlesTabelle
+import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
@@ -28,7 +50,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
@@ -51,16 +72,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -71,7 +83,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -84,8 +100,12 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import coil.ImageLoader
+import coil.compose.AsyncImage
+import coil.disk.DiskCache
+import coil.memory.MemoryCache
+import coil.request.ImageRequest
 import com.bumptech.glide.Priority
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -100,25 +120,29 @@ import com.bumptech.glide.signature.ObjectKey
 import com.example.clientjetpack.LoadingOverlay
 import com.example.clientjetpack.R
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import kotlin.math.roundToInt
 
 @Composable
 fun StartupAppDisplayerOfNewArticles(
-    viewModel: StartUpNewArticlesViewModels,
-    onToggleNavBar: () -> Unit,
-    reloadTrigger: Int,
-    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
-    onClickToOpenClientsW: () -> Unit,
-    isFabVisible: Boolean, onClickDonne: () -> Unit,
+viewModel: StartUpNewArticlesViewModels,
+onToggleNavBar: () -> Unit,
+reloadTrigger: Int,
+modifier: Modifier = Modifier,
+onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
+modeFilterToTest: Boolean = true,
+onClickToOpenClientsW: () -> Unit,
+isFabVisible: Boolean, onClickDonne: () -> Unit,
 ) {
-    var gridColumnsForNewArticels by remember { mutableStateOf(2) }
-    var showFilter by remember { mutableStateOf(false) }
-    var filterText by remember { mutableStateOf("") }
-    val gridState = rememberLazyStaggeredGridState()
-    val uiState by viewModel.uiState.collectAsState()
+var gridColumnsForNewArticels by remember { mutableStateOf(2) }
+var showFilter by remember { mutableStateOf(false) }
+var filterText by remember { mutableStateOf("") }
+val gridState = rememberLazyStaggeredGridState()
+val uiState by viewModel.uiState.collectAsState()
 
     ArticleDisplayScreen(
         uiState = uiState,
@@ -131,48 +155,207 @@ fun StartupAppDisplayerOfNewArticles(
         onToggleNavBar = onToggleNavBar,
         viewModel = viewModel,
         reloadTrigger = reloadTrigger,
+        modifier = modifier,
         onClickToOpenWindos = onClickToOpenWindos,
+        modeFilterToTest=modeFilterToTest,
         onClickToOpenClientsW = onClickToOpenClientsW,
-        isFabVisible=isFabVisible,
-        onClickDonne = onClickDonne
+        isFabVisible=isFabVisible, onClickDonne = onClickDonne
     )
+}
+
+// First, let's add the missing utility functions
+private fun getImagePath(article: ArticlesBasesStatsTable, colorIndex: Int, viewModel: StartUpNewArticlesViewModels): String {
+val baseFileName = "${article.idArticle}_${if (colorIndex == -1) "Unite" else (colorIndex + 1)}"
+val baseImagePath = File(viewModel.viewModelImagesPath, baseFileName).absolutePath
+
+    // Try both jpg and webp extensions
+    return listOf("jpg", "webp")
+        .asSequence()
+        .map { "$baseImagePath.$it" }
+        .firstOrNull { path -> File(path).exists() && File(path).canRead() }
+        ?: baseImagePath // Return base path if no file exists
+}
+
+private fun ArticlesBasesStatsTable.getAvailableColorIndices(): List<Int> {
+return listOf(
+Triple(0, idcolor1, couleur1),
+Triple(1, idcolor2, couleur2),
+Triple(2, idcolor3, couleur3),
+Triple(3, idcolor4, couleur4)
+).filter { (_, id, name) -> id != 0L && !name.isNullOrEmpty() }
+.map { it.first }
+}
+
+// Fix the ArticlePagingSource class by implementing missing methods and functions
+class ArticlePagingSource(
+private val articles: List<ArticlesBasesStatsTable>,
+private val filterText: String,
+private val context: Context,
+private val viewModel: StartUpNewArticlesViewModels
+) : PagingSource<Int, ArticlesBasesStatsTable>() {
+private val pageSize = 10
+private val preloadDistance = 2
+private val imageLoader = ArticleImageLoader.getInstance(context)
+
+    override fun getRefreshKey(state: PagingState<Int, ArticlesBasesStatsTable>): Int? {
+        return state.anchorPosition?.let { anchorPosition ->
+            val anchorPage = state.closestPageToPosition(anchorPosition)
+            anchorPage?.prevKey?.plus(1) ?: anchorPage?.nextKey?.minus(1)
+        }
+    }
+
+    private fun filterAndGetPage(page: Int): List<ArticlesBasesStatsTable> {
+        return articles
+            .filter { article ->
+                filterText.isEmpty() || article.nomArticleFinale.contains(filterText, ignoreCase = true)
+            }
+            .drop(page * pageSize)
+            .take(pageSize)
+    }
+
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ArticlesBasesStatsTable> {
+        val page = params.key ?: 0
+
+        return try {
+            val filteredArticles = filterAndGetPage(page)
+
+            // Preload images for next page
+            coroutineScope {
+                launch(Dispatchers.IO) {
+                    preloadImagesForPage(page + 1)
+                }
+            }
+
+            LoadResult.Page(
+                data = filteredArticles,
+                prevKey = if (page == 0) null else page - 1,
+                nextKey = if (filteredArticles.size < pageSize) null else page + 1
+            )
+        } catch (e: Exception) {
+            LoadResult.Error(e)
+        }
+    }
+
+    private suspend fun preloadImagesForPage(page: Int) {
+        val nextPageArticles = filterAndGetPage(page)
+        nextPageArticles.forEach { article ->
+            preloadArticleImages(article)
+        }
+    }
+
+    private suspend fun preloadArticleImages(article: ArticlesBasesStatsTable) {
+        article.getAvailableColorIndices().forEach { colorIndex ->
+            val imagePath = getImagePath(article, colorIndex, viewModel)
+            imageLoader.enqueue(
+                ImageRequest.Builder(context)
+                    .data(imagePath)
+                    .build()
+            )
+        }
+    }
+}
+
+// Fix ArticleImageWithOverlay by adding missing roundToPx extension
+private fun Dp.roundToPx(): Int {
+return value.roundToInt()
+}
+
+// Updated ArticleImageWithOverlay with fixed references
+@Composable
+private fun ArticleImageWithOverlay(
+article: ArticlesBasesStatsTable,
+viewModel: StartUpNewArticlesViewModels,
+colorIndex: Int,
+reloadTrigger: Int,
+uiState: UiState,
+modifier: Modifier = Modifier,
+contentScale: ContentScale = ContentScale.Fit,
+onClickToOpenWindow: (ArticlesBasesStatsTable, Int) -> Unit,
+imageSize: DpSize
+) {
+val scope = rememberCoroutineScope()
+val context = LocalContext.current
+val lifecycle = LocalLifecycleOwner.current.lifecycle
+val imageLoader = remember { ArticleImageLoader.getInstance(context) }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            scope.launch(Dispatchers.IO) {
+                imageLoader.memoryCache?.clear()
+            }
+        }
+    }
+
+    Surface(
+        modifier = modifier,
+        shape = MaterialTheme.shapes.medium,
+        tonalElevation = 2.dp,
+        shadowElevation = 4.dp
+    ) {
+        Box(
+            modifier = Modifier
+                .clickable { onClickToOpenWindow(article, colorIndex) }
+                .fillMaxSize()
+        ) {
+            val imagePath = remember(article.idArticle, colorIndex) {
+                getImagePath(article, colorIndex, viewModel)
+            }
+
+            AsyncImage(
+                model = ImageRequest.Builder(context)
+                    .data(imagePath)
+                    .crossfade(true)
+                    .size(imageSize.width.roundToPx(), imageSize.height.roundToPx())
+                    .memoryCacheKey("${article.idArticle}_${colorIndex}")
+                    .diskCacheKey("${article.idArticle}_${colorIndex}")
+                    .build(),
+                contentDescription = "Article image ${article.idArticle}",
+                contentScale = contentScale,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(4.dp))
+            )
+        }
+    }
 }
 @Composable
 fun ArticleDisplayScreen(
-    uiState: UiState,
-    gridColumns: Int,
-    filterText: String,
-    gridState: LazyStaggeredGridState,
-    onFilterTextChange: (String) -> Unit,
-    onToggleFilter: () -> Unit,
-    onChangeGridColumns: (Int) -> Unit,
-    onToggleNavBar: () -> Unit,
-    viewModel: StartUpNewArticlesViewModels,
-    reloadTrigger: Int,
-    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
-    onClickToOpenClientsW: () -> Unit,
-    isFabVisible: Boolean,
-    onClickDonne: () -> Unit,
+uiState: UiState,
+gridColumns: Int,
+filterText: String,
+gridState: LazyStaggeredGridState,
+onFilterTextChange: (String) -> Unit,
+onToggleFilter: () -> Unit,
+onChangeGridColumns: (Int) -> Unit,
+onToggleNavBar: () -> Unit,
+viewModel: StartUpNewArticlesViewModels,
+reloadTrigger: Int,
+modifier: Modifier = Modifier,
+onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
+modeFilterToTest: Boolean = false,
+onClickToOpenClientsW: () -> Unit,
+isFabVisible: Boolean,
+onClickDonne: () -> Unit,
 ) {
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        // Main content in a Box to constrain its height
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = if (isFabVisible) 80.dp else 0.dp) // Add padding at bottom when FAB is visible
-        ) {
-            Column {
-                SearchFilter(
-                    showFilter = isFabVisible,
-                    filterText = filterText,
-                    onFilterTextChange = onFilterTextChange,
-                    onAddNotInBaseArticle = onClickToOpenWindos,
-                    viewModel = viewModel,
-                    uiState = uiState,
-                    onClickDonne = onClickDonne
-                )
+Box(
+modifier = Modifier.fillMaxSize()
+) {
+// Main content in a Box to constrain its height
+Box(
+modifier = Modifier
+.fillMaxSize()
+.padding(bottom = if (isFabVisible) 80.dp else 0.dp) // Add padding at bottom when FAB is visible
+) {
+Column {
+SearchFilter(
+showFilter = isFabVisible,
+filterText = filterText,
+onFilterTextChange = onFilterTextChange,
+onAddNotInBaseArticle = onClickToOpenWindos,
+viewModel = viewModel,
+uiState = uiState,
+onClickDonne = onClickDonne
+)
 
                 ArticleGrid(
                     uiState = uiState,
@@ -182,10 +365,12 @@ fun ArticleDisplayScreen(
                     gridState = gridState,
                     viewModel = viewModel,
                     reloadTrigger = reloadTrigger,
-                    onClickToOpenWindos = onClickToOpenWindos
+                    onClickToOpenWindos = onClickToOpenWindos,
+                    modeFilterToTest = modeFilterToTest
                 )
             }
         }
+
 
         // FAB positioned at the bottom
         AnimatedVisibility(
@@ -215,142 +400,110 @@ fun ArticleDisplayScreen(
         }
     }
 }
+// 1. Implement a custom ImageLoader configuration
+object ArticleImageLoader {
+private var imageLoader: ImageLoader? = null
 
-
-class ArticlePagingSource(
-    private val articles: List<ArticlesBasesStatsTable>,
-    private val filterText: String,
-) : PagingSource<Int, ArticlesBasesStatsTable>() {
-    private val cachedFilteredArticles = mutableMapOf<Int, List<ArticlesBasesStatsTable>>()
-    private val pageSize = 10
-
-    override fun getRefreshKey(state: PagingState<Int, ArticlesBasesStatsTable>): Int? {
-        return state.anchorPosition?.let { anchorPosition ->
-            val anchorPage = state.closestPageToPosition(anchorPosition)
-            anchorPage?.prevKey?.plus(1) ?: anchorPage?.nextKey?.minus(1)
+    fun getInstance(context: Context): ImageLoader {
+        if (imageLoader == null) {
+            imageLoader = ImageLoader.Builder(context)
+                .memoryCache {
+                    MemoryCache.Builder(context)
+                        .maxSizePercent(0.25) // Use 25% of app memory
+                        .build()
+                }
+                .diskCache {
+                    DiskCache.Builder()
+                        .directory(context.cacheDir.resolve("image_cache"))
+                        .maxSizeBytes(512L * 1024 * 1024) // 512MB
+                        .build()
+                }
+                .crossfade(true)
+                .build()
         }
-    }
-
-    private fun filterArticles(): List<ArticlesBasesStatsTable> {
-        return if (filterText.isEmpty()) {
-            articles.filter { it.idForSearchArticles <= 0 }
-        } else {
-            articles.filter { article ->
-                (article.nomArticleFinale.contains(filterText, ignoreCase = true) ||
-                        article.idForSearchArticles > 0)
-            }
-        }
-    }
-
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ArticlesBasesStatsTable> {
-        val page = params.key ?: 0
-
-        return try {
-            val filteredArticles = cachedFilteredArticles.getOrPut(page) {
-                filterArticles().drop(page * pageSize).take(pageSize)
-            }
-
-            LoadResult.Page(
-                data = filteredArticles,
-                prevKey = if (page == 0) null else page - 1,
-                nextKey = if (filteredArticles.size < pageSize) null else page + 1
-            )
-        } catch (e: Exception) {
-            LoadResult.Error(e)
-        } finally {
-            // Clear cache for pages that are no longer needed
-            cachedFilteredArticles.keys.filter { it < page - 1 || it > page + 1 }
-                .forEach { cachedFilteredArticles.remove(it) }
-        }
+        return imageLoader!!
     }
 }
 
+
+
+// 4. Implement efficient grid layout with improved recycling
 @Composable
 private fun ArticleGrid(
-    uiState: UiState,
-    gridColumns: Int,
-    filterText: String,
-    showFilter: Boolean,
-    gridState: LazyStaggeredGridState,
-    viewModel: StartUpNewArticlesViewModels,
-    reloadTrigger: Int,
-    modifier: Modifier = Modifier,
-    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
+uiState: UiState,
+gridColumns: Int,
+filterText: String,
+showFilter: Boolean,
+gridState: LazyStaggeredGridState,
+viewModel: StartUpNewArticlesViewModels,
+reloadTrigger: Int,
+modifier: Modifier = Modifier,
+onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
+modeFilterToTest: Boolean
 ) {
-    val pagingConfig = PagingConfig(
-        pageSize = 3,
-        enablePlaceholders = true,
-        prefetchDistance = 2
-    )
+val context = LocalContext.current
+val scope = rememberCoroutineScope()
 
-    // Create separate pagers for each category
-    val categoryPagers = remember(uiState.categories, filterText) {
-        uiState.categories.associateWith { category ->
+    val displayMetrics = context.resources.displayMetrics
+    val screenWidth = displayMetrics.widthPixels / displayMetrics.density
+    val itemsPerRow = if (screenWidth > 600) gridColumns else 2
+    val pageSize = itemsPerRow * 4
+
+    val pagingConfig = remember {
+        PagingConfig(
+            pageSize = pageSize,
+            enablePlaceholders = false,
+            prefetchDistance = pageSize,
+            initialLoadSize = pageSize * 2,
+            maxSize = pageSize * 5
+        )
+    }
+
+    // Move paging data creation outside of remember to properly collect the Flow
+    val categories = uiState.categories
+    val pagers = categories.map { category ->
+        category to remember(category, filterText) {
             Pager(pagingConfig) {
                 ArticlePagingSource(
-                    articles = if (category.nomCategorieInCategoriesTabele == "NewArrivale") {
-                        uiState.articlesBasesStatTables.filter { it.itsNewArrivale }
-                    } else {
-                        uiState.articlesBasesStatTables.filter {
-                            it.nomCategorie == category.nomCategorieInCategoriesTabele && !it.itsNewArrivale
+                    articles = uiState.articlesBasesStatTables.filter {
+                        when {
+                            category.nomCategorieInCategoriesTabele == "NewArrivale" -> it.itsNewArrivale
+                            else -> it.nomCategorie == category.nomCategorieInCategoriesTabele && !it.itsNewArrivale
                         }
                     },
-                    filterText = filterText
+                    filterText = filterText,
+                    context = context,
+                    viewModel = viewModel
                 )
             }
         }
-    }
-
-    // Create a map of category to their respective LazyPagingItems
-    val categoryPagingItems = remember(categoryPagers) {
-        mutableMapOf<CategoriesTabelle, LazyPagingItems<ArticlesBasesStatsTable>>()
-    }
-
-    // Collect paging items for each category
-    categoryPagers.forEach { (category, pager) ->
-        val pagingItems = pager.flow.collectAsLazyPagingItems()
-        categoryPagingItems[category] = pagingItems
     }
 
     LazyVerticalStaggeredGrid(
-        columns = StaggeredGridCells.Fixed(if (uiState.categories.any {
-                it.nomCategorieInCategoriesTabele == "NewArrivale"
-            }) gridColumns else 2),
+        columns = StaggeredGridCells.Fixed(itemsPerRow),
         state = gridState,
         contentPadding = PaddingValues(3.dp),
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .semantics { contentDescription = "Article Grid" },
         horizontalArrangement = Arrangement.spacedBy(3.dp),
         verticalItemSpacing = 3.dp
     ) {
-        if (!showFilter) {
-            item(span = StaggeredGridItemSpan.FullLine) {
-                ScrolleAdBanner(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 8.dp)
-                )
-            }
-        }
+        pagers.forEach { (category, pager) {
+            val pagingItems = pager.flow.collectAsLazyPagingItems()
 
-        // Display categories in order, with NewArrivale first
-        uiState.categories.sortedBy {
-            if (it.nomCategorieInCategoriesTabele == "NewArrivale") 0 else 1
-        }.forEach { category ->
-            val lazyPagingItems = categoryPagingItems[category]
-
-            if (lazyPagingItems != null && lazyPagingItems.itemCount > 0) {
-                // Show category header if needed
+            if (pagingItems.itemCount > 0) {
                 if (category.displayedHeader) {
                     item(span = StaggeredGridItemSpan.FullLine) {
                         CategoryHeader(category)
                     }
                 }
 
-                // Display category items
                 items(
-                    count = lazyPagingItems.itemCount,
+                    count = pagingItems.itemCount,
+                    key = { index -> "${category.nomCategorieInCategoriesTabele}_${pagingItems[index]?.idArticle}" },
                     span = { index ->
-                        val article = lazyPagingItems[index]
+                        val article = pagingItems[index]
                         if (article?.imageDimention == "Demi") {
                             StaggeredGridItemSpan.FullLine
                         } else {
@@ -358,31 +511,34 @@ private fun ArticleGrid(
                         }
                     }
                 ) { index ->
-                    val article = lazyPagingItems[index]
+                    val article = pagingItems[index]
                     article?.let {
-                        ArticleItem(
-                            article = it,
-                            viewModel = viewModel,
-                            reloadTrigger = reloadTrigger,
-                            onClickToOpenWindos = onClickToOpenWindos,
-                            uiState = uiState
-                        )
+                        key(it.idArticle) {
+                            ArticleItem(
+                                article = it,
+                                viewModel = viewModel,
+                                reloadTrigger = reloadTrigger,
+                                onClickToOpenWindos = onClickToOpenWindos,
+                                uiState = uiState
+                            )
+                        }
                     }
                 }
             }
         }
+        }
     }
-}
+
 
 
 
 sealed class ArticleLayout {
-    data object DemiUno : ArticleLayout()
-    data object DemiDual : ArticleLayout()
-    data object DemiMulti : ArticleLayout()
-    data object SmallUno : ArticleLayout()
-    data object SmallDual : ArticleLayout()
-    data object SmallMulti : ArticleLayout()
+data object DemiUno : ArticleLayout()
+data object DemiDual : ArticleLayout()
+data object DemiMulti : ArticleLayout()
+data object SmallUno : ArticleLayout()
+data object SmallDual : ArticleLayout()
+data object SmallMulti : ArticleLayout()
 
     // Define size configurations for different layouts
     private val imageSize: DpSize
@@ -438,14 +594,14 @@ sealed class ArticleLayout {
 // Update the ArticleItem to use the new layout logic
 @Composable
 private fun ArticleItem(
-    article: ArticlesBasesStatsTable,
-    viewModel: StartUpNewArticlesViewModels,
-    reloadTrigger: Int,
-    modifier: Modifier = Modifier,
-    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
-    uiState: UiState,
+article: ArticlesBasesStatsTable,
+viewModel: StartUpNewArticlesViewModels,
+reloadTrigger: Int,
+modifier: Modifier = Modifier,
+onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
+uiState: UiState,
 ) {
-    val colorCount = countColors(article)
+val colorCount = countColors(article)
 
     Card(
         modifier = modifier
@@ -476,25 +632,25 @@ private fun ArticleItem(
 // Add new layout components
 @Composable
 private fun SmallDisplayerDualColor(
-    article: ArticlesBasesStatsTable,
-    viewModel: StartUpNewArticlesViewModels,
-    reloadTrigger: Int,
-    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
-    uiState: UiState,
-    modifier: Modifier = Modifier, imageSize: DpSize
+article: ArticlesBasesStatsTable,
+viewModel: StartUpNewArticlesViewModels,
+reloadTrigger: Int,
+onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
+uiState: UiState,
+modifier: Modifier = Modifier, imageSize: DpSize
 ) {
-    Column(
-        modifier = modifier.padding(3.dp),
-        verticalArrangement = Arrangement.spacedBy(3.dp)
-    ) {
-        ArticleImageWithOverlay(
-            article = article,
-            viewModel = viewModel,
-            colorIndex = 0,
-            reloadTrigger = reloadTrigger,
-            onClickToOpenWindow = onClickToOpenWindos,
-            uiState = uiState, imageSize = imageSize
-        )
+Column(
+modifier = modifier.padding(3.dp),
+verticalArrangement = Arrangement.spacedBy(3.dp)
+) {
+ArticleImageWithOverlay(
+article = article,
+viewModel = viewModel,
+colorIndex = 0,
+reloadTrigger = reloadTrigger,
+onClickToOpenWindow = onClickToOpenWindos,
+uiState = uiState, imageSize = imageSize
+)
 
         ArticleImageWithOverlay(
             article = article,
@@ -516,27 +672,27 @@ private fun SmallDisplayerDualColor(
 
 @Composable
 private fun SmallDisplayerMultiColor(
-    article: ArticlesBasesStatsTable,
-    viewModel: StartUpNewArticlesViewModels,
-    reloadTrigger: Int,
-    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
-    uiState: UiState,
-    modifier: Modifier = Modifier,
-    imageSize: DpSize
+article: ArticlesBasesStatsTable,
+viewModel: StartUpNewArticlesViewModels,
+reloadTrigger: Int,
+onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
+uiState: UiState,
+modifier: Modifier = Modifier,
+imageSize: DpSize
 ) {
-    Column(
-        modifier = modifier.padding(3.dp),
-        verticalArrangement = Arrangement.spacedBy(3.dp)
-    ) {
-        // Main image
-        ArticleImageWithOverlay(
-            article = article,
-            viewModel = viewModel,
-            colorIndex = 0,
-            reloadTrigger = reloadTrigger,
-            onClickToOpenWindow = onClickToOpenWindos,
-            uiState = uiState, imageSize = imageSize
-        )
+Column(
+modifier = modifier.padding(3.dp),
+verticalArrangement = Arrangement.spacedBy(3.dp)
+) {
+// Main image
+ArticleImageWithOverlay(
+article = article,
+viewModel = viewModel,
+colorIndex = 0,
+reloadTrigger = reloadTrigger,
+onClickToOpenWindow = onClickToOpenWindos,
+uiState = uiState, imageSize = imageSize
+)
 
         // Replace LazyColumn with Column since we have a small fixed number of items
         val availableColors = (1..3).filter { article.getColorIdForIndex(it) != null }
@@ -565,15 +721,15 @@ private fun SmallDisplayerMultiColor(
 
 @Composable
 private fun DemiDisplayerMultiColor(
-    article: ArticlesBasesStatsTable,
-    viewModel: StartUpNewArticlesViewModels,
-    reloadTrigger: Int,
-    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
-    uiState: UiState,
-    modifier: Modifier = Modifier, imageSize: DpSize
+article: ArticlesBasesStatsTable,
+viewModel: StartUpNewArticlesViewModels,
+reloadTrigger: Int,
+onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
+uiState: UiState,
+modifier: Modifier = Modifier, imageSize: DpSize
 ) {
-    Column(modifier = modifier.padding(3.dp)) {
-        ArticleDetails(article)
+Column(modifier = modifier.padding(3.dp)) {
+ArticleDetails(article)
 
         // Main image display
         ArticleImageWithOverlay(
@@ -617,23 +773,23 @@ private fun DemiDisplayerMultiColor(
 
 @Composable
 private fun DemiDisplayerDualColor(
-    article: ArticlesBasesStatsTable,
-    viewModel: StartUpNewArticlesViewModels,
-    reloadTrigger: Int,
-    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
-    uiState: UiState,
-    modifier: Modifier = Modifier, imageSize: DpSize
+article: ArticlesBasesStatsTable,
+viewModel: StartUpNewArticlesViewModels,
+reloadTrigger: Int,
+onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
+uiState: UiState,
+modifier: Modifier = Modifier, imageSize: DpSize
 ) {
-    Column(modifier = modifier.padding(3.dp)) {
-        ArticleDetails(article)
-        ArticleImageWithOverlay(
-            article = article,
-            viewModel = viewModel,
-            colorIndex = 0,
-            reloadTrigger = reloadTrigger,
-            onClickToOpenWindow = onClickToOpenWindos,
-            uiState = uiState, imageSize = imageSize
-        )
+Column(modifier = modifier.padding(3.dp)) {
+ArticleDetails(article)
+ArticleImageWithOverlay(
+article = article,
+viewModel = viewModel,
+colorIndex = 0,
+reloadTrigger = reloadTrigger,
+onClickToOpenWindow = onClickToOpenWindos,
+uiState = uiState, imageSize = imageSize
+)
 
         Box(modifier = Modifier.height(100.dp)) {
             ArticleImageWithOverlay(
@@ -650,64 +806,64 @@ private fun DemiDisplayerDualColor(
 }
 @Composable
 private fun SmallSingleColorDisplayer(
-    article: ArticlesBasesStatsTable,
-    viewModel: StartUpNewArticlesViewModels,
-    reloadTrigger: Int,
-    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
-    uiState: UiState,
-    modifier: Modifier = Modifier, imageSize: DpSize
+article: ArticlesBasesStatsTable,
+viewModel: StartUpNewArticlesViewModels,
+reloadTrigger: Int,
+onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
+uiState: UiState,
+modifier: Modifier = Modifier, imageSize: DpSize
 ) {
-    Column(modifier = modifier.padding(3.dp)) {
-        Box(
-            modifier = Modifier,
-            contentAlignment = Alignment.Center
-        ) {
-            ArticleImageWithOverlay(
-                article = article,
-                viewModel = viewModel,
-                colorIndex = 0,
-                reloadTrigger = reloadTrigger,
-                onClickToOpenWindow = onClickToOpenWindos,
-                uiState = uiState, imageSize = imageSize
-            )
-        }
-        ArticleDetails(article)
-    }
+Column(modifier = modifier.padding(3.dp)) {
+Box(
+modifier = Modifier,
+contentAlignment = Alignment.Center
+) {
+ArticleImageWithOverlay(
+article = article,
+viewModel = viewModel,
+colorIndex = 0,
+reloadTrigger = reloadTrigger,
+onClickToOpenWindow = onClickToOpenWindos,
+uiState = uiState, imageSize = imageSize
+)
+}
+ArticleDetails(article)
+}
 }
 @Composable
 private fun DemiSingleColorDisplayer(
-    article: ArticlesBasesStatsTable,
-    viewModel: StartUpNewArticlesViewModels,
-    reloadTrigger: Int,
-    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
-    uiState: UiState,
-    modifier: Modifier = Modifier, imageSize: DpSize
+article: ArticlesBasesStatsTable,
+viewModel: StartUpNewArticlesViewModels,
+reloadTrigger: Int,
+onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
+uiState: UiState,
+modifier: Modifier = Modifier, imageSize: DpSize
 ) {
-    Column(modifier = modifier.padding(3.dp)) {
-        Box(
-            modifier = Modifier,
-            contentAlignment = Alignment.Center
-        ) {
-            ArticleImageWithOverlay(
-                article = article,
-                viewModel = viewModel,
-                colorIndex = 0,
-                reloadTrigger = reloadTrigger,
-                onClickToOpenWindow = onClickToOpenWindos,
-                uiState = uiState, imageSize = imageSize
-            )
-        }
-        ArticleDetails(article)
-    }
+Column(modifier = modifier.padding(3.dp)) {
+Box(
+modifier = Modifier,
+contentAlignment = Alignment.Center
+) {
+ArticleImageWithOverlay(
+article = article,
+viewModel = viewModel,
+colorIndex = 0,
+reloadTrigger = reloadTrigger,
+onClickToOpenWindow = onClickToOpenWindos,
+uiState = uiState, imageSize = imageSize
+)
+}
+ArticleDetails(article)
+}
 }
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 private fun ColorIndicator(
-    iconColore: String,
-    modifier: Modifier = Modifier,
-    onClickToOpenWindow: () -> Unit,
-    imageSize: DpSize,
+iconColore: String,
+modifier: Modifier = Modifier,
+onClickToOpenWindow: () -> Unit,
+imageSize: DpSize,
 
     ) {
     val demiSizeImage = imageSize.width>200.dp
@@ -753,88 +909,29 @@ private fun ColorIndicator(
 }
 
 
-@Composable
-private fun ArticleImageWithOverlay(
-    article: ArticlesBasesStatsTable,
-    viewModel: StartUpNewArticlesViewModels,
-    colorIndex: Int,
-    reloadTrigger: Int,
-    uiState: UiState,
-    modifier: Modifier = Modifier,
-    contentScale: ContentScale = ContentScale.Fit,
-    onClickToOpenWindow: (ArticlesBasesStatsTable, Int) -> Unit,
-    imageSize: DpSize
-) {
-    Surface(
-        modifier = modifier,
-        shape = MaterialTheme.shapes.medium,
-        tonalElevation = 2.dp,
-        shadowElevation = 4.dp
-    ) {
-        Box(
-            modifier = Modifier
-                .clickable { onClickToOpenWindow(article, colorIndex) }
-                .fillMaxSize()
-        ) {
-            val imageExists = remember(article.idArticle, colorIndex, reloadTrigger) {
-                checkImageExists(viewModel, article, colorIndex, reloadTrigger)
-            }
-
-            ImageDisplayer(
-                article = article,
-                viewModel = viewModel,
-                indexColor = colorIndex,
-                reloadKey = reloadTrigger,
-                onClickToOpenWindow = onClickToOpenWindow,
-                uiState = uiState,
-                showOverlay = !imageExists,
-                imageScale = contentScale,
-                imageSize = imageSize
-            )
-
-            if (imageExists) {
-                article.getColorIdForIndex(colorIndex)?.let { colorId ->
-                    uiState.colorsArticlesTabelleModel.find { it.idColore == colorId }?.let { color ->
-                        ColorIndicator(
-                            iconColore = color.iconColore,
-                            modifier = Modifier
-                                .padding(3.dp)
-                                .align(Alignment.BottomEnd)
-                                .wrapContentSize()
-                                .offset(x = (-10).dp, y = (-15).dp)
-                            ,
-                            imageSize = imageSize,
-                            onClickToOpenWindow = { onClickToOpenWindow(article, colorIndex) }
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 private fun ImageDisplayer(
-    modifier: Modifier = Modifier,
-    article: ArticlesBasesStatsTable,
-    viewModel: StartUpNewArticlesViewModels,
-    indexColor: Int,
-    reloadKey: Any,
-    onClickToOpenWindow: (ArticlesBasesStatsTable, Int) -> Unit,
-    uiState: UiState,
-    showOverlay: Boolean,
-    imageScale: ContentScale = ContentScale.Fit,
-    cornerRadius: Dp = 4.dp,
-    imageSize: DpSize,
+modifier: Modifier = Modifier,
+article: ArticlesBasesStatsTable,
+viewModel: StartUpNewArticlesViewModels,
+indexColor: Int,
+reloadKey: Any,
+onClickToOpenWindow: (ArticlesBasesStatsTable, Int) -> Unit,
+uiState: UiState,
+showOverlay: Boolean,
+imageScale: ContentScale = ContentScale.Fit,
+cornerRadius: Dp = 4.dp,
+imageSize: DpSize,
 ) {
-    var currentQuality by remember { mutableStateOf(5f) }
-    var isLoading by remember { mutableStateOf(true) }
-    var imageLoaded by remember { mutableStateOf(false) }
+var currentQuality by remember { mutableStateOf(5f) }
+var isLoading by remember { mutableStateOf(true) }
+var imageLoaded by remember { mutableStateOf(false) }
 
     val blurRadius by animateFloatAsState(
         targetValue = if (isLoading) 25f else 0f,
-        animationSpec = tween(1500),  //700
+        animationSpec = tween(700),
         label = "blur"
     )
 
@@ -843,11 +940,11 @@ private fun ImageDisplayer(
         imageLoaded = false
         currentQuality = 5f
 
-        delay(1500) // Initial loading delay     300
+        delay(300) // Initial loading delay
         currentQuality = 100f
         imageLoaded = true
 
-        delay(1500) // Keep blur for 700ms after image loads
+        delay(700) // Keep blur for 700ms after image loads
         isLoading = false
     }
 
@@ -918,26 +1015,26 @@ private fun ImageDisplayer(
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 private fun ColorOverlayWithBlur(
-    color: ColorsArticlesTabelle,
-    cornerRadius: Dp,
-    onClickToOpenWindow: () -> Unit,
+color: ColorsArticlesTabelle,
+cornerRadius: Dp,
+onClickToOpenWindow: () -> Unit,
 ) {
-    Box {
-        GlideImage(
-            model = R.drawable.logo,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxSize()
-                .clip(RoundedCornerShape(cornerRadius))
-                .graphicsLayer {
-                    renderEffect = BlurEffect(
-                        radiusX = 25f,
-                        radiusY = 25f,
-                        edgeTreatment = TileMode.Decal
-                    )
-                },
-            contentDescription = null
-        )
+Box {
+GlideImage(
+model = R.drawable.logo,
+contentScale = ContentScale.Crop,
+modifier = Modifier
+.fillMaxSize()
+.clip(RoundedCornerShape(cornerRadius))
+.graphicsLayer {
+renderEffect = BlurEffect(
+radiusX = 25f,
+radiusY = 25f,
+edgeTreatment = TileMode.Decal
+)
+},
+contentDescription = null
+)
 
         Box(
             modifier = Modifier
@@ -960,35 +1057,35 @@ private fun ColorOverlayWithBlur(
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 private fun ColorOverlay(
-    color: ColorsArticlesTabelle,
-    modifier: Modifier = Modifier,
-    onClickToOpenWindow: () -> Unit,
+color: ColorsArticlesTabelle,
+modifier: Modifier = Modifier,
+onClickToOpenWindow: () -> Unit,
 ) {
-    Box(
-        modifier = modifier
-            .fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(IntrinsicSize.Min),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Color name with circular background
-            Box(
-                modifier = Modifier
-                    .weight(0.6f)
-                    .wrapContentHeight(),
-                contentAlignment = Alignment.Center
-            ) {
-                Surface(
-                    modifier = Modifier
-                        .matchParentSize(),
-                    shape = CircleShape,
-                    color = Color.White.copy(alpha = 0.7f),
-                    border = BorderStroke(1.dp, Color.White.copy(alpha = 0.9f))
-                ) {}
+Box(
+modifier = modifier
+.fillMaxSize(),
+contentAlignment = Alignment.Center
+) {
+Row(
+modifier = Modifier
+.fillMaxWidth()
+.height(IntrinsicSize.Min),
+verticalAlignment = Alignment.CenterVertically
+) {
+// Color name with circular background
+Box(
+modifier = Modifier
+.weight(0.6f)
+.wrapContentHeight(),
+contentAlignment = Alignment.Center
+) {
+Surface(
+modifier = Modifier
+.matchParentSize(),
+shape = CircleShape,
+color = Color.White.copy(alpha = 0.7f),
+border = BorderStroke(1.dp, Color.White.copy(alpha = 0.9f))
+) {}
 
                 AutoResizedText(
                     text = color.nameColore,
@@ -1046,15 +1143,15 @@ private fun ColorOverlay(
 
 // Utility functions
 private fun checkImageExists(
-    viewModel: StartUpNewArticlesViewModels,
-    article: ArticlesBasesStatsTable,
-    colorIndex: Int,
-    reloadTrigger: Int
+viewModel: StartUpNewArticlesViewModels,
+article: ArticlesBasesStatsTable,
+colorIndex: Int,
+reloadTrigger: Int
 ): Boolean {
-    val baseImagePath = File(
-        viewModel.viewModelImagesPath,
-        "${article.idArticle}_${if (colorIndex == -1) "Unite" else (colorIndex + 1)}"
-    ).absolutePath
+val baseImagePath = File(
+viewModel.viewModelImagesPath,
+"${article.idArticle}_${if (colorIndex == -1) "Unite" else (colorIndex + 1)}"
+).absolutePath
 
     return listOf("jpg", "webp").any { extension ->
         val file = File("$baseImagePath.$extension")
@@ -1062,35 +1159,35 @@ private fun checkImageExists(
     }
 }
 private fun ArticlesBasesStatsTable.getColorIdForIndex(index: Int): Long? {
-    return when (index) {
-        0 -> idcolor1.takeIf { it != 0L }
-        1 -> idcolor2.takeIf { it != 0L }
-        2 -> idcolor3.takeIf { it != 0L }
-        3 -> idcolor4.takeIf { it != 0L }
-        else -> null
-    }
+return when (index) {
+0 -> idcolor1.takeIf { it != 0L }
+1 -> idcolor2.takeIf { it != 0L }
+2 -> idcolor3.takeIf { it != 0L }
+3 -> idcolor4.takeIf { it != 0L }
+else -> null
+}
 }
 
 private fun countColors(article: ArticlesBasesStatsTable): Int {
-    return listOf(
-        article.couleur1,
-        article.couleur2,
-        article.couleur3,
-        article.couleur4
-    ).count { !it.isNullOrEmpty() }
+return listOf(
+article.couleur1,
+article.couleur2,
+article.couleur3,
+article.couleur4
+).count { !it.isNullOrEmpty() }
 }
 
 @Composable
 fun AutoResizedText(
-    text: String,
-    modifier: Modifier = Modifier,
-    color: Color = MaterialTheme.colorScheme.onSurface,
-    style: TextStyle = MaterialTheme.typography.headlineMedium,
-    maxLines: Int = Int.MAX_VALUE
+text: String,
+modifier: Modifier = Modifier,
+color: Color = MaterialTheme.colorScheme.onSurface,
+style: TextStyle = MaterialTheme.typography.headlineMedium,
+maxLines: Int = Int.MAX_VALUE
 ) {
-    var fontSize by remember(text) {
-        mutableStateOf(style.fontSize)
-    }
+var fontSize by remember(text) {
+mutableStateOf(style.fontSize)
+}
 
     var previousFontSize by remember {
         mutableStateOf(fontSize)
@@ -1119,26 +1216,26 @@ fun AutoResizedText(
 
 
 private fun RequestBuilder<Drawable>.applyImageOptions(
-    article: ArticlesBasesStatsTable,
-    indexColor: Int,
-    quality: Float,
-    onResourceReady: (Boolean) -> Unit
+article: ArticlesBasesStatsTable,
+indexColor: Int,
+quality: Float,
+onResourceReady: (Boolean) -> Unit
 ) = this
-    .thumbnail(
-        this.clone()
-            .transform(jp.wasabeef.glide.transformations.BlurTransformation(10))
-    )
-    .transition(DrawableTransitionOptions.withCrossFade())
-    .diskCacheStrategy(DiskCacheStrategy.ALL)
-    .priority(Priority.HIGH)
-    .signature(ObjectKey("${article.idArticle}_${indexColor}_${quality}"))
-    .listener(object : RequestListener<Drawable> {
-        override fun onLoadFailed(
-            e: GlideException?,
-            model: Any?,
-            target: Target<Drawable>,
-            isFirstResource: Boolean
-        ) = false
+.thumbnail(
+this.clone()
+.transform(jp.wasabeef.glide.transformations.BlurTransformation(10))
+)
+.transition(DrawableTransitionOptions.withCrossFade())
+.diskCacheStrategy(DiskCacheStrategy.ALL)
+.priority(Priority.HIGH)
+.signature(ObjectKey("${article.idArticle}_${indexColor}_${quality}"))
+.listener(object : RequestListener<Drawable> {
+override fun onLoadFailed(
+e: GlideException?,
+model: Any?,
+target: Target<Drawable>,
+isFirstResource: Boolean
+) = false
 
         override fun onResourceReady(
             resource: Drawable,
@@ -1158,37 +1255,37 @@ private fun RequestBuilder<Drawable>.applyImageOptions(
 
 @Composable
 private fun ArticleDetails(
-    article: ArticlesBasesStatsTable,
-    modifier: Modifier = Modifier
+article: ArticlesBasesStatsTable,
+modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        Text(
-            text = article.nomArticleFinale,
-            style = MaterialTheme.typography.titleMedium
-        )
-        Text(
-            text = "Prix: ${article.monPrixVent}",
-            style = MaterialTheme.typography.bodyMedium
-        )
-    }
+Column(
+modifier = modifier,
+verticalArrangement = Arrangement.spacedBy(4.dp)
+) {
+Text(
+text = article.nomArticleFinale,
+style = MaterialTheme.typography.titleMedium
+)
+Text(
+text = "Prix: ${article.monPrixVent}",
+style = MaterialTheme.typography.bodyMedium
+)
+}
 }
 @Composable
 private fun SearchFilter(
-    showFilter: Boolean,
-    filterText: String,
-    onFilterTextChange: (String) -> Unit,
-    onAddNotInBaseArticle: (ArticlesBasesStatsTable, Int) -> Unit,
-    modifier: Modifier = Modifier,
-    viewModel: StartUpNewArticlesViewModels,
-    uiState: UiState,
-    onClickDonne: () -> Unit
+showFilter: Boolean,
+filterText: String,
+onFilterTextChange: (String) -> Unit,
+onAddNotInBaseArticle: (ArticlesBasesStatsTable, Int) -> Unit,
+modifier: Modifier = Modifier,
+viewModel: StartUpNewArticlesViewModels,
+uiState: UiState,
+onClickDonne: () -> Unit
 ) {
-    val keyboardController = LocalSoftwareKeyboardController.current
-    val focusRequester = remember { FocusRequester() }
-    val scope = rememberCoroutineScope()
+val keyboardController = LocalSoftwareKeyboardController.current
+val focusRequester = remember { FocusRequester() }
+val scope = rememberCoroutineScope()
 
     AnimatedVisibility(
         visible = showFilter,
@@ -1248,3 +1345,4 @@ private fun SearchFilter(
         }
     }
 }
+                   ```
