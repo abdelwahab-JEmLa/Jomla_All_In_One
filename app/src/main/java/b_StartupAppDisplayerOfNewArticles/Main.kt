@@ -94,6 +94,7 @@ import com.bumptech.glide.signature.ObjectKey
 import com.example.clientjetpack.LoadingOverlay
 import com.example.clientjetpack.R
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import java.io.File
 
@@ -886,8 +887,18 @@ private fun ImageDisplayer(
     cornerRadius: Dp = 4.dp,
     imageSize: DpSize,
 ) {
-     
-    var currentQuality by remember { mutableStateOf(15f) }
+    var currentQuality by remember { mutableStateOf(5f) } // Start with lower quality
+    var isLoading by remember { mutableStateOf(true) }
+
+    LaunchedEffect(Unit) {
+        delay(500) // Initial delay for blur effect
+        isLoading = false
+        currentQuality = 15f
+        delay(100)
+        currentQuality = 50f
+        delay(100)
+        currentQuality = 100f
+    }
 
     val imagePath by remember(viewModel.viewModelImagesPath, article.idArticle, indexColor) {
         derivedStateOf {
@@ -909,8 +920,7 @@ private fun ImageDisplayer(
         }
     }
 
-    Box(modifier = modifier.size(width = imageSize.width, height = imageSize.height))
-    {
+    Box(modifier = modifier.size(width = imageSize.width, height = imageSize.height)) {
         imageFile?.let { file ->
             GlideImage(
                 model = file,
@@ -920,9 +930,14 @@ private fun ImageDisplayer(
                     .fillMaxSize()
                     .clip(RoundedCornerShape(cornerRadius))
             ) {
-                it.applyImageOptions(article, indexColor, currentQuality) { isFirstResource ->
-                    if (isFirstResource && currentQuality < 100f) {
-                        currentQuality = 100f
+                it.apply {
+                    if (isLoading) {
+                        transform(jp.wasabeef.glide.transformations.BlurTransformation(500))
+                    }
+                    applyImageOptions(article, indexColor, currentQuality) { isFirstResource ->
+                        if (isFirstResource && currentQuality < 100f) {
+                            currentQuality = 100f
+                        }
                     }
                 }
             }
@@ -934,7 +949,7 @@ private fun ImageDisplayer(
                     ColorOverlayWithBlur(
                         color = color,
                         cornerRadius = cornerRadius,
-                        onClickToOpenWindow={ onClickToOpenWindow(article, indexColor) }
+                        onClickToOpenWindow = { onClickToOpenWindow(article, indexColor) }
                     )
                 }
             }
@@ -942,17 +957,15 @@ private fun ImageDisplayer(
     }
 }
 
-
-
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 private fun ColorOverlayWithBlur(
     color: ColorsArticlesTabelle,
     cornerRadius: Dp,
     onClickToOpenWindow: () -> Unit,
-    ) {
+) {
     Box {
-        // Blurred background image
+        // Blurred background image with increased blur radius
         GlideImage(
             model = R.drawable.logo,
             contentScale = ContentScale.Crop,
@@ -961,10 +974,10 @@ private fun ColorOverlayWithBlur(
                 .clip(RoundedCornerShape(cornerRadius)),
             contentDescription = null
         ) {
-            it.transform(jp.wasabeef.glide.transformations.BlurTransformation(25))
+            it.transform(jp.wasabeef.glide.transformations.BlurTransformation(500)) // Increased blur
         }
 
-        // Semi-transparent black overlay
+        // Rest of the overlay components remain the same...
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -972,14 +985,12 @@ private fun ColorOverlayWithBlur(
                 .background(Color.Black.copy(alpha = 0.4f))
         )
 
-        // Color overlay with content
         ColorOverlay(
             color = color,
             modifier = Modifier
                 .fillMaxSize()
-                .clip(RoundedCornerShape(cornerRadius))
-            ,
-            onClickToOpenWindow= onClickToOpenWindow
+                .clip(RoundedCornerShape(cornerRadius)),
+            onClickToOpenWindow = onClickToOpenWindow
         )
     }
 }
