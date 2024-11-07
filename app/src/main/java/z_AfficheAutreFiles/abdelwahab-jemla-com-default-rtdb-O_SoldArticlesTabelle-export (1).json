@@ -1,147 +1,719 @@
 [
   null,
-  {
-    "clientSoldToItId": 1,
-    "color1IdPicked": 52,
-    "color1SoldQuantity": 2,
-    "color2IdPicked": 0,
-    "color2SoldQuantity": 0,
-    "color3IdPicked": 0,
-    "color3SoldQuantity": 0,
-    "color4IdPicked": 0,
-    "color4SoldQuantity": 0,
-    "confimed": false,
-    "date": "1730881542266",
-    "idArticle": 484,
-    "nameArticle": "Wiwi Halkom®",
-    "vid": 1
-  },
-  {
-    "clientSoldToItId": 1,
-    "color1IdPicked": 1,
-    "color1SoldQuantity": 1,
-    "color2IdPicked": 0,
-    "color2SoldQuantity": 0,
-    "color3IdPicked": 0,
-    "color3SoldQuantity": 0,
-    "color4IdPicked": 0,
-    "color4SoldQuantity": 0,
-    "confimed": false,
-    "date": "1730881582192",
-    "idArticle": 3557,
-    "nameArticle": "hnina",
-    "vid": 2
-  },
-  {
-    "clientSoldToItId": 3,
-    "color1IdPicked": 152,
-    "color1SoldQuantity": 1,
-    "color2IdPicked": 0,
-    "color2SoldQuantity": 0,
-    "color3IdPicked": 0,
-    "color3SoldQuantity": 0,
-    "color4IdPicked": 0,
-    "color4SoldQuantity": 0,
-    "confimed": false,
-    "date": "1730881614758",
-    "idArticle": 1072,
-    "nameArticle": "pupg caramel",
-    "vid": 3
-  },
-  {
-    "clientSoldToItId": 3,
-    "color1IdPicked": 49,
-    "color1SoldQuantity": 1,
-    "color2IdPicked": 0,
-    "color2SoldQuantity": 0,
-    "color3IdPicked": 0,
-    "color3SoldQuantity": 0,
-    "color4IdPicked": 0,
-    "color4SoldQuantity": 0,
-    "confimed": false,
-    "date": "1730881624639",
-    "idArticle": 472,
-    "nameArticle": "Kinder Joy®",
-    "vid": 4
-  },
-  {
-    "clientSoldToItId": 3,
-    "color1IdPicked": 52,
-    "color1SoldQuantity": 3,
-    "color2IdPicked": 0,
-    "color2SoldQuantity": 0,
-    "color3IdPicked": 0,
-    "color3SoldQuantity": 0,
-    "color4IdPicked": 0,
-    "color4SoldQuantity": 0,
-    "confimed": false,
-    "date": "1730881633492",
-    "idArticle": 447,
-    "nameArticle": "Rigolo®",
-    "vid": 5
-  },
-  {
-    "clientSoldToItId": 3,
-    "color1IdPicked": 1,
-    "color1SoldQuantity": 2,
-    "color2IdPicked": 0,
-    "color2SoldQuantity": 0,
-    "color3IdPicked": 0,
-    "color3SoldQuantity": 0,
-    "color4IdPicked": 0,
-    "color4SoldQuantity": 0,
-    "confimed": false,
-    "date": "1730881653581",
-    "idArticle": 3558,
-    "nameArticle": "hnina",
-    "vid": 6
-  },
-  {
-    "clientSoldToItId": 3,
-    "color1IdPicked": 93,
-    "color1SoldQuantity": 1,
-    "color2IdPicked": 0,
-    "color2SoldQuantity": 0,
-    "color3IdPicked": 0,
-    "color3SoldQuantity": 0,
-    "color4IdPicked": 0,
-    "color4SoldQuantity": 0,
-    "confimed": false,
-    "date": "1730881676393",
-    "idArticle": 842,
-    "nameArticle": "optilla 1k",
-    "vid": 7
-  },
-  {
-    "clientSoldToItId": 3,
-    "color1IdPicked": 1,
-    "color1SoldQuantity": 1,
-    "color2IdPicked": 0,
-    "color2SoldQuantity": 0,
-    "color3IdPicked": 0,
-    "color3SoldQuantity": 0,
-    "color4IdPicked": 0,
-    "color4SoldQuantity": 0,
-    "confimed": false,
-    "date": "1730881689481",
-    "idArticle": 3559,
-    "nameArticle": "optil70",
-    "vid": 8
-  },
-  {
-    "clientSoldToItId": 1,
-    "color1IdPicked": 49,
-    "color1SoldQuantity": 1,
-    "color2IdPicked": 48,
-    "color2SoldQuantity": 1,
-    "color3IdPicked": 0,
-    "color3SoldQuantity": 0,
-    "color4IdPicked": 0,
-    "color4SoldQuantity": 0,
-    "confimed": false,
-    "date": "1730881748326",
-    "idArticle": 472,
-    "nameArticle": "Kinder Joy®",
-    "vid": 9
-  }
+{
+"idArticle": 963,
+"nameArticle": "celebrity bar",
+"color1SoldQuantity": 1,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "3"
+},
+{
+"idArticle": 3562,
+"nameArticle": "my cand",
+"color1SoldQuantity": 1,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "3"
+},
+{
+"idArticle": 446,
+"nameArticle": "Zozo Surprise®",
+"color1SoldQuantity": 1,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "3"
+},
+{
+"idArticle": 58,
+"nameArticle": "Reglize حلقومة®",
+"color1SoldQuantity": 1,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "3"
+},
+{
+"idArticle": 65,
+"nameArticle": "Silca®",
+"color1SoldQuantity": 1,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "3"
+},
+{
+"idArticle": 215,
+"nameArticle": "Optila Stick 5Da®",
+"color1SoldQuantity": 1,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "3"
+},
+{
+"idArticle": 481,
+"nameArticle": "Mentos®",
+"color1SoldQuantity": 1,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "3"
+},
+{
+"idArticle": 791,
+"nameArticle": "Caprice Caramel®",
+"color1SoldQuantity": 1,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "3"
+},
+{
+"idArticle": 788,
+"nameArticle": "Vegeca Bar®",
+"color1SoldQuantity": 1,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "3"
+},
+{
+"idArticle": 948,
+"nameArticle": "hanna nssibti la3ziza sachet",
+"color1SoldQuantity": 2,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "3"
+},
+{
+"idArticle": 819,
+"nameArticle": "cream deployent ghalia",
+"color1SoldQuantity": 1,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "3"
+},
+{
+"idArticle": 344,
+"nameArticle": "المسواك صغير Local®",
+"color1SoldQuantity": 1,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "3"
+},
+{
+"idArticle": 921,
+"nameArticle": "dove savonn",
+"color1SoldQuantity": 1,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "3"
+},
+{
+"idArticle": 352,
+"nameArticle": "Krish K7 2 Eme Choix®",
+"color1SoldQuantity": 1,
+"color2SoldQuantity": 1,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 1,
+"clientSoldToItId": "3"
+},
+{
+"idArticle": 269,
+"nameArticle": "Scotche Amballage®",
+"color1SoldQuantity": 0,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "3"
+},
+{
+"idArticle": 969,
+"nameArticle": "wafer serir",
+"color1SoldQuantity": 1,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "5"
+},
+{
+"idArticle": 83,
+"nameArticle": "Copor®",
+"color1SoldQuantity": 2,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "5"
+},
+{
+"idArticle": 754,
+"nameArticle": "Turta®",
+"color1SoldQuantity": 2,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "5"
+},
+{
+"idArticle": 45,
+"nameArticle": "Pino Enrobe®",
+"color1SoldQuantity": 2,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "5"
+},
+{
+"idArticle": 28,
+"nameArticle": "Cherchel®",
+"color1SoldQuantity": 1,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "5"
+},
+{
+"idArticle": 69,
+"nameArticle": "Maxon Tablette®",
+"color1SoldQuantity": 5,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "5"
+},
+{
+"idArticle": 611,
+"nameArticle": "Fetre Tableau®",
+"color1SoldQuantity": 2,
+"color2SoldQuantity": 2,
+"color3SoldQuantity": 2,
+"color4SoldQuantity": 2,
+"clientSoldToItId": "3,5"
+},
+{
+"idArticle": 23,
+"nameArticle": "Gominola®",
+"color1SoldQuantity": 1,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "5"
+},
+{
+"idArticle": 565,
+"nameArticle": "golden sachet®",
+"color1SoldQuantity": 1,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "5"
+},
+{
+"idArticle": 195,
+"nameArticle": "Cap 200®",
+"color1SoldQuantity": 1,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "5"
+},
+{
+"idArticle": 101,
+"nameArticle": "May Stick®",
+"color1SoldQuantity": 1,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "5"
+},
+{
+"idArticle": 3563,
+"nameArticle": "holdays",
+"color1SoldQuantity": 2,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "5"
+},
+{
+"idArticle": 17,
+"nameArticle": "Dragon®",
+"color1SoldQuantity": 1,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "5"
+},
+{
+"idArticle": 1076,
+"nameArticle": "scusa daffodil",
+"color1SoldQuantity": 1,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "5"
+},
+{
+"idArticle": 86,
+"nameArticle": "Chiwawa 50 Da®",
+"color1SoldQuantity": 1,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "5"
+},
+{
+"idArticle": 871,
+"nameArticle": "chips bidon",
+"color1SoldQuantity": 1,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "5"
+},
+{
+"idArticle": 910,
+"nameArticle": "fasseure view",
+"color1SoldQuantity": 1,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "3"
+},
+{
+"idArticle": 572,
+"nameArticle": "Jellopy Matrag®",
+"color1SoldQuantity": 1,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "6"
+},
+{
+"idArticle": 442,
+"nameArticle": "Halilo®",
+"color1SoldQuantity": 0,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "6"
+},
+{
+"idArticle": 962,
+"nameArticle": "jelly loubia dydo",
+"color1SoldQuantity": 2,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "6"
+},
+{
+"idArticle": 203,
+"nameArticle": "Jellopey®",
+"color1SoldQuantity": 1,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "6"
+},
+{
+"idArticle": 1077,
+"nameArticle": "halilo",
+"color1SoldQuantity": 1,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "6"
+},
+{
+"idArticle": 23,
+"nameArticle": "Gominola®",
+"color1SoldQuantity": 0,
+"color2SoldQuantity": 1,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "6"
+},
+{
+"idArticle": 572,
+"nameArticle": "Jellopy Matrag®",
+"color1SoldQuantity": 2,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "6"
+},
+{
+"idArticle": 1072,
+"nameArticle": "pupg caramel",
+"color1SoldQuantity": 1,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "6"
+},
+{
+"idArticle": 113,
+"nameArticle": "Clako®",
+"color1SoldQuantity": 1,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "6"
+},
+{
+"idArticle": 1070,
+"nameArticle": "massassa bekri",
+"color1SoldQuantity": 1,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "6"
+},
+{
+"idArticle": 150,
+"nameArticle": "La Skoidra®",
+"color1SoldQuantity": 2,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "6"
+},
+{
+"idArticle": 235,
+"nameArticle": "Pinko®",
+"color1SoldQuantity": 1,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "6"
+},
+{
+"idArticle": 178,
+"nameArticle": "Shan The Sheep®",
+"color1SoldQuantity": 1,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "6"
+},
+{
+"idArticle": 145,
+"nameArticle": "Frech Gum®",
+"color1SoldQuantity": 1,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "6"
+},
+
+{
+"idArticle": 195,
+"nameArticle": "Cap 200®",
+"color1SoldQuantity": 1,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "6"
+},
+{
+"idArticle": 146,
+"nameArticle": "Le Dore®",
+"color1SoldQuantity": 1,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "6"
+},
+{
+"idArticle": 130,
+"nameArticle": "Ambassadeur 70%®",
+"color1SoldQuantity": 5,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "6"
+},
+{
+"idArticle": 182,
+"nameArticle": "Nice®",
+"color1SoldQuantity": 8,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "6"
+},
+{
+"idArticle": 189,
+"nameArticle": "Excelence®",
+"color1SoldQuantity": 8,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "6"
+},
+{
+"idArticle": 114,
+"nameArticle": "Mamaia®",
+"color1SoldQuantity": 1,
+"color2SoldQuantity": 1,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "6"
+},
+{
+"idArticle": 1077,
+"nameArticle": "halilo",
+"color1SoldQuantity": 1,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "6"
+},
+{
+"idArticle": 45,
+"nameArticle": "Pino Enrobe®",
+"color1SoldQuantity": 1,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "6"
+},
+{
+"idArticle": 933,
+"nameArticle": "osram led 14w",
+"color1SoldQuantity": 1,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "6"
+},
+{
+"idArticle": 851,
+"nameArticle": "el mordjene 200g chocolate",
+"color1SoldQuantity": 6,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "6"
+},
+{
+"idArticle": 850,
+"nameArticle": "el mordjene 200g blanche",
+"color1SoldQuantity": 6,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "6"
+},
+{
+"idArticle": 852,
+"nameArticle": "el mordjene 350g blanche",
+"color1SoldQuantity": 6,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "6"
+},
+{
+"idArticle": 853,
+"nameArticle": "el mordjene 350g chocolate",
+"color1SoldQuantity": 6,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "6"
+},
+{
+"idArticle": 830,
+"nameArticle": "el raki",
+"color1SoldQuantity": 5,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "6"
+},
+{
+"idArticle": 872,
+"nameArticle": "ananas",
+"color1SoldQuantity": 5,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "6"
+},
+{
+"idArticle": 867,
+"nameArticle": "el mukam",
+"color1SoldQuantity": 1,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "6"
+},
+{
+"idArticle": 871,
+"nameArticle": "chips bidon",
+"color1SoldQuantity": 4,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "6"
+},
+{
+"idArticle": 868,
+"nameArticle": "mixo dydo",
+"color1SoldQuantity": 2,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "6"
+},
+{
+"idArticle": 3565,
+"nameArticle": "maissi",
+"color1SoldQuantity": 2,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "6"
+},
+{
+"idArticle": 3567,
+"nameArticle": "dawaba",
+"color1SoldQuantity": 3,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "6"
+},
+{
+"idArticle": 64,
+"nameArticle": "Soray®",
+"color1SoldQuantity": 1,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "6"
+},
+{
+"idArticle": 3568,
+"nameArticle": "pisto",
+"color1SoldQuantity": 1,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "6"
+},
+{
+"idArticle": 529,
+"nameArticle": "Venus®",
+"color1SoldQuantity": 5,
+"color2SoldQuantity": 5,
+"color3SoldQuantity": 5,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "4"
+},
+{
+"idArticle": 912,
+"nameArticle": "venus savon liquide",
+"color1SoldQuantity": 3,
+"color2SoldQuantity": 3,
+"color3SoldQuantity": 3,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "4"
+},
+{
+"idArticle": 806,
+"nameArticle": "Venus 2 En 1 New®",
+"color1SoldQuantity": 0,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "4"
+},
+{
+"idArticle": 818,
+"nameArticle": "Venus 3En1®",
+"color1SoldQuantity": 3,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "4"
+},
+{
+"idArticle": 510,
+"nameArticle": "Venus Gel Douche Famme®",
+"color1SoldQuantity": 10,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "4"
+},
+{
+"idArticle": 955,
+"nameArticle": "venus new 2e1 2",
+"color1SoldQuantity": 5,
+"color2SoldQuantity": 5,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "4"
+},
+{
+"idArticle": 923,
+"nameArticle": "venus gel douche homme 2",
+"color1SoldQuantity": 0,
+"color2SoldQuantity": 3,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "4"
+},
+{
+"idArticle": 498,
+"nameArticle": "Alteco®",
+"color1SoldQuantity": 3,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "4,5"
+},
+{
+"idArticle": 360,
+"nameArticle": "Hexi صغير®",
+"color1SoldQuantity": 1,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "4"
+},
+{
+"idArticle": 950,
+"nameArticle": "protected arak",
+"color1SoldQuantity": 1,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "4"
+},
+{
+"idArticle": 594,
+"nameArticle": "Hawai Gm®",
+"color1SoldQuantity": 2,
+"color2SoldQuantity": 0,
+"color3SoldQuantity": 0,
+"color4SoldQuantity": 0,
+"clientSoldToItId": "4"
+}
 ]
+
+
+
+

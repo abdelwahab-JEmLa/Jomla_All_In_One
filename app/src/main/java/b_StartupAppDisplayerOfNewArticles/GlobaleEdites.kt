@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Details
+import androidx.compose.material.icons.filled.DoNotDisturbAlt
 import androidx.compose.material.icons.filled.EditCalendar
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.Home
@@ -148,6 +149,19 @@ fun FloatingActionButtonGroup(
                             onClick = {
                                 currentGridColumns = (currentGridColumns % 4) + 1
                                 onChangeGridColumns(currentGridColumns)
+                            }
+                        ),FabData(
+                            icon = Icons.Default.DoNotDisturbAlt,
+                            label = if (clearDataClickCount == 0) "exportToWarningDataBaseBakup" else "Confirm ",
+                            color = Color(0xFFDE1010),
+                            onClick = {
+                                if (clearDataClickCount == 0) {
+                                    clearDataClickCount++
+                                } else {
+                                    viewModel.exportToWarningDataBaseBakup()
+                                    viewModel.exportArticlesBasesStatsTableOnly()
+                                    clearDataClickCount = 0
+                                }
                             }
                         ),
                         FabData(

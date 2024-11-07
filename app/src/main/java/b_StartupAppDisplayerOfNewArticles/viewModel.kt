@@ -8,8 +8,10 @@ import a_RoomDB.ClientsModel
 import a_RoomDB.ColorsArticlesTabelle
 import a_RoomDB.SoldArticlesTabelle
 import a_RoomDB.SuppliersTabelle
+import android.os.Build
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.database.BuildConfig
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,9 +20,11 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.io.File
+import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Date
+import java.util.Locale
 
 
 // UiState.kt
@@ -421,7 +425,96 @@ class StartUpNewArticlesViewModels(
 
         }
     }
+    /**EXPO INTIA*/
+    fun exportToWarningDataBaseBakup() {
+        viewModelScope.launch {
+            try {
+                setLoading(true)
 
+
+                // Get current timestamp for the backup
+                val timestamp = System.currentTimeMillis()
+                val backupRef = firebaseDatabase.getReference("WarningDataBaseBakup/$timestamp")
+
+                // Create a backup object with all relevant data
+                val backupData = hashMapOf(
+                    "articlesBasesStatTables" to _uiState.value.articlesBasesStatTables,
+                    "appSettingsSaverModel" to _uiState.value.appSettingsSaverModel,
+                    "categories" to _uiState.value.categories,
+                    "colorsArticlesTabelleModel" to _uiState.value.colorsArticlesTabelleModel,
+                    "soldArticlesModel" to _uiState.value.soldArticlesModel,
+                    "clientsModel" to _uiState.value.clientsModel,
+                    "suppliers" to _uiState.value.suppliers,
+                    "backupTimestamp" to timestamp,
+                    "backupDate" to SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date(timestamp))
+                )
+
+                // Update loading progress as we save each collection
+                val totalCollections = backupData.size
+                var currentCollection = 0
+
+                backupData.forEach { (key, value) ->
+                    try {
+                        backupRef.child(key).setValue(value).await()
+                        currentCollection++
+                        // Adjust progress to start from 30% and go to 100%
+                        updateLoadingProgress(0.3f + (0.7f * currentCollection.toFloat() / totalCollections))
+                    } catch (e: Exception) {
+                        _uiState.update { it.copy(error = "Failed to backup $key: ${e.message}") }
+                    }
+                }
+
+                // Add metadata about the backup
+                backupRef.child("metadata").setValue(
+                    hashMapOf(
+                        "totalCollections" to totalCollections,
+                        "backupComplete" to true,
+                        "deviceInfo" to Build.MODEL,
+                        "appVersion" to BuildConfig.VERSION_NAME,
+                        "totalArticlesExported" to _uiState.value.articlesBasesStatTables.size
+                    )
+                ).await()
+
+            } catch (e: Exception) {
+                _uiState.update { it.copy(error = "Backup failed: ${e.message}") }
+            } finally {
+                setLoading(false)
+            }
+        }
+    }
+
+    // Optional: Add a separate function if you want to export articles only
+    fun exportArticlesBasesStatsTableOnly() {
+        viewModelScope.launch {
+            try {
+                setLoading(true)
+
+                val totalArticles = _uiState.value.articlesBasesStatTables.size
+                var currentArticle = 0
+
+                _uiState.value.articlesBasesStatTables.forEach { article ->
+                    try {
+                        refDBJetPackExport
+                            .child(article.idArticle.toString())
+                            .setValue(article)
+                            .await()
+
+                        currentArticle++
+                        updateLoadingProgress(currentArticle.toFloat() / totalArticles)
+                    } catch (e: Exception) {
+                        _uiState.update {
+                            it.copy(error = "Failed to export article ${article.idArticle}: ${e.message}")
+                        }
+                    }
+                }
+
+            } catch (e: Exception) {
+                _uiState.update { it.copy(error = "Articles export failed: ${e.message}") }
+            } finally {
+                setLoading(false)
+            }
+        }
+    }
     fun importFromFirebase() {
         viewModelScope.launch {
             try {
