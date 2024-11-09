@@ -2,7 +2,6 @@ package f_Wifi
 
 import android.content.Context
 import android.os.Build
-import android.util.Log
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.AdvertisingOptions
 import com.google.android.gms.nearby.connection.ConnectionInfo
@@ -24,8 +23,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 
-
-class NearbyConnectionService(private val context: Context) {
+class NearbyConnectionService(
+    private val context: Context,
+    private val onDataReceived: (String) -> Unit // Ajout du callback
+) {
     private val connectionsClient = Nearby.getConnectionsClient(context)
     private val scope = CoroutineScope(Dispatchers.IO + Job())
 
@@ -61,21 +62,7 @@ class NearbyConnectionService(private val context: Context) {
         }
     }
 
-    private val payloadCallback = object : PayloadCallback() {
-        override fun onPayloadReceived(endpointId: String, payload: Payload) {
-            when (payload.type) {
-                Payload.Type.BYTES -> {
-                    val data = payload.asBytes()?.let { String(it) }
-                    handleReceivedData(data)
-                }
-                // Gérer d'autres types de payload si nécessaire
-            }
-        }
 
-        override fun onPayloadTransferUpdate(endpointId: String, update: PayloadTransferUpdate) {
-            // Gérer les mises à jour de transfert si nécessaire
-        }
-    }
 
     fun startAdvertising(serviceId: String) {
         val options = AdvertisingOptions.Builder()
@@ -126,15 +113,22 @@ class NearbyConnectionService(private val context: Context) {
             }
     }
 
-    private fun handleReceivedData(data: String?) {
-        // Gérer les données reçues selon vos besoins
-        data?.let {
-            Log.d("NearbyService", "Données reçues: $it")
-        }
-    }
-
     fun stop() {
         connectionsClient.stopAllEndpoints()
         scope.cancel()
+    }
+    private val payloadCallback = object : PayloadCallback() {
+        override fun onPayloadReceived(endpointId: String, payload: Payload) {
+            when (payload.type) {
+                Payload.Type.BYTES -> {
+                    val data = payload.asBytes()?.let { String(it) }
+                    data?.let { onDataReceived(it) } // Appel du callback
+                }
+            }
+        }
+
+        override fun onPayloadTransferUpdate(endpointId: String, update: PayloadTransferUpdate) {
+            // Gestion des mises à jour de transfert si nécessaire
+        }
     }
 }

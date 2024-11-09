@@ -29,8 +29,8 @@ import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 
-// UiState.kt
 data class UiState(
+    val scrollPosition: Int = 0,
     val appSettingsSaverModel: List<AppSettingsSaverModel> = emptyList(),
     val articlesBasesStatTables: List<ArticlesBasesStatsTable> = emptyList(),
     val categories: List<CategoriesTabelle> = emptyList(),
@@ -40,11 +40,12 @@ data class UiState(
     val suppliers: List<SuppliersTabelle> = emptyList(),
     val isLoading: Boolean = false,
     val loadingProgress: Float = 0f,
-    val error: String? = null ,
+    val error: String? = null,
     val wifiTestDisplayer: Boolean = false,
     val connectionStatus: String = "Déconnecté",
     val isConnected: Boolean = false,
-    val connectedDeviceName: String? = null
+    val connectedDeviceName: String? = null,
+    val isServer: Boolean = false
 )
 
 // StartUpNewArticlesViewModel.kt
@@ -58,8 +59,33 @@ class StartUpNewArticlesViewModels(
     private val _isServer = MutableStateFlow(false)
     val isServer = _isServer.asStateFlow()
 
-    private val nearbyService = NearbyConnectionService(context)
+    private val nearbyService = NearbyConnectionService(
+        context = context,
+        onDataReceived = { data ->
+            when {
+                data.startsWith("SCROLL_POSITION:") -> {
+                    val position = data.substringAfter(":").toIntOrNull() ?: 0
+                    _uiState.update { it.copy(scrollPosition = position) }
+                }
+                data == "START_WIFI_TEST" -> {
+                    _uiState.update { it.copy(wifiTestDisplayer = true) }
+                }
+                data == "STOP_WIFI_TEST" -> {
+                    _uiState.update { it.copy(wifiTestDisplayer = false) }
+                }
+            }
+        }
+    )
 
+    fun sendScrollPosition(position: Int) {
+        viewModelScope.launch {
+            if (_isServer.value) {
+                uiState.value.connectedDeviceName?.let { endpointId ->
+                    nearbyService.sendData(endpointId, "SCROLL_POSITION:$position")
+                }
+            }
+        }
+    }
     fun toggleServerMode() {
         viewModelScope.launch {
             _isServer.value = !_isServer.value

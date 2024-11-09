@@ -61,6 +61,7 @@ import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -101,6 +102,7 @@ import com.example.clientjetpack.LoadingOverlay
 import com.example.clientjetpack.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -152,16 +154,33 @@ fun ArticleDisplayScreen(
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     onClickToOpenClientsW: () -> Unit,
     isFabVisible: Boolean,
-    onClickDonne: () -> Unit, onToggleitsWifiServerAppOrClient: () -> Unit,
+    onClickDonne: () -> Unit,
+    onToggleitsWifiServerAppOrClient: () -> Unit,
 ) {
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        // Main content in a Box to constrain its height
+    // Track scroll position changes
+    LaunchedEffect(gridState) {
+        snapshotFlow { gridState.firstVisibleItemIndex }
+            .distinctUntilChanged() // Évite les mises à jour inutiles
+            .collect { index ->
+                if (uiState.isConnected) {
+                    viewModel.sendScrollPosition(index)
+                }
+            }
+    }
+
+    // Listen for scroll updates from server
+    LaunchedEffect(uiState.scrollPosition) {
+        if (!uiState.isServer && uiState.scrollPosition != gridState.firstVisibleItemIndex) {
+            gridState.scrollToItem(uiState.scrollPosition)
+        }
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        // Reste du code existant...
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = if (isFabVisible) 80.dp else 0.dp) // Add padding at bottom when FAB is visible
+                .padding(bottom = if (isFabVisible) 80.dp else 0.dp)
         ) {
             Column {
                 SearchFilter(
@@ -187,7 +206,6 @@ fun ArticleDisplayScreen(
             }
         }
 
-        // FAB positioned at the bottom
         AnimatedVisibility(
             visible = isFabVisible,
             enter = fadeIn(),
@@ -203,11 +221,10 @@ fun ArticleDisplayScreen(
                 onChangeGridColumns = onChangeGridColumns,
                 viewModel = viewModel,
                 onClickToOpenClientsListW = onClickToOpenClientsW,
-                onToggleitsWifiServerAppOrClient
+                onToggleitsWifiServerAppOrClient = onToggleitsWifiServerAppOrClient
             )
         }
 
-        // Loading overlay
         if (uiState.isLoading) {
             LoadingOverlay(
                 progress = uiState.loadingProgress,
@@ -216,7 +233,6 @@ fun ArticleDisplayScreen(
         }
     }
 }
-
 
 class ArticlePagingSource(
     private val articles: List<ArticlesBasesStatsTable>,

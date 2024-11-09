@@ -227,6 +227,133 @@ private fun MainScreen(
         }
     }
 }
+@Composable
+fun AppNavHost(
+    appViewModels: AppViewModels,
+    navController: NavHostController,
+    onToggleNavBar: () -> Unit,
+    modifier: Modifier = Modifier,
+    isFabVisible: Boolean, onClickDonne: () -> Unit, onToggleitsWifiServerAppOrClient: () -> Unit
+) {
+    val uiState by appViewModels.startUpNewArticlesViewModels.uiState.collectAsState()
+
+    // Get current client from settings
+    val currentClientId = uiState.appSettingsSaverModel
+        .find { it.name == "clientBuyerNowId" }?.valueLong ?: 0
+    val currentClient = uiState.clientsModel.find { it.idClientsSu == currentClientId }
+
+    // Existing state management
+    var opnerSaleWindows by rememberSaveable { mutableStateOf(false) }
+    var showClientSelection by rememberSaveable { mutableStateOf(false) }
+    var showClientSelectionWithoutCondition by rememberSaveable { mutableStateOf(false) }
+    var relatedArticleBaseStats by rememberSaveable { mutableStateOf<ArticlesBasesStatsTable?>(null) }
+    var pendingIndexColor by rememberSaveable { mutableIntStateOf(0) }
+    val reloadTrigger by rememberSaveable { mutableIntStateOf(0) }
+
+    Box(modifier = modifier.fillMaxSize()) {
+        NavHost(
+            navController = navController,
+            startDestination = Screen.EditDatabaseWithCreateNewArticles.route,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            composable(Screen.EditDatabaseWithCreateNewArticles.route) {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    StartupAppDisplayerOfNewArticles(
+                        viewModel = appViewModels.startUpNewArticlesViewModels,
+                        onToggleNavBar = onToggleNavBar,
+                        reloadTrigger = reloadTrigger,
+                        onClickToOpenWindos = { articleDataBase, indexColor ->
+                            relatedArticleBaseStats = articleDataBase
+                            pendingIndexColor = indexColor
+
+                            if (currentClientId == 0L) {
+                                showClientSelection = true
+                            } else {
+                                appViewModels.startUpNewArticlesViewModels.openWindowsNewSaleWithUpdateCurrent(
+                                    relatedArticleBaseStats!!.idArticle.toLong(),
+                                    currentClientId,
+                                    pendingIndexColor)
+                                opnerSaleWindows=true
+                            }
+                        },
+                        onClickToOpenClientsW = {
+                            showClientSelectionWithoutCondition=true
+                        },
+                        isFabVisible=isFabVisible, onClickDonne = onClickDonne,
+                        onToggleitsWifiServerAppOrClient = onToggleitsWifiServerAppOrClient
+                    )
+
+                    if (uiState.isLoading) {
+                        LoadingOverlay(
+                            progress = uiState.loadingProgress / 100f,
+                            modifier = Modifier.matchParentSize()
+                        )
+                    }
+                }
+            }
+
+            composable(Screen.SoldCart.route) {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    SoldCartScreen(
+                        viewModel = appViewModels.startUpNewArticlesViewModels,
+                        clientBuyerNow = currentClient,
+                        uiState = uiState,
+                        onConfirmOrder = {
+                            appViewModels.startUpNewArticlesViewModels.updateLongAppSetting("clientBuyerNowId",0)
+                        }
+                    )
+                }
+            }
+            composable(Screen.BakingScreen.route) {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    GenerativeAiScreen(
+                        generativeAiViewModel = appViewModels.generativeAiViewModel,
+                    )
+                }
+            }
+        }
+
+        // Overlay dialogs and windows
+        if (showClientSelectionWithoutCondition ||(showClientSelection && currentClientId == 0L)) {
+            ClientSelectionDialog(
+                soldArticle = uiState.soldArticlesModel,
+                viewModel = appViewModels.startUpNewArticlesViewModels,
+                clients = uiState.clientsModel,
+                onClientSelected = { client ->
+                    appViewModels.startUpNewArticlesViewModels.updateLongAppSetting("clientBuyerNowId",client.idClientsSu)
+                    if (!showClientSelectionWithoutCondition) {
+                        appViewModels.startUpNewArticlesViewModels.openWindowsNewSaleWithUpdateCurrent(
+                            relatedArticleBaseStats!!.idArticle.toLong(),
+                            client.idClientsSu,
+                            pendingIndexColor
+                        )
+                        opnerSaleWindows = true
+                    }
+                    showClientSelection = false
+                    showClientSelectionWithoutCondition= false
+                },
+                onDismiss = {
+                    showClientSelection = false
+                    showClientSelectionWithoutCondition= false
+
+                }
+            )
+        }
+
+        if (opnerSaleWindows) {
+            SaleWindows(
+                modifier = Modifier.padding(horizontal = 3.dp),
+                uiState = uiState,
+                viewModel = appViewModels.startUpNewArticlesViewModels,
+                onDismiss = {
+                    appViewModels.startUpNewArticlesViewModels.clearCurrentSale()
+                    opnerSaleWindows=false
+                },
+                reloadTrigger = reloadTrigger,
+            )
+        }
+    }
+}
 
 @Composable
 private fun ConnectionStatusSection(uiState: UiState) {
@@ -383,133 +510,6 @@ sealed class Screen(
 
 
 // In AppNavHost.kt update the client selection handling:
-@Composable
-fun AppNavHost(
-    appViewModels: AppViewModels,
-    navController: NavHostController,
-    onToggleNavBar: () -> Unit,
-    modifier: Modifier = Modifier,
-    isFabVisible: Boolean, onClickDonne: () -> Unit, onToggleitsWifiServerAppOrClient: () -> Unit
-) {
-    val uiState by appViewModels.startUpNewArticlesViewModels.uiState.collectAsState()
-
-    // Get current client from settings
-    val currentClientId = uiState.appSettingsSaverModel
-        .find { it.name == "clientBuyerNowId" }?.valueLong ?: 0
-    val currentClient = uiState.clientsModel.find { it.idClientsSu == currentClientId }
-
-    // Existing state management
-    var opnerSaleWindows by rememberSaveable { mutableStateOf(false) }
-    var showClientSelection by rememberSaveable { mutableStateOf(false) }
-    var showClientSelectionWithoutCondition by rememberSaveable { mutableStateOf(false) }
-    var relatedArticleBaseStats by rememberSaveable { mutableStateOf<ArticlesBasesStatsTable?>(null) }
-    var pendingIndexColor by rememberSaveable { mutableIntStateOf(0) }
-    val reloadTrigger by rememberSaveable { mutableIntStateOf(0) }
-
-    Box(modifier = modifier.fillMaxSize()) {
-        NavHost(
-            navController = navController,
-            startDestination = Screen.EditDatabaseWithCreateNewArticles.route,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            composable(Screen.EditDatabaseWithCreateNewArticles.route) {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    StartupAppDisplayerOfNewArticles(
-                        viewModel = appViewModels.startUpNewArticlesViewModels,
-                        onToggleNavBar = onToggleNavBar,
-                        reloadTrigger = reloadTrigger,
-                        onClickToOpenWindos = { articleDataBase, indexColor ->
-                            relatedArticleBaseStats = articleDataBase
-                            pendingIndexColor = indexColor
-
-                            if (currentClientId == 0L) {
-                                showClientSelection = true
-                            } else {
-                                appViewModels.startUpNewArticlesViewModels.openWindowsNewSaleWithUpdateCurrent(
-                                    relatedArticleBaseStats!!.idArticle.toLong(),
-                                    currentClientId,
-                                    pendingIndexColor)
-                                opnerSaleWindows=true
-                            }
-                        },
-                        onClickToOpenClientsW = {
-                            showClientSelectionWithoutCondition=true
-                        },
-                        isFabVisible=isFabVisible, onClickDonne = onClickDonne,
-                        onToggleitsWifiServerAppOrClient = onToggleitsWifiServerAppOrClient
-                    )
-
-                    if (uiState.isLoading) {
-                        LoadingOverlay(
-                            progress = uiState.loadingProgress / 100f,
-                            modifier = Modifier.matchParentSize()
-                        )
-                    }
-                }
-            }
-
-            composable(Screen.SoldCart.route) {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    SoldCartScreen(
-                        viewModel = appViewModels.startUpNewArticlesViewModels,
-                        clientBuyerNow = currentClient,
-                        uiState = uiState,
-                        onConfirmOrder = {
-                            appViewModels.startUpNewArticlesViewModels.updateLongAppSetting("clientBuyerNowId",0)
-                        }
-                    )
-                }
-            }
-            composable(Screen.BakingScreen.route) {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    GenerativeAiScreen(
-                        generativeAiViewModel = appViewModels.generativeAiViewModel,
-                    )
-                }
-            }
-        }
-
-        // Overlay dialogs and windows
-        if (showClientSelectionWithoutCondition ||(showClientSelection && currentClientId == 0L)) {
-            ClientSelectionDialog(
-                soldArticle = uiState.soldArticlesModel,
-                viewModel = appViewModels.startUpNewArticlesViewModels,
-                clients = uiState.clientsModel,
-                onClientSelected = { client ->
-                    appViewModels.startUpNewArticlesViewModels.updateLongAppSetting("clientBuyerNowId",client.idClientsSu)
-                    if (!showClientSelectionWithoutCondition) {
-                        appViewModels.startUpNewArticlesViewModels.openWindowsNewSaleWithUpdateCurrent(
-                            relatedArticleBaseStats!!.idArticle.toLong(),
-                            client.idClientsSu,
-                            pendingIndexColor
-                        )
-                        opnerSaleWindows = true
-                    }
-                    showClientSelection = false
-                    showClientSelectionWithoutCondition= false
-                },
-                onDismiss = {
-                    showClientSelection = false
-                    showClientSelectionWithoutCondition= false
-
-                }
-            )
-        }
-
-        if (opnerSaleWindows) {
-            SaleWindows(
-                modifier = Modifier.padding(horizontal = 3.dp),
-                uiState = uiState,
-                viewModel = appViewModels.startUpNewArticlesViewModels,
-                onDismiss = {
-                    appViewModels.startUpNewArticlesViewModels.clearCurrentSale()
-                    opnerSaleWindows=false
-                },
-                reloadTrigger = reloadTrigger,
-            )
-        }
-    }
-}
 
 @Composable
 fun LoadingOverlay(
