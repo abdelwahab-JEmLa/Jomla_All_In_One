@@ -10,6 +10,7 @@ import a_RoomDB.SoldArticlesTabelle
 import a_RoomDB.SuppliersTabelle
 import android.content.Context
 import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.database.BuildConfig
@@ -177,6 +178,7 @@ class StartUpNewArticlesViewModels(
         firebaseDatabase.getReference("K_GroupeurBonCommendToSupplierRef").removeValue()
 
     }
+     @RequiresApi(Build.VERSION_CODES.O)
      suspend fun addNewEmptyArticle(nameArticleNIB: String): ArticlesBasesStatsTable? {
         return try {
             val currentState = _uiState.value

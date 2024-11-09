@@ -24,7 +24,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 
-// Si vous utilisez viewModelScope dans un ViewModel
 
 class NearbyConnectionService(private val context: Context) {
     private val connectionsClient = Nearby.getConnectionsClient(context)
