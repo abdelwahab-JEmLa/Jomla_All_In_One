@@ -42,7 +42,6 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -376,14 +375,7 @@ private fun ServerClientSection(
 ) {
     if (isServer) {
         Text("Mode Serveur")
-        if (uiState.isConnected) {
-            Switch(
-                checked = uiState.wifiTestDisplayer,
-                onCheckedChange = { isEnabled ->
-                    startUpViewModel.sendWifiTestState(isEnabled)
-                }
-            )
-        }
+
     } else {
         Text("Mode Client")
         Text("État du test WiFi: ${if (uiState.wifiTestDisplayer) "Actif" else "Inactif"}")
