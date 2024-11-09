@@ -5,6 +5,8 @@ import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ClientsModel
 import a_RoomDB.SoldArticlesTabelle
 import android.app.Application
+import android.content.Context
+import android.net.wifi.p2p.WifiP2pDevice
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -59,6 +61,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -73,6 +76,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.BlendMode.Companion.Screen
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -90,6 +94,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.wear.compose.material.ContentAlpha
+import androidx.wear.compose.material.ListHeader
 import b_StartupAppDisplayerOfNewArticles.StartUpNewArticlesViewModels
 import b_StartupAppDisplayerOfNewArticles.StartupAppDisplayerOfNewArticles
 import c_WindosBuyAndDesplayeArticleStats.SaleWindows
@@ -119,12 +124,13 @@ data class AppViewModels(
 
 // ViewModelFactory.kt
 class ViewModelFactory(
+    private val context: Context,
     private val database: AppDatabase
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when {
             modelClass.isAssignableFrom(StartUpNewArticlesViewModels::class.java) ->
-                StartUpNewArticlesViewModels(database) as T
+                StartUpNewArticlesViewModels(context.applicationContext, database) as T
             modelClass.isAssignableFrom(GenerativeAiViewModel::class.java) ->
                 GenerativeAiViewModel() as T
             else -> throw IllegalArgumentException("Unknown ViewModel: ${modelClass.name}")
@@ -136,13 +142,18 @@ class ViewModelFactory(
 class MainActivity : ComponentActivity() {
     private val database by lazy { (application as MyApplication).database }
     private val permissionHandler by lazy { PermissionHandler(this) }
+    private val isServer = true // ou false selon le rôle de l'appareil
+
+    private val viewModelFactory by lazy {
+        ViewModelFactory(applicationContext, database)
+    }
 
     private val startUpNewArticlesViewModels: StartUpNewArticlesViewModels by viewModels {
-        ViewModelFactory(database)
+        viewModelFactory
     }
 
     private val generativeAiViewModel: GenerativeAiViewModel by viewModels {
-        ViewModelFactory(database)
+        viewModelFactory
     }
 
     private val appViewModels by lazy {
@@ -155,6 +166,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         permissionHandler.checkAndRequestPermissions()
+
         setContent {
             MainScreen(appViewModels)
         }
@@ -163,6 +175,10 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 private fun MainScreen(appViewModels: AppViewModels) {
+    val startUpViewModel = appViewModels.startUpNewArticlesViewModels
+    val uiState by startUpViewModel.uiState.collectAsState()
+    val connectionStatus by startUpViewModel.connectionStatus.collectAsState()
+    val devices by startUpViewModel.discoveredDevices.collectAsState()
     val navController = rememberNavController()
     val items = NavigationItems.getItems()
     var isNavBarVisible by remember { mutableStateOf(true) }
@@ -197,6 +213,45 @@ private fun MainScreen(appViewModels: AppViewModels) {
                     .fillMaxSize()
                     .padding(padding)
             ) {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    Column {
+                        // Status de connexion
+                        Text(
+                            text = connectionStatus,
+                            modifier = Modifier.padding(16.dp),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+
+                        // WiFi Test Switch
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "WiFi Test",
+                                modifier = Modifier.weight(1f)
+                            )
+                            Switch(
+                                checked = uiState.wifiTestDisplayer,
+                                onCheckedChange = { startUpViewModel.updateWifiTestDisplayerState(it) }
+                            )
+                        }
+
+                        // Liste des appareils découverts
+                        LazyColumn(
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            items(devices) { device ->
+                                DeviceItem(
+                                    device = device,
+                                    onClick = { startUpViewModel.connectToDevice(device) }
+                                )
+                            }
+                        }
+                    }
+                }
                 AppNavHost(
                     appViewModels = appViewModels,
                     navController = navController,
@@ -204,6 +259,35 @@ private fun MainScreen(appViewModels: AppViewModels) {
                     isFabVisible = isFabVisible, onClickDonne = {isFabVisible=false}
                 )
             }
+        }
+    }
+}
+
+
+@Composable
+private fun DeviceItem(
+    device: WifiP2pDevice,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+            .clickable(onClick = onClick),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(
+                text = device.deviceName,
+                style = MaterialTheme.typography.titleMedium
+            )
+            Text(
+                text = device.deviceAddress,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }

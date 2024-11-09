@@ -8,19 +8,18 @@ import a_RoomDB.ClientsModel
 import a_RoomDB.ColorsArticlesTabelle
 import a_RoomDB.SoldArticlesTabelle
 import a_RoomDB.SuppliersTabelle
+import android.content.Context
+import android.net.wifi.p2p.WifiP2pDevice
 import android.os.Build
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.database.BuildConfig
 import com.google.firebase.database.FirebaseDatabase
-import j_Wifi.WifiDirectManager
+import j_Wifi.WifiDirectDiscoveryService
+import j_Wifi.WifiDirectService
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.internal.NoOpContinuation.context
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -30,7 +29,6 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
-import kotlin.coroutines.jvm.internal.CompletedContinuation.context
 
 
 // UiState.kt
@@ -43,16 +41,82 @@ data class UiState(
     val clientsModel: List<ClientsModel> = emptyList(),
     val suppliers: List<SuppliersTabelle> = emptyList(),
     val isLoading: Boolean = false,
+    val wifiTestDisplayer: Boolean = false,
     val loadingProgress: Float = 0f,
     val error: String? = null
 )
 
-// StartUpNewArticlesViewModels.kt
 class StartUpNewArticlesViewModels(
-    private val database: AppDatabase
+    context: Context,
+    private val database: AppDatabase,
+    private val isServer: Boolean = true
 ) : ViewModel() {
+
     private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()
+
+    private val discoveryService = WifiDirectDiscoveryService(context.applicationContext)
+    private val wifiDirectService = WifiDirectService(context.applicationContext)
+
+    private val _discoveredDevices = MutableStateFlow<List<WifiP2pDevice>>(emptyList())
+    val discoveredDevices = _discoveredDevices.asStateFlow()
+
+    private val _connectionStatus = MutableStateFlow("Déconnecté")
+    val connectionStatus = _connectionStatus.asStateFlow()
+
+    init {
+        setupWifiDirect()
+    }
+
+    private fun setupWifiDirect() {
+        viewModelScope.launch {
+            discoveryService.discoveryEvents.collect { event ->
+                when (event) {
+                    is WifiDirectDiscoveryService.DiscoveryEvent.DevicesFound -> {
+                        _discoveredDevices.value = event.devices.filter { device ->
+                            if (isServer) device.deviceName.contains("FilterClient")
+                            else device.deviceName.contains("FilterServer")
+                        }
+                    }
+                    is WifiDirectDiscoveryService.DiscoveryEvent.Connected -> {
+                        _connectionStatus.value = "Connecté à ${event.device.deviceName}\n" +
+                                if (_uiState.value.wifiTestDisplayer) "WiFi Test: Actif" else "WiFi Test: Inactif"
+                    }
+                    is WifiDirectDiscoveryService.DiscoveryEvent.Error -> {
+                        _connectionStatus.value = "Erreur: ${event.message}"
+                    }
+                    is WifiDirectDiscoveryService.DiscoveryEvent.Started -> {
+                        _connectionStatus.value = "Recherche en cours..."
+                    }
+                    is WifiDirectDiscoveryService.DiscoveryEvent.PermissionRequired -> {
+                        _connectionStatus.value = "Permissions requises pour le WiFi Direct"
+                    }
+                    null -> {}
+                }
+            }
+        }
+
+        // Set device name based on role
+        val deviceName = if (isServer) "FilterServer" else "FilterClient"
+        wifiDirectService.setDeviceName(deviceName) { success ->
+            if (success) {
+                if (isServer) {
+                    wifiDirectService.startServer { newState ->
+                        _uiState.update { it.copy(wifiTestDisplayer = newState) }
+                    }
+                }
+                discoveryService.startDiscovery(isServer)
+            } else {
+                _connectionStatus.value = "Erreur: Impossible de définir le nom de l'appareil"
+            }
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        wifiDirectService.cleanup()
+    }
+
 
     // Ensure the directory exists when initializing the path
     val viewModelImagesPath = File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne/").apply {
@@ -68,7 +132,6 @@ class StartUpNewArticlesViewModels(
     private val refSoldArticlesTabelle = firebaseDatabase.getReference("O_SoldArticlesTabelle")
     private val refClientsTabelle = firebaseDatabase.getReference("G_Clients")
 
-    private val wifiDirectManager = WifiDirectManager(context)
 
     private fun updateLoadingProgress(progress: Float) {
         _uiState.update { it.copy(loadingProgress = progress) }
@@ -86,41 +149,8 @@ class StartUpNewArticlesViewModels(
             loadDataOfUiStateFromRoom()
         }
     }
-    init {
-        // Start WiFi Direct discovery when ViewModel is created
-        startWifiSharing()
-    }
 
-    private fun startWifiSharing() {
-        viewModelScope.launch {
-            wifiDirectManager.startDiscovery()
-            // Monitor showOnlyWithFilter changes and share them
-            uiState.map { it.isLoading }
-                .distinctUntilChanged()
-                .collect { filterState ->
-                    shareFilterState(filterState)
-                }
-        }
-    }
 
-    private fun shareFilterState(state: Boolean) {
-        // Implement actual sharing logic here using WiFi Direct sockets
-        viewModelScope.launch {
-            // This would be replaced with actual socket communication
-            // For demonstration, we'll just log the state change
-            Log.d("WifiSharing", "Sharing filter state: $state")
-        }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        wifiDirectManager.stopDiscovery()
-    }
-
-    // Function to update filter state (can be called from UI or when receiving updates)
-    fun updateFilterState(newState: Boolean) {
-        _uiState.update { it.copy(showOnlyWithFilter = newState) }
-    }
 
     private val _currentSaleInWindows = MutableStateFlow<SoldArticlesTabelle?>(null)
     val currentSaleInWindows = _currentSaleInWindows.asStateFlow()
