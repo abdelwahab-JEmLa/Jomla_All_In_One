@@ -128,7 +128,7 @@ class ViewModelFactory(
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when {
             modelClass.isAssignableFrom(StartUpNewArticlesViewModels::class.java) ->
-                StartUpNewArticlesViewModels(context.applicationContext, database,true) as T
+                StartUpNewArticlesViewModels(context.applicationContext, database,false) as T
             modelClass.isAssignableFrom(GenerativeAiViewModel::class.java) ->
                 GenerativeAiViewModel() as T
             else -> throw IllegalArgumentException("Unknown ViewModel: ${modelClass.name}")
