@@ -244,18 +244,7 @@ private fun MainScreen(appViewModels: AppViewModels) {
                     }
                 }
             }
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-            ) {
-                AppNavHost(
-                    appViewModels = appViewModels,
-                    navController = navController,
-                    onToggleNavBar = { isNavBarVisible = !isNavBarVisible },
-                    isFabVisible = isFabVisible, onClickDonne = {isFabVisible=false}
-                )
-            }
+
         }
     }
 }
