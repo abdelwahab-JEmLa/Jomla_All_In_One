@@ -9,13 +9,18 @@ import a_RoomDB.ColorsArticlesTabelle
 import a_RoomDB.SoldArticlesTabelle
 import a_RoomDB.SuppliersTabelle
 import android.os.Build
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.database.BuildConfig
 import com.google.firebase.database.FirebaseDatabase
+import j_Wifi.WifiDirectManager
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.internal.NoOpContinuation.context
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -25,6 +30,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
+import kotlin.coroutines.jvm.internal.CompletedContinuation.context
 
 
 // UiState.kt
@@ -62,6 +68,7 @@ class StartUpNewArticlesViewModels(
     private val refSoldArticlesTabelle = firebaseDatabase.getReference("O_SoldArticlesTabelle")
     private val refClientsTabelle = firebaseDatabase.getReference("G_Clients")
 
+    private val wifiDirectManager = WifiDirectManager(context)
 
     private fun updateLoadingProgress(progress: Float) {
         _uiState.update { it.copy(loadingProgress = progress) }
@@ -78,6 +85,41 @@ class StartUpNewArticlesViewModels(
         viewModelScope.launch {
             loadDataOfUiStateFromRoom()
         }
+    }
+    init {
+        // Start WiFi Direct discovery when ViewModel is created
+        startWifiSharing()
+    }
+
+    private fun startWifiSharing() {
+        viewModelScope.launch {
+            wifiDirectManager.startDiscovery()
+            // Monitor showOnlyWithFilter changes and share them
+            uiState.map { it.isLoading }
+                .distinctUntilChanged()
+                .collect { filterState ->
+                    shareFilterState(filterState)
+                }
+        }
+    }
+
+    private fun shareFilterState(state: Boolean) {
+        // Implement actual sharing logic here using WiFi Direct sockets
+        viewModelScope.launch {
+            // This would be replaced with actual socket communication
+            // For demonstration, we'll just log the state change
+            Log.d("WifiSharing", "Sharing filter state: $state")
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        wifiDirectManager.stopDiscovery()
+    }
+
+    // Function to update filter state (can be called from UI or when receiving updates)
+    fun updateFilterState(newState: Boolean) {
+        _uiState.update { it.copy(showOnlyWithFilter = newState) }
     }
 
     private val _currentSaleInWindows = MutableStateFlow<SoldArticlesTabelle?>(null)
