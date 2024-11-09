@@ -52,6 +52,8 @@ class StartUpNewArticlesViewModels(
     private val isServer: Boolean = true
 ) : ViewModel() {
 
+
+
     private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()
 
@@ -66,6 +68,24 @@ class StartUpNewArticlesViewModels(
 
     init {
         setupWifiDirect()
+    }
+
+    fun updateWifiTestDisplayerState(newState: Boolean) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(wifiTestDisplayer = newState) }
+            _connectionStatus.value = if (_connectionStatus.value.startsWith("Connecté")) {
+                "${_connectionStatus.value.split('\n')[0]}\nWiFi Test: ${if (newState) "Actif" else "Inactif"}"
+            } else {
+                _connectionStatus.value
+            }
+        }
+    }
+
+    fun connectToDevice(device: WifiP2pDevice) {
+        viewModelScope.launch {
+            discoveryService.connectToDevice(device)
+            _connectionStatus.value = "Tentative de connexion à ${device.deviceName}..."
+        }
     }
 
     private fun setupWifiDirect() {
@@ -96,8 +116,7 @@ class StartUpNewArticlesViewModels(
             }
         }
 
-        // Set device name based on role
-        val deviceName = if (isServer) "FilterServer" else "FilterClient"
+        val deviceName = if (isServer) "Server" else "Client"
         wifiDirectService.setDeviceName(deviceName) { success ->
             if (success) {
                 if (isServer) {
@@ -115,6 +134,7 @@ class StartUpNewArticlesViewModels(
     override fun onCleared() {
         super.onCleared()
         wifiDirectService.cleanup()
+        discoveryService.stop()
     }
 
 

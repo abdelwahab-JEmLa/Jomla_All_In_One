@@ -76,7 +76,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.BlendMode.Companion.Screen
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -94,7 +93,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.wear.compose.material.ContentAlpha
-import androidx.wear.compose.material.ListHeader
 import b_StartupAppDisplayerOfNewArticles.StartUpNewArticlesViewModels
 import b_StartupAppDisplayerOfNewArticles.StartupAppDisplayerOfNewArticles
 import c_WindosBuyAndDesplayeArticleStats.SaleWindows
@@ -120,7 +118,7 @@ class MyApplication : Application() {
 data class AppViewModels(
     val startUpNewArticlesViewModels: StartUpNewArticlesViewModels,
     val generativeAiViewModel: GenerativeAiViewModel,
-    )
+)
 
 // ViewModelFactory.kt
 class ViewModelFactory(
@@ -166,7 +164,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         permissionHandler.checkAndRequestPermissions()
-
         setContent {
             MainScreen(appViewModels)
         }
@@ -208,50 +205,50 @@ private fun MainScreen(appViewModels: AppViewModels) {
                 }
             }
         ) { padding ->
+            Box(modifier = Modifier.fillMaxSize()) {
+                Column {
+                    // Status de connexion
+                    Text(
+                        text = connectionStatus,
+                        modifier = Modifier.padding(16.dp),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+
+                    // WiFi Test Switch
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "WiFi Test",
+                            modifier = Modifier.weight(1f)
+                        )
+                        Switch(
+                            checked = uiState.wifiTestDisplayer,
+                            onCheckedChange = { startUpViewModel.updateWifiTestDisplayerState(it) }    //TODO fix   Unresolved reference: updateWifiTestDisplayerState
+                        )
+                    }
+
+                    // Liste des appareils découverts
+                    LazyColumn(
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        items(devices) { device ->
+                            DeviceItem(
+                                device = device,
+                                onClick = { startUpViewModel.connectToDevice(device) }     //TODo fix Unresolved reference: connectToDevice
+                            )
+                        }
+                    }
+                }
+            }
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
             ) {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    Column {
-                        // Status de connexion
-                        Text(
-                            text = connectionStatus,
-                            modifier = Modifier.padding(16.dp),
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-
-                        // WiFi Test Switch
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "WiFi Test",
-                                modifier = Modifier.weight(1f)
-                            )
-                            Switch(
-                                checked = uiState.wifiTestDisplayer,
-                                onCheckedChange = { startUpViewModel.updateWifiTestDisplayerState(it) }
-                            )
-                        }
-
-                        // Liste des appareils découverts
-                        LazyColumn(
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            items(devices) { device ->
-                                DeviceItem(
-                                    device = device,
-                                    onClick = { startUpViewModel.connectToDevice(device) }
-                                )
-                            }
-                        }
-                    }
-                }
                 AppNavHost(
                     appViewModels = appViewModels,
                     navController = navController,
