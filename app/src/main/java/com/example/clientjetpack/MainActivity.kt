@@ -98,15 +98,15 @@ data class AppViewModels(
     val generativeAiViewModel: GenerativeAiViewModel,
 )
 
-// ViewModelFactory.kt
 class ViewModelFactory(
     private val context: Context,
-    private val database: AppDatabase
+    private val database: AppDatabase,
+    private val permissionHandler: PermissionHandler
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when {
             modelClass.isAssignableFrom(StartUpNewArticlesViewModels::class.java) ->
-                StartUpNewArticlesViewModels(context.applicationContext, database) as T
+                StartUpNewArticlesViewModels(context, database, permissionHandler) as T
             modelClass.isAssignableFrom(GenerativeAiViewModel::class.java) ->
                 GenerativeAiViewModel() as T
             else -> throw IllegalArgumentException("Unknown ViewModel: ${modelClass.name}")
@@ -114,13 +114,17 @@ class ViewModelFactory(
     }
 }
 
-// MainActivity.kt
+// Update the viewModelFactory initialization in MainActivity
 class MainActivity : ComponentActivity() {
     private val database by lazy { (application as MyApplication).database }
     private val permissionHandler by lazy { PermissionHandler(this) }
 
     private val viewModelFactory by lazy {
-        ViewModelFactory(applicationContext, database)
+        ViewModelFactory(
+            applicationContext,
+            database,
+            permissionHandler
+        )
     }
 
     private val startUpNewArticlesViewModels: StartUpNewArticlesViewModels by viewModels {
@@ -161,7 +165,18 @@ private fun MainScreenWrapper(appViewModels: AppViewModels) {
         onToggleServerMode = startUpViewModel::toggleServerMode
     )
 }
-
+@Composable
+private fun ConnectionStatusSection(uiState: UiState) {
+    Text(
+        text = uiState.connectionStatus,
+        style = MaterialTheme.typography.titleMedium,
+        color = when {
+            uiState.isConnected -> Color.Green
+            uiState.connectionStatus.startsWith("Erreur") -> Color.Red
+            else -> Color.Gray
+        }
+    )
+}
 @Composable
 private fun MainScreen(
     appViewModels: AppViewModels,
@@ -172,7 +187,7 @@ private fun MainScreen(
     val navController = rememberNavController()
     val items = NavigationItems.getItems()
     var isNavBarVisible by remember { mutableStateOf(true) }
-    var isFabVisible by remember { mutableStateOf(false) }
+    var isFabVisible by remember { mutableStateOf(true) }
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -355,18 +370,7 @@ fun AppNavHost(
     }
 }
 
-@Composable
-private fun ConnectionStatusSection(uiState: UiState) {
-    Text(
-        text = uiState.connectionStatus,
-        style = MaterialTheme.typography.titleMedium,
-        color = when {
-            uiState.isConnected -> Color.Green
-            uiState.connectionStatus.startsWith("Erreur") -> Color.Red
-            else -> Color.Gray
-        }
-    )
-}
+
 
 @Composable
 private fun ServerClientSection(

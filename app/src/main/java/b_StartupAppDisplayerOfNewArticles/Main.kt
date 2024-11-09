@@ -4,6 +4,7 @@ import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.CategoriesTabelle
 import a_RoomDB.ColorsArticlesTabelle
 import android.graphics.drawable.Drawable
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -100,7 +101,9 @@ import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.signature.ObjectKey
 import com.example.clientjetpack.LoadingOverlay
 import com.example.clientjetpack.R
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -139,6 +142,8 @@ fun StartupAppDisplayerOfNewArticles(
         onClickDonne = onClickDonne, onToggleitsWifiServerAppOrClient = onToggleitsWifiServerAppOrClient
     )
 }
+
+// In ArticleDisplayScreen.kt
 @Composable
 fun ArticleDisplayScreen(
     uiState: UiState,
@@ -157,26 +162,64 @@ fun ArticleDisplayScreen(
     onClickDonne: () -> Unit,
     onToggleitsWifiServerAppOrClient: () -> Unit,
 ) {
-    // Track scroll position changes
+    // Add state to track manual scrolling
+    var isManualScrolling by remember { mutableStateOf(false) }
+// First, remember the coroutine scope
+    val coroutineScope = rememberCoroutineScope()
+
+// Then use the remembered scope to create the debounced function
+    val debouncedSendPosition = remember(coroutineScope) {
+        debounce<Int>(
+            delayMillis = 100L,
+            coroutineScope = coroutineScope
+        ) { position ->
+            if (uiState.isServer && uiState.isConnected) {
+                viewModel.sendScrollPosition(position)
+            }
+        }
+    }
+
+    // Server-side scroll handling
     LaunchedEffect(gridState) {
         snapshotFlow { gridState.firstVisibleItemIndex }
-            .distinctUntilChanged() // Évite les mises à jour inutiles
+            .distinctUntilChanged()
             .collect { index ->
-                if (uiState.isConnected) {
-                    viewModel.sendScrollPosition(index)
+                Log.d("ScrollSync", "Scroll position changed: $index")
+                Log.d("ScrollSync", "isServer: ${uiState.isServer}, isConnected: ${uiState.isConnected}")
+
+                if (!isManualScrolling) {
+                    debouncedSendPosition(index)
                 }
             }
     }
 
-    // Listen for scroll updates from server
+    // Client-side scroll handling
     LaunchedEffect(uiState.scrollPosition) {
-        if (!uiState.isServer && uiState.scrollPosition != gridState.firstVisibleItemIndex) {
-            gridState.scrollToItem(uiState.scrollPosition)
+        if (!uiState.isServer &&
+            uiState.isConnected &&
+            uiState.scrollPosition != gridState.firstVisibleItemIndex) {
+            try {
+                isManualScrolling = true
+                Log.d("ScrollSync", "Client scrolling to: ${uiState.scrollPosition}")
+                gridState.scrollToItem(uiState.scrollPosition)
+            } finally {
+                // Reset the flag after a short delay
+                delay(200)
+                isManualScrolling = false
+            }
+        }
+    }
+
+    // Connection status observer
+    LaunchedEffect(uiState.isConnected) {
+        if (uiState.isConnected) {
+            Log.d("ScrollSync", "Connected as ${if (uiState.isServer) "server" else "client"}")
+        } else {
+            Log.d("ScrollSync", "Disconnected")
         }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        // Reste du code existant...
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -233,7 +276,21 @@ fun ArticleDisplayScreen(
         }
     }
 }
-
+// Utility function for debouncing
+fun <T> debounce(
+    delayMillis: Long,
+    coroutineScope: CoroutineScope,
+    action: suspend (T) -> Unit
+): (T) -> Unit {
+    var debounceJob: Job? = null
+    return { param: T ->
+        debounceJob?.cancel()
+        debounceJob = coroutineScope.launch {
+            delay(delayMillis)
+            action(param)
+        }
+    }
+}
 class ArticlePagingSource(
     private val articles: List<ArticlesBasesStatsTable>,
     private val filterText: String,

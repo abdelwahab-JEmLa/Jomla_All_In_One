@@ -250,7 +250,7 @@ fun SaleWindows(
                     Details(isDetailsVisible, stats)
                 }
 
-                ActionsButtonRow(      //TODO fait que ca soit s affiche toutjoure au base du dialoge
+                ActionsButtonRow(      // fait que ca soit s affiche toutjoure au base du dialoge
                     //comme button bar et fait anime infenie du button طلب
                     //comme    LaunchedEffect(Unit) {
                     //        while(true) {

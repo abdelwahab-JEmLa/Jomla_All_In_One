@@ -1,5 +1,8 @@
 package b_StartupAppDisplayerOfNewArticles
 
+// For StartUpNewArticlesViewModels.kt
+
+// For ArticleDisplayScreen.kt
 import a_RoomDB.AppDatabase
 import a_RoomDB.AppSettingsSaverModel
 import a_RoomDB.ArticlesBasesStatsTable
@@ -10,9 +13,11 @@ import a_RoomDB.SoldArticlesTabelle
 import a_RoomDB.SuppliersTabelle
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.clientjetpack.PermissionHandler
 import com.google.firebase.database.BuildConfig
 import com.google.firebase.database.FirebaseDatabase
 import f_Wifi.NearbyConnectionService
@@ -48,10 +53,10 @@ data class UiState(
     val isServer: Boolean = false
 )
 
-// StartUpNewArticlesViewModel.kt
 class StartUpNewArticlesViewModels(
-    context: Context,
-    private val database: AppDatabase
+    private val context: Context,
+    private val database: AppDatabase,
+    private val permissionHandler: PermissionHandler
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()
@@ -59,78 +64,155 @@ class StartUpNewArticlesViewModels(
     private val _isServer = MutableStateFlow(false)
     val isServer = _isServer.asStateFlow()
 
-    private val nearbyService = NearbyConnectionService(
-        context = context,
-        onDataReceived = { data ->
-            when {
-                data.startsWith("SCROLL_POSITION:") -> {
-                    val position = data.substringAfter(":").toIntOrNull() ?: 0
-                    _uiState.update { it.copy(scrollPosition = position) }
-                }
-                data == "START_WIFI_TEST" -> {
-                    _uiState.update { it.copy(wifiTestDisplayer = true) }
-                }
-                data == "STOP_WIFI_TEST" -> {
-                    _uiState.update { it.copy(wifiTestDisplayer = false) }
+    private val nearbyService by lazy {
+        NearbyConnectionService(
+            context = context,
+            permissionHandler = permissionHandler,
+            onDataReceived = { data ->
+                viewModelScope.launch {
+                    when {
+                        data.startsWith("SCROLL_POSITION:") -> {
+                            val position = data.substringAfter(":").toIntOrNull() ?: 0
+                            Log.d("ScrollSync", "Updating scroll position to: $position")
+                            _uiState.update { it.copy(scrollPosition = position) }
+                        }
+                        data == "START_WIFI_TEST" -> {
+                            _uiState.update { it.copy(wifiTestDisplayer = true) }
+                        }
+                        data == "STOP_WIFI_TEST" -> {
+                            _uiState.update { it.copy(wifiTestDisplayer = false) }
+                        }
+                    }
                 }
             }
-        }
-    )
+        )
+    }
 
-    fun sendScrollPosition(position: Int) {
+    fun setupNearbyConnection() {
         viewModelScope.launch {
-            if (_isServer.value) {
-                uiState.value.connectedDeviceName?.let { endpointId ->
-                    nearbyService.sendData(endpointId, "SCROLL_POSITION:$position")
+            if (!permissionHandler.checkAndRequestPermissions()) {
+                _uiState.update { it.copy(
+                    connectionStatus = "Permissions required",
+                    isConnected = false
+                )}
+                return@launch
+            }
+
+            Log.d("ScrollSync", "Setting up connection as ${if (_isServer.value) "server" else "client"}")
+            try {
+                if (_isServer.value) {
+                    nearbyService.startAdvertising("filter_service")
+                } else {
+                    nearbyService.startDiscovery("filter_service")
+                }
+            } catch (e: Exception) {
+                Log.e("ScrollSync", "Error setting up connection", e)
+                _uiState.update { it.copy(
+                    connectionStatus = "Error: ${e.message}",
+                    isConnected = false
+                )}
+            }
+        }
+    }
+
+
+    init {
+        setupConnectionStateObserver()
+        setupNearbyConnection() // Add this line to start the connection immediately
+    }
+
+    private fun setupConnectionStateObserver() {
+        viewModelScope.launch {
+            nearbyService.connectionState.collect { state ->
+                when (state) {
+                    is NearbyConnectionService.ConnectionState.Connected -> {
+                        Log.d("ScrollSync", "Connected to device: ${state.endpointId}")
+                        _uiState.update { it.copy(
+                            isConnected = true,
+                            isServer = _isServer.value,
+                            connectionStatus = "Connected",
+                            connectedDeviceName = state.endpointId
+                        )}
+                        // Ensure server status is maintained after connection
+                        _isServer.value = _uiState.value.isServer
+                    }
+                    is NearbyConnectionService.ConnectionState.Disconnected -> {
+                        Log.d("ScrollSync", "Disconnected from device")
+                        _uiState.update { it.copy(
+                            isConnected = false,
+                            connectionStatus = "Disconnected",
+                            connectedDeviceName = null
+                        )}
+                        // Automatically try to reconnect
+                        setupNearbyConnection()
+                    }
+                    is NearbyConnectionService.ConnectionState.Searching -> {
+                        Log.d("ScrollSync", "Searching for devices")
+                        _uiState.update { it.copy(
+                            isConnected = false,
+                            connectionStatus = "Searching...",
+                            connectedDeviceName = null
+                        )}
+                    }
+                    is NearbyConnectionService.ConnectionState.Error -> {
+                        Log.e("ScrollSync", "Connection error: ${state.message}")
+                        _uiState.update { it.copy(
+                            isConnected = false,
+                            connectionStatus = "Error: ${state.message}",
+                            connectedDeviceName = null
+                        )}
+                        // Attempt to reconnect after error
+                        delay(1000)
+                        setupNearbyConnection()
+                    }
                 }
             }
         }
     }
+
     fun toggleServerMode() {
         viewModelScope.launch {
-            _isServer.value = !_isServer.value
+            val newServerMode = !_isServer.value
+            Log.d("ScrollSync", "Toggling server mode from ${_isServer.value} to $newServerMode")
+
+            nearbyService.stop()
+            delay(100) // Small delay to ensure everything is stopped
+
+            _isServer.value = newServerMode
+            _uiState.update { it.copy(isServer = newServerMode) }
+
             setupNearbyConnection()
         }
     }
 
-    private fun setupNearbyConnection() {
+
+
+
+
+
+    fun sendScrollPosition(position: Int) {
         viewModelScope.launch {
-            if (_isServer.value) {
-                nearbyService.startAdvertising("filter_service")
-            } else {
-                nearbyService.startDiscovery("filter_service")
+            Log.d("ScrollSync", "Attempting to send scroll position: $position")
+
+            if (!uiState.value.isConnected) {
+                Log.d("ScrollSync", "Cannot send scroll position - not connected")
+                return@launch
             }
 
-            nearbyService.connectionState.collect { state ->
-                when (state) {
-                    is NearbyConnectionService.ConnectionState.Connected -> {
-                        _uiState.update { it.copy(
-                            isConnected = true,
-                            connectionStatus = "Connecté",
-                            connectedDeviceName = state.endpointId
-                        )}
-                    }
-                    is NearbyConnectionService.ConnectionState.Disconnected -> {
-                        _uiState.update { it.copy(
-                            isConnected = false,
-                            connectionStatus = "Déconnecté",
-                            connectedDeviceName = null
-                        )}
-                    }
-                    is NearbyConnectionService.ConnectionState.Searching -> {
-                        _uiState.update { it.copy(
-                            connectionStatus = "Recherche en cours..."
-                        )}
-                    }
-                    is NearbyConnectionService.ConnectionState.Error -> {
-                        _uiState.update { it.copy(
-                            connectionStatus = "Erreur: ${state.message}"
-                        )}
-                    }
-                }
+            if (!_isServer.value) {
+                Log.d("ScrollSync", "Cannot send scroll position - not in server mode")
+                return@launch
             }
+
+            uiState.value.connectedDeviceName?.let { endpointId ->
+                Log.d("ScrollSync", "Sending scroll position to endpoint: $endpointId")
+                nearbyService.sendData(endpointId, "SCROLL_POSITION:$position")
+            } ?: Log.e("ScrollSync", "Cannot send scroll position - no endpoint ID")
         }
     }
+
+
+
 
     fun sendWifiTestState(isEnabled: Boolean) {
         viewModelScope.launch {
@@ -144,12 +226,15 @@ class StartUpNewArticlesViewModels(
         nearbyService.stop()
         super.onCleared()
     }
+
     // Ensure the directory exists when initializing the path
     val viewModelImagesPath = File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne/").apply {
         if (!exists()) {
             mkdirs()
         }
     }
+
+  //  ***
     private val firebaseDatabase = FirebaseDatabase.getInstance()
     private val refAppSettingsSaverModel = firebaseDatabase.getReference("A_AppSettingsSaverModel")
     private val refDBJetPackExport = firebaseDatabase.getReference("e_DBJetPackExport")
