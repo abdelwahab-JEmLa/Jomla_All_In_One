@@ -32,76 +32,197 @@ class NearbyConnectionService(
     private val connectionsClient = Nearby.getConnectionsClient(context)
     private val scope = CoroutineScope(Dispatchers.IO + Job())
     private var activeEndpointId: String? = null
+    private var retryCount = 0
+    private val MAX_RETRIES = 3
+    private val RETRY_DELAY = 3000L // 3 seconds
 
     private val _connectionState = MutableStateFlow<ConnectionState>(ConnectionState.Disconnected)
     val connectionState = _connectionState.asStateFlow()
 
-    // Keep track of ongoing discovery or advertising
     private var isDiscovering = false
     private var isAdvertising = false
+    private var pendingRetry: Job? = null
 
     private val connectionLifecycleCallback = object : ConnectionLifecycleCallback() {
         override fun onConnectionInitiated(endpointId: String, info: ConnectionInfo) {
             Log.d("ScrollSync", "Connection initiated with endpoint: $endpointId, name: ${info.endpointName}")
-            activeEndpointId = endpointId
-            // Automatically accept the connection
-            connectionsClient.acceptConnection(endpointId, payloadCallback)
-                .addOnSuccessListener {
-                    Log.d("ScrollSync", "Connection accepted with endpoint: $endpointId")
+            scope.launch(Dispatchers.Main) {
+                try {
+                    activeEndpointId = endpointId
+                    _connectionState.value = ConnectionState.Connecting(endpointId)
+                    connectionsClient.acceptConnection(endpointId, payloadCallback)
+                        .addOnFailureListener { e ->
+                            handleConnectionFailure(endpointId, e, "Failed to accept connection")
+                        }
+                } catch (e: Exception) {
+                    handleConnectionFailure(endpointId, e, "Error during connection initiation")
                 }
-                .addOnFailureListener { e ->
-                    Log.e("ScrollSync", "Failed to accept connection with endpoint: $endpointId", e)
-                    handleConnectionFailure(endpointId, e)
-                }
+            }
         }
 
         override fun onConnectionResult(endpointId: String, result: ConnectionResolution) {
-            Log.d("ScrollSync", "Connection result for endpoint: $endpointId, status: ${result.status}")
-            when (result.status.statusCode) {
-                ConnectionsStatusCodes.STATUS_OK -> {
-                    Log.d("ScrollSync", "Successfully connected to endpoint: $endpointId")
-                    activeEndpointId = endpointId
-                    _connectionState.value = ConnectionState.Connected(endpointId)
-                    // Stop discovery once connected
-                    stopDiscovery()
-                }
-                ConnectionsStatusCodes.STATUS_CONNECTION_REJECTED -> {
-                    Log.e("ScrollSync", "Connection rejected with endpoint: $endpointId")
-                    handleConnectionFailure(endpointId, Exception("Connection rejected"))
-                }
-                ConnectionsStatusCodes.STATUS_ERROR -> {
-                    Log.e("ScrollSync", "Connection error with endpoint: $endpointId")
-                    handleConnectionFailure(endpointId, Exception("Connection error"))
-                }
-                else -> {
-                    Log.e("ScrollSync", "Unknown connection result with endpoint: $endpointId, code: ${result.status.statusCode}")
-                    handleConnectionFailure(endpointId, Exception("Unknown error"))
+            scope.launch(Dispatchers.Main) {
+                when (result.status.statusCode) {
+                    ConnectionsStatusCodes.STATUS_OK -> {
+                        Log.d("ScrollSync", "Successfully connected to endpoint: $endpointId")
+                        retryCount = 0
+                        activeEndpointId = endpointId
+                        _connectionState.value = ConnectionState.Connected(endpointId)
+                        stopDiscoveryAndAdvertising()
+                    }
+                    ConnectionsStatusCodes.STATUS_CONNECTION_REJECTED -> {
+                        handleConnectionFailure(endpointId, Exception("Connection rejected"), "Connection rejected")
+                    }
+                    ConnectionsStatusCodes.STATUS_ERROR -> {
+                        handleConnectionFailure(endpointId, Exception("Connection error"), "General connection error")
+                    }
+                    else -> {
+                        handleConnectionFailure(
+                            endpointId,
+                            Exception("Unknown error code: ${result.status.statusCode}"),
+                            "Unknown connection result"
+                        )
+                    }
                 }
             }
         }
 
         override fun onDisconnected(endpointId: String) {
-            Log.d("ScrollSync", "Disconnected from endpoint: $endpointId")
-            if (endpointId == activeEndpointId) {
-                activeEndpointId = null
-                _connectionState.value = ConnectionState.Disconnected
-                // Restart discovery or advertising based on previous state
-                restartConnectionProcess()
+            scope.launch(Dispatchers.Main) {
+                if (endpointId == activeEndpointId) {
+                    Log.d("ScrollSync", "Disconnected from endpoint: $endpointId")
+                    activeEndpointId = null
+                    _connectionState.value = ConnectionState.Disconnected
+                    retryConnection()
+                }
             }
         }
     }
 
-    private fun handleConnectionFailure(endpointId: String, error: Exception) {
-        if (endpointId == activeEndpointId) {
-            activeEndpointId = null
-            _connectionState.value = ConnectionState.Error(error.message ?: "Unknown error")
-            // Restart the connection process after a delay
-            scope.launch {
-                delay(1000)
-                restartConnectionProcess()
+    private fun handleConnectionFailure(endpointId: String, error: Exception, message: String) {
+        scope.launch(Dispatchers.Main) {
+            Log.e("ScrollSync", "$message: ${error.message}")
+            if (endpointId == activeEndpointId) {
+                activeEndpointId = null
+                _connectionState.value = ConnectionState.Error("$message: ${error.message}")
+                retryConnection()
             }
         }
     }
+
+    private fun retryConnection() {
+        pendingRetry?.cancel()
+        pendingRetry = scope.launch {
+            if (retryCount < MAX_RETRIES) {
+                retryCount++
+                delay(RETRY_DELAY * retryCount)
+                Log.d("ScrollSync", "Attempting retry #$retryCount")
+                when {
+                    isAdvertising -> startAdvertising("filter_service")
+                    isDiscovering -> startDiscovery("filter_service")
+                }
+            } else {
+                Log.e("ScrollSync", "Max retries reached")
+                _connectionState.value = ConnectionState.Error("Failed to establish connection after $MAX_RETRIES attempts")
+                stop()
+            }
+        }
+    }
+
+    private fun stopDiscoveryAndAdvertising() {
+        connectionsClient.apply {
+            if (isDiscovering) stopDiscovery()
+            if (isAdvertising) stopAdvertising()
+        }
+        isDiscovering = false
+        isAdvertising = false
+    }
+
+    fun startAdvertising(serviceId: String) {
+        scope.launch(Dispatchers.Main) {
+            try {
+                stopDiscoveryAndAdvertising()
+
+                val advertisingOptions = AdvertisingOptions.Builder()
+                    .setStrategy(Strategy.P2P_POINT_TO_POINT)
+                    .build()
+
+                isAdvertising = true
+                _connectionState.value = ConnectionState.Searching
+
+                connectionsClient.startAdvertising(
+                    Build.MODEL,
+                    serviceId,
+                    connectionLifecycleCallback,
+                    advertisingOptions
+                ).addOnFailureListener { e ->
+                    handleConnectionFailure("", e, "Failed to start advertising")
+                }
+            } catch (e: Exception) {
+                handleConnectionFailure("", e, "Error during advertising setup")
+            }
+        }
+    }
+
+    fun startDiscovery(serviceId: String) {
+        scope.launch(Dispatchers.Main) {
+            try {
+                stopDiscoveryAndAdvertising()
+
+                val discoveryOptions = DiscoveryOptions.Builder()
+                    .setStrategy(Strategy.P2P_POINT_TO_POINT)
+                    .build()
+
+                isDiscovering = true
+                _connectionState.value = ConnectionState.Searching
+
+                connectionsClient.startDiscovery(
+                    serviceId,
+                    endpointDiscoveryCallback,
+                    discoveryOptions
+                ).addOnFailureListener { e ->
+                    handleConnectionFailure("", e, "Failed to start discovery")
+                }
+            } catch (e: Exception) {
+                handleConnectionFailure("", e, "Error during discovery setup")
+            }
+        }
+    }
+
+    private val endpointDiscoveryCallback = object : EndpointDiscoveryCallback() {
+        override fun onEndpointFound(endpointId: String, info: DiscoveredEndpointInfo) {
+            scope.launch(Dispatchers.Main) {
+                if (_connectionState.value !is ConnectionState.Connected) {
+                    try {
+                        connectionsClient.requestConnection(
+                            Build.MODEL,
+                            endpointId,
+                            connectionLifecycleCallback
+                        ).addOnFailureListener { e ->
+                            handleConnectionFailure(endpointId, e, "Failed to request connection")
+                        }
+                    } catch (e: Exception) {
+                        handleConnectionFailure(endpointId, e, "Error requesting connection")
+                    }
+                }
+            }
+        }
+
+        override fun onEndpointLost(endpointId: String) {
+            if (endpointId == activeEndpointId) {
+                handleConnectionFailure(endpointId, Exception("Endpoint lost"), "Lost connection to endpoint")
+            }
+        }
+    }
+
+    sealed class ConnectionState {
+        object Disconnected : ConnectionState()
+        object Searching : ConnectionState()
+        data class Connecting(val endpointId: String) : ConnectionState()
+        data class Connected(val endpointId: String) : ConnectionState()
+        data class Error(val message: String) : ConnectionState()
+    }
+
 
     private fun restartConnectionProcess() {
         when {
@@ -124,83 +245,7 @@ class NearbyConnectionService(
         }
     }
 
-    fun startAdvertising(serviceId: String) {
-        Log.d("ScrollSync", "Starting advertising with serviceId: $serviceId")
-        // Stop any ongoing discovery or advertising
-        stop()
 
-        val advertisingOptions = AdvertisingOptions.Builder()
-            .setStrategy(Strategy.P2P_POINT_TO_POINT)
-            .build()
-
-        connectionsClient.startAdvertising(
-            Build.MODEL,
-            serviceId,
-            connectionLifecycleCallback,
-            advertisingOptions
-        ).addOnSuccessListener {
-            Log.d("ScrollSync", "Successfully started advertising")
-            isAdvertising = true
-            _connectionState.value = ConnectionState.Searching
-        }.addOnFailureListener { e ->
-            Log.e("ScrollSync", "Failed to start advertising", e)
-            isAdvertising = false
-            _connectionState.value = ConnectionState.Error("Failed to start advertising: ${e.message}")
-            // Retry after delay
-            retryConnection { startAdvertising(serviceId) }
-        }
-    }
-
-    fun startDiscovery(serviceId: String) {
-        Log.d("ScrollSync", "Starting discovery with serviceId: $serviceId")
-        // Stop any ongoing discovery or advertising
-        stop()
-
-        val discoveryOptions = DiscoveryOptions.Builder()
-            .setStrategy(Strategy.P2P_POINT_TO_POINT)
-            .build()
-
-        connectionsClient.startDiscovery(
-            serviceId,
-            endpointDiscoveryCallback,
-            discoveryOptions
-        ).addOnSuccessListener {
-            Log.d("ScrollSync", "Successfully started discovery")
-            isDiscovering = true
-            _connectionState.value = ConnectionState.Searching
-        }.addOnFailureListener { e ->
-            Log.e("ScrollSync", "Failed to start discovery", e)
-            isDiscovering = false
-            _connectionState.value = ConnectionState.Error("Failed to start discovery: ${e.message}")
-            // Retry after delay
-            retryConnection { startDiscovery(serviceId) }
-        }
-    }
-
-    private val endpointDiscoveryCallback = object : EndpointDiscoveryCallback() {
-        override fun onEndpointFound(endpointId: String, info: DiscoveredEndpointInfo) {
-            Log.d("ScrollSync", "Found endpoint: $endpointId, name: ${info.endpointName}")
-            if (_connectionState.value !is ConnectionState.Connected) {
-                connectionsClient.requestConnection(
-                    Build.MODEL,
-                    endpointId,
-                    connectionLifecycleCallback
-                ).addOnSuccessListener {
-                    Log.d("ScrollSync", "Successfully requested connection to endpoint: $endpointId")
-                }.addOnFailureListener { e ->
-                    Log.e("ScrollSync", "Failed to request connection to endpoint: $endpointId", e)
-                    handleConnectionFailure(endpointId, e)
-                }
-            }
-        }
-
-        override fun onEndpointLost(endpointId: String) {
-            Log.d("ScrollSync", "Lost endpoint: $endpointId")
-            if (endpointId == activeEndpointId) {
-                handleConnectionFailure(endpointId, Exception("Endpoint lost"))
-            }
-        }
-    }
 
     private fun retryConnection(action: () -> Unit) {
         scope.launch {
@@ -232,7 +277,7 @@ class NearbyConnectionService(
             }
             .addOnFailureListener { e ->
                 Log.e("ScrollSync", "Failed to send data to endpoint: $endpointId", e)
-                handleConnectionFailure(endpointId, e)
+                handleConnectionFailure(endpointId, e,"cc1")
             }
     }
 
@@ -265,7 +310,7 @@ class NearbyConnectionService(
                 }
                 PayloadTransferUpdate.Status.FAILURE -> {
                     Log.e("ScrollSync", "Transfer failed")
-                    handleConnectionFailure(endpointId, Exception("Transfer failed"))
+                    handleConnectionFailure(endpointId, Exception("Transfer failed"),"cc")
                 }
                 PayloadTransferUpdate.Status.IN_PROGRESS -> {
                     val progress = (update.bytesTransferred * 100 / update.totalBytes)
@@ -275,10 +320,5 @@ class NearbyConnectionService(
         }
     }
 
-    sealed class ConnectionState {
-        object Disconnected : ConnectionState()
-        object Searching : ConnectionState()
-        data class Connected(val endpointId: String) : ConnectionState()
-        data class Error(val message: String) : ConnectionState()
-    }
+
 }

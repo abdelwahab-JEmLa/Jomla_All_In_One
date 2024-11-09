@@ -68,7 +68,6 @@ class StartUpNewArticlesViewModels(
     // Add connection state tracking
     private var isActuallyConnected = false
 
-
     private val nearbyService by lazy {
         NearbyConnectionService(
             context = context,
@@ -80,22 +79,12 @@ class StartUpNewArticlesViewModels(
             }
         )
     }
+
     init {
         setupConnectionStateObserver()
         viewModelScope.launch(Dispatchers.Main) {
             delay(500)
             setupNearbyConnection()
-        }
-    }
-
-
-    private fun setupConnectionStateObserver() {
-        viewModelScope.launch(Dispatchers.Main) {
-            nearbyService.connectionState
-                .collect { state ->
-                    Log.d("ScrollSync", "Connection state changed to: $state")
-                    updateConnectionState(state)
-                }
         }
     }
 
@@ -114,6 +103,16 @@ class StartUpNewArticlesViewModels(
                 )
                 // Verify state after update
                 Log.d("ScrollSync", "Updated state - isConnected: ${_uiState.value.isConnected}, isServer: ${_uiState.value.isServer}")
+            }
+            is NearbyConnectionService.ConnectionState.Connecting -> {
+                Log.d("ScrollSync", "Connecting to device: ${state.endpointId}")
+                _uiState.emit(
+                    _uiState.value.copy(
+                        isConnected = false,
+                        connectionStatus = "Connecting...",
+                        connectedDeviceName = state.endpointId
+                    )
+                )
             }
             is NearbyConnectionService.ConnectionState.Disconnected -> {
                 Log.d("ScrollSync", "Device disconnected")
@@ -156,6 +155,18 @@ class StartUpNewArticlesViewModels(
             }
         }
     }
+
+    private fun setupConnectionStateObserver() {
+        viewModelScope.launch(Dispatchers.Main) {
+            nearbyService.connectionState
+                .collect { state ->
+                    Log.d("ScrollSync", "Connection state changed to: $state")
+                    updateConnectionState(state)
+                }
+        }
+    }
+
+
 
     fun sendScrollPosition(position: Int) {
         viewModelScope.launch(Dispatchers.Main) {

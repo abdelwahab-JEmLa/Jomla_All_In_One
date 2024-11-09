@@ -139,10 +139,23 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        permissionHandler.checkAndRequestPermissions()
-        setContent {
-            MainScreenWrapper(appViewModels)
-        }
+
+        permissionHandler.checkAndRequestPermissions(object : PermissionHandler.PermissionCallback {
+            override fun onPermissionsGranted() {
+                // Initialize your Nearby Connections here
+                setContent {
+                    MainScreenWrapper(appViewModels)
+                }
+            }
+
+            override fun onPermissionsDenied() {
+                // Handle the case where permissions are denied
+                // You might want to show a message or disable certain features
+                setContent {
+                    MainScreenWrapper(appViewModels)
+                }
+            }
+        })
     }
 }
 
