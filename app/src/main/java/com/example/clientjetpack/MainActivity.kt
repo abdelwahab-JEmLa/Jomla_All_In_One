@@ -71,6 +71,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.wear.compose.material.ContentAlpha
 import b_StartupAppDisplayerOfNewArticles.StartUpNewArticlesViewModels
 import b_StartupAppDisplayerOfNewArticles.StartupAppDisplayerOfNewArticles
+import b_StartupAppDisplayerOfNewArticles.UiState
 import c_WindosBuyAndDesplayeArticleStats.SaleWindows
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.FirebaseDatabase
@@ -100,13 +101,12 @@ data class AppViewModels(
 // ViewModelFactory.kt
 class ViewModelFactory(
     private val context: Context,
-    private val database: AppDatabase,
-
+    private val database: AppDatabase
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when {
             modelClass.isAssignableFrom(StartUpNewArticlesViewModels::class.java) ->
-                StartUpNewArticlesViewModels(context.applicationContext, database,false) as T
+                StartUpNewArticlesViewModels(context.applicationContext, database) as T
             modelClass.isAssignableFrom(GenerativeAiViewModel::class.java) ->
                 GenerativeAiViewModel() as T
             else -> throw IllegalArgumentException("Unknown ViewModel: ${modelClass.name}")
@@ -142,16 +142,33 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         permissionHandler.checkAndRequestPermissions()
         setContent {
-            MainScreen(appViewModels)
+            MainScreenWrapper(appViewModels)
         }
     }
 }
 
-// MainScreen
+// MainScreen.kt
 @Composable
-private fun MainScreen(appViewModels: AppViewModels) {
+private fun MainScreenWrapper(appViewModels: AppViewModels) {
     val startUpViewModel = appViewModels.startUpNewArticlesViewModels
     val uiState by startUpViewModel.uiState.collectAsState()
+    val isServer by startUpViewModel.isServer.collectAsState()
+
+    MainScreen(
+        appViewModels = appViewModels,
+        uiState = uiState,
+        isServer = isServer,
+        onToggleServerMode = startUpViewModel::toggleServerMode
+    )
+}
+
+@Composable
+private fun MainScreen(
+    appViewModels: AppViewModels,
+    uiState: UiState,
+    isServer: Boolean,
+    onToggleServerMode: () -> Unit
+) {
     val navController = rememberNavController()
     val items = NavigationItems.getItems()
     var isNavBarVisible by remember { mutableStateOf(true) }
@@ -190,51 +207,61 @@ private fun MainScreen(appViewModels: AppViewModels) {
                         .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    // Status de connexion
-                    Text(
-                        text = uiState.connectionStatus,
-                        style = MaterialTheme.typography.titleMedium,
-                        color = when {
-                            uiState.isConnected -> Color.Green
-                            uiState.connectionStatus.startsWith("Erreur") -> Color.Red
-                            else -> Color.Gray
-                        }
+                    ConnectionStatusSection(uiState = uiState)
+                    ServerClientSection(
+                        uiState = uiState,
+                        isServer = isServer,
+                        startUpViewModel = appViewModels.startUpNewArticlesViewModels
                     )
 
-                    // Affichage spécifique au mode serveur/client
-                    if (appViewModels.startUpNewArticlesViewModels.isServer) {
-                        Text("Mode Serveur")
-                        if (uiState.isConnected) {
-                            Switch(
-                                checked = uiState.wifiTestDisplayer,
-                                onCheckedChange = { isEnabled ->
-                                    startUpViewModel.sendWifiTestState(isEnabled)
-                                }
-                            )
-                        }
-                    } else {
-                        Text("Mode Client")
-                        Text("État du test WiFi: ${if (uiState.wifiTestDisplayer) "Actif" else "Inactif"}")
-                    }
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(padding)
-                ) {
                     AppNavHost(
                         appViewModels = appViewModels,
                         navController = navController,
                         onToggleNavBar = { isNavBarVisible = !isNavBarVisible },
-                        isFabVisible = isFabVisible, onClickDonne = {isFabVisible=false}
+                        isFabVisible = isFabVisible,
+                        onClickDonne = { isFabVisible = false },
+                        onToggleitsWifiServerAppOrClient = onToggleServerMode
                     )
-                }
                 }
             }
         }
     }
 }
 
+@Composable
+private fun ConnectionStatusSection(uiState: UiState) {
+    Text(
+        text = uiState.connectionStatus,
+        style = MaterialTheme.typography.titleMedium,
+        color = when {
+            uiState.isConnected -> Color.Green
+            uiState.connectionStatus.startsWith("Erreur") -> Color.Red
+            else -> Color.Gray
+        }
+    )
+}
+
+@Composable
+private fun ServerClientSection(
+    uiState: UiState,
+    isServer: Boolean,
+    startUpViewModel: StartUpNewArticlesViewModels
+) {
+    if (isServer) {
+        Text("Mode Serveur")
+        if (uiState.isConnected) {
+            Switch(
+                checked = uiState.wifiTestDisplayer,
+                onCheckedChange = { isEnabled ->
+                    startUpViewModel.sendWifiTestState(isEnabled)
+                }
+            )
+        }
+    } else {
+        Text("Mode Client")
+        Text("État du test WiFi: ${if (uiState.wifiTestDisplayer) "Actif" else "Inactif"}")
+    }
+}
 
 
 @Composable
@@ -362,7 +389,7 @@ fun AppNavHost(
     navController: NavHostController,
     onToggleNavBar: () -> Unit,
     modifier: Modifier = Modifier,
-    isFabVisible: Boolean, onClickDonne: () -> Unit
+    isFabVisible: Boolean, onClickDonne: () -> Unit, onToggleitsWifiServerAppOrClient: () -> Unit
 ) {
     val uiState by appViewModels.startUpNewArticlesViewModels.uiState.collectAsState()
 
@@ -408,7 +435,8 @@ fun AppNavHost(
                         onClickToOpenClientsW = {
                             showClientSelectionWithoutCondition=true
                         },
-                        isFabVisible=isFabVisible, onClickDonne = onClickDonne
+                        isFabVisible=isFabVisible, onClickDonne = onClickDonne,
+                        onToggleitsWifiServerAppOrClient = onToggleitsWifiServerAppOrClient
                     )
 
                     if (uiState.isLoading) {

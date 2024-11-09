@@ -47,31 +47,34 @@ data class UiState(
     val connectedDeviceName: String? = null
 )
 
-// ViewModel
+// StartUpNewArticlesViewModel.kt
 class StartUpNewArticlesViewModels(
     context: Context,
-    private val database: AppDatabase,
-    val isServer: Boolean
+    private val database: AppDatabase
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()
 
+    private val _isServer = MutableStateFlow(false)
+    val isServer = _isServer.asStateFlow()
+
     private val nearbyService = NearbyConnectionService(context)
 
-    init {
-        setupNearbyConnection()
+    fun toggleServerMode() {
+        viewModelScope.launch {
+            _isServer.value = !_isServer.value
+            setupNearbyConnection()
+        }
     }
 
     private fun setupNearbyConnection() {
         viewModelScope.launch {
-            if (isServer) {
+            if (_isServer.value) {
                 nearbyService.startAdvertising("filter_service")
             } else {
                 nearbyService.startDiscovery("filter_service")
             }
 
-            // Collecter l'état de la connexion
             nearbyService.connectionState.collect { state ->
                 when (state) {
                     is NearbyConnectionService.ConnectionState.Connected -> {

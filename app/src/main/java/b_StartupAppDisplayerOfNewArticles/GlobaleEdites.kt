@@ -51,13 +51,15 @@ fun FloatingActionButtonGroup(
     onToggleOutlineFilter: () -> Unit,
     onChangeGridColumns: (Int) -> Unit,
     viewModel: StartUpNewArticlesViewModels,
-    onClickToOpenClientsListW: () -> Unit
+    onClickToOpenClientsListW: () -> Unit,
+    onToggleitsWifiServerAppOrClient: () -> Unit
 ) {
     var currentGridColumns by remember { mutableIntStateOf(2) }
     var showLabels by remember { mutableStateOf(true) }
     var isExpanded by remember { mutableStateOf(false) }
     var clearDataClickCount by remember { mutableIntStateOf(0) }
     var clearDataGrouprurClickCount by remember { mutableIntStateOf(0) }
+    var itsWifiServerAppOrClientStatDisplayer by remember { mutableStateOf(false) }
 
     // Reset click count when FAB is collapsed
     LaunchedEffect(isExpanded) {
@@ -98,6 +100,15 @@ fun FloatingActionButtonGroup(
                         .padding(bottom = 56.dp)
                 ) {
                     listOf(
+                        FabData(
+                            icon = Icons.Default.Delete,
+                            label = if (itsWifiServerAppOrClientStatDisplayer) "istServerApp" else "istClientApp",
+                            color = Color(0xFF9C27B0),
+                            onClick = {
+                                itsWifiServerAppOrClientStatDisplayer=!itsWifiServerAppOrClientStatDisplayer
+                                onToggleitsWifiServerAppOrClient()
+                            }
+                        ),
                         FabData(
                             icon = Icons.Default.Delete,
                             label = if (clearDataClickCount == 0) "clearSoldArticlesData" else "Confirm Clear",

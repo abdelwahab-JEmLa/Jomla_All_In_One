@@ -112,7 +112,7 @@ fun StartupAppDisplayerOfNewArticles(
     reloadTrigger: Int,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     onClickToOpenClientsW: () -> Unit,
-    isFabVisible: Boolean, onClickDonne: () -> Unit,
+    isFabVisible: Boolean, onClickDonne: () -> Unit, onToggleitsWifiServerAppOrClient: () -> Unit,
 ) {
     var gridColumnsForNewArticels by remember { mutableStateOf(2) }
     var showFilter by remember { mutableStateOf(false) }
@@ -134,7 +134,7 @@ fun StartupAppDisplayerOfNewArticles(
         onClickToOpenWindos = onClickToOpenWindos,
         onClickToOpenClientsW = onClickToOpenClientsW,
         isFabVisible=isFabVisible,
-        onClickDonne = onClickDonne
+        onClickDonne = onClickDonne, onToggleitsWifiServerAppOrClient = onToggleitsWifiServerAppOrClient
     )
 }
 @Composable
@@ -152,7 +152,7 @@ fun ArticleDisplayScreen(
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     onClickToOpenClientsW: () -> Unit,
     isFabVisible: Boolean,
-    onClickDonne: () -> Unit,
+    onClickDonne: () -> Unit, onToggleitsWifiServerAppOrClient: () -> Unit,
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -197,12 +197,13 @@ fun ArticleDisplayScreen(
                 .padding(16.dp)
         ) {
             FloatingActionButtonGroup(
+                modifier = Modifier,
                 onToggleNavBar = onToggleNavBar,
                 onToggleOutlineFilter = onToggleFilter,
                 onChangeGridColumns = onChangeGridColumns,
-                onClickToOpenClientsListW = onClickToOpenClientsW,
                 viewModel = viewModel,
-                modifier = Modifier
+                onClickToOpenClientsListW = onClickToOpenClientsW,
+                onToggleitsWifiServerAppOrClient
             )
         }
 
