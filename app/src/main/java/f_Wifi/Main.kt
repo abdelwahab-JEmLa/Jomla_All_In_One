@@ -1,10 +1,8 @@
 package f_Wifi
 
-import android.Manifest
 import android.content.Context
 import android.os.Build
 import android.util.Log
-import com.example.clientjetpack.PermissionHandler
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.AdvertisingOptions
 import com.google.android.gms.nearby.connection.ConnectionInfo
@@ -26,9 +24,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
+
 class NearbyConnectionService(
     private val context: Context,
-    private val permissionHandler: PermissionHandler,
     private val onDataReceived: (String) -> Unit
 ) {
     private val connectionsClient = Nearby.getConnectionsClient(context)
@@ -38,91 +36,9 @@ class NearbyConnectionService(
     private val _connectionState = MutableStateFlow<ConnectionState>(ConnectionState.Disconnected)
     val connectionState = _connectionState.asStateFlow()
 
+    // Keep track of ongoing discovery or advertising
     private var isDiscovering = false
     private var isAdvertising = false
-
-    private fun checkRequiredPermissions(): Boolean {
-        val requiredPermissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            listOf(
-                Manifest.permission.BLUETOOTH_SCAN,
-                Manifest.permission.BLUETOOTH_ADVERTISE,
-                Manifest.permission.BLUETOOTH_CONNECT,
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            )
-        } else {
-            listOf(
-                Manifest.permission.BLUETOOTH,
-                Manifest.permission.BLUETOOTH_ADMIN,
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            )
-        }
-
-        return requiredPermissions.all { permission ->
-            permissionHandler.checkPermission(permission)
-        }
-    }
-
-    fun startAdvertising(serviceId: String) {
-        if (!checkRequiredPermissions()) {
-            _connectionState.value = ConnectionState.Error("Missing required permissions")
-            return
-        }
-
-        Log.d("ScrollSync", "Starting advertising with serviceId: $serviceId")
-        stop()
-
-        val advertisingOptions = AdvertisingOptions.Builder()
-            .setStrategy(Strategy.P2P_POINT_TO_POINT)
-            .build()
-
-        connectionsClient.startAdvertising(
-            Build.MODEL,
-            serviceId,
-            connectionLifecycleCallback,
-            advertisingOptions
-        ).addOnSuccessListener {
-            Log.d("ScrollSync", "Successfully started advertising")
-            isAdvertising = true
-            _connectionState.value = ConnectionState.Searching
-        }.addOnFailureListener { e ->
-            Log.e("ScrollSync", "Failed to start advertising", e)
-            isAdvertising = false
-            _connectionState.value = ConnectionState.Error("Failed to start advertising: ${e.message}")
-            retryConnection { startAdvertising(serviceId) }
-        }
-    }
-
-    fun startDiscovery(serviceId: String) {
-        if (!checkRequiredPermissions()) {
-            _connectionState.value = ConnectionState.Error("Missing required permissions")
-            return
-        }
-
-        Log.d("ScrollSync", "Starting discovery with serviceId: $serviceId")
-        stop()
-
-        val discoveryOptions = DiscoveryOptions.Builder()
-            .setStrategy(Strategy.P2P_POINT_TO_POINT)
-            .build()
-
-        connectionsClient.startDiscovery(
-            serviceId,
-            endpointDiscoveryCallback,
-            discoveryOptions
-        ).addOnSuccessListener {
-            Log.d("ScrollSync", "Successfully started discovery")
-            isDiscovering = true
-            _connectionState.value = ConnectionState.Searching
-        }.addOnFailureListener { e ->
-            Log.e("ScrollSync", "Failed to start discovery", e)
-            isDiscovering = false
-            _connectionState.value = ConnectionState.Error("Failed to start discovery: ${e.message}")
-            retryConnection { startDiscovery(serviceId) }
-        }
-    }
-
 
     private val connectionLifecycleCallback = object : ConnectionLifecycleCallback() {
         override fun onConnectionInitiated(endpointId: String, info: ConnectionInfo) {
@@ -208,7 +124,58 @@ class NearbyConnectionService(
         }
     }
 
+    fun startAdvertising(serviceId: String) {
+        Log.d("ScrollSync", "Starting advertising with serviceId: $serviceId")
+        // Stop any ongoing discovery or advertising
+        stop()
 
+        val advertisingOptions = AdvertisingOptions.Builder()
+            .setStrategy(Strategy.P2P_POINT_TO_POINT)
+            .build()
+
+        connectionsClient.startAdvertising(
+            Build.MODEL,
+            serviceId,
+            connectionLifecycleCallback,
+            advertisingOptions
+        ).addOnSuccessListener {
+            Log.d("ScrollSync", "Successfully started advertising")
+            isAdvertising = true
+            _connectionState.value = ConnectionState.Searching
+        }.addOnFailureListener { e ->
+            Log.e("ScrollSync", "Failed to start advertising", e)
+            isAdvertising = false
+            _connectionState.value = ConnectionState.Error("Failed to start advertising: ${e.message}")
+            // Retry after delay
+            retryConnection { startAdvertising(serviceId) }
+        }
+    }
+
+    fun startDiscovery(serviceId: String) {
+        Log.d("ScrollSync", "Starting discovery with serviceId: $serviceId")
+        // Stop any ongoing discovery or advertising
+        stop()
+
+        val discoveryOptions = DiscoveryOptions.Builder()
+            .setStrategy(Strategy.P2P_POINT_TO_POINT)
+            .build()
+
+        connectionsClient.startDiscovery(
+            serviceId,
+            endpointDiscoveryCallback,
+            discoveryOptions
+        ).addOnSuccessListener {
+            Log.d("ScrollSync", "Successfully started discovery")
+            isDiscovering = true
+            _connectionState.value = ConnectionState.Searching
+        }.addOnFailureListener { e ->
+            Log.e("ScrollSync", "Failed to start discovery", e)
+            isDiscovering = false
+            _connectionState.value = ConnectionState.Error("Failed to start discovery: ${e.message}")
+            // Retry after delay
+            retryConnection { startDiscovery(serviceId) }
+        }
+    }
 
     private val endpointDiscoveryCallback = object : EndpointDiscoveryCallback() {
         override fun onEndpointFound(endpointId: String, info: DiscoveredEndpointInfo) {

@@ -101,9 +101,7 @@ import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.signature.ObjectKey
 import com.example.clientjetpack.LoadingOverlay
 import com.example.clientjetpack.R
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -162,24 +160,6 @@ fun ArticleDisplayScreen(
     onClickDonne: () -> Unit,
     onToggleitsWifiServerAppOrClient: () -> Unit,
 ) {
-    // Add state to track manual scrolling
-    var isManualScrolling by remember { mutableStateOf(false) }
-// First, remember the coroutine scope
-    val coroutineScope = rememberCoroutineScope()
-
-// Then use the remembered scope to create the debounced function
-    val debouncedSendPosition = remember(coroutineScope) {
-        debounce<Int>(
-            delayMillis = 100L,
-            coroutineScope = coroutineScope
-        ) { position ->
-            if (uiState.isServer && uiState.isConnected) {
-                viewModel.sendScrollPosition(position)
-            }
-        }
-    }
-
-    // Server-side scroll handling
     LaunchedEffect(gridState) {
         snapshotFlow { gridState.firstVisibleItemIndex }
             .distinctUntilChanged()
@@ -187,35 +167,18 @@ fun ArticleDisplayScreen(
                 Log.d("ScrollSync", "Scroll position changed: $index")
                 Log.d("ScrollSync", "isServer: ${uiState.isServer}, isConnected: ${uiState.isConnected}")
 
-                if (!isManualScrolling) {
-                    debouncedSendPosition(index)
+                if (uiState.isServer && uiState.isConnected) {
+                    viewModel.sendScrollPosition(index)
                 }
             }
     }
 
-    // Client-side scroll handling
+    // Separate effect for client scroll
     LaunchedEffect(uiState.scrollPosition) {
-        if (!uiState.isServer &&
-            uiState.isConnected &&
+        if (!uiState.isServer && uiState.isConnected &&
             uiState.scrollPosition != gridState.firstVisibleItemIndex) {
-            try {
-                isManualScrolling = true
-                Log.d("ScrollSync", "Client scrolling to: ${uiState.scrollPosition}")
-                gridState.scrollToItem(uiState.scrollPosition)
-            } finally {
-                // Reset the flag after a short delay
-                delay(200)
-                isManualScrolling = false
-            }
-        }
-    }
-
-    // Connection status observer
-    LaunchedEffect(uiState.isConnected) {
-        if (uiState.isConnected) {
-            Log.d("ScrollSync", "Connected as ${if (uiState.isServer) "server" else "client"}")
-        } else {
-            Log.d("ScrollSync", "Disconnected")
+            Log.d("ScrollSync", "Client scrolling to: ${uiState.scrollPosition}")
+            gridState.scrollToItem(uiState.scrollPosition)
         }
     }
 
@@ -276,21 +239,7 @@ fun ArticleDisplayScreen(
         }
     }
 }
-// Utility function for debouncing
-fun <T> debounce(
-    delayMillis: Long,
-    coroutineScope: CoroutineScope,
-    action: suspend (T) -> Unit
-): (T) -> Unit {
-    var debounceJob: Job? = null
-    return { param: T ->
-        debounceJob?.cancel()
-        debounceJob = coroutineScope.launch {
-            delay(delayMillis)
-            action(param)
-        }
-    }
-}
+
 class ArticlePagingSource(
     private val articles: List<ArticlesBasesStatsTable>,
     private val filterText: String,

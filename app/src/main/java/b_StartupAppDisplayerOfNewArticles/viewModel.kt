@@ -17,7 +17,6 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.clientjetpack.PermissionHandler
 import com.google.firebase.database.BuildConfig
 import com.google.firebase.database.FirebaseDatabase
 import f_Wifi.NearbyConnectionService
@@ -54,21 +53,20 @@ data class UiState(
 )
 
 class StartUpNewArticlesViewModels(
-    private val context: Context,
-    private val database: AppDatabase,
-    private val permissionHandler: PermissionHandler
+    context: Context,
+    private val database: AppDatabase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()
 
-    private val _isServer = MutableStateFlow(false)
+    private val _isServer = MutableStateFlow(true)
     val isServer = _isServer.asStateFlow()
 
     private val nearbyService by lazy {
         NearbyConnectionService(
             context = context,
-            permissionHandler = permissionHandler,
             onDataReceived = { data ->
+                Log.d("ScrollSync", "Received data in ViewModel: $data")
                 viewModelScope.launch {
                     when {
                         data.startsWith("SCROLL_POSITION:") -> {
@@ -87,34 +85,6 @@ class StartUpNewArticlesViewModels(
             }
         )
     }
-
-    fun setupNearbyConnection() {
-        viewModelScope.launch {
-            if (!permissionHandler.checkAndRequestPermissions()) {
-                _uiState.update { it.copy(
-                    connectionStatus = "Permissions required",
-                    isConnected = false
-                )}
-                return@launch
-            }
-
-            Log.d("ScrollSync", "Setting up connection as ${if (_isServer.value) "server" else "client"}")
-            try {
-                if (_isServer.value) {
-                    nearbyService.startAdvertising("filter_service")
-                } else {
-                    nearbyService.startDiscovery("filter_service")
-                }
-            } catch (e: Exception) {
-                Log.e("ScrollSync", "Error setting up connection", e)
-                _uiState.update { it.copy(
-                    connectionStatus = "Error: ${e.message}",
-                    isConnected = false
-                )}
-            }
-        }
-    }
-
 
     init {
         setupConnectionStateObserver()
@@ -185,7 +155,25 @@ class StartUpNewArticlesViewModels(
         }
     }
 
+    private fun setupNearbyConnection() {
+        viewModelScope.launch {
+            Log.d("ScrollSync", "Setting up connection as ${if (_isServer.value) "server" else "client"}")
 
+            try {
+                if (_isServer.value) {
+                    nearbyService.startAdvertising("filter_service")
+                } else {
+                    nearbyService.startDiscovery("filter_service")
+                }
+            } catch (e: Exception) {
+                Log.e("ScrollSync", "Error setting up connection", e)
+                _uiState.update { it.copy(
+                    connectionStatus = "Error: ${e.message}",
+                    isConnected = false
+                )}
+            }
+        }
+    }
 
 
 
