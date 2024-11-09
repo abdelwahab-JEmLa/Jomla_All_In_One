@@ -85,6 +85,7 @@ dependencies {
     implementation(libs.androidx.compose.material)
     implementation(libs.firebase.storage.ktx)
     implementation(libs.generativeai)
+    implementation(libs.material)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -113,6 +114,7 @@ dependencies {
     // Glide Compose integration
     implementation(libs.compose.v100beta01)
     implementation (libs.glide.transformations)
+    implementation (libs.play.services.nearby)
 }
 
 apply(plugin = "com.google.gms.google-services")

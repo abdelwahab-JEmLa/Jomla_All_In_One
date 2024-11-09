@@ -9,15 +9,12 @@ import a_RoomDB.ColorsArticlesTabelle
 import a_RoomDB.SoldArticlesTabelle
 import a_RoomDB.SuppliersTabelle
 import android.content.Context
-import android.net.wifi.p2p.WifiP2pDevice
 import android.os.Build
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.database.BuildConfig
 import com.google.firebase.database.FirebaseDatabase
-import j_Wifi.WifiDirectDiscoveryService
-import j_Wifi.WifiDirectService
+import f_Wifi.NearbyConnectionService
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -31,7 +28,6 @@ import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 
-
 // UiState.kt
 data class UiState(
     val appSettingsSaverModel: List<AppSettingsSaverModel> = emptyList(),
@@ -42,148 +38,82 @@ data class UiState(
     val clientsModel: List<ClientsModel> = emptyList(),
     val suppliers: List<SuppliersTabelle> = emptyList(),
     val isLoading: Boolean = false,
-    val wifiTestDisplayer: Boolean = false,
     val loadingProgress: Float = 0f,
-    val error: String? = null
+    val error: String? = null ,
+    val wifiTestDisplayer: Boolean = false,
+    val connectionStatus: String = "Déconnecté",
+    val isConnected: Boolean = false,
+    val connectedDeviceName: String? = null
 )
 
+// ViewModel
 class StartUpNewArticlesViewModels(
     context: Context,
     private val database: AppDatabase,
-    private val isServer: Boolean = true
+    val isServer: Boolean
 ) : ViewModel() {
-
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()
 
-    private val discoveryService = WifiDirectDiscoveryService(context.applicationContext)
-    private val wifiDirectService = WifiDirectService(context.applicationContext)
-
-    private val _discoveredDevices = MutableStateFlow<List<WifiP2pDevice>>(emptyList())
-    val discoveredDevices = _discoveredDevices.asStateFlow()
-
-    private val _connectionStatus = MutableStateFlow("Déconnecté")
-    val connectionStatus = _connectionStatus.asStateFlow()
+    private val nearbyService = NearbyConnectionService(context)
 
     init {
-        Log.d(TAG, "Initializing ViewModel - Server Mode: $isServer")
-        setupWifiDirect()
+        setupNearbyConnection()
     }
 
-    fun updateWifiTestDisplayerState(newState: Boolean) {
-        Log.d(TAG, "Updating WiFi Test state to: $newState")
+    private fun setupNearbyConnection() {
         viewModelScope.launch {
-            try {
-                _uiState.update { it.copy(wifiTestDisplayer = newState) }
-                _connectionStatus.value = if (_connectionStatus.value.startsWith("Connecté")) {
-                    "${_connectionStatus.value.split('\n')[0]}\nWiFi Test: ${if (newState) "Actif" else "Inactif"}"
-                } else {
-                    _connectionStatus.value
-                }
-                Log.d(TAG, "WiFi Test state updated successfully. New connection status: ${_connectionStatus.value}")
-            } catch (e: Exception) {
-                Log.e(TAG, "Error updating WiFi Test state", e)
-            }
-        }
-    }
-
-    fun connectToDevice(device: WifiP2pDevice) {
-        Log.d(TAG, "Attempting to connect to device: ${device.deviceName} (${device.deviceAddress})")
-        viewModelScope.launch {
-            try {
-                discoveryService.connectToDevice(device)
-                _connectionStatus.value = "Tentative de connexion à ${device.deviceName}..."
-                Log.d(TAG, "Connection attempt initiated")
-            } catch (e: Exception) {
-                Log.e(TAG, "Error initiating connection to device", e)
-                _connectionStatus.value = "Erreur de connexion: ${e.message}"
-            }
-        }
-    }
-
-    private fun setupWifiDirect() {
-        Log.d(TAG, "Setting up WiFi Direct services")
-        viewModelScope.launch {
-            try {
-                discoveryService.discoveryEvents.collect { event ->
-                    Log.d(TAG, "Received discovery event: $event")
-                    when (event) {
-                        is WifiDirectDiscoveryService.DiscoveryEvent.DevicesFound -> {
-                            val filteredDevices = event.devices.filter { device ->
-                                if (isServer) device.deviceName.contains("FilterClient")
-                                else device.deviceName.contains("FilterServer")
-                            }
-                            Log.d(TAG, "Found ${event.devices.size} devices, filtered to ${filteredDevices.size} devices")
-                            _discoveredDevices.value = filteredDevices
-                        }
-                        is WifiDirectDiscoveryService.DiscoveryEvent.Connected -> {
-                            Log.d(TAG, "Connected to device: ${event.device.deviceName}")
-                            _connectionStatus.value = "Connecté à ${event.device.deviceName}\n" +
-                                    if (_uiState.value.wifiTestDisplayer) "WiFi Test: Actif" else "WiFi Test: Inactif"
-                        }
-                        is WifiDirectDiscoveryService.DiscoveryEvent.Error -> {
-                            Log.e(TAG, "Discovery error: ${event.message}")
-                            _connectionStatus.value = "Erreur: ${event.message}"
-                        }
-                        is WifiDirectDiscoveryService.DiscoveryEvent.Started -> {
-                            Log.d(TAG, "Discovery process started")
-                            _connectionStatus.value = "Recherche en cours..."
-                        }
-                        is WifiDirectDiscoveryService.DiscoveryEvent.PermissionRequired -> {
-                            Log.w(TAG, "WiFi Direct permissions not granted")
-                            _connectionStatus.value = "Permissions requises pour le WiFi Direct"
-                        }
-                        null -> {
-                            Log.d(TAG, "Received null discovery event")
-                        }
-                    }
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "Error collecting discovery events", e)
-            }
-        }
-
-        val deviceName = if (isServer) "FilterServer" else "FilterClient"
-        Log.d(TAG, "Setting device name to: $deviceName")
-
-        wifiDirectService.setDeviceName(deviceName) { success ->
-            Log.d(TAG, "Device name set result: $success")
-            if (success) {
-                if (isServer) {
-                    Log.d(TAG, "Starting server mode")
-                    wifiDirectService.startServer { newState ->
-                        Log.d(TAG, "Server received new state: $newState")
-                        _uiState.update { it.copy(wifiTestDisplayer = newState) }
-                    }
-                }
-                discoveryService.startDiscovery(isServer)
-                Log.d(TAG, "Discovery started in ${if (isServer) "server" else "client"} mode")
+            if (isServer) {
+                nearbyService.startAdvertising("filter_service")
             } else {
-                Log.e(TAG, "Failed to set device name")
-                _connectionStatus.value = "Erreur: Impossible de définir le nom de l'appareil"
+                nearbyService.startDiscovery("filter_service")
+            }
+
+            // Collecter l'état de la connexion
+            nearbyService.connectionState.collect { state ->
+                when (state) {
+                    is NearbyConnectionService.ConnectionState.Connected -> {
+                        _uiState.update { it.copy(
+                            isConnected = true,
+                            connectionStatus = "Connecté",
+                            connectedDeviceName = state.endpointId
+                        )}
+                    }
+                    is NearbyConnectionService.ConnectionState.Disconnected -> {
+                        _uiState.update { it.copy(
+                            isConnected = false,
+                            connectionStatus = "Déconnecté",
+                            connectedDeviceName = null
+                        )}
+                    }
+                    is NearbyConnectionService.ConnectionState.Searching -> {
+                        _uiState.update { it.copy(
+                            connectionStatus = "Recherche en cours..."
+                        )}
+                    }
+                    is NearbyConnectionService.ConnectionState.Error -> {
+                        _uiState.update { it.copy(
+                            connectionStatus = "Erreur: ${state.message}"
+                        )}
+                    }
+                }
+            }
+        }
+    }
+
+    fun sendWifiTestState(isEnabled: Boolean) {
+        viewModelScope.launch {
+            uiState.value.connectedDeviceName?.let { endpointId ->
+                nearbyService.sendData(endpointId, if (isEnabled) "START_WIFI_TEST" else "STOP_WIFI_TEST")
             }
         }
     }
 
     override fun onCleared() {
-        Log.d(TAG, "ViewModel clearing, performing cleanup")
-        try {
-            wifiDirectService.cleanup()
-            discoveryService.stop()
-            Log.d(TAG, "Cleanup completed successfully")
-        } catch (e: Exception) {
-            Log.e(TAG, "Error during cleanup", e)
-        }
+        nearbyService.stop()
         super.onCleared()
     }
-
-    companion object {
-        private const val TAG = "StartUpViewModel"
-    }
-
-
-
     // Ensure the directory exists when initializing the path
     val viewModelImagesPath = File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne/").apply {
         if (!exists()) {
