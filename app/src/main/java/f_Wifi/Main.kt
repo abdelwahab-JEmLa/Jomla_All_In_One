@@ -25,12 +25,14 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import java.io.ObjectOutputStream
 import java.net.InetAddress
 import java.net.NetworkInterface
 import java.net.ServerSocket
 import java.net.Socket
+import kotlin.coroutines.resume
 
 @RequiresApi(Build.VERSION_CODES.Q)
 class P2PManager(
@@ -540,83 +542,122 @@ private class P2PConnection(
 class P2PDiagnostics(private val context: Context) {
     private val wifiP2pManager = context.getSystemService(Context.WIFI_P2P_SERVICE) as WifiP2pManager
     private val channel = wifiP2pManager.initialize(context, context.mainLooper, null)
+    private val TAG = "P2PDiagnostics"
 
     @RequiresApi(Build.VERSION_CODES.Q)
     suspend fun runDiagnostics(): String = withContext(Dispatchers.IO) {
         val diagnostics = StringBuilder()
 
-        // Check if WiFi is enabled
-        val wifiManager = context.getSystemService(Context.WIFI_SERVICE) as WifiManager
-        diagnostics.append("WiFi Enabled: ${wifiManager.isWifiEnabled}\n")
+        try {
+            // Basic WiFi Check
+            val wifiManager = context.getSystemService(Context.WIFI_SERVICE) as WifiManager
+            val isWifiEnabled = wifiManager.isWifiEnabled
+            Log.d(TAG, "📡 WiFi Enabled: $isWifiEnabled")
+            diagnostics.append("WiFi Enabled: $isWifiEnabled\n")
 
-        // Check P2P State
-        var p2pStateResult = CompletableDeferred<String>()
-        wifiP2pManager.requestP2pState(channel) { state ->
-            val stateStr = when (state) {
+            // P2P State Check
+            val p2pState = suspendCancellableCoroutine<Int> { continuation ->
+                wifiP2pManager.requestP2pState(channel) { state ->
+                    continuation.resume(state)
+                }
+            }
+            val stateStr = when (p2pState) {
                 WifiP2pManager.WIFI_P2P_STATE_ENABLED -> "ENABLED"
                 WifiP2pManager.WIFI_P2P_STATE_DISABLED -> "DISABLED"
                 else -> "UNKNOWN"
             }
-            p2pStateResult.complete("WiFi P2P State: $stateStr\n")
-        }
-        diagnostics.append(p2pStateResult.await())
+            Log.d(TAG, "🔄 P2P State: $stateStr")
+            diagnostics.append("WiFi P2P State: $stateStr\n")
 
-        // Check existing group info
-        var groupInfoResult = CompletableDeferred<String>()
-        try {
-            wifiP2pManager.requestGroupInfo(channel) { group ->
-                val groupInfo = if (group != null) {
-                    "Active P2P Group: YES\n" +
-                            "Network Name: ${group.networkName}\n" +
-                            "Is Group Owner: ${group.isGroupOwner}\n" +
-                            "Connected Clients: ${group.clientList.size}\n"
-                } else {
-                    "Active P2P Group: NO\n"
-                }
-                groupInfoResult.complete(groupInfo)
-            }
-        } catch (e: SecurityException) {
-            groupInfoResult.complete("Failed to get group info: ${e.message}\n")
-        }
-        diagnostics.append(groupInfoResult.await())
+            // Permission Check
+            val permissions = checkPermissions()
+            Log.d(TAG, "🔐 Permissions Check: ${permissions.joinToString()}")
+            diagnostics.append("Permissions Status:\n${permissions.joinToString("\n")}\n")
 
-        // Check permissions
-        val requiredPermissions = listOf(
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_WIFI_STATE,
-            Manifest.permission.CHANGE_WIFI_STATE
-        ) + if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            listOf(Manifest.permission.NEARBY_WIFI_DEVICES)
-        } else {
-            emptyList()
-        }
+            // Detailed Group Info Check
+            val groupInfo = suspendCancellableCoroutine<String> { continuation ->
+                try {
+                    wifiP2pManager.requestGroupInfo(channel) { group ->
+                        val info = if (group != null) {
+                            val clientList = group.clientList.joinToString("\n") { client ->
+                                "- Device: ${client.deviceName} (${client.deviceAddress})"
+                            }
 
-        diagnostics.append("Permissions:\n")
-        requiredPermissions.forEach { permission ->
-            val granted = ContextCompat.checkSelfPermission(
-                context,
-                permission
-            ) == PackageManager.PERMISSION_GRANTED
-            diagnostics.append("- ${permission.substringAfterLast(".")}: ${if (granted) "✓" else "✗"}\n")
-        }
+                            Log.d(TAG, "✅ Group found with ${group.clientList.size} clients")
 
-        // Get network interface info with corrected variable name
-        try {
-            val networkInterfaces = NetworkInterface.getNetworkInterfaces()
-            diagnostics.append("\nNetwork Interfaces:\n")
-            networkInterfaces.toList().forEach { networkInterface ->
-                if (networkInterface.name.startsWith("p2p") || networkInterface.name.startsWith("wlan")) {
-                    diagnostics.append("- ${networkInterface.name}: ${networkInterface.isUp}\n")
+                            """
+                            Active P2P Group: YES
+                            Network Name: ${group.networkName}
+                            Is Group Owner: ${group.isGroupOwner}
+                            Connected Clients: ${group.clientList.size}
+                            Interface: ${group.getInterface()}
+                            
+                            Client Details:
+                            $clientList
+                            """.trimIndent()
+                        } else {
+                            Log.d(TAG, "❌ No active P2P group")
+                            "Active P2P Group: NO\n"
+                        }
+                        continuation.resume(info)
+                    }
+                } catch (e: SecurityException) {
+                    Log.e(TAG, "⛔ Security Exception during group info request", e)
+                    continuation.resume("Failed to get group info: ${e.message}\n")
                 }
             }
+            diagnostics.append(groupInfo)
+
+            // Network Interface Check
+            try {
+                val networkInterfaces = NetworkInterface.getNetworkInterfaces().toList()
+                    .filter { it.name.startsWith("p2p") || it.name.startsWith("wlan") }
+
+                if (networkInterfaces.isNotEmpty()) {
+                    diagnostics.append("\nNetwork Interfaces:\n")
+                    networkInterfaces.forEach { netInterface ->
+                        val hwAddress = netInterface.hardwareAddress?.joinToString(":") {
+                            "%02x".format(it)
+                        } ?: "Not Available"
+
+                        Log.d(TAG, "📶 Interface ${netInterface.name} - Up: ${netInterface.isUp}")
+                        diagnostics.append("- ${netInterface.name}: ${netInterface.isUp}\n")
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "💥 Network Interface Error", e)
+                diagnostics.append("Failed to get network interfaces: ${e.message}\n")
+            }
+
         } catch (e: Exception) {
-            diagnostics.append("Failed to get network interfaces: ${e.message}\n")
+            Log.e(TAG, "💥 General diagnostics error", e)
+            diagnostics.append("Error running diagnostics: ${e.message}\n")
         }
 
         return@withContext diagnostics.toString()
     }
-}
 
+    private fun checkPermissions(): List<String> {
+        val requiredPermissions = listOf(
+            Manifest.permission.ACCESS_FINE_LOCATION to "Location",
+            Manifest.permission.ACCESS_WIFI_STATE to "WiFi State",
+            Manifest.permission.CHANGE_WIFI_STATE to "WiFi Change",
+            Manifest.permission.INTERNET to "Internet"
+        ) + if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            listOf(Manifest.permission.NEARBY_WIFI_DEVICES to "Nearby Devices")
+        } else {
+            emptyList()
+        }
+
+        return requiredPermissions.map { (permission, name) ->
+            val granted = ContextCompat.checkSelfPermission(
+                context,
+                permission
+            ) == PackageManager.PERMISSION_GRANTED
+            "$name: ${if (granted) "✓" else "✗"}"
+        }
+    }
+}
 data class UiState(
     val scrollPosition: Int = 0,
     val isConnected: Boolean = false,
