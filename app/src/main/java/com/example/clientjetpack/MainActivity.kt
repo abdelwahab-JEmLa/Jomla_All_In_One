@@ -204,6 +204,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
         permissionHandler.checkAndRequestPermissions(object : PermissionHandler.PermissionCallback {
             @RequiresApi(Build.VERSION_CODES.Q)
             override fun onPermissionsGranted() {

@@ -45,6 +45,95 @@ class ConnectionManager(
     private val serviceId = "com.example.clientjetpack"
     private val strategy = Strategy.P2P_STAR
 
+    // Liste exhaustive des permissions nécessaires selon la version d'Android
+    private val requiredPermissions = when {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+            arrayOf(
+                Manifest.permission.BLUETOOTH_SCAN,
+                Manifest.permission.BLUETOOTH_ADVERTISE,
+                Manifest.permission.BLUETOOTH_CONNECT,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.NEARBY_WIFI_DEVICES
+            )
+        }
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> {
+            arrayOf(
+                Manifest.permission.BLUETOOTH,
+                Manifest.permission.BLUETOOTH_ADMIN,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+        }
+        else -> {
+            arrayOf(
+                Manifest.permission.BLUETOOTH,
+                Manifest.permission.BLUETOOTH_ADMIN,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+        }
+    }
+
+    private fun checkRequiredPermissions(): Boolean {
+        val missingPermissions = requiredPermissions.filter { permission ->
+            val isGranted = ContextCompat.checkSelfPermission(
+                context,
+                permission
+            ) == PackageManager.PERMISSION_GRANTED
+
+            // Log pour chaque permission
+            Log.d(TAG, "Permission $permission: ${if (isGranted) "GRANTED" else "DENIED"}")
+
+            !isGranted
+        }
+
+        if (missingPermissions.isNotEmpty()) {
+            Log.e(TAG, "Permissions manquantes: ${missingPermissions.joinToString()}")
+            return false
+        }
+
+        return true
+    }
+
+    fun startAsClient() {
+        viewModelScope.launch {
+            Log.d(TAG, "Démarrage de la recherche...")
+
+            if (!checkRequiredPermissions()) {
+                val error = "Permissions manquantes pour la découverte Nearby"
+                Log.e(TAG, error)
+                handleError(error)
+                return@launch
+            }
+
+            Log.d(TAG, "Toutes les permissions sont accordées, démarrage de la découverte...")
+            _uiState.update { it.copy(isHost = false) }
+
+            try {
+                val discoveryOptions = DiscoveryOptions.Builder().setStrategy(strategy).build()
+
+                Nearby.getConnectionsClient(context)
+                    .startDiscovery(
+                        serviceId,
+                        endpointDiscoveryCallback,
+                        discoveryOptions
+                    )
+                    .addOnSuccessListener {
+                        Log.d(TAG, "Découverte démarrée avec succès")
+                        updateConnectionStatus("Recherche d'appareils...")
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e(TAG, "Erreur lors du démarrage de la découverte", e)
+                        handleError("Erreur de démarrage de la recherche: ${e.message}")
+                    }
+            } catch (e: Exception) {
+                Log.e(TAG, "Exception lors du démarrage de la découverte", e)
+                handleError("Exception lors du démarrage de la découverte: ${e.message}")
+            }
+        }
+    }
+
+
     private val endpointDiscoveryCallback = object : EndpointDiscoveryCallback() {
         override fun onEndpointFound(endpointId: String, info: DiscoveredEndpointInfo) {
             Log.d(TAG, "🔍 Endpoint trouvé: ${info.endpointName}")
@@ -130,30 +219,6 @@ class ConnectionManager(
         }
     }
 
-    private fun checkRequiredPermissions(): Boolean {
-        val coarseLocation = ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
-
-        val fineLocation = ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
-
-        val nearbyDevices = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.NEARBY_WIFI_DEVICES
-            ) == PackageManager.PERMISSION_GRANTED
-        } else {
-            true
-        }
-
-        val result = coarseLocation && (fineLocation || nearbyDevices)
-        Log.d(TAG, if (result) "✅ Permissions OK" else "⚠️ Permissions manquantes")
-        return result
-    }
 
     fun startAsHost() {
         viewModelScope.launch {
@@ -184,33 +249,6 @@ class ConnectionManager(
         }
     }
 
-    fun startAsClient() {
-        viewModelScope.launch {
-            Log.d(TAG, "👤 Démarrage en mode client...")
-            if (!checkRequiredPermissions()) {
-                handleError("Permissions de localisation manquantes")
-                return@launch
-            }
-
-            _uiState.update { it.copy(isHost = false) }
-            val discoveryOptions = DiscoveryOptions.Builder().setStrategy(strategy).build()
-
-            Nearby.getConnectionsClient(context)
-                .startDiscovery(
-                    serviceId,
-                    endpointDiscoveryCallback,
-                    discoveryOptions
-                )
-                .addOnSuccessListener {
-                    Log.d(TAG, "🔍 Recherche démarrée avec succès")
-                    updateConnectionStatus("Recherche d'appareils...")
-                }
-                .addOnFailureListener { e ->
-                    Log.e(TAG, "💥 Échec de la recherche: ${e.message}")
-                    handleError("Erreur de démarrage de la recherche: ${e.message}")
-                }
-        }
-    }
 
     fun sendMessage(message: String) {
         endpointId?.let { endpoint ->
