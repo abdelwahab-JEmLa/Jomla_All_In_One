@@ -46,7 +46,8 @@ data class UiState(
     val connectionStatus: String = "Déconnecté",
     val wifiTestDisplayer: Boolean = false,
     val appIsInstalledInHostPhone: Boolean = true,
-)
+    val message: String = "",
+    )
 
 class StartUpNewArticlesViewModels(
     context: Context,
@@ -64,7 +65,8 @@ class StartUpNewArticlesViewModels(
                     connectionStatus = connectionState.connectionStatus,
                     isConnected = connectionState.isConnected,
                     appIsInstalledInHostPhone = connectionState.isHost,
-                    error = connectionState.error
+                    error = connectionState.error,
+                    message = connectionState.messages.lastOrNull() ?: ""  // Add message update
                 )}
             }
         }
@@ -74,7 +76,6 @@ class StartUpNewArticlesViewModels(
     fun startAsClient() = connectionManager.startAsClient()
     fun sendTestMessage(message: String) = connectionManager.sendMessage(message)
     fun disconnect() = connectionManager.disconnect()
-
 
     // Ensure the directory exists when initializing the path
     val viewModelImagesPath = File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne/").apply {

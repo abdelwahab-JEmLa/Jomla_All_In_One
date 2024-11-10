@@ -22,6 +22,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -45,6 +46,7 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -219,10 +221,7 @@ class MainActivity : ComponentActivity() {
             }
 
             override fun onPermissionRationale(permissions: Array<String>) {
-                // This is called when the user has previously denied permissions
-                // and we need to show them why we need these permissions
-                // The PermissionHandler will automatically handle showing the
-                // permission request dialog after this
+
             }
         })
     }
@@ -246,6 +245,7 @@ private fun MainScreen(
     uiState: UiState,
 ) {
     val navController = rememberNavController()
+    var messageText by remember { mutableStateOf("") }
     val items = NavigationItems.getItems()
     var isNavBarVisible by remember { mutableStateOf(true) }
     var isFabVisible by remember { mutableStateOf(true) }
@@ -282,6 +282,16 @@ private fun MainScreen(
                         else -> MaterialTheme.colorScheme.onSurface
                     }
                 )
+
+                // Message Display
+                if (uiState.message.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Message reçu: ${uiState.message}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+                }
             }
         }
 
@@ -304,12 +314,45 @@ private fun MainScreen(
             )
         }
 
-        // Connected Actions
+        // Connected Actions and Message Input
         if (uiState.isConnected) {
-            ConnectedActions(
-                onDisconnectClick = { appViewModels.startUpNewArticlesViewModels.disconnect() },
-                onSendTestMessage = { appViewModels.startUpNewArticlesViewModels.sendTestMessage("Test message!") }
-            )
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                OutlinedTextField(
+                    value = messageText,
+                    onValueChange = { messageText = it },
+                    label = { Text("Message") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Button(
+                        onClick = {
+                            if (messageText.isNotEmpty()) {
+                                appViewModels.startUpNewArticlesViewModels.sendTestMessage(messageText)
+                                messageText = ""
+                            }
+                        },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("Envoyer")
+                    }
+                    Button(
+                        onClick = { appViewModels.startUpNewArticlesViewModels.disconnect() },
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.error
+                        )
+                    ) {
+                        Text("Déconnecter")
+                    }
+                }
+            }
         }
 
         // Loading Indicator
