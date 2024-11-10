@@ -28,9 +28,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.ObjectOutputStream
 import java.net.InetAddress
+import java.net.NetworkInterface
 import java.net.ServerSocket
 import java.net.Socket
 
+@RequiresApi(Build.VERSION_CODES.Q)
 class P2PManager(
     private val context: Context,
     private val permissionHandler: PermissionHandler,
@@ -534,6 +536,87 @@ private class P2PConnection(
     }
 
 }
+
+class P2PDiagnostics(private val context: Context) {
+    private val wifiP2pManager = context.getSystemService(Context.WIFI_P2P_SERVICE) as WifiP2pManager
+    private val channel = wifiP2pManager.initialize(context, context.mainLooper, null)
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    suspend fun runDiagnostics(): String = withContext(Dispatchers.IO) {
+        val diagnostics = StringBuilder()
+
+        // Check if WiFi is enabled
+        val wifiManager = context.getSystemService(Context.WIFI_SERVICE) as WifiManager
+        diagnostics.append("WiFi Enabled: ${wifiManager.isWifiEnabled}\n")
+
+        // Check P2P State
+        var p2pStateResult = CompletableDeferred<String>()
+        wifiP2pManager.requestP2pState(channel) { state ->
+            val stateStr = when (state) {
+                WifiP2pManager.WIFI_P2P_STATE_ENABLED -> "ENABLED"
+                WifiP2pManager.WIFI_P2P_STATE_DISABLED -> "DISABLED"
+                else -> "UNKNOWN"
+            }
+            p2pStateResult.complete("WiFi P2P State: $stateStr\n")
+        }
+        diagnostics.append(p2pStateResult.await())
+
+        // Check existing group info
+        var groupInfoResult = CompletableDeferred<String>()
+        try {
+            wifiP2pManager.requestGroupInfo(channel) { group ->
+                val groupInfo = if (group != null) {
+                    "Active P2P Group: YES\n" +
+                            "Network Name: ${group.networkName}\n" +
+                            "Is Group Owner: ${group.isGroupOwner}\n" +
+                            "Connected Clients: ${group.clientList.size}\n"
+                } else {
+                    "Active P2P Group: NO\n"
+                }
+                groupInfoResult.complete(groupInfo)
+            }
+        } catch (e: SecurityException) {
+            groupInfoResult.complete("Failed to get group info: ${e.message}\n")
+        }
+        diagnostics.append(groupInfoResult.await())
+
+        // Check permissions
+        val requiredPermissions = listOf(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_WIFI_STATE,
+            Manifest.permission.CHANGE_WIFI_STATE
+        ) + if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            listOf(Manifest.permission.NEARBY_WIFI_DEVICES)
+        } else {
+            emptyList()
+        }
+
+        diagnostics.append("Permissions:\n")
+        requiredPermissions.forEach { permission ->
+            val granted = ContextCompat.checkSelfPermission(
+                context,
+                permission
+            ) == PackageManager.PERMISSION_GRANTED
+            diagnostics.append("- ${permission.substringAfterLast(".")}: ${if (granted) "✓" else "✗"}\n")
+        }
+
+        // Get network interface info with corrected variable name
+        try {
+            val networkInterfaces = NetworkInterface.getNetworkInterfaces()
+            diagnostics.append("\nNetwork Interfaces:\n")
+            networkInterfaces.toList().forEach { networkInterface ->
+                if (networkInterface.name.startsWith("p2p") || networkInterface.name.startsWith("wlan")) {
+                    diagnostics.append("- ${networkInterface.name}: ${networkInterface.isUp}\n")
+                }
+            }
+        } catch (e: Exception) {
+            diagnostics.append("Failed to get network interfaces: ${e.message}\n")
+        }
+
+        return@withContext diagnostics.toString()
+    }
+}
+
 data class UiState(
     val scrollPosition: Int = 0,
     val isConnected: Boolean = false,

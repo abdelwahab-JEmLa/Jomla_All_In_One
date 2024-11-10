@@ -13,6 +13,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.clientjetpack.DiagnosticState
 import com.example.clientjetpack.PermissionHandler
 import com.google.firebase.database.BuildConfig
 import com.google.firebase.database.FirebaseDatabase
@@ -30,7 +31,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 
-// Mise à jour de UiState pour inclure les propriétés de connexion
+
 data class UiState(
     val scrollPosition: Int = 0,
     val appSettingsSaverModel: List<AppSettingsSaverModel> = emptyList(),
@@ -43,14 +44,13 @@ data class UiState(
     val isLoading: Boolean = false,
     val loadingProgress: Float = 0f,
     val error: String? = null,
-    // Nouvelles propriétés pour la connexion
     val isConnected: Boolean = false,
     val connectionStatus: String = "Déconnecté",
     val wifiTestDisplayer: Boolean = false,
-    val appIsInstalledInHostPhone: Boolean = true
+    val appIsInstalledInHostPhone: Boolean = true,
+    val diagnosticState: DiagnosticState = DiagnosticState() // Added diagnostic state
 )
 
-// In ViewModel
 class StartUpNewArticlesViewModels(
     context: Context,
     private val database: AppDatabase,
@@ -59,6 +59,10 @@ class StartUpNewArticlesViewModels(
     private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()
 
+    private val _appIsInstalledInHostPhone = MutableStateFlow(true)
+    val appIsInstalledInHostPhone = _appIsInstalledInHostPhone.asStateFlow()
+
+    @RequiresApi(Build.VERSION_CODES.Q)
     private val p2pManager = P2PManager(
         context = context,
         permissionHandler = permissionHandler
@@ -72,26 +76,31 @@ class StartUpNewArticlesViewModels(
         }
     }
 
-    private val _appIsInstalledInHostPhone = MutableStateFlow(true)
-    val appIsInstalledInHostPhone = _appIsInstalledInHostPhone.asStateFlow()
+    fun updateDiagnosticState(newDiagnosticState: DiagnosticState) {
+        _uiState.update { currentState ->
+            currentState.copy(diagnosticState = newDiagnosticState)
+        }
+    }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     fun toggleServerMode() {
         viewModelScope.launch {
             p2pManager.toggleRole()
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     fun sendScrollPosition(position: Int) {
         viewModelScope.launch {
             p2pManager.sendScrollPosition(position)
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCleared() {
         super.onCleared()
         p2pManager.disconnect()
     }
-
 
     // Ensure the directory exists when initializing the path
     val viewModelImagesPath = File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne/").apply {
