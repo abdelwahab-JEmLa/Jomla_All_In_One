@@ -53,9 +53,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -102,6 +100,7 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.signature.ObjectKey
 import com.example.clientjetpack.LoadingOverlay
+import com.example.clientjetpack.PermissionHandler
 import com.example.clientjetpack.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -118,6 +117,7 @@ fun StartupAppDisplayerOfNewArticles(
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     onClickToOpenClientsW: () -> Unit,
     isFabVisible: Boolean, onClickDonne: () -> Unit, onToggleitsWifiServerAppOrClient: () -> Unit,
+    permissionHandler: PermissionHandler,
 ) {
     var gridColumnsForNewArticels by remember { mutableStateOf(2) }
     var showFilter by remember { mutableStateOf(false) }
@@ -139,10 +139,11 @@ fun StartupAppDisplayerOfNewArticles(
         onClickToOpenWindos = onClickToOpenWindos,
         onClickToOpenClientsW = onClickToOpenClientsW,
         isFabVisible=isFabVisible,
-        onClickDonne = onClickDonne, onToggleitsWifiServerAppOrClient = onToggleitsWifiServerAppOrClient
+        onClickDonne = onClickDonne,
+        onToggleitsWifiServerAppOrClient = onToggleitsWifiServerAppOrClient,
+        permissionHandler
     )
 }
-
 @Composable
 fun ArticleDisplayScreen(
     uiState: UiState,
@@ -160,86 +161,96 @@ fun ArticleDisplayScreen(
     isFabVisible: Boolean,
     onClickDonne: () -> Unit,
     onToggleitsWifiServerAppOrClient: () -> Unit,
-) {
+    permissionHandler: PermissionHandler,
+
+    ) {
     val scope = rememberCoroutineScope()
     val isServer = uiState.appIsInstalledInHostPhone
-    val tag = if (isServer) "📱 ServerScreen" else "📱 ClientScreen"
 
-    // Log composition
-    SideEffect {
-        Log.d(tag, "Screen Composed - Mode: ${if (isServer) "Server" else "Client"}")
-        Log.d(tag, "Connection Status: ${uiState.connectionStatus}")
-        Log.d(tag, "Is Connected: ${uiState.isConnected}")
-    }
-
-    // Monitor state changes
-    LaunchedEffect(uiState.isConnected, uiState.connectionStatus) {
-        Log.d(tag, "Connection State Changed - Status: ${uiState.connectionStatus}, Connected: ${uiState.isConnected}")
-    }
-
-    // Scroll synchronization
-    LaunchedEffect(gridState, isServer) {
-        Log.d(tag, "Setting up scroll synchronization for ${if (isServer) "Server" else "Client"}")
-
-        snapshotFlow { gridState.firstVisibleItemIndex }
-            .distinctUntilChanged()
-            .collect { position ->
-                when {
-                    isServer -> {
-                        Log.d(tag, "🔵 Server broadcasting scroll position: $position")
-                        viewModel.scrollSyncManager.sendScrollPosition(position)
-                    }
-                    else -> {
+    LaunchedEffect(gridState, isServer, uiState.isConnected) {
+        if (uiState.isConnected && permissionHandler.areNearbyPermissionsGranted()) {
+            snapshotFlow { gridState.firstVisibleItemIndex }
+                .distinctUntilChanged()
+                .collect { position ->
+                    if (isServer) {
+                        viewModel.sendScrollPosition(position)
+                    } else {
                         val serverPosition = uiState.scrollPosition
                         if (serverPosition != position) {
-                            Log.d(tag, "🔴 Client received new position: $serverPosition (current: $position)")
                             gridState.scrollToItem(serverPosition)
-                        } else {
-                            Log.v(tag, "Client position already matches server: $position")
                         }
                     }
                 }
-            }
+        }
     }
 
-    // Cleanup logging
-    DisposableEffect(Unit) {
-        Log.d(tag, "Screen Mounted")
-        onDispose {
-            Log.d(tag, "Screen Disposed")
+    val tag = if (isServer) "📱 ServerScreen" else "📱 ClientScreen"
+
+    // Optimization: Combine scroll handling and logging into a single LaunchedEffect
+    LaunchedEffect(gridState, isServer, uiState.isConnected) {
+        if (uiState.isConnected) {
+            snapshotFlow { gridState.firstVisibleItemIndex }
+                .distinctUntilChanged()
+                .collect { position ->
+                    Log.d(tag, "📜 Scroll Position: $position (${if (isServer) "Server" else "Client"})")
+
+                    if (isServer) {
+                        // Server broadcasts scroll position
+                        viewModel.sendScrollPosition(position)
+                        Log.d(tag, "🔵 Server broadcasting position: $position")
+                    } else {
+                        // Client syncs with server position if different
+                        val serverPosition = uiState.scrollPosition
+                        if (serverPosition != position) {
+                            Log.d(tag, "🔴 Client syncing to position: $serverPosition")
+                            gridState.scrollToItem(serverPosition)
+                        }
+                    }
+                }
         }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(bottom = if (isFabVisible) 80.dp else 0.dp)
         ) {
-            Column {
-                SearchFilter(
-                    showFilter = isFabVisible,
-                    filterText = filterText,
-                    onFilterTextChange = onFilterTextChange,
-                    onAddNotInBaseArticle = onClickToOpenWindos,
-                    viewModel = viewModel,
-                    uiState = uiState,
-                    onClickDonne = onClickDonne
-                )
-
-                ArticleGrid(
-                    uiState = uiState,
-                    gridColumns = gridColumns,
-                    filterText = filterText,
-                    showFilter = isFabVisible,
-                    gridState = gridState,
-                    viewModel = viewModel,
-                    reloadTrigger = reloadTrigger,
-                    onClickToOpenWindos = onClickToOpenWindos
+            // Connection status banner
+            AnimatedVisibility(
+                visible = true,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                ConnectionStatusBanner(
+                    isConnected = uiState.isConnected,
+                    status = uiState.connectionStatus,
+                    isServer = isServer
                 )
             }
+
+            SearchFilter(
+                showFilter = isFabVisible,
+                filterText = filterText,
+                onFilterTextChange = onFilterTextChange,
+                onAddNotInBaseArticle = onClickToOpenWindos,
+                viewModel = viewModel,
+                uiState = uiState,
+                onClickDonne = onClickDonne
+            )
+
+            ArticleGrid(
+                uiState = uiState,
+                gridColumns = gridColumns,
+                filterText = filterText,
+                showFilter = isFabVisible,
+                gridState = gridState,
+                viewModel = viewModel,
+                reloadTrigger = reloadTrigger,
+                onClickToOpenWindos = onClickToOpenWindos
+            )
         }
 
+        // FAB Group with connection controls
         AnimatedVisibility(
             visible = isFabVisible,
             enter = fadeIn(),
@@ -262,36 +273,53 @@ fun ArticleDisplayScreen(
             )
         }
 
+        // Loading overlay
         if (uiState.isLoading) {
             LoadingOverlay(
                 progress = uiState.loadingProgress,
                 modifier = Modifier.align(Alignment.Center)
             )
         }
+    }
+}
 
-        // Connection status with logging
-        AnimatedVisibility(
-            visible = true,
+@Composable
+private fun ConnectionStatusBanner(
+    isConnected: Boolean,
+    status: String,
+    isServer: Boolean,
+    modifier: Modifier = Modifier
+) {
+    val backgroundColor = if (isConnected) {
+        Color(0xFF4CAF50).copy(alpha = 0.9f) // Green with transparency
+    } else {
+        Color(0xFFE57373).copy(alpha = 0.9f) // Red with transparency
+    }
+
+    Surface(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(32.dp),
+        color = backgroundColor,
+        shadowElevation = 4.dp
+    ) {
+        Row(
             modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(8.dp)
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            val statusColor = if (uiState.isConnected) Color.Green else Color.Red
-            val modeText = if (isServer) "Server" else "Client"
-            val statusText = "$modeText: ${uiState.connectionStatus}"
-
-            Log.v(tag, "Displaying status: $statusText (Connected: ${uiState.isConnected})")
+            Text(
+                text = status,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.White
+            )
 
             Text(
-                text = statusText,
-                color = statusColor,
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier
-                    .background(
-                        color = Color.Black.copy(alpha = 0.7f),
-                        shape = RoundedCornerShape(4.dp)
-                    )
-                    .padding(4.dp)
+                text = if (isServer) "Serveur" else "Client",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.White
             )
         }
     }

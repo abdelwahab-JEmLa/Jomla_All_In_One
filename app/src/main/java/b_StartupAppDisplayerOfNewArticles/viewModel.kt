@@ -13,14 +13,13 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.clientjetpack.PermissionHandler
 import com.google.firebase.database.BuildConfig
 import com.google.firebase.database.FirebaseDatabase
-import f_Wifi.NetworkManager
-import f_Wifi.ScrollSyncManager
+import f_Wifi.P2PManager
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -51,90 +50,46 @@ data class UiState(
     val appIsInstalledInHostPhone: Boolean = true
 )
 
+// In ViewModel
 class StartUpNewArticlesViewModels(
     context: Context,
-    private val database: AppDatabase
+    private val database: AppDatabase,
+    private val permissionHandler: PermissionHandler
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()
 
+    private val p2pManager = P2PManager(
+        context = context,
+        permissionHandler = permissionHandler
+    ) { status ->
+        viewModelScope.launch {
+            _uiState.update { it.copy(
+                connectionStatus = status.message,
+                isConnected = status.isConnected,
+                appIsInstalledInHostPhone = status.isHost
+            )}
+        }
+    }
+
     private val _appIsInstalledInHostPhone = MutableStateFlow(true)
     val appIsInstalledInHostPhone = _appIsInstalledInHostPhone.asStateFlow()
 
-    private val networkManager = NetworkManager(context)
-    val scrollSyncManager = ScrollSyncManager()
-
-    init {
-        networkManager.initialize()
-        initializeScrollSync(_appIsInstalledInHostPhone.value)
-    }
-
-    fun initializeScrollSync(isServer: Boolean) {
-        viewModelScope.launch {
-            try {
-                if (isServer) {
-                    _uiState.update { it.copy(connectionStatus = "Démarrage du serveur...") }
-                    scrollSyncManager.startServer()
-                } else {
-                    _uiState.update { it.copy(connectionStatus = "Connexion au serveur...") }
-                    // Utiliser l'URL du serveur automatiquement détectée
-                    scrollSyncManager.startClient(networkManager.getServerUrlOrDefault())
-                }
-
-                scrollSyncManager.observeScrollPosition()
-                    .catch { e ->
-                        _uiState.update { it.copy(
-                            connectionStatus = "Erreur: ${e.message}",
-                            isConnected = false
-                        )}
-                    }
-                    .collect { position ->
-                        _uiState.update { it.copy(
-                            scrollPosition = position,
-                            isConnected = true,
-                            connectionStatus = "Connecté"
-                        )}
-                    }
-            } catch (e: Exception) {
-                _uiState.update { it.copy(
-                    connectionStatus = "Erreur: ${e.message}",
-                    isConnected = false
-                )}
-            }
-        }
-    }
-
-    fun getNetworkStatus(): String {
-        return "IP: ${networkManager.serverUrl.value ?: "Non connecté"}"
-    }
-
     fun toggleServerMode() {
         viewModelScope.launch {
-            // Arrêter la connexion actuelle
-            scrollSyncManager.stop()
-
-            // Basculer le mode
-            _appIsInstalledInHostPhone.value = !_appIsInstalledInHostPhone.value
-
-            // Mettre à jour l'état UI
-            _uiState.update { it.copy(
-                appIsInstalledInHostPhone = _appIsInstalledInHostPhone.value,
-                connectionStatus = "Mode ${if (_appIsInstalledInHostPhone.value) "Serveur" else "Client"}",
-                isConnected = false
-            )}
-
-            // Réinitialiser la connexion
-            initializeScrollSync(_appIsInstalledInHostPhone.value)
+            p2pManager.toggleRole()
         }
     }
 
-
+    fun sendScrollPosition(position: Int) {
+        viewModelScope.launch {
+            p2pManager.sendScrollPosition(position)
+        }
+    }
 
     override fun onCleared() {
         super.onCleared()
-        viewModelScope.launch {
-            scrollSyncManager.stop()
-        }
+        p2pManager.disconnect()
     }
 
 

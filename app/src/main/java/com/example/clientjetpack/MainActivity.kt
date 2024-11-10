@@ -100,12 +100,13 @@ data class AppViewModels(
 // ViewModelFactory.kt
 class ViewModelFactory(
     private val context: Context,
-    private val database: AppDatabase
+    private val database: AppDatabase,
+    private val permissionHandler: PermissionHandler  // Fixed: Added permissionHandler parameter
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when {
             modelClass.isAssignableFrom(StartUpNewArticlesViewModels::class.java) ->
-                StartUpNewArticlesViewModels(context.applicationContext, database) as T
+                StartUpNewArticlesViewModels(context.applicationContext, database, permissionHandler) as T
             modelClass.isAssignableFrom(GenerativeAiViewModel::class.java) ->
                 GenerativeAiViewModel() as T
             else -> throw IllegalArgumentException("Unknown ViewModel: ${modelClass.name}")
@@ -119,7 +120,7 @@ class MainActivity : ComponentActivity() {
     private val permissionHandler by lazy { PermissionHandler(this) }
 
     private val viewModelFactory by lazy {
-        ViewModelFactory(applicationContext, database)
+        ViewModelFactory(applicationContext, database,permissionHandler)
     }
 
     private val startUpNewArticlesViewModels: StartUpNewArticlesViewModels by viewModels {
@@ -144,7 +145,7 @@ class MainActivity : ComponentActivity() {
             override fun onPermissionsGranted() {
                 // Initialize your Nearby Connections here
                 setContent {
-                    MainScreenWrapper(appViewModels)
+                    MainScreenWrapper(appViewModels, permissionHandler)
                 }
             }
 
@@ -152,7 +153,7 @@ class MainActivity : ComponentActivity() {
                 // Handle the case where permissions are denied
                 // You might want to show a message or disable certain features
                 setContent {
-                    MainScreenWrapper(appViewModels)
+                    MainScreenWrapper(appViewModels, permissionHandler)
                 }
             }
         })
@@ -161,7 +162,7 @@ class MainActivity : ComponentActivity() {
 
 // MainScreen.kt
 @Composable
-private fun MainScreenWrapper(appViewModels: AppViewModels) {
+private fun MainScreenWrapper(appViewModels: AppViewModels, permissionHandler: PermissionHandler) {
     val startUpViewModel = appViewModels.startUpNewArticlesViewModels
     val uiState by startUpViewModel.uiState.collectAsState()
     val isServer by startUpViewModel.appIsInstalledInHostPhone.collectAsState()
@@ -170,7 +171,8 @@ private fun MainScreenWrapper(appViewModels: AppViewModels) {
         appViewModels = appViewModels,
         uiState = uiState,
         isServer = isServer,
-        onToggleServerMode = startUpViewModel::toggleServerMode  //Unresolved reference: toggleServerMode
+        onToggleServerMode = startUpViewModel::toggleServerMode,
+        permissionHandler = permissionHandler  //Unresolved reference: toggleServerMode
     )
 }
 
@@ -179,7 +181,7 @@ private fun MainScreen(
     appViewModels: AppViewModels,
     uiState: UiState,
     isServer: Boolean,
-    onToggleServerMode: () -> Unit
+    onToggleServerMode: () -> Unit, permissionHandler: PermissionHandler
 ) {
     val navController = rememberNavController()
     val items = NavigationItems.getItems()
@@ -232,7 +234,7 @@ private fun MainScreen(
                         onToggleNavBar = { isNavBarVisible = !isNavBarVisible },
                         isFabVisible = isFabVisible,
                         onClickDonne = { isFabVisible = false },
-                        onToggleitsWifiServerAppOrClient = onToggleServerMode
+                        onToggleitsWifiServerAppOrClient = onToggleServerMode, permissionHandler = permissionHandler
                     )
                 }
             }
@@ -273,7 +275,8 @@ fun AppNavHost(
     navController: NavHostController,
     onToggleNavBar: () -> Unit,
     modifier: Modifier = Modifier,
-    isFabVisible: Boolean, onClickDonne: () -> Unit, onToggleitsWifiServerAppOrClient: () -> Unit
+    isFabVisible: Boolean, onClickDonne: () -> Unit, onToggleitsWifiServerAppOrClient: () -> Unit,
+    permissionHandler: PermissionHandler
 ) {
     val uiState by appViewModels.startUpNewArticlesViewModels.uiState.collectAsState()
 
@@ -320,7 +323,8 @@ fun AppNavHost(
                             showClientSelectionWithoutCondition=true
                         },
                         isFabVisible=isFabVisible, onClickDonne = onClickDonne,
-                        onToggleitsWifiServerAppOrClient = onToggleitsWifiServerAppOrClient
+                        onToggleitsWifiServerAppOrClient = onToggleitsWifiServerAppOrClient,
+                        permissionHandler = permissionHandler
                     )
 
                     if (uiState.isLoading) {
