@@ -13,11 +13,10 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.clientjetpack.DiagnosticState
 import com.example.clientjetpack.PermissionHandler
 import com.google.firebase.database.BuildConfig
 import com.google.firebase.database.FirebaseDatabase
-import f_Wifi.P2PManager
+import f_Wifi.ConnectionManager
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -48,7 +47,6 @@ data class UiState(
     val connectionStatus: String = "Déconnecté",
     val wifiTestDisplayer: Boolean = false,
     val appIsInstalledInHostPhone: Boolean = true,
-    val diagnosticState: DiagnosticState = DiagnosticState() // Added diagnostic state
 )
 
 class StartUpNewArticlesViewModels(
@@ -56,51 +54,29 @@ class StartUpNewArticlesViewModels(
     private val database: AppDatabase,
     private val permissionHandler: PermissionHandler
 ) : ViewModel() {
+    private val connectionManager = ConnectionManager(context, permissionHandler)
+
     private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()
 
-    private val _appIsInstalledInHostPhone = MutableStateFlow(true)
-    val appIsInstalledInHostPhone = _appIsInstalledInHostPhone.asStateFlow()
-
-    @RequiresApi(Build.VERSION_CODES.Q)
-    private val p2pManager = P2PManager(
-        context = context,
-        permissionHandler = permissionHandler
-    ) { status ->
+    init {
         viewModelScope.launch {
-            _uiState.update { it.copy(
-                connectionStatus = status.message,
-                isConnected = status.isConnected,
-                appIsInstalledInHostPhone = status.isHost
-            )}
+            connectionManager.uiState.collect { connectionState ->
+                _uiState.update { it.copy(
+                    connectionStatus = connectionState.connectionStatus,
+                    isConnected = connectionState.isConnected,
+                    appIsInstalledInHostPhone = connectionState.isHost,
+                    error = connectionState.error
+                )}
+            }
         }
     }
 
-    fun updateDiagnosticState(newDiagnosticState: DiagnosticState) {
-        _uiState.update { currentState ->
-            currentState.copy(diagnosticState = newDiagnosticState)
-        }
-    }
+    fun startAsHost() = connectionManager.startAsHost()
+    fun startAsClient() = connectionManager.startAsClient()
+    fun sendTestMessage(message: String) = connectionManager.sendMessage(message)
+    fun disconnect() = connectionManager.disconnect()
 
-    @RequiresApi(Build.VERSION_CODES.Q)
-    fun toggleServerMode() {
-        viewModelScope.launch {
-            p2pManager.toggleRole()
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.Q)
-    fun sendScrollPosition(position: Int) {
-        viewModelScope.launch {
-            p2pManager.sendScrollPosition(position)
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.Q)
-    override fun onCleared() {
-        super.onCleared()
-        p2pManager.disconnect()
-    }
 
     // Ensure the directory exists when initializing the path
     val viewModelImagesPath = File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne/").apply {

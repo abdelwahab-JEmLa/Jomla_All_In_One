@@ -173,7 +173,6 @@ fun ArticleDisplayScreen(
                 .distinctUntilChanged()
                 .collect { position ->
                     if (isServer) {
-                        viewModel.sendScrollPosition(position)
                     } else {
                         val serverPosition = uiState.scrollPosition
                         if (serverPosition != position) {
@@ -196,7 +195,6 @@ fun ArticleDisplayScreen(
 
                     if (isServer) {
                         // Server broadcasts scroll position
-                        viewModel.sendScrollPosition(position)
                         Log.d(tag, "🔵 Server broadcasting position: $position")
                     } else {
                         // Client syncs with server position if different

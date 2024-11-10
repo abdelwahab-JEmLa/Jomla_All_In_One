@@ -10,7 +10,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -23,31 +22,30 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.CreditScore
 import androidx.compose.material.icons.filled.EditRoad
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.ProgressIndicatorDefaults
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -56,7 +54,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -66,9 +63,8 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -87,9 +83,7 @@ import com.google.firebase.database.FirebaseDatabase
 import d_SoldCartScreen.SoldCartScreen
 import e_AiGroupeForSupplier.GenerativeAiScreen
 import e_AiGroupeForSupplier.GenerativeAiViewModel
-import f_Wifi.P2PDiagnostics
 import g_DialogeClientsEditer.ClientSelectionDialog
-import kotlinx.coroutines.launch
 
 // Application.kt
 class MyApplication : Application() {
@@ -118,7 +112,7 @@ class ViewModelFactory(
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when {
             modelClass.isAssignableFrom(StartUpNewArticlesViewModels::class.java) ->
-                StartUpNewArticlesViewModels(context.applicationContext, database, permissionHandler) as T
+                StartUpNewArticlesViewModels(context.applicationContext, database,permissionHandler) as T
             modelClass.isAssignableFrom(GenerativeAiViewModel::class.java) ->
                 GenerativeAiViewModel() as T
             else -> throw IllegalArgumentException("Unknown ViewModel: ${modelClass.name}")
@@ -126,6 +120,63 @@ class ViewModelFactory(
     }
 }
 
+
+
+
+@Composable
+fun ButtonsSection(
+    onHostClick: () -> Unit,
+    onClientClick: () -> Unit
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Button(
+            onClick = onHostClick,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Démarrer comme Hôte")
+        }
+
+        Button(
+            onClick = onClientClick,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Démarrer comme Client")
+        }
+    }
+}
+
+@Composable
+fun ConnectedActions(
+    onDisconnectClick: () -> Unit,
+    onSendTestMessage: () -> Unit
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Button(
+            onClick = onSendTestMessage,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Envoyer un message test")
+        }
+
+        Button(
+            onClick = onDisconnectClick,
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.error
+            )
+        ) {
+            Text("Déconnecter")
+        }
+    }
+}
 // MainActivity.kt
 class MainActivity : ComponentActivity() {
     private val database by lazy { (application as MyApplication).database }
@@ -156,7 +207,6 @@ class MainActivity : ComponentActivity() {
         permissionHandler.checkAndRequestPermissions(object : PermissionHandler.PermissionCallback {
             @RequiresApi(Build.VERSION_CODES.Q)
             override fun onPermissionsGranted() {
-                // Initialize your Nearby Connections here
                 setContent {
                     MainScreenWrapper(appViewModels, permissionHandler)
                 }
@@ -164,67 +214,21 @@ class MainActivity : ComponentActivity() {
 
             @RequiresApi(Build.VERSION_CODES.Q)
             override fun onPermissionsDenied() {
-                // Handle the case where permissions are denied
-                // You might want to show a message or disable certain features
-                setContent {
-                    MainScreenWrapper(appViewModels, permissionHandler)
-                }
+
             }
         })
     }
 }
-
-// First, let's create a state holder for diagnostics
-data class DiagnosticState(
-    val diagnosticResults: String = "",
-    val isRunningDiagnostics: Boolean = false,
-    val lastError: String? = null
-)
-
-// Add diagnostic state to UiState
-data class UiState(
-    val scrollPosition: Int = 0,
-    val isConnected: Boolean = false,
-    val connectionStatus: String = "Déconnecté",
-    val isHost: Boolean = true,
-    val wifiTestDisplayer: Boolean = false,
-    val diagnosticState: DiagnosticState = DiagnosticState()
-)
 
 @RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 private fun MainScreenWrapper(appViewModels: AppViewModels, permissionHandler: PermissionHandler) {
     val startUpViewModel = appViewModels.startUpNewArticlesViewModels
     val uiState by startUpViewModel.uiState.collectAsState()
-    val isServer by startUpViewModel.appIsInstalledInHostPhone.collectAsState()
-    val scope = rememberCoroutineScope()
-    val context = LocalContext.current
-
-    // Fixed lambda expression type
-    val runDiagnostics: () -> Unit = {
-        scope.launch {
-            startUpViewModel.updateDiagnosticState(DiagnosticState(isRunningDiagnostics = true))
-            try {
-                val diagnostics = P2PDiagnostics(context)
-                val results = diagnostics.runDiagnostics()
-                startUpViewModel.updateDiagnosticState(
-                    DiagnosticState(diagnosticResults = results)
-                )
-            } catch (e: Exception) {
-                startUpViewModel.updateDiagnosticState(
-                    DiagnosticState(lastError = e.message ?: "Unknown error occurred")
-                )
-            }
-        }
-    }
 
     MainScreen(
         appViewModels = appViewModels,
         uiState = uiState,
-        isServer = isServer,
-        onToggleServerMode = startUpViewModel::toggleServerMode,
-        permissionHandler = permissionHandler,
-        onRunDiagnostics = runDiagnostics  // Now properly typed as () -> Unit
     )
 }
 
@@ -232,10 +236,6 @@ private fun MainScreenWrapper(appViewModels: AppViewModels, permissionHandler: P
 private fun MainScreen(
     appViewModels: AppViewModels,
     uiState: UiState,
-    isServer: Boolean,
-    onToggleServerMode: () -> Unit,
-    permissionHandler: PermissionHandler,
-    onRunDiagnostics: () -> Unit
 ) {
     val navController = rememberNavController()
     val items = NavigationItems.getItems()
@@ -243,162 +243,77 @@ private fun MainScreen(
     var isFabVisible by remember { mutableStateOf(true) }
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        Scaffold(
-            bottomBar = {
-                Box(modifier = Modifier.fillMaxWidth()) {
-                    AnimatedVisibility(visible = isNavBarVisible) {
-                        NavigationBarWithFab(
-                            items = items.filter { it != Screen.ToggleFab },
-                            currentRoute = currentRoute,
-                            onNavigate = { route ->
-                                navController.navigate(route) {
-                                    popUpTo(navController.graph.startDestinationId)
-                                    launchSingleTop = true
-                                }
-                            },
-                            isFabVisible = isFabVisible,
-                            onToggleFabVisibility = { isFabVisible = !isFabVisible }
-                        )
-                    }
-                }
-            }
-        ) { padding ->
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    ConnectionStatusSection(
-                        uiState = uiState,
-                        onRunDiagnostics = onRunDiagnostics
-                    )
-                    ServerClientSection(
-                        uiState = uiState,
-                        isServer = isServer,
-                        startUpViewModel = appViewModels.startUpNewArticlesViewModels
-                    )
-
-                    // Add diagnostic results section
-                    DiagnosticResultsSection(diagnosticState = uiState.diagnosticState)    //err Unresolved reference: diagnosticState
-
-                    AppNavHost(
-                        appViewModels = appViewModels,
-                        navController = navController,
-                        onToggleNavBar = { isNavBarVisible = !isNavBarVisible },
-                        isFabVisible = isFabVisible,
-                        onClickDonne = { isFabVisible = false },
-                        onToggleitsWifiServerAppOrClient = onToggleServerMode,
-                        permissionHandler = permissionHandler
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun ConnectionStatusSection(
-    uiState: UiState,
-    onRunDiagnostics: () -> Unit
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Text(
-            text = uiState.connectionStatus,
-            style = MaterialTheme.typography.titleMedium,
-            color = when {
-                uiState.isConnected -> Color.Green
-                uiState.connectionStatus.startsWith("Erreur") -> Color.Red
-                else -> Color.Gray
-            }
-        )
-
-        // Add diagnostic button that appears when there's an error
-        if (uiState.connectionStatus.startsWith("Erreur") || !uiState.isConnected) {
-            IconButton(onClick = onRunDiagnostics) {
-                Icon(
-                    imageVector = Icons.Default.BugReport,
-                    contentDescription = "Run diagnostics",
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun DiagnosticResultsSection(diagnosticState: DiagnosticState) {
-    AnimatedVisibility(
-        visible = diagnosticState.isRunningDiagnostics ||
-                diagnosticState.diagnosticResults.isNotEmpty() ||
-                diagnosticState.lastError != null
-    ) {
+        // Status Card
         Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant
-            )
+            modifier = Modifier.fillMaxWidth()
         ) {
             Column(
-                modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Diagnostic Results",
+                    text = "État de la connexion",
                     style = MaterialTheme.typography.titleMedium
                 )
-
-                when {
-                    diagnosticState.isRunningDiagnostics -> {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(24.dp)
-                        )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = uiState.connectionStatus,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = when {
+                        uiState.isConnected -> MaterialTheme.colorScheme.primary
+                        uiState.error != null -> MaterialTheme.colorScheme.error
+                        else -> MaterialTheme.colorScheme.onSurface
                     }
-                    diagnosticState.lastError != null -> {
-                        Text(
-                            text = "Error: ${diagnosticState.lastError}",
-                            color = MaterialTheme.colorScheme.error
-                        )
-                    }
-                    diagnosticState.diagnosticResults.isNotEmpty() -> {
-                        Text(
-                            text = diagnosticState.diagnosticResults,
-                            style = MaterialTheme.typography.bodySmall,
-                            fontFamily = FontFamily.Monospace
-                        )
-                    }
-                }
+                )
             }
+        }
+
+        // Error Display
+        if (uiState.error != null) {
+            Text(
+                text = uiState.error ?: "",
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+        // Connection Buttons
+        if (!uiState.isConnected) {
+            ButtonsSection(
+                onHostClick = { appViewModels.startUpNewArticlesViewModels.startAsHost() },
+                onClientClick = { appViewModels.startUpNewArticlesViewModels.startAsClient() }
+            )
+        }
+
+        // Connected Actions
+        if (uiState.isConnected) {
+            ConnectedActions(
+                onDisconnectClick = { appViewModels.startUpNewArticlesViewModels.disconnect() },
+                onSendTestMessage = { appViewModels.startUpNewArticlesViewModels.sendTestMessage("Test message!") }
+            )
+        }
+
+        // Loading Indicator
+        if (uiState.isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(48.dp),
+                progress = uiState.loadingProgress
+            )
         }
     }
 }
 
-@Composable
-private fun ServerClientSection(
-    uiState: UiState,
-    isServer: Boolean,
-    startUpViewModel: StartUpNewArticlesViewModels
-) {
-    if (isServer) {
-        Text("Mode Serveur")
-
-    } else {
-        Text("Mode Client")
-        Text("État du test WiFi: ${if (uiState.wifiTestDisplayer) "Actif" else "Inactif"}")
-    }
-}
 
 @Composable
 fun AppNavHost(
