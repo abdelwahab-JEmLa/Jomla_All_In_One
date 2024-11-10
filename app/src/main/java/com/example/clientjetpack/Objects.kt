@@ -11,67 +11,90 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
+
 class PermissionHandler(private val activity: ComponentActivity) {
+    // Constantes pour les versions d'API
+    companion object {
+        private const val TAG = "PermissionHandler"
+        private const val ANDROID_12 = Build.VERSION_CODES.S           // API 31
+        private const val ANDROID_11 = Build.VERSION_CODES.R          // API 30
+        private const val ANDROID_10 = Build.VERSION_CODES.Q          // API 29
+        private const val ANDROID_9 = Build.VERSION_CODES.P           // API 28
+    }
+
+    // Permissions de localisation requises pour toutes les versions
     private val locationPermissions = arrayOf(
         Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.ACCESS_COARSE_LOCATION
     )
 
-    private val wifiPermissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        arrayOf(
+    // Permissions WiFi selon la version d'Android
+    private val wifiPermissions = when {
+        Build.VERSION.SDK_INT >= ANDROID_12 -> arrayOf(
             Manifest.permission.ACCESS_WIFI_STATE,
             Manifest.permission.CHANGE_WIFI_STATE,
             Manifest.permission.NEARBY_WIFI_DEVICES
         )
-    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-        arrayOf(
+        Build.VERSION.SDK_INT >= ANDROID_11 -> arrayOf(
             Manifest.permission.ACCESS_WIFI_STATE,
             Manifest.permission.CHANGE_WIFI_STATE,
-            // Pour Android 11 (API 30), on a toujours besoin de ACCESS_FINE_LOCATION
-            // même si NEARBY_WIFI_DEVICES n'est pas disponible
-            Manifest.permission.ACCESS_FINE_LOCATION
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_NETWORK_STATE
         )
-    } else {
-        arrayOf(
+        Build.VERSION.SDK_INT >= ANDROID_10 -> arrayOf(
             Manifest.permission.ACCESS_WIFI_STATE,
             Manifest.permission.CHANGE_WIFI_STATE,
-            // Pour Android 10 et moins, on a besoin de la localisation pour le WiFi
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_NETWORK_STATE
+        )
+        else -> arrayOf( // Pour Android 9 (API 28) et versions antérieures
+            Manifest.permission.ACCESS_WIFI_STATE,
+            Manifest.permission.CHANGE_WIFI_STATE,
             Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.ACCESS_FINE_LOCATION
+            Manifest.permission.ACCESS_NETWORK_STATE
         )
     }
 
-    private val nearbyPermissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        arrayOf(
+    // Permissions Bluetooth selon la version
+    private val nearbyPermissions = when {
+        Build.VERSION.SDK_INT >= ANDROID_12 -> arrayOf(
             Manifest.permission.BLUETOOTH_SCAN,
             Manifest.permission.BLUETOOTH_ADVERTISE,
             Manifest.permission.BLUETOOTH_CONNECT
         )
-    } else {
-        arrayOf(
+        Build.VERSION.SDK_INT >= ANDROID_10 -> arrayOf(
+            Manifest.permission.BLUETOOTH,
+            Manifest.permission.BLUETOOTH_ADMIN,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
+        else -> arrayOf(
             Manifest.permission.BLUETOOTH,
             Manifest.permission.BLUETOOTH_ADMIN
         )
     }
 
-    private val storagePermissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        arrayOf(
+    // Permissions de stockage selon la version
+    private val storagePermissions = when {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> arrayOf(
             Manifest.permission.READ_MEDIA_IMAGES,
             Manifest.permission.READ_MEDIA_VIDEO
         )
-    } else {
-        arrayOf(
+        Build.VERSION.SDK_INT >= ANDROID_10 -> arrayOf(
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        )
+        else -> arrayOf(
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
         )
     }
 
-    // Combine toutes les permissions nécessaires
-    private val allPermissions = locationPermissions + wifiPermissions + nearbyPermissions + storagePermissions
+    // Toutes les permissions nécessaires
+    private val allPermissions = (locationPermissions + wifiPermissions + nearbyPermissions + storagePermissions).distinct().toTypedArray()
 
     interface PermissionCallback {
         fun onPermissionsGranted()
         fun onPermissionsDenied()
+        fun onPermissionRationale(permissions: Array<String>)
     }
 
     private var permissionCallback: PermissionCallback? = null
@@ -79,13 +102,29 @@ class PermissionHandler(private val activity: ComponentActivity) {
     private val requestPermissionLauncher = activity.registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
-        val allGranted = permissions.entries.all { it.value }
-        if (allGranted) {
-            permissionCallback?.onPermissionsGranted()
-        } else {
-            handlePermissionDenial()
-            permissionCallback?.onPermissionsDenied()
+        handlePermissionResult(permissions)
+    }
+
+    private fun handlePermissionResult(permissions: Map<String, Boolean>) {
+        val deniedPermissions = permissions.filterValues { !it }.keys.toTypedArray()
+
+        when {
+            deniedPermissions.isEmpty() -> {
+                permissionCallback?.onPermissionsGranted()
+            }
+            deniedPermissions.any { shouldShowRequestPermissionRationale(it) } -> {
+                permissionCallback?.onPermissionRationale(deniedPermissions)
+                handlePermissionDenial()
+            }
+            else -> {
+                permissionCallback?.onPermissionsDenied()
+                handlePermissionDenial()
+            }
         }
+    }
+
+    private fun shouldShowRequestPermissionRationale(permission: String): Boolean {
+        return activity.shouldShowRequestPermissionRationale(permission)
     }
 
     fun checkAndRequestPermissions(callback: PermissionCallback) {
@@ -95,40 +134,68 @@ class PermissionHandler(private val activity: ComponentActivity) {
             ContextCompat.checkSelfPermission(activity, permission) != PackageManager.PERMISSION_GRANTED
         }.toTypedArray()
 
-        if (permissionsToRequest.isEmpty()) {
-            callback.onPermissionsGranted()
-        } else {
-            requestPermissionLauncher.launch(permissionsToRequest)
+        when {
+            permissionsToRequest.isEmpty() -> {
+                callback.onPermissionsGranted()
+            }
+            permissionsToRequest.any { shouldShowRequestPermissionRationale(it) } -> {
+                callback.onPermissionRationale(permissionsToRequest)
+                requestPermissionLauncher.launch(permissionsToRequest)
+            }
+            else -> {
+                requestPermissionLauncher.launch(permissionsToRequest)
+            }
         }
     }
 
-    fun areLocationPermissionsGranted(): Boolean {
-        return locationPermissions.all { permission ->
-            ContextCompat.checkSelfPermission(activity, permission) == PackageManager.PERMISSION_GRANTED
-        }
+    fun areLocationPermissionsGranted(): Boolean = locationPermissions.all {
+        isPermissionGranted(it)
     }
 
-    fun areWifiPermissionsGranted(): Boolean {
-        return wifiPermissions.all { permission ->
-            ContextCompat.checkSelfPermission(activity, permission) == PackageManager.PERMISSION_GRANTED
-        }
+    fun areWifiPermissionsGranted(): Boolean = wifiPermissions.all {
+        isPermissionGranted(it)
     }
 
-    fun areNearbyPermissionsGranted(): Boolean {
-        return nearbyPermissions.all { permission ->
-            ContextCompat.checkSelfPermission(activity, permission) == PackageManager.PERMISSION_GRANTED
-        }
+    fun areNearbyPermissionsGranted(): Boolean = nearbyPermissions.all {
+        isPermissionGranted(it)
+    }
+
+    fun areStoragePermissionsGranted(): Boolean = storagePermissions.all {
+        isPermissionGranted(it)
+    }
+
+    private fun isPermissionGranted(permission: String): Boolean {
+        return ContextCompat.checkSelfPermission(
+            activity,
+            permission
+        ) == PackageManager.PERMISSION_GRANTED
     }
 
     private fun handlePermissionDenial() {
-        MaterialAlertDialogBuilder(activity)
-            .setTitle("Permissions Requises")
-            .setMessage("Cette application nécessite des permissions pour la localisation, le WiFi et les appareils à proximité pour fonctionner correctement. Veuillez les accorder dans les Paramètres.")
-            .setPositiveButton("Paramètres") { _, _ ->
-                openAppSettings()
+        MaterialAlertDialogBuilder(activity).apply {
+            setTitle("Permissions Requises")
+            setMessage(getPermissionMessage())
+            setPositiveButton("Paramètres") { _, _ -> openAppSettings() }
+            setNegativeButton("Annuler", null)
+            show()
+        }
+    }
+
+    private fun getPermissionMessage(): String {
+        return when {
+            Build.VERSION.SDK_INT >= ANDROID_12 -> {
+                "Cette application nécessite l'accès au WiFi, aux appareils à proximité et au stockage. " +
+                        "Veuillez accorder ces permissions dans les Paramètres."
             }
-            .setNegativeButton("Annuler", null)
-            .show()
+            Build.VERSION.SDK_INT >= ANDROID_11 -> {
+                "Cette application nécessite l'accès à la localisation pour le WiFi et le Bluetooth, " +
+                        "ainsi que l'accès au stockage. Veuillez accorder ces permissions dans les Paramètres."
+            }
+            else -> {
+                "Cette application nécessite l'accès à la localisation, au WiFi, au Bluetooth et au stockage. " +
+                        "Veuillez accorder ces permissions dans les Paramètres."
+            }
+        }
     }
 
     private fun openAppSettings() {
