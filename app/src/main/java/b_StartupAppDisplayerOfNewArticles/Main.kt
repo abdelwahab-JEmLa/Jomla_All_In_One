@@ -53,7 +53,9 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -141,7 +143,6 @@ fun StartupAppDisplayerOfNewArticles(
     )
 }
 
-// In ArticleDisplayScreen.kt
 @Composable
 fun ArticleDisplayScreen(
     uiState: UiState,
@@ -160,25 +161,52 @@ fun ArticleDisplayScreen(
     onClickDonne: () -> Unit,
     onToggleitsWifiServerAppOrClient: () -> Unit,
 ) {
-    LaunchedEffect(gridState) {
+    val scope = rememberCoroutineScope()
+    val isServer = uiState.appIsInstalledInHostPhone
+    val tag = if (isServer) "📱 ServerScreen" else "📱 ClientScreen"
+
+    // Log composition
+    SideEffect {
+        Log.d(tag, "Screen Composed - Mode: ${if (isServer) "Server" else "Client"}")
+        Log.d(tag, "Connection Status: ${uiState.connectionStatus}")
+        Log.d(tag, "Is Connected: ${uiState.isConnected}")
+    }
+
+    // Monitor state changes
+    LaunchedEffect(uiState.isConnected, uiState.connectionStatus) {
+        Log.d(tag, "Connection State Changed - Status: ${uiState.connectionStatus}, Connected: ${uiState.isConnected}")
+    }
+
+    // Scroll synchronization
+    LaunchedEffect(gridState, isServer) {
+        Log.d(tag, "Setting up scroll synchronization for ${if (isServer) "Server" else "Client"}")
+
         snapshotFlow { gridState.firstVisibleItemIndex }
             .distinctUntilChanged()
-            .collect { index ->
-                Log.d("ScrollSync", "Scroll position changed: $index")
-                Log.d("ScrollSync", "isServer: ${uiState.isServer}, isConnected: ${uiState.isConnected}")
-
-                if (uiState.isServer && uiState.isConnected) {
-                    viewModel.sendScrollPosition(index)
+            .collect { position ->
+                when {
+                    isServer -> {
+                        Log.d(tag, "🔵 Server broadcasting scroll position: $position")
+                        viewModel.scrollSyncManager.sendScrollPosition(position)
+                    }
+                    else -> {
+                        val serverPosition = uiState.scrollPosition
+                        if (serverPosition != position) {
+                            Log.d(tag, "🔴 Client received new position: $serverPosition (current: $position)")
+                            gridState.scrollToItem(serverPosition)
+                        } else {
+                            Log.v(tag, "Client position already matches server: $position")
+                        }
+                    }
                 }
             }
     }
 
-    // Separate effect for client scroll
-    LaunchedEffect(uiState.scrollPosition) {
-        if (!uiState.isServer && uiState.isConnected &&
-            uiState.scrollPosition != gridState.firstVisibleItemIndex) {
-            Log.d("ScrollSync", "Client scrolling to: ${uiState.scrollPosition}")
-            gridState.scrollToItem(uiState.scrollPosition)
+    // Cleanup logging
+    DisposableEffect(Unit) {
+        Log.d(tag, "Screen Mounted")
+        onDispose {
+            Log.d(tag, "Screen Disposed")
         }
     }
 
@@ -227,7 +255,10 @@ fun ArticleDisplayScreen(
                 onChangeGridColumns = onChangeGridColumns,
                 viewModel = viewModel,
                 onClickToOpenClientsListW = onClickToOpenClientsW,
-                onToggleitsWifiServerAppOrClient = onToggleitsWifiServerAppOrClient
+                onToggleitsWifiServerAppOrClient = {
+                    Log.d(tag, "🔄 Toggling Server/Client mode")
+                    onToggleitsWifiServerAppOrClient()
+                }
             )
         }
 
@@ -237,8 +268,35 @@ fun ArticleDisplayScreen(
                 modifier = Modifier.align(Alignment.Center)
             )
         }
+
+        // Connection status with logging
+        AnimatedVisibility(
+            visible = true,
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(8.dp)
+        ) {
+            val statusColor = if (uiState.isConnected) Color.Green else Color.Red
+            val modeText = if (isServer) "Server" else "Client"
+            val statusText = "$modeText: ${uiState.connectionStatus}"
+
+            Log.v(tag, "Displaying status: $statusText (Connected: ${uiState.isConnected})")
+
+            Text(
+                text = statusText,
+                color = statusColor,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier
+                    .background(
+                        color = Color.Black.copy(alpha = 0.7f),
+                        shape = RoundedCornerShape(4.dp)
+                    )
+                    .padding(4.dp)
+            )
+        }
     }
 }
+
 
 class ArticlePagingSource(
     private val articles: List<ArticlesBasesStatsTable>,

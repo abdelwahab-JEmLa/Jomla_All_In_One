@@ -164,13 +164,13 @@ class MainActivity : ComponentActivity() {
 private fun MainScreenWrapper(appViewModels: AppViewModels) {
     val startUpViewModel = appViewModels.startUpNewArticlesViewModels
     val uiState by startUpViewModel.uiState.collectAsState()
-    val isServer by startUpViewModel.isServer.collectAsState()
+    val isServer by startUpViewModel.appIsInstalledInHostPhone.collectAsState()
 
     MainScreen(
         appViewModels = appViewModels,
         uiState = uiState,
         isServer = isServer,
-        onToggleServerMode = startUpViewModel::toggleServerMode
+        onToggleServerMode = startUpViewModel::toggleServerMode  //Unresolved reference: toggleServerMode
     )
 }
 
@@ -239,6 +239,34 @@ private fun MainScreen(
         }
     }
 }
+@Composable
+private fun ConnectionStatusSection(uiState: UiState) {
+    Text(
+        text = uiState.connectionStatus,
+        style = MaterialTheme.typography.titleMedium,
+        color = when {
+            uiState.isConnected -> Color.Green
+            uiState.connectionStatus.startsWith("Erreur") -> Color.Red
+            else -> Color.Gray
+        }
+    )
+}
+
+@Composable
+private fun ServerClientSection(
+    uiState: UiState,
+    isServer: Boolean,
+    startUpViewModel: StartUpNewArticlesViewModels
+) {
+    if (isServer) {
+        Text("Mode Serveur")
+
+    } else {
+        Text("Mode Client")
+        Text("État du test WiFi: ${if (uiState.wifiTestDisplayer) "Actif" else "Inactif"}")
+    }
+}
+
 @Composable
 fun AppNavHost(
     appViewModels: AppViewModels,
@@ -367,33 +395,6 @@ fun AppNavHost(
     }
 }
 
-@Composable
-private fun ConnectionStatusSection(uiState: UiState) {
-    Text(
-        text = uiState.connectionStatus,
-        style = MaterialTheme.typography.titleMedium,
-        color = when {
-            uiState.isConnected -> Color.Green
-            uiState.connectionStatus.startsWith("Erreur") -> Color.Red
-            else -> Color.Gray
-        }
-    )
-}
-
-@Composable
-private fun ServerClientSection(
-    uiState: UiState,
-    isServer: Boolean,
-    startUpViewModel: StartUpNewArticlesViewModels
-) {
-    if (isServer) {
-        Text("Mode Serveur")
-
-    } else {
-        Text("Mode Client")
-        Text("État du test WiFi: ${if (uiState.wifiTestDisplayer) "Actif" else "Inactif"}")
-    }
-}
 
 
 @Composable

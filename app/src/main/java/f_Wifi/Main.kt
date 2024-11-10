@@ -1,324 +1,314 @@
 package f_Wifi
 
 import android.content.Context
-import android.os.Build
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
+import android.net.wifi.WifiManager
 import android.util.Log
-import com.google.android.gms.nearby.Nearby
-import com.google.android.gms.nearby.connection.AdvertisingOptions
-import com.google.android.gms.nearby.connection.ConnectionInfo
-import com.google.android.gms.nearby.connection.ConnectionLifecycleCallback
-import com.google.android.gms.nearby.connection.ConnectionResolution
-import com.google.android.gms.nearby.connection.ConnectionsStatusCodes
-import com.google.android.gms.nearby.connection.DiscoveredEndpointInfo
-import com.google.android.gms.nearby.connection.DiscoveryOptions
-import com.google.android.gms.nearby.connection.EndpointDiscoveryCallback
-import com.google.android.gms.nearby.connection.Payload
-import com.google.android.gms.nearby.connection.PayloadCallback
-import com.google.android.gms.nearby.connection.PayloadTransferUpdate
-import com.google.android.gms.nearby.connection.Strategy
+import io.ktor.server.application.install
+import io.ktor.server.engine.ApplicationEngine
+import io.ktor.server.engine.embeddedServer
+import io.ktor.server.netty.Netty
+import io.ktor.server.routing.routing
+import io.ktor.server.websocket.WebSocketServerSession
+import io.ktor.server.websocket.WebSockets
+import io.ktor.server.websocket.pingPeriod
+import io.ktor.server.websocket.timeout
+import io.ktor.server.websocket.webSocket
+import io.ktor.websocket.Frame
+import io.ktor.websocket.close
+import io.ktor.websocket.readText
+import io.ktor.websocket.send
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
+import okhttp3.WebSocket
+import okhttp3.WebSocketListener
+import java.net.NetworkInterface
+import java.net.ServerSocket
+import java.time.Duration
+import java.util.Locale
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.TimeUnit
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.set
 
+class NetworkManager(private val context: Context) {
+    private val _serverUrl = MutableStateFlow<String?>(null)
+    val serverUrl = _serverUrl.asStateFlow()
 
-class NearbyConnectionService(
-    private val context: Context,
-    private val onDataReceived: (String) -> Unit
-) {
-    private val connectionsClient = Nearby.getConnectionsClient(context)
-    private val scope = CoroutineScope(Dispatchers.IO + Job())
-    private var activeEndpointId: String? = null
-    private var retryCount = 0
-    private val MAX_RETRIES = 3
-    private val RETRY_DELAY = 3000L // 3 seconds
+    private val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    private val wifiManager = context.getSystemService(Context.WIFI_SERVICE) as WifiManager
 
-    private val _connectionState = MutableStateFlow<ConnectionState>(ConnectionState.Disconnected)
-    val connectionState = _connectionState.asStateFlow()
+    fun initialize() {
+        // Observer les changements de réseau
+        val networkRequest = NetworkRequest.Builder()
+            .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+            .build()
 
-    private var isDiscovering = false
-    private var isAdvertising = false
-    private var pendingRetry: Job? = null
-
-    private val connectionLifecycleCallback = object : ConnectionLifecycleCallback() {
-        override fun onConnectionInitiated(endpointId: String, info: ConnectionInfo) {
-            Log.d("ScrollSync", "Connection initiated with endpoint: $endpointId, name: ${info.endpointName}")
-            scope.launch(Dispatchers.Main) {
-                try {
-                    activeEndpointId = endpointId
-                    _connectionState.value = ConnectionState.Connecting(endpointId)
-                    connectionsClient.acceptConnection(endpointId, payloadCallback)
-                        .addOnFailureListener { e ->
-                            handleConnectionFailure(endpointId, e, "Failed to accept connection")
-                        }
-                } catch (e: Exception) {
-                    handleConnectionFailure(endpointId, e, "Error during connection initiation")
-                }
+        connectivityManager.registerNetworkCallback(networkRequest, object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                updateServerUrl()
             }
-        }
 
-        override fun onConnectionResult(endpointId: String, result: ConnectionResolution) {
-            scope.launch(Dispatchers.Main) {
-                when (result.status.statusCode) {
-                    ConnectionsStatusCodes.STATUS_OK -> {
-                        Log.d("ScrollSync", "Successfully connected to endpoint: $endpointId")
-                        retryCount = 0
-                        activeEndpointId = endpointId
-                        _connectionState.value = ConnectionState.Connected(endpointId)
-                        stopDiscoveryAndAdvertising()
-                    }
-                    ConnectionsStatusCodes.STATUS_CONNECTION_REJECTED -> {
-                        handleConnectionFailure(endpointId, Exception("Connection rejected"), "Connection rejected")
-                    }
-                    ConnectionsStatusCodes.STATUS_ERROR -> {
-                        handleConnectionFailure(endpointId, Exception("Connection error"), "General connection error")
-                    }
-                    else -> {
-                        handleConnectionFailure(
-                            endpointId,
-                            Exception("Unknown error code: ${result.status.statusCode}"),
-                            "Unknown connection result"
-                        )
-                    }
-                }
+            override fun onLost(network: Network) {
+                _serverUrl.value = null
             }
-        }
+        })
 
-        override fun onDisconnected(endpointId: String) {
-            scope.launch(Dispatchers.Main) {
-                if (endpointId == activeEndpointId) {
-                    Log.d("ScrollSync", "Disconnected from endpoint: $endpointId")
-                    activeEndpointId = null
-                    _connectionState.value = ConnectionState.Disconnected
-                    retryConnection()
-                }
+        // Initialisation initiale
+        updateServerUrl()
+    }
+
+    private fun updateServerUrl() {
+        try {
+            val ipAddress = getWifiIpAddress()
+            if (ipAddress != null) {
+                val port = findAvailablePort()
+                _serverUrl.value = "$ipAddress:$port"
+                Log.d("NetworkManager", "Server URL updated: ${_serverUrl.value}")
             }
+        } catch (e: Exception) {
+            Log.e("NetworkManager", "Error updating server URL", e)
         }
     }
 
-    private fun handleConnectionFailure(endpointId: String, error: Exception, message: String) {
-        scope.launch(Dispatchers.Main) {
-            Log.e("ScrollSync", "$message: ${error.message}")
-            if (endpointId == activeEndpointId) {
-                activeEndpointId = null
-                _connectionState.value = ConnectionState.Error("$message: ${error.message}")
-                retryConnection()
+    private fun getWifiIpAddress(): String? {
+        // Essayer d'abord l'adresse IP du WiFi
+        val wifiInfo = wifiManager.connectionInfo
+        if (wifiInfo != null) {
+            val ipInt = wifiInfo.ipAddress
+            if (ipInt != 0) {
+                return String.format(
+                    Locale.US,
+                    "%d.%d.%d.%d",
+                    ipInt and 0xff,
+                    ipInt shr 8 and 0xff,
+                    ipInt shr 16 and 0xff,
+                    ipInt shr 24 and 0xff
+                )
             }
         }
+
+        // Backup: parcourir toutes les interfaces réseau
+        return NetworkInterface.getNetworkInterfaces()?.toList()?.flatMap { networkInterface ->
+            networkInterface.inetAddresses.toList()
+                .filter { !it.isLoopbackAddress && it.hostAddress?.contains(":") == false }
+                .map { it.hostAddress }
+        }?.firstOrNull()
     }
 
-    private fun retryConnection() {
-        pendingRetry?.cancel()
-        pendingRetry = scope.launch {
-            if (retryCount < MAX_RETRIES) {
-                retryCount++
-                delay(RETRY_DELAY * retryCount)
-                Log.d("ScrollSync", "Attempting retry #$retryCount")
-                when {
-                    isAdvertising -> startAdvertising("filter_service")
-                    isDiscovering -> startDiscovery("filter_service")
-                }
-            } else {
-                Log.e("ScrollSync", "Max retries reached")
-                _connectionState.value = ConnectionState.Error("Failed to establish connection after $MAX_RETRIES attempts")
-                stop()
-            }
-        }
-    }
-
-    private fun stopDiscoveryAndAdvertising() {
-        connectionsClient.apply {
-            if (isDiscovering) stopDiscovery()
-            if (isAdvertising) stopAdvertising()
-        }
-        isDiscovering = false
-        isAdvertising = false
-    }
-
-    fun startAdvertising(serviceId: String) {
-        scope.launch(Dispatchers.Main) {
+    private fun findAvailablePort(startPort: Int = 8080): Int {
+        for (port in startPort..65535) {
             try {
-                stopDiscoveryAndAdvertising()
-
-                val advertisingOptions = AdvertisingOptions.Builder()
-                    .setStrategy(Strategy.P2P_POINT_TO_POINT)
-                    .build()
-
-                isAdvertising = true
-                _connectionState.value = ConnectionState.Searching
-
-                connectionsClient.startAdvertising(
-                    Build.MODEL,
-                    serviceId,
-                    connectionLifecycleCallback,
-                    advertisingOptions
-                ).addOnFailureListener { e ->
-                    handleConnectionFailure("", e, "Failed to start advertising")
-                }
+                ServerSocket(port).use { return port }
             } catch (e: Exception) {
-                handleConnectionFailure("", e, "Error during advertising setup")
+                // Port is in use, try next one
             }
         }
+        throw IllegalStateException("No available ports found")
     }
 
-    fun startDiscovery(serviceId: String) {
-        scope.launch(Dispatchers.Main) {
-            try {
-                stopDiscoveryAndAdvertising()
+    fun getServerUrlOrDefault(): String {
+        return serverUrl.value ?: "192.168.1.1:8080"
+    }
+}
+class ScrollSyncManager {
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private var server: WebSocketServer? = null
+    private var client: WebSocketClient? = null
 
-                val discoveryOptions = DiscoveryOptions.Builder()
-                    .setStrategy(Strategy.P2P_POINT_TO_POINT)
-                    .build()
+    fun startServer(port: Int = 8080) {
+        server = WebSocketServer(port)
+        server?.start()
+    }
 
-                isDiscovering = true
-                _connectionState.value = ConnectionState.Searching
+    fun startClient(serverUrl: String) {
+        client = WebSocketClient(serverUrl)
+        client?.connect()
+    }
 
-                connectionsClient.startDiscovery(
-                    serviceId,
-                    endpointDiscoveryCallback,
-                    discoveryOptions
-                ).addOnFailureListener { e ->
-                    handleConnectionFailure("", e, "Failed to start discovery")
-                }
-            } catch (e: Exception) {
-                handleConnectionFailure("", e, "Error during discovery setup")
+    suspend fun stop() {
+        server?.stop()
+        client?.disconnect()
+    }
+
+    fun sendScrollPosition(position: Int) {
+        server?.broadcastScrollPosition(position) ?: client?.sendScrollPosition(position)
+    }
+
+    fun observeScrollPosition(): Flow<Int> {
+        return client?.scrollPositionFlow ?: server?.scrollPositionFlow ?: emptyFlow()
+    }
+}
+
+class WebSocketServer(private val port: Int) {
+    private val _scrollPositionFlow = MutableSharedFlow<Int>()
+    val scrollPositionFlow: Flow<Int> = _scrollPositionFlow.asSharedFlow()
+
+    private val connections = ConcurrentHashMap<String, WebSocketServerSession>()
+    private var ktorServer: ApplicationEngine? = null
+
+    fun start() {
+        ktorServer = embeddedServer(Netty, port = port) {
+            install(WebSockets) {
+                pingPeriod = Duration.ofSeconds(15)
+                timeout = Duration.ofSeconds(30)
             }
-        }
-    }
-
-    private val endpointDiscoveryCallback = object : EndpointDiscoveryCallback() {
-        override fun onEndpointFound(endpointId: String, info: DiscoveredEndpointInfo) {
-            scope.launch(Dispatchers.Main) {
-                if (_connectionState.value !is ConnectionState.Connected) {
+            routing {
+                webSocket("/scroll-sync") {
+                    val sessionId = generateSessionId()
                     try {
-                        connectionsClient.requestConnection(
-                            Build.MODEL,
-                            endpointId,
-                            connectionLifecycleCallback
-                        ).addOnFailureListener { e ->
-                            handleConnectionFailure(endpointId, e, "Failed to request connection")
+                        connections[sessionId] = this
+                        Log.d("WebSocketServer", "Client connected: $sessionId")
+
+                        for (frame in incoming) {
+                            when (frame) {
+                                is Frame.Text -> {
+                                    val message = frame.readText()
+                                    handleIncomingMessage(message, sessionId)
+                                }
+                                else -> { /* Ignore other frame types */ }
+                            }
                         }
                     } catch (e: Exception) {
-                        handleConnectionFailure(endpointId, e, "Error requesting connection")
+                        Log.e("WebSocketServer", "Error in connection $sessionId", e)
+                    } finally {
+                        connections.remove(sessionId)
+                        Log.d("WebSocketServer", "Client disconnected: $sessionId")
                     }
                 }
             }
-        }
+        }.start(wait = false)
+    }
 
-        override fun onEndpointLost(endpointId: String) {
-            if (endpointId == activeEndpointId) {
-                handleConnectionFailure(endpointId, Exception("Endpoint lost"), "Lost connection to endpoint")
+    suspend fun stop() {
+        connections.values.forEach { it.close() }
+        connections.clear()
+        ktorServer?.stop(1000, 2000)
+    }
+
+    fun broadcastScrollPosition(position: Int) {
+        val message = createScrollMessage(position)
+        connections.values.forEach { session ->
+            scope.launch {
+                try {
+                    session.send(message)
+                } catch (e: Exception) {
+                    Log.e("WebSocketServer", "Error sending to client", e)
+                }
             }
         }
     }
 
-    sealed class ConnectionState {
-        object Disconnected : ConnectionState()
-        object Searching : ConnectionState()
-        data class Connecting(val endpointId: String) : ConnectionState()
-        data class Connected(val endpointId: String) : ConnectionState()
-        data class Error(val message: String) : ConnectionState()
-    }
-
-
-    private fun restartConnectionProcess() {
+    private fun handleIncomingMessage(message: String, senderId: String) {
         when {
-            isAdvertising -> startAdvertising("filter_service")
-            isDiscovering -> startDiscovery("filter_service")
-        }
-    }
-
-    private fun stopDiscovery() {
-        if (isDiscovering) {
-            connectionsClient.stopDiscovery()
-            isDiscovering = false
-        }
-    }
-
-    private fun stopAdvertising() {
-        if (isAdvertising) {
-            connectionsClient.stopAdvertising()
-            isAdvertising = false
-        }
-    }
-
-
-
-    private fun retryConnection(action: () -> Unit) {
-        scope.launch {
-            delay(5000) // Wait 5 seconds before retry
-            action()
-        }
-    }
-
-    fun stop() {
-        Log.d("ScrollSync", "Stopping all endpoints")
-        connectionsClient.stopAllEndpoints()
-        stopDiscovery()
-        stopAdvertising()
-        activeEndpointId = null
-        _connectionState.value = ConnectionState.Disconnected
-    }
-
-    fun sendData(endpointId: String, data: String) {
-        Log.d("ScrollSync", "Attempting to send data: $data to endpoint: $endpointId")
-        if (_connectionState.value !is ConnectionState.Connected || endpointId != activeEndpointId) {
-            Log.e("ScrollSync", "Cannot send data - not connected to endpoint: $endpointId")
-            return
-        }
-
-        val payload = Payload.fromBytes(data.toByteArray())
-        connectionsClient.sendPayload(endpointId, payload)
-            .addOnSuccessListener {
-                Log.d("ScrollSync", "Successfully sent data to endpoint: $endpointId")
-            }
-            .addOnFailureListener { e ->
-                Log.e("ScrollSync", "Failed to send data to endpoint: $endpointId", e)
-                handleConnectionFailure(endpointId, e,"cc1")
-            }
-    }
-
-    private val payloadCallback = object : PayloadCallback() {
-        override fun onPayloadReceived(endpointId: String, payload: Payload) {
-            if (endpointId != activeEndpointId) {
-                Log.w("ScrollSync", "Received payload from inactive endpoint: $endpointId")
-                return
-            }
-
-            Log.d("ScrollSync", "Received payload from: $endpointId")
-            when (payload.type) {
-                Payload.Type.BYTES -> {
-                    payload.asBytes()?.let { bytes ->
-                        val data = String(bytes)
-                        Log.d("ScrollSync", "Decoded payload data: $data")
-                        onDataReceived(data)
+            message.startsWith("SCROLL:") -> {
+                val position = message.substringAfter("SCROLL:").toIntOrNull() ?: return
+                scope.launch {
+                    _scrollPositionFlow.emit(position)
+                    // Broadcast to all other clients except sender
+                    connections.forEach { (id, session) ->
+                        if (id != senderId) {
+                            session.send(message)
+                        }
                     }
                 }
-                else -> Log.w("ScrollSync", "Received unsupported payload type")
-            }
-        }
-
-        override fun onPayloadTransferUpdate(endpointId: String, update: PayloadTransferUpdate) {
-            if (endpointId != activeEndpointId) return
-
-            when (update.status) {
-                PayloadTransferUpdate.Status.SUCCESS -> {
-                    Log.d("ScrollSync", "Transfer completed successfully")
-                }
-                PayloadTransferUpdate.Status.FAILURE -> {
-                    Log.e("ScrollSync", "Transfer failed")
-                    handleConnectionFailure(endpointId, Exception("Transfer failed"),"cc")
-                }
-                PayloadTransferUpdate.Status.IN_PROGRESS -> {
-                    val progress = (update.bytesTransferred * 100 / update.totalBytes)
-                    Log.d("ScrollSync", "Transfer progress: $progress%")
-                }
             }
         }
     }
 
+    private companion object {
+        private val scope = CoroutineScope(Dispatchers.IO)
+        private var sessionCounter = 0
+        private fun generateSessionId() = "client-${++sessionCounter}"
+        private fun createScrollMessage(position: Int) = "SCROLL:$position"
+    }
+}
 
+class WebSocketClient(private val serverUrl: String) {
+    private val _scrollPositionFlow = MutableSharedFlow<Int>()
+    val scrollPositionFlow: Flow<Int> = _scrollPositionFlow.asSharedFlow()
+
+    private var webSocket: WebSocket? = null
+    private val client = OkHttpClient.Builder()
+        .readTimeout(0, TimeUnit.MILLISECONDS)
+        .pingInterval(15, TimeUnit.SECONDS)
+        .build()
+
+    private val reconnectChannel = Channel<Unit>()
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
+    init {
+        setupReconnection()
+    }
+
+    fun connect() {
+        val request = Request.Builder()
+            .url("ws://$serverUrl/scroll-sync")
+            .build()
+
+        webSocket = client.newWebSocket(request, createListener())
+    }
+
+    fun disconnect() {
+        webSocket?.close(1000, "Normal closure")
+        webSocket = null
+    }
+
+    fun sendScrollPosition(position: Int) {
+        webSocket?.send("SCROLL:$position")
+    }
+
+    private fun setupReconnection() {
+        scope.launch {
+            for (unit in reconnectChannel) {
+                Log.d("WebSocketClient", "Attempting to reconnect...")
+                kotlinx.coroutines.delay(5000)
+                connect()
+            }
+        }
+    }
+
+    private fun createListener() = object : WebSocketListener() {
+        override fun onOpen(webSocket: WebSocket, response: Response) {
+            Log.d("WebSocketClient", "Connected to server")
+        }
+
+        override fun onMessage(webSocket: WebSocket, text: String) {
+            when {
+                text.startsWith("SCROLL:") -> {
+                    val position = text.substringAfter("SCROLL:").toIntOrNull() ?: return
+                    scope.launch {
+                        _scrollPositionFlow.emit(position)
+                    }
+                }
+            }
+        }
+
+        override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
+            Log.e("WebSocketClient", "WebSocket failure", t)
+            scope.launch {
+                reconnectChannel.send(Unit)
+            }
+        }
+
+        override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
+            Log.d("WebSocketClient", "WebSocket closed: $reason")
+        }
+    }
 }

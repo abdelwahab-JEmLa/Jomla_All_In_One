@@ -13,21 +13,20 @@ import a_RoomDB.SoldArticlesTabelle
 import a_RoomDB.SuppliersTabelle
 import android.content.Context
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.database.BuildConfig
 import com.google.firebase.database.FirebaseDatabase
-import f_Wifi.NearbyConnectionService
-import kotlinx.coroutines.Dispatchers
+import f_Wifi.NetworkManager
+import f_Wifi.ScrollSyncManager
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
 import java.io.File
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
@@ -35,8 +34,8 @@ import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 
+// Mise à jour de UiState pour inclure les propriétés de connexion
 data class UiState(
-
     val scrollPosition: Int = 0,
     val appSettingsSaverModel: List<AppSettingsSaverModel> = emptyList(),
     val articlesBasesStatTables: List<ArticlesBasesStatsTable> = emptyList(),
@@ -48,11 +47,11 @@ data class UiState(
     val isLoading: Boolean = false,
     val loadingProgress: Float = 0f,
     val error: String? = null,
-    val wifiTestDisplayer: Boolean = false,
-    val connectionStatus: String = "Déconnecté",
+    // Nouvelles propriétés pour la connexion
     val isConnected: Boolean = false,
-    val connectedDeviceName: String? = null,
-    val isServer: Boolean = false
+    val connectionStatus: String = "Déconnecté",
+    val wifiTestDisplayer: Boolean = false,
+    val appIsInstalledInHostPhone: Boolean = true
 )
 
 class StartUpNewArticlesViewModels(
@@ -62,220 +61,84 @@ class StartUpNewArticlesViewModels(
     private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()
 
-    private val _isServer = MutableStateFlow(true)
-    val isServer = _isServer.asStateFlow()
+    private val _appIsInstalledInHostPhone = MutableStateFlow(true)
+    val appIsInstalledInHostPhone = _appIsInstalledInHostPhone.asStateFlow()
 
-    // Add connection state tracking
-    private var isActuallyConnected = false
-
-    private val nearbyService by lazy {
-        NearbyConnectionService(
-            context = context,
-            onDataReceived = { data ->
-                Log.d("ScrollSync", "Received data in ViewModel: $data")
-                viewModelScope.launch(Dispatchers.Main) {
-                    handleReceivedData(data)
-                }
-            }
-        )
-    }
+    private val networkManager = NetworkManager(context)
+    val scrollSyncManager = ScrollSyncManager()
 
     init {
-        setupConnectionStateObserver()
-        viewModelScope.launch(Dispatchers.Main) {
-            delay(500)
-            setupNearbyConnection()
-        }
+        networkManager.initialize()
+        initializeScrollSync(_appIsInstalledInHostPhone.value)
     }
 
-    private suspend fun updateConnectionState(state: NearbyConnectionService.ConnectionState) {
-        when (state) {
-            is NearbyConnectionService.ConnectionState.Connected -> {
-                Log.d("ScrollSync", "Device connected: ${state.endpointId}")
-                isActuallyConnected = true
-                _uiState.emit(
-                    _uiState.value.copy(
-                        isConnected = true,
-                        isServer = _isServer.value,
-                        connectionStatus = "Connected",
-                        connectedDeviceName = state.endpointId
-                    )
-                )
-                // Verify state after update
-                Log.d("ScrollSync", "Updated state - isConnected: ${_uiState.value.isConnected}, isServer: ${_uiState.value.isServer}")
-            }
-            is NearbyConnectionService.ConnectionState.Connecting -> {
-                Log.d("ScrollSync", "Connecting to device: ${state.endpointId}")
-                _uiState.emit(
-                    _uiState.value.copy(
-                        isConnected = false,
-                        connectionStatus = "Connecting...",
-                        connectedDeviceName = state.endpointId
-                    )
-                )
-            }
-            is NearbyConnectionService.ConnectionState.Disconnected -> {
-                Log.d("ScrollSync", "Device disconnected")
-                isActuallyConnected = false
-                _uiState.emit(
-                    _uiState.value.copy(
-                        isConnected = false,
-                        connectionStatus = "Disconnected",
-                        connectedDeviceName = null
-                    )
-                )
-                delay(1000)
-                if (!isActuallyConnected) {
-                    setupNearbyConnection()
-                }
-            }
-            is NearbyConnectionService.ConnectionState.Searching -> {
-                Log.d("ScrollSync", "Searching for devices")
-                _uiState.emit(
-                    _uiState.value.copy(
-                        isConnected = false,
-                        connectionStatus = "Searching..."
-                    )
-                )
-            }
-            is NearbyConnectionService.ConnectionState.Error -> {
-                Log.e("ScrollSync", "Connection error: ${state.message}")
-                isActuallyConnected = false
-                _uiState.emit(
-                    _uiState.value.copy(
-                        isConnected = false,
-                        connectionStatus = "Error: ${state.message}",
-                        connectedDeviceName = null
-                    )
-                )
-                delay(2000)
-                if (!isActuallyConnected) {
-                    setupNearbyConnection()
-                }
-            }
-        }
-    }
-
-    private fun setupConnectionStateObserver() {
-        viewModelScope.launch(Dispatchers.Main) {
-            nearbyService.connectionState
-                .collect { state ->
-                    Log.d("ScrollSync", "Connection state changed to: $state")
-                    updateConnectionState(state)
-                }
-        }
-    }
-
-
-
-    fun sendScrollPosition(position: Int) {
-        viewModelScope.launch(Dispatchers.Main) {
-            Log.d("ScrollSync", "Attempting to send scroll position: $position")
-            Log.d("ScrollSync", "Current state - isConnected: ${uiState.value.isConnected}, " +
-                    "isServer: ${_isServer.value}, actuallyConnected: $isActuallyConnected")
-
-            // Check actual connection state
-            if (!isActuallyConnected) {
-                Log.d("ScrollSync", "Cannot send - not actually connected")
-                return@launch
-            }
-
-            // Validate server status
-            if (!_isServer.value) {
-                Log.d("ScrollSync", "Cannot send - not in server mode")
-                return@launch
-            }
-
-            // Send data if we have an endpoint
-            uiState.value.connectedDeviceName?.let { endpointId ->
-                try {
-                    Log.d("ScrollSync", "Sending scroll position to endpoint: $endpointId")
-                    nearbyService.sendData(endpointId, "SCROLL_POSITION:$position")
-                } catch (e: Exception) {
-                    Log.e("ScrollSync", "Failed to send scroll position", e)
-                    handleSendError(e)
-                }
-            } ?: Log.e("ScrollSync", "Cannot send - no endpoint ID")
-        }
-    }
-
-    private suspend fun handleSendError(error: Exception) {
-        isActuallyConnected = false
-        _uiState.emit(
-            _uiState.value.copy(
-                isConnected = false,
-                connectionStatus = "Error: ${error.message}",
-                connectedDeviceName = null
-            )
-        )
-    }
-
-    private fun setupNearbyConnection() {
-        viewModelScope.launch(Dispatchers.IO) {
-            Log.d("ScrollSync", "Setting up new connection as ${if (_isServer.value) "server" else "client"}")
+    fun initializeScrollSync(isServer: Boolean) {
+        viewModelScope.launch {
             try {
-                if (_isServer.value) {
-                    nearbyService.startAdvertising("filter_service")
+                if (isServer) {
+                    _uiState.update { it.copy(connectionStatus = "Démarrage du serveur...") }
+                    scrollSyncManager.startServer()
                 } else {
-                    nearbyService.startDiscovery("filter_service")
+                    _uiState.update { it.copy(connectionStatus = "Connexion au serveur...") }
+                    // Utiliser l'URL du serveur automatiquement détectée
+                    scrollSyncManager.startClient(networkManager.getServerUrlOrDefault())
                 }
-            } catch (e: Exception) {
-                Log.e("ScrollSync", "Setup connection failed", e)
-                withContext(Dispatchers.Main) {
-                    _uiState.emit(
-                        _uiState.value.copy(
-                            connectionStatus = "Error: ${e.message}",
+
+                scrollSyncManager.observeScrollPosition()
+                    .catch { e ->
+                        _uiState.update { it.copy(
+                            connectionStatus = "Erreur: ${e.message}",
                             isConnected = false
-                        )
-                    )
-                }
+                        )}
+                    }
+                    .collect { position ->
+                        _uiState.update { it.copy(
+                            scrollPosition = position,
+                            isConnected = true,
+                            connectionStatus = "Connecté"
+                        )}
+                    }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(
+                    connectionStatus = "Erreur: ${e.message}",
+                    isConnected = false
+                )}
             }
         }
+    }
+
+    fun getNetworkStatus(): String {
+        return "IP: ${networkManager.serverUrl.value ?: "Non connecté"}"
     }
 
     fun toggleServerMode() {
-        viewModelScope.launch(Dispatchers.Main) {
-            val newServerMode = !_isServer.value
-            Log.d("ScrollSync", "Toggling server mode from ${_isServer.value} to $newServerMode")
+        viewModelScope.launch {
+            // Arrêter la connexion actuelle
+            scrollSyncManager.stop()
 
-            nearbyService.stop()
-            isActuallyConnected = false
+            // Basculer le mode
+            _appIsInstalledInHostPhone.value = !_appIsInstalledInHostPhone.value
 
-            delay(100)
-            _isServer.value = newServerMode
-            _uiState.emit(_uiState.value.copy(
-                isServer = newServerMode,
-                isConnected = false,
-                connectedDeviceName = null
-            ))
+            // Mettre à jour l'état UI
+            _uiState.update { it.copy(
+                appIsInstalledInHostPhone = _appIsInstalledInHostPhone.value,
+                connectionStatus = "Mode ${if (_appIsInstalledInHostPhone.value) "Serveur" else "Client"}",
+                isConnected = false
+            )}
 
-            setupNearbyConnection()
+            // Réinitialiser la connexion
+            initializeScrollSync(_appIsInstalledInHostPhone.value)
         }
     }
+
+
 
     override fun onCleared() {
-        nearbyService.stop()
         super.onCleared()
-    }
-
-
-
-    private suspend fun handleReceivedData(data: String) {
-        when {
-            data.startsWith("SCROLL_POSITION:") -> {
-                val position = data.substringAfter(":").toIntOrNull() ?: 0
-                Log.d("ScrollSync", "Updating scroll position to: $position")
-                _uiState.update { it.copy(scrollPosition = position) }
-            }
-            data == "START_WIFI_TEST" -> {
-                _uiState.update { it.copy(wifiTestDisplayer = true) }
-            }
-            data == "STOP_WIFI_TEST" -> {
-                _uiState.update { it.copy(wifiTestDisplayer = false) }
-            }
+        viewModelScope.launch {
+            scrollSyncManager.stop()
         }
     }
-
 
 
     // Ensure the directory exists when initializing the path
