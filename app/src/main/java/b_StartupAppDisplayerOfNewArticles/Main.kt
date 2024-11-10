@@ -100,7 +100,6 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.signature.ObjectKey
 import com.example.clientjetpack.LoadingOverlay
-import com.example.clientjetpack.PermissionHandler
 import com.example.clientjetpack.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -116,8 +115,7 @@ fun StartupAppDisplayerOfNewArticles(
     reloadTrigger: Int,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     onClickToOpenClientsW: () -> Unit,
-    isFabVisible: Boolean, onClickDonne: () -> Unit, onToggleitsWifiServerAppOrClient: () -> Unit,
-    permissionHandler: PermissionHandler,
+    isFabVisible: Boolean, onClickDonne: () -> Unit
 ) {
     var gridColumnsForNewArticels by remember { mutableStateOf(2) }
     var showFilter by remember { mutableStateOf(false) }
@@ -140,8 +138,7 @@ fun StartupAppDisplayerOfNewArticles(
         onClickToOpenClientsW = onClickToOpenClientsW,
         isFabVisible=isFabVisible,
         onClickDonne = onClickDonne,
-        onToggleitsWifiServerAppOrClient = onToggleitsWifiServerAppOrClient,
-        permissionHandler
+
     )
 }
 @Composable
@@ -160,15 +157,13 @@ fun ArticleDisplayScreen(
     onClickToOpenClientsW: () -> Unit,
     isFabVisible: Boolean,
     onClickDonne: () -> Unit,
-    onToggleitsWifiServerAppOrClient: () -> Unit,
-    permissionHandler: PermissionHandler,
 
-    ) {
+    ) {       //TODO fait affiche le scroll position de chaque don messageByWifi
     val scope = rememberCoroutineScope()
     val isServer = uiState.appIsInstalledInHostPhone
 
     LaunchedEffect(gridState, isServer, uiState.isConnected) {
-        if (uiState.isConnected && permissionHandler.areNearbyPermissionsGranted()) {
+        if (uiState.isConnected ) {
             snapshotFlow { gridState.firstVisibleItemIndex }
                 .distinctUntilChanged()
                 .collect { position ->
@@ -264,10 +259,7 @@ fun ArticleDisplayScreen(
                 onChangeGridColumns = onChangeGridColumns,
                 viewModel = viewModel,
                 onClickToOpenClientsListW = onClickToOpenClientsW,
-                onToggleitsWifiServerAppOrClient = {
-                    Log.d(tag, "🔄 Toggling Server/Client mode")
-                    onToggleitsWifiServerAppOrClient()
-                }
+
             )
         }
 

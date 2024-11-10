@@ -31,7 +31,7 @@ data class ConnectionUiState(
     val messages: List<String> = emptyList()
 )
 
-class ConnectionManager(  //TODO cree moi des logs par imojis
+class ConnectionManager(
     private val context: Context,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ConnectionUiState())

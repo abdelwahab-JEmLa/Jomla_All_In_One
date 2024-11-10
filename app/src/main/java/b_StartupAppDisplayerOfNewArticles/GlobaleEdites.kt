@@ -52,7 +52,6 @@ fun FloatingActionButtonGroup(
     onChangeGridColumns: (Int) -> Unit,
     viewModel: StartUpNewArticlesViewModels,
     onClickToOpenClientsListW: () -> Unit,
-    onToggleitsWifiServerAppOrClient: () -> Unit
 ) {
     var currentGridColumns by remember { mutableIntStateOf(2) }
     var showLabels by remember { mutableStateOf(true) }
@@ -100,15 +99,6 @@ fun FloatingActionButtonGroup(
                         .padding(bottom = 56.dp)
                 ) {
                     listOf(
-                        FabData(
-                            icon = Icons.Default.Delete,
-                            label = if (itsWifiServerAppOrClientStatDisplayer) "istServerApp" else "istClientApp",
-                            color = Color(0xFF9C27B0),
-                            onClick = {
-                                itsWifiServerAppOrClientStatDisplayer=!itsWifiServerAppOrClientStatDisplayer
-                                onToggleitsWifiServerAppOrClient()
-                            }
-                        ),
                         FabData(
                             icon = Icons.Default.Delete,
                             label = if (clearDataClickCount == 0) "clearSoldArticlesData" else "Confirm Clear",

@@ -46,7 +46,7 @@ data class UiState(
     val connectionStatus: String = "Déconnecté",
     val wifiTestDisplayer: Boolean = false,
     val appIsInstalledInHostPhone: Boolean = true,
-    val message: String = "",
+    val messageByWifi: String = "",
     )
 
 class StartUpNewArticlesViewModels(
@@ -66,7 +66,7 @@ class StartUpNewArticlesViewModels(
                     isConnected = connectionState.isConnected,
                     appIsInstalledInHostPhone = connectionState.isHost,
                     error = connectionState.error,
-                    message = connectionState.messages.lastOrNull() ?: ""  // Add message update
+                    messageByWifi = connectionState.messages.lastOrNull() ?: ""  // Add message update
                 )}
             }
         }

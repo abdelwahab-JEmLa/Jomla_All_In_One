@@ -10,6 +10,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -48,6 +49,7 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.ProgressIndicatorDefaults
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -284,10 +286,10 @@ private fun MainScreen(
                 )
 
                 // Message Display
-                if (uiState.message.isNotEmpty()) {
+                if (uiState.messageByWifi.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "Message reçu: ${uiState.message}",
+                        text = "Message reçu: ${uiState.messageByWifi}",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.secondary
                     )
@@ -363,6 +365,50 @@ private fun MainScreen(
             )
         }
     }
+    Box(modifier = Modifier.fillMaxSize()) {
+        Scaffold(
+            bottomBar = {
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    AnimatedVisibility(visible = isNavBarVisible) {
+                        NavigationBarWithFab(
+                            items = items.filter { it != Screen.ToggleFab },
+                            currentRoute = currentRoute,
+                            onNavigate = { route ->
+                                navController.navigate(route) {
+                                    popUpTo(navController.graph.startDestinationId)
+                                    launchSingleTop = true
+                                }
+                            },
+                            isFabVisible = isFabVisible,
+                            onToggleFabVisibility = { isFabVisible = !isFabVisible }
+                        )
+                    }
+                }
+            }
+        ) { padding ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+
+                    AppNavHost(
+                        appViewModels = appViewModels,
+                        navController = navController,
+                        onToggleNavBar = { isNavBarVisible = !isNavBarVisible },
+                        isFabVisible = isFabVisible,
+                        onClickDonne = { isFabVisible = false },
+                    )
+                }
+            }
+        }
+    }
 }
 
 
@@ -372,8 +418,7 @@ fun AppNavHost(
     navController: NavHostController,
     onToggleNavBar: () -> Unit,
     modifier: Modifier = Modifier,
-    isFabVisible: Boolean, onClickDonne: () -> Unit, onToggleitsWifiServerAppOrClient: () -> Unit,
-    permissionHandler: PermissionHandler
+    isFabVisible: Boolean, onClickDonne: () -> Unit
 ) {
     val uiState by appViewModels.startUpNewArticlesViewModels.uiState.collectAsState()
 
@@ -420,8 +465,7 @@ fun AppNavHost(
                             showClientSelectionWithoutCondition=true
                         },
                         isFabVisible=isFabVisible, onClickDonne = onClickDonne,
-                        onToggleitsWifiServerAppOrClient = onToggleitsWifiServerAppOrClient,
-                        permissionHandler = permissionHandler
+
                     )
 
                     if (uiState.isLoading) {
