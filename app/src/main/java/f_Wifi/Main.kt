@@ -1,7 +1,11 @@
 package f_Wifi
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
 import android.util.Log
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.nearby.Nearby
@@ -41,9 +45,30 @@ class ConnectionManager(
     private val serviceId = "com.example.clientjetpack"
     private val strategy = Strategy.P2P_STAR
 
+    private val endpointDiscoveryCallback = object : EndpointDiscoveryCallback() {
+        override fun onEndpointFound(endpointId: String, info: DiscoveredEndpointInfo) {
+            Log.d(TAG, "🔍 Endpoint trouvé: ${info.endpointName}")
+            Log.d(TAG, "🤝 Tentative de connexion à: $endpointId")
+            Nearby.getConnectionsClient(context).requestConnection(
+                "Client Device",
+                endpointId,
+                connectionLifecycleCallback
+            ).addOnSuccessListener {
+                Log.d(TAG, "✅ Demande de connexion envoyée")
+            }.addOnFailureListener { e ->
+                Log.e(TAG, "❌ Échec de la demande de connexion: ${e.message}")
+            }
+        }
+
+        override fun onEndpointLost(endpointId: String) {
+            Log.d(TAG, "💨 Endpoint perdu: $endpointId")
+        }
+    }
+
     private val connectionLifecycleCallback = object : ConnectionLifecycleCallback() {
         override fun onConnectionInitiated(endpointId: String, info: ConnectionInfo) {
-            Log.d(TAG, "Connection initiated with: ${info.endpointName}")
+            Log.d(TAG, "🌟 Connexion initiée avec: ${info.endpointName}")
+            Log.d(TAG, "🔄 Acceptation de la connexion en cours...")
             Nearby.getConnectionsClient(context).acceptConnection(endpointId, payloadCallback)
             updateConnectionStatus("Connexion en cours avec ${info.endpointName}...")
         }
@@ -51,21 +76,25 @@ class ConnectionManager(
         override fun onConnectionResult(endpointId: String, result: ConnectionResolution) {
             when (result.status.statusCode) {
                 ConnectionsStatusCodes.STATUS_OK -> {
+                    Log.d(TAG, "✨ Connexion établie avec succès!")
                     this@ConnectionManager.endpointId = endpointId
                     updateConnectionStatus("Connecté")
                     _uiState.update { it.copy(isConnected = true) }
                     sendMessage("Connection established")
                 }
                 ConnectionsStatusCodes.STATUS_CONNECTION_REJECTED -> {
+                    Log.e(TAG, "🚫 Connexion rejetée")
                     handleError("Connexion rejetée")
                 }
                 ConnectionsStatusCodes.STATUS_ERROR -> {
+                    Log.e(TAG, "💥 Erreur de connexion")
                     handleError("Erreur de connexion")
                 }
             }
         }
 
         override fun onDisconnected(endpointId: String) {
+            Log.d(TAG, "👋 Déconnexion de: $endpointId")
             this@ConnectionManager.endpointId = null
             updateConnectionStatus("Déconnecté")
             _uiState.update { it.copy(isConnected = false) }
@@ -76,7 +105,7 @@ class ConnectionManager(
         override fun onPayloadReceived(endpointId: String, payload: Payload) {
             if (payload.type == Payload.Type.BYTES) {
                 val message = String(payload.asBytes()!!)
-                Log.d(TAG, "Message reçu: $message")
+                Log.d(TAG, "📩 Message reçu: $message")
                 _uiState.update {
                     it.copy(messages = it.messages + message)
                 }
@@ -84,12 +113,55 @@ class ConnectionManager(
         }
 
         override fun onPayloadTransferUpdate(endpointId: String, update: PayloadTransferUpdate) {
-            // Handle transfer status updates if needed
+            when (update.status) {
+                PayloadTransferUpdate.Status.SUCCESS -> {
+                    Log.d(TAG, "✅ Transfert réussi")
+                }
+                PayloadTransferUpdate.Status.FAILURE -> {
+                    Log.e(TAG, "❌ Échec du transfert")
+                }
+                PayloadTransferUpdate.Status.IN_PROGRESS -> {
+                    Log.d(TAG, "⏳ Transfert en cours: ${update.bytesTransferred}/${update.totalBytes}")
+                }
+                PayloadTransferUpdate.Status.CANCELED -> {
+                    Log.d(TAG, "🚫 Transfert annulé")
+                }
+            }
         }
+    }
+
+    private fun checkRequiredPermissions(): Boolean {
+        val coarseLocation = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+
+        val fineLocation = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+
+        val nearbyDevices = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.NEARBY_WIFI_DEVICES
+            ) == PackageManager.PERMISSION_GRANTED
+        } else {
+            true
+        }
+
+        val result = coarseLocation && (fineLocation || nearbyDevices)
+        Log.d(TAG, if (result) "✅ Permissions OK" else "⚠️ Permissions manquantes")
+        return result
     }
 
     fun startAsHost() {
         viewModelScope.launch {
+            Log.d(TAG, "🏠 Démarrage en mode hôte...")
+            if (!checkRequiredPermissions()) {
+                handleError("Permissions de localisation manquantes")
+                return@launch
+            }
 
             _uiState.update { it.copy(isHost = true) }
             val advertisingOptions = AdvertisingOptions.Builder().setStrategy(strategy).build()
@@ -102,9 +174,11 @@ class ConnectionManager(
                     advertisingOptions
                 )
                 .addOnSuccessListener {
+                    Log.d(TAG, "📡 Mode hôte activé avec succès")
                     updateConnectionStatus("En attente de connexion...")
                 }
                 .addOnFailureListener { e ->
+                    Log.e(TAG, "💥 Échec du mode hôte: ${e.message}")
                     handleError("Erreur de démarrage du mode hôte: ${e.message}")
                 }
         }
@@ -112,6 +186,11 @@ class ConnectionManager(
 
     fun startAsClient() {
         viewModelScope.launch {
+            Log.d(TAG, "👤 Démarrage en mode client...")
+            if (!checkRequiredPermissions()) {
+                handleError("Permissions de localisation manquantes")
+                return@launch
+            }
 
             _uiState.update { it.copy(isHost = false) }
             val discoveryOptions = DiscoveryOptions.Builder().setStrategy(strategy).build()
@@ -119,25 +198,15 @@ class ConnectionManager(
             Nearby.getConnectionsClient(context)
                 .startDiscovery(
                     serviceId,
-                    object : EndpointDiscoveryCallback() {
-                        override fun onEndpointFound(endpointId: String, info: DiscoveredEndpointInfo) {
-                            Nearby.getConnectionsClient(context).requestConnection(
-                                "Client Device",
-                                endpointId,
-                                connectionLifecycleCallback
-                            )
-                        }
-
-                        override fun onEndpointLost(endpointId: String) {
-                            Log.d(TAG, "Endpoint perdu: $endpointId")
-                        }
-                    },
+                    endpointDiscoveryCallback,
                     discoveryOptions
                 )
                 .addOnSuccessListener {
+                    Log.d(TAG, "🔍 Recherche démarrée avec succès")
                     updateConnectionStatus("Recherche d'appareils...")
                 }
                 .addOnFailureListener { e ->
+                    Log.e(TAG, "💥 Échec de la recherche: ${e.message}")
                     handleError("Erreur de démarrage de la recherche: ${e.message}")
                 }
         }
@@ -145,15 +214,21 @@ class ConnectionManager(
 
     fun sendMessage(message: String) {
         endpointId?.let { endpoint ->
+            Log.d(TAG, "📤 Envoi du message: $message")
             val payload = Payload.fromBytes(message.toByteArray())
             Nearby.getConnectionsClient(context).sendPayload(endpoint, payload)
+                .addOnSuccessListener {
+                    Log.d(TAG, "✅ Message envoyé avec succès")
+                }
                 .addOnFailureListener { e ->
+                    Log.e(TAG, "❌ Échec de l'envoi: ${e.message}")
                     handleError("Erreur d'envoi du message: ${e.message}")
                 }
         }
     }
 
     fun disconnect() {
+        Log.d(TAG, "🔌 Déconnexion en cours...")
         Nearby.getConnectionsClient(context).apply {
             stopAdvertising()
             stopDiscovery()
@@ -165,24 +240,28 @@ class ConnectionManager(
             isConnected = false,
             isHost = false
         )}
+        Log.d(TAG, "👋 Déconnexion terminée")
     }
 
     private fun updateConnectionStatus(status: String) {
+        Log.d(TAG, "📊 Status: $status")
         _uiState.update { it.copy(connectionStatus = status) }
     }
 
     private fun handleError(error: String) {
-        Log.e(TAG, error)
+        Log.e(TAG, "⚠️ Erreur: $error")
         _uiState.update { it.copy(error = error) }
     }
 
-
     override fun onCleared() {
         super.onCleared()
+        Log.d(TAG, "🧹 Nettoyage du ViewModel")
         disconnect()
     }
 
     companion object {
         private const val TAG = "ConnectionManager"
     }
+
+
 }
