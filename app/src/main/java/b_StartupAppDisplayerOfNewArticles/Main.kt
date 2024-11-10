@@ -12,6 +12,8 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -82,6 +84,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingSource
@@ -157,70 +160,48 @@ fun ArticleDisplayScreen(
     onClickToOpenClientsW: () -> Unit,
     isFabVisible: Boolean,
     onClickDonne: () -> Unit,
-
-    ) {       //TODO fait affiche le scroll position de chaque don messageByWifi
-    val scope = rememberCoroutineScope()
+) {
     val isServer = uiState.appIsInstalledInHostPhone
-
-    LaunchedEffect(gridState, isServer, uiState.isConnected) {
-        if (uiState.isConnected ) {
-            snapshotFlow { gridState.firstVisibleItemIndex }
-                .distinctUntilChanged()
-                .collect { position ->
-                    if (isServer) {
-                    } else {
-                        val serverPosition = uiState.scrollPosition
-                        if (serverPosition != position) {
-                            gridState.scrollToItem(serverPosition)
-                        }
-                    }
-                }
-        }
-    }
-
     val tag = if (isServer) "📱 ServerScreen" else "📱 ClientScreen"
 
-    // Optimization: Combine scroll handling and logging into a single LaunchedEffect
     LaunchedEffect(gridState, isServer, uiState.isConnected) {
         if (uiState.isConnected) {
             snapshotFlow { gridState.firstVisibleItemIndex }
                 .distinctUntilChanged()
-                .collect { position ->
-                    Log.d(tag, "📜 Scroll Position: $position (${if (isServer) "Server" else "Client"})")
-
-                    if (isServer) {
-                        // Server broadcasts scroll position
-                        Log.d(tag, "🔵 Server broadcasting position: $position")
-                    } else {
-                        // Client syncs with server position if different
-                        val serverPosition = uiState.scrollPosition
-                        if (serverPosition != position) {
-                            Log.d(tag, "🔴 Client syncing to position: $serverPosition")
-                            gridState.scrollToItem(serverPosition)
+                .collect { currentPosition ->
+                    when {
+                        isServer -> {
+                            viewModel.sendTestMessage("SCROLL_POS:$currentPosition")
+                            Log.d(tag, "🔵 Server: Broadcasting position $currentPosition")
+                        }
+                        else -> {
+                            val serverPosition = uiState.scrollPosition
+                            if (serverPosition != currentPosition && serverPosition >= 0) {
+                                Log.d(tag, "🔴 Client: Syncing to position $serverPosition")
+                                gridState.scrollToItem(serverPosition)
+                            }
                         }
                     }
                 }
         }
     }
 
+    LaunchedEffect(uiState.messageByWifi) {
+        if (uiState.messageByWifi.startsWith("SCROLL_POS:")) {
+            val position = uiState.messageByWifi
+                .removePrefix("SCROLL_POS:")
+                .toIntOrNull() ?: return@LaunchedEffect
+            viewModel.updateScrollPosition(position)
+        }
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
+        // Main content column with correct padding
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(bottom = if (isFabVisible) 80.dp else 0.dp)
         ) {
-            // Connection status banner
-            AnimatedVisibility(
-                visible = true,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                ConnectionStatusBanner(
-                    isConnected = uiState.isConnected,
-                    status = uiState.connectionStatus,
-                    isServer = isServer
-                )
-            }
-
             SearchFilter(
                 showFilter = isFabVisible,
                 filterText = filterText,
@@ -231,85 +212,49 @@ fun ArticleDisplayScreen(
                 onClickDonne = onClickDonne
             )
 
-            ArticleGrid(
-                uiState = uiState,
-                gridColumns = gridColumns,
-                filterText = filterText,
-                showFilter = isFabVisible,
-                gridState = gridState,
-                viewModel = viewModel,
-                reloadTrigger = reloadTrigger,
-                onClickToOpenWindos = onClickToOpenWindos
-            )
+            // Article grid with weight to fill remaining space
+            Box(modifier = Modifier.weight(1f)) {
+                ArticleGrid(
+                    uiState = uiState,
+                    gridColumns = gridColumns,
+                    filterText = filterText,
+                    showFilter = isFabVisible,
+                    gridState = gridState,
+                    viewModel = viewModel,
+                    reloadTrigger = reloadTrigger,
+                    onClickToOpenWindos = onClickToOpenWindos
+                )
+            }
         }
 
-        // FAB Group with connection controls
-        AnimatedVisibility(
-            visible = isFabVisible,
-            enter = fadeIn(),
-            exit = fadeOut(),
+        // FAB Group with proper z-index and positioning
+        Box(
             modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp)
+                .matchParentSize()
+                .padding(bottom = 16.dp, end = 16.dp),
+            contentAlignment = Alignment.BottomEnd
         ) {
-            FloatingActionButtonGroup(
-                modifier = Modifier,
-                onToggleNavBar = onToggleNavBar,
-                onToggleOutlineFilter = onToggleFilter,
-                onChangeGridColumns = onChangeGridColumns,
-                viewModel = viewModel,
-                onClickToOpenClientsListW = onClickToOpenClientsW,
-
-            )
+            AnimatedVisibility(
+                visible = isFabVisible,
+                enter = fadeIn() + slideInVertically { it / 2 },
+                exit = fadeOut() + slideOutVertically { it / 2 }
+            ) {
+                FloatingActionButtonGroup(
+                    modifier = Modifier.zIndex(1f),
+                    onToggleNavBar = onToggleNavBar,
+                    onToggleOutlineFilter = onToggleFilter,
+                    onChangeGridColumns = onChangeGridColumns,
+                    viewModel = viewModel,
+                    onClickToOpenClientsListW = onClickToOpenClientsW,
+                )
+            }
         }
 
-        // Loading overlay
+        // Loading overlay on top of everything
         if (uiState.isLoading) {
             LoadingOverlay(
                 progress = uiState.loadingProgress,
                 modifier = Modifier.align(Alignment.Center)
-            )
-        }
-    }
-}
-
-@Composable
-private fun ConnectionStatusBanner(
-    isConnected: Boolean,
-    status: String,
-    isServer: Boolean,
-    modifier: Modifier = Modifier
-) {
-    val backgroundColor = if (isConnected) {
-        Color(0xFF4CAF50).copy(alpha = 0.9f) // Green with transparency
-    } else {
-        Color(0xFFE57373).copy(alpha = 0.9f) // Red with transparency
-    }
-
-    Surface(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(32.dp),
-        color = backgroundColor,
-        shadowElevation = 4.dp
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = status,
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.White
-            )
-
-            Text(
-                text = if (isServer) "Serveur" else "Client",
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.White
             )
         }
     }

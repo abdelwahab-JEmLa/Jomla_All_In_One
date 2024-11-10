@@ -71,7 +71,9 @@ class StartUpNewArticlesViewModels(
             }
         }
     }
-
+    fun updateScrollPosition(position: Int) {
+        _uiState.update { it.copy(scrollPosition = position) }
+    }
     fun startAsHost() = connectionManager.startAsHost()
     fun startAsClient() = connectionManager.startAsClient()
     fun sendTestMessage(message: String) = connectionManager.sendMessage(message)

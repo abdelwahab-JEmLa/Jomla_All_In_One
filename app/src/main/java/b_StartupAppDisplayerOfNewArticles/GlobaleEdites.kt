@@ -55,10 +55,9 @@ fun FloatingActionButtonGroup(
 ) {
     var currentGridColumns by remember { mutableIntStateOf(2) }
     var showLabels by remember { mutableStateOf(true) }
-    var isExpanded by remember { mutableStateOf(false) }
+    var isExpanded by remember { mutableStateOf(true) }
     var clearDataClickCount by remember { mutableIntStateOf(0) }
     var clearDataGrouprurClickCount by remember { mutableIntStateOf(0) }
-    var itsWifiServerAppOrClientStatDisplayer by remember { mutableStateOf(false) }
 
     // Reset click count when FAB is collapsed
     LaunchedEffect(isExpanded) {

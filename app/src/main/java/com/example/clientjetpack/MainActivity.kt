@@ -24,10 +24,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -49,7 +47,6 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.ProgressIndicatorDefaults
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -253,160 +250,151 @@ private fun MainScreen(
     var isFabVisible by remember { mutableStateOf(true) }
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        // Status Card
-        Card(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Column(
+    Box(modifier = Modifier.fillMaxSize()) {
+        // Main content including connection card and navigation
+        Column(modifier = Modifier.fillMaxSize()) {
+            // Connection Card Section
+            Card(
                 modifier = Modifier
+                    .fillMaxWidth()
                     .padding(16.dp)
-                    .fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = "État de la connexion",
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = uiState.connectionStatus,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = when {
-                        uiState.isConnected -> MaterialTheme.colorScheme.primary
-                        uiState.error != null -> MaterialTheme.colorScheme.error
-                        else -> MaterialTheme.colorScheme.onSurface
-                    }
-                )
-
-                // Message Display
-                if (uiState.messageByWifi.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "Message reçu: ${uiState.messageByWifi}",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.secondary
-                    )
-                }
-            }
-        }
-
-        // Error Display
-        if (uiState.error != null) {
-            Text(
-                text = uiState.error ?: "",
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodyMedium,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-
-        // Connection Buttons
-        if (!uiState.isConnected) {
-            ButtonsSection(
-                onHostClick = { appViewModels.startUpNewArticlesViewModels.startAsHost() },
-                onClientClick = { appViewModels.startUpNewArticlesViewModels.startAsClient() }
-            )
-        }
-
-        // Connected Actions and Message Input
-        if (uiState.isConnected) {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                OutlinedTextField(
-                    value = messageText,
-                    onValueChange = { messageText = it },
-                    label = { Text("Message") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                Column(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Button(
-                        onClick = {
-                            if (messageText.isNotEmpty()) {
-                                appViewModels.startUpNewArticlesViewModels.sendTestMessage(messageText)
-                                messageText = ""
-                            }
-                        },
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Text("Envoyer")
-                    }
-                    Button(
-                        onClick = { appViewModels.startUpNewArticlesViewModels.disconnect() },
-                        modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.error
+                    Text(
+                        text = "État de la connexion",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+
+                    Text(
+                        text = uiState.connectionStatus,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = when {
+                            uiState.isConnected -> MaterialTheme.colorScheme.primary
+                            uiState.error != null -> MaterialTheme.colorScheme.error
+                            else -> MaterialTheme.colorScheme.onSurface
+                        }
+                    )
+
+                    // Error Display
+                    uiState.error?.let { error ->
+                        Text(
+                            text = error,
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodyMedium,
+                            textAlign = TextAlign.Center
                         )
-                    ) {
-                        Text("Déconnecter")
+                    }
+
+                    // Connection Controls
+                    if (!uiState.isConnected) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        ) {
+                            Button(onClick = { appViewModels.startUpNewArticlesViewModels.startAsHost() }) {
+                                Text("Mode Hôte")
+                            }
+                            Button(onClick = { appViewModels.startUpNewArticlesViewModels.startAsClient() }) {
+                                Text("Mode Client")
+                            }
+                        }
+                    }
+
+                    // Message Input and Controls when Connected
+                    if (uiState.isConnected) {
+                        OutlinedTextField(
+                            value = messageText,
+                            onValueChange = { messageText = it },
+                            label = { Text("Message") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Button(
+                                onClick = {
+                                    if (messageText.isNotEmpty()) {
+                                        appViewModels.startUpNewArticlesViewModels.sendTestMessage(messageText)
+                                        messageText = ""
+                                    }
+                                },
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text("Envoyer")
+                            }
+                            Button(
+                                onClick = { appViewModels.startUpNewArticlesViewModels.disconnect() },
+                                modifier = Modifier.weight(1f),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.error
+                                )
+                            ) {
+                                Text("Déconnecter")
+                            }
+                        }
+
+                        // Received Message Display
+                        if (uiState.messageByWifi.isNotEmpty()) {
+                            Text(
+                                text = "Message reçu: ${uiState.messageByWifi}",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.secondary
+                            )
+                        }
                     }
                 }
             }
+
+            // Main Navigation Content
+            Box(modifier = Modifier.weight(1f)) {
+                AppNavHost(
+                    appViewModels = appViewModels,
+                    navController = navController,
+                    onToggleNavBar = { isNavBarVisible = !isNavBarVisible },
+                    isFabVisible = isFabVisible,
+                    onClickDonne = { isFabVisible = false },
+                )
+
+            }
+
         }
+
+        // Bottom Navigation Bar
+        AnimatedVisibility(
+            visible = isNavBarVisible,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        ) {
+            NavigationBarWithFab(
+                items = items.filter { it != Screen.ToggleFab },
+                currentRoute = currentRoute,
+                onNavigate = { route ->
+                    navController.navigate(route) {
+                        popUpTo(navController.graph.startDestinationId)
+                        launchSingleTop = true
+                    }
+                },
+                isFabVisible = isFabVisible,
+                onToggleFabVisibility = { isFabVisible = !isFabVisible }
+            )
+        }
+
 
         // Loading Indicator
         if (uiState.isLoading) {
             CircularProgressIndicator(
-                modifier = Modifier.size(48.dp),
+                modifier = Modifier
+                    .size(48.dp)
+                    .align(Alignment.Center),
                 progress = uiState.loadingProgress
             )
-        }
-    }
-    Box(modifier = Modifier.fillMaxSize()) {
-        Scaffold(
-            bottomBar = {
-                Box(modifier = Modifier.fillMaxWidth()) {
-                    AnimatedVisibility(visible = isNavBarVisible) {
-                        NavigationBarWithFab(
-                            items = items.filter { it != Screen.ToggleFab },
-                            currentRoute = currentRoute,
-                            onNavigate = { route ->
-                                navController.navigate(route) {
-                                    popUpTo(navController.graph.startDestinationId)
-                                    launchSingleTop = true
-                                }
-                            },
-                            isFabVisible = isFabVisible,
-                            onToggleFabVisibility = { isFabVisible = !isFabVisible }
-                        )
-                    }
-                }
-            }
-        ) { padding ->
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-
-                    AppNavHost(
-                        appViewModels = appViewModels,
-                        navController = navController,
-                        onToggleNavBar = { isNavBarVisible = !isNavBarVisible },
-                        isFabVisible = isFabVisible,
-                        onClickDonne = { isFabVisible = false },
-                    )
-                }
-            }
         }
     }
 }
@@ -537,6 +525,7 @@ fun AppNavHost(
                 reloadTrigger = reloadTrigger,
             )
         }
+
     }
 }
 
