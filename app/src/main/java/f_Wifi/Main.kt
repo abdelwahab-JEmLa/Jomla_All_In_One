@@ -14,13 +14,16 @@ import android.net.wifi.p2p.WifiP2pInfo
 import android.net.wifi.p2p.WifiP2pManager
 import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.clientjetpack.PermissionHandler
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.ObjectOutputStream
@@ -39,10 +42,119 @@ class P2PManager(
     private var connection: P2PConnection? = null
     private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private var receiver: BroadcastReceiver? = null
+    private var discoveryActive = false
 
     init {
         Log.d(TAG, "🚀 Initializing P2PManager")
         checkWifiAndPermissions()
+    }
+
+    private fun ensureWifiEnabled(): Boolean {
+        val wifiManager = context.getSystemService(Context.WIFI_SERVICE) as WifiManager
+        if (!wifiManager.isWifiEnabled) {
+            updateStatus(P2PStatus(
+                message = "WiFi désactivé. Veuillez activer le WiFi.",
+                isConnected = false,
+                isHost = isHost
+            ))
+            return false
+        }
+        return true
+    }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private suspend fun startDiscoveryWithRetry(attempts: Int = 3) {
+        if (!ensureWifiEnabled()) return
+
+        var currentAttempt = 0
+        while (currentAttempt < attempts && !discoveryActive) {
+            currentAttempt++
+            Log.d(TAG, "🔍 Starting discovery attempt $currentAttempt/$attempts")
+
+            if (startDiscoveryAttempt()) {
+                discoveryActive = true
+                break
+            } else {
+                // Add exponential backoff
+                val delayTime = (1000L * (1 shl (currentAttempt - 1))).coerceAtMost(5000L)
+                delay(delayTime)
+
+                // Check if WiFi P2P is enabled before retrying
+                safeExecuteWithPermissions {
+                    wifiP2pManager.requestP2pState(channel) { state ->
+                        if (state != WifiP2pManager.WIFI_P2P_STATE_ENABLED) {
+                            updateStatus(P2PStatus(
+                                message = "WiFi Direct désactivé. Veuillez l'activer dans les paramètres.",
+                                isConnected = false,
+                                isHost = isHost
+                            ))
+                            discoveryActive = false
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!discoveryActive) {
+            updateStatus(P2PStatus(
+                message = "Échec de la découverte après $attempts tentatives. Veuillez réessayer.",
+                isConnected = false,
+                isHost = isHost
+            ))
+        }
+    }
+
+    private suspend fun startDiscoveryAttempt(): Boolean = withContext(Dispatchers.IO) {
+        try {
+            if (!checkRequiredPermissions()) {
+                Log.e(TAG, "❌ Missing required permissions for discovery")
+                return@withContext false
+            }
+
+            var result = CompletableDeferred<Boolean>()
+
+            wifiP2pManager.discoverPeers(channel, object : WifiP2pManager.ActionListener {
+                override fun onSuccess() {
+                    Log.d(TAG, "✨ Discovery started successfully")
+                    updateStatus(P2PStatus(
+                        message = if (isHost) "En attente de connexion..." else "Recherche d'un hôte...",
+                        isConnected = false,
+                        isHost = isHost
+                    ))
+                    result.complete(true)
+                }
+
+                override fun onFailure(reason: Int) {
+                    Log.e(TAG, "💥 Discovery failed with reason: $reason")
+                    handleDiscoveryFailure(reason)
+                    result.complete(false)
+                }
+            })
+
+            return@withContext result.await()
+        } catch (e: SecurityException) {
+            Log.e(TAG, "⛔ Security exception during discovery: ${e.localizedMessage}")
+            return@withContext false
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    fun toggleRole() {
+        if (!checkRequiredPermissions()) {
+            updateStatus(P2PStatus(
+                message = "Permissions requises",
+                isConnected = false,
+                isHost = isHost
+            ))
+            return
+        }
+
+        discoveryActive = false
+        isHost = !isHost
+        disconnect()
+        scope.launch {
+            startDiscoveryWithRetry()
+        }
     }
 
     private fun checkPermission(permission: String): Boolean {
@@ -89,6 +201,7 @@ class P2PManager(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     private fun checkWifiAndPermissions() {
         val wifiManager = context.getSystemService(Context.WIFI_SERVICE) as WifiManager
         if (!wifiManager.isWifiEnabled) {
@@ -217,50 +330,7 @@ class P2PManager(
         }
     }
 
-    private suspend fun startDiscoveryWithRetry(attempts: Int = 3) {
-        var currentAttempt = 0
-        while (currentAttempt < attempts) {
-            currentAttempt++
-            Log.d(TAG, "🔍 Starting discovery attempt $currentAttempt/$attempts")
 
-            if (startDiscoveryAttempt()) {
-                break
-            } else {
-                kotlinx.coroutines.delay(1000)
-            }
-        }
-    }
-
-    private suspend fun startDiscoveryAttempt(): Boolean = withContext(Dispatchers.IO) {
-        try {
-            if (!checkRequiredPermissions()) {
-                Log.e(TAG, "❌ Missing required permissions for discovery")
-                return@withContext false
-            }
-
-            var success = false
-            wifiP2pManager.discoverPeers(channel, object : WifiP2pManager.ActionListener {
-                override fun onSuccess() {
-                    Log.d(TAG, "✨ Discovery started successfully")
-                    success = true
-                    updateStatus(P2PStatus(
-                        message = if (isHost) "En attente de connexion..." else "Recherche d'un hôte...",
-                        isConnected = false,
-                        isHost = isHost
-                    ))
-                }
-                override fun onFailure(reason: Int) {
-                    Log.e(TAG, "💥 Discovery failed with reason: $reason")
-                    success = false
-                    handleDiscoveryFailure(reason)
-                }
-            })
-            success
-        } catch (e: SecurityException) {
-            Log.e(TAG, "⛔ Security exception during discovery: ${e.localizedMessage}")
-            false
-        }
-    }
 
     fun disconnect() {
         safeExecuteWithPermissions {
@@ -275,22 +345,6 @@ class P2PManager(
         }
     }
 
-    fun toggleRole() {
-        if (!checkRequiredPermissions()) {
-            updateStatus(P2PStatus(
-                message = "Permissions requises",
-                isConnected = false,
-                isHost = isHost
-            ))
-            return
-        }
-
-        isHost = !isHost
-        disconnect()
-        scope.launch {
-            startDiscoveryWithRetry()
-        }
-    }
 
     fun sendScrollPosition(position: Int) {
         if (checkRequiredPermissions()) {
@@ -391,11 +445,8 @@ class P2PManager(
         }
     }
 
-
-
-
-
 }
+
 data class P2PStatus(
     val message: String,
     val isConnected: Boolean,
