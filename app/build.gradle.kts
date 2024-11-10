@@ -116,6 +116,7 @@ dependencies {
     implementation (libs.glide.transformations)
     implementation (libs.play.services.nearby)
 
+
 }
 
 apply(plugin = "com.google.gms.google-services")
