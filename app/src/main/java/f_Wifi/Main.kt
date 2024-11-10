@@ -4,7 +4,6 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.clientjetpack.PermissionHandler
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.AdvertisingOptions
 import com.google.android.gms.nearby.connection.ConnectionInfo
@@ -34,7 +33,6 @@ data class ConnectionUiState(
 
 class ConnectionManager(
     private val context: Context,
-    private val permissionHandler: PermissionHandler
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ConnectionUiState())
     val uiState: StateFlow<ConnectionUiState> = _uiState.asStateFlow()
@@ -92,7 +90,6 @@ class ConnectionManager(
 
     fun startAsHost() {
         viewModelScope.launch {
-            if (!checkPermissions()) return@launch
 
             _uiState.update { it.copy(isHost = true) }
             val advertisingOptions = AdvertisingOptions.Builder().setStrategy(strategy).build()
@@ -115,7 +112,6 @@ class ConnectionManager(
 
     fun startAsClient() {
         viewModelScope.launch {
-            if (!checkPermissions()) return@launch
 
             _uiState.update { it.copy(isHost = false) }
             val discoveryOptions = DiscoveryOptions.Builder().setStrategy(strategy).build()
@@ -180,19 +176,6 @@ class ConnectionManager(
         _uiState.update { it.copy(error = error) }
     }
 
-    private suspend fun checkPermissions(): Boolean {
-        var permissionsGranted = false
-        permissionHandler.checkAndRequestPermissions(object : PermissionHandler.PermissionCallback {
-            override fun onPermissionsGranted() {
-                permissionsGranted = true
-            }
-            override fun onPermissionsDenied() {
-                handleError("Permissions requises non accordées")
-                permissionsGranted = false
-            }
-        })
-        return permissionsGranted
-    }
 
     override fun onCleared() {
         super.onCleared()

@@ -13,7 +13,6 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.clientjetpack.PermissionHandler
 import com.google.firebase.database.BuildConfig
 import com.google.firebase.database.FirebaseDatabase
 import f_Wifi.ConnectionManager
@@ -52,9 +51,8 @@ data class UiState(
 class StartUpNewArticlesViewModels(
     context: Context,
     private val database: AppDatabase,
-    private val permissionHandler: PermissionHandler
 ) : ViewModel() {
-    private val connectionManager = ConnectionManager(context, permissionHandler)
+    private val connectionManager = ConnectionManager(context)
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()

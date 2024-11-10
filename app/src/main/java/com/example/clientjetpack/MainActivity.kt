@@ -112,7 +112,7 @@ class ViewModelFactory(
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when {
             modelClass.isAssignableFrom(StartUpNewArticlesViewModels::class.java) ->
-                StartUpNewArticlesViewModels(context.applicationContext, database,permissionHandler) as T
+                StartUpNewArticlesViewModels(context.applicationContext, database) as T
             modelClass.isAssignableFrom(GenerativeAiViewModel::class.java) ->
                 GenerativeAiViewModel() as T
             else -> throw IllegalArgumentException("Unknown ViewModel: ${modelClass.name}")
@@ -177,13 +177,12 @@ fun ConnectedActions(
         }
     }
 }
-// MainActivity.kt
 class MainActivity : ComponentActivity() {
     private val database by lazy { (application as MyApplication).database }
     private val permissionHandler by lazy { PermissionHandler(this) }
 
     private val viewModelFactory by lazy {
-        ViewModelFactory(applicationContext, database,permissionHandler)
+        ViewModelFactory(applicationContext, database, permissionHandler)
     }
 
     private val startUpNewArticlesViewModels: StartUpNewArticlesViewModels by viewModels {
@@ -214,7 +213,16 @@ class MainActivity : ComponentActivity() {
 
             @RequiresApi(Build.VERSION_CODES.Q)
             override fun onPermissionsDenied() {
+                // You might want to show a message to the user or handle the denial
+                // The PermissionHandler will already show a dialog prompting the user
+                // to go to settings
+            }
 
+            override fun onPermissionRationale(permissions: Array<String>) {
+                // This is called when the user has previously denied permissions
+                // and we need to show them why we need these permissions
+                // The PermissionHandler will automatically handle showing the
+                // permission request dialog after this
             }
         })
     }
