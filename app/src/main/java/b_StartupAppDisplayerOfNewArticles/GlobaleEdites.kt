@@ -26,7 +26,6 @@ import androidx.compose.material.icons.filled.Details
 import androidx.compose.material.icons.filled.DoNotDisturbAlt
 import androidx.compose.material.icons.filled.EditCalendar
 import androidx.compose.material.icons.filled.GridView
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -61,7 +60,7 @@ fun FloatingActionButtonGroup(
 ) {
     var currentGridColumns by remember { mutableIntStateOf(2) }
     var showLabels by remember { mutableStateOf(true) }
-    var isExpanded by remember { mutableStateOf(true) }
+    var isExpanded by remember { mutableStateOf(false) }
     var clearDataClickCount by remember { mutableIntStateOf(0) }
     var clearDataGrouprurClickCount by remember { mutableIntStateOf(0) }
 
@@ -185,10 +184,12 @@ fun FloatingActionButtonGroup(
                             onClick = { showLabels = !showLabels }
                         ),
                         FabData(
-                            icon = Icons.Default.Home,
-                            label = "Home",
-                            color = Color(0xFF9C27B0),
-                            onClick = { onToggleNavBar() }
+                            icon = Icons.Default.Close,
+                            label =  "not Expande ",
+                            color = Color(0xFFDE1010),
+                            onClick = {
+                                isExpanded=false
+                            }
                         )
                     ).forEach { fabData ->
                         FabButton(
