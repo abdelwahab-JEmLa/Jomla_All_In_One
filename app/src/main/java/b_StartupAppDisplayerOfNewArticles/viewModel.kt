@@ -55,9 +55,50 @@ class StartUpNewArticlesViewModels(
     private val database: AppDatabase,
 ) : ViewModel() {
     private val connectionManager = ConnectionManager(context)
-
     private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            connectionManager.uiState.collect { connectionState ->
+                Log.d("ViewModel", "💫 Connection state update: ${connectionState.connectionStatus}")
+                val lastMessage = connectionState.messages.lastOrNull()
+                if (lastMessage != null) {
+                    Log.d("ViewModel", "📩 New message received: $lastMessage")
+                }
+
+                _uiState.update { it.copy(
+                    connectionStatus = connectionState.connectionStatus,
+                    isConnected = connectionState.isConnected,
+                    appIsInstalledInHostPhone = connectionState.isHost,
+                    error = connectionState.error,
+                    messageByWifi = lastMessage ?: it.messageByWifi
+                )}
+            }
+        }
+    }
+
+    fun sendTestMessage(message: String) {
+        viewModelScope.launch {
+            Log.d("ViewModel", "📤 Attempting to send message: $message")
+            try {
+                connectionManager.sendMessage(message)
+                Log.d("ViewModel", "✅ Message sent successfully: $message")
+            } catch (e: Exception) {
+                Log.e("ViewModel", "❌ Failed to send message: ${e.message}")
+            }
+        }
+    }
+
+    fun updateScrollPosition(position: Int) {
+        viewModelScope.launch {
+            Log.d("ViewModel", "🔄 Updating scroll position to: $position")
+            _uiState.update { it.copy(scrollPosition = position) }
+            Log.d("ViewModel", "✅ Scroll position updated")
+        }
+    }
+
+
 
     init {
         viewModelScope.launch {
@@ -73,18 +114,10 @@ class StartUpNewArticlesViewModels(
         }
     }
     // Add scroll position validation
-    fun updateScrollPosition(position: Int) {
-        if (position >= 0) {
-            viewModelScope.launch {
-                _uiState.update { it.copy(scrollPosition = position) }
-                Log.d("ViewModel", "Updated scroll position to: $position")
-            }
-        }
-    }
+
 
     fun startAsHost() = connectionManager.startAsHost()
     fun startAsClient() = connectionManager.startAsClient()
-    fun sendTestMessage(message: String) = connectionManager.sendMessage(message)
     fun disconnect() = connectionManager.disconnect()
 
     // Ensure the directory exists when initializing the path

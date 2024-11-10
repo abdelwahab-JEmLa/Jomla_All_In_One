@@ -105,7 +105,6 @@ import com.bumptech.glide.signature.ObjectKey
 import com.example.clientjetpack.LoadingOverlay
 import com.example.clientjetpack.R
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -167,64 +166,85 @@ fun ArticleDisplayScreen(
     val tag = if (isServer) "📱 ServerScreen" else "📱 ClientScreen"
     var isAutoScrolling by remember { mutableStateOf(false) }
 
-    // Debounce scroll broadcasts
+    // Scroll broadcast handling
     val scope = rememberCoroutineScope()
     val broadcastScroll = remember {
-        var job: Job? = null
+        var lastPosition = -1
         { position: Int ->
-            job?.cancel()
-            job = scope.launch {
-                delay(100) // Debounce time
-                if (isServer && !isAutoScrolling) {
-                    viewModel.sendTestMessage("SCROLL_POS:$position")
-                    Log.d(tag, "🔵 Server: Broadcasting position $position")
-                }
-            }
-        }
-    }
-
-    LaunchedEffect(gridState, isServer, uiState.isConnected) {
-        if (uiState.isConnected) {
-            snapshotFlow { gridState.firstVisibleItemIndex }
-                .distinctUntilChanged()
-                .collect { currentPosition ->
-                    when {
-                        isServer -> broadcastScroll(currentPosition)
-                        else -> {
-                            val serverPosition = uiState.scrollPosition
-                            if (serverPosition != currentPosition &&
-                                serverPosition >= 0 &&
-                                !isAutoScrolling) {
-                                Log.d(tag, "🔴 Client: Syncing to position $serverPosition")
-                                isAutoScrolling = true
-                                gridState.animateScrollToItem(serverPosition)
-                                delay(500) // Allow animation to complete
-                                isAutoScrolling = false
-                            }
+            if (position != lastPosition) {  // Avoid duplicate broadcasts
+                lastPosition = position
+                scope.launch {
+                    if (isServer && !isAutoScrolling) {
+                        val scrollMessage = "SCROLL_POS:$position"
+                        Log.d(tag, "🚀 Broadcasting scroll message: $scrollMessage")
+                        try {
+                            viewModel.sendTestMessage(scrollMessage)
+                            Log.d(tag, "✅ Scroll broadcast completed")
+                        } catch (e: Exception) {
+                            Log.e(tag, "❌ Failed to broadcast scroll: ${e.message}")
                         }
                     }
                 }
-        }
-    }
-
-    // Separate message handling effect
-    LaunchedEffect(uiState.messageByWifi) {
-        val message = uiState.messageByWifi
-        if (message.startsWith("SCROLL_POS:")) {
-            try {
-                val position = message.removePrefix("SCROLL_POS:").toIntOrNull()
-                    ?: return@LaunchedEffect
-                viewModel.updateScrollPosition(position)
-                Log.d(tag, "📥 Received scroll position: $position")
-            } catch (e: Exception) {
-                Log.e(tag, "Error processing scroll message: ${e.message}")
             }
         }
     }
 
+    // Server scroll monitoring
+    LaunchedEffect(isServer, uiState.isConnected) {
+        if (!isServer || !uiState.isConnected) {
+            Log.d(tag, "⚠️ Not monitoring scroll (Server: $isServer, Connected: ${uiState.isConnected})")
+            return@LaunchedEffect
+        }
+
+        Log.d(tag, "👀 Starting scroll monitoring")
+        snapshotFlow { gridState.firstVisibleItemIndex }
+            .distinctUntilChanged()
+            .collect { position ->
+                Log.d(tag, "📊 Grid position changed to: $position")
+                broadcastScroll(position)
+            }
+    }
+
+    // Client scroll handling
+    LaunchedEffect(uiState.messageByWifi) {
+        if (isServer) return@LaunchedEffect
+
+        val message = uiState.messageByWifi
+        Log.d(tag, "📨 Client received message: $message")
+
+        if (message.startsWith("SCROLL_POS:")) {
+            try {
+                val position = message.removePrefix("SCROLL_POS:").toIntOrNull()
+                if (position != null) {
+                    Log.d(tag, "📥 Processing scroll position: $position")
+                    viewModel.updateScrollPosition(position)
+
+                    if (!isAutoScrolling && position != gridState.firstVisibleItemIndex) {
+                        Log.d(tag, "🔄 Starting scroll animation to $position")
+                        isAutoScrolling = true
+                        try {
+                            scope.launch {
+                                gridState.animateScrollToItem(position)
+                                delay(300)
+                                isAutoScrolling = false
+                                Log.d(tag, "✅ Scroll animation completed")
+                            }
+                        } catch (e: Exception) {
+                            Log.e(tag, "❌ Scroll animation failed: ${e.message}")
+                            isAutoScrolling = false
+                        }
+                    }
+                } else {
+                    Log.e(tag, "❌ Invalid position format in message: $message")
+                }
+            } catch (e: Exception) {
+                Log.e(tag, "❌ Error processing message: ${e.message}")
+            }
+        }
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        // Main content column with correct padding
+        // Main content column
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -240,7 +260,7 @@ fun ArticleDisplayScreen(
                 onClickDonne = onClickDonne
             )
 
-            // Article grid with weight to fill remaining space
+            // Article grid
             Box(modifier = Modifier.weight(1f)) {
                 ArticleGrid(
                     uiState = uiState,
@@ -255,7 +275,7 @@ fun ArticleDisplayScreen(
             }
         }
 
-        // FAB Group with proper z-index and positioning
+        // FAB Group
         Box(
             modifier = Modifier
                 .matchParentSize()
@@ -278,7 +298,7 @@ fun ArticleDisplayScreen(
             }
         }
 
-        // Loading overlay on top of everything
+        // Loading overlay
         if (uiState.isLoading) {
             LoadingOverlay(
                 progress = uiState.loadingProgress,
