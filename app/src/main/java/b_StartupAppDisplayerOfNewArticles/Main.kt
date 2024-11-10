@@ -144,6 +144,7 @@ fun StartupAppDisplayerOfNewArticles(
 
     )
 }
+
 @Composable
 fun ArticleDisplayScreen(
     uiState: UiState,
