@@ -10,6 +10,7 @@ import a_RoomDB.SoldArticlesTabelle
 import a_RoomDB.SuppliersTabelle
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -71,9 +72,16 @@ class StartUpNewArticlesViewModels(
             }
         }
     }
+    // Add scroll position validation
     fun updateScrollPosition(position: Int) {
-        _uiState.update { it.copy(scrollPosition = position) }
+        if (position >= 0) {
+            viewModelScope.launch {
+                _uiState.update { it.copy(scrollPosition = position) }
+                Log.d("ViewModel", "Updated scroll position to: $position")
+            }
+        }
     }
+
     fun startAsHost() = connectionManager.startAsHost()
     fun startAsClient() = connectionManager.startAsClient()
     fun sendTestMessage(message: String) = connectionManager.sendMessage(message)

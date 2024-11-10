@@ -105,6 +105,7 @@ import com.bumptech.glide.signature.ObjectKey
 import com.example.clientjetpack.LoadingOverlay
 import com.example.clientjetpack.R
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -164,6 +165,23 @@ fun ArticleDisplayScreen(
 ) {
     val isServer = uiState.appIsInstalledInHostPhone
     val tag = if (isServer) "📱 ServerScreen" else "📱 ClientScreen"
+    var isAutoScrolling by remember { mutableStateOf(false) }
+
+    // Debounce scroll broadcasts
+    val scope = rememberCoroutineScope()
+    val broadcastScroll = remember {
+        var job: Job? = null
+        { position: Int ->
+            job?.cancel()
+            job = scope.launch {
+                delay(100) // Debounce time
+                if (isServer && !isAutoScrolling) {
+                    viewModel.sendTestMessage("SCROLL_POS:$position")
+                    Log.d(tag, "🔵 Server: Broadcasting position $position")
+                }
+            }
+        }
+    }
 
     LaunchedEffect(gridState, isServer, uiState.isConnected) {
         if (uiState.isConnected) {
@@ -171,15 +189,17 @@ fun ArticleDisplayScreen(
                 .distinctUntilChanged()
                 .collect { currentPosition ->
                     when {
-                        isServer -> {
-                            viewModel.sendTestMessage("SCROLL_POS:$currentPosition")
-                            Log.d(tag, "🔵 Server: Broadcasting position $currentPosition")
-                        }
+                        isServer -> broadcastScroll(currentPosition)
                         else -> {
                             val serverPosition = uiState.scrollPosition
-                            if (serverPosition != currentPosition && serverPosition >= 0) {
+                            if (serverPosition != currentPosition &&
+                                serverPosition >= 0 &&
+                                !isAutoScrolling) {
                                 Log.d(tag, "🔴 Client: Syncing to position $serverPosition")
-                                gridState.scrollToItem(serverPosition)
+                                isAutoScrolling = true
+                                gridState.animateScrollToItem(serverPosition)
+                                delay(500) // Allow animation to complete
+                                isAutoScrolling = false
                             }
                         }
                     }
@@ -187,14 +207,21 @@ fun ArticleDisplayScreen(
         }
     }
 
+    // Separate message handling effect
     LaunchedEffect(uiState.messageByWifi) {
-        if (uiState.messageByWifi.startsWith("SCROLL_POS:")) {
-            val position = uiState.messageByWifi
-                .removePrefix("SCROLL_POS:")
-                .toIntOrNull() ?: return@LaunchedEffect
-            viewModel.updateScrollPosition(position)
+        val message = uiState.messageByWifi
+        if (message.startsWith("SCROLL_POS:")) {
+            try {
+                val position = message.removePrefix("SCROLL_POS:").toIntOrNull()
+                    ?: return@LaunchedEffect
+                viewModel.updateScrollPosition(position)
+                Log.d(tag, "📥 Received scroll position: $position")
+            } catch (e: Exception) {
+                Log.e(tag, "Error processing scroll message: ${e.message}")
+            }
         }
     }
+
 
     Box(modifier = Modifier.fillMaxSize()) {
         // Main content column with correct padding
