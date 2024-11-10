@@ -115,9 +115,9 @@ dependencies {
     implementation(libs.compose.v100beta01)
     implementation (libs.glide.transformations)
     implementation (libs.play.services.nearby)
-    implementation ("com.squareup.okhttp3:okhttp:4.9.3")
-    implementation ("io.ktor:ktor-server-netty:2.0.3")
-    implementation ("io.ktor:ktor-server-websockets:2.0.3")
+    implementation (libs.okhttp)
+    implementation (libs.ktor.server.netty)
+    implementation (libs.ktor.server.websockets)
 }
 
 apply(plugin = "com.google.gms.google-services")

@@ -1,8 +1,5 @@
 package b_StartupAppDisplayerOfNewArticles
 
-// For StartUpNewArticlesViewModels.kt
-
-// For ArticleDisplayScreen.kt
 import a_RoomDB.AppDatabase
 import a_RoomDB.AppSettingsSaverModel
 import a_RoomDB.ArticlesBasesStatsTable
