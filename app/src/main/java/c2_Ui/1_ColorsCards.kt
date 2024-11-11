@@ -31,7 +31,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import b_StartupAppDisplayerOfNewArticles.StartUpNewArticlesViewModels
 import c3_Objects.ImageDisplayerPC
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -40,7 +39,6 @@ import com.example.clientjetpack.R
 @Composable
 fun ColorsCards(
     articlesBasesStatsTable: ArticlesBasesStatsTable,
-    viewModel: StartUpNewArticlesViewModels,
     modifier: Modifier = Modifier,
     relodeTigger: Int,
     colorsArticlesList: List<ColorsArticlesTabelle>,
@@ -80,7 +78,6 @@ fun ColorsCards(
                     color = colors.firstOrNull(),
                     index = 0,
                     relodeTigger = relodeTigger,
-                    viewModel = viewModel
                 )
             }
 
@@ -103,7 +100,6 @@ fun ColorsCards(
                                 color = color,
                                 index = colors.indexOf(color),
                                 relodeTigger = relodeTigger,
-                                viewModel = viewModel
                             )
                         }
                     }
@@ -121,7 +117,6 @@ private fun ColorItem(
     color: ColorsArticlesTabelle?,
     index: Int,
     relodeTigger: Int,
-    viewModel: StartUpNewArticlesViewModels,
 ) {
     Card(
         modifier = modifier,
@@ -132,7 +127,6 @@ private fun ColorItem(
             ImageDisplayerPC(
                 modifier = Modifier.fillMaxSize(),
                 article = article,
-                viewModel = viewModel,
                 indexColor = index,
                 reloadKey = relodeTigger
             )

@@ -30,16 +30,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import b_StartupAppDisplayerOfNewArticles.StartUpNewArticlesViewModels
 import c2_Ui.ColorsCards
 import c2_Ui.CompactQuantityPickerPC
 import c2_Ui.ProductNameSection
 
 @Composable
 fun DisplayeArticleInfoToClientWindowsPackageC(
+    displayeControler: DisplayeControler,
     articleStatsDataBase: ArticlesBasesStatsTable,
     colorsArticlesList: List<ColorsArticlesTabelle>,
-    viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
     modifier: Modifier = Modifier,
 ) {
@@ -121,7 +120,6 @@ fun DisplayeArticleInfoToClientWindowsPackageC(
                         ) {
                             ColorsCards(
                                 articlesBasesStatsTable = stats,
-                                viewModel = viewModel,
                                 relodeTigger = reloadTrigger,
                                 colorsArticlesList = colorsArticlesList,
                                 modifier = Modifier.fillMaxWidth()

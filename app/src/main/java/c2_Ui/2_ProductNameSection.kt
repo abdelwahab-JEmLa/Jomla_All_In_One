@@ -16,7 +16,6 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun ProductNameSection(article: ArticlesBasesStatsTable) {
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
