@@ -5,25 +5,23 @@ import a_RoomDB.ColorsArticlesTabelle
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -40,6 +38,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -50,9 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import b_StartupAppDisplayerOfNewArticles.AutoResizedText
 import b_StartupAppDisplayerOfNewArticles.StartUpNewArticlesViewModels
-import b_StartupAppDisplayerOfNewArticles.UiState
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -60,16 +58,188 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.example.clientjetpack.R
 import java.io.File
 
+
 @Composable
 fun DisplayeArticleInfoToClientWindows(
-    uiState: UiState,
+    articleStatsDataBase: ArticlesBasesStatsTable,
+    colorsArticlesList: List<ColorsArticlesTabelle> ,
     viewModel: StartUpNewArticlesViewModels,
     reloadTrigger: Int,
     modifier: Modifier = Modifier,
-) {
-    val articleStatsDataBase = uiState.articlesBasesStatTables.find {
-            it.idArticle.toLong() == 100L
-    }
+) {  //todo cree moi preview  phone 360 800 dp
+    // from   "65": {
+    //    "affichageUniteState": false,
+    //    "afficheBoitSiUniter": "",
+    //    "articleHaveUniteImages": false,
+    //    "benficeTotaleEntreMoiEtClien": 0,
+    //    "benificeClient": 0,
+    //    "benificeTotaleEn2": 290,
+    //    "cartonState": "",
+    //    "classementCate": 3,
+    //    "clienPrixVentUnite": 15,
+    //    "commmentSeVent": "",
+    //    "couleur1": "🍓 Fraise 🍓",
+    //    "couleur2": "🥤 Coca 🥤",
+    //    "couleur3": "🍏 تفاح 🍏",
+    //    "couleur4": "🍋 Citron 🍋",
+    //    "dateCreationCategorie": "",
+    //    "dateLastIdSupplierChoseToBuy": "2024-11-07",
+    //    "diponibilityState": "",
+    //    "funChangeImagsDimention": false,
+    //    "idArticle": 65,
+    //    "idCategorie": 12,
+    //    "idForSearchArticles": 0,
+    //    "idcolor1": 10,
+    //    "idcolor2": 29,
+    //    "idcolor3": 30,
+    //    "idcolor4": 31,
+    //    "imageDimention": "",
+    //    "itsNewArrivale": false,
+    //    "lastIdSupplierChoseToBuy": 3,
+    //    "lastUpdateState": "",
+    //    "minQuan": 1,
+    //    "monBeneficeUniter": 0,
+    //    "monBenfice": 60,
+    //    "monPrixAchat": 370,
+    //    "monPrixAchatUniter": 8.958333333333334,
+    //    "monPrixVent": 430,
+    //    "monPrixVentUniter": 215,
+    //    "neaon1": 0,
+    //    "neaon2": "",
+    //    "nmbrCaron": 1,
+    //    "nmbrCat": 4,
+    //    "nmbrUnite": 48,
+    //    "nomArab": "سيلكا",
+    //    "nomArticleFinale": "Silca®",
+    //    "nomCategorie": "Fun Candys",
+    //    "nomCategorie2": "Fun Candys",
+    //    "prixDeVentTotaleChezClient": 720
+    //  },
+    //    {
+    //    "classementColore": 1,
+    //    "iconColore": "🎨",
+    //    "idColore": 1,
+    //    "nameColore": "Multi Couleur"
+    //  },
+    //  {
+    //    "classementColore": 2,
+    //    "iconColore": "🍫",
+    //    "idColore": 2,
+    //    "nameColore": "chocolat"
+    //  },
+    //  {
+    //    "classementColore": 3,
+    //    "iconColore": "🍒",
+    //    "idColore": 3,
+    //    "nameColore": "Ceris"
+    //  },
+    //  {
+    //    "classementColore": 4,
+    //    "iconColore": "🥛",
+    //    "idColore": 4,
+    //    "nameColore": "lait"
+    //  },
+    //  {
+    //    "classementColore": 5,
+    //    "iconColore": "🟨",
+    //    "idColore": 5,
+    //    "nameColore": "صفراء"
+    //  },
+    //  {
+    //    "classementColore": 6,
+    //    "iconColore": "🉐",
+    //    "idColore": 6,
+    //    "nameColore": "بيضاء"
+    //  },
+    //  {
+    //    "classementColore": 7,
+    //    "iconColore": "©",
+    //    "idColore": 7,
+    //    "nameColore": "[Barbrqu]"
+    //  },
+    //  {
+    //    "classementColore": 8,
+    //    "iconColore": "🎁",
+    //    "idColore": 8,
+    //    "nameColore": "standard"
+    //  },
+    //  {
+    //    "classementColore": 9,
+    //    "iconColore": "🥛",
+    //    "idColore": 9,
+    //    "nameColore": "Blanche"
+    //  },
+    //  {
+    //    "classementColore": 10,
+    //    "iconColore": "🍓",
+    //    "idColore": 10,
+    //    "nameColore": "Fraise"
+    //  },
+    //  {
+    //    "classementColore": 11,
+    //    "iconColore": "🍡",
+    //    "idColore": 11,
+    //    "nameColore": "fruité"
+    //  },
+    //  {
+    //    "classementColore": 12,
+    //    "iconColore": "🥞",
+    //    "idColore": 12,
+    //    "nameColore": "Caramel"
+    //  },
+    //  {
+    //    "classementColore": 13,
+    //    "iconColore": "",
+    //    "idColore": 13,
+    //    "nameColore": "unite"
+    //  },
+    //  {
+    //    "classementColore": 14,
+    //    "iconColore": "🍌",
+    //    "idColore": 14,
+    //    "nameColore": "Banane"
+    //  },
+    //  {
+    //    "classementColore": 15,
+    //    "iconColore": "🐛",
+    //    "idColore": 15,
+    //    "nameColore": "دو5دة"
+    //  },
+    //  {
+    //    "classementColore": 16,
+    //    "iconColore": "🍬",
+    //    "idColore": 16,
+    //    "nameColore": "?? خاتم"
+    //  },
+    //  {
+    //    "classementColore": 17,
+    //    "iconColore": "🤏",
+    //    "idColore": 17,
+    //    "nameColore": "اسنان"
+    //  },
+    //  {
+    //    "classementColore": 18,
+    //    "iconColore": "🌰",
+    //    "idColore": 18,
+    //    "nameColore": "بندق"
+    //  },
+    //  {
+    //    "classementColore": 19,
+    //    "iconColore": "🍇",
+    //    "idColore": 19,
+    //    "nameColore": "cassisse"
+    //  },
+    //  {
+    //    "classementColore": 20,
+    //    "iconColore": "🍏",
+    //    "idColore": 20,
+    //    "nameColore": "?? تفاح"
+    //  },
+    //  {
+    //    "classementColore": 21,
+    //    "iconColore": "🍫",
+    //    "idColore": 21,
+    //    "nameColore": "Noir"
     var isPickerVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
@@ -128,7 +298,7 @@ fun DisplayeArticleInfoToClientWindows(
                             articlesBasesStatsTable = stats,
                             viewModel = viewModel,
                             relodeTigger = reloadTrigger,
-                            uiState = uiState,
+                            colorsArticlesList = colorsArticlesList,
                             modifier = Modifier.padding(horizontal = 4.dp),
                         )
                     }
@@ -183,16 +353,13 @@ private fun ProductNameSection(article: ArticlesBasesStatsTable) {
 }
 
 @Composable
-private fun ColorsCards(
+fun ColorsCards(
     articlesBasesStatsTable: ArticlesBasesStatsTable,
     viewModel: StartUpNewArticlesViewModels,
     modifier: Modifier = Modifier,
     relodeTigger: Int,
-    uiState: UiState,
-) {  // TODO: regle la logique pour que l affichage va etre
-    //ca contien index0 une image grand qui max whidth et height = 360
-    //au bas un lazy row contien les autre couleurs whidth =   200
-    //hei = 200
+    colorsArticlesList: List<ColorsArticlesTabelle>,
+) {
     val colors = listOf(
         articlesBasesStatsTable.idcolor1,
         articlesBasesStatsTable.idcolor2,
@@ -200,93 +367,62 @@ private fun ColorsCards(
         articlesBasesStatsTable.idcolor4
     ).mapNotNull { colorId ->
         if (colorId != 0L) {
-            uiState.colorsArticlesTabelleModel.find { it.idColore == colorId }
+            colorsArticlesList.find { it.idColore == colorId }
         } else null
     }
 
-    Box(
+    Card(
         modifier = modifier
             .fillMaxWidth()
+            .padding(8.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        when (colors.size) {
-            1 -> SingleColorLayout(
-                article = articlesBasesStatsTable,
-                color = colors[0],
-                viewModel = viewModel,
-                relodeTigger = relodeTigger,
-            )
-            else -> MultipleColorsLayout(
-                article = articlesBasesStatsTable,
-                colors = colors,
-                viewModel = viewModel,
-                relodeTigger = relodeTigger,
-            )
-        }
-    }
-}
-
-@Composable
-private fun SingleColorLayout(
-    article: ArticlesBasesStatsTable,
-    color: ColorsArticlesTabelle,
-    viewModel: StartUpNewArticlesViewModels,
-    relodeTigger: Int,
-) {
-    val height = 250.dp
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(4.dp)
-    ) {
-        ColorItem(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(height),
-            article = article,
-            color = color,
-            index = 0,
-            relodeTigger = relodeTigger,
-            viewModel = viewModel,
-            height = height,
-        )
-    }
-}
-
-@Composable
-private fun MultipleColorsLayout(
-    article: ArticlesBasesStatsTable,
-    colors: List<ColorsArticlesTabelle>,
-    viewModel: StartUpNewArticlesViewModels,
-    relodeTigger: Int,
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(4.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        colors.chunked(2).forEach { rowColors ->
-            LazyRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                .padding(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            // Main large image
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(360.dp)
             ) {
-                items(rowColors) { color ->
-                    val index = colors.indexOf(color)
-                    val height = 250.dp
-                    Box(
-                        modifier = Modifier
-                            .size(height)
-                    ) {
-                        ColorItem(
-                            modifier = Modifier.fillMaxSize(),
-                            article = article,
-                            color = color,
-                            index = index,
-                            relodeTigger = relodeTigger,
-                            viewModel = viewModel,
-                            height=height
-                        )
+                ColorItem(
+                    modifier = Modifier.fillMaxSize(),
+                    article = articlesBasesStatsTable,
+                    color = colors.firstOrNull(),
+                    index = 0,
+                    relodeTigger = relodeTigger,
+                    viewModel = viewModel,
+                    height = 360.dp
+                )
+            }
+
+            // Color variants in LazyRow
+            if (colors.size > 1) {
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    contentPadding = PaddingValues(horizontal = 8.dp)
+                ) {
+                    items(colors.drop(1)) { color ->
+                        Box(
+                            modifier = Modifier
+                                .size(200.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                        ) {
+                            ColorItem(
+                                modifier = Modifier.fillMaxSize(),
+                                article = articlesBasesStatsTable,
+                                color = color,
+                                index = colors.indexOf(color),
+                                relodeTigger = relodeTigger,
+                                viewModel = viewModel,
+                                height = 200.dp
+                            )
+                        }
                     }
                 }
             }
@@ -294,11 +430,9 @@ private fun MultipleColorsLayout(
     }
 }
 
-
-
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun ColorItem(
+private fun ColorItem(
     modifier: Modifier,
     article: ArticlesBasesStatsTable,
     color: ColorsArticlesTabelle?,
@@ -308,115 +442,72 @@ fun ColorItem(
     height: Dp,
 ) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(4.dp)
+        modifier = modifier,
+        shape = RoundedCornerShape(8.dp)
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Box(
-                modifier = Modifier
-                    .weight(0.7f)
-                    .fillMaxHeight()
-            ) {
-                ImageDisplayer(
-                    modifier = Modifier.fillMaxSize(),
-                    article = article,
-                    viewModel = viewModel,
-                    indexColor = index,
-                    reloadKey = relodeTigger
-                )
+        Box(modifier = Modifier.fillMaxSize()) {
+            // Image
+            ImageDisplayer(
+                modifier = Modifier.fillMaxSize(),
+                article = article,
+                viewModel = viewModel,
+                indexColor = index,
+                reloadKey = relodeTigger
+            )
 
-                Column(
+            // Color info overlay at bottom
+            color?.let { colorData ->
+                Surface(
                     modifier = Modifier
-                        .fillMaxWidth()
                         .align(Alignment.BottomCenter)
+                        .fillMaxWidth()
+                        .background(
+                            Brush.verticalGradient(
+                                colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.3f))
+                            )
+                        ),
+                    color = Color.Transparent
                 ) {
-
-
-                    AnimatedVisibility(
-                        visible = true,
-                        enter = fadeIn(),
-                        exit = fadeOut()
+                    Row(
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        color?.let { colorData ->
+                        // Color name
+                        Text(
+                            text = colorData.nameColore,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.weight(1f)
+                        )
+
+                        // Color icon
+                        Surface(
+                            shape = CircleShape,
+                            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
+                            modifier = Modifier.size(32.dp)
+                        ) {
                             Box(
-                                modifier = Modifier
-                                    .padding(3.dp)
-                                    .fillMaxWidth(),
+                                modifier = Modifier.fillMaxSize(),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(IntrinsicSize.Min),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Box(
-                                        modifier = Modifier
-                                            .weight(0.6f)
-                                            .wrapContentHeight(),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Surface(
-                                            modifier = Modifier.matchParentSize(),
-                                            shape = CircleShape,
-                                            color = Color.White.copy(alpha = 0.7f),
-                                            border = BorderStroke(1.dp, Color.White.copy(alpha = 0.9f))
-                                        ) {}
-
-                                        AutoResizedText(
-                                            text = colorData.nameColore,
-                                            modifier = Modifier,
-                                            color = Color.Black,
-                                            style = MaterialTheme.typography.headlineMedium.copy(
-                                                fontWeight = FontWeight.Bold
-                                            ),
-                                            maxLines = 1
+                                when {
+                                    colorData.iconColore in listOf("©", "💯", "") -> {
+                                        GlideImage(
+                                            model = R.drawable.logo,
+                                            contentDescription = "Logo",
+                                            modifier = Modifier.size(24.dp)
                                         )
                                     }
-
-                                    Box(
-                                        modifier = Modifier
-                                            .weight(0.4f)
-                                            .wrapContentHeight(),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Surface(
-                                            modifier = Modifier.matchParentSize(),
-                                            shape = CircleShape,
-                                            color = Color.White.copy(alpha = 0.8f),
-                                            border = BorderStroke(1.dp, Color.White.copy(alpha = 0.95f))
-                                        ) {}
-
-
-                                        Surface(
-                                            shape = CircleShape,
-                                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f),
-                                            tonalElevation = 4.dp,
-                                            shadowElevation = 4.dp
-                                        ) {
-                                            if (colorData.iconColore == "©" || colorData.iconColore == "💯"|| colorData.iconColore == "") {
-                                                GlideImage(
-                                                    model = R.drawable.logo,
-                                                    contentDescription = "Logo",
-                                                    modifier = Modifier
-                                                        .size(
-                                                            38.dp
-                                                        )
-                                                )
-                                            } else {
-                                                Text(
-                                                    text = colorData.iconColore,
-                                                    fontSize =  38.sp,
-                                                    fontWeight = FontWeight.Bold ,
-                                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                                    modifier = Modifier
-                                                )
-                                            }
-                                        }
+                                    else -> {
+                                        Text(
+                                            text = colorData.iconColore,
+                                            fontSize = 18.sp,
+                                            fontWeight = FontWeight.Bold
+                                        )
                                     }
                                 }
                             }
@@ -427,6 +518,7 @@ fun ColorItem(
         }
     }
 }
+
 
 @Composable
 private fun ImageDisplayer(

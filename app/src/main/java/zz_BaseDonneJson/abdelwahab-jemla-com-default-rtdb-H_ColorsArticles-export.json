@@ -1,0 +1,975 @@
+[
+  null,
+  {
+    "classementColore": 1,
+    "iconColore": "🎨",
+    "idColore": 1,
+    "nameColore": "Multi Couleur"
+  },
+  {
+    "classementColore": 2,
+    "iconColore": "🍫",
+    "idColore": 2,
+    "nameColore": "chocolat"
+  },
+  {
+    "classementColore": 3,
+    "iconColore": "🍒",
+    "idColore": 3,
+    "nameColore": "Ceris"
+  },
+  {
+    "classementColore": 4,
+    "iconColore": "🥛",
+    "idColore": 4,
+    "nameColore": "lait"
+  },
+  {
+    "classementColore": 5,
+    "iconColore": "🟨",
+    "idColore": 5,
+    "nameColore": "صفراء"
+  },
+  {
+    "classementColore": 6,
+    "iconColore": "🉐",
+    "idColore": 6,
+    "nameColore": "بيضاء"
+  },
+  {
+    "classementColore": 7,
+    "iconColore": "©",
+    "idColore": 7,
+    "nameColore": "[Barbrqu]"
+  },
+  {
+    "classementColore": 8,
+    "iconColore": "🎁",
+    "idColore": 8,
+    "nameColore": "standard"
+  },
+  {
+    "classementColore": 9,
+    "iconColore": "🥛",
+    "idColore": 9,
+    "nameColore": "Blanche"
+  },
+  {
+    "classementColore": 10,
+    "iconColore": "🍓",
+    "idColore": 10,
+    "nameColore": "Fraise"
+  },
+  {
+    "classementColore": 11,
+    "iconColore": "🍡",
+    "idColore": 11,
+    "nameColore": "fruité"
+  },
+  {
+    "classementColore": 12,
+    "iconColore": "🥞",
+    "idColore": 12,
+    "nameColore": "Caramel"
+  },
+  {
+    "classementColore": 13,
+    "iconColore": "",
+    "idColore": 13,
+    "nameColore": "unite"
+  },
+  {
+    "classementColore": 14,
+    "iconColore": "🍌",
+    "idColore": 14,
+    "nameColore": "Banane"
+  },
+  {
+    "classementColore": 15,
+    "iconColore": "🐛",
+    "idColore": 15,
+    "nameColore": "دو5دة"
+  },
+  {
+    "classementColore": 16,
+    "iconColore": "🍬",
+    "idColore": 16,
+    "nameColore": "?? خاتم"
+  },
+  {
+    "classementColore": 17,
+    "iconColore": "🤏",
+    "idColore": 17,
+    "nameColore": "اسنان"
+  },
+  {
+    "classementColore": 18,
+    "iconColore": "🌰",
+    "idColore": 18,
+    "nameColore": "بندق"
+  },
+  {
+    "classementColore": 19,
+    "iconColore": "🍇",
+    "idColore": 19,
+    "nameColore": "cassisse"
+  },
+  {
+    "classementColore": 20,
+    "iconColore": "🍏",
+    "idColore": 20,
+    "nameColore": "?? تفاح"
+  },
+  {
+    "classementColore": 21,
+    "iconColore": "🍫",
+    "idColore": 21,
+    "nameColore": "Noir"
+  },
+  {
+    "classementColore": 22,
+    "iconColore": "🍫",
+    "idColore": 22,
+    "nameColore": "chocolat ??"
+  },
+  {
+    "classementColore": 23,
+    "iconColore": "🟦",
+    "idColore": 23,
+    "nameColore": "ازرق"
+  },
+  {
+    "classementColore": 24,
+    "iconColore": "🌿",
+    "idColore": 24,
+    "nameColore": "نعناع"
+  },
+  {
+    "classementColore": 25,
+    "iconColore": "🎨",
+    "idColore": 25,
+    "nameColore": "?? Multi Couleur"
+  },
+  {
+    "classementColore": 26,
+    "iconColore": "🍙",
+    "idColore": 26,
+    "nameColore": "Reglize"
+  },
+  {
+    "classementColore": 27,
+    "iconColore": "🎇",
+    "idColore": 27,
+    "nameColore": "nougat"
+  },
+  {
+    "classementColore": 28,
+    "iconColore": "🍡",
+    "idColore": 28,
+    "nameColore": "?? fruité"
+  },
+  {
+    "classementColore": 29,
+    "iconColore": "🥤",
+    "idColore": 29,
+    "nameColore": "Coca"
+  },
+  {
+    "classementColore": 30,
+    "iconColore": "🍏",
+    "idColore": 30,
+    "nameColore": "تفاح"
+  },
+  {
+    "classementColore": 31,
+    "iconColore": "🍋",
+    "idColore": 31,
+    "nameColore": "Citron"
+  },
+  {
+    "classementColore": 32,
+    "iconColore": "🥥",
+    "idColore": 32,
+    "nameColore": "noîx de coco"
+  },
+  {
+    "classementColore": 33,
+    "iconColore": "🍪",
+    "idColore": 33,
+    "nameColore": "oreo"
+  },
+  {
+    "classementColore": 34,
+    "iconColore": "",
+    "idColore": 34,
+    "nameColore": "رمان"
+  },
+  {
+    "classementColore": 35,
+    "iconColore": "🧃",
+    "idColore": 35,
+    "nameColore": "حارة"
+  },
+  {
+    "classementColore": 36,
+    "iconColore": "🉐",
+    "idColore": 36,
+    "nameColore": "زرقاء"
+  },
+  {
+    "classementColore": 37,
+    "iconColore": "🧆",
+    "idColore": 37,
+    "nameColore": "barbecu"
+  },
+  {
+    "classementColore": 38,
+    "iconColore": "🍉",
+    "idColore": 38,
+    "nameColore": "دلاع"
+  },
+  {
+    "classementColore": 39,
+    "iconColore": "🟤",
+    "idColore": 39,
+    "nameColore": "لوز"
+  },
+  {
+    "classementColore": 40,
+    "iconColore": "🧀",
+    "idColore": 40,
+    "nameColore": "فرماج"
+  },
+  {
+    "classementColore": 41,
+    "iconColore": "🍅",
+    "idColore": 41,
+    "nameColore": "طماطم"
+  },
+  {
+    "classementColore": 42,
+    "iconColore": "🍕",
+    "idColore": 42,
+    "nameColore": "pizza"
+  },
+  {
+    "classementColore": 43,
+    "iconColore": "🐬",
+    "idColore": 43,
+    "nameColore": "حوتة"
+  },
+  {
+    "classementColore": 44,
+    "iconColore": "🍬",
+    "idColore": 44,
+    "nameColore": "خاتم"
+  },
+  {
+    "classementColore": 45,
+    "iconColore": "",
+    "idColore": 45,
+    "nameColore": "amb"
+  },
+  {
+    "classementColore": 46,
+    "iconColore": "🟥",
+    "idColore": 46,
+    "nameColore": "حمراء"
+  },
+  {
+    "classementColore": 47,
+    "iconColore": "💟",
+    "idColore": 47,
+    "nameColore": "وردي"
+  },
+  {
+    "classementColore": 48,
+    "iconColore": "💮",
+    "idColore": 48,
+    "nameColore": "بنات"
+  },
+  {
+    "classementColore": 49,
+    "iconColore": "👦",
+    "idColore": 49,
+    "nameColore": "اولاد"
+  },
+  {
+    "classementColore": 50,
+    "iconColore": "⬛",
+    "idColore": 50,
+    "nameColore": "سوداء"
+  },
+  {
+    "classementColore": 51,
+    "iconColore": "🉐",
+    "idColore": 51,
+    "nameColore": "خضراء"
+  },
+  {
+    "classementColore": 52,
+    "iconColore": "💯",
+    "idColore": 52,
+    "nameColore": "Standar"
+  },
+  {
+    "classementColore": 53,
+    "iconColore": "🍨",
+    "idColore": 53,
+    "nameColore": "vert fort"
+  },
+  {
+    "classementColore": 54,
+    "iconColore": "🍨",
+    "idColore": 54,
+    "nameColore": "blue fort"
+  },
+  {
+    "classementColore": 55,
+    "iconColore": "🍊",
+    "idColore": 55,
+    "nameColore": "orange"
+  },
+  {
+    "classementColore": 56,
+    "iconColore": "🍊",
+    "idColore": 56,
+    "nameColore": "مندرين"
+  },
+  {
+    "classementColore": 57,
+    "iconColore": "©",
+    "idColore": 57,
+    "nameColore": "[Banane]"
+  },
+  {
+    "classementColore": 58,
+    "iconColore": "🉐",
+    "idColore": 58,
+    "nameColore": "Classice"
+  },
+  {
+    "classementColore": 59,
+    "iconColore": "🉐",
+    "idColore": 59,
+    "nameColore": "Animale"
+  },
+  {
+    "classementColore": 60,
+    "iconColore": "💯",
+    "idColore": 60,
+    "nameColore": "Standar??"
+  },
+  {
+    "classementColore": 61,
+    "iconColore": "©",
+    "idColore": 61,
+    "nameColore": "[Citron]"
+  },
+  {
+    "classementColore": 62,
+    "iconColore": "©",
+    "idColore": 62,
+    "nameColore": "[Orange]"
+  },
+  {
+    "classementColore": 63,
+    "iconColore": "🉐",
+    "idColore": 63,
+    "nameColore": "تين"
+  },
+  {
+    "classementColore": 64,
+    "iconColore": "🉐",
+    "idColore": 64,
+    "nameColore": "حليب"
+  },
+  {
+    "classementColore": 65,
+    "iconColore": "🉐",
+    "idColore": 65,
+    "nameColore": "Kiratin"
+  },
+  {
+    "classementColore": 66,
+    "iconColore": "🟫",
+    "idColore": 66,
+    "nameColore": "بني"
+  },
+  {
+    "classementColore": 67,
+    "iconColore": "🟥",
+    "idColore": 67,
+    "nameColore": "احمر"
+  },
+  {
+    "classementColore": 68,
+    "iconColore": "⬛",
+    "idColore": 68,
+    "nameColore": "اسود"
+  },
+  {
+    "classementColore": 69,
+    "iconColore": "🟢",
+    "idColore": 69,
+    "nameColore": "Avocado"
+  },
+  {
+    "classementColore": 70,
+    "iconColore": "🟤",
+    "idColore": 70,
+    "nameColore": "شعير"
+  },
+  {
+    "classementColore": 71,
+    "iconColore": "🍑",
+    "idColore": 71,
+    "nameColore": "مشماش"
+  },
+  {
+    "classementColore": 72,
+    "iconColore": "⚪",
+    "idColore": 72,
+    "nameColore": "ابيض"
+  },
+  {
+    "classementColore": 73,
+    "iconColore": "🟩",
+    "idColore": 73,
+    "nameColore": "اخضر"
+  },
+  {
+    "classementColore": 74,
+    "iconColore": "©",
+    "idColore": 74,
+    "nameColore": "[Standar]"
+  },
+  {
+    "classementColore": 75,
+    "iconColore": "©",
+    "idColore": 75,
+    "nameColore": "[Vanilia]"
+  },
+  {
+    "classementColore": 76,
+    "iconColore": "©",
+    "idColore": 76,
+    "nameColore": "[Choco]"
+  },
+  {
+    "classementColore": 77,
+    "iconColore": "",
+    "idColore": 77,
+    "nameColore": "frai"
+  },
+  {
+    "classementColore": 78,
+    "iconColore": "©",
+    "idColore": 78,
+    "nameColore": "[Blanc]"
+  },
+  {
+    "classementColore": 79,
+    "iconColore": "©",
+    "idColore": 79,
+    "nameColore": "[Bleu]"
+  },
+  {
+    "classementColore": 80,
+    "iconColore": "",
+    "idColore": 80,
+    "nameColore": "fruité"
+  },
+  {
+    "classementColore": 81,
+    "iconColore": "©",
+    "idColore": 81,
+    "nameColore": "[Vert]"
+  },
+  {
+    "classementColore": 82,
+    "iconColore": "©",
+    "idColore": 82,
+    "nameColore": "[Rouge]"
+  },
+  {
+    "classementColore": 83,
+    "iconColore": "©",
+    "idColore": 83,
+    "nameColore": "[Cactus]"
+  },
+  {
+    "classementColore": 84,
+    "iconColore": "©",
+    "idColore": 84,
+    "nameColore": "[Miel]"
+  },
+  {
+    "classementColore": 85,
+    "iconColore": "©",
+    "idColore": 85,
+    "nameColore": "[Noir]"
+  },
+  {
+    "classementColore": 86,
+    "iconColore": "©",
+    "idColore": 86,
+    "nameColore": "[Gris]"
+  },
+  {
+    "classementColore": 87,
+    "iconColore": "©",
+    "idColore": 87,
+    "nameColore": "[Violet]"
+  },
+  {
+    "classementColore": 88,
+    "iconColore": "©",
+    "idColore": 88,
+    "nameColore": "[Rose]"
+  },
+  {
+    "classementColore": 89,
+    "iconColore": "©",
+    "idColore": 89,
+    "nameColore": "[]"
+  },
+  {
+    "classementColore": 90,
+    "iconColore": "",
+    "idColore": 90,
+    "nameColore": "zanjabil"
+  },
+  {
+    "classementColore": 91,
+    "iconColore": "",
+    "idColore": 91,
+    "nameColore": "na3na3"
+  },
+  {
+    "classementColore": 92,
+    "iconColore": "",
+    "idColore": 92,
+    "nameColore": "za3ter"
+  },
+  {
+    "classementColore": 93,
+    "iconColore": "",
+    "idColore": 93,
+    "nameColore": "Standart"
+  },
+  {
+    "classementColore": 94,
+    "iconColore": "",
+    "idColore": 94,
+    "nameColore": "violet"
+  },
+  {
+    "classementColore": 95,
+    "iconColore": "",
+    "idColore": 95,
+    "nameColore": "rouge"
+  },
+  {
+    "classementColore": 96,
+    "iconColore": "",
+    "idColore": 96,
+    "nameColore": "blanche"
+  },
+  {
+    "classementColore": 97,
+    "iconColore": "",
+    "idColore": 97,
+    "nameColore": "lait"
+  },
+  {
+    "classementColore": 98,
+    "iconColore": "",
+    "idColore": 98,
+    "nameColore": "formaje"
+  },
+  {
+    "classementColore": 99,
+    "iconColore": "",
+    "idColore": 99,
+    "nameColore": "hare"
+  },
+  {
+    "classementColore": 100,
+    "iconColore": "",
+    "idColore": 100,
+    "nameColore": "barbqio"
+  },
+  {
+    "classementColore": 101,
+    "iconColore": "",
+    "idColore": 101,
+    "nameColore": "3 couleurs"
+  },
+  {
+    "classementColore": 102,
+    "iconColore": "",
+    "idColore": 102,
+    "nameColore": "kid"
+  },
+  {
+    "classementColore": 103,
+    "iconColore": "",
+    "idColore": 103,
+    "nameColore": "citron"
+  },
+  {
+    "classementColore": 104,
+    "iconColore": "",
+    "idColore": 104,
+    "nameColore": "jaune"
+  },
+  {
+    "classementColore": 105,
+    "iconColore": "",
+    "idColore": 105,
+    "nameColore": "vert"
+  },
+  {
+    "classementColore": 106,
+    "iconColore": "",
+    "idColore": 106,
+    "nameColore": "rose"
+  },
+  {
+    "classementColore": 107,
+    "iconColore": "",
+    "idColore": 107,
+    "nameColore": "4 couleurs"
+  },
+  {
+    "classementColore": 108,
+    "iconColore": "",
+    "idColore": 108,
+    "nameColore": "roman"
+  },
+  {
+    "classementColore": 109,
+    "iconColore": "",
+    "idColore": 109,
+    "nameColore": "noire"
+  },
+  {
+    "classementColore": 110,
+    "iconColore": "",
+    "idColore": 110,
+    "nameColore": "berbery"
+  },
+  {
+    "classementColore": 111,
+    "iconColore": "",
+    "idColore": 111,
+    "nameColore": "maron kemache"
+  },
+  {
+    "classementColore": 112,
+    "iconColore": "",
+    "idColore": 112,
+    "nameColore": "rouge kemache"
+  },
+  {
+    "classementColore": 113,
+    "iconColore": "",
+    "idColore": 113,
+    "nameColore": "jaune kemeche"
+  },
+  {
+    "classementColore": 114,
+    "iconColore": "",
+    "idColore": 114,
+    "nameColore": "blue"
+  },
+  {
+    "classementColore": 115,
+    "iconColore": "",
+    "idColore": 115,
+    "nameColore": "caliptus"
+  },
+  {
+    "classementColore": 116,
+    "iconColore": "",
+    "idColore": 116,
+    "nameColore": "blue fort"
+  },
+  {
+    "classementColore": 117,
+    "iconColore": "",
+    "idColore": 117,
+    "nameColore": "white"
+  },
+  {
+    "classementColore": 118,
+    "iconColore": "",
+    "idColore": 118,
+    "nameColore": "boite"
+  },
+  {
+    "classementColore": 119,
+    "iconColore": "",
+    "idColore": 119,
+    "nameColore": "gris"
+  },
+  {
+    "classementColore": 120,
+    "iconColore": "",
+    "idColore": 120,
+    "nameColore": "maron"
+  },
+  {
+    "classementColore": 121,
+    "iconColore": "",
+    "idColore": 121,
+    "nameColore": "fresh"
+  },
+  {
+    "classementColore": 122,
+    "iconColore": "",
+    "idColore": 122,
+    "nameColore": "couleur protection"
+  },
+  {
+    "classementColore": 123,
+    "iconColore": "",
+    "idColore": 123,
+    "nameColore": "keratin"
+  },
+  {
+    "classementColore": 124,
+    "iconColore": "",
+    "idColore": 124,
+    "nameColore": "looz"
+  },
+  {
+    "classementColore": 125,
+    "iconColore": "",
+    "idColore": 125,
+    "nameColore": "vert alovera"
+  },
+  {
+    "classementColore": 126,
+    "iconColore": "",
+    "idColore": 126,
+    "nameColore": "hana"
+  },
+  {
+    "classementColore": 127,
+    "iconColore": "",
+    "idColore": 127,
+    "nameColore": "2 couleurs"
+  },
+  {
+    "classementColore": 128,
+    "iconColore": "",
+    "idColore": 128,
+    "nameColore": "fruite"
+  },
+  {
+    "classementColore": 129,
+    "iconColore": "",
+    "idColore": 129,
+    "nameColore": "kermouss"
+  },
+  {
+    "classementColore": 130,
+    "iconColore": "",
+    "idColore": 130,
+    "nameColore": "halazoun"
+  },
+  {
+    "classementColore": 131,
+    "iconColore": "",
+    "idColore": 131,
+    "nameColore": "blach zig zag"
+  },
+  {
+    "classementColore": 132,
+    "iconColore": "",
+    "idColore": 132,
+    "nameColore": "chocolat"
+  },
+  {
+    "classementColore": 133,
+    "iconColore": "",
+    "idColore": 133,
+    "nameColore": "b sekour"
+  },
+  {
+    "classementColore": 134,
+    "iconColore": "",
+    "idColore": 134,
+    "nameColore": ""
+  },
+  {
+    "classementColore": 135,
+    "iconColore": "",
+    "idColore": 135,
+    "nameColore": "bakhsis"
+  },
+  {
+    "classementColore": 136,
+    "iconColore": "",
+    "idColore": 136,
+    "nameColore": "temer"
+  },
+  {
+    "classementColore": 137,
+    "iconColore": "",
+    "idColore": 137,
+    "nameColore": "cream"
+  },
+  {
+    "classementColore": 138,
+    "iconColore": "",
+    "idColore": 138,
+    "nameColore": "blanch"
+  },
+  {
+    "classementColore": 139,
+    "iconColore": "",
+    "idColore": 139,
+    "nameColore": "cerise"
+  },
+  {
+    "classementColore": 140,
+    "iconColore": "",
+    "idColore": 140,
+    "nameColore": "mechmach"
+  },
+  {
+    "classementColore": 141,
+    "iconColore": "",
+    "idColore": 141,
+    "nameColore": "noisette"
+  },
+  {
+    "classementColore": 142,
+    "iconColore": "",
+    "idColore": 142,
+    "nameColore": "bidon"
+  },
+  {
+    "classementColore": 143,
+    "iconColore": "",
+    "idColore": 143,
+    "nameColore": "Fraise"
+  },
+  {
+    "classementColore": 144,
+    "iconColore": "",
+    "idColore": 144,
+    "nameColore": "f"
+  },
+  {
+    "classementColore": 145,
+    "iconColore": "",
+    "idColore": 145,
+    "nameColore": "fr"
+  },
+  {
+    "classementColore": 146,
+    "iconColore": "",
+    "idColore": 146,
+    "nameColore": "Frais"
+  },
+  {
+    "classementColore": 147,
+    "iconColore": "",
+    "idColore": 147,
+    "nameColore": "Frai"
+  },
+  {
+    "classementColore": 148,
+    "iconColore": "",
+    "idColore": 148,
+    "nameColore": "Fra"
+  },
+  {
+    "classementColore": 149,
+    "iconColore": "",
+    "idColore": 149,
+    "nameColore": "Fr"
+  },
+  {
+    "classementColore": 150,
+    "iconColore": "",
+    "idColore": 150,
+    "nameColore": "F"
+  },
+  {
+    "classementColore": 151,
+    "iconColore": "",
+    "idColore": 151,
+    "nameColore": "Couleur 10"
+  },
+  {
+    "classementColore": 152,
+    "iconColore": "",
+    "idColore": 152,
+    "nameColore": "Couleur 1"
+  },
+  {
+    "classementColore": 153,
+    "iconColore": "",
+    "idColore": 153,
+    "nameColore": "Uniteh"
+  },
+  {
+    "classementColore": 154,
+    "iconColore": "",
+    "idColore": 154,
+    "nameColore": "Unitehx"
+  },
+  {
+    "classementColore": 155,
+    "iconColore": "",
+    "idColore": 155,
+    "nameColore": "Couleur "
+  },
+  {
+    "classementColore": 156,
+    "iconColore": "",
+    "idColore": 156,
+    "nameColore": "s"
+  },
+  {
+    "classementColore": 157,
+    "iconColore": "",
+    "idColore": 157,
+    "nameColore": "st"
+  },
+  {
+    "classementColore": 158,
+    "iconColore": "",
+    "idColore": 158,
+    "nameColore": "sta"
+  },
+  {
+    "classementColore": 159,
+    "iconColore": "",
+    "idColore": 159,
+    "nameColore": "[Standar"
+  },
+  {
+    "classementColore": 160,
+    "iconColore": "",
+    "idColore": 160,
+    "nameColore": "t"
+  },
+  {
+    "classementColore": 161,
+    "iconColore": "",
+    "idColore": 161,
+    "nameColore": "te"
+  },
+  {
+    "classementColore": 162,
+    "iconColore": "",
+    "idColore": 162,
+    "nameColore": "tes"
+  }
+]
