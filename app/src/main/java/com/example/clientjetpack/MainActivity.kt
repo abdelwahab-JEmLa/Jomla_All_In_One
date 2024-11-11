@@ -30,6 +30,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CreditScore
 import androidx.compose.material.icons.filled.EditRoad
@@ -170,6 +171,7 @@ private fun MainScreen(
 ) {
     val startUpViewModel = appViewModels.startUpNewArticlesViewModels
     val uiState by startUpViewModel.uiState.collectAsState()
+    val isHostPhone = uiState.isHostPhone
     val navController = rememberNavController()
     val items = NavigationItems.getItems()
     var isNavBarVisible by remember { mutableStateOf(true) }
@@ -178,14 +180,24 @@ private fun MainScreen(
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
     Box(modifier = Modifier.fillMaxSize()) {
-        // Main content including connection card and navigation
         Column(modifier = Modifier.fillMaxSize()) {
-
             if (isDisplayeConexionWifiVisible) {
                 ConexionCard(uiState, appViewModels)
             }
-
-            // Main Navigation Content
+            if (uiState.isConnected && !isHostPhone) {
+                    Text(
+                        text = "Mode Client - Welocom To our Displayer",
+                        color = Color.White,
+                        style = MaterialTheme.typography.titleSmall,
+                        modifier = Modifier
+                            .background(
+                                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                            .padding(16.dp)
+                    )
+            }
+            // Main Navigation Content with Overlay
             Box(modifier = Modifier.weight(1f)) {
                 AppNavHost(
                     appViewModels = appViewModels,
@@ -193,11 +205,19 @@ private fun MainScreen(
                     onToggleNavBar = { isNavBarVisible = !isNavBarVisible },
                     isFabVisible = isFabVisible,
                     onClickDonne = { isFabVisible = false },
-                    onClickToDisplayeConexionWifi = {isDisplayeConexionWifiVisible=!isDisplayeConexionWifiVisible},
+                    onClickToDisplayeConexionWifi = { isDisplayeConexionWifiVisible = !isDisplayeConexionWifiVisible },
                 )
 
+                // Overlay when not host phone
+                if (!isHostPhone) {
+                    Box(
+                        modifier = Modifier
+                            .matchParentSize()
+                            .clickable(enabled = false) { }
+                    ) {
+                    }
+                }
             }
-
         }
 
         // Bottom Navigation Bar
@@ -218,7 +238,6 @@ private fun MainScreen(
                 onToggleFabVisibility = { isFabVisible = !isFabVisible }
             )
         }
-
 
         // Loading Indicator
         if (uiState.isLoading) {
