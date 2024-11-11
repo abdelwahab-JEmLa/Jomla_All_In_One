@@ -241,10 +241,14 @@ private fun MainScreen(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
-                            Button(onClick = { appViewModels.startUpNewArticlesViewModels.startAsHost() }) {
+                            Button(onClick = { appViewModels.startUpNewArticlesViewModels.startAsHost()
+                                appViewModels.startUpNewArticlesViewModels.updateTypePhone(type=true)
+                            }) {
                                 Text("Mode Hôte")
                             }
-                            Button(onClick = { appViewModels.startUpNewArticlesViewModels.startAsClient() }) {
+                            Button(onClick = { appViewModels.startUpNewArticlesViewModels.startAsClient()
+                                appViewModels.startUpNewArticlesViewModels.updateTypePhone()
+                            }) {
                                 Text("Mode Client")
                             }
                         }

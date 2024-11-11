@@ -54,7 +54,11 @@ class StartUpNewArticlesViewModels(
     context: Context,
     private val database: AppDatabase,
 ) : ViewModel() {
-    private val connectionManager = ConnectionManager(context)
+    private val connectionManager = ConnectionManager(
+        context,
+        onPayloadReceivedInteger = {
+            updateScrollPositionFromRecived(it)
+        },)
     private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()
 
@@ -70,15 +74,16 @@ class StartUpNewArticlesViewModels(
                 _uiState.update { it.copy(
                     connectionStatus = connectionState.connectionStatus,
                     isConnected = connectionState.isConnected,
-                    isHostPhone = connectionState.isHostPhone,
                     error = connectionState.error,
                     messageByWifi = lastMessage ?: it.messageByWifi ,
-                    scrollPosition=connectionState.scrollPosition ?: 0
                 )}
             }
         }
     }
 
+    fun updateScrollPositionFromRecived(position: Int): Unit {
+        _uiState.update { it.copy(scrollPosition = position) }
+    }
     fun sendTestMessage(message: String) {
         viewModelScope.launch {
             Log.d("ViewModel", "📤 Attempting to send message: $message")
@@ -95,7 +100,9 @@ class StartUpNewArticlesViewModels(
             connectionManager.sendData(position)
         }
     }
-
+    fun updateTypePhone(type: Boolean = false): Unit {
+        _uiState.update { it.copy(isHostPhone = type) }
+    }
 
     fun startAsHost() = connectionManager.startAsHost()
     fun startAsClient() = connectionManager.startAsClient()

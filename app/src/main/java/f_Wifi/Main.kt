@@ -38,6 +38,7 @@ data class ConnectionUiState(
 
 class ConnectionManager(
     private val context: Context,
+    onPayloadReceivedInteger: (Int) -> Unit,
 ) : ViewModel() {
     private val _connectionUiState = MutableStateFlow(ConnectionUiState())
     val connectionUiState: StateFlow<ConnectionUiState> = _connectionUiState.asStateFlow()
@@ -231,9 +232,7 @@ class ConnectionManager(
                     try {
                         val intValue = rawMessage.removePrefix("INT:").toInt()
                         Log.d(TAG, "📩 Entier reçu: $intValue")
-                        _connectionUiState.update {
-                            it.copy(scrollPosition = intValue)
-                        }
+                        onPayloadReceivedInteger(intValue)
                     } catch (e: Exception) {
                         Log.e(TAG, "❌ Erreur de conversion d'entier: ${e.message}")
                     }
