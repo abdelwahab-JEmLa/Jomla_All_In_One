@@ -15,7 +15,7 @@ data class ProductDisplayController(
 fun DisplayArticleInfoToClientWindowsPreview() {
 
         val sampleProductDisplayController = ProductDisplayController(
-            selectedColorId=2
+            selectedColorId=0
         )
 
         val sampleArticleStats = ArticlesBasesStatsTable(
