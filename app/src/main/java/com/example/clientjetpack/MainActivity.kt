@@ -204,7 +204,8 @@ private fun MainScreen(
                     navController = navController,
                     onToggleNavBar = { isNavBarVisible = !isNavBarVisible },
                     isFabVisible = isFabVisible,
-                    onClickDonne = { isFabVisible = false },
+                    onClickDonne = { isFabVisible = false
+                                   },
                     onClickToDisplayeConexionWifi = { isDisplayeConexionWifiVisible = !isDisplayeConexionWifiVisible },
                 )
 
@@ -235,7 +236,8 @@ private fun MainScreen(
                     }
                 },
                 isFabVisible = isFabVisible,
-                onToggleFabVisibility = { isFabVisible = !isFabVisible }
+                onToggleFabVisibility = { isFabVisible = !isFabVisible
+                    isDisplayeConexionWifiVisible=false}
             )
         }
 
