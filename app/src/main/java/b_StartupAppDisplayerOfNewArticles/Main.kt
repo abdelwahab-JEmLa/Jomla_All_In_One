@@ -118,7 +118,7 @@ fun StartupAppDisplayerOfNewArticles(
     reloadTrigger: Int,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     onClickToOpenClientsW: () -> Unit,
-    isFabVisible: Boolean, onClickDonne: () -> Unit
+    isFabVisible: Boolean, onClickDonne: () -> Unit, onClickToDisplayeConexionWifi: () -> Unit
 ) {
     var gridColumnsForNewArticels by remember { mutableStateOf(2) }
     var showFilter by remember { mutableStateOf(false) }
@@ -140,7 +140,7 @@ fun StartupAppDisplayerOfNewArticles(
         onClickToOpenWindos = onClickToOpenWindos,
         onClickToOpenClientsW = onClickToOpenClientsW,
         isFabVisible=isFabVisible,
-        onClickDonne = onClickDonne,
+        onClickDonne = onClickDonne, onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi,
 
     )
 }
@@ -161,6 +161,7 @@ fun ArticleDisplayScreen(
     onClickToOpenClientsW: () -> Unit,
     isFabVisible: Boolean,
     onClickDonne: () -> Unit,
+    onClickToDisplayeConexionWifi: () -> Unit,
 ) {
     val isHostPhone = uiState.isHostPhone
     val tag = if (isHostPhone) "📱 ServerScreen" else "📱 ClientScreen"
@@ -205,23 +206,27 @@ fun ArticleDisplayScreen(
 
     // Client scroll handling
     LaunchedEffect(uiState.scrollPosition) {
-        if (isHostPhone) return@LaunchedEffect
-            try {
-                val position = uiState.scrollPosition
-                    Log.d(tag, "🔄 Starting scroll animation to $position")
-                    try {
-                        scope.launch {
-                            gridState.animateScrollToItem(position)
-                            delay(300)
-                            Log.d(tag, "✅ Scroll animation completed")
-                        }
-                    } catch (e: Exception) {
-                        Log.e(tag, "❌ Scroll animation failed: ${e.message}")
-                    }
+        if (isHostPhone) {
+            return@LaunchedEffect
+        }
 
-            } catch (e: Exception) {
-                Log.e(tag, "❌ Error processing message: ${e.message}")
+        Log.d(tag, "🔄 Processing scroll position update")
+        try {
+            val position = uiState.scrollPosition
+            Log.d(tag, "🔄 Starting scroll animation to $position")
+
+            scope.launch {
+                try {
+                    gridState.animateScrollToItem(position)
+                    delay(300)
+                    Log.d(tag, "✅ Scroll animation completed")
+                } catch (e: Exception) {
+                    Log.e(tag, "❌ Scroll animation failed: ${e.message}")
+                }
             }
+        } catch (e: Exception) {
+            Log.e(tag, "❌ Error processing scroll position: ${e.message}")
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -270,11 +275,12 @@ fun ArticleDisplayScreen(
             ) {
                 FloatingActionButtonGroup(
                     modifier = Modifier.zIndex(1f),
+                    viewModel = viewModel,
                     onToggleNavBar = onToggleNavBar,
                     onToggleOutlineFilter = onToggleFilter,
                     onChangeGridColumns = onChangeGridColumns,
-                    viewModel = viewModel,
                     onClickToOpenClientsListW = onClickToOpenClientsW,
+                    onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi
                 )
             }
         }

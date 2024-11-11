@@ -27,6 +27,7 @@ import androidx.compose.material.icons.filled.DoNotDisturbAlt
 import androidx.compose.material.icons.filled.EditCalendar
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.People
+import androidx.compose.material.icons.filled.SettingsInputComponent
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -50,19 +51,21 @@ import androidx.compose.ui.unit.dp
 import kotlin.math.roundToInt
 
 @Composable
-fun FloatingActionButtonGroup(     //todo fait que ca commence un peu on haute
+fun FloatingActionButtonGroup(
     modifier: Modifier,
+    viewModel: StartUpNewArticlesViewModels,
     onToggleNavBar: () -> Unit,
     onToggleOutlineFilter: () -> Unit,
     onChangeGridColumns: (Int) -> Unit,
-    viewModel: StartUpNewArticlesViewModels,
     onClickToOpenClientsListW: () -> Unit,
+    onClickToDisplayeConexionWifi: () -> Unit,
 ) {
     var currentGridColumns by remember { mutableIntStateOf(2) }
     var showLabels by remember { mutableStateOf(true) }
     var isExpanded by remember { mutableStateOf(false) }
     var clearDataClickCount by remember { mutableIntStateOf(0) }
     var clearDataGrouprurClickCount by remember { mutableIntStateOf(0) }
+    var buttonChangeUiStat1 by remember { mutableStateOf(false) }
 
     // State for drag position
     var offsetX by remember { mutableFloatStateOf(0f) }
@@ -82,6 +85,7 @@ fun FloatingActionButtonGroup(     //todo fait que ca commence un peu on haute
         modifier = modifier
             .fillMaxWidth()
             .wrapContentHeight()
+            .padding(top = 16.dp, bottom = 72.dp) // Added top padding to start higher
             .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
             .pointerInput(Unit) {
                 detectDragGestures { change, dragAmount ->
@@ -99,7 +103,7 @@ fun FloatingActionButtonGroup(     //todo fait que ca commence un peu on haute
             Surface(
                 modifier = Modifier
                     .wrapContentSize()
-                    .padding(bottom = 8.dp),
+                    .padding(end = 16.dp), // Added end padding for alignment
                 color = Color.Transparent
             ) {
                 Column(
@@ -107,9 +111,18 @@ fun FloatingActionButtonGroup(     //todo fait que ca commence un peu on haute
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier
                         .verticalScroll(rememberScrollState())
-                        .padding(bottom = 56.dp)
+                        .padding(bottom = 8.dp) // Reduced bottom padding since we added it to parent
                 ) {
                     listOf(
+                        FabData(
+                            icon = Icons.Default.SettingsInputComponent,
+                            label = "Displaye Conexion Wifi" ,
+                            color = Color(0xFFFF5722),
+                            onClick = {
+                                buttonChangeUiStat1=! buttonChangeUiStat1
+                                onClickToDisplayeConexionWifi()
+                            }
+                        ),
                         FabData(
                             icon = Icons.Default.Delete,
                             label = if (clearDataClickCount == 0) "clearSoldArticlesData" else "Confirm Clear",

@@ -108,7 +108,6 @@ data class AppViewModels(
 class ViewModelFactory(
     private val context: Context,
     private val database: AppDatabase,
-    private val permissionHandler: PermissionHandler  // Fixed: Added permissionHandler parameter
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when {
@@ -126,7 +125,7 @@ class MainActivity : ComponentActivity() {
     private val permissionHandler by lazy { PermissionHandler(this) }
 
     private val viewModelFactory by lazy {
-        ViewModelFactory(applicationContext, database, permissionHandler)
+        ViewModelFactory(applicationContext, database)
     }
 
     private val startUpNewArticlesViewModels: StartUpNewArticlesViewModels by viewModels {
@@ -152,153 +151,38 @@ class MainActivity : ComponentActivity() {
             @RequiresApi(Build.VERSION_CODES.Q)
             override fun onPermissionsGranted() {
                 setContent {
-                    MainScreenWrapper(appViewModels)
+                    MainScreen(appViewModels)
                 }
             }
 
             @RequiresApi(Build.VERSION_CODES.Q)
-            override fun onPermissionsDenied() {
-                // You might want to show a message to the user or handle the denial
-                // The PermissionHandler will already show a dialog prompting the user
-                // to go to settings
-            }
+            override fun onPermissionsDenied() {}
 
-            override fun onPermissionRationale(permissions: Array<String>) {
-
-            }
+            override fun onPermissionRationale(permissions: Array<String>) {}
         })
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.Q)
-@Composable
-private fun MainScreenWrapper(appViewModels: AppViewModels) {
-    val startUpViewModel = appViewModels.startUpNewArticlesViewModels
-    val uiState by startUpViewModel.uiState.collectAsState()
-
-    MainScreen(
-        appViewModels = appViewModels,
-        uiState = uiState,
-    )
-}
 
 @Composable
 private fun MainScreen(
-    appViewModels: AppViewModels,
-    uiState: UiState,
+    appViewModels: AppViewModels
 ) {
+    val startUpViewModel = appViewModels.startUpNewArticlesViewModels
+    val uiState by startUpViewModel.uiState.collectAsState()
     val navController = rememberNavController()
-    var messageText by remember { mutableStateOf("") }
     val items = NavigationItems.getItems()
     var isNavBarVisible by remember { mutableStateOf(true) }
     var isFabVisible by remember { mutableStateOf(true) }
+    var isDisplayeConexionWifiVisible by remember { mutableStateOf(true) }
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
     Box(modifier = Modifier.fillMaxSize()) {
         // Main content including connection card and navigation
         Column(modifier = Modifier.fillMaxSize()) {
-            // Connection Card Section
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text(
-                        text = "État de la connexion",
-                        style = MaterialTheme.typography.titleMedium
-                    )
 
-                    Text(
-                        text = uiState.connectionStatus,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = when {
-                            uiState.isConnected -> MaterialTheme.colorScheme.primary
-                            uiState.error != null -> MaterialTheme.colorScheme.error
-                            else -> MaterialTheme.colorScheme.onSurface
-                        }
-                    )
-
-                    // Error Display
-                    uiState.error?.let { error ->
-                        Text(
-                            text = error,
-                            color = MaterialTheme.colorScheme.error,
-                            style = MaterialTheme.typography.bodyMedium,
-                            textAlign = TextAlign.Center
-                        )
-                    }
-
-                    // Connection Controls
-                    if (!uiState.isConnected) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceEvenly
-                        ) {
-                            Button(onClick = { appViewModels.startUpNewArticlesViewModels.startAsHost()
-                                appViewModels.startUpNewArticlesViewModels.updateTypePhone(type=true)
-                            }) {
-                                Text("Mode Hôte")
-                            }
-                            Button(onClick = { appViewModels.startUpNewArticlesViewModels.startAsClient()
-                                appViewModels.startUpNewArticlesViewModels.updateTypePhone()
-                            }) {
-                                Text("Mode Client")
-                            }
-                        }
-                    }
-
-                    // Message Input and Controls when Connected
-                    if (uiState.isConnected) {
-                        OutlinedTextField(
-                            value = messageText,
-                            onValueChange = { messageText = it },
-                            label = { Text("Message") },
-                            modifier = Modifier.fillMaxWidth()
-                        )
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            Button(
-                                onClick = {
-                                    if (messageText.isNotEmpty()) {
-                                        appViewModels.startUpNewArticlesViewModels.sendTestMessage(messageText)
-                                        messageText = ""
-                                    }
-                                },
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                Text("Envoyer")
-                            }
-                            Button(
-                                onClick = { appViewModels.startUpNewArticlesViewModels.disconnect() },
-                                modifier = Modifier.weight(1f),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.error
-                                )
-                            ) {
-                                Text("Déconnecter")
-                            }
-                        }
-
-                        // Received Message Display
-                        if (uiState.messageByWifi.isNotEmpty()) {
-                            Text(
-                                text = "Message reçu: ${uiState.messageByWifi}",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.secondary
-                            )
-                        }
-                    }
-                }
+            if (isDisplayeConexionWifiVisible) {
+                ConexionCard(uiState, appViewModels)
             }
 
             // Main Navigation Content
@@ -309,6 +193,7 @@ private fun MainScreen(
                     onToggleNavBar = { isNavBarVisible = !isNavBarVisible },
                     isFabVisible = isFabVisible,
                     onClickDonne = { isFabVisible = false },
+                    onClickToDisplayeConexionWifi = {isDisplayeConexionWifiVisible=!isDisplayeConexionWifiVisible},
                 )
 
             }
@@ -347,6 +232,120 @@ private fun MainScreen(
     }
 }
 
+@Composable
+private fun ConexionCard(
+    uiState: UiState,
+    appViewModels: AppViewModels,
+) {
+    var messageText by remember { mutableStateOf("") }
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = "État de la connexion",
+                style = MaterialTheme.typography.titleMedium
+            )
+
+            Text(
+                text = uiState.connectionStatus,
+                style = MaterialTheme.typography.bodyMedium,
+                color = when {
+                    uiState.isConnected -> MaterialTheme.colorScheme.primary
+                    uiState.error != null -> MaterialTheme.colorScheme.error
+                    else -> MaterialTheme.colorScheme.onSurface
+                }
+            )
+
+            // Error Display
+            uiState.error?.let { error ->
+                Text(
+                    text = error,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center
+                )
+            }
+
+            // Connection Controls
+            if (!uiState.isConnected) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    Button(onClick = {
+                        appViewModels.startUpNewArticlesViewModels.startAsHost()
+                        appViewModels.startUpNewArticlesViewModels.updateTypePhone(type = true)
+                    }) {
+                        Text("Mode Hôte")
+                    }
+                    Button(onClick = {
+                        appViewModels.startUpNewArticlesViewModels.startAsClient()
+                        appViewModels.startUpNewArticlesViewModels.updateTypePhone()
+                    }) {
+                        Text("Mode Client")
+                    }
+                }
+            }
+
+            // Message Input and Controls when Connected
+            if (uiState.isConnected) {
+                OutlinedTextField(
+                    value = messageText,
+                    onValueChange = { messageText = it },
+                    label = { Text("Message") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Button(
+                        onClick = {
+                            if (messageText.isNotEmpty()) {
+                                appViewModels.startUpNewArticlesViewModels.sendTestMessage(
+                                    messageText
+                                )
+                                messageText = ""
+                            }
+                        },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("Envoyer")
+                    }
+                    Button(
+                        onClick = { appViewModels.startUpNewArticlesViewModels.disconnect() },
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.error
+                        )
+                    ) {
+                        Text("Déconnecter")
+                    }
+                }
+
+                // Received Message Display
+                if (uiState.messageByWifi.isNotEmpty()) {
+                    Text(
+                        text = "Message reçu: ${uiState.messageByWifi}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+                }
+            }
+        }
+    }
+}
+
 
 @Composable
 fun AppNavHost(
@@ -354,7 +353,7 @@ fun AppNavHost(
     navController: NavHostController,
     onToggleNavBar: () -> Unit,
     modifier: Modifier = Modifier,
-    isFabVisible: Boolean, onClickDonne: () -> Unit
+    isFabVisible: Boolean, onClickDonne: () -> Unit, onClickToDisplayeConexionWifi: () -> Unit
 ) {
     val uiState by appViewModels.startUpNewArticlesViewModels.uiState.collectAsState()
 
@@ -401,6 +400,7 @@ fun AppNavHost(
                             showClientSelectionWithoutCondition=true
                         },
                         isFabVisible=isFabVisible, onClickDonne = onClickDonne,
+                        onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi,
 
                     )
 
