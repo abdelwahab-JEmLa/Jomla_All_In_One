@@ -48,14 +48,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.room.Database
 import androidx.room.Room
-import androidx.room.RoomDatabase
 import b_StartupAppDisplayerOfNewArticles.StartUpNewArticlesViewModels
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
@@ -309,8 +306,7 @@ fun ColorsCards(
                     color = colors.firstOrNull(),
                     index = 0,
                     relodeTigger = relodeTigger,
-                    viewModel = viewModel,
-                    height = 360.dp
+                    viewModel = viewModel
                 )
             }
 
@@ -333,8 +329,7 @@ fun ColorsCards(
                                 color = color,
                                 index = colors.indexOf(color),
                                 relodeTigger = relodeTigger,
-                                viewModel = viewModel,
-                                height = 200.dp
+                                viewModel = viewModel
                             )
                         }
                     }
@@ -353,7 +348,6 @@ private fun ColorItem(
     index: Int,
     relodeTigger: Int,
     viewModel: StartUpNewArticlesViewModels,
-    height: Dp,
 ) {
     Card(
         modifier = modifier,
