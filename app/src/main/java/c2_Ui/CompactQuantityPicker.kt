@@ -107,8 +107,6 @@ fun CompactQuantityPickerPC(
             val valuesPickerState = rememberPickerState()
 
             LaunchedEffect(Unit) {
-                valuesPickerState.selectedItem = "50"
-                delay(3000)
                 valuesPickerState.selectedItem = initialQuantity.toString()
             }
 
@@ -119,7 +117,7 @@ fun CompactQuantityPickerPC(
                     .size(height),
                 items = values,
                 state = valuesPickerState,
-                visibleItemsCount = 8,
+                visibleItemsCount = 15,
                 textModifier = Modifier.padding(4.dp),
                 textStyle = TextStyle(
                     fontSize = 25.sp,
@@ -146,7 +144,7 @@ fun Picker(
     items: List<String>,
     state: PickerState = rememberPickerState(),
     startIndex: Int = 0,
-    visibleItemsCount: Int = 8,
+    visibleItemsCount: Int ,
     textModifier: Modifier = Modifier,
     textStyle: TextStyle = LocalTextStyle.current,
     dividerColor: Color = LocalContentColor.current,
@@ -154,7 +152,7 @@ fun Picker(
 ) {
     var minusToReglePosition by remember { mutableStateOf(7.0) }
 
-    val centerPosition = 1
+    val centerPosition = 3
     val listScrollCount = Integer.MAX_VALUE
     val listScrollMiddle = listScrollCount / 2
     val listStartIndex = listScrollMiddle - listScrollMiddle % items.size - centerPosition + startIndex
@@ -185,7 +183,7 @@ fun Picker(
             .collect { item ->
                 state.selectedItem = item
                 onItemStat(item)
-                minusToReglePosition = 7.0
+                minusToReglePosition = -50.0
             }
     }
 
