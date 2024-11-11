@@ -7,16 +7,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 
 
-data class DisplayeControler(   //TODO donne un nom thecnique programmation on anglai depui
-    //celuila d arabe لوحة التحكم في ما يشاشهده الزبون من بيانات المنتج
-    val colorFocuse: Int = 0,
+data class ProductDisplayController(
+    val selectedColorId: Int = 0,
 )
 @Preview
 @Composable
 fun DisplayArticleInfoToClientWindowsPreview() {
 
-        val sampleDisplayeControler = DisplayeControler(
-            colorFocuse=2
+        val sampleProductDisplayController = ProductDisplayController(
+            selectedColorId=2
         )
 
         val sampleArticleStats = ArticlesBasesStatsTable(
@@ -64,7 +63,7 @@ fun DisplayArticleInfoToClientWindowsPreview() {
 
     MaterialTheme {
         DisplayeArticleInfoToClientWindowsPackageC(
-            displayeControler=sampleDisplayeControler,
+            displayController=sampleProductDisplayController,
             articleStatsDataBase = sampleArticleStats,
             colorsArticlesList = sampleColorsList,
             reloadTrigger = 0

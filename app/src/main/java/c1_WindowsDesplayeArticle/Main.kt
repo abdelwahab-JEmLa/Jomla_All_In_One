@@ -36,7 +36,7 @@ import c2_Ui.ProductNameSection
 
 @Composable
 fun DisplayeArticleInfoToClientWindowsPackageC(
-    displayeControler: DisplayeControler,
+    displayController: ProductDisplayController,
     articleStatsDataBase: ArticlesBasesStatsTable,
     colorsArticlesList: List<ColorsArticlesTabelle>,
     reloadTrigger: Int,
@@ -99,9 +99,9 @@ fun DisplayeArticleInfoToClientWindowsPackageC(
                             .padding(horizontal = 4.dp),
                         verticalAlignment = Alignment.Top
                     ) {
-                        // Quantity Picker Section
+                        // Update the AnimatedVisibility condition
                         AnimatedVisibility(
-                            visible = isPickerVisible,
+                            visible = displayController.selectedColorId > 0,
                             modifier = Modifier.weight(0.2f),
                             enter = slideInHorizontally(),
                             exit = slideOutHorizontally()
@@ -119,10 +119,11 @@ fun DisplayeArticleInfoToClientWindowsPackageC(
                             enter = fadeIn() + expandVertically()
                         ) {
                             ColorsCards(
+                                displayController=displayController,
                                 articlesBasesStatsTable = stats,
+                                modifier = Modifier.fillMaxWidth(),
                                 relodeTigger = reloadTrigger,
                                 colorsArticlesList = colorsArticlesList,
-                                modifier = Modifier.fillMaxWidth()
                             )
                         }
                     }

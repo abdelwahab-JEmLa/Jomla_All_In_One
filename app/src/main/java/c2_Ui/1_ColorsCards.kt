@@ -31,13 +31,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import c1_WindowsDesplayeArticle.ProductDisplayController
 import c3_Objects.ImageDisplayerPC
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.clientjetpack.R
 
+// In ColorsCards.kt
 @Composable
 fun ColorsCards(
+    displayController: ProductDisplayController,
     articlesBasesStatsTable: ArticlesBasesStatsTable,
     modifier: Modifier = Modifier,
     relodeTigger: Int,
@@ -54,6 +57,8 @@ fun ColorsCards(
         } else null
     }
 
+    val selectedColor = colors.find { it.idColore.toInt() == displayController.selectedColorId }
+
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -66,7 +71,7 @@ fun ColorsCards(
                 .padding(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            // Main large image
+            // Main large image - Show selected color or first color
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -75,14 +80,14 @@ fun ColorsCards(
                 ColorItem(
                     modifier = Modifier.fillMaxSize(),
                     article = articlesBasesStatsTable,
-                    color = colors.firstOrNull(),
-                    index = 0,
+                    color = selectedColor ?: colors.firstOrNull(),
+                    index = if (selectedColor != null) colors.indexOf(selectedColor) else 0,
                     relodeTigger = relodeTigger,
                 )
             }
 
-            // Color variants in LazyRow
-            if (colors.size > 1) {
+            // Show color variants only if no color is selected
+            if (displayController.selectedColorId == 0 && colors.size > 1) {
                 LazyRow(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
