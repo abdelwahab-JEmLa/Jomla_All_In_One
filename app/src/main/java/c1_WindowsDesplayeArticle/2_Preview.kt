@@ -14,11 +14,11 @@ data class ProductDisplayController(
 @Composable
 fun DisplayArticleInfoToClientWindowsPreview() {
 
-        val sampleProductDisplayController = ProductDisplayController(
-            selectedColorId=0
-        )
+    val sampleProductDisplayController = ProductDisplayController(
+        selectedColorId=0
+    )
 
-        val sampleArticleStats = ArticlesBasesStatsTable(
+    val sampleArticleStats = ArticlesBasesStatsTable(
         idArticle = 65,
         nomArticleFinale = "Silca®",
         nomArab = "سيلكا",

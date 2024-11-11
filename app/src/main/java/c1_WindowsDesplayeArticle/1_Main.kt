@@ -99,18 +99,6 @@ fun DisplayeArticleInfoToClientWindowsPackageC(
                             .padding(horizontal = 4.dp),
                         verticalAlignment = Alignment.Top
                     ) {
-                        // Update the AnimatedVisibility condition
-                        AnimatedVisibility(
-                            visible = displayController.selectedColorId > 0,
-                            modifier = Modifier.weight(0.2f),
-                            enter = slideInHorizontally(),
-                            exit = slideOutHorizontally()
-                        ) {
-                            CompactQuantityPickerPC(
-                                initialQuantity = 1,
-                                height = 600.dp
-                            )
-                        }
 
                         // Colors Selection Section
                         AnimatedVisibility(
@@ -124,6 +112,19 @@ fun DisplayeArticleInfoToClientWindowsPackageC(
                                 modifier = Modifier.fillMaxWidth(),
                                 relodeTigger = reloadTrigger,
                                 colorsArticlesList = colorsArticlesList,
+                            )
+                        }
+
+                        // Update the AnimatedVisibility condition
+                        AnimatedVisibility(
+                            visible = displayController.selectedColorId > 0,
+                            modifier = Modifier.weight(0.2f),
+                            enter = slideInHorizontally(),
+                            exit = slideOutHorizontally()
+                        ) {
+                            CompactQuantityPickerPC(
+                                initialQuantity = 1,
+                                height = 600.dp
                             )
                         }
                     }
