@@ -182,7 +182,7 @@ private fun MainScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
             if (isDisplayeConexionWifiVisible) {
-                ConexionCard(uiState, appViewModels)
+                ConnexionCard(uiState, appViewModels)
             }
             if (uiState.isConnected && !isHostPhone) {
                     Text(
@@ -244,17 +244,20 @@ private fun MainScreen(
         // Loading Indicator
         if (uiState.isLoading) {
             CircularProgressIndicator(
+                progress = {
+                    uiState.loadingProgress
+                },
                 modifier = Modifier
                     .size(48.dp)
                     .align(Alignment.Center),
-                progress = uiState.loadingProgress
+                trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
             )
         }
     }
 }
 
 @Composable
-private fun ConexionCard(
+private fun ConnexionCard(
     uiState: UiState,
     appViewModels: AppViewModels,
 ) {
