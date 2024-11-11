@@ -30,16 +30,17 @@ import kotlinx.coroutines.launch
 data class ConnectionUiState(
     val connectionStatus: String = "Déconnecté",
     val isConnected: Boolean = false,
-    val isHost: Boolean = false,
+    val isHostPhone: Boolean = false,
     val error: String? = null,
-    val messages: List<String> = emptyList()
+    val messages: List<String> = emptyList(),
+    val scrollPosition: Int? = 0,
 )
 
 class ConnectionManager(
     private val context: Context,
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(ConnectionUiState())
-    val uiState: StateFlow<ConnectionUiState> = _uiState.asStateFlow()
+    private val _connectionUiState = MutableStateFlow(ConnectionUiState())
+    val connectionUiState: StateFlow<ConnectionUiState> = _connectionUiState.asStateFlow()
 
     private var endpointId: String? = null
     private val serviceId = "com.example.clientjetpack"
@@ -107,7 +108,7 @@ class ConnectionManager(
             }
 
             Log.d(TAG, "Toutes les permissions sont accordées, démarrage de la découverte...")
-            _uiState.update { it.copy(isHost = false) }
+            _connectionUiState.update { it.copy(isHostPhone = false) }
 
             try {
                 val discoveryOptions = DiscoveryOptions.Builder().setStrategy(strategy).build()
@@ -168,8 +169,8 @@ class ConnectionManager(
                     Log.d(TAG, "✨ Connexion établie avec succès!")
                     this@ConnectionManager.endpointId = endpointId
                     updateConnectionStatus("Connecté")
-                    _uiState.update { it.copy(isConnected = true) }
-                    sendMessage("Connection established")
+                    _connectionUiState.update { it.copy(isConnected = true) }
+                    sendData("Connection established")
                 }
                 ConnectionsStatusCodes.STATUS_CONNECTION_REJECTED -> {
                     Log.e(TAG, "🚫 Connexion rejetée")
@@ -186,17 +187,61 @@ class ConnectionManager(
             Log.d(TAG, "👋 Déconnexion de: $endpointId")
             this@ConnectionManager.endpointId = null
             updateConnectionStatus("Déconnecté")
-            _uiState.update { it.copy(isConnected = false) }
+            _connectionUiState.update { it.copy(isConnected = false) }
         }
     }
 
+    fun startAsHost() {
+        viewModelScope.launch {
+            Log.d(TAG, "🏠 Démarrage en mode hôte...")
+            if (!checkRequiredPermissions()) {
+                handleError("Permissions de localisation manquantes")
+                return@launch
+            }
+
+            _connectionUiState.update { it.copy(isHostPhone = true) }
+            val advertisingOptions = AdvertisingOptions.Builder().setStrategy(strategy).build()
+
+            Nearby.getConnectionsClient(context)
+                .startAdvertising(
+                    "Host Device",
+                    serviceId,
+                    connectionLifecycleCallback,
+                    advertisingOptions
+                )
+                .addOnSuccessListener {
+                    Log.d(TAG, "📡 Mode hôte activé avec succès")
+                    updateConnectionStatus("En attente de connexion...")
+                }
+                .addOnFailureListener { e ->
+                    Log.e(TAG, "💥 Échec du mode hôte: ${e.message}")
+                    handleError("Erreur de démarrage du mode hôte: ${e.message}")
+                }
+        }
+    }
+
+
+    // Update payloadCallback to handle both string and integer messages
     private val payloadCallback = object : PayloadCallback() {
         override fun onPayloadReceived(endpointId: String, payload: Payload) {
             if (payload.type == Payload.Type.BYTES) {
-                val message = String(payload.asBytes()!!)
-                Log.d(TAG, "📩 Message reçu: $message")
-                _uiState.update {
-                    it.copy(messages = it.messages + message)
+                val rawMessage = String(payload.asBytes()!!)
+
+                if (rawMessage.startsWith("INT:")) {
+                    try {
+                        val intValue = rawMessage.removePrefix("INT:").toInt()
+                        Log.d(TAG, "📩 Entier reçu: $intValue")
+                        _connectionUiState.update {
+                            it.copy(scrollPosition = intValue)
+                        }
+                    } catch (e: Exception) {
+                        Log.e(TAG, "❌ Erreur de conversion d'entier: ${e.message}")
+                    }
+                } else {
+                    Log.d(TAG, "📩 Message texte reçu: $rawMessage")
+                    _connectionUiState.update {
+                        it.copy(messages = it.messages + rawMessage)
+                    }
                 }
             }
         }
@@ -219,52 +264,33 @@ class ConnectionManager(
         }
     }
 
-
-    fun startAsHost() {
-        viewModelScope.launch {
-            Log.d(TAG, "🏠 Démarrage en mode hôte...")
-            if (!checkRequiredPermissions()) {
-                handleError("Permissions de localisation manquantes")
-                return@launch
+    fun sendData(data: Any) {
+        endpointId?.let { endpoint ->
+            val payload = when (data) {
+                is String -> {
+                    Log.d(TAG, "📤 Envoi du message texte: $data")
+                    Payload.fromBytes(data.toByteArray())
+                }
+                is Int -> {
+                    Log.d(TAG, "📤 Envoi de l'entier: $data")
+                    Payload.fromBytes("INT:$data".toByteArray())
+                }
+                else -> {
+                    Log.e(TAG, "❌ Type de données non supporté: ${data.javaClass}")
+                    return
+                }
             }
 
-            _uiState.update { it.copy(isHost = true) }
-            val advertisingOptions = AdvertisingOptions.Builder().setStrategy(strategy).build()
-
-            Nearby.getConnectionsClient(context)
-                .startAdvertising(
-                    "Host Device",
-                    serviceId,
-                    connectionLifecycleCallback,
-                    advertisingOptions
-                )
-                .addOnSuccessListener {
-                    Log.d(TAG, "📡 Mode hôte activé avec succès")
-                    updateConnectionStatus("En attente de connexion...")
-                }
-                .addOnFailureListener { e ->
-                    Log.e(TAG, "💥 Échec du mode hôte: ${e.message}")
-                    handleError("Erreur de démarrage du mode hôte: ${e.message}")
-                }
-        }
-    }
-
-
-    fun sendMessage(message: String) {
-        endpointId?.let { endpoint ->
-            Log.d(TAG, "📤 Envoi du message: $message")
-            val payload = Payload.fromBytes(message.toByteArray())
             Nearby.getConnectionsClient(context).sendPayload(endpoint, payload)
                 .addOnSuccessListener {
-                    Log.d(TAG, "✅ Message envoyé avec succès")
+                    Log.d(TAG, "✅ Données envoyées avec succès")
                 }
                 .addOnFailureListener { e ->
                     Log.e(TAG, "❌ Échec de l'envoi: ${e.message}")
-                    handleError("Erreur d'envoi du message: ${e.message}")
+                    handleError("Erreur d'envoi des données: ${e.message}")
                 }
         }
     }
-
     fun disconnect() {
         Log.d(TAG, "🔌 Déconnexion en cours...")
         Nearby.getConnectionsClient(context).apply {
@@ -274,21 +300,21 @@ class ConnectionManager(
         }
         endpointId = null
         updateConnectionStatus("Déconnecté")
-        _uiState.update { it.copy(
+        _connectionUiState.update { it.copy(
             isConnected = false,
-            isHost = false
+            isHostPhone = false
         )}
         Log.d(TAG, "👋 Déconnexion terminée")
     }
 
     private fun updateConnectionStatus(status: String) {
         Log.d(TAG, "📊 Status: $status")
-        _uiState.update { it.copy(connectionStatus = status) }
+        _connectionUiState.update { it.copy(connectionStatus = status) }
     }
 
     private fun handleError(error: String) {
         Log.e(TAG, "⚠️ Erreur: $error")
-        _uiState.update { it.copy(error = error) }
+        _connectionUiState.update { it.copy(error = error) }
     }
 
     override fun onCleared() {

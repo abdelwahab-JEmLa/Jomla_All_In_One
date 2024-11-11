@@ -46,7 +46,7 @@ data class UiState(
     val isConnected: Boolean = false,
     val connectionStatus: String = "Déconnecté",
     val wifiTestDisplayer: Boolean = false,
-    val appIsInstalledInHostPhone: Boolean = true,
+    val isHostPhone: Boolean = true,
     val messageByWifi: String = "",
     )
 
@@ -60,7 +60,7 @@ class StartUpNewArticlesViewModels(
 
     init {
         viewModelScope.launch {
-            connectionManager.uiState.collect { connectionState ->
+            connectionManager.connectionUiState.collect { connectionState ->
                 Log.d("ViewModel", "💫 Connection state update: ${connectionState.connectionStatus}")
                 val lastMessage = connectionState.messages.lastOrNull()
                 if (lastMessage != null) {
@@ -70,9 +70,10 @@ class StartUpNewArticlesViewModels(
                 _uiState.update { it.copy(
                     connectionStatus = connectionState.connectionStatus,
                     isConnected = connectionState.isConnected,
-                    appIsInstalledInHostPhone = connectionState.isHost,
+                    isHostPhone = connectionState.isHostPhone,
                     error = connectionState.error,
-                    messageByWifi = lastMessage ?: it.messageByWifi
+                    messageByWifi = lastMessage ?: it.messageByWifi ,
+                    scrollPosition=connectionState.scrollPosition ?: 0
                 )}
             }
         }
@@ -82,38 +83,18 @@ class StartUpNewArticlesViewModels(
         viewModelScope.launch {
             Log.d("ViewModel", "📤 Attempting to send message: $message")
             try {
-                connectionManager.sendMessage(message)
+                connectionManager.sendData(message)
                 Log.d("ViewModel", "✅ Message sent successfully: $message")
             } catch (e: Exception) {
                 Log.e("ViewModel", "❌ Failed to send message: ${e.message}")
             }
         }
     }
-
-    fun updateScrollPosition(position: Int) {
+    fun sendScrollPositionToClient(position: Int) {
         viewModelScope.launch {
-            Log.d("ViewModel", "🔄 Updating scroll position to: $position")
-            _uiState.update { it.copy(scrollPosition = position) }
-            Log.d("ViewModel", "✅ Scroll position updated")
+            connectionManager.sendData(position)
         }
     }
-
-
-
-    init {
-        viewModelScope.launch {
-            connectionManager.uiState.collect { connectionState ->
-                _uiState.update { it.copy(
-                    connectionStatus = connectionState.connectionStatus,
-                    isConnected = connectionState.isConnected,
-                    appIsInstalledInHostPhone = connectionState.isHost,
-                    error = connectionState.error,
-                    messageByWifi = connectionState.messages.lastOrNull() ?: ""  // Add message update
-                )}
-            }
-        }
-    }
-    // Add scroll position validation
 
 
     fun startAsHost() = connectionManager.startAsHost()

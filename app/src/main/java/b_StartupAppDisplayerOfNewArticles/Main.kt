@@ -162,9 +162,8 @@ fun ArticleDisplayScreen(
     isFabVisible: Boolean,
     onClickDonne: () -> Unit,
 ) {
-    val isServer = uiState.appIsInstalledInHostPhone
-    val tag = if (isServer) "📱 ServerScreen" else "📱 ClientScreen"
-    var isAutoScrolling by remember { mutableStateOf(false) }
+    val isHostPhone = uiState.isHostPhone
+    val tag = if (isHostPhone) "📱 ServerScreen" else "📱 ClientScreen"
 
     // Scroll broadcast handling
     val scope = rememberCoroutineScope()
@@ -174,11 +173,10 @@ fun ArticleDisplayScreen(
             if (position != lastPosition) {  // Avoid duplicate broadcasts
                 lastPosition = position
                 scope.launch {
-                    if (isServer && !isAutoScrolling) {
-                        val scrollMessage = "SCROLL_POS:$position"
-                        Log.d(tag, "🚀 Broadcasting scroll message: $scrollMessage")
+                    if (isHostPhone) {
+                        Log.d(tag, "🚀 Broadcasting scroll message: $position")
                         try {
-                            viewModel.sendTestMessage(scrollMessage)
+                            viewModel.sendScrollPositionToClient(position)
                             Log.d(tag, "✅ Scroll broadcast completed")
                         } catch (e: Exception) {
                             Log.e(tag, "❌ Failed to broadcast scroll: ${e.message}")
@@ -190,9 +188,9 @@ fun ArticleDisplayScreen(
     }
 
     // Server scroll monitoring
-    LaunchedEffect(isServer, uiState.isConnected) {
-        if (!isServer || !uiState.isConnected) {
-            Log.d(tag, "⚠️ Not monitoring scroll (Server: $isServer, Connected: ${uiState.isConnected})")
+    LaunchedEffect(isHostPhone, uiState.isConnected) {
+        if (!isHostPhone || !uiState.isConnected) {
+            Log.d(tag, "⚠️ Not monitoring scroll (Server: $isHostPhone, Connected: ${uiState.isConnected})")
             return@LaunchedEffect
         }
 
@@ -206,41 +204,24 @@ fun ArticleDisplayScreen(
     }
 
     // Client scroll handling
-    LaunchedEffect(uiState.messageByWifi) {
-        if (isServer) return@LaunchedEffect
-
-        val message = uiState.messageByWifi
-        Log.d(tag, "📨 Client received message: $message")
-
-        if (message.startsWith("SCROLL_POS:")) {
+    LaunchedEffect(uiState.scrollPosition) {
+        if (isHostPhone) return@LaunchedEffect
             try {
-                val position = message.removePrefix("SCROLL_POS:").toIntOrNull()
-                if (position != null) {
-                    Log.d(tag, "📥 Processing scroll position: $position")
-                    viewModel.updateScrollPosition(position)
-
-                    if (!isAutoScrolling && position != gridState.firstVisibleItemIndex) {
-                        Log.d(tag, "🔄 Starting scroll animation to $position")
-                        isAutoScrolling = true
-                        try {
-                            scope.launch {
-                                gridState.animateScrollToItem(position)
-                                delay(300)
-                                isAutoScrolling = false
-                                Log.d(tag, "✅ Scroll animation completed")
-                            }
-                        } catch (e: Exception) {
-                            Log.e(tag, "❌ Scroll animation failed: ${e.message}")
-                            isAutoScrolling = false
+                val position = uiState.scrollPosition
+                    Log.d(tag, "🔄 Starting scroll animation to $position")
+                    try {
+                        scope.launch {
+                            gridState.animateScrollToItem(position)
+                            delay(300)
+                            Log.d(tag, "✅ Scroll animation completed")
                         }
+                    } catch (e: Exception) {
+                        Log.e(tag, "❌ Scroll animation failed: ${e.message}")
                     }
-                } else {
-                    Log.e(tag, "❌ Invalid position format in message: $message")
-                }
+
             } catch (e: Exception) {
                 Log.e(tag, "❌ Error processing message: ${e.message}")
             }
-        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {

@@ -121,63 +121,6 @@ class ViewModelFactory(
     }
 }
 
-
-
-
-@Composable
-fun ButtonsSection(
-    onHostClick: () -> Unit,
-    onClientClick: () -> Unit
-) {
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        Button(
-            onClick = onHostClick,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Démarrer comme Hôte")
-        }
-
-        Button(
-            onClick = onClientClick,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Démarrer comme Client")
-        }
-    }
-}
-
-@Composable
-fun ConnectedActions(
-    onDisconnectClick: () -> Unit,
-    onSendTestMessage: () -> Unit
-) {
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        Button(
-            onClick = onSendTestMessage,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Envoyer un message test")
-        }
-
-        Button(
-            onClick = onDisconnectClick,
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.error
-            )
-        ) {
-            Text("Déconnecter")
-        }
-    }
-}
 class MainActivity : ComponentActivity() {
     private val database by lazy { (application as MyApplication).database }
     private val permissionHandler by lazy { PermissionHandler(this) }
@@ -209,7 +152,7 @@ class MainActivity : ComponentActivity() {
             @RequiresApi(Build.VERSION_CODES.Q)
             override fun onPermissionsGranted() {
                 setContent {
-                    MainScreenWrapper(appViewModels, permissionHandler)
+                    MainScreenWrapper(appViewModels)
                 }
             }
 
@@ -229,7 +172,7 @@ class MainActivity : ComponentActivity() {
 
 @RequiresApi(Build.VERSION_CODES.Q)
 @Composable
-private fun MainScreenWrapper(appViewModels: AppViewModels, permissionHandler: PermissionHandler) {
+private fun MainScreenWrapper(appViewModels: AppViewModels) {
     val startUpViewModel = appViewModels.startUpNewArticlesViewModels
     val uiState by startUpViewModel.uiState.collectAsState()
 
