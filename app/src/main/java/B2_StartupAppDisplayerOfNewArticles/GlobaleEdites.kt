@@ -1,4 +1,4 @@
-package b_StartupAppDisplayerOfNewArticles
+package B2_StartupAppDisplayerOfNewArticles
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally

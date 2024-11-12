@@ -1,4 +1,4 @@
-package b_StartupAppDisplayerOfNewArticles
+package B2_StartupAppDisplayerOfNewArticles
 
 import a_RoomDB.CategoriesTabelle
 import androidx.compose.foundation.Image

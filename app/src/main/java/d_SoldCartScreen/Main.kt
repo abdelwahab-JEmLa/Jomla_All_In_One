@@ -54,8 +54,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import b_StartupAppDisplayerOfNewArticles.StartUpNewArticlesViewModels
-import b_StartupAppDisplayerOfNewArticles.UiState
+import B2_StartupAppDisplayerOfNewArticles.StartUpNewArticlesViewModels
+import B2_StartupAppDisplayerOfNewArticles.UiState
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
