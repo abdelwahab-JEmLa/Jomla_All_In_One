@@ -1,15 +1,12 @@
 package c1_WindowsDesplayeArticle
 
+import a1_Models.ProductDisplayController
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ColorsArticlesTabelle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 
-
-data class ProductDisplayController(
-    val selectedColorId: Int = 0,
-)
 @Preview
 @Composable
 fun DisplayArticleInfoToClientWindowsPreview() {

@@ -4,7 +4,6 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.util.Date
 
-
 // AppSettingsSaverModel.kt
 @Entity
 data class AppSettingsSaverModel(
@@ -66,7 +65,6 @@ data class ArticlesBasesStatsTable(
     var itsNewArrivale: Boolean = false,
     var imageDimention: String = "",
     var idForSearchArticles: Long = 0,
-
 
     ) {
     // No-argument constructor for Firebase
