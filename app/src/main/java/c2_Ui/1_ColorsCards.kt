@@ -1,5 +1,6 @@
 package c2_Ui
 
+import a1_Models.ProductDisplayController
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ColorsArticlesTabelle
 import androidx.compose.foundation.background
@@ -31,7 +32,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import c1_WindowsDesplayeArticle.ProductDisplayController
 import c3_Objects.ImageDisplayerPC
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage

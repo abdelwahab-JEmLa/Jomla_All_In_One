@@ -76,9 +76,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.wear.compose.material.ContentAlpha
-import B2_StartupAppDisplayerOfNewArticles.StartUpNewArticlesViewModels
+import B2_StartupAppDisplayerOfNewArticles.Main.StartUpNewArticlesViewModels
 import B2_StartupAppDisplayerOfNewArticles.Main.StartupAppDisplayerOfNewArticles
-import B2_StartupAppDisplayerOfNewArticles.UiState
+import B2_StartupAppDisplayerOfNewArticles.Main.UiState
 import c_WindosBuyAndDesplayeArticleStats.SaleWindows
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.FirebaseDatabase

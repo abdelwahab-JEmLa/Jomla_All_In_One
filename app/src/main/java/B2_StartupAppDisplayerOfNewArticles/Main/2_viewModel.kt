@@ -1,4 +1,4 @@
-package B2_StartupAppDisplayerOfNewArticles
+package B2_StartupAppDisplayerOfNewArticles.Main
 
 import a_RoomDB.AppDatabase
 import a_RoomDB.AppSettingsSaverModel
@@ -80,6 +80,7 @@ class StartUpNewArticlesViewModels(
             }
         }
     }
+
 
     fun updateScrollPositionFromRecived(position: Int): Unit {
         _uiState.update { it.copy(scrollPosition = position) }

@@ -1,9 +1,8 @@
 package B2_StartupAppDisplayerOfNewArticles.Main
 
 import B2_StartupAppDisplayerOfNewArticles.FloatingActionButtonGroup
-import B2_StartupAppDisplayerOfNewArticles.StartUpNewArticlesViewModels
+import B2_StartupAppDisplayerOfNewArticles.Ui.ArticleGridWithScrollbar
 import B2_StartupAppDisplayerOfNewArticles.Ui.SearchFilterPB
-import B2_StartupAppDisplayerOfNewArticles.UiState
 import a_RoomDB.ArticlesBasesStatsTable
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
@@ -160,9 +159,10 @@ fun ArticleDisplayScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(bottom = if (isFabVisible) 80.dp else 0.dp)
-        ) {   // TODO: fait que le quend $isFab.. est active
-            //douvrire une dialoge windos contien le filter est les items quand il sont filtre il s afficheon
-            //au lieux que ca soit un filtre des element du main compos
+        ) {      //TODO fait que on activon le filter
+            //d enregesntre la position du bar scroll pour quand il se cache et
+            // le recherche termine il
+            //revien a la postition enregstre
             SearchFilterPB(
                 showFilter = isFabVisible,
                 filterText = filterText,

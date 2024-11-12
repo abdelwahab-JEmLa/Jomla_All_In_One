@@ -101,9 +101,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import B2_StartupAppDisplayerOfNewArticles.Main.AutoResizedText
-import B2_StartupAppDisplayerOfNewArticles.StartUpNewArticlesViewModels
-import B2_StartupAppDisplayerOfNewArticles.UiState
+import B2_StartupAppDisplayerOfNewArticles.Ui.AutoResizedText
+import B2_StartupAppDisplayerOfNewArticles.Main.StartUpNewArticlesViewModels
+import B2_StartupAppDisplayerOfNewArticles.Main.UiState
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi

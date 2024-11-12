@@ -41,7 +41,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import B2_StartupAppDisplayerOfNewArticles.StartUpNewArticlesViewModels
+import B2_StartupAppDisplayerOfNewArticles.Main.StartUpNewArticlesViewModels
 
 @Composable
 fun ClientSelectionDialog(
