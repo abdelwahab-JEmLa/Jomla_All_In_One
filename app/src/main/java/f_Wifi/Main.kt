@@ -39,6 +39,7 @@ data class ConnectionUiState(
 class ConnectionManager(
     private val context: Context,
     onPayloadReceivedInteger: (Int) -> Unit,
+
 ) : ViewModel() {
     private val _connectionUiState = MutableStateFlow(ConnectionUiState())
     val connectionUiState: StateFlow<ConnectionUiState> = _connectionUiState.asStateFlow()
@@ -46,6 +47,95 @@ class ConnectionManager(
     private var endpointId: String? = null
     private val serviceId = "com.example.clientjetpack"
     private val strategy = Strategy.P2P_STAR
+
+    // Update payloadCallback to handle both string and integer messages
+    private val payloadCallback = object : PayloadCallback() {
+        override fun onPayloadReceived(endpointId: String, payload: Payload) {
+            if (payload.type == Payload.Type.BYTES) {
+                val rawMessage = String(payload.asBytes()!!)
+
+                if (rawMessage.startsWith("INT:")) {
+                    try {
+                        val intValue = rawMessage.removePrefix("INT:").toInt()
+                        Log.d(TAG, "📩 Entier reçu: $intValue")
+                        onPayloadReceivedInteger(intValue)
+                    } catch (e: Exception) {
+                        Log.e(TAG, "❌ Erreur de conversion d'entier: ${e.message}")
+                    }
+                } else {
+                    Log.d(TAG, "📩 Message texte reçu: $rawMessage")
+                    _connectionUiState.update {
+                        it.copy(messages = it.messages + rawMessage)
+                    }
+                }
+            }
+        }
+
+        override fun onPayloadTransferUpdate(endpointId: String, update: PayloadTransferUpdate) {
+            when (update.status) {
+                PayloadTransferUpdate.Status.SUCCESS -> {
+                    Log.d(TAG, "✅ Transfert réussi")
+                }
+                PayloadTransferUpdate.Status.FAILURE -> {
+                    Log.e(TAG, "❌ Échec du transfert")
+                }
+                PayloadTransferUpdate.Status.IN_PROGRESS -> {
+                    Log.d(TAG, "⏳ Transfert en cours: ${update.bytesTransferred}/${update.totalBytes}")
+                }
+                PayloadTransferUpdate.Status.CANCELED -> {
+                    Log.d(TAG, "🚫 Transfert annulé")
+                }
+            }
+        }
+    }
+    fun sendOrder //TODO fix
+                (name : String,data: Any) {
+
+
+    }
+
+    fun sendData(data: Any) {
+        endpointId?.let { endpoint ->
+            val payload = when (data) {
+                is String -> {
+                    Log.d(TAG, "📤 Envoi du message texte: $data")
+                    Payload.fromBytes(data.toByteArray())
+                }
+                is Int -> {
+                    Log.d(TAG, "📤 Envoi de l'entier: $data")
+                    Payload.fromBytes("INT:$data".toByteArray())
+                }
+                else -> {
+                    Log.e(TAG, "❌ Type de données non supporté: ${data.javaClass}")
+                    return
+                }
+            }
+
+            Nearby.getConnectionsClient(context).sendPayload(endpoint, payload)
+                .addOnSuccessListener {
+                    Log.d(TAG, "✅ Données envoyées avec succès")
+                }
+                .addOnFailureListener { e ->
+                    Log.e(TAG, "❌ Échec de l'envoi: ${e.message}")
+                    handleError("Erreur d'envoi des données: ${e.message}")
+                }
+        }
+    }
+    fun disconnect() {
+        Log.d(TAG, "🔌 Déconnexion en cours...")
+        Nearby.getConnectionsClient(context).apply {
+            stopAdvertising()
+            stopDiscovery()
+            stopAllEndpoints()
+        }
+        endpointId = null
+        updateConnectionStatus("Déconnecté")
+        _connectionUiState.update { it.copy(
+            isConnected = false,
+            isHostPhone = false
+        )}
+        Log.d(TAG, "👋 Déconnexion terminée")
+    }
 
     // Liste exhaustive des permissions nécessaires selon la version d'Android
     private val requiredPermissions = when {
@@ -222,92 +312,6 @@ class ConnectionManager(
     }
 
 
-    // Update payloadCallback to handle both string and integer messages
-    private val payloadCallback = object : PayloadCallback() {
-        override fun onPayloadReceived(endpointId: String, payload: Payload) {
-            if (payload.type == Payload.Type.BYTES) {
-                val rawMessage = String(payload.asBytes()!!)
-
-                if (rawMessage.startsWith("INT:")) {
-                    try {
-                        val intValue = rawMessage.removePrefix("INT:").toInt()
-                        Log.d(TAG, "📩 Entier reçu: $intValue")
-                        onPayloadReceivedInteger(intValue)
-                    } catch (e: Exception) {
-                        Log.e(TAG, "❌ Erreur de conversion d'entier: ${e.message}")
-                    }
-                } else {
-                    Log.d(TAG, "📩 Message texte reçu: $rawMessage")
-                    _connectionUiState.update {
-                        it.copy(messages = it.messages + rawMessage)
-                    }
-                }
-            }
-        }
-
-        override fun onPayloadTransferUpdate(endpointId: String, update: PayloadTransferUpdate) {
-            when (update.status) {
-                PayloadTransferUpdate.Status.SUCCESS -> {
-                    Log.d(TAG, "✅ Transfert réussi")
-                }
-                PayloadTransferUpdate.Status.FAILURE -> {
-                    Log.e(TAG, "❌ Échec du transfert")
-                }
-                PayloadTransferUpdate.Status.IN_PROGRESS -> {
-                    Log.d(TAG, "⏳ Transfert en cours: ${update.bytesTransferred}/${update.totalBytes}")
-                }
-                PayloadTransferUpdate.Status.CANCELED -> {
-                    Log.d(TAG, "🚫 Transfert annulé")
-                }
-            }
-        }
-    }
-    fun sendOrder(name : String,data: Any) {  //TODO fix
-
-    }
-
-    fun sendData(data: Any) {
-        endpointId?.let { endpoint ->
-            val payload = when (data) {
-                is String -> {
-                    Log.d(TAG, "📤 Envoi du message texte: $data")
-                    Payload.fromBytes(data.toByteArray())
-                }
-                is Int -> {
-                    Log.d(TAG, "📤 Envoi de l'entier: $data")
-                    Payload.fromBytes("INT:$data".toByteArray())
-                }
-                else -> {
-                    Log.e(TAG, "❌ Type de données non supporté: ${data.javaClass}")
-                    return
-                }
-            }
-
-            Nearby.getConnectionsClient(context).sendPayload(endpoint, payload)
-                .addOnSuccessListener {
-                    Log.d(TAG, "✅ Données envoyées avec succès")
-                }
-                .addOnFailureListener { e ->
-                    Log.e(TAG, "❌ Échec de l'envoi: ${e.message}")
-                    handleError("Erreur d'envoi des données: ${e.message}")
-                }
-        }
-    }
-    fun disconnect() {
-        Log.d(TAG, "🔌 Déconnexion en cours...")
-        Nearby.getConnectionsClient(context).apply {
-            stopAdvertising()
-            stopDiscovery()
-            stopAllEndpoints()
-        }
-        endpointId = null
-        updateConnectionStatus("Déconnecté")
-        _connectionUiState.update { it.copy(
-            isConnected = false,
-            isHostPhone = false
-        )}
-        Log.d(TAG, "👋 Déconnexion terminée")
-    }
 
     private fun updateConnectionStatus(status: String) {
         Log.d(TAG, "📊 Status: $status")

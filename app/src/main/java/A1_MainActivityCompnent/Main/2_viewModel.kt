@@ -1,6 +1,7 @@
 package A1_MainActivityCompnent.Main
 
-import a1_Models.ProductDisplayController
+import A0_Models.ProductDisplayController
+import A0_Models.UiState
 import  a_RoomDB.AppDatabase
 import a_RoomDB.AppSettingsSaverModel
 import a_RoomDB.ArticlesBasesStatsTable
@@ -31,25 +32,6 @@ import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 
-data class UiState(
-    val scrollPosition: Int = 0,
-    val appSettingsSaverModel: List<AppSettingsSaverModel> = emptyList(),
-    val articlesBasesStatTables: List<ArticlesBasesStatsTable> = emptyList(),
-    val categories: List<CategoriesTabelle> = emptyList(),
-    val colorsArticlesTabelleModel: List<ColorsArticlesTabelle> = emptyList(),
-    val soldArticlesModel: List<SoldArticlesTabelle?> = emptyList(),
-    val clientsModel: List<ClientsModel> = emptyList(),
-    val suppliers: List<SuppliersTabelle> = emptyList(),
-    val isLoading: Boolean = false,
-    val loadingProgress: Float = 0f,
-    val error: String? = null,
-    val isConnected: Boolean = false,
-    val connectionStatus: String = "Déconnecté",
-    val wifiTestDisplayer: Boolean = false,
-    val isHostPhone: Boolean = true,
-    val messageByWifi: String = "",
-    )
-
 class StartUpNewArticlesViewModels(
     context: Context,
     private val database: AppDatabase,
@@ -65,6 +47,9 @@ class StartUpNewArticlesViewModels(
         onPayloadReceivedInteger = {
             updateScrollPositionFromRecived(it)
         },
+        onRecive = {
+         //TODO fait que on recive id article d updte   _productDisplayController .   prodectIdWhoInfoDisplayed par lui
+        }
 
         )
 

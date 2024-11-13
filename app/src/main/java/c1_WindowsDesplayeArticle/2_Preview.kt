@@ -1,6 +1,6 @@
 package c1_WindowsDesplayeArticle
 
-import a1_Models.ProductDisplayController
+import A0_Models.ProductDisplayController
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ColorsArticlesTabelle
 import androidx.compose.material3.MaterialTheme
