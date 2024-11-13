@@ -262,6 +262,9 @@ class ConnectionManager(
             }
         }
     }
+    fun sendOrder(name : String,data: Any) {  //TODO fix
+
+    }
 
     fun sendData(data: Any) {
         endpointId?.let { endpoint ->

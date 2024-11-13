@@ -70,6 +70,7 @@ fun AppNavHost(
                                     currentClientId,
                                     pendingIndexColor)
                                 opnerSaleWindows=true
+                                //TODO fix    sendOrderToClient("idProdect",relatedArticleBaseStats!!.idArticle.toLong())
                             }
                         },
                         onClickToOpenClientsW = {

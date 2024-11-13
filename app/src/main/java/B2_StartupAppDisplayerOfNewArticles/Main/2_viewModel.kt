@@ -1,6 +1,6 @@
 package B2_StartupAppDisplayerOfNewArticles.Main
 
-import a_RoomDB.AppDatabase
+import  a_RoomDB.AppDatabase
 import a_RoomDB.AppSettingsSaverModel
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.CategoriesTabelle
@@ -80,7 +80,11 @@ class StartUpNewArticlesViewModels(
             }
         }
     }
-
+    fun sendOrderToClient(name: String,data: Any) {
+        viewModelScope.launch {
+            connectionManager.sendOrder(name,data)
+        }
+    }
 
     fun updateScrollPositionFromRecived(position: Int): Unit {
         _uiState.update { it.copy(scrollPosition = position) }
