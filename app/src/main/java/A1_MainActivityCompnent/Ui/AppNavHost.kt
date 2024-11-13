@@ -1,0 +1,154 @@
+package A1_MainActivityCompnent.Ui
+import A1_MainActivityCompnent.Res.LoadingOverlay
+import B2_StartupAppDisplayerOfNewArticles.Main.StartupAppDisplayerOfNewArticles
+import a_RoomDB.ArticlesBasesStatsTable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import c_WindosBuyAndDesplayeArticleStats.SaleWindows
+import com.example.clientjetpack.AppViewModels
+import d_SoldCartScreen.SoldCartScreen
+import e_AiGroupeForSupplier.GenerativeAiScreen
+import g_DialogeClientsEditer.ClientSelectionDialog
+
+@Composable
+fun AppNavHost(
+    appViewModels: AppViewModels,
+    navController: NavHostController,
+    onToggleNavBar: () -> Unit,
+    modifier: Modifier = Modifier,
+    isFabVisible: Boolean, onClickDonne: () -> Unit, onClickToDisplayeConexionWifi: () -> Unit
+) {
+    val uiState by appViewModels.startUpNewArticlesViewModels.uiState.collectAsState()
+
+    // Get current client from settings
+    val currentClientId = uiState.appSettingsSaverModel
+        .find { it.name == "clientBuyerNowId" }?.valueLong ?: 0
+    val currentClient = uiState.clientsModel.find { it.idClientsSu == currentClientId }
+
+    // Existing state management
+    var opnerSaleWindows by rememberSaveable { mutableStateOf(false) }
+    var showClientSelection by rememberSaveable { mutableStateOf(false) }
+    var showClientSelectionWithoutCondition by rememberSaveable { mutableStateOf(false) }
+    var relatedArticleBaseStats by rememberSaveable { mutableStateOf<ArticlesBasesStatsTable?>(null) }
+    var pendingIndexColor by rememberSaveable { mutableIntStateOf(0) }
+    val reloadTrigger by rememberSaveable { mutableIntStateOf(0) }
+
+    Box(modifier = modifier.fillMaxSize()) {
+        NavHost(
+            navController = navController,
+            startDestination = Screen.EditDatabaseWithCreateNewArticles.route,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            composable(Screen.EditDatabaseWithCreateNewArticles.route) {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    StartupAppDisplayerOfNewArticles(
+                        viewModel = appViewModels.startUpNewArticlesViewModels,
+                        onToggleNavBar = onToggleNavBar,
+                        reloadTrigger = reloadTrigger,
+                        onClickToOpenWindos = { articleDataBase, indexColor ->
+                            relatedArticleBaseStats = articleDataBase
+                            pendingIndexColor = indexColor
+
+                            if (currentClientId == 0L) {
+                                showClientSelection = true
+                            } else {
+                                appViewModels.startUpNewArticlesViewModels.openWindowsNewSaleWithUpdateCurrent(
+                                    relatedArticleBaseStats!!.idArticle.toLong(),
+                                    currentClientId,
+                                    pendingIndexColor)
+                                opnerSaleWindows=true
+                            }
+                        },
+                        onClickToOpenClientsW = {
+                            showClientSelectionWithoutCondition=true
+                        },
+                        isFabVisible=isFabVisible, onClickDonne = onClickDonne,
+                        onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi,
+
+                    )
+
+                    if (uiState.isLoading) {
+                        LoadingOverlay(
+                            progress = uiState.loadingProgress / 100f,
+                            modifier = Modifier.matchParentSize()
+                        )
+                    }
+                }
+            }
+
+            composable(Screen.SoldCart.route) {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    SoldCartScreen(
+                        viewModel = appViewModels.startUpNewArticlesViewModels,
+                        clientBuyerNow = currentClient,
+                        uiState = uiState,
+                        onConfirmOrder = {
+                            appViewModels.startUpNewArticlesViewModels.updateLongAppSetting("clientBuyerNowId",0)
+                        }
+                    )
+                }
+            }
+            composable(Screen.BakingScreen.route) {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    GenerativeAiScreen(
+                        generativeAiViewModel = appViewModels.generativeAiViewModel,
+                    )
+                }
+            }
+        }
+
+        // Overlay dialogs and windows
+        if (showClientSelectionWithoutCondition ||(showClientSelection && currentClientId == 0L)) {
+            ClientSelectionDialog(
+                soldArticle = uiState.soldArticlesModel,
+                viewModel = appViewModels.startUpNewArticlesViewModels,
+                clients = uiState.clientsModel,
+                onClientSelected = { client ->
+                    appViewModels.startUpNewArticlesViewModels.updateLongAppSetting("clientBuyerNowId",client.idClientsSu)
+                    if (!showClientSelectionWithoutCondition) {
+                        appViewModels.startUpNewArticlesViewModels.openWindowsNewSaleWithUpdateCurrent(
+                            relatedArticleBaseStats!!.idArticle.toLong(),
+                            client.idClientsSu,
+                            pendingIndexColor
+                        )
+                        opnerSaleWindows = true
+                    }
+                    showClientSelection = false
+                    showClientSelectionWithoutCondition= false
+                },
+                onDismiss = {
+                    showClientSelection = false
+                    showClientSelectionWithoutCondition= false
+
+                }
+            )
+        }
+
+        if (opnerSaleWindows) {
+            SaleWindows(
+                modifier = Modifier.padding(horizontal = 3.dp),
+                uiState = uiState,
+                viewModel = appViewModels.startUpNewArticlesViewModels,
+                onDismiss = {
+                    appViewModels.startUpNewArticlesViewModels.clearCurrentSale()
+                    opnerSaleWindows=false
+                },
+                reloadTrigger = reloadTrigger,
+            )
+        }
+
+    }
+}
