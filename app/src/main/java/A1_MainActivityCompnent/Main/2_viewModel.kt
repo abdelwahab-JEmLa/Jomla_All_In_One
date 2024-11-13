@@ -1,5 +1,6 @@
-package B2_StartupAppDisplayerOfNewArticles.Main
+package A1_MainActivityCompnent.Main
 
+import a1_Models.ProductDisplayController
 import  a_RoomDB.AppDatabase
 import a_RoomDB.AppSettingsSaverModel
 import a_RoomDB.ArticlesBasesStatsTable
@@ -30,7 +31,6 @@ import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 
-
 data class UiState(
     val scrollPosition: Int = 0,
     val appSettingsSaverModel: List<AppSettingsSaverModel> = emptyList(),
@@ -54,13 +54,19 @@ class StartUpNewArticlesViewModels(
     context: Context,
     private val database: AppDatabase,
 ) : ViewModel() {
+    private val _uiState = MutableStateFlow(UiState())
+    val uiState = _uiState.asStateFlow()
+
+    private val _productDisplayController = MutableStateFlow(ProductDisplayController())
+    val productDisplayController = _productDisplayController.asStateFlow()
+
     private val connectionManager = ConnectionManager(
         context,
         onPayloadReceivedInteger = {
             updateScrollPositionFromRecived(it)
-        },)
-    private val _uiState = MutableStateFlow(UiState())
-    val uiState = _uiState.asStateFlow()
+        },
+
+        )
 
     init {
         viewModelScope.launch {

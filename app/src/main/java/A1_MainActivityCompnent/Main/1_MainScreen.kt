@@ -6,18 +6,13 @@ import A1_MainActivityCompnent.Ui.NavigationBarWithFab
 import A1_MainActivityCompnent.Ui.NavigationItems
 import A1_MainActivityCompnent.Ui.Screen
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProgressIndicatorDefaults
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -26,7 +21,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -51,19 +45,6 @@ fun MainScreen(
             if (isDisplayeConexionWifiVisible) {
                 ConnexionCard(uiState, appViewModels)
             }
-            if (uiState.isConnected && !isHostPhone) {
-                    Text(
-                        text = "Mode Client - Welocom To our Displayer",
-                        color = Color.White,
-                        style = MaterialTheme.typography.titleSmall,
-                        modifier = Modifier
-                            .background(
-                                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
-                                shape = RoundedCornerShape(8.dp)
-                            )
-                            .padding(16.dp)
-                    )
-            }
             // Main Navigation Content with Overlay
             Box(modifier = Modifier.weight(1f)) {
                 AppNavHost(
@@ -73,7 +54,7 @@ fun MainScreen(
                     isFabVisible = isFabVisible,
                     onClickDonne = { isFabVisible = false
 
-                                   },
+                    },
                     onClickToDisplayeConexionWifi = { isDisplayeConexionWifiVisible = !isDisplayeConexionWifiVisible },
                 )
 

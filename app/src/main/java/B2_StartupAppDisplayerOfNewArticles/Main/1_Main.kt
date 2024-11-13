@@ -1,5 +1,7 @@
 package B2_StartupAppDisplayerOfNewArticles.Main
 
+import A1_MainActivityCompnent.Main.StartUpNewArticlesViewModels
+import A1_MainActivityCompnent.Main.UiState
 import A1_MainActivityCompnent.Objects.LoadingOverlay
 import B2_StartupAppDisplayerOfNewArticles.FloatingActionButtonGroup
 import B2_StartupAppDisplayerOfNewArticles.Ui.ArticleGridWithScrollbar

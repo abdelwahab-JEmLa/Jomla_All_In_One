@@ -2,8 +2,8 @@ package B2_StartupAppDisplayerOfNewArticles.Ui
 
 import B2_StartupAppDisplayerOfNewArticles.CategoryHeader
 import B2_StartupAppDisplayerOfNewArticles.Main.ArticlePagingSource
-import B2_StartupAppDisplayerOfNewArticles.Main.StartUpNewArticlesViewModels
-import B2_StartupAppDisplayerOfNewArticles.Main.UiState
+import A1_MainActivityCompnent.Main.StartUpNewArticlesViewModels
+import A1_MainActivityCompnent.Main.UiState
 import B2_StartupAppDisplayerOfNewArticles.ScrolleAdBanner
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.CategoriesTabelle

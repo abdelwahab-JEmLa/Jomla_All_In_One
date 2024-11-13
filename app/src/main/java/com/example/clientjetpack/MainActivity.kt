@@ -1,7 +1,7 @@
 package com.example.clientjetpack
 
 import A1_MainActivityCompnent.Main.MainScreen
-import B2_StartupAppDisplayerOfNewArticles.Main.StartUpNewArticlesViewModels
+import A1_MainActivityCompnent.Main.StartUpNewArticlesViewModels
 import a_RoomDB.AppDatabase
 import android.app.Application
 import android.content.Context
