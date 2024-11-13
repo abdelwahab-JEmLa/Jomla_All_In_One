@@ -1,5 +1,7 @@
 package d_SoldCartScreen
 
+import A0_Models.UiState
+import A1_MainActivityCompnent.Main.HeadViewModel
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ClientsModel
 import a_RoomDB.ColorsArticlesTabelle
@@ -54,8 +56,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import A1_MainActivityCompnent.Main.HeadViewModel
-import A1_MainActivityCompnent.Main.UiState
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size

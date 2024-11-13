@@ -1,5 +1,5 @@
 package A1_MainActivityCompnent.Ui
-import A1_MainActivityCompnent.Main.UiState
+import A0_Models.UiState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

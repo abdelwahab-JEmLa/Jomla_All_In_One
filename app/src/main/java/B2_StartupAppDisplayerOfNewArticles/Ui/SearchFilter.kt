@@ -1,7 +1,7 @@
 package B2_StartupAppDisplayerOfNewArticles.Ui
 
+import A0_Models.UiState
 import A1_MainActivityCompnent.Main.HeadViewModel
-import A1_MainActivityCompnent.Main.UiState
 import a_RoomDB.ArticlesBasesStatsTable
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
