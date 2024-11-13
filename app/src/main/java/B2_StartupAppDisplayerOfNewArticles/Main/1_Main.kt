@@ -43,9 +43,11 @@ fun StartupAppDisplayerOfNewArticles(
     reloadTrigger: Int,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     onClickToOpenClientsW: () -> Unit,
-    isFabVisible: Boolean, onClickDonne: () -> Unit, onClickToDisplayeConexionWifi: () -> Unit
+    isFabVisible: Boolean,
+    onClickDonne: () -> Unit,
+    onClickToDisplayeConexionWifi: () -> Unit
 ) {
-    var gridColumnsForNewArticels by remember { mutableStateOf(2) }
+    var gridColumns by remember { mutableStateOf(2) }
     var showFilter by remember { mutableStateOf(false) }
     var filterText by remember { mutableStateOf("") }
     val gridState = rememberLazyStaggeredGridState()
@@ -53,19 +55,22 @@ fun StartupAppDisplayerOfNewArticles(
 
     ArticleDisplayScreen(
         uiState = uiState,
-        gridColumns = gridColumnsForNewArticels,
+        gridColumns = gridColumns,
         filterText = filterText,
         gridState = gridState,
         onFilterTextChange = { filterText = it },
         onToggleFilter = { showFilter = !showFilter },
-        onChangeGridColumns = { gridColumnsForNewArticels = it },
+        onChangeGridColumns = { gridColumns = it },
         onToggleNavBar = onToggleNavBar,
         viewModel = viewModel,
         reloadTrigger = reloadTrigger,
         onClickToOpenWindos = onClickToOpenWindos,
         onClickToOpenClientsW = onClickToOpenClientsW,
-        isFabVisible=isFabVisible,
-        onClickDonne = onClickDonne, onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi,
+        isFabVisible = isFabVisible,
+        onClickDonne = {
+            filterText=""
+            onClickDonne() },
+        onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi,
     )
 }
 
@@ -87,82 +92,46 @@ fun ArticleDisplayScreen(
     onClickDonne: () -> Unit,
     onClickToDisplayeConexionWifi: () -> Unit,
 ) {
-    val isHostPhone = uiState.isHostPhone
-    val tag = if (isHostPhone) "📱 ServerScreen" else "📱 ClientScreen"
-
-    // Scroll broadcast handling
     val scope = rememberCoroutineScope()
-    val broadcastScroll = remember {
-        var lastPosition = -1
-        { position: Int ->
-            if (position != lastPosition) {  // Avoid duplicate broadcasts
-                lastPosition = position
-                scope.launch {
-                    if (isHostPhone) {
-                        Log.d(tag, "🚀 Broadcasting scroll message: $position")
-                        try {
-                            viewModel.sendScrollPositionToClient(position)
-                            Log.d(tag, "✅ Scroll broadcast completed")
-                        } catch (e: Exception) {
-                            Log.e(tag, "❌ Failed to broadcast scroll: ${e.message}")
-                        }
-                    }
-                }
-            }
-        }
-    }
+    val tag = if (uiState.isHostPhone) "📱 ServerScreen" else "📱 ClientScreen"
 
-    // Server scroll monitoring
-    LaunchedEffect(isHostPhone, uiState.isConnected) {
-        if (!isHostPhone || !uiState.isConnected) {
-            Log.d(tag, "⚠️ Not monitoring scroll (Server: $isHostPhone, Connected: ${uiState.isConnected})")
-            return@LaunchedEffect
-        }
+    // Sauvegarder la position quand le FAB est visible
+    var savedScrollPosition by remember { mutableStateOf(0) }
 
-        Log.d(tag, "👀 Starting scroll monitoring")
-        snapshotFlow { gridState.firstVisibleItemIndex }
-            .distinctUntilChanged()
-            .collect { position ->
-                Log.d(tag, "📊 Grid position changed to: $position")
-                broadcastScroll(position)
-            }
-    }
-
-    // Client scroll handling
-    LaunchedEffect(uiState.scrollPosition) {
-        if (isHostPhone) {
-            return@LaunchedEffect
-        }
-
-        Log.d(tag, "🔄 Processing scroll position update")
-        try {
-            val position = uiState.scrollPosition
-            Log.d(tag, "🔄 Starting scroll animation to $position")
-
+    // Gérer le changement de visibilité du FAB
+    LaunchedEffect(isFabVisible) {
+        if (isFabVisible) {
+            // Quand le FAB devient visible, sauvegarder la position actuelle
+            savedScrollPosition = gridState.firstVisibleItemIndex
+        } else {
+            // Quand le FAB devient invisible, revenir à la position sauvegardée
             scope.launch {
-                try {
-                    gridState.animateScrollToItem(position)
-                    delay(300)
-                    Log.d(tag, "✅ Scroll animation completed")
-                } catch (e: Exception) {
-                    Log.e(tag, "❌ Scroll animation failed: ${e.message}")
-                }
+                gridState.scrollToItem(savedScrollPosition)
             }
-        } catch (e: Exception) {
-            Log.e(tag, "❌ Error processing scroll position: ${e.message}")
         }
     }
+
+    HandleScrollBroadcast(
+        isHostPhone = uiState.isHostPhone,
+        isConnected = uiState.isConnected,
+        gridState = gridState,
+        viewModel = viewModel,
+        tag = tag
+    )
+
+    HandleClientScroll(
+        isHostPhone = uiState.isHostPhone,
+        scrollPosition = uiState.scrollPosition,
+        gridState = gridState,
+        tag = tag
+    )
 
     Box(modifier = Modifier.fillMaxSize()) {
-        // Main content column
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(bottom = if (isFabVisible) 80.dp else 0.dp)
-        ) {      //TODO fait que on activon le filter
-            //d enregesntre la position du bar scroll pour quand il se cache et
-            // le recherche termine il
-            //revien a la postition enregstre
+        ) {
             SearchFilterPB(
                 showFilter = isFabVisible,
                 filterText = filterText,
@@ -173,7 +142,6 @@ fun ArticleDisplayScreen(
                 onClickDonne = onClickDonne
             )
 
-            // Article grid
             Box(modifier = Modifier.weight(1f)) {
                 ArticleGridWithScrollbar(
                     uiState = uiState,
@@ -188,7 +156,6 @@ fun ArticleDisplayScreen(
             }
         }
 
-        // FAB Group
         Box(
             modifier = Modifier
                 .matchParentSize()
@@ -212,7 +179,6 @@ fun ArticleDisplayScreen(
             }
         }
 
-        // Loading overlay
         if (uiState.isLoading) {
             LoadingOverlay(
                 progress = uiState.loadingProgress,
@@ -222,29 +188,81 @@ fun ArticleDisplayScreen(
     }
 }
 
+@Composable
+private fun HandleScrollBroadcast(
+    isHostPhone: Boolean,
+    isConnected: Boolean,
+    gridState: LazyStaggeredGridState,
+    viewModel: StartUpNewArticlesViewModels,
+    tag: String
+) {
+    LaunchedEffect(isHostPhone, isConnected) {
+        if (!isHostPhone || !isConnected) {
+            Log.d(tag, "⚠️ Not monitoring scroll (Server: $isHostPhone, Connected: $isConnected)")
+            return@LaunchedEffect
+        }
+
+        Log.d(tag, "👀 Starting scroll monitoring")
+        snapshotFlow { gridState.firstVisibleItemIndex }
+            .distinctUntilChanged()
+            .collect { position ->
+                Log.d(tag, "📊 Grid position changed to: $position")
+                try {
+                    viewModel.sendScrollPositionToClient(position)
+                    Log.d(tag, "✅ Scroll broadcast completed")
+                } catch (e: Exception) {
+                    Log.e(tag, "❌ Failed to broadcast scroll: ${e.message}")
+                }
+            }
+    }
+}
+
+@Composable
+private fun HandleClientScroll(
+    isHostPhone: Boolean,
+    scrollPosition: Int,
+    gridState: LazyStaggeredGridState,
+    tag: String
+) {
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(scrollPosition) {
+        if (isHostPhone) return@LaunchedEffect
+
+        Log.d(tag, "🔄 Processing scroll position update")
+        try {
+            scope.launch {
+                gridState.animateScrollToItem(scrollPosition)
+                delay(300)
+                Log.d(tag, "✅ Scroll animation completed")
+            }
+        } catch (e: Exception) {
+            Log.e(tag, "❌ Scroll animation failed: ${e.message}")
+        }
+    }
+}
 
 class ArticlePagingSource(
     private val articles: List<ArticlesBasesStatsTable>,
     private val filterText: String,
 ) : PagingSource<Int, ArticlesBasesStatsTable>() {
-    private val cachedFilteredArticles = mutableMapOf<Int, List<ArticlesBasesStatsTable>>()
     private val pageSize = 10
+    private val cachedFilteredArticles = mutableMapOf<Int, List<ArticlesBasesStatsTable>>()
 
     override fun getRefreshKey(state: PagingState<Int, ArticlesBasesStatsTable>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
-            val anchorPage = state.closestPageToPosition(anchorPosition)
-            anchorPage?.prevKey?.plus(1) ?: anchorPage?.nextKey?.minus(1)
+            state.closestPageToPosition(anchorPosition)?.let { anchorPage ->
+                anchorPage.prevKey?.plus(1) ?: anchorPage.nextKey?.minus(1)
+            }
         }
     }
 
-    private fun filterArticles(): List<ArticlesBasesStatsTable> {
-        return if (filterText.isEmpty()) {
-            articles.filter { it.idForSearchArticles <= 0 && it.diponibilityState==""}
-        } else {
-            articles.filter { article ->
-                (article.nomArticleFinale.contains(filterText, ignoreCase = true) ||
-                        article.idForSearchArticles > 0)
-            }
+    private fun filterArticles() = if (filterText.isEmpty()) {
+        articles.filter { it.idForSearchArticles <= 0 && it.diponibilityState == "" }
+    } else {
+        articles.filter { article ->
+            article.nomArticleFinale.contains(filterText, ignoreCase = true) ||
+                    article.idForSearchArticles > 0
         }
     }
 
@@ -265,9 +283,9 @@ class ArticlePagingSource(
             LoadResult.Error(e)
         } finally {
             // Clear cache for pages that are no longer needed
-            cachedFilteredArticles.keys.filter { it < page - 1 || it > page + 1 }
+            cachedFilteredArticles.keys
+                .filter { it < page - 1 || it > page + 1 }
                 .forEach { cachedFilteredArticles.remove(it) }
         }
     }
 }
-

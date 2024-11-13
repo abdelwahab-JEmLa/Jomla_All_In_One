@@ -57,7 +57,7 @@ fun ArticleGridWithScrollbar(
             modifier = Modifier.fillMaxSize()
         )
 
-        CustomScrollbar(
+        Scrollbar(
             state = gridState,
             modifier = Modifier
                 .align(Alignment.CenterEnd)
@@ -68,7 +68,7 @@ fun ArticleGridWithScrollbar(
 }
 
 @Composable
-fun CustomScrollbar(
+fun Scrollbar(
     state: LazyStaggeredGridState,
     modifier: Modifier = Modifier
 ) {
