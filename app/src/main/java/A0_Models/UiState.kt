@@ -9,7 +9,6 @@ import a_RoomDB.SoldArticlesTabelle
 import a_RoomDB.SuppliersTabelle
 
 data class UiState(
-    val scrollPosition: Int = 0,
     val appSettingsSaverModel: List<AppSettingsSaverModel> = emptyList(),
     val articlesBasesStatTables: List<ArticlesBasesStatsTable> = emptyList(),
     val categories: List<CategoriesTabelle> = emptyList(),
@@ -19,6 +18,7 @@ data class UiState(
     val suppliers: List<SuppliersTabelle> = emptyList(),
     val isLoading: Boolean = false,
     val loadingProgress: Float = 0f,
+    val scrollPosition: Int = 0,
     val error: String? = null,
     val isConnected: Boolean = false,
     val connectionStatus: String = "Déconnecté",

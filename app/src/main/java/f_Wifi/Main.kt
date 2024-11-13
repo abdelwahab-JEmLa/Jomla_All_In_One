@@ -27,19 +27,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-data class ConnectionUiState(
-    val connectionStatus: String = "Déconnecté",
-    val isConnected: Boolean = false,
-    val isHostPhone: Boolean = false,
-    val error: String? = null,
-    val messages: List<String> = emptyList(),
-    val scrollPosition: Int? = 0,
-)
-
 class ConnectionManager(
     private val context: Context,
     onPayloadReceivedInteger: (Int) -> Unit,
-
+    onReceive: ((Long) -> Unit)? = null,
 ) : ViewModel() {
     private val _connectionUiState = MutableStateFlow(ConnectionUiState())
     val connectionUiState: StateFlow<ConnectionUiState> = _connectionUiState.asStateFlow()
@@ -49,28 +40,55 @@ class ConnectionManager(
     private val strategy = Strategy.P2P_STAR
 
     // Update payloadCallback to handle both string and integer messages
+    fun sendOrder(name: String, data: Any) {
+        when (name) {
+            "idProdect" -> {
+                if (data is Long) {
+                    sendData("PRODUCT:$data")
+                    Log.d(TAG, "📤 Product ID sent: $data")
+                } else {
+                    Log.e(TAG, "❌ Invalid data type for product ID: ${data.javaClass}")
+                }
+            }
+            else -> {
+                Log.e(TAG, "❌ Unknown order type: $name")
+            }
+        }
+    }
+
     private val payloadCallback = object : PayloadCallback() {
         override fun onPayloadReceived(endpointId: String, payload: Payload) {
             if (payload.type == Payload.Type.BYTES) {
                 val rawMessage = String(payload.asBytes()!!)
 
-                if (rawMessage.startsWith("INT:")) {
-                    try {
-                        val intValue = rawMessage.removePrefix("INT:").toInt()
-                        Log.d(TAG, "📩 Entier reçu: $intValue")
-                        onPayloadReceivedInteger(intValue)
-                    } catch (e: Exception) {
-                        Log.e(TAG, "❌ Erreur de conversion d'entier: ${e.message}")
+                when {
+                    rawMessage.startsWith("INT:") -> {
+                        try {
+                            val intValue = rawMessage.removePrefix("INT:").toInt()
+                            Log.d(TAG, "📩 Integer received: $intValue")
+                            onPayloadReceivedInteger(intValue)
+                        } catch (e: Exception) {
+                            Log.e(TAG, "❌ Integer conversion error: ${e.message}")
+                        }
                     }
-                } else {
-                    Log.d(TAG, "📩 Message texte reçu: $rawMessage")
-                    _connectionUiState.update {
-                        it.copy(messages = it.messages + rawMessage)
+                    rawMessage.startsWith("PRODUCT:") -> {
+                        try {
+                            val productId = rawMessage.removePrefix("PRODUCT:").toLong()
+                            Log.d(TAG, "📩 Product ID received: $productId")
+                            onReceive(productId)
+                        } catch (e: Exception) {
+                            Log.e(TAG, "❌ Product ID conversion error: ${e.message}")
+                        }
+                    }
+                    else -> {
+                        Log.d(TAG, "📩 Text message received: $rawMessage")
+                        _connectionUiState.update {
+                            it.copy(messages = it.messages + rawMessage)
+                        }
                     }
                 }
             }
         }
-
         override fun onPayloadTransferUpdate(endpointId: String, update: PayloadTransferUpdate) {
             when (update.status) {
                 PayloadTransferUpdate.Status.SUCCESS -> {
@@ -87,10 +105,6 @@ class ConnectionManager(
                 }
             }
         }
-    }
-    fun sendOrder //TODO fix
-                (name : String,data: Any) {
-
 
     }
 
@@ -335,3 +349,11 @@ class ConnectionManager(
 
 
 }
+data class ConnectionUiState(
+    val connectionStatus: String = "Déconnecté",
+    val isConnected: Boolean = false,
+    val isHostPhone: Boolean = false,
+    val error: String? = null,
+    val messages: List<String> = emptyList(),
+    val scrollPosition: Int? = 0,
+)

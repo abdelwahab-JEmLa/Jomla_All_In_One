@@ -12,7 +12,7 @@ import androidx.compose.ui.tooling.preview.Preview
 fun DisplayArticleInfoToClientWindowsPreview() {
 
     val sampleProductDisplayController = ProductDisplayController(
-        selectedColorId=0
+        selectedColorId =0
     )
 
     val sampleArticleStats = ArticlesBasesStatsTable(

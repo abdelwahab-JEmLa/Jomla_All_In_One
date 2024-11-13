@@ -1,5 +1,6 @@
 package A1_MainActivityCompnent.Ui
 import A1_MainActivityCompnent.Objects.LoadingOverlay
+import A4_DisplyerEBoutiqueToClient.SaleWindows
 import B2_StartupAppDisplayerOfNewArticles.Main.StartupAppDisplayerOfNewArticles
 import a_RoomDB.ArticlesBasesStatsTable
 import androidx.compose.foundation.layout.Box
@@ -17,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import c_WindosBuyAndDesplayeArticleStats.SaleWindows
 import com.example.clientjetpack.AppViewModels
 import d_SoldCartScreen.SoldCartScreen
 import e_AiGroupeForSupplier.GenerativeAiScreen
@@ -70,8 +70,7 @@ fun AppNavHost(
                                     currentClientId,
                                     pendingIndexColor)
                                 opnerSaleWindows=true
-                                //TODO fix    sendOrderToClient("idProdect",relatedArticleBaseStats!!.idArticle.toLong())
-                            }
+                                appViewModels.startUpNewArticlesViewModels.sendOrderToClient("idProdect", relatedArticleBaseStats!!.idArticle.toLong())                            }
                         },
                         onClickToOpenClientsW = {
                             showClientSelectionWithoutCondition=true

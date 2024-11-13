@@ -1,4 +1,4 @@
-package c_WindosBuyAndDesplayeArticleStats
+package A4_DisplyerEBoutiqueToClient
 
 import A0_Models.UiState
 import A1_MainActivityCompnent.Main.StartUpNewArticlesViewModels

@@ -33,6 +33,8 @@ fun MainScreen(
     val startUpViewModel = appViewModels.startUpNewArticlesViewModels
     val uiState by startUpViewModel.uiState.collectAsState()
     val isHostPhone = uiState.isHostPhone
+
+
     val navController = rememberNavController()
     val items = NavigationItems.getItems()
     var isNavBarVisible by remember { mutableStateOf(true) }

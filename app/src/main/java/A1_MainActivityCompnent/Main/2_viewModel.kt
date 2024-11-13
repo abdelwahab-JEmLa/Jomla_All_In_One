@@ -1,15 +1,13 @@
 package A1_MainActivityCompnent.Main
 
-import A0_Models.ProductDisplayController
 import A0_Models.UiState
-import  a_RoomDB.AppDatabase
+import a_RoomDB.AppDatabase
 import a_RoomDB.AppSettingsSaverModel
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.CategoriesTabelle
 import a_RoomDB.ClientsModel
 import a_RoomDB.ColorsArticlesTabelle
 import a_RoomDB.SoldArticlesTabelle
-import a_RoomDB.SuppliersTabelle
 import android.content.Context
 import android.os.Build
 import android.util.Log
@@ -19,6 +17,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.database.BuildConfig
 import com.google.firebase.database.FirebaseDatabase
 import f_Wifi.ConnectionManager
+import f_Wifi.Main.ClientPresentationViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -35,23 +34,24 @@ import java.util.Locale
 class StartUpNewArticlesViewModels(
     context: Context,
     private val database: AppDatabase,
+    clientPresentationViewModel: ClientPresentationViewModel? = null  // Removed 'private' to allow property reference
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()
 
-    private val _productDisplayController = MutableStateFlow(ProductDisplayController())
-    val productDisplayController = _productDisplayController.asStateFlow()
+    // Changed to non-nullable with backing property pattern
+    private val _clientPresentationViewModel = MutableStateFlow(
+        clientPresentationViewModel ?: ClientPresentationViewModel(context)
+    )
+    val clientPresentationViewModel = _clientPresentationViewModel.asStateFlow()
 
     private val connectionManager = ConnectionManager(
         context,
         onPayloadReceivedInteger = {
             updateScrollPositionFromRecived(it)
-        },
-        onRecive = {
-         //TODO fait que on recive id article d updte   _productDisplayController .   prodectIdWhoInfoDisplayed par lui
         }
+    )
 
-        )
 
     init {
         viewModelScope.launch {
@@ -71,6 +71,7 @@ class StartUpNewArticlesViewModels(
             }
         }
     }
+
     fun sendOrderToClient(name: String,data: Any) {
         viewModelScope.launch {
             connectionManager.sendOrder(name,data)
@@ -106,7 +107,7 @@ class StartUpNewArticlesViewModels(
 
     // Ensure the directory exists when initializing the path
     val viewModelImagesPath = File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne/").apply {
-        if (!exists()) {
+if (!exists()) {
             mkdirs()
         }
     }
