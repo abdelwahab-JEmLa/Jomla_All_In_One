@@ -1,5 +1,5 @@
 package A1_MainActivityCompnent.Ui
-import A1_MainActivityCompnent.Res.LoadingOverlay
+import A1_MainActivityCompnent.Objects.LoadingOverlay
 import B2_StartupAppDisplayerOfNewArticles.Main.StartupAppDisplayerOfNewArticles
 import a_RoomDB.ArticlesBasesStatsTable
 import androidx.compose.foundation.layout.Box

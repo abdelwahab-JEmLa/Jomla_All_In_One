@@ -1,5 +1,6 @@
 package B2_StartupAppDisplayerOfNewArticles.Main
 
+import A1_MainActivityCompnent.Objects.LoadingOverlay
 import B2_StartupAppDisplayerOfNewArticles.FloatingActionButtonGroup
 import B2_StartupAppDisplayerOfNewArticles.Ui.ArticleGridWithScrollbar
 import B2_StartupAppDisplayerOfNewArticles.Ui.SearchFilterPB
@@ -31,7 +32,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.example.clientjetpack.LoadingOverlay
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch

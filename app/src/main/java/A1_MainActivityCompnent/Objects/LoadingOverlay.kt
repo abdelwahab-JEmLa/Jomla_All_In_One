@@ -1,4 +1,4 @@
-package A1_MainActivityCompnent.Res
+package A1_MainActivityCompnent.Objects
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
