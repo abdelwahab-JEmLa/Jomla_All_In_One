@@ -174,7 +174,7 @@ private fun MainScreen(
     val isHostPhone = uiState.isHostPhone
     val navController = rememberNavController()
     val items = NavigationItems.getItems()
-    var isNavBarVisible by remember { mutableStateOf(false) }
+    var isNavBarVisible by remember { mutableStateOf(true) }
     var isFabVisible by remember { mutableStateOf(false) }
     var isDisplayeConexionWifiVisible by remember { mutableStateOf(false) }
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
