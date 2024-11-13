@@ -30,7 +30,7 @@ import com.example.clientjetpack.AppViewModels
 fun MainScreen(
     appViewModels: AppViewModels
 ) {
-    val startUpViewModel = appViewModels.startUpNewArticlesViewModels
+    val startUpViewModel = appViewModels.headViewModel
     val uiState by startUpViewModel.uiState.collectAsState()
     val isHostPhone = uiState.isHostPhone
 

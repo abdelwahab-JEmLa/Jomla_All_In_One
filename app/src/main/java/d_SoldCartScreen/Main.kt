@@ -54,7 +54,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import A1_MainActivityCompnent.Main.StartUpNewArticlesViewModels
+import A1_MainActivityCompnent.Main.HeadViewModel
 import A1_MainActivityCompnent.Main.UiState
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
@@ -66,7 +66,7 @@ import java.io.File
 
 @Composable
 fun SoldCartScreen(
-    viewModel: StartUpNewArticlesViewModels,
+    viewModel: HeadViewModel,
     modifier: Modifier = Modifier,
     clientBuyerNow: ClientsModel? = null,
     uiState: UiState,
@@ -226,7 +226,7 @@ fun CartSummaryCard(
 fun ImageDisplayer(
     modifier: Modifier = Modifier,
     article: ArticlesBasesStatsTable,
-    viewModel: StartUpNewArticlesViewModels,
+    viewModel: HeadViewModel,
     indexColor: Int = 0,
     reloadKey: Any = Unit,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
@@ -294,7 +294,7 @@ fun CartItem(
     soldArticle: SoldArticlesTabelle,
     baseArticle: ArticlesBasesStatsTable,
     colors: List<ColorsArticlesTabelle>,
-    viewModel: StartUpNewArticlesViewModels,
+    viewModel: HeadViewModel,
     onOpenArticleStats: (ArticlesBasesStatsTable, Int) -> Unit,
     uiState: UiState
 ) {
@@ -423,7 +423,7 @@ private fun ColorItemWithQuantity(
     colorIndex: Int,
     quantity: Int,
     onDelete: () -> Unit,
-    viewModel: StartUpNewArticlesViewModels,
+    viewModel: HeadViewModel,
     onOpenArticleStats: (ArticlesBasesStatsTable, Int) -> Unit,
     uiState: UiState,
     colors: List<ColorsArticlesTabelle>,

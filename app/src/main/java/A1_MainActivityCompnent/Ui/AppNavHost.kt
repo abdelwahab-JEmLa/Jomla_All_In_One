@@ -31,7 +31,7 @@ fun AppNavHost(
     modifier: Modifier = Modifier,
     isFabVisible: Boolean, onClickDonne: () -> Unit, onClickToDisplayeConexionWifi: () -> Unit
 ) {
-    val uiState by appViewModels.startUpNewArticlesViewModels.uiState.collectAsState()
+    val uiState by appViewModels.headViewModel.uiState.collectAsState()
 
     // Get current client from settings
     val currentClientId = uiState.appSettingsSaverModel
@@ -55,7 +55,7 @@ fun AppNavHost(
             composable(Screen.EditDatabaseWithCreateNewArticles.route) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     StartupAppDisplayerOfNewArticles(
-                        viewModel = appViewModels.startUpNewArticlesViewModels,
+                        viewModel = appViewModels.headViewModel,
                         onToggleNavBar = onToggleNavBar,
                         reloadTrigger = reloadTrigger,
                         onClickToOpenWindos = { articleDataBase, indexColor ->
@@ -65,12 +65,12 @@ fun AppNavHost(
                             if (currentClientId == 0L) {
                                 showClientSelection = true
                             } else {
-                                appViewModels.startUpNewArticlesViewModels.openWindowsNewSaleWithUpdateCurrent(
+                                appViewModels.headViewModel.openWindowsNewSaleWithUpdateCurrent(
                                     relatedArticleBaseStats!!.idArticle.toLong(),
                                     currentClientId,
                                     pendingIndexColor)
                                 opnerSaleWindows=true
-                                appViewModels.startUpNewArticlesViewModels.sendOrderToClient("idProdect", relatedArticleBaseStats!!.idArticle.toLong())                            }
+                                appViewModels.headViewModel.sendOrderToClient("idProdect", relatedArticleBaseStats!!.idArticle.toLong())                            }
                         },
                         onClickToOpenClientsW = {
                             showClientSelectionWithoutCondition=true
@@ -92,11 +92,11 @@ fun AppNavHost(
             composable(Screen.SoldCart.route) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     SoldCartScreen(
-                        viewModel = appViewModels.startUpNewArticlesViewModels,
+                        viewModel = appViewModels.headViewModel,
                         clientBuyerNow = currentClient,
                         uiState = uiState,
                         onConfirmOrder = {
-                            appViewModels.startUpNewArticlesViewModels.updateLongAppSetting("clientBuyerNowId",0)
+                            appViewModels.headViewModel.updateLongAppSetting("clientBuyerNowId",0)
                         }
                     )
                 }
@@ -114,12 +114,12 @@ fun AppNavHost(
         if (showClientSelectionWithoutCondition ||(showClientSelection && currentClientId == 0L)) {
             ClientSelectionDialog(
                 soldArticle = uiState.soldArticlesModel,
-                viewModel = appViewModels.startUpNewArticlesViewModels,
+                viewModel = appViewModels.headViewModel,
                 clients = uiState.clientsModel,
                 onClientSelected = { client ->
-                    appViewModels.startUpNewArticlesViewModels.updateLongAppSetting("clientBuyerNowId",client.idClientsSu)
+                    appViewModels.headViewModel.updateLongAppSetting("clientBuyerNowId",client.idClientsSu)
                     if (!showClientSelectionWithoutCondition) {
-                        appViewModels.startUpNewArticlesViewModels.openWindowsNewSaleWithUpdateCurrent(
+                        appViewModels.headViewModel.openWindowsNewSaleWithUpdateCurrent(
                             relatedArticleBaseStats!!.idArticle.toLong(),
                             client.idClientsSu,
                             pendingIndexColor
@@ -141,9 +141,9 @@ fun AppNavHost(
             SaleWindows(
                 modifier = Modifier.padding(horizontal = 3.dp),
                 uiState = uiState,
-                viewModel = appViewModels.startUpNewArticlesViewModels,
+                viewModel = appViewModels.headViewModel,
                 onDismiss = {
-                    appViewModels.startUpNewArticlesViewModels.clearCurrentSale()
+                    appViewModels.headViewModel.clearCurrentSale()
                     opnerSaleWindows=false
                 },
                 reloadTrigger = reloadTrigger,

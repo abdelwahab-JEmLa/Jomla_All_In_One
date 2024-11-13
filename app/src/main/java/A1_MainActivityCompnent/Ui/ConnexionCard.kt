@@ -72,14 +72,14 @@ fun ConnexionCard(
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     Button(onClick = {
-                        appViewModels.startUpNewArticlesViewModels.startAsHost()
-                        appViewModels.startUpNewArticlesViewModels.updateTypePhone(type = true)
+                        appViewModels.headViewModel.startAsHost()
+                        appViewModels.headViewModel.updateTypePhone(type = true)
                     }) {
                         Text("Mode Hôte")
                     }
                     Button(onClick = {
-                        appViewModels.startUpNewArticlesViewModels.startAsClient()
-                        appViewModels.startUpNewArticlesViewModels.updateTypePhone()
+                        appViewModels.headViewModel.startAsClient()
+                        appViewModels.headViewModel.updateTypePhone()
                     }) {
                         Text("Mode Client")
                     }
@@ -102,7 +102,7 @@ fun ConnexionCard(
                     Button(
                         onClick = {
                             if (messageText.isNotEmpty()) {
-                                appViewModels.startUpNewArticlesViewModels.sendTestMessage(
+                                appViewModels.headViewModel.sendTestMessage(
                                     messageText
                                 )
                                 messageText = ""
@@ -113,7 +113,7 @@ fun ConnexionCard(
                         Text("Envoyer")
                     }
                     Button(
-                        onClick = { appViewModels.startUpNewArticlesViewModels.disconnect() },
+                        onClick = { appViewModels.headViewModel.disconnect() },
                         modifier = Modifier.weight(1f),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.error

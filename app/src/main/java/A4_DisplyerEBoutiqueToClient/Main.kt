@@ -1,7 +1,7 @@
 package A4_DisplyerEBoutiqueToClient
 
 import A0_Models.UiState
-import A1_MainActivityCompnent.Main.StartUpNewArticlesViewModels
+import A1_MainActivityCompnent.Main.HeadViewModel
 import B2_StartupAppDisplayerOfNewArticles.Ui.AutoResizedText
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ColorsArticlesTabelle
@@ -119,7 +119,7 @@ import kotlin.math.roundToInt
 @Composable
 fun SaleWindows(
     uiState: UiState,
-    viewModel: StartUpNewArticlesViewModels,
+    viewModel: HeadViewModel,
     onDismiss: () -> Unit,
     reloadTrigger: Int,
     modifier: Modifier = Modifier,
@@ -502,7 +502,7 @@ private fun ActionsButtonRow(
 private fun ColorsCards(
     currentSale: SoldArticlesTabelle?,
     articlesBasesStatsTable: ArticlesBasesStatsTable,
-    viewModel: StartUpNewArticlesViewModels,
+    viewModel: HeadViewModel,
     modifier: Modifier = Modifier,
     relodeTigger: Int,
     uiState: UiState,
@@ -546,7 +546,7 @@ private fun SingleColorLayout(
     currentSale: SoldArticlesTabelle?,
     article: ArticlesBasesStatsTable,
     color: ColorsArticlesTabelle,
-    viewModel: StartUpNewArticlesViewModels,
+    viewModel: HeadViewModel,
     relodeTigger: Int,
 ) {
     val height = 250.dp
@@ -576,7 +576,7 @@ private fun MultipleColorsLayout(
     currentSale: SoldArticlesTabelle?,
     article: ArticlesBasesStatsTable,
     colors: List<ColorsArticlesTabelle>,
-    viewModel: StartUpNewArticlesViewModels,
+    viewModel: HeadViewModel,
     relodeTigger: Int,
 ) {
     Column(
@@ -625,7 +625,7 @@ fun ColorItem(
     color: ColorsArticlesTabelle?,
     index: Int,
     relodeTigger: Int,
-    viewModel: StartUpNewArticlesViewModels,
+    viewModel: HeadViewModel,
     height: Dp,
 ) {
     var showPicker by remember {
@@ -812,7 +812,7 @@ fun ColorItem(
 fun CompactQuantityPicker(
     onClosePick: () -> Unit,
     colorIndex: Int,
-    viewModel: StartUpNewArticlesViewModels,
+    viewModel: HeadViewModel,
     initialQuantity: Int = 0,
     height: Dp
 ) {
@@ -1059,7 +1059,7 @@ class PickerState {
 private fun ImageDisplayer(
     modifier: Modifier = Modifier,
     article: ArticlesBasesStatsTable,
-    viewModel: StartUpNewArticlesViewModels,
+    viewModel: HeadViewModel,
     indexColor: Int = 0,
     reloadKey: Any = Unit
 ) {

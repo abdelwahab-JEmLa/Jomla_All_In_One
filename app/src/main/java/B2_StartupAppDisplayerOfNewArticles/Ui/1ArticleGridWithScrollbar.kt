@@ -1,6 +1,6 @@
 package B2_StartupAppDisplayerOfNewArticles.Ui
 
-import A1_MainActivityCompnent.Main.StartUpNewArticlesViewModels
+import A1_MainActivityCompnent.Main.HeadViewModel
 import A1_MainActivityCompnent.Main.UiState
 import a_RoomDB.ArticlesBasesStatsTable
 import androidx.compose.foundation.background
@@ -39,7 +39,7 @@ fun ArticleGridWithScrollbar(
     filterText: String,
     showFilter: Boolean,
     gridState: LazyStaggeredGridState,
-    viewModel: StartUpNewArticlesViewModels,
+    viewModel: HeadViewModel,
     reloadTrigger: Int,
     modifier: Modifier = Modifier,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,

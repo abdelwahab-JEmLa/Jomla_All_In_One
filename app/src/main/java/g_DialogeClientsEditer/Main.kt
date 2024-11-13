@@ -41,7 +41,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import A1_MainActivityCompnent.Main.StartUpNewArticlesViewModels
+import A1_MainActivityCompnent.Main.HeadViewModel
 
 @Composable
 fun ClientSelectionDialog(
@@ -49,7 +49,7 @@ fun ClientSelectionDialog(
     onClientSelected: (ClientsModel) -> Unit,
     onDismiss: () -> Unit,
     soldArticle: List<SoldArticlesTabelle?>,
-    viewModel: StartUpNewArticlesViewModels
+    viewModel: HeadViewModel
 ) {
     var searchQuery by remember { mutableStateOf("") }
     var showAddClientDialog by remember { mutableStateOf(false) }

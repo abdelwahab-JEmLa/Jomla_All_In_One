@@ -1,6 +1,6 @@
 package B2_StartupAppDisplayerOfNewArticles.Main
 
-import A1_MainActivityCompnent.Main.StartUpNewArticlesViewModels
+import A1_MainActivityCompnent.Main.HeadViewModel
 import A1_MainActivityCompnent.Main.UiState
 import A1_MainActivityCompnent.Objects.LoadingOverlay
 import B2_StartupAppDisplayerOfNewArticles.FloatingActionButtonGroup
@@ -40,7 +40,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun StartupAppDisplayerOfNewArticles(
-    viewModel: StartUpNewArticlesViewModels,
+    viewModel: HeadViewModel,
     onToggleNavBar: () -> Unit,
     reloadTrigger: Int,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
@@ -86,7 +86,7 @@ fun ArticleDisplayScreen(
     onToggleFilter: () -> Unit,
     onChangeGridColumns: (Int) -> Unit,
     onToggleNavBar: () -> Unit,
-    viewModel: StartUpNewArticlesViewModels,
+    viewModel: HeadViewModel,
     reloadTrigger: Int,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     onClickToOpenClientsW: () -> Unit,
@@ -195,7 +195,7 @@ private fun HandleScrollBroadcast(
     isHostPhone: Boolean,
     isConnected: Boolean,
     gridState: LazyStaggeredGridState,
-    viewModel: StartUpNewArticlesViewModels,
+    viewModel: HeadViewModel,
     tag: String
 ) {
     LaunchedEffect(isHostPhone, isConnected) {

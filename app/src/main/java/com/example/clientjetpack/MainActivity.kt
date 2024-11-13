@@ -1,7 +1,7 @@
 package com.example.clientjetpack
 
 import A1_MainActivityCompnent.Main.MainScreen
-import A1_MainActivityCompnent.Main.StartUpNewArticlesViewModels
+import A1_MainActivityCompnent.Main.HeadViewModel
 import a_RoomDB.AppDatabase
 import android.app.Application
 import android.content.Context
@@ -31,7 +31,7 @@ class MyApplication : Application() {
 }
 
 data class AppViewModels(
-    val startUpNewArticlesViewModels: StartUpNewArticlesViewModels,
+    val headViewModel: HeadViewModel,
     val generativeAiViewModel: GenerativeAiViewModel,
     val clientPresentationViewModel: ClientPresentationViewModel,
 )
@@ -50,8 +50,8 @@ class ViewModelFactory(
                 clientPresentationViewModelInstance = ClientPresentationViewModel( context.applicationContext,)
                 clientPresentationViewModelInstance as T
             }
-            modelClass.isAssignableFrom(StartUpNewArticlesViewModels::class.java) ->
-                StartUpNewArticlesViewModels(
+            modelClass.isAssignableFrom(HeadViewModel::class.java) ->
+                HeadViewModel(
                     context.applicationContext,
                     database,
                     clientPresentationViewModelInstance
@@ -67,13 +67,13 @@ class MainActivity : ComponentActivity() {
     private val database by lazy { (application as MyApplication).database }
     private val permissionHandler by lazy { PermissionHandler(this) }
     private val viewModelFactory by lazy { ViewModelFactory(applicationContext, database) }
-    private val startUpNewArticlesViewModels: StartUpNewArticlesViewModels by viewModels { viewModelFactory }
+    private val headViewModel: HeadViewModel by viewModels { viewModelFactory }
     private val generativeAiViewModel: GenerativeAiViewModel by viewModels { viewModelFactory }
     private val clientPresentationViewModel: ClientPresentationViewModel by viewModels { viewModelFactory }
 
     private val appViewModels by lazy {
         AppViewModels(
-            startUpNewArticlesViewModels = startUpNewArticlesViewModels,
+            headViewModel = headViewModel,
             generativeAiViewModel = generativeAiViewModel,
             clientPresentationViewModel=clientPresentationViewModel
         )

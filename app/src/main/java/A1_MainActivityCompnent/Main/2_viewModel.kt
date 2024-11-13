@@ -31,7 +31,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 
-class StartUpNewArticlesViewModels(
+class HeadViewModel(
     context: Context,
     private val database: AppDatabase,
     clientPresentationViewModel: ClientPresentationViewModel? = null  // Removed 'private' to allow property reference
@@ -49,7 +49,8 @@ class StartUpNewArticlesViewModels(
         context,
         onPayloadReceivedInteger = {
             updateScrollPositionFromRecived(it)
-        }
+        },
+        onReceive = {}
     )
 
 

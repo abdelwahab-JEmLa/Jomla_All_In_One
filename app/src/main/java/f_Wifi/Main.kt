@@ -30,7 +30,7 @@ import kotlinx.coroutines.launch
 class ConnectionManager(
     private val context: Context,
     onPayloadReceivedInteger: (Int) -> Unit,
-    onReceive: ((Long) -> Unit)? = null,
+    onReceive: (Long) -> Unit,
 ) : ViewModel() {
     private val _connectionUiState = MutableStateFlow(ConnectionUiState())
     val connectionUiState: StateFlow<ConnectionUiState> = _connectionUiState.asStateFlow()

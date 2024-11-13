@@ -1,6 +1,6 @@
 package B2_StartupAppDisplayerOfNewArticles
 
-import A1_MainActivityCompnent.Main.StartUpNewArticlesViewModels
+import A1_MainActivityCompnent.Main.HeadViewModel
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
@@ -54,7 +54,7 @@ import kotlin.math.roundToInt
 @Composable
 fun FloatingActionButtonGroup(
     modifier: Modifier,
-    viewModel: StartUpNewArticlesViewModels,
+    viewModel: HeadViewModel,
     onToggleNavBar: () -> Unit,
     onToggleOutlineFilter: () -> Unit,
     onChangeGridColumns: (Int) -> Unit,

@@ -2,7 +2,7 @@ package B2_StartupAppDisplayerOfNewArticles.Ui
 
 import B2_StartupAppDisplayerOfNewArticles.CategoryHeader
 import B2_StartupAppDisplayerOfNewArticles.Main.ArticlePagingSource
-import A1_MainActivityCompnent.Main.StartUpNewArticlesViewModels
+import A1_MainActivityCompnent.Main.HeadViewModel
 import A1_MainActivityCompnent.Main.UiState
 import B2_StartupAppDisplayerOfNewArticles.ScrolleAdBanner
 import a_RoomDB.ArticlesBasesStatsTable
@@ -93,7 +93,7 @@ fun ArticleGrid(
     filterText: String,
     showFilter: Boolean,
     gridState: LazyStaggeredGridState,
-    viewModel: StartUpNewArticlesViewModels,
+    viewModel: HeadViewModel,
     reloadTrigger: Int,
     modifier: Modifier = Modifier,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
@@ -213,7 +213,7 @@ sealed class ArticleLayout {
     @Composable
     fun Content(
         article: ArticlesBasesStatsTable,
-        viewModel: StartUpNewArticlesViewModels,
+        viewModel: HeadViewModel,
         reloadTrigger: Int,
         onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
         uiState: UiState,
@@ -258,7 +258,7 @@ sealed class ArticleLayout {
 @Composable
 private fun ArticleItem(
     article: ArticlesBasesStatsTable,
-    viewModel: StartUpNewArticlesViewModels,
+    viewModel: HeadViewModel,
     reloadTrigger: Int,
     modifier: Modifier = Modifier,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
@@ -296,7 +296,7 @@ private fun ArticleItem(
 @Composable
 private fun SmallDisplayerDualColor(
     article: ArticlesBasesStatsTable,
-    viewModel: StartUpNewArticlesViewModels,
+    viewModel: HeadViewModel,
     reloadTrigger: Int,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     uiState: UiState,
@@ -336,7 +336,7 @@ private fun SmallDisplayerDualColor(
 @Composable
 private fun SmallDisplayerMultiColor(
     article: ArticlesBasesStatsTable,
-    viewModel: StartUpNewArticlesViewModels,
+    viewModel: HeadViewModel,
     reloadTrigger: Int,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     uiState: UiState,
@@ -385,7 +385,7 @@ private fun SmallDisplayerMultiColor(
 @Composable
 private fun DemiDisplayerMultiColor(
     article: ArticlesBasesStatsTable,
-    viewModel: StartUpNewArticlesViewModels,
+    viewModel: HeadViewModel,
     reloadTrigger: Int,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     uiState: UiState,
@@ -437,7 +437,7 @@ private fun DemiDisplayerMultiColor(
 @Composable
 private fun DemiDisplayerDualColor(
     article: ArticlesBasesStatsTable,
-    viewModel: StartUpNewArticlesViewModels,
+    viewModel: HeadViewModel,
     reloadTrigger: Int,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     uiState: UiState,
@@ -470,7 +470,7 @@ private fun DemiDisplayerDualColor(
 @Composable
 private fun SmallSingleColorDisplayer(
     article: ArticlesBasesStatsTable,
-    viewModel: StartUpNewArticlesViewModels,
+    viewModel: HeadViewModel,
     reloadTrigger: Int,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     uiState: UiState,
@@ -496,7 +496,7 @@ private fun SmallSingleColorDisplayer(
 @Composable
 private fun DemiSingleColorDisplayer(
     article: ArticlesBasesStatsTable,
-    viewModel: StartUpNewArticlesViewModels,
+    viewModel: HeadViewModel,
     reloadTrigger: Int,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     uiState: UiState,
@@ -575,7 +575,7 @@ private fun ColorIndicator(
 @Composable
 private fun ArticleImageWithOverlay(
     article: ArticlesBasesStatsTable,
-    viewModel: StartUpNewArticlesViewModels,
+    viewModel: HeadViewModel,
     colorIndex: Int,
     reloadTrigger: Int,
     uiState: UiState,
@@ -637,7 +637,7 @@ private fun ArticleImageWithOverlay(
 private fun ImageDisplayer(
     modifier: Modifier = Modifier,
     article: ArticlesBasesStatsTable,
-    viewModel: StartUpNewArticlesViewModels,
+    viewModel: HeadViewModel,
     indexColor: Int,
     reloadKey: Any,
     onClickToOpenWindow: (ArticlesBasesStatsTable, Int) -> Unit,
@@ -865,7 +865,7 @@ private fun ColorOverlay(
 
 // Utility functions
 private fun checkImageExists(
-    viewModel: StartUpNewArticlesViewModels,
+    viewModel: HeadViewModel,
     article: ArticlesBasesStatsTable,
     colorIndex: Int,
     reloadTrigger: Int

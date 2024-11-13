@@ -1,6 +1,6 @@
 package B2_StartupAppDisplayerOfNewArticles.Ui
 
-import A1_MainActivityCompnent.Main.StartUpNewArticlesViewModels
+import A1_MainActivityCompnent.Main.HeadViewModel
 import A1_MainActivityCompnent.Main.UiState
 import a_RoomDB.ArticlesBasesStatsTable
 import androidx.compose.animation.AnimatedVisibility
@@ -38,7 +38,7 @@ fun SearchFilterPB(
     onFilterTextChange: (String) -> Unit,
     onAddNotInBaseArticle: (ArticlesBasesStatsTable, Int) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: StartUpNewArticlesViewModels,
+    viewModel: HeadViewModel,
     uiState: UiState,
     onClickDonne: () -> Unit
 ) {
