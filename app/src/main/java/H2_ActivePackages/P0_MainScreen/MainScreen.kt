@@ -36,7 +36,7 @@ fun MainScreen(
     val displayerStats by appViewModels.clientPresentationViewModel.displayerStats.collectAsState()
 
     // Safely find matching article based on displayed product ID
-    val displayeProdectDataBase = displayerStats.prodectIdWhoInfoDisplayed?.let { id ->
+    val displayProductDataBase = displayerStats.prodectIdWhoInfoDisplayed?.let { id ->
         uiState.articlesBasesStatTables.find { it.idArticle.toLong() == id }
     }
 
@@ -108,10 +108,10 @@ fun MainScreen(
     }
 
     // Show product info window only when we have both an ID and matching product data
-    if ( displayeProdectDataBase != null) {
+    if ( displayProductDataBase != null) {
         WindowsPresentationInfoProdect(
             displayController = displayerStats,
-            articleStatsDataBase = displayeProdectDataBase,
+            articleStatsDataBase = displayProductDataBase,
             colorsArticlesList = uiState.colorsArticlesTabelleModel,
             reloadTrigger = 0
         )
