@@ -1,7 +1,7 @@
 package P3_DisplayeProductInfosToSeller.Ui.Main
 import P1_StartupScreen.Ui.AutoResizedText
 import P3_DisplayeProductInfosToSeller.Modules.ImageDisplayer
-import P3_DisplayeProductInfosToSeller.Ui.CompactQuantityPicker
+import P3_DisplayeProductInfosToSeller.Ui.Objects.CompactQuantityPicker
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ColorsArticlesTabelle
 import a_RoomDB.SoldArticlesTabelle
@@ -51,7 +51,7 @@ import com.example.clientjetpack.ViewModel.HeadViewModel
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun ColorItem(
+fun ColorItemP3(
     modifier: Modifier,
     currentSale: SoldArticlesTabelle?,
     article: ArticlesBasesStatsTable,

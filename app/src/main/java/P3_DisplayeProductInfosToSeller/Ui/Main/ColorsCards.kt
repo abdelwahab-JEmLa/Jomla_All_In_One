@@ -19,7 +19,7 @@ import com.example.clientjetpack.Models.UiState
 import com.example.clientjetpack.ViewModel.HeadViewModel
 
 @Composable
-private fun ColorsCards(
+fun ColorsCardsP3(
     currentSale: SoldArticlesTabelle?,
     articlesBasesStatsTable: ArticlesBasesStatsTable,
     viewModel: HeadViewModel,
@@ -76,7 +76,7 @@ private fun SingleColorLayout(
             .fillMaxWidth()
             .padding(4.dp)
     ) {
-        ColorItem(
+        ColorItemP3(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(height),
@@ -117,7 +117,7 @@ private fun MultipleColorsLayout(
                         modifier = Modifier
                             .size(height)
                     ) {
-                        ColorItem(
+                        ColorItemP3(
                             modifier = Modifier.fillMaxSize(),
                             currentSale=currentSale,
                             article = article,

@@ -1,10 +1,11 @@
-package P3_DisplayeProductInfosToSeller
+package P3_DisplayeProductInfosToSeller.Main
 
 import P2_EStorePresentationToClient.Ui.ColorsCards
 import P2_EStorePresentationToClient.Ui.ProductNameSection
-import P3_DisplayeProductInfosToSeller.Ui.ActionsButtonRow
-import P3_DisplayeProductInfosToSeller.Ui.Details
-import P3_DisplayeProductInfosToSeller.Ui.confirmExitDialog
+import P3_DisplayeProductInfosToSeller.Ui.Main.ColorsCardsP3
+import P3_DisplayeProductInfosToSeller.Ui.Objects.ActionsButtonRow
+import P3_DisplayeProductInfosToSeller.Ui.Objects.Details
+import P3_DisplayeProductInfosToSeller.Ui.Objects.confirmExitDialog
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.SoldArticlesTabelle
 import androidx.compose.animation.AnimatedVisibility
@@ -136,7 +137,7 @@ private fun MainUi(
                         visible = true,
                         enter = fadeIn() + expandVertically()
                     ) {
-                        ColorsCards(
+                        ColorsCardsP3(
                             currentSale = currentSale,
                             articlesBasesStatsTable = stats,
                             viewModel = viewModel,

@@ -1,4 +1,4 @@
-package P3_DisplayeProductInfosToSeller.Ui
+package P3_DisplayeProductInfosToSeller.Ui.Objects
 import a_RoomDB.ArticlesBasesStatsTable
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
