@@ -10,9 +10,8 @@ import com.example.clientjetpack.Models.ProductDisplayController
 @Preview
 @Composable
 fun DisplayArticleInfoToClientWindowsPreview() {
-
     val sampleProductDisplayController = ProductDisplayController(
-        windowsSelectedColorId =0 ,
+        windowsSelectedColorId = 0,
         windowsPickerDisplayedQuantity = 25
     )
 
@@ -60,12 +59,11 @@ fun DisplayArticleInfoToClientWindowsPreview() {
     )
 
     MaterialTheme {
-        WindowsPresentationInfoProdect(
-            displayController=sampleProductDisplayController,
+        WindowsPresentationInfoProduct(
+            displayController = sampleProductDisplayController,
             articleStatsDataBase = sampleArticleStats,
             colorsArticlesList = sampleColorsList,
             reloadTrigger = 0
         )
     }
 }
-
