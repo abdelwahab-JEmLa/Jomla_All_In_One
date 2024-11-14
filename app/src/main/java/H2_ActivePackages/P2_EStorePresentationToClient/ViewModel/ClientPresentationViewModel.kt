@@ -13,8 +13,8 @@ import kotlinx.coroutines.launch
 
 class ClientPresentationViewModel(context: Context) : ViewModel() {
 
-    private val _productPresentationController = MutableStateFlow(ProductDisplayController())
-    val productPresentationController = _productPresentationController.asStateFlow()
+    private val _displayerStats = MutableStateFlow(ProductDisplayController())
+    val displayerStats = _displayerStats.asStateFlow()
 
     private val connectionManager = ConnectionManager(
         context,
@@ -22,7 +22,7 @@ class ClientPresentationViewModel(context: Context) : ViewModel() {
             updateScrollPositionFromRecived(it)
         },
         onReceive = { receivedId ->
-            _productPresentationController.update { currentState ->
+            _displayerStats.update { currentState ->
                 currentState.copy(prodectIdWhoInfoDisplayed = receivedId)
             }
         }
@@ -36,7 +36,7 @@ class ClientPresentationViewModel(context: Context) : ViewModel() {
     }
 
     private fun updateScrollPositionFromRecived(position: Int): Unit {
-        _productPresentationController.update { it.copy(scrollPosition = position) }
+        _displayerStats.update { it.copy(scrollPosition = position) }
     }
 
     fun sendScrollPositionToClient(position: Int) {
@@ -45,7 +45,7 @@ class ClientPresentationViewModel(context: Context) : ViewModel() {
         }
     }
     fun updateTypePhone(type: Boolean = false): Unit {
-        _productPresentationController.update { it.copy(isHostPhone = type) }
+        _displayerStats.update { it.copy(isHostPhone = type) }
     }
 
     fun startAsHost() = connectionManager.startAsHost()

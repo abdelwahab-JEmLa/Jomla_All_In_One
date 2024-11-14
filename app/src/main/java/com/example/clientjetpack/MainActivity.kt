@@ -1,6 +1,6 @@
 package com.example.clientjetpack
 
-import H1_APPMainCompnenents.Main.MainScreen
+import H2_ActivePackages.P0_MainScreen.MainScreen
 import H1_APPMainCompnenents.ViewModel.HeadViewModel
 import H2_ActivePackages.P2_EStorePresentationToClient.ViewModel.ClientPresentationViewModel
 import P6_AiGroupeForSupplier.GenerativeAiViewModel

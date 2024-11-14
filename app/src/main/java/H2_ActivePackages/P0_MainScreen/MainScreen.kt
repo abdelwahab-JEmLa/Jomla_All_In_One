@@ -1,10 +1,11 @@
-package H1_APPMainCompnenents.Main
+package H2_ActivePackages.P0_MainScreen
 
-import H1_APPMainCompnenents.Main.Ui.AppNavHost
-import H1_APPMainCompnenents.Main.Ui.ConnexionCard
-import H1_APPMainCompnenents.Main.Ui.NavigationBarWithFab
-import H1_APPMainCompnenents.Main.Ui.NavigationItems
-import H1_APPMainCompnenents.Main.Ui.Screen
+import H2_ActivePackages.P0_MainScreen.Ui.AppNavHost
+import H2_ActivePackages.P0_MainScreen.Ui.ConnexionCard
+import H2_ActivePackages.P0_MainScreen.Ui.NavigationBarWithFab
+import H2_ActivePackages.P0_MainScreen.Ui.NavigationItems
+import H2_ActivePackages.P0_MainScreen.Ui.Screen
+import H2_ActivePackages.P2_EStorePresentationToClient.WindowsPresentationInfoProdect
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -32,11 +33,14 @@ fun MainScreen(
 ) {
     val startUpViewModel = appViewModels.headViewModel
     val uiState by startUpViewModel.uiState.collectAsState()
+    val displayerStats by appViewModels.clientPresentationViewModel.displayerStats.collectAsState()
 
+    // Safely find matching article based on displayed product ID
+    val displayeProdectDataBase = displayerStats.prodectIdWhoInfoDisplayed?.let { id ->
+        uiState.articlesBasesStatTables.find { it.idArticle.toLong() == id }
+    }
 
     val isHostPhone = uiState.isHostPhone
-
-
     val navController = rememberNavController()
     val items = NavigationItems.getItems()
     var isNavBarVisible by remember { mutableStateOf(true) }
@@ -49,32 +53,28 @@ fun MainScreen(
             if (isDisplayeConexionWifiVisible) {
                 ConnexionCard(uiState, appViewModels)
             }
-            // Main Navigation Content with Overlay
             Box(modifier = Modifier.weight(1f)) {
                 AppNavHost(
                     appViewModels = appViewModels,
                     navController = navController,
                     onToggleNavBar = { isNavBarVisible = !isNavBarVisible },
                     isFabVisible = isFabVisible,
-                    onClickDonne = { isFabVisible = false
-
+                    onClickDonne = { isFabVisible = false },
+                    onClickToDisplayeConexionWifi = {
+                        isDisplayeConexionWifiVisible = !isDisplayeConexionWifiVisible
                     },
-                    onClickToDisplayeConexionWifi = { isDisplayeConexionWifiVisible = !isDisplayeConexionWifiVisible },
                 )
 
-                // Overlay when not host phone
                 if (!isHostPhone) {
                     Box(
                         modifier = Modifier
                             .matchParentSize()
                             .clickable(enabled = false) { }
-                    ) {
-                    }
+                    )
                 }
             }
         }
 
-        // Bottom Navigation Bar
         AnimatedVisibility(
             visible = isNavBarVisible,
             modifier = Modifier.align(Alignment.BottomCenter)
@@ -89,17 +89,16 @@ fun MainScreen(
                     }
                 },
                 isFabVisible = isFabVisible,
-                onToggleFabVisibility = { isFabVisible = !isFabVisible
-                    isDisplayeConexionWifiVisible=false}
+                onToggleFabVisibility = {
+                    isFabVisible = !isFabVisible
+                    isDisplayeConexionWifiVisible = false
+                }
             )
         }
 
-        // Loading Indicator
         if (uiState.isLoading) {
             CircularProgressIndicator(
-                progress = {
-                    uiState.loadingProgress
-                },
+                progress = { uiState.loadingProgress },
                 modifier = Modifier
                     .size(48.dp)
                     .align(Alignment.Center),
@@ -107,6 +106,14 @@ fun MainScreen(
             )
         }
     }
-    // TODO: fait affiche la fentre de
-    // si
+
+    // Show product info window only when we have both an ID and matching product data
+    if ( displayeProdectDataBase != null) {
+        WindowsPresentationInfoProdect(
+            displayController = displayerStats,
+            articleStatsDataBase = displayeProdectDataBase,
+            colorsArticlesList = uiState.colorsArticlesTabelleModel,
+            reloadTrigger = 0
+        )
+    }
 }

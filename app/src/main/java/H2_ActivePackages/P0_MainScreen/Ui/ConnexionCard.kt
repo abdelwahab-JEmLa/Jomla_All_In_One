@@ -1,4 +1,4 @@
-package H1_APPMainCompnenents.Main.Ui
+package H2_ActivePackages.P0_MainScreen.Ui
 import H1_APPMainCompnenents.Models.UiState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

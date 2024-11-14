@@ -1,6 +1,6 @@
 package P1_StartupScreen
 
-import H1_APPMainCompnenents.Main.Objects.LoadingOverlay
+import H2_ActivePackages.P0_MainScreen.Objects.LoadingOverlay
 import H1_APPMainCompnenents.Models.UiState
 import H1_APPMainCompnenents.ViewModel.HeadViewModel
 import P1_StartupScreen.Main.FloatingActionButtonGroup
