@@ -2,6 +2,8 @@ package H1_APPMainCompnenents.Models
 
 data class ProductDisplayController(
     val prodectIdWhoInfoDisplayed: Long? = null,
+    val pickerDisplayedQuantity: Int = 0,
+
     val selectedColorId: Int = 0,
     val isLoading: Boolean = false,
     val loadingProgress: Float = 0f,

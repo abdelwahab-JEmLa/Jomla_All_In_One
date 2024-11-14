@@ -150,9 +150,8 @@ fun Picker(
     dividerColor: Color = LocalContentColor.current,
     onItemStat: (String) -> Unit,
 ) {
-    var minusToReglePosition by remember { mutableStateOf(7.0) }
 
-    val centerPosition = 3
+    val centerPosition = 4
     val listScrollCount = Integer.MAX_VALUE
     val listScrollMiddle = listScrollCount / 2
     val listStartIndex = listScrollMiddle - listScrollMiddle % items.size - centerPosition + startIndex
@@ -183,7 +182,6 @@ fun Picker(
             .collect { item ->
                 state.selectedItem = item
                 onItemStat(item)
-                minusToReglePosition = -50.0
             }
     }
 
@@ -245,12 +243,12 @@ fun Picker(
         }
 
         HorizontalDivider(
-            modifier = Modifier.offset(y = (itemHeightDp- minusToReglePosition.dp) * 1),
+            modifier = Modifier.offset(y = (itemHeightDp+ 20.dp) * 2),
             color = dividerColor
         )
 
         HorizontalDivider(
-            modifier = Modifier.offset(y = (itemHeightDp- minusToReglePosition.dp) * 2),
+            modifier = Modifier.offset(y = (itemHeightDp+ 36.dp) * 2),
             color = dividerColor
         )
     }
