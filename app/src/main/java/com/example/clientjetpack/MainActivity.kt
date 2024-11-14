@@ -2,7 +2,8 @@ package com.example.clientjetpack
 
 import H1_APPMainCompnenents.Main.MainScreen
 import H1_APPMainCompnenents.ViewModel.HeadViewModel
-import com.example.clientjetpack.Modules.AppDatabase
+import H2_ActivePackages.P2_EStorePresentationToClient.ViewModel.ClientPresentationViewModel
+import P6_AiGroupeForSupplier.GenerativeAiViewModel
 import android.app.Application
 import android.content.Context
 import android.os.Build
@@ -13,11 +14,10 @@ import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.clientjetpack.Modules.AppDatabase
+import com.example.clientjetpack.Modules.PermissionHandler
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.FirebaseDatabase
-import P6_AiGroupeForSupplier.GenerativeAiViewModel
-import H2_ActivePackages.P2_EStorePresentationToClient.ViewModel.ClientPresentationViewModel
-import com.example.clientjetpack.Modules.PermissionHandler
 
 class MyApplication : Application() {
     lateinit var database: AppDatabase
@@ -55,7 +55,6 @@ class ViewModelFactory(
                 HeadViewModel(
                     context.applicationContext,
                     database,
-                    clientPresentationViewModelInstance
                 ) as T
             modelClass.isAssignableFrom(GenerativeAiViewModel::class.java) ->
                 GenerativeAiViewModel() as T

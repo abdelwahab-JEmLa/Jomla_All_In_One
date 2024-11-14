@@ -32,6 +32,8 @@ fun MainScreen(
 ) {
     val startUpViewModel = appViewModels.headViewModel
     val uiState by startUpViewModel.uiState.collectAsState()
+
+
     val isHostPhone = uiState.isHostPhone
 
 

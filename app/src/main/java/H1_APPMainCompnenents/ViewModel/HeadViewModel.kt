@@ -1,9 +1,7 @@
 package H1_APPMainCompnenents.ViewModel
 
 import H1_APPMainCompnenents.Models.UiState
-import H2_ActivePackages.P2_EStorePresentationToClient.ViewModel.ClientPresentationViewModel
 import H2_ActivePackages.P2_EStorePresentationToClient.Modules.ConnectionManager
-import com.example.clientjetpack.Modules.AppDatabase
 import a_RoomDB.AppSettingsSaverModel
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.CategoriesTabelle
@@ -16,6 +14,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.clientjetpack.Modules.AppDatabase
 import com.google.firebase.database.BuildConfig
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.delay
@@ -34,16 +33,10 @@ import java.util.Locale
 class HeadViewModel(
     context: Context,
     private val database: AppDatabase,
-    clientPresentationViewModel: ClientPresentationViewModel? = null  // Removed 'private' to allow property reference
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()
 
-    // Changed to non-nullable with backing property pattern
-    private val _clientPresentationViewModel = MutableStateFlow(
-        clientPresentationViewModel ?: ClientPresentationViewModel(context)
-    )
-    val clientPresentationViewModel = _clientPresentationViewModel.asStateFlow()
 
     private val connectionManager = ConnectionManager(
         context,

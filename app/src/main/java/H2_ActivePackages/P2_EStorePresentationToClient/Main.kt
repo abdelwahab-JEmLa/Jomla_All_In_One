@@ -36,7 +36,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 
 @Composable
-fun EStorePresentationToClient(
+fun WindowsPresentationInfoProdect(
     displayController: ProductDisplayController,
     articleStatsDataBase: ArticlesBasesStatsTable,
     colorsArticlesList: List<ColorsArticlesTabelle>,
