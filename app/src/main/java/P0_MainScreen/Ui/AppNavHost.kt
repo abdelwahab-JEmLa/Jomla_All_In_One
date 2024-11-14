@@ -133,6 +133,7 @@ fun AppNavHost(
                 onDismiss = {
                     showClientSelection = false
                     showClientSelectionWithoutCondition= false
+                    appViewModels.headViewModel.sendOrderToClient("DismissWindowsInfosProduct")
 
                 }
             )

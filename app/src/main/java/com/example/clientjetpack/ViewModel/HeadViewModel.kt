@@ -57,6 +57,11 @@ class HeadViewModel(
                         copy(windowsProductIdWhoInfoDisplayed = valReceived)
                     }
                 }
+                payload.startsWith("DismissWindowsInfosProduct") -> {
+                    updateDisplayController {
+                        copy(windowsProductIdWhoInfoDisplayed = null)
+                    }
+                }
                 else -> {
                     Log.d(tag, "📩 Text message received: $payload")
                 }
@@ -95,7 +100,7 @@ class HeadViewModel(
         }
     }
 
-    fun sendOrderToClient(orderName: String, data: Any) {
+    fun sendOrderToClient(orderName: String, data: Any? =null) {
         viewModelScope.launch {
             connectionManager.sendData("$orderName$data")
         }
