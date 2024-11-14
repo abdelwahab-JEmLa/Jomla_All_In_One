@@ -95,7 +95,7 @@ fun MainUi(
     onClickToDisplayeConexionWifi: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
-    val tag = if (uiState.isHostPhone) "📱 ServerScreen" else "📱 ClientScreen"
+    val tag = if (uiState.productDisplayController.isHostPhone) "📱 ServerScreen" else "📱 ClientScreen"
     var savedScrollPosition by remember { mutableStateOf(0) }
 
     // Get the current scroll position directly from ProductDisplayController
@@ -112,15 +112,15 @@ fun MainUi(
     }
 
     HandleScrollBroadcast(
-        isHostPhone = uiState.isHostPhone,
-        isConnected = uiState.isConnected,
+        isHostPhone = uiState.productDisplayController.isHostPhone,
+        isConnected = uiState.productDisplayController.isConnected,
         gridState = gridState,
         viewModel = viewModel,
         tag = tag
     )
 
     HandleClientScroll(
-        isHostPhone = uiState.isHostPhone,
+        isHostPhone = uiState.productDisplayController.isHostPhone,
         scrollPosition = currentScrollPosition,
         gridState = gridState,
         tag = tag
@@ -158,8 +158,8 @@ fun MainUi(
 
         AnimatedFabGroup(
             isFabVisible = isFabVisible,
-            isConnected = uiState.isConnected,
-            isHostPhone = uiState.isHostPhone,
+            isConnected = uiState.productDisplayController.isConnected,
+            isHostPhone = uiState.productDisplayController.isHostPhone,
             viewModel = viewModel,
             onToggleNavBar = onToggleNavBar,
             onToggleOutlineFilter = onToggleFilter,

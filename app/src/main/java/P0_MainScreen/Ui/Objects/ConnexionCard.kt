@@ -33,12 +33,7 @@ fun ConnexionCard(
 ) {
     var messageText by remember { mutableStateOf("") }
     val context = LocalContext.current
-
-    // Check if device name contains "M200" (case insensitive)
-    val isHostEnabled = remember {
-        val deviceName = Build.MODEL.lowercase()
-        deviceName.contains("M200")
-    }
+    val isHostEnabled = Build.MODEL.lowercase().contains("m200")
 
     Card(
         modifier = Modifier
@@ -52,116 +47,142 @@ fun ConnexionCard(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Text(
-                text = "État de la connexion",
-                style = MaterialTheme.typography.titleMedium
-            )
+            ConnectionStatus(productDisplayController)
 
-            Text(
-                text = productDisplayController.connectionStatus,
-                style = MaterialTheme.typography.bodyMedium,
-                color = when {
-                    productDisplayController.isConnected -> MaterialTheme.colorScheme.primary
-                    productDisplayController.error != null -> MaterialTheme.colorScheme.error
-                    else -> MaterialTheme.colorScheme.onSurface
-                }
-            )
-
-            // Error Display
-            productDisplayController.error?.let { error ->
-                Text(
-                    text = error,
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Center
-                )
-            }
-
-            // Connection Controls with Host mode restriction
             if (!productDisplayController.isConnected) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    Button(
-                        onClick = {
-                            appViewModels.headViewModel.startAsHost()
-                            appViewModels.headViewModel.updateTypePhone(type = true)
-                        },
-                        enabled = isHostEnabled
-                    ) {
-                        Text("Mode Hôte")
-                    }
-                    Button(
-                        onClick = {
-                            appViewModels.headViewModel.startAsClient()
-                            appViewModels.headViewModel.updateTypePhone()
-                            onClickToStartAsClient()
+                ConnectionButtons(
+                    isHostEnabled = isHostEnabled,
+                    onHostClick = {
+                        appViewModels.headViewModel.run {
+                            startAsHost()
+                            updateTypePhone(type = true)
                         }
-                    ) {
-                        Text("Mode Client")
+                    },
+                    onClientClick = {
+                        appViewModels.headViewModel.run {
+                            startAsClient()
+                            updateTypePhone()
+                        }
+                        onClickToStartAsClient()
                     }
-                }
-
-                // Display message if host mode is disabled
-                if (!isHostEnabled) {
-                    Text(
-                        text = "Le mode Hôte n'est disponible que pour les appareils M200",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.error,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(top = 4.dp)
-                    )
-                }
-            }
-
-            // Message Input and Controls when Connected
-            if (productDisplayController.isConnected) {
-                OutlinedTextField(
-                    value = messageText,
-                    onValueChange = { messageText = it },
-                    label = { Text("Message") },
-                    modifier = Modifier.fillMaxWidth()
                 )
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Button(
-                        onClick = {
-                            if (messageText.isNotEmpty()) {
-                                appViewModels.headViewModel.sendOrderToClient(
-                                    "Message",
-                                    messageText
-                                )
-                                messageText = ""
-                            }
-                        },
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Text("Envoyer")
-                    }
-                    Button(
-                        onClick = { appViewModels.headViewModel.disconnect() },
-                        modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.error
-                        )
-                    ) {
-                        Text("Déconnecter")
-                    }
-                }
-
-                // Received Message Display
-                if (productDisplayController.testMessageByWifi.isNotEmpty()) {
-                    Text(
-                        text = "Message reçu: ${productDisplayController.testMessageByWifi}",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.secondary
-                    )
-                }
+            } else {
+                MessageSection(
+                    messageText = messageText,
+                    onMessageChange = { messageText = it },
+                    onSendClick = {
+                        if (messageText.isNotEmpty()) {
+                            appViewModels.headViewModel.sendOrderToClient("Message", messageText)
+                            messageText = ""
+                        }
+                    },
+                    onDisconnectClick = { appViewModels.headViewModel.disconnect() },
+                    receivedMessage = productDisplayController.testMessageByWifi
+                )
             }
         }
+    }
+}
+
+@Composable
+private fun ConnectionStatus(productDisplayController: ProductDisplayController) {
+    Text(
+        text = "État de la connexion",
+        style = MaterialTheme.typography.titleMedium
+    )
+
+    Text(
+        text = productDisplayController.connectionStatus,
+        style = MaterialTheme.typography.bodyMedium,
+        color = when {
+            productDisplayController.isConnected -> MaterialTheme.colorScheme.primary
+            productDisplayController.error != null -> MaterialTheme.colorScheme.error
+            else -> MaterialTheme.colorScheme.onSurface
+        }
+    )
+
+    productDisplayController.error?.let { error ->
+        Text(
+            text = error,
+            color = MaterialTheme.colorScheme.error,
+            style = MaterialTheme.typography.bodyMedium,
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Composable
+private fun ConnectionButtons(
+    isHostEnabled: Boolean,
+    onHostClick: () -> Unit,
+    onClientClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        Button(
+            onClick = onHostClick,
+        ) {
+            Text("Mode Hôte")
+        }
+        Button(onClick = onClientClick) {
+            Text("Mode Client")
+        }
+    }
+
+    if (!isHostEnabled) {
+        Text(
+            text = "Le mode Hôte n'est disponible que pour les appareils M200",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.error,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(top = 4.dp)
+        )
+    }
+}
+
+@Composable
+private fun MessageSection(
+    messageText: String,
+    onMessageChange: (String) -> Unit,
+    onSendClick: () -> Unit,
+    onDisconnectClick: () -> Unit,
+    receivedMessage: String
+) {
+    OutlinedTextField(
+        value = messageText,
+        onValueChange = onMessageChange,
+        label = { Text("Message") },
+        modifier = Modifier.fillMaxWidth()
+    )
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Button(
+            onClick = onSendClick,
+            modifier = Modifier.weight(1f)
+        ) {
+            Text("Envoyer")
+        }
+        Button(
+            onClick = onDisconnectClick,
+            modifier = Modifier.weight(1f),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.error
+            )
+        ) {
+            Text("Déconnecter")
+        }
+    }
+
+    if (receivedMessage.isNotEmpty()) {
+        Text(
+            text = "Message reçu: $receivedMessage",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.secondary
+        )
     }
 }
