@@ -1,7 +1,7 @@
-package H2_ActivePackages.P2_EStorePresentationToClient.Ui
+package P2_EStorePresentationToClient.Ui
 
-import H1_APPMainCompnenents.Models.ProductDisplayController
-import H2_ActivePackages.P2_EStorePresentationToClient.Modules.ImageDisplayerPC
+import com.example.clientjetpack.Models.ProductDisplayController
+import P2_EStorePresentationToClient.Modules.ImageDisplayerPC
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ColorsArticlesTabelle
 import androidx.compose.foundation.background

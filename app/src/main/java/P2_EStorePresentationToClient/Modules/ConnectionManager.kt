@@ -1,4 +1,4 @@
-package H2_ActivePackages.P2_EStorePresentationToClient.Modules
+package P2_EStorePresentationToClient.Modules
 
 import android.Manifest
 import android.content.Context

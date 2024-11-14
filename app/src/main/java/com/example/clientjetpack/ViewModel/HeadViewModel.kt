@@ -1,7 +1,7 @@
-package H1_APPMainCompnenents.ViewModel
+package com.example.clientjetpack.ViewModel
 
-import H1_APPMainCompnenents.Models.UiState
-import H2_ActivePackages.P2_EStorePresentationToClient.Modules.ConnectionManager
+import com.example.clientjetpack.Models.UiState
+import P2_EStorePresentationToClient.Modules.ConnectionManager
 import a_RoomDB.AppSettingsSaverModel
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.CategoriesTabelle

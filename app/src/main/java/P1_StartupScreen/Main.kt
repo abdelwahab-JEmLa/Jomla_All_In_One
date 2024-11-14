@@ -1,8 +1,8 @@
 package P1_StartupScreen
 
-import H2_ActivePackages.P0_MainScreen.Objects.LoadingOverlay
-import H1_APPMainCompnenents.Models.UiState
-import H1_APPMainCompnenents.ViewModel.HeadViewModel
+import P0_MainScreen.Objects.LoadingOverlay
+import com.example.clientjetpack.Models.UiState
+import com.example.clientjetpack.ViewModel.HeadViewModel
 import P1_StartupScreen.Main.FloatingActionButtonGroup
 import P1_StartupScreen.Ui.ArticleGridWithScrollbar
 import P1_StartupScreen.Ui.SearchFilterPB

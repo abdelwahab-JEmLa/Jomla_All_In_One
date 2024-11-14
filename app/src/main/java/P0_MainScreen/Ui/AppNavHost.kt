@@ -1,5 +1,5 @@
-package H2_ActivePackages.P0_MainScreen.Ui
-import H2_ActivePackages.P0_MainScreen.Objects.LoadingOverlay
+package P0_MainScreen.Ui
+import P0_MainScreen.Objects.LoadingOverlay
 import P1_StartupScreen.StartupScreen
 import P3_DisplayeProdectInfoToSeller.SaleWindows
 import a_RoomDB.ArticlesBasesStatsTable

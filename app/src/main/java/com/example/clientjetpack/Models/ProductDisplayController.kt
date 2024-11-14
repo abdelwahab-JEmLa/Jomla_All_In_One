@@ -1,4 +1,4 @@
-package H1_APPMainCompnenents.Models
+package com.example.clientjetpack.Models
 
 data class ProductDisplayController(
     val windowsProductIdWhoInfoDisplayed: Long? = null,

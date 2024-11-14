@@ -1,8 +1,8 @@
 package P1_StartupScreen.Ui
 
-import H1_APPMainCompnenents.Models.UiState
+import com.example.clientjetpack.Models.UiState
 import P1_StartupScreen.ArticlePagingSource
-import H1_APPMainCompnenents.ViewModel.HeadViewModel
+import com.example.clientjetpack.ViewModel.HeadViewModel
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.CategoriesTabelle
 import a_RoomDB.ColorsArticlesTabelle

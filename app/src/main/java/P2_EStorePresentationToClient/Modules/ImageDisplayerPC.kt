@@ -1,4 +1,4 @@
-package H2_ActivePackages.P2_EStorePresentationToClient.Modules
+package P2_EStorePresentationToClient.Modules
 import a_RoomDB.ArticlesBasesStatsTable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box

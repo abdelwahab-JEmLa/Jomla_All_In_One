@@ -1,7 +1,7 @@
 package P4_SoldCartScreen
 
-import H1_APPMainCompnenents.Models.UiState
-import H1_APPMainCompnenents.ViewModel.HeadViewModel
+import com.example.clientjetpack.Models.UiState
+import com.example.clientjetpack.ViewModel.HeadViewModel
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ClientsModel
 import a_RoomDB.ColorsArticlesTabelle

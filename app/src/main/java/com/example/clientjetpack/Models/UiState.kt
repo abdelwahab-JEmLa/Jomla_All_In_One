@@ -1,4 +1,4 @@
-package H1_APPMainCompnenents.Models
+package com.example.clientjetpack.Models
 
 import a_RoomDB.AppSettingsSaverModel
 import a_RoomDB.ArticlesBasesStatsTable

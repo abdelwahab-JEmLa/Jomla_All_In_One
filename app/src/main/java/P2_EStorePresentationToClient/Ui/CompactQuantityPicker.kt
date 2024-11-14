@@ -1,4 +1,4 @@
-package H2_ActivePackages.P2_EStorePresentationToClient.Ui
+package P2_EStorePresentationToClient.Ui
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring

@@ -1,7 +1,7 @@
 package P3_DisplayeProdectInfoToSeller
 
-import H1_APPMainCompnenents.Models.UiState
-import H1_APPMainCompnenents.ViewModel.HeadViewModel
+import com.example.clientjetpack.Models.UiState
+import com.example.clientjetpack.ViewModel.HeadViewModel
 import P1_StartupScreen.Ui.AutoResizedText
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ColorsArticlesTabelle

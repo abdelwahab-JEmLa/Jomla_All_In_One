@@ -1,7 +1,7 @@
 package P1_StartupScreen.Ui
 
-import H1_APPMainCompnenents.Models.UiState
-import H1_APPMainCompnenents.ViewModel.HeadViewModel
+import com.example.clientjetpack.Models.UiState
+import com.example.clientjetpack.ViewModel.HeadViewModel
 import a_RoomDB.ArticlesBasesStatsTable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures

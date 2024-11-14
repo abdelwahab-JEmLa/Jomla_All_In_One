@@ -1,5 +1,5 @@
-package H2_ActivePackages.P0_MainScreen.Ui
-import H1_APPMainCompnenents.Models.UiState
+package P0_MainScreen.Ui
+import com.example.clientjetpack.Models.UiState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,7 +27,8 @@ fun ConnexionCard(
     uiState: UiState,
     appViewModels: AppViewModels,
     onClickToStartAsClient:()->Unit
-) {
+) {      // TODO: fait que si le nom du telephone installe dob contain m200
+    //  de clienk sur host
     var messageText by remember { mutableStateOf("") }
     Card(
         modifier = Modifier

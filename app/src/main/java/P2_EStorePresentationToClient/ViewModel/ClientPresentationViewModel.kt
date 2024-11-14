@@ -1,7 +1,7 @@
-package H2_ActivePackages.P2_EStorePresentationToClient.ViewModel
+package P2_EStorePresentationToClient.ViewModel
 
-import H1_APPMainCompnenents.Models.ProductDisplayController
-import H2_ActivePackages.P2_EStorePresentationToClient.Modules.ConnectionManager
+import com.example.clientjetpack.Models.ProductDisplayController
+import P2_EStorePresentationToClient.Modules.ConnectionManager
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

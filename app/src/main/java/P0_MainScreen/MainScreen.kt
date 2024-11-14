@@ -1,11 +1,11 @@
-package H2_ActivePackages.P0_MainScreen
+package P0_MainScreen
 
-import H2_ActivePackages.P0_MainScreen.Ui.AppNavHost
-import H2_ActivePackages.P0_MainScreen.Ui.ConnexionCard
-import H2_ActivePackages.P0_MainScreen.Ui.NavigationBarWithFab
-import H2_ActivePackages.P0_MainScreen.Ui.NavigationItems
-import H2_ActivePackages.P0_MainScreen.Ui.Screen
-import H2_ActivePackages.P2_EStorePresentationToClient.WindowsPresentationInfoProdect
+import P0_MainScreen.Ui.AppNavHost
+import P0_MainScreen.Ui.ConnexionCard
+import P0_MainScreen.Ui.NavigationBarWithFab
+import P0_MainScreen.Ui.NavigationItems
+import P0_MainScreen.Ui.Screen
+import P2_EStorePresentationToClient.WindowsPresentationInfoProdect
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box

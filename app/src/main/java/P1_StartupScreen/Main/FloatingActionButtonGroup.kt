@@ -1,6 +1,6 @@
 package P1_StartupScreen.Main
 
-import H1_APPMainCompnenents.ViewModel.HeadViewModel
+import com.example.clientjetpack.ViewModel.HeadViewModel
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
