@@ -1,4 +1,4 @@
-package A1_ActivePackages.E_StorePresentationToClientPackage.Main
+package A1_ActivePackages.E_StorePresentationToClientPackage.ViewModel
 
 import A0_MainObjectsAPP.Models.ProductDisplayController
 import A1_ActivePackages.E_StorePresentationToClientPackage.Objects.ConnectionManager

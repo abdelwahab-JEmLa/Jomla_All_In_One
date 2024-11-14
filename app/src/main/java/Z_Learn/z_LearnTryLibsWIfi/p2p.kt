@@ -1,4 +1,4 @@
-package z_LearnTryLibsWIfi
+package Z_Learn.z_LearnTryLibsWIfi
 
 
 import android.Manifest
@@ -56,11 +56,13 @@ class P2PManager(
     private fun ensureWifiEnabled(): Boolean {
         val wifiManager = context.getSystemService(Context.WIFI_SERVICE) as WifiManager
         if (!wifiManager.isWifiEnabled) {
-            updateStatus(P2PStatus(
+            updateStatus(
+                P2PStatus(
                 message = "WiFi désactivé. Veuillez activer le WiFi.",
                 isConnected = false,
                 isHost = isHost
-            ))
+            )
+            )
             return false
         }
         return true
@@ -87,11 +89,13 @@ class P2PManager(
                 safeExecuteWithPermissions {
                     wifiP2pManager.requestP2pState(channel) { state ->
                         if (state != WifiP2pManager.WIFI_P2P_STATE_ENABLED) {
-                            updateStatus(P2PStatus(
+                            updateStatus(
+                                P2PStatus(
                                 message = "WiFi Direct désactivé. Veuillez l'activer dans les paramètres.",
                                 isConnected = false,
                                 isHost = isHost
-                            ))
+                            )
+                            )
                             discoveryActive = false
                         }
                     }
@@ -100,11 +104,13 @@ class P2PManager(
         }
 
         if (!discoveryActive) {
-            updateStatus(P2PStatus(
+            updateStatus(
+                P2PStatus(
                 message = "Échec de la découverte après $attempts tentatives. Veuillez réessayer.",
                 isConnected = false,
                 isHost = isHost
-            ))
+            )
+            )
         }
     }
 
@@ -120,11 +126,13 @@ class P2PManager(
             wifiP2pManager.discoverPeers(channel, object : WifiP2pManager.ActionListener {
                 override fun onSuccess() {
                     Log.d(TAG, "✨ Discovery started successfully")
-                    updateStatus(P2PStatus(
+                    updateStatus(
+                        P2PStatus(
                         message = if (isHost) "En attente de connexion..." else "Recherche d'un hôte...",
                         isConnected = false,
                         isHost = isHost
-                    ))
+                    )
+                    )
                     result.complete(true)
                 }
 
@@ -145,11 +153,13 @@ class P2PManager(
     @RequiresApi(Build.VERSION_CODES.Q)
     fun toggleRole() {
         if (!checkRequiredPermissions()) {
-            updateStatus(P2PStatus(
+            updateStatus(
+                P2PStatus(
                 message = "Permissions requises",
                 isConnected = false,
                 isHost = isHost
-            ))
+            )
+            )
             return
         }
 
@@ -189,19 +199,23 @@ class P2PManager(
                 action()
             } else {
                 Log.e(TAG, "❌ Missing required permissions")
-                updateStatus(P2PStatus(
+                updateStatus(
+                    P2PStatus(
                     message = "Permissions manquantes",
                     isConnected = false,
                     isHost = isHost
-                ))
+                )
+                )
             }
         } catch (e: SecurityException) {
             Log.e(TAG, "⛔ Security exception: ${e.localizedMessage}")
-            updateStatus(P2PStatus(
+            updateStatus(
+                P2PStatus(
                 message = "Erreur de permission",
                 isConnected = false,
                 isHost = isHost
-            ))
+            )
+            )
         }
     }
 
@@ -209,11 +223,13 @@ class P2PManager(
     private fun checkWifiAndPermissions() {
         val wifiManager = context.getSystemService(Context.WIFI_SERVICE) as WifiManager
         if (!wifiManager.isWifiEnabled) {
-            updateStatus(P2PStatus(
+            updateStatus(
+                P2PStatus(
                 message = "WiFi désactivé",
                 isConnected = false,
                 isHost = isHost
-            ))
+            )
+            )
             return
         }
 
@@ -285,11 +301,13 @@ class P2PManager(
         val state = intent.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, -1)
         val isEnabled = state == WifiP2pManager.WIFI_P2P_STATE_ENABLED
 
-        updateStatus(P2PStatus(
+        updateStatus(
+            P2PStatus(
             message = if (isEnabled) "WiFi P2P activé" else "WiFi P2P désactivé",
             isConnected = false,
             isHost = isHost
-        ))
+        )
+        )
     }
 
     private fun handleConnectionChanged(intent: Intent) {
@@ -306,11 +324,13 @@ class P2PManager(
             } else {
                 connection?.close()
                 connection = null
-                updateStatus(P2PStatus(
+                updateStatus(
+                    P2PStatus(
                     message = "Déconnecté",
                     isConnected = false,
                     isHost = isHost
-                ))
+                )
+                )
             }
         }
     }
@@ -335,11 +355,13 @@ class P2PManager(
             connection?.close()
             connection = null
             wifiP2pManager.removeGroup(channel, null)
-            updateStatus(P2PStatus(
+            updateStatus(
+                P2PStatus(
                 message = "Déconnecté",
                 isConnected = false,
                 isHost = isHost
-            ))
+            )
+            )
         }
     }
 
@@ -357,11 +379,13 @@ class P2PManager(
             WifiP2pManager.BUSY -> "Système occupé"
             else -> "Erreur inconnue"
         }
-        updateStatus(P2PStatus(
+        updateStatus(
+            P2PStatus(
             message = "Échec découverte: $errorMsg",
             isConnected = false,
             isHost = isHost
-        ))
+        )
+        )
     }
 
     private fun updateStatus(status: P2PStatus) {
@@ -410,11 +434,13 @@ class P2PManager(
         Log.d(TAG, "\uD83D\uDD0D Starting discovery as ${if (isHost) "HOST" else "CLIENT"}")
         if (!permissionHandler.areNearbyPermissionsGranted()) {
             Log.d(TAG, "❌ Discovery failed: Missing permissions")
-            updateStatus(P2PStatus(
+            updateStatus(
+                P2PStatus(
                 message = "Permissions manquantes",
                 isConnected = false,
                 isHost = isHost
-            ))
+            )
+            )
             return
         }
 
@@ -422,11 +448,13 @@ class P2PManager(
             wifiP2pManager.discoverPeers(channel, object : WifiP2pManager.ActionListener {
                 override fun onSuccess() {
                     Log.d(TAG, "✨ Discovery started successfully")
-                    updateStatus(P2PStatus(
+                    updateStatus(
+                        P2PStatus(
                         message = if (isHost) "En attente de connexion..." else "Recherche d'un hôte...",
                         isConnected = false,
                         isHost = isHost
-                    ))
+                    )
+                    )
                 }
                 override fun onFailure(reason: Int) {
                     Log.d(TAG, "\uD83D\uDCA5 Discovery failed with reason: $reason")
@@ -435,11 +463,13 @@ class P2PManager(
             })
         } catch (e: SecurityException) {
             Log.e(TAG, "⛔ Security exception during discovery: ${e.localizedMessage}")
-            updateStatus(P2PStatus(
+            updateStatus(
+                P2PStatus(
                 message = "Erreur de permission: ${e.localizedMessage}",
                 isConnected = false,
                 isHost = isHost
-            ))
+            )
+            )
         }
     }
 
@@ -474,11 +504,13 @@ private class P2PConnection(
             if (isHost) {
                 Log.d(TAG, "\uD83D\uDCE5 HOST: Creating server socket on port $PORT")
                 serverSocket = ServerSocket(PORT)
-                onStatusUpdate(P2PStatus(
+                onStatusUpdate(
+                    P2PStatus(
                     message = "En attente de connexion...",
                     isConnected = false,
                     isHost = isHost
-                ))
+                )
+                )
                 Log.d(TAG, "⏳ HOST: Waiting for client connection")
                 socket = serverSocket?.accept()
                 Log.d(TAG, "✅ HOST: Client connected!")
@@ -488,20 +520,24 @@ private class P2PConnection(
                 Log.d(TAG, "✅ CLIENT: Connected to host!")
             }
 
-            onStatusUpdate(P2PStatus(
+            onStatusUpdate(
+                P2PStatus(
                 message = "Connecté",
                 isConnected = true,
                 isHost = isHost
-            ))
+            )
+            )
 
         } catch (e: Exception) {
             Log.e(TAG, "💥 Connection failed: ${e.message}")
             Log.e(TAG, "Stack trace: ${e.stackTrace.joinToString("\n")}")
-            onStatusUpdate(P2PStatus(
+            onStatusUpdate(
+                P2PStatus(
                 message = "Erreur connexion: ${e.message}",
                 isConnected = false,
                 isHost = isHost
-            ))
+            )
+            )
         }
     }
 

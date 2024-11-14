@@ -16,7 +16,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.FirebaseDatabase
 import e_AiGroupeForSupplier.GenerativeAiViewModel
-import A1_ActivePackages.E_StorePresentationToClientPackage.Main.ClientPresentationViewModel
+import A1_ActivePackages.E_StorePresentationToClientPackage.ViewModel.ClientPresentationViewModel
 import A0_MainActivity.Objects.PermissionHandler
 
 class MyApplication : Application() {

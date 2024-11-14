@@ -1,4 +1,4 @@
-package c3_Objects
+package A1_ActivePackages.E_StorePresentationToClientPackage.Objects
 import a_RoomDB.ArticlesBasesStatsTable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box

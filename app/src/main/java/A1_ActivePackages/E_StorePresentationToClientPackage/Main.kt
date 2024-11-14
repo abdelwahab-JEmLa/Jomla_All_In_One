@@ -1,6 +1,9 @@
-package A1_ActivePackages.E_StorePresentationToClientPackage.Main
+package A1_ActivePackages.E_StorePresentationToClientPackage
 
 import A0_MainObjectsAPP.Models.ProductDisplayController
+import A1_ActivePackages.E_StorePresentationToClientPackage.Ui.ColorsCards
+import A1_ActivePackages.E_StorePresentationToClientPackage.Ui.CompactQuantityPickerPC
+import A1_ActivePackages.E_StorePresentationToClientPackage.Ui.ProductNameSection
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ColorsArticlesTabelle
 import androidx.compose.animation.AnimatedVisibility
@@ -31,9 +34,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import A1_ActivePackages.E_StorePresentationToClientPackage.Ui.ColorsCards
-import A1_ActivePackages.E_StorePresentationToClientPackage.Ui.CompactQuantityPickerPC
-import A1_ActivePackages.E_StorePresentationToClientPackage.Ui.ProductNameSection
 
 @Composable
 fun DisplayeArticleInfoToClientWindowsPackageC(

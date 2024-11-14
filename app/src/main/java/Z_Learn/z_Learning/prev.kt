@@ -1,4 +1,4 @@
-package z_Learning
+package Z_Learn.z_Learning
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
