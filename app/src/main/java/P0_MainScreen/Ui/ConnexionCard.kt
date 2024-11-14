@@ -1,5 +1,4 @@
 package P0_MainScreen.Ui
-import com.example.clientjetpack.Models.UiState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.clientjetpack.AppViewModels
+import com.example.clientjetpack.Models.UiState
 
 @Composable
 fun ConnexionCard(
@@ -105,8 +105,8 @@ fun ConnexionCard(
                     Button(
                         onClick = {
                             if (messageText.isNotEmpty()) {
-                                appViewModels.headViewModel.sendTestMessage(
-                                    messageText
+                                appViewModels.headViewModel.sendOrderToClient(
+                                    "Message",messageText
                                 )
                                 messageText = ""
                             }

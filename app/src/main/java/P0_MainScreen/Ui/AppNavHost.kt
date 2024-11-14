@@ -1,7 +1,7 @@
 package P0_MainScreen.Ui
 import P0_MainScreen.Objects.LoadingOverlay
 import P1_StartupScreen.StartupScreen
-import P3_DisplayeProdectInfoToSeller.SaleWindows
+import P3_DisplayeProductInfosToSeller.P3DisplayeProductInfosToSeller
 import P4_SoldCartScreen.SoldCartScreen
 import P5_DialogeClientsEditer.ClientSelectionDialog
 import P6_AiGroupeForSupplier.GenerativeAiScreen
@@ -138,7 +138,7 @@ fun AppNavHost(
         }
 
         if (opnerSaleWindows) {
-            SaleWindows(
+            P3DisplayeProductInfosToSeller(
                 modifier = Modifier.padding(horizontal = 3.dp),
                 uiState = uiState,
                 viewModel = appViewModels.headViewModel,

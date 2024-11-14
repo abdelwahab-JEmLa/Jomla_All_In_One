@@ -19,7 +19,6 @@ data class UiState(
     val productDisplayController: List<ProductDisplayController> = emptyList(),
     val isLoading: Boolean = false,
     val loadingProgress: Float = 0f,
-    val scrollPosition: Int = 0,
     val error: String? = null,
     val isConnected: Boolean = false,
     val connectionStatus: String = "Déconnecté",

@@ -1,7 +1,5 @@
-package P3_DisplayeProdectInfoToSeller
+package P3_DisplayeProductInfosToSeller
 
-import com.example.clientjetpack.Models.UiState
-import com.example.clientjetpack.ViewModel.HeadViewModel
 import P1_StartupScreen.Ui.AutoResizedText
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ColorsArticlesTabelle
@@ -108,7 +106,9 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.example.clientjetpack.Models.UiState
 import com.example.clientjetpack.R
+import com.example.clientjetpack.ViewModel.HeadViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -117,7 +117,7 @@ import java.io.File
 import kotlin.math.roundToInt
 
 @Composable
-fun SaleWindows(
+fun P3DisplayeProductInfosToSeller(
     uiState: UiState,
     viewModel: HeadViewModel,
     onDismiss: () -> Unit,
@@ -131,16 +131,157 @@ fun SaleWindows(
         }
     }
 
-    var showConfirmDialog by remember { mutableStateOf(false) }
     var isDetailsVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         isDetailsVisible = true
     }
 
-    if (showConfirmDialog) {
+
+    if (currentSale != null) {
+        MainUi(
+            modifier,
+            articlesBaseStats,
+            currentSale,
+            viewModel,
+            reloadTrigger,
+            uiState,
+            isDetailsVisible,
+            onDismiss
+        )
+    }
+}
+
+@Composable
+private fun MainUi(
+    modifier: Modifier,
+    articlesBaseStats: ArticlesBasesStatsTable?,
+    currentSale: SoldArticlesTabelle,
+    viewModel: HeadViewModel,
+    reloadTrigger: Int,
+    uiState: UiState,
+    isDetailsVisible: Boolean,
+    onDismiss: () -> Unit
+) {
+    var showConfirmDialog by remember { mutableStateOf(false) }
+    showConfirmDialog = confirmDialog(showConfirmDialog, viewModel, onDismiss)
+
+    Dialog(
+        onDismissRequest = { showConfirmDialog = true },
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false,
+            decorFitsSystemWindows = true
+        )
+    ) {
+        Surface(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(4.dp),
+            shape = MaterialTheme.shapes.large,
+            tonalElevation = 2.dp
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+            ) {
+                articlesBaseStats?.let { stats ->
+                    ProductNameSection(stats)
+
+                    // Visual Divider with Label
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 3.dp, vertical = 3.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        HorizontalDivider(
+                            modifier = Modifier.weight(1f),
+                            color = MaterialTheme.colorScheme.outlineVariant
+                        )
+                        Text(
+                            text = "اختر اللون",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(horizontal = 4.dp)
+                        )
+                        HorizontalDivider(
+                            modifier = Modifier.weight(1f),
+                            color = MaterialTheme.colorScheme.outlineVariant
+                        )
+                    }
+
+                    // Colors Selection with Animation
+                    AnimatedVisibility(
+                        visible = true,
+                        enter = fadeIn() + expandVertically()
+                    ) {
+                        ColorsCards(
+                            currentSale = currentSale,
+                            articlesBasesStatsTable = stats,
+                            viewModel = viewModel,
+                            relodeTigger = reloadTrigger,
+                            uiState = uiState,
+                            modifier = Modifier.padding(horizontal = 4.dp),
+                        )
+                    }
+
+                    // Details Card with Animation
+                    Details(isDetailsVisible, stats)
+                }
+
+                ActionsButtonRow(
+                    // TODO:  fait que ca soit s affiche toutjoure au base du dialoge
+                    //comme button bar et fait anime infenie du button طلب
+                    //comme    LaunchedEffect(Unit) {
+                    //        while(true) {
+                    //            if(isRed) {
+                    //                delay(700)
+                    //                isRed = false
+                    //            }  else {
+                    //                delay(6000)
+                    //                isRed = true
+                    //            }
+                    //        }
+                    //    }
+                    //
+                    //    Card(
+                    //        modifier = Modifier
+                    //            .fillMaxSize()
+                    //            .wrapContentHeight(),
+                    //        elevation = CardDefaults.cardElevation(4.dp),
+                    //        colors = CardDefaults.cardColors(
+                    //            containerColor = animateColorAsState(
+                    //                if (isRed) Color.Red else Color.White,
+                    //                label = "backgroundColor"
+                    //            ).value
+                    //        )
+                    onConfirm = {
+                        viewModel.saveSaleTransactionToSoldAriclesList()
+                        onDismiss()
+                    },
+                    onCancel = {
+                        if (currentSale != null) {
+                            viewModel.deleteSoldArticle(currentSale.vid)
+                        }
+                        onDismiss()
+                    },
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun confirmDialog(
+    showConfirmDialog: Boolean,
+    viewModel: HeadViewModel,
+    onDismiss: () -> Unit
+): Boolean {
+    var showConfirmDialog1 = showConfirmDialog
+    if (showConfirmDialog1) {
         AlertDialog(
-            onDismissRequest = { showConfirmDialog = false },
+            onDismissRequest = { showConfirmDialog1 = false },
             icon = { Icon(Icons.Outlined.Warning, contentDescription = null) },
             title = {
                 Text(
@@ -185,110 +326,7 @@ fun SaleWindows(
             }
         )
     }
-
-    Dialog(
-        onDismissRequest = { showConfirmDialog = true },
-        properties = DialogProperties(
-            usePlatformDefaultWidth = false,
-            decorFitsSystemWindows = true
-        )
-    ) {
-        Surface(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(4.dp),
-            shape = MaterialTheme.shapes.large,
-            tonalElevation = 2.dp
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-            ) {
-                articlesBaseStats?.let { stats ->
-                    ProductNameSection(stats)
-
-                    // Visual Divider with Label
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 3.dp, vertical = 3.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                    HorizontalDivider(
-                        modifier = Modifier.weight(1f),
-                        color = MaterialTheme.colorScheme.outlineVariant
-                    )
-                    Text(
-                        text = "اختر اللون",
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(horizontal = 4.dp)
-                    )
-                    HorizontalDivider(
-                        modifier = Modifier.weight(1f),
-                        color = MaterialTheme.colorScheme.outlineVariant
-                    )
-                }
-
-                    // Colors Selection with Animation
-                    AnimatedVisibility(
-                        visible = true,
-                        enter = fadeIn() + expandVertically()
-                    ) {
-                        ColorsCards(
-                            currentSale = currentSale,
-                            articlesBasesStatsTable = stats,
-                            viewModel = viewModel,
-                            relodeTigger = reloadTrigger,
-                            uiState = uiState,
-                            modifier = Modifier.padding(horizontal = 4.dp),
-                        )
-                    }
-
-                    // Details Card with Animation
-                    Details(isDetailsVisible, stats)
-                }
-
-                ActionsButtonRow(      // fait que ca soit s affiche toutjoure au base du dialoge
-                    //comme button bar et fait anime infenie du button طلب
-                    //comme    LaunchedEffect(Unit) {
-                    //        while(true) {
-                    //            if(isRed) {
-                    //                delay(700)
-                    //                isRed = false
-                    //            }  else {
-                    //                delay(6000)
-                    //                isRed = true
-                    //            }
-                    //        }
-                    //    }
-                    //
-                    //    Card(
-                    //        modifier = Modifier
-                    //            .fillMaxSize()
-                    //            .wrapContentHeight(),
-                    //        elevation = CardDefaults.cardElevation(4.dp),
-                    //        colors = CardDefaults.cardColors(
-                    //            containerColor = animateColorAsState(
-                    //                if (isRed) Color.Red else Color.White,
-                    //                label = "backgroundColor"
-                    //            ).value
-                    //        )
-                    onConfirm = {
-                        viewModel.saveSaleTransactionToSoldAriclesList()
-                        onDismiss()
-                    },
-                    onCancel = {
-                        if (currentSale != null) {
-                            viewModel.deleteSoldArticle(currentSale.vid)
-                        }
-                        onDismiss()
-                    },
-                )
-            }
-        }
-    }
+    return showConfirmDialog1
 }
 
 @Composable
@@ -986,8 +1024,10 @@ fun Picker(
                         onDragEnd = {
                             scope.launch {
                                 val velocity = totalDragDistance * 1.5f
-                                val targetOffset = decayAnimationSpec.calculateTargetValue(0f, velocity)
-                                val targetIndex = (targetOffset / itemHeightPixels.value).roundToInt()
+                                val targetOffset =
+                                    decayAnimationSpec.calculateTargetValue(0f, velocity)
+                                val targetIndex =
+                                    (targetOffset / itemHeightPixels.value).roundToInt()
                                 listState.animateScrollBy(
                                     targetIndex * itemHeightPixels.value.toFloat(),
                                     spring(

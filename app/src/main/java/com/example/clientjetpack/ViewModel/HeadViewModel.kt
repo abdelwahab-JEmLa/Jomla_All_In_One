@@ -11,6 +11,7 @@ import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.ui.tooling.data.EmptyGroup.data
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.clientjetpack.Models.UiState
@@ -45,7 +46,7 @@ class HeadViewModel(
         },
         onReceive = { receivedId ->
             _uiState.update { currentState ->
-                currentState.copy(productDisplayController =  windowsProductIdWhoInfoDisplayed = receivedId)       //TODO fix
+                currentState.copy(productDisplayController .  windowsProductIdWhoInfoDisplayed = receivedId)       //TODO fix
             }
         }
     )
@@ -72,33 +73,24 @@ class HeadViewModel(
 
 
     fun updateScrollPositionFromRecived(position: Int): Unit {
-        _uiState.update { it.copy(scrollPosition = position) }
-    }
-    fun sendTestMessage(message: String) {
-        viewModelScope.launch {
-            Log.d("ViewModel", "📤 Attempting to send message: $message")
-            try {
-                connectionManager.sendData(message)
-                Log.d("ViewModel", "✅ Message sent successfully: $message")
-            } catch (e: Exception) {
-                Log.e("ViewModel", "❌ Failed to send message: ${e.message}")
-            }
-        }
+        _uiState.update { it.copy(productDisplayController . scrollPosition = position) }   // TODO: fix her
     }
 
-    fun sendOrderToClient(name: String,data: Any) {
+    fun sendOrderToClient(orderName: String, data: Any) {
         viewModelScope.launch {
-            connectionManager.sendOrder(name,data)
+            connectionManager.sendOrder(orderName,data)
         }
     }
 
     fun sendScrollPositionToClient(position: Int) {
         viewModelScope.launch {
             connectionManager.sendData(position)
+            connectionManager.sendOrder("scrollTo->",position)
+
         }
     }
     fun updateTypePhone(type: Boolean = false): Unit {
-        _uiState.update { it.copy(isHostPhone = type) }
+        _uiState.update { it.copy(productDisplayController . isHostPhone = type) }
     }
 
     fun startAsHost() = connectionManager.startAsHost()
