@@ -1,4 +1,4 @@
-package B2_StartupAppDisplayerOfNewArticles
+package B2_StartupAppDisplayerOfNewArticles.Main
 
 import A0_MainObjectsAPP.ViewModel.HeadViewModel
 import androidx.compose.animation.AnimatedVisibility
