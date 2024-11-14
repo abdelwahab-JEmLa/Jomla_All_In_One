@@ -50,7 +50,7 @@ class ConnectionManager(
                 }
             }
             else -> {
-                Log.e(TAG, "❌ Unknown order type: $name")
+                sendData("$name$data")
             }
         }
     }
@@ -86,7 +86,6 @@ class ConnectionManager(
         endpointId?.let { endpoint ->
             val payload = when (data) {
                 is String -> {
-                    Log.d(TAG, "📤 Envoi du message texte: $data")
                     Payload.fromBytes(data.toByteArray())
                 }
                 is Int -> {
