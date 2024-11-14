@@ -1,7 +1,7 @@
 package d_SoldCartScreen
 
-import A0_Models.UiState
-import A1_MainActivityCompnent.Main.HeadViewModel
+import A0_MainObjectsAPP.Models.UiState
+import A0_MainObjectsAPP.ViewModel.HeadViewModel
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ClientsModel
 import a_RoomDB.ColorsArticlesTabelle

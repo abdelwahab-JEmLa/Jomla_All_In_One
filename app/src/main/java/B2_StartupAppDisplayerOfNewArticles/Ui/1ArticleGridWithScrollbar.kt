@@ -1,7 +1,7 @@
 package B2_StartupAppDisplayerOfNewArticles.Ui
 
-import A0_Models.UiState
-import A1_MainActivityCompnent.Main.HeadViewModel
+import A0_MainObjectsAPP.Models.UiState
+import A0_MainObjectsAPP.ViewModel.HeadViewModel
 import a_RoomDB.ArticlesBasesStatsTable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures

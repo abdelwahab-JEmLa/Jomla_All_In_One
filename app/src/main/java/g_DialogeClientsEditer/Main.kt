@@ -41,7 +41,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import A1_MainActivityCompnent.Main.HeadViewModel
+import A0_MainObjectsAPP.ViewModel.HeadViewModel
 
 @Composable
 fun ClientSelectionDialog(

@@ -1,6 +1,6 @@
 package B2_StartupAppDisplayerOfNewArticles
 
-import A1_MainActivityCompnent.Main.HeadViewModel
+import A0_MainObjectsAPP.ViewModel.HeadViewModel
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn

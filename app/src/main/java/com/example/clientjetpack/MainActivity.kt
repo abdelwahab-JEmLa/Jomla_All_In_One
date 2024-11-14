@@ -1,8 +1,8 @@
 package com.example.clientjetpack
 
-import A1_MainActivityCompnent.Main.MainScreen
-import A1_MainActivityCompnent.Main.HeadViewModel
-import a_RoomDB.AppDatabase
+import A0_MainActivity.Main.MainScreen
+import A0_MainObjectsAPP.ViewModel.HeadViewModel
+import A0_MainActivity.Objects.AppDatabase
 import android.app.Application
 import android.content.Context
 import android.os.Build
@@ -16,7 +16,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.FirebaseDatabase
 import e_AiGroupeForSupplier.GenerativeAiViewModel
-import f_Wifi.Main.ClientPresentationViewModel
+import A1_ActivePackages.E_StorePresentationToClientPackage.Main.ClientPresentationViewModel
+import A0_MainActivity.Objects.PermissionHandler
 
 class MyApplication : Application() {
     lateinit var database: AppDatabase

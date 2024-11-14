@@ -1,0 +1,15 @@
+package A0_MainObjectsAPP.Models
+
+data class ProductDisplayController(
+    val prodectIdWhoInfoDisplayed: Long = 0L,
+    val selectedColorId: Int = 0,
+    val isLoading: Boolean = false,
+    val loadingProgress: Float = 0f,
+    val scrollPosition: Int = 0,
+    val error: String? = null,
+    val isConnected: Boolean = false,
+    val connectionStatus: String = "Déconnecté",
+    val wifiTestDisplayer: Boolean = false,
+    val isHostPhone: Boolean = true,
+    val messageByWifi: String = "",
+)
