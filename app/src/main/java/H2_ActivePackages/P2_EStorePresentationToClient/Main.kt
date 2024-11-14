@@ -124,7 +124,7 @@ fun WindowsPresentationInfoProdect(
                             exit = slideOutHorizontally()
                         ) {
                             CompactQuantityPickerPC(
-                                initialQuantity = (displayController.pickerDisplayedQuantity)+1,
+                                initialQuantity = displayController.pickerDisplayedQuantity,
                                 height = 600.dp
                             )
                         }
