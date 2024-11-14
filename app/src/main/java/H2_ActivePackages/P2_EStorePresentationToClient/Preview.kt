@@ -13,7 +13,7 @@ fun DisplayArticleInfoToClientWindowsPreview() {
 
     val sampleProductDisplayController = ProductDisplayController(
         selectedColorId =0 ,
-        pickerDisplayedQuantity = 25
+        windowsPickerDisplayedQuantity = 25
     )
 
     val sampleArticleStats = ArticlesBasesStatsTable(

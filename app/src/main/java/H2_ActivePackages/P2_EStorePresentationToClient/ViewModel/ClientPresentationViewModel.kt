@@ -23,7 +23,7 @@ class ClientPresentationViewModel(context: Context) : ViewModel() {
         },
         onReceive = { receivedId ->
             _displayerStats.update { currentState ->
-                currentState.copy(prodectIdWhoInfoDisplayed = receivedId)
+                currentState.copy(windowsProductIdWhoInfoDisplayed = receivedId)
             }
         }
     )

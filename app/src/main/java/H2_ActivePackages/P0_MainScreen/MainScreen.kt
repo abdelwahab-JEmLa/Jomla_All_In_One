@@ -28,7 +28,8 @@ import androidx.navigation.compose.rememberNavController
 import com.example.clientjetpack.AppViewModels
 
 @Composable
-fun MainScreen(
+fun MainScreen(     //TODO fit que l app soit on mode prentation plien ecran
+    //le top bar du time ert button du telphone ce cachon quand   !isHostPhone
     appViewModels: AppViewModels
 ) {
     val startUpViewModel = appViewModels.headViewModel
@@ -36,7 +37,7 @@ fun MainScreen(
     val displayerStats by appViewModels.clientPresentationViewModel.displayerStats.collectAsState()
 
     // Safely find matching article based on displayed product ID
-    val displayProductDataBase = displayerStats.prodectIdWhoInfoDisplayed?.let { id ->
+    val displayProductDataBase = displayerStats.windowsProductIdWhoInfoDisplayed?.let { id ->
         uiState.articlesBasesStatTables.find { it.idArticle.toLong() == id }
     }
 
@@ -76,7 +77,7 @@ fun MainScreen(
         }
 
         AnimatedVisibility(
-            visible = isNavBarVisible,
+            visible = isNavBarVisible && isHostPhone,
             modifier = Modifier.align(Alignment.BottomCenter)
         ) {
             NavigationBarWithFab(

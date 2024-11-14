@@ -1,8 +1,9 @@
 package H1_APPMainCompnenents.Models
 
 data class ProductDisplayController(
-    val prodectIdWhoInfoDisplayed: Long? = null,
-    val pickerDisplayedQuantity: Int = 0,
+    val windowsProductIdWhoInfoDisplayed: Long? = null,
+    val windowsPickerDisplayedQuantity: Int = 0,
+    val windowsBottomRowScrollPosition: Int = 0,
 
     val selectedColorId: Int = 0,
     val isLoading: Boolean = false,

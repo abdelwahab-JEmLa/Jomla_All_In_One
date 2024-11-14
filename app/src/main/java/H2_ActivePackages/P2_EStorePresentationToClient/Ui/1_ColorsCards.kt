@@ -1,6 +1,7 @@
 package H2_ActivePackages.P2_EStorePresentationToClient.Ui
 
 import H1_APPMainCompnenents.Models.ProductDisplayController
+import H2_ActivePackages.P2_EStorePresentationToClient.Modules.ImageDisplayerPC
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ColorsArticlesTabelle
 import androidx.compose.foundation.background
@@ -32,7 +33,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import H2_ActivePackages.P2_EStorePresentationToClient.Modules.ImageDisplayerPC
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.clientjetpack.R
@@ -88,7 +88,7 @@ fun ColorsCards(
 
             // Show color variants only if no color is selected
             if (displayController.selectedColorId == 0 && colors.size > 1) {
-                LazyRow(
+                LazyRow(   //TODO fait que le grid goToitem par  displayController.windowsBottomRowScrollPosition
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     contentPadding = PaddingValues(horizontal = 8.dp)
