@@ -1,6 +1,6 @@
 package com.example.clientjetpack
 
-import A0_MainActivity.Main.MainScreen
+import A0_MainActivity.MainScreen
 import A0_MainObjectsAPP.ViewModel.HeadViewModel
 import A0_MainActivity.Objects.AppDatabase
 import android.app.Application

@@ -1,7 +1,7 @@
 package B2_StartupAppDisplayerOfNewArticles.Ui
 
 import A0_MainObjectsAPP.Models.UiState
-import B2_StartupAppDisplayerOfNewArticles.Main.ArticlePagingSource
+import B2_StartupAppDisplayerOfNewArticles.ArticlePagingSource
 import A0_MainObjectsAPP.ViewModel.HeadViewModel
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.CategoriesTabelle

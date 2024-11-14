@@ -1,4 +1,4 @@
-package A0_MainActivity.Main
+package A0_MainActivity
 
 import A0_MainActivity.Ui.AppNavHost
 import A0_MainActivity.Ui.ConnexionCard

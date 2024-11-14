@@ -1,7 +1,7 @@
 package A0_MainActivity.Ui
 import A0_MainActivity.Objects.LoadingOverlay
 import D3_DisplayeProdectInfoToSeller.SaleWindows
-import B2_StartupAppDisplayerOfNewArticles.Main.StartupAppDisplayerOfNewArticles
+import B2_StartupAppDisplayerOfNewArticles.StartupAppDisplayerOfNewArticles
 import a_RoomDB.ArticlesBasesStatsTable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
