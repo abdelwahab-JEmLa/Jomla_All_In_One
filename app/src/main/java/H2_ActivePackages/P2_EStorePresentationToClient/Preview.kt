@@ -59,7 +59,7 @@ fun DisplayArticleInfoToClientWindowsPreview() {
     )
 
     MaterialTheme {
-        DisplayeArticleInfoToClientWindowsPackageC(
+        EStorePresentationToClient(
             displayController=sampleProductDisplayController,
             articleStatsDataBase = sampleArticleStats,
             colorsArticlesList = sampleColorsList,
