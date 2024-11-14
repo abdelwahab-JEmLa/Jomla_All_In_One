@@ -1,8 +1,6 @@
 package P1_StartupScreen
 
 import P0_MainScreen.Objects.LoadingOverlay
-import com.example.clientjetpack.Models.UiState
-import com.example.clientjetpack.ViewModel.HeadViewModel
 import P1_StartupScreen.Main.FloatingActionButtonGroup
 import P1_StartupScreen.Ui.ArticleGridWithScrollbar
 import P1_StartupScreen.Ui.SearchFilterPB
@@ -34,6 +32,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.example.clientjetpack.Models.UiState
+import com.example.clientjetpack.ViewModel.HeadViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -165,7 +165,7 @@ fun ArticleDisplayScreen(
             contentAlignment = Alignment.BottomEnd
         ) {
             AnimatedVisibility(
-                visible = isFabVisible,
+                visible = isFabVisible ||uiState.isConnected && uiState.isHostPhone,
                 enter = fadeIn() + slideInVertically { it / 2 },
                 exit = fadeOut() + slideOutVertically { it / 2 }
             ) {

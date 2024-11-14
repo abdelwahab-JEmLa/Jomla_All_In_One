@@ -51,13 +51,12 @@ fun MainScreen(     //TODO fit que l app soit on mode prentation plien ecran
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
-            if (isDisplayeConexionWifiVisible) {
+            if (isDisplayeConexionWifiVisible || !uiState.isConnected) {
                 ConnexionCard(uiState,
                     appViewModels,
                     onClickToStartAsClient = {
                         isNavBarVisible=false
                         isFabVisible=false
-                        isDisplayeConexionWifiVisible=false
                     }
                 )
             }
@@ -73,7 +72,7 @@ fun MainScreen(     //TODO fit que l app soit on mode prentation plien ecran
                     },
                 )
 
-                if (!isHostPhone) {
+                if (!isHostPhone && uiState.isConnected) {
                     Box(
                         modifier = Modifier
                             .matchParentSize()
@@ -84,7 +83,7 @@ fun MainScreen(     //TODO fit que l app soit on mode prentation plien ecran
         }
 
         AnimatedVisibility(
-            visible = isNavBarVisible ,
+            visible = isHostPhone || !uiState.isConnected ,
             modifier = Modifier.align(Alignment.BottomCenter)
         ) {
             NavigationBarWithFab(
