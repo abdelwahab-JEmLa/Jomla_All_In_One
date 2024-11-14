@@ -1,13 +1,12 @@
 package P0_MainScreen
 
+import P0_MainScreen.Modules.HandleFullscreenMode
 import P0_MainScreen.Ui.AppNavHost
-import P0_MainScreen.Ui.ConnexionCard
-import P0_MainScreen.Ui.NavigationBarWithFab
-import P0_MainScreen.Ui.NavigationItems
-import P0_MainScreen.Ui.Screen
+import P0_MainScreen.Ui.Objects.ConnexionCard
+import P0_MainScreen.Ui.Objects.NavigationBarWithFab
+import P0_MainScreen.Ui.Objects.NavigationItems
+import P0_MainScreen.Ui.Objects.Screen
 import P2_EStorePresentationToClient.WindowsPresentationInfoProdect
-import android.app.Activity
-import android.view.WindowManager
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,12 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.clientjetpack.AppViewModels
@@ -41,34 +34,12 @@ fun MainScreen(
 ) {
     val headViewModel = appViewModels.headViewModel
     val uiState by headViewModel.uiState.collectAsState()
-    val context = LocalContext.current
-    val view = LocalView.current
-    val window = (context as? Activity)?.window
+    val productDisplayController =   uiState.productDisplayController
 
-    // Handle fullscreen mode based on isHostPhone
-    LaunchedEffect(uiState.isHostPhone) {
-        if (!uiState.isHostPhone) {
-            // Enable fullscreen and hide system bars
-            window?.let {
-                WindowCompat.setDecorFitsSystemWindows(it, false)
-                it.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
-                WindowInsetsControllerCompat(it, view).let { controller ->
-                    controller.hide(WindowInsetsCompat.Type.systemBars())
-                    controller.systemBarsBehavior =
-                        WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-                }
-            }
-        } else {
-            // Restore normal mode
-            window?.let {
-                WindowCompat.setDecorFitsSystemWindows(it, true)
-                it.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
-                WindowInsetsControllerCompat(it, view).show(WindowInsetsCompat.Type.systemBars())
-            }
-        }
-    }
+    HandleFullscreenMode(productDisplayController)
 
-    val displayProductDataBase = uiState.productDisplayController.windowsProductIdWhoInfoDisplayed?.let { id ->
+
+    val displayProductDataBase = productDisplayController.windowsProductIdWhoInfoDisplayed?.let { id ->
         uiState.articlesBasesStatTables.find { it.idArticle.toLong() == id }
     }
 
@@ -81,9 +52,9 @@ fun MainScreen(
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
-            if (isDisplayedConnexionWifiVisible || !uiState.isConnected) {
+            if (isDisplayedConnexionWifiVisible || !productDisplayController.isConnected) {
                 ConnexionCard(
-                    uiState,
+                    productDisplayController,
                     appViewModels,
                     onClickToStartAsClient = {
                         isNavBarVisible = false
@@ -103,7 +74,7 @@ fun MainScreen(
                     },
                 )
 
-                if (!uiState.isHostPhone && uiState.isConnected) {
+                if (!productDisplayController.isHostPhone && productDisplayController.isConnected) {
                     Box(
                         modifier = Modifier
                             .matchParentSize()
@@ -114,7 +85,7 @@ fun MainScreen(
         }
 
         AnimatedVisibility(
-            visible = uiState.isHostPhone || !uiState.isConnected,
+            visible = productDisplayController.isHostPhone || !productDisplayController.isConnected,
             modifier = Modifier.align(Alignment.BottomCenter)
         ) {
             NavigationBarWithFab(
@@ -147,7 +118,7 @@ fun MainScreen(
 
     if (displayProductDataBase != null) {
         WindowsPresentationInfoProdect(
-            displayController = uiState.productDisplayController,
+            displayController = productDisplayController,
             articleStatsDataBase = displayProductDataBase,
             colorsArticlesList = uiState.colorsArticlesTabelleModel,
             reloadTrigger = 0

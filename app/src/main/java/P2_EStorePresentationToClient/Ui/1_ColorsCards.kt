@@ -57,7 +57,7 @@ fun ColorsCards(
         } else null
     }
 
-    val selectedColor = colors.find { it.idColore.toInt() == displayController.selectedColorId }
+    val selectedColor = colors.find { it.idColore.toInt() == displayController.windowsSelectedColorId }
 
     Card(
         modifier = modifier
@@ -87,7 +87,7 @@ fun ColorsCards(
             }
 
             // Show color variants only if no color is selected
-            if (displayController.selectedColorId == 0 && colors.size > 1) {
+            if (displayController.windowsSelectedColorId == 0 && colors.size > 1) {
                 LazyRow(   //TODO fait que le grid goToitem par  displayController.windowsBottomRowScrollPosition
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),

@@ -118,7 +118,7 @@ fun WindowsPresentationInfoProdect(
 
                         // Update the AnimatedVisibility condition
                         AnimatedVisibility(
-                            visible = displayController.selectedColorId > 0,
+                            visible = displayController.windowsSelectedColorId > 0,
                             modifier = Modifier.weight(0.2f),
                             enter = slideInHorizontally(),
                             exit = slideOutHorizontally()

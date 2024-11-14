@@ -328,6 +328,5 @@ data class ConnectionUiState(
     val isConnected: Boolean = false,
     val isHostPhone: Boolean = false,
     val error: String? = null,
-    val messages: List<String> = emptyList(),
-    val scrollPosition: Int? = 0,
+    val testMessages: List<String> = emptyList(),
 )

@@ -2,16 +2,26 @@ package com.example.clientjetpack
 
 import P0_MainScreen.MainScreen
 import P6_AiGroupeForSupplier.GenerativeAiViewModel
+import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.clientjetpack.Models.ProductDisplayController
 import com.example.clientjetpack.Modules.AppDatabase
 import com.example.clientjetpack.Modules.PermissionHandler
 import com.example.clientjetpack.ViewModel.HeadViewModel
@@ -22,13 +32,23 @@ class MyApplication : Application() {
     lateinit var database: AppDatabase
         private set
 
-    override fun onCreate() {
-        super.onCreate()
+    private fun initializeDatabase() {
         database = AppDatabase.DatabaseModule.getDatabase(this)
+    }
+
+    private fun initializeFirebase() {
         FirebaseApp.initializeApp(this)
         FirebaseDatabase.getInstance().setPersistenceEnabled(true)
     }
+
+    override fun onCreate() {
+        super.onCreate()
+        initializeDatabase()
+        initializeFirebase()
+    }
 }
+
+
 
 data class AppViewModels(
     val headViewModel: HeadViewModel,
@@ -79,7 +99,6 @@ class MainActivity : ComponentActivity() {
             override fun onPermissionsGranted() {
                 setContent {
                     MainScreen(appViewModels)
-
                 }
             }
 

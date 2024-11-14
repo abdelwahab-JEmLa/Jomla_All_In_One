@@ -35,7 +35,7 @@ class HeadViewModel(
     context: Context,
     private val database: AppDatabase,
 ) : ViewModel() {
-    private val TAG = "HeadViewModel"
+    private val tag = "HeadViewModel"
     private val _uiState = MutableStateFlow(UiState(
         productDisplayController = ProductDisplayController()
     ))
@@ -58,7 +58,7 @@ class HeadViewModel(
                     }
                 }
                 else -> {
-                    Log.d(TAG, "📩 Text message received: $payload")
+                    Log.d(tag, "📩 Text message received: $payload")
                 }
             }
         }
@@ -67,18 +67,19 @@ class HeadViewModel(
     init {
         viewModelScope.launch {
             connectionManager.connectionUiState.collect { connectionState ->
-                Log.d("ViewModel", "💫 Connection state update: ${connectionState.connectionStatus}")
-                val lastMessage = connectionState.messages.lastOrNull()
-                if (lastMessage != null) {
-                    Log.d("ViewModel", "📩 New message received: $lastMessage")
+                val lastMessage = connectionState.testMessages.lastOrNull()
+
+                updateDisplayController {
+                    copy(
+                        isConnected = connectionState.isConnected,
+                        connectionStatus = connectionState.connectionStatus,
+                        testMessageByWifi = lastMessage ?: testMessageByWifi
+                    )
                 }
 
                 _uiState.update { currentState ->
                     currentState.copy(
-                        connectionStatus = connectionState.connectionStatus,
-                        isConnected = connectionState.isConnected,
-                        error = connectionState.error,
-                        messageByWifi = lastMessage ?: currentState.messageByWifi
+                        error = connectionState.error
                     )
                 }
             }

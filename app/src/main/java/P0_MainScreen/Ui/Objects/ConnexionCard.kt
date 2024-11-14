@@ -1,4 +1,6 @@
-package P0_MainScreen.Ui
+package P0_MainScreen.Ui.Objects
+
+import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,19 +19,27 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.clientjetpack.AppViewModels
-import com.example.clientjetpack.Models.UiState
+import com.example.clientjetpack.Models.ProductDisplayController
 
 @Composable
 fun ConnexionCard(
-    uiState: UiState,
+    productDisplayController: ProductDisplayController,
     appViewModels: AppViewModels,
-    onClickToStartAsClient:()->Unit
-) {      // TODO: fait que si le nom du telephone installe dob contain m200
-    //  de clienk sur host
+    onClickToStartAsClient: () -> Unit
+) {
     var messageText by remember { mutableStateOf("") }
+    val context = LocalContext.current
+
+    // Check if device name contains "M200" (case insensitive)
+    val isHostEnabled = remember {
+        val deviceName = Build.MODEL.lowercase()
+        deviceName.contains("M200")
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -48,17 +58,17 @@ fun ConnexionCard(
             )
 
             Text(
-                text = uiState.connectionStatus,
+                text = productDisplayController.connectionStatus,
                 style = MaterialTheme.typography.bodyMedium,
                 color = when {
-                    uiState.isConnected -> MaterialTheme.colorScheme.primary
-                    uiState.error != null -> MaterialTheme.colorScheme.error
+                    productDisplayController.isConnected -> MaterialTheme.colorScheme.primary
+                    productDisplayController.error != null -> MaterialTheme.colorScheme.error
                     else -> MaterialTheme.colorScheme.onSurface
                 }
             )
 
             // Error Display
-            uiState.error?.let { error ->
+            productDisplayController.error?.let { error ->
                 Text(
                     text = error,
                     color = MaterialTheme.colorScheme.error,
@@ -67,30 +77,46 @@ fun ConnexionCard(
                 )
             }
 
-            // Connection Controls
-            if (!uiState.isConnected) {
+            // Connection Controls with Host mode restriction
+            if (!productDisplayController.isConnected) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    Button(onClick = {
-                        appViewModels.headViewModel.startAsHost()
-                        appViewModels.headViewModel.updateTypePhone(type = true)
-                    }) {
+                    Button(
+                        onClick = {
+                            appViewModels.headViewModel.startAsHost()
+                            appViewModels.headViewModel.updateTypePhone(type = true)
+                        },
+                        enabled = isHostEnabled
+                    ) {
                         Text("Mode Hôte")
                     }
-                    Button(onClick = {
-                        appViewModels.headViewModel.startAsClient()
-                        appViewModels.headViewModel.updateTypePhone()
-                        onClickToStartAsClient()
-                    }) {
+                    Button(
+                        onClick = {
+                            appViewModels.headViewModel.startAsClient()
+                            appViewModels.headViewModel.updateTypePhone()
+                            onClickToStartAsClient()
+                        }
+                    ) {
                         Text("Mode Client")
                     }
+                }
+
+                // Display message if host mode is disabled
+                if (!isHostEnabled) {
+                    Text(
+                        text = "Le mode Hôte n'est disponible que pour les appareils M200",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
                 }
             }
 
             // Message Input and Controls when Connected
-            if (uiState.isConnected) {
+            if (productDisplayController.isConnected) {
                 OutlinedTextField(
                     value = messageText,
                     onValueChange = { messageText = it },
@@ -106,7 +132,8 @@ fun ConnexionCard(
                         onClick = {
                             if (messageText.isNotEmpty()) {
                                 appViewModels.headViewModel.sendOrderToClient(
-                                    "Message",messageText
+                                    "Message",
+                                    messageText
                                 )
                                 messageText = ""
                             }
@@ -127,9 +154,9 @@ fun ConnexionCard(
                 }
 
                 // Received Message Display
-                if (uiState.messageByWifi.isNotEmpty()) {
+                if (productDisplayController.testMessageByWifi.isNotEmpty()) {
                     Text(
-                        text = "Message reçu: ${uiState.messageByWifi}",
+                        text = "Message reçu: ${productDisplayController.testMessageByWifi}",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.secondary
                     )
@@ -138,4 +165,3 @@ fun ConnexionCard(
         }
     }
 }
-

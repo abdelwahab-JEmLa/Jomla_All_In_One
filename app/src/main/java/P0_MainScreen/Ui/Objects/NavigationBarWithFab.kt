@@ -1,4 +1,4 @@
-package P0_MainScreen.Ui
+package P0_MainScreen.Ui.Objects
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable

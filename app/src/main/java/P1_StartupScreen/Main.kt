@@ -1,6 +1,6 @@
 package P1_StartupScreen
 
-import P0_MainScreen.Objects.LoadingOverlay
+import P0_MainScreen.Ui.Objects.LoadingOverlay
 import P1_StartupScreen.Main.FloatingActionButtonGroup
 import P1_StartupScreen.Ui.ArticleGridWithScrollbar
 import P1_StartupScreen.Ui.SearchFilterPB
