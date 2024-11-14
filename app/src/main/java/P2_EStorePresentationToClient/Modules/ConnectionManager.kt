@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -38,22 +39,6 @@ class ConnectionManager(
     private val serviceId = "com.example.clientjetpack"
     private val strategy = Strategy.P2P_STAR
 
-    // Update payloadCallback to handle both string and integer messages
-    fun sendOrder(name: String, data: Any) {
-        when (name) {
-            "idProdect" -> {
-                if (data is Long) {
-                    sendData("PRODUCT:$data")
-                    Log.d(TAG, "📤 Product ID sent: $data")
-                } else {
-                    Log.e(TAG, "❌ Invalid data type for product ID: ${data.javaClass}")
-                }
-            }
-            else -> {
-                sendData("$name$data")
-            }
-        }
-    }
 
     private val payloadCallback = object : PayloadCallback() {
         override fun onPayloadReceived(endpointId: String, payload: Payload) {
@@ -125,6 +110,7 @@ class ConnectionManager(
     }
 
     // Liste exhaustive des permissions nécessaires selon la version d'Android
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private val requiredPermissions = when {
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             arrayOf(
@@ -153,6 +139,7 @@ class ConnectionManager(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun checkRequiredPermissions(): Boolean {
         val missingPermissions = requiredPermissions.filter { permission ->
             val isGranted = ContextCompat.checkSelfPermission(
@@ -174,6 +161,7 @@ class ConnectionManager(
         return true
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun startAsClient() {
         viewModelScope.launch {
             Log.d(TAG, "Démarrage de la recherche...")
@@ -269,6 +257,7 @@ class ConnectionManager(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun startAsHost() {
         viewModelScope.launch {
             Log.d(TAG, "🏠 Démarrage en mode hôte...")

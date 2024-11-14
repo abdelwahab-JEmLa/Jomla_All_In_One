@@ -97,7 +97,7 @@ class HeadViewModel(
 
     fun sendOrderToClient(orderName: String, data: Any) {
         viewModelScope.launch {
-            connectionManager.sendOrder(orderName, data)
+            connectionManager.sendData("$orderName$data")
         }
     }
 
@@ -108,7 +108,9 @@ class HeadViewModel(
     }
 
     // Connection management functions
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun startAsHost() = connectionManager.startAsHost()
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun startAsClient() = connectionManager.startAsClient()
     fun disconnect() = connectionManager.disconnect()
 
