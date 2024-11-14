@@ -1,7 +1,5 @@
 package P1_StartupScreen.Ui
 
-import com.example.clientjetpack.Models.UiState
-import com.example.clientjetpack.ViewModel.HeadViewModel
 import a_RoomDB.ArticlesBasesStatsTable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -29,6 +27,8 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import com.example.clientjetpack.Models.UiState
+import com.example.clientjetpack.ViewModel.HeadViewModel
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 

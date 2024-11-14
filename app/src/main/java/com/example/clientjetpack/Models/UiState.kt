@@ -16,6 +16,7 @@ data class UiState(
     val soldArticlesModel: List<SoldArticlesTabelle?> = emptyList(),
     val clientsModel: List<ClientsModel> = emptyList(),
     val suppliers: List<SuppliersTabelle> = emptyList(),
+    val productDisplayController: List<ProductDisplayController> = emptyList(),
     val isLoading: Boolean = false,
     val loadingProgress: Float = 0f,
     val scrollPosition: Int = 0,

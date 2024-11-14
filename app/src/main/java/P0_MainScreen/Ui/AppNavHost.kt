@@ -2,6 +2,9 @@ package P0_MainScreen.Ui
 import P0_MainScreen.Objects.LoadingOverlay
 import P1_StartupScreen.StartupScreen
 import P3_DisplayeProdectInfoToSeller.SaleWindows
+import P4_SoldCartScreen.SoldCartScreen
+import P5_DialogeClientsEditer.ClientSelectionDialog
+import P6_AiGroupeForSupplier.GenerativeAiScreen
 import a_RoomDB.ArticlesBasesStatsTable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,9 +22,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.clientjetpack.AppViewModels
-import P4_SoldCartScreen.SoldCartScreen
-import P6_AiGroupeForSupplier.GenerativeAiScreen
-import P5_DialogeClientsEditer.ClientSelectionDialog
 
 @Composable
 fun AppNavHost(

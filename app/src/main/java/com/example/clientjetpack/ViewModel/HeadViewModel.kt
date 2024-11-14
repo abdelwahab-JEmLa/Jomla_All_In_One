@@ -1,6 +1,5 @@
 package com.example.clientjetpack.ViewModel
 
-import com.example.clientjetpack.Models.UiState
 import P2_EStorePresentationToClient.Modules.ConnectionManager
 import a_RoomDB.AppSettingsSaverModel
 import a_RoomDB.ArticlesBasesStatsTable
@@ -14,6 +13,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.clientjetpack.Models.UiState
 import com.example.clientjetpack.Modules.AppDatabase
 import com.google.firebase.database.BuildConfig
 import com.google.firebase.database.FirebaseDatabase
@@ -43,7 +43,11 @@ class HeadViewModel(
         onPayloadReceivedInteger = {
             updateScrollPositionFromRecived(it)
         },
-        onReceive = {}
+        onReceive = { receivedId ->
+            _uiState.update { currentState ->
+                currentState.copy(productDisplayController =  windowsProductIdWhoInfoDisplayed = receivedId)       //TODO fix
+            }
+        }
     )
 
 
@@ -66,11 +70,6 @@ class HeadViewModel(
         }
     }
 
-    fun sendOrderToClient(name: String,data: Any) {
-        viewModelScope.launch {
-            connectionManager.sendOrder(name,data)
-        }
-    }
 
     fun updateScrollPositionFromRecived(position: Int): Unit {
         _uiState.update { it.copy(scrollPosition = position) }
@@ -86,6 +85,13 @@ class HeadViewModel(
             }
         }
     }
+
+    fun sendOrderToClient(name: String,data: Any) {
+        viewModelScope.launch {
+            connectionManager.sendOrder(name,data)
+        }
+    }
+
     fun sendScrollPositionToClient(position: Int) {
         viewModelScope.launch {
             connectionManager.sendData(position)
