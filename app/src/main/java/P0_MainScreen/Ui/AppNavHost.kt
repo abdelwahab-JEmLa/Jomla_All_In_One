@@ -23,6 +23,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.clientjetpack.AppViewModels
+import com.example.clientjetpack.ViewModel.ConnectionMessage
 
 @Composable
 fun AppNavHost(
@@ -71,7 +72,11 @@ fun AppNavHost(
                                     currentClientId,
                                     pendingIndexColor)
                                 opnerSaleWindows=true
-                                appViewModels.headViewModel.sendOrderToClient("idProdect", relatedArticleBaseStats!!.idArticle.toLong())                            }
+                                appViewModels.headViewModel.sendOrderToClient(
+                                    ConnectionMessage.PRODUCT_ID.prefix,
+                                    relatedArticleBaseStats!!.idArticle.toLong()
+                                )
+                            }
                         },
                         onClickToOpenClientsW = {
                             showClientSelectionWithoutCondition=true
@@ -133,8 +138,9 @@ fun AppNavHost(
                 onDismiss = {
                     showClientSelection = false
                     showClientSelectionWithoutCondition= false
-                    appViewModels.headViewModel.sendOrderToClient("DismissWindowsInfosProduct")
-
+                    appViewModels.headViewModel.sendOrderToClient(
+                        ConnectionMessage.DISMISS_PRODUCT_INFO.prefix
+                    )
                 }
             )
         }

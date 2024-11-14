@@ -1,4 +1,4 @@
-package P3_DisplayeProductInfosToSeller.Ui.Objects
+package P3_DisplayeProductInfosToSeller.Ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer

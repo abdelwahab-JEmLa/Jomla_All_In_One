@@ -172,12 +172,12 @@ fun GenerativeAiScreen(
                     .padding(16.dp)
             ) {
                 when (val state = uiState) {
-                    is UiState.Loading -> {
+                    is UiStateInterface.Loading -> {
                         CircularProgressIndicator(
                             modifier = Modifier.align(Alignment.Center)
                         )
                     }
-                    is UiState.Error -> {
+                    is UiStateInterface.Error -> {
                         Text(
                             text = state.errorMessage,
                             color = MaterialTheme.colorScheme.error,
@@ -187,7 +187,7 @@ fun GenerativeAiScreen(
                             textAlign = TextAlign.Center
                         )
                     }
-                    is UiState.Success -> {
+                    is UiStateInterface.Success -> {
                         Text(
                             text = state.outputText,
                             modifier = Modifier
@@ -197,7 +197,7 @@ fun GenerativeAiScreen(
                             color = MaterialTheme.colorScheme.onSurface
                         )
                     }
-                    UiState.Initial -> {
+                    UiStateInterface.Initial -> {
                         Text(
                             text = ("R.string.initial_message"),
                             modifier = Modifier.align(Alignment.Center),
@@ -213,13 +213,13 @@ fun GenerativeAiScreen(
     // Handle UI state changes
     LaunchedEffect(uiState) {
         when (uiState) {
-            is UiState.Error -> {
+            is UiStateInterface.Error -> {
                 snackbarHostState.showSnackbar(
-                    message = (uiState as UiState.Error).errorMessage,
+                    message = (uiState as UiStateInterface.Error).errorMessage,
                     duration = SnackbarDuration.Long
                 )
             }
-            is UiState.Success -> {
+            is UiStateInterface.Success -> {
                 selectedImages.clear()
                 prompt = placeholderPrompt
             }

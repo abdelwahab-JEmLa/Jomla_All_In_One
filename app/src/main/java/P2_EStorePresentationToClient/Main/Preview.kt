@@ -1,11 +1,11 @@
-package P2_EStorePresentationToClient
+package P2_EStorePresentationToClient.Main
 
-import com.example.clientjetpack.Models.ProductDisplayController
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ColorsArticlesTabelle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.clientjetpack.Models.ProductDisplayController
 
 @Preview
 @Composable

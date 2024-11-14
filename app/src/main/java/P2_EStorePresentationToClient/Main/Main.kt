@@ -1,4 +1,4 @@
-package P2_EStorePresentationToClient
+package P2_EStorePresentationToClient.Main
 
 import com.example.clientjetpack.Models.ProductDisplayController
 import P2_EStorePresentationToClient.Ui.ColorsCards

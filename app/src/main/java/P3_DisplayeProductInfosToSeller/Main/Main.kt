@@ -1,11 +1,10 @@
 package P3_DisplayeProductInfosToSeller.Main
 
-import P2_EStorePresentationToClient.Ui.ColorsCards
 import P2_EStorePresentationToClient.Ui.ProductNameSection
-import P3_DisplayeProductInfosToSeller.Ui.Main.ColorsCardsP3
-import P3_DisplayeProductInfosToSeller.Ui.Objects.ActionsButtonRow
-import P3_DisplayeProductInfosToSeller.Ui.Objects.Details
-import P3_DisplayeProductInfosToSeller.Ui.Objects.confirmExitDialog
+import P3_DisplayeProductInfosToSeller.Ui.ActionsButtonRow
+import P3_DisplayeProductInfosToSeller.Ui.ColorsCardsP3
+import P3_DisplayeProductInfosToSeller.Ui.Details
+import P3_DisplayeProductInfosToSeller.Ui.confirmExitDialog
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.SoldArticlesTabelle
 import androidx.compose.animation.AnimatedVisibility
@@ -48,7 +47,7 @@ fun P3DisplayeProductInfosToSeller(
     val currentSale = viewModel.currentSaleInWindows.collectAsState().value
     val articlesBaseStats = currentSale?.let { sale ->
         uiState.articlesBasesStatTables.find {
-            it.idArticle.toLong() ==   sale.idArticle
+            it.idArticle.toLong() == sale.idArticle
         }
     }
 
@@ -182,9 +181,7 @@ private fun MainUi(
                         onDismiss()
                     },
                     onCancel = {
-                        if (currentSale != null) {
-                            viewModel.deleteSoldArticle(currentSale.vid)
-                        }
+                        viewModel.deleteSoldArticle(currentSale.vid)
                         onDismiss()
                     },
                 )

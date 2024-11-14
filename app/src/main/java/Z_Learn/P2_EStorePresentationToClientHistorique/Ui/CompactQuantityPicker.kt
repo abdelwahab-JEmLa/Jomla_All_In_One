@@ -1,10 +1,10 @@
-package P3_DisplayeProductInfosToSeller.Ui.Objects
+package P2_EStorePresentationToClient.Ui
+
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.calculateTargetValue
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.rememberSplineBasedDecay
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.scrollBy
@@ -21,14 +21,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
@@ -58,7 +53,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.clientjetpack.ViewModel.HeadViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -66,11 +60,8 @@ import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 @Composable
-fun CompactQuantityPicker(
-    onClosePick: () -> Unit,
-    colorIndex: Int,
-    viewModel: HeadViewModel,
-    initialQuantity: Int = 0,
+fun CompactQuantityPickerPC(
+    initialQuantity: Int = 1,
     height: Dp
 ) {
     var isRed by remember { mutableStateOf(true) }
@@ -106,30 +97,6 @@ fun CompactQuantityPicker(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(4.dp)
-                    .background(
-                        color = Color.White,
-                        shape = CircleShape
-                    ),
-                contentAlignment = Alignment.TopEnd
-            ) {
-                IconButton(
-                    onClick = {
-                        viewModel.updateColorSelection(colorIndex, 0)
-                        onClosePick()
-                    },
-                    modifier = Modifier.size(48.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Close picker",
-                        tint = Color.Black
-                    )
-                }
-            }
 
             val values = remember {
                 (1..15).map { it.toString() } +
@@ -140,8 +107,6 @@ fun CompactQuantityPicker(
             val valuesPickerState = rememberPickerState()
 
             LaunchedEffect(Unit) {
-                valuesPickerState.selectedItem = "50"
-                delay(3000)
                 valuesPickerState.selectedItem = initialQuantity.toString()
             }
 
@@ -152,7 +117,7 @@ fun CompactQuantityPicker(
                     .size(height),
                 items = values,
                 state = valuesPickerState,
-                visibleItemsCount = 8,
+                visibleItemsCount = 15,
                 textModifier = Modifier.padding(4.dp),
                 textStyle = TextStyle(
                     fontSize = 25.sp,
@@ -167,7 +132,7 @@ fun CompactQuantityPicker(
                     label = "dividerColor"
                 ).value,
                 startIndex = values.indexOfFirst { it == initialQuantity.toString() }.coerceAtLeast(0),
-                onItemStat = { viewModel.updateColorSelection(colorIndex, it.toInt()) }
+                onItemStat = { }
             )
         }
     }
@@ -179,15 +144,14 @@ fun Picker(
     items: List<String>,
     state: PickerState = rememberPickerState(),
     startIndex: Int = 0,
-    visibleItemsCount: Int = 8,
+    visibleItemsCount: Int,
     textModifier: Modifier = Modifier,
     textStyle: TextStyle = LocalTextStyle.current,
     dividerColor: Color = LocalContentColor.current,
     onItemStat: (String) -> Unit,
 ) {
-    var minusToReglePosition by remember { mutableStateOf(7.0) }
 
-    val centerPosition = 1
+    val centerPosition = 4
     val listScrollCount = Integer.MAX_VALUE
     val listScrollMiddle = listScrollCount / 2
     val listStartIndex = listScrollMiddle - listScrollMiddle % items.size - centerPosition + startIndex
@@ -218,7 +182,6 @@ fun Picker(
             .collect { item ->
                 state.selectedItem = item
                 onItemStat(item)
-                minusToReglePosition = 7.0
             }
     }
 
@@ -243,10 +206,8 @@ fun Picker(
                         onDragEnd = {
                             scope.launch {
                                 val velocity = totalDragDistance * 1.5f
-                                val targetOffset =
-                                    decayAnimationSpec.calculateTargetValue(0f, velocity)
-                                val targetIndex =
-                                    (targetOffset / itemHeightPixels.value).roundToInt()
+                                val targetOffset = decayAnimationSpec.calculateTargetValue(0f, velocity)
+                                val targetIndex = (targetOffset / itemHeightPixels.value).roundToInt()
                                 listState.animateScrollBy(
                                     targetIndex * itemHeightPixels.value.toFloat(),
                                     spring(
@@ -282,12 +243,12 @@ fun Picker(
         }
 
         HorizontalDivider(
-            modifier = Modifier.offset(y = (itemHeightDp- minusToReglePosition.dp) * 1),
+            modifier = Modifier.offset(y = (itemHeightDp+ 20.dp) * 2),
             color = dividerColor
         )
 
         HorizontalDivider(
-            modifier = Modifier.offset(y = (itemHeightDp- minusToReglePosition.dp) * 2),
+            modifier = Modifier.offset(y = (itemHeightDp+ 36.dp) * 2),
             color = dividerColor
         )
     }
@@ -312,3 +273,4 @@ fun rememberPickerState() = remember { PickerState() }
 class PickerState {
     var selectedItem by mutableStateOf("")
 }
+

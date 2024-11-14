@@ -26,8 +26,8 @@ import java.io.StringReader
 class GenerativeAiViewModel : ViewModel() {
     private val TAG = "GenerativeAiViewModel"
     private val firebaseDatabase = FirebaseDatabase.getInstance()
-    private val _uiState = MutableStateFlow<UiState>(UiState.Initial)
-    val uiState = _uiState.asStateFlow()
+    private val _uiStateInterface = MutableStateFlow<UiStateInterface>(UiStateInterface.Initial)
+    val uiState = _uiStateInterface.asStateFlow()
     private val refSoldArticlesTabelle = firebaseDatabase.getReference("O_SoldArticlesTabelle")
 
     private val generativeAiViewModel = GenerativeModel(
@@ -80,7 +80,7 @@ class GenerativeAiViewModel : ViewModel() {
         Log.d(TAG, "Starting transaction prompt")
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                _uiState.value = UiState.Loading
+                _uiStateInterface.value = UiStateInterface.Loading
                 Log.d(TAG, "UI State set to Loading")
 
                 // Fetch data from Firebase
@@ -143,13 +143,13 @@ class GenerativeAiViewModel : ViewModel() {
                         saveToFirebase(groupedData)
                     }
 
-                    _uiState.value = UiState.Success("Transaction processed successfully")
+                    _uiStateInterface.value = UiStateInterface.Success("Transaction processed successfully")
                 } ?: run {
-                    _uiState.value = UiState.Error("Empty response received")
+                    _uiStateInterface.value = UiStateInterface.Error("Empty response received")
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Transaction failed", e)
-                _uiState.value = UiState.Error(e.message ?: "Transaction failed")
+                _uiStateInterface.value = UiStateInterface.Error(e.message ?: "Transaction failed")
             }
         }
     }
@@ -236,7 +236,7 @@ class GenerativeAiViewModel : ViewModel() {
         prompt: String
     ) {
         Log.d(TAG, "sendPrompt() called with ${bitmaps.size} bitmaps and prompt: $prompt")
-        _uiState.value = UiState.Loading
+        _uiStateInterface.value = UiStateInterface.Loading
         Log.d(TAG, "UI State set to Loading")
 
         viewModelScope.launch(Dispatchers.IO) {
@@ -250,14 +250,14 @@ class GenerativeAiViewModel : ViewModel() {
                 )
                 response.text?.let { outputContent ->
                     Log.d(TAG, "Content generated successfully: ${outputContent.take(100)}...")
-                    _uiState.value = UiState.Success(outputContent)
+                    _uiStateInterface.value = UiStateInterface.Success(outputContent)
                 } ?: run {
                     Log.w(TAG, "Generated content was null")
-                    _uiState.value = UiState.Error("Generated content was empty")
+                    _uiStateInterface.value = UiStateInterface.Error("Generated content was empty")
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Error generating content", e)
-                _uiState.value = UiState.Error(e.localizedMessage ?: "")
+                _uiStateInterface.value = UiStateInterface.Error(e.localizedMessage ?: "")
             }
         }
     }

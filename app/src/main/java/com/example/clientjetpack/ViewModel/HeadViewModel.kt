@@ -31,6 +31,22 @@ import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 
+// Define message types enum for better organization and type safety
+enum class ConnectionMessage(val prefix: String) {
+    SCROLL_TO_POSITION("ScrollToPosition-> "),
+    PRODUCT_ID("idProdect"),
+    DISMISS_PRODUCT_INFO("DismissWindowsInfosProduct") ,
+    ;
+
+    companion object {
+        fun fromPayload(payload: String): Pair<ConnectionMessage, String>? {
+            return entries.firstOrNull { payload.startsWith(it.prefix) }?.let {
+                it to payload.removePrefix(it.prefix)
+            }
+        }
+    }
+}
+
 class HeadViewModel(
     context: Context,
     private val database: AppDatabase,
@@ -43,33 +59,42 @@ class HeadViewModel(
 
     private val connectionManager = ConnectionManager(
         context = context,
-        onPayloadReceiveRaw = { payload ->
-            when {
-                payload.startsWith("ScrollToPosition-> ") -> {
-                    val valReceived = payload.removePrefix("ScrollToPosition-> ").toInt()
-                    updateDisplayController {
-                        copy(clientDisplayerScrollPosition = valReceived)
-                    }
-                }
-                payload.startsWith("idProdect") -> {
-                    val valReceived = payload.removePrefix("idProdect").toLong()
-                    updateDisplayController {
-                        copy(windowsProductIdWhoInfoDisplayed = valReceived)
-                    }
-                }
-                payload.startsWith("DismissWindowsInfosProduct") -> {
-                    updateDisplayController {
-                        copy(windowsProductIdWhoInfoDisplayed = null)
-                    }
-                }
-                else -> {
-                    Log.d(tag, "📩 Text message received: $payload")
-                }
-            }
-        }
+        onPayloadReceiveRaw = { payload -> handlePayload(payload) }
     )
 
     init {
+        observeConnectionState()
+    }
+
+    private fun handlePayload(payload: String) {
+        ConnectionMessage.fromPayload(payload)?.let { (messageType, content) ->
+            when (messageType) {
+                ConnectionMessage.SCROLL_TO_POSITION -> updateScrollPosition(content.toInt())
+                ConnectionMessage.PRODUCT_ID -> updateDisplayedProductId(content.toLong())
+                ConnectionMessage.DISMISS_PRODUCT_INFO -> dismissProductInfo()
+            }
+        } ?: Log.d(tag, "📩 Unhandled message received: $payload")
+    }
+
+    private fun updateScrollPosition(position: Int) {
+        updateDisplayController {
+            copy(clientDisplayerScrollPosition = position)
+        }
+    }
+
+    private fun updateDisplayedProductId(productId: Long) {
+        updateDisplayController {
+            copy(windowsProductIdWhoInfoDisplayed = productId)
+        }
+    }
+
+    private fun dismissProductInfo() {
+        updateDisplayController {
+            copy(windowsProductIdWhoInfoDisplayed = null)
+        }
+    }
+
+    private fun observeConnectionState() {
         viewModelScope.launch {
             connectionManager.connectionUiState.collect { connectionState ->
                 val lastMessage = connectionState.testMessages.lastOrNull()
@@ -82,25 +107,16 @@ class HeadViewModel(
                     )
                 }
 
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        error = connectionState.error
-                    )
-                }
+                _uiState.update { it.copy(error = connectionState.error) }
             }
         }
     }
 
-    // Simplified helper function to update ProductDisplayController state
     private fun updateDisplayController(update: ProductDisplayController.() -> ProductDisplayController) {
-        _uiState.update { currentState ->
-            currentState.copy(
-                productDisplayController = update(currentState.productDisplayController)
-            )
-        }
+        _uiState.update { it.copy(productDisplayController = update(it.productDisplayController)) }
     }
 
-    fun sendOrderToClient(orderName: String, data: Any? =null) {
+    fun sendOrderToClient(orderName: String, data: Any? = null) {
         viewModelScope.launch {
             connectionManager.sendData("$orderName$data")
         }
@@ -112,11 +128,12 @@ class HeadViewModel(
         }
     }
 
-    // Connection management functions
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun startAsHost() = connectionManager.startAsHost()
+
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun startAsClient() = connectionManager.startAsClient()
+
     fun disconnect() = connectionManager.disconnect()
 
 
