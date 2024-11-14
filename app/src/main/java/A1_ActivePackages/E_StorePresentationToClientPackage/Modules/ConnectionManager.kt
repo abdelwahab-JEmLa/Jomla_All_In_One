@@ -1,4 +1,4 @@
-package A1_ActivePackages.E_StorePresentationToClientPackage.Objects
+package A1_ActivePackages.E_StorePresentationToClientPackage.Modules
 
 import android.Manifest
 import android.content.Context

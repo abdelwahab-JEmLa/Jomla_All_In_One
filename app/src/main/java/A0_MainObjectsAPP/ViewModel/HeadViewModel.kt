@@ -2,7 +2,7 @@ package A0_MainObjectsAPP.ViewModel
 
 import A0_MainObjectsAPP.Models.UiState
 import A1_ActivePackages.E_StorePresentationToClientPackage.ViewModel.ClientPresentationViewModel
-import A1_ActivePackages.E_StorePresentationToClientPackage.Objects.ConnectionManager
+import A1_ActivePackages.E_StorePresentationToClientPackage.Modules.ConnectionManager
 import A0_MainActivity.Objects.AppDatabase
 import a_RoomDB.AppSettingsSaverModel
 import a_RoomDB.ArticlesBasesStatsTable

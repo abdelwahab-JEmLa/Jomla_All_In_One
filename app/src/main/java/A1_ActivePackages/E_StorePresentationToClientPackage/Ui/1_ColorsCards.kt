@@ -32,7 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import A1_ActivePackages.E_StorePresentationToClientPackage.Objects.ImageDisplayerPC
+import A1_ActivePackages.E_StorePresentationToClientPackage.Modules.ImageDisplayerPC
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.clientjetpack.R
