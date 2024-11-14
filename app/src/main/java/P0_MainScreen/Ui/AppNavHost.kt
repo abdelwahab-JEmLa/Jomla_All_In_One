@@ -138,9 +138,7 @@ fun AppNavHost(
                 onDismiss = {
                     showClientSelection = false
                     showClientSelectionWithoutCondition= false
-                    appViewModels.headViewModel.sendOrderToClient(
-                        ConnectionMessage.DISMISS_PRODUCT_INFO.prefix
-                    )
+
                 }
             )
         }
@@ -153,6 +151,9 @@ fun AppNavHost(
                 onDismiss = {
                     appViewModels.headViewModel.clearCurrentSale()
                     opnerSaleWindows=false
+                    appViewModels.headViewModel.sendOrderToClient(
+                        ConnectionMessage.DISMISS_PRODUCT_INFO.prefix
+                    )
                 },
                 reloadTrigger = reloadTrigger,
             )
