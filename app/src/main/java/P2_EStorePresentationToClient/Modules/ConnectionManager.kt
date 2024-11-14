@@ -29,8 +29,7 @@ import kotlinx.coroutines.launch
 
 class ConnectionManager(
     private val context: Context,
-    onPayloadReceivedInteger: (Int) -> Unit,
-    onReceive: (Long) -> Unit,
+    onPayloadReceiveRaw: (String) -> Unit,
 ) : ViewModel() {
     private val _connectionUiState = MutableStateFlow(ConnectionUiState())
     val connectionUiState: StateFlow<ConnectionUiState> = _connectionUiState.asStateFlow()
@@ -60,33 +59,8 @@ class ConnectionManager(
         override fun onPayloadReceived(endpointId: String, payload: Payload) {
             if (payload.type == Payload.Type.BYTES) {
                 val rawMessage = String(payload.asBytes()!!)
+                onPayloadReceiveRaw(rawMessage)
 
-                when {
-                    rawMessage.startsWith("INT:") -> {
-                        try {
-                            val intValue = rawMessage.removePrefix("INT:").toInt()
-                            Log.d(TAG, "📩 Integer received: $intValue")
-                            onPayloadReceivedInteger(intValue)
-                        } catch (e: Exception) {
-                            Log.e(TAG, "❌ Integer conversion error: ${e.message}")
-                        }
-                    }
-                    rawMessage.startsWith("PRODUCT:") -> {
-                        try {
-                            val productId = rawMessage.removePrefix("PRODUCT:").toLong()
-                            Log.d(TAG, "📩 Product ID received: $productId")
-                            onReceive(productId)
-                        } catch (e: Exception) {
-                            Log.e(TAG, "❌ Product ID conversion error: ${e.message}")
-                        }
-                    }
-                    else -> {
-                        Log.d(TAG, "📩 Text message received: $rawMessage")
-                        _connectionUiState.update {
-                            it.copy(messages = it.messages + rawMessage)
-                        }
-                    }
-                }
             }
         }
         override fun onPayloadTransferUpdate(endpointId: String, update: PayloadTransferUpdate) {

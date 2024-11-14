@@ -1,6 +1,6 @@
 package P0_MainScreen.Ui
 import P0_MainScreen.Objects.LoadingOverlay
-import P1_StartupScreen.StartupScreen
+import P1_StartupScreen.FragmentStartupScreen
 import P3_DisplayeProductInfosToSeller.Main.P3DisplayeProductInfosToSeller
 import P4_SoldCartScreen.SoldCartScreen
 import P5_DialogeClientsEditer.ClientSelectionDialog
@@ -54,7 +54,7 @@ fun AppNavHost(
         ) {
             composable(Screen.EditDatabaseWithCreateNewArticles.route) {
                 Box(modifier = Modifier.fillMaxSize()) {
-                    StartupScreen(
+                    FragmentStartupScreen(
                         viewModel = appViewModels.headViewModel,
                         onToggleNavBar = onToggleNavBar,
                         reloadTrigger = reloadTrigger,

@@ -39,7 +39,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 @Composable
-fun StartupScreen(
+fun FragmentStartupScreen(
     viewModel: HeadViewModel,
     onToggleNavBar: () -> Unit,
     reloadTrigger: Int,
@@ -55,7 +55,7 @@ fun StartupScreen(
     val gridState = rememberLazyStaggeredGridState()
     val uiState by viewModel.uiState.collectAsState()
 
-    ArticleDisplayScreen(
+    MainUi(
         uiState = uiState,
         gridColumns = gridColumns,
         filterText = filterText,
@@ -77,7 +77,7 @@ fun StartupScreen(
 }
 
 @Composable
-fun ArticleDisplayScreen(
+fun MainUi(
     uiState: UiState,
     gridColumns: Int,
     filterText: String,
@@ -96,17 +96,15 @@ fun ArticleDisplayScreen(
 ) {
     val scope = rememberCoroutineScope()
     val tag = if (uiState.isHostPhone) "📱 ServerScreen" else "📱 ClientScreen"
-
-    // Sauvegarder la position quand le FAB est visible
     var savedScrollPosition by remember { mutableStateOf(0) }
 
-    // Gérer le changement de visibilité du FAB
+    // Get the current scroll position directly from ProductDisplayController
+    val currentScrollPosition = uiState.productDisplayController.clientDisplayerScrollPosition
+
     LaunchedEffect(isFabVisible) {
         if (isFabVisible) {
-            // Quand le FAB devient visible, sauvegarder la position actuelle
             savedScrollPosition = gridState.firstVisibleItemIndex
         } else {
-            // Quand le FAB devient invisible, revenir à la position sauvegardée
             scope.launch {
                 gridState.scrollToItem(savedScrollPosition)
             }
@@ -123,7 +121,7 @@ fun ArticleDisplayScreen(
 
     HandleClientScroll(
         isHostPhone = uiState.isHostPhone,
-        scrollPosition = uiState.scrollPosition,
+        scrollPosition = currentScrollPosition,
         gridState = gridState,
         tag = tag
     )
@@ -158,33 +156,57 @@ fun ArticleDisplayScreen(
             }
         }
 
-        Box(
-            modifier = Modifier
-                .matchParentSize()
-                .padding(bottom = 16.dp, end = 16.dp),
-            contentAlignment = Alignment.BottomEnd
-        ) {
-            AnimatedVisibility(
-                visible = isFabVisible ||uiState.isConnected && uiState.isHostPhone,
-                enter = fadeIn() + slideInVertically { it / 2 },
-                exit = fadeOut() + slideOutVertically { it / 2 }
-            ) {
-                FloatingActionButtonGroup(
-                    modifier = Modifier.zIndex(1f),
-                    viewModel = viewModel,
-                    onToggleNavBar = onToggleNavBar,
-                    onToggleOutlineFilter = onToggleFilter,
-                    onChangeGridColumns = onChangeGridColumns,
-                    onClickToOpenClientsListW = onClickToOpenClientsW,
-                    onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi
-                )
-            }
-        }
+        AnimatedFabGroup(
+            isFabVisible = isFabVisible,
+            isConnected = uiState.isConnected,
+            isHostPhone = uiState.isHostPhone,
+            viewModel = viewModel,
+            onToggleNavBar = onToggleNavBar,
+            onToggleOutlineFilter = onToggleFilter,
+            onChangeGridColumns = onChangeGridColumns,
+            onClickToOpenClientsListW = onClickToOpenClientsW,
+            onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi
+        )
 
         if (uiState.isLoading) {
             LoadingOverlay(
                 progress = uiState.loadingProgress,
                 modifier = Modifier.align(Alignment.Center)
+            )
+        }
+    }
+}
+
+@Composable
+private fun AnimatedFabGroup(
+    isFabVisible: Boolean,
+    isConnected: Boolean,
+    isHostPhone: Boolean,
+    viewModel: HeadViewModel,
+    onToggleNavBar: () -> Unit,
+    onToggleOutlineFilter: () -> Unit,
+    onChangeGridColumns: (Int) -> Unit,
+    onClickToOpenClientsListW: () -> Unit,
+    onClickToDisplayeConexionWifi: () -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .padding(bottom = 16.dp, end = 16.dp),
+        contentAlignment = Alignment.BottomEnd
+    ) {
+        AnimatedVisibility(
+            visible = isFabVisible || (isConnected && isHostPhone),
+            enter = fadeIn() + slideInVertically { it / 2 },
+            exit = fadeOut() + slideOutVertically { it / 2 }
+        ) {
+            FloatingActionButtonGroup(
+                modifier = Modifier.zIndex(1f),
+                viewModel = viewModel,
+                onToggleNavBar = onToggleNavBar,
+                onToggleOutlineFilter = onToggleOutlineFilter,
+                onChangeGridColumns = onChangeGridColumns,
+                onClickToOpenClientsListW = onClickToOpenClientsListW,
+                onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi
             )
         }
     }
@@ -210,7 +232,7 @@ private fun HandleScrollBroadcast(
             .collect { position ->
                 Log.d(tag, "📊 Grid position changed to: $position")
                 try {
-                    viewModel.sendScrollPositionToClient(position)
+                    viewModel.sendOrderToClient("ScrollToPosition-> ",position)
                     Log.d(tag, "✅ Scroll broadcast completed")
                 } catch (e: Exception) {
                     Log.e(tag, "❌ Failed to broadcast scroll: ${e.message}")

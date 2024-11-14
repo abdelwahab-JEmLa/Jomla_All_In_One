@@ -11,9 +11,9 @@ import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.compose.ui.tooling.data.EmptyGroup.data
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.clientjetpack.Models.ProductDisplayController
 import com.example.clientjetpack.Models.UiState
 import com.example.clientjetpack.Modules.AppDatabase
 import com.google.firebase.database.BuildConfig
@@ -35,22 +35,34 @@ class HeadViewModel(
     context: Context,
     private val database: AppDatabase,
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(UiState())
+    private val TAG = "HeadViewModel"
+    private val _uiState = MutableStateFlow(UiState(
+        productDisplayController = ProductDisplayController()
+    ))
     val uiState = _uiState.asStateFlow()
 
-
     private val connectionManager = ConnectionManager(
-        context,
-        onPayloadReceivedInteger = {
-            updateScrollPositionFromRecived(it)
-        },
-        onReceive = { receivedId ->
-            _uiState.update { currentState ->
-                currentState.copy(productDisplayController .  windowsProductIdWhoInfoDisplayed = receivedId)       //TODO fix
+        context = context,
+        onPayloadReceiveRaw = { payload ->
+            when {
+                payload.startsWith("ScrollToPosition-> ") -> {
+                    val valReceived = payload.removePrefix("ScrollToPosition-> ").toInt()
+                    updateDisplayController {
+                        copy(clientDisplayerScrollPosition = valReceived)
+                    }
+                }
+                payload.startsWith("idProdect") -> {
+                    val valReceived = payload.removePrefix("idProdect").toLong()
+                    updateDisplayController {
+                        copy(windowsProductIdWhoInfoDisplayed = valReceived)
+                    }
+                }
+                else -> {
+                    Log.d(TAG, "📩 Text message received: $payload")
+                }
             }
         }
     )
-
 
     init {
         viewModelScope.launch {
@@ -61,41 +73,44 @@ class HeadViewModel(
                     Log.d("ViewModel", "📩 New message received: $lastMessage")
                 }
 
-                _uiState.update { it.copy(
-                    connectionStatus = connectionState.connectionStatus,
-                    isConnected = connectionState.isConnected,
-                    error = connectionState.error,
-                    messageByWifi = lastMessage ?: it.messageByWifi ,
-                )}
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        connectionStatus = connectionState.connectionStatus,
+                        isConnected = connectionState.isConnected,
+                        error = connectionState.error,
+                        messageByWifi = lastMessage ?: currentState.messageByWifi
+                    )
+                }
             }
         }
     }
 
-
-    fun updateScrollPositionFromRecived(position: Int): Unit {
-        _uiState.update { it.copy(productDisplayController . scrollPosition = position) }   // TODO: fix her
+    // Simplified helper function to update ProductDisplayController state
+    private fun updateDisplayController(update: ProductDisplayController.() -> ProductDisplayController) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                productDisplayController = update(currentState.productDisplayController)
+            )
+        }
     }
 
     fun sendOrderToClient(orderName: String, data: Any) {
         viewModelScope.launch {
-            connectionManager.sendOrder(orderName,data)
+            connectionManager.sendOrder(orderName, data)
         }
     }
 
-    fun sendScrollPositionToClient(position: Int) {
-        viewModelScope.launch {
-            connectionManager.sendData(position)
-            connectionManager.sendOrder("scrollTo->",position)
-
+    fun updateTypePhone(type: Boolean = false) {
+        updateDisplayController {
+            copy(isHostPhone = type)
         }
     }
-    fun updateTypePhone(type: Boolean = false): Unit {
-        _uiState.update { it.copy(productDisplayController . isHostPhone = type) }
-    }
 
+    // Connection management functions
     fun startAsHost() = connectionManager.startAsHost()
     fun startAsClient() = connectionManager.startAsClient()
     fun disconnect() = connectionManager.disconnect()
+
 
     // Ensure the directory exists when initializing the path
     val viewModelImagesPath = File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne/").apply {

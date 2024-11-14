@@ -8,7 +8,7 @@ data class ProductDisplayController(
     val selectedColorId: Int = 0,
     val isLoading: Boolean = false,
     val loadingProgress: Float = 0f,
-    val scrollPosition: Int = 0,
+    val clientDisplayerScrollPosition: Int = 0,
     val error: String? = null,
     val isConnected: Boolean = false,
     val connectionStatus: String = "Déconnecté",

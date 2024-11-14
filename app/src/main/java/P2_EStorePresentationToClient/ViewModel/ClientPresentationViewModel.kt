@@ -36,7 +36,7 @@ class ClientPresentationViewModel(context: Context) : ViewModel() {
     }
 
     private fun updateScrollPositionFromRecived(position: Int): Unit {
-        _displayerStats.update { it.copy(scrollPosition = position) }
+        _displayerStats.update { it.copy(clientDisplayerScrollPosition = position) }
     }
 
     fun sendScrollPositionToClient(position: Int) {
