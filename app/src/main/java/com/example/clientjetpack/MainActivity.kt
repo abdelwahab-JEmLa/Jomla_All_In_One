@@ -1,8 +1,8 @@
 package com.example.clientjetpack
 
-import A0_MainActivity.MainScreen
-import A0_MainObjectsAPP.ViewModel.HeadViewModel
-import A0_MainActivity.Objects.AppDatabase
+import H1_APPMainCompnenents.Main.MainScreen
+import H1_APPMainCompnenents.ViewModel.HeadViewModel
+import com.example.clientjetpack.Modules.AppDatabase
 import android.app.Application
 import android.content.Context
 import android.os.Build
@@ -15,9 +15,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.FirebaseDatabase
-import e_AiGroupeForSupplier.GenerativeAiViewModel
-import A1_ActivePackages.E_StorePresentationToClientPackage.ViewModel.ClientPresentationViewModel
-import A0_MainActivity.Objects.PermissionHandler
+import P6_AiGroupeForSupplier.GenerativeAiViewModel
+import H2_ActivePackages.P2_EStorePresentationToClient.ViewModel.ClientPresentationViewModel
+import com.example.clientjetpack.Modules.PermissionHandler
 
 class MyApplication : Application() {
     lateinit var database: AppDatabase
