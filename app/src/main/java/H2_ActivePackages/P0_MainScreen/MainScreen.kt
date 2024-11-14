@@ -52,7 +52,14 @@ fun MainScreen(     //TODO fit que l app soit on mode prentation plien ecran
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
             if (isDisplayeConexionWifiVisible) {
-                ConnexionCard(uiState, appViewModels)
+                ConnexionCard(uiState,
+                    appViewModels,
+                    onClickToStartAsClient = {
+                        isNavBarVisible=false
+                        isFabVisible=false
+                        isDisplayeConexionWifiVisible=false
+                    }
+                )
             }
             Box(modifier = Modifier.weight(1f)) {
                 AppNavHost(
@@ -77,7 +84,7 @@ fun MainScreen(     //TODO fit que l app soit on mode prentation plien ecran
         }
 
         AnimatedVisibility(
-            visible = isNavBarVisible && isHostPhone,
+            visible = isNavBarVisible ,
             modifier = Modifier.align(Alignment.BottomCenter)
         ) {
             NavigationBarWithFab(

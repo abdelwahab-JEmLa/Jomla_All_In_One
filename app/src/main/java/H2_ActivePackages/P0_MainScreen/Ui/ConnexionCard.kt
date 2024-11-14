@@ -26,6 +26,7 @@ import com.example.clientjetpack.AppViewModels
 fun ConnexionCard(
     uiState: UiState,
     appViewModels: AppViewModels,
+    onClickToStartAsClient:()->Unit
 ) {
     var messageText by remember { mutableStateOf("") }
     Card(
@@ -80,6 +81,7 @@ fun ConnexionCard(
                     Button(onClick = {
                         appViewModels.headViewModel.startAsClient()
                         appViewModels.headViewModel.updateTypePhone()
+                        onClickToStartAsClient()
                     }) {
                         Text("Mode Client")
                     }
