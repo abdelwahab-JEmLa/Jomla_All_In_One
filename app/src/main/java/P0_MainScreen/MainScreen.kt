@@ -6,6 +6,8 @@ import P0_MainScreen.Ui.NavigationBarWithFab
 import P0_MainScreen.Ui.NavigationItems
 import P0_MainScreen.Ui.Screen
 import P2_EStorePresentationToClient.WindowsPresentationInfoProdect
+import android.app.Activity
+import android.view.WindowManager
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -15,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,41 +25,69 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.clientjetpack.AppViewModels
 
 @Composable
-fun MainScreen(     //TODO fit que l app soit on mode prentation plien ecran
-    //le top bar du time ert button du telphone ce cachon quand   !isHostPhone
+fun MainScreen(
     appViewModels: AppViewModels
 ) {
-    val startUpViewModel = appViewModels.headViewModel
-    val uiState by startUpViewModel.uiState.collectAsState()
-    val displayerStats by appViewModels.clientPresentationViewModel.displayerStats.collectAsState()
+    val headViewModel = appViewModels.headViewModel
+    val uiState by headViewModel.uiState.collectAsState()
+    val context = LocalContext.current
+    val view = LocalView.current
+    val window = (context as? Activity)?.window
 
-    // Safely find matching article based on displayed product ID
-    val displayProductDataBase = displayerStats.windowsProductIdWhoInfoDisplayed?.let { id ->
+    // Handle fullscreen mode based on isHostPhone
+    LaunchedEffect(uiState.isHostPhone) {
+        if (!uiState.isHostPhone) {
+            // Enable fullscreen and hide system bars
+            window?.let {
+                WindowCompat.setDecorFitsSystemWindows(it, false)
+                it.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+                WindowInsetsControllerCompat(it, view).let { controller ->
+                    controller.hide(WindowInsetsCompat.Type.systemBars())
+                    controller.systemBarsBehavior =
+                        WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                }
+            }
+        } else {
+            // Restore normal mode
+            window?.let {
+                WindowCompat.setDecorFitsSystemWindows(it, true)
+                it.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+                WindowInsetsControllerCompat(it, view).show(WindowInsetsCompat.Type.systemBars())
+            }
+        }
+    }
+
+    val displayProductDataBase = uiState.productDisplayController.windowsProductIdWhoInfoDisplayed?.let { id ->
         uiState.articlesBasesStatTables.find { it.idArticle.toLong() == id }
     }
 
-    val isHostPhone = uiState.isHostPhone
     val navController = rememberNavController()
     val items = NavigationItems.getItems()
     var isNavBarVisible by remember { mutableStateOf(true) }
     var isFabVisible by remember { mutableStateOf(false) }
-    var isDisplayeConexionWifiVisible by remember { mutableStateOf(false) }
+    var isDisplayedConnexionWifiVisible by remember { mutableStateOf(false) }
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
-            if (isDisplayeConexionWifiVisible || !uiState.isConnected) {
-                ConnexionCard(uiState,
+            if (isDisplayedConnexionWifiVisible || !uiState.isConnected) {
+                ConnexionCard(
+                    uiState,
                     appViewModels,
                     onClickToStartAsClient = {
-                        isNavBarVisible=false
-                        isFabVisible=false
+                        isNavBarVisible = false
+                        isFabVisible = false
                     }
                 )
             }
@@ -68,11 +99,11 @@ fun MainScreen(     //TODO fit que l app soit on mode prentation plien ecran
                     isFabVisible = isFabVisible,
                     onClickDonne = { isFabVisible = false },
                     onClickToDisplayeConexionWifi = {
-                        isDisplayeConexionWifiVisible = !isDisplayeConexionWifiVisible
+                        isDisplayedConnexionWifiVisible = !isDisplayedConnexionWifiVisible
                     },
                 )
 
-                if (!isHostPhone && uiState.isConnected) {
+                if (!uiState.isHostPhone && uiState.isConnected) {
                     Box(
                         modifier = Modifier
                             .matchParentSize()
@@ -83,7 +114,7 @@ fun MainScreen(     //TODO fit que l app soit on mode prentation plien ecran
         }
 
         AnimatedVisibility(
-            visible = isHostPhone || !uiState.isConnected ,
+            visible = uiState.isHostPhone || !uiState.isConnected,
             modifier = Modifier.align(Alignment.BottomCenter)
         ) {
             NavigationBarWithFab(
@@ -98,7 +129,7 @@ fun MainScreen(     //TODO fit que l app soit on mode prentation plien ecran
                 isFabVisible = isFabVisible,
                 onToggleFabVisibility = {
                     isFabVisible = !isFabVisible
-                    isDisplayeConexionWifiVisible = false
+                    isDisplayedConnexionWifiVisible = false
                 }
             )
         }
@@ -114,10 +145,9 @@ fun MainScreen(     //TODO fit que l app soit on mode prentation plien ecran
         }
     }
 
-    // Show product info window only when we have both an ID and matching product data
-    if ( displayProductDataBase != null) {
+    if (displayProductDataBase != null) {
         WindowsPresentationInfoProdect(
-            displayController = displayerStats,
+            displayController = uiState.productDisplayController,
             articleStatsDataBase = displayProductDataBase,
             colorsArticlesList = uiState.colorsArticlesTabelleModel,
             reloadTrigger = 0

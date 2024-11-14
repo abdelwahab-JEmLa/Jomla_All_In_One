@@ -1,8 +1,6 @@
 package com.example.clientjetpack
 
-import com.example.clientjetpack.ViewModel.HeadViewModel
 import P0_MainScreen.MainScreen
-import P2_EStorePresentationToClient.ViewModel.ClientPresentationViewModel
 import P6_AiGroupeForSupplier.GenerativeAiViewModel
 import android.app.Application
 import android.content.Context
@@ -16,6 +14,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.clientjetpack.Modules.AppDatabase
 import com.example.clientjetpack.Modules.PermissionHandler
+import com.example.clientjetpack.ViewModel.HeadViewModel
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.FirebaseDatabase
 
@@ -34,7 +33,6 @@ class MyApplication : Application() {
 data class AppViewModels(
     val headViewModel: HeadViewModel,
     val generativeAiViewModel: GenerativeAiViewModel,
-    val clientPresentationViewModel: ClientPresentationViewModel,
 )
 
 
@@ -43,14 +41,9 @@ class ViewModelFactory(
     private val context: Context,
     private val database: AppDatabase,
 ) : ViewModelProvider.Factory {
-    private var clientPresentationViewModelInstance: ClientPresentationViewModel? = null
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when {
-            modelClass.isAssignableFrom(ClientPresentationViewModel::class.java) -> {
-                clientPresentationViewModelInstance = ClientPresentationViewModel( context.applicationContext,)
-                clientPresentationViewModelInstance as T
-            }
             modelClass.isAssignableFrom(HeadViewModel::class.java) ->
                 HeadViewModel(
                     context.applicationContext,
@@ -69,13 +62,11 @@ class MainActivity : ComponentActivity() {
     private val viewModelFactory by lazy { ViewModelFactory(applicationContext, database) }
     private val headViewModel: HeadViewModel by viewModels { viewModelFactory }
     private val generativeAiViewModel: GenerativeAiViewModel by viewModels { viewModelFactory }
-    private val clientPresentationViewModel: ClientPresentationViewModel by viewModels { viewModelFactory }
 
     private val appViewModels by lazy {
         AppViewModels(
             headViewModel = headViewModel,
             generativeAiViewModel = generativeAiViewModel,
-            clientPresentationViewModel=clientPresentationViewModel
         )
     }
 
