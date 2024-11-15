@@ -1,4 +1,4 @@
-package P2_EStorePresentationToClient.Ui
+package P7_EStorePresentationToClient.Ui
 
 import a_RoomDB.ArticlesBasesStatsTable
 import androidx.compose.foundation.layout.Arrangement

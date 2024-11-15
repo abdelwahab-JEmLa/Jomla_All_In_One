@@ -1,4 +1,4 @@
-package P2_EStorePresentationToClient.Main
+package P7_EStorePresentationToClient.Main
 
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ColorsArticlesTabelle

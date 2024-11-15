@@ -51,7 +51,7 @@ import com.example.clientjetpack.ViewModel.HeadViewModel
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun ColorItemP3(
+fun ColorItem3(
     modifier: Modifier,
     currentSale: SoldArticlesTabelle?,
     article: ArticlesBasesStatsTable,

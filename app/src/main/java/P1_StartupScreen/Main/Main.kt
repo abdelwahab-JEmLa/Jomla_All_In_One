@@ -4,7 +4,6 @@ import P0_MainScreen.Ui.Objects.LoadingOverlay
 import P1_StartupScreen.Ui.ArticleGridWithScrollbar
 import P1_StartupScreen.Ui.Objects.SearchFilterPB
 import a_RoomDB.ArticlesBasesStatsTable
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -114,8 +113,7 @@ fun MainUi(
         isHostPhone = uiState.productDisplayController.isHostPhone,
         isConnected = uiState.productDisplayController.isConnected,
         gridState = gridState,
-        viewModel = viewModel,
-        tag = tag
+        viewModel = viewModel
     )
 
     HandleClientScroll(
@@ -217,25 +215,16 @@ private fun HandleScrollBroadcast(
     isConnected: Boolean,
     gridState: LazyStaggeredGridState,
     viewModel: HeadViewModel,
-    tag: String
 ) {
     LaunchedEffect(isHostPhone, isConnected) {
         if (!isHostPhone || !isConnected) {
-            Log.d(tag, "⚠️ Not monitoring scroll (Server: $isHostPhone, Connected: $isConnected)")
             return@LaunchedEffect
         }
 
-        Log.d(tag, "👀 Starting scroll monitoring")
         snapshotFlow { gridState.firstVisibleItemIndex }
             .distinctUntilChanged()
             .collect { position ->
-                Log.d(tag, "📊 Grid position changed to: $position")
-                try {
-                    viewModel.sendOrderToClient("ScrollToPosition-> ",position)
-                    Log.d(tag, "✅ Scroll broadcast completed")
-                } catch (e: Exception) {
-                    Log.e(tag, "❌ Failed to broadcast scroll: ${e.message}")
-                }
+              viewModel.sendOrderToClient("ScrollToPosition-> ",position)
             }
     }
 }
@@ -252,15 +241,12 @@ private fun HandleClientScroll(
     LaunchedEffect(scrollPosition) {
         if (isHostPhone) return@LaunchedEffect
 
-        Log.d(tag, "🔄 Processing scroll position update")
         try {
             scope.launch {
                 gridState.animateScrollToItem(scrollPosition)
                 delay(300)
-                Log.d(tag, "✅ Scroll animation completed")
             }
         } catch (e: Exception) {
-            Log.e(tag, "❌ Scroll animation failed: ${e.message}")
         }
     }
 }

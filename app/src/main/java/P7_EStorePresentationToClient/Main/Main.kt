@@ -1,9 +1,9 @@
-package P2_EStorePresentationToClient.Main
+package P7_EStorePresentationToClient.Main
 
 import com.example.clientjetpack.Models.ProductDisplayController
-import P2_EStorePresentationToClient.Ui.ColorsCards
-import P2_EStorePresentationToClient.Ui.CompactQuantityPickerPC
-import P2_EStorePresentationToClient.Ui.ProductNameSection
+import P7_EStorePresentationToClient.Ui.ColorsCards
+import P7_EStorePresentationToClient.Ui.CompactQuantityPickerPC
+import P7_EStorePresentationToClient.Ui.ProductNameSection
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ColorsArticlesTabelle
 import androidx.compose.animation.AnimatedVisibility

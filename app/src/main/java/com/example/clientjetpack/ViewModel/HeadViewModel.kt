@@ -1,6 +1,6 @@
 package com.example.clientjetpack.ViewModel
 
-import P2_EStorePresentationToClient.Modules.ConnectionManager
+import P7_EStorePresentationToClient.Modules.ConnectionManager
 import a_RoomDB.AppSettingsSaverModel
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.CategoriesTabelle
@@ -35,6 +35,7 @@ enum class ConnectionMessage(val prefix: String) {
     SCROLL_TO_POSITION("ScrollToPosition-> "),
     PRODUCT_ID("idProdect"),
     DISMISS_PRODUCT_INFO("DismissWindowsInfosProduct") ,
+    ColorSelectionSectionScrollStat_SCROLL_TO("ColorSelectionSectionScrollStat") ,
     ;
 
     companion object {
@@ -71,6 +72,7 @@ open class HeadViewModel(
                 ConnectionMessage.SCROLL_TO_POSITION -> updateScrollPosition(content.toInt())
                 ConnectionMessage.PRODUCT_ID -> updateDisplayedProductId(content.toLong())
                 ConnectionMessage.DISMISS_PRODUCT_INFO -> dismissProductInfo()
+                ConnectionMessage.ColorSelectionSectionScrollStat_SCROLL_TO -> updateColorSelectionSectionScrollStat(content.toInt())
             }
         } ?: Log.d(tag, "📩 Unhandled message received: $payload")
     }
@@ -81,6 +83,11 @@ open class HeadViewModel(
         }
     }
 
+    private fun updateColorSelectionSectionScrollStat(productId: Int) {
+        updateDisplayController {
+            copy(colorSelectionSectionScrollStat = productId)
+        }
+    }
     private fun updateDisplayedProductId(productId: Long) {
         updateDisplayController {
             copy(windowsProductIdWhoInfoDisplayed = productId)

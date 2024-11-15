@@ -6,7 +6,7 @@ import P0_MainScreen.Ui.Objects.ConnexionCard
 import P0_MainScreen.Ui.Objects.NavigationBarWithFab
 import P0_MainScreen.Ui.Objects.NavigationItems
 import P0_MainScreen.Ui.Objects.Screen
-import P2_EStorePresentationToClient.Main.WindowsPresentationInfoProduct
+import P7_EStorePresentationToClient.Main.WindowsPresentationInfoProduct
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box

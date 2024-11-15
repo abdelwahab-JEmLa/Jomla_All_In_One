@@ -1,6 +1,6 @@
-package P2_EStorePresentationToClient.Ui
+package P7_EStorePresentationToClient.Ui
 
-import P2_EStorePresentationToClient.Modules.ImageDisplayerPC
+import P7_EStorePresentationToClient.Modules.ImageDisplayerPC
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ColorsArticlesTabelle
 import androidx.compose.foundation.background
@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -24,6 +25,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,8 +39,9 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.clientjetpack.Models.ProductDisplayController
 import com.example.clientjetpack.R
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
-// In 1_ColorSelectionSection.kt
 @Composable
 fun ColorsCards(
     displayController: ProductDisplayController,
@@ -58,6 +62,22 @@ fun ColorsCards(
     }
 
     val selectedColor = colors.find { it.idColore.toInt() == displayController.windowsSelectedColorId }
+    val scope = rememberCoroutineScope()
+    val listState = rememberLazyListState()
+
+    // Handle scroll synchronization
+    LaunchedEffect(displayController.colorSelectionSectionScrollStat) {
+        if (displayController.isHostPhone) return@LaunchedEffect
+
+        try {
+            scope.launch {
+                listState.animateScrollToItem(displayController.colorSelectionSectionScrollStat)
+                delay(300)
+            }
+        } catch (e: Exception) {
+            // Safely handle any scroll errors
+        }
+    }
 
     Card(
         modifier = modifier
@@ -71,11 +91,9 @@ fun ColorsCards(
                 .padding(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-
-
-            // Show color variants only if no color is selected
             if (displayController.windowsSelectedColorId == 0 && colors.size > 1) {
                 LazyRow(
+                    state = listState,
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     contentPadding = PaddingValues(horizontal = 8.dp)
@@ -97,7 +115,8 @@ fun ColorsCards(
                     }
                 }
             }
-            // Main large image - Show selected color or first color
+
+            // Main large image
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -114,7 +133,6 @@ fun ColorsCards(
         }
     }
 }
-
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 private fun ColorItem(
