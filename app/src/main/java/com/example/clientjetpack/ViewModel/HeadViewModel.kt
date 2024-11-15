@@ -36,6 +36,7 @@ enum class ConnectionMessage(val prefix: String) {
     PRODUCT_ID("idProdect"),
     DISMISS_PRODUCT_INFO("DismissWindowsInfosProduct") ,
     ColorSelectionSectionScrollStat_SCROLL_TO("ColorSelectionSectionScrollStat") ,
+    WindowsPickerDisplayedQuantity("windowsPickerDisplayedQuantity") ,
     ;
 
     companion object {
@@ -73,13 +74,15 @@ open class HeadViewModel(
                 ConnectionMessage.PRODUCT_ID -> updateDisplayedProductId(content.toLong())
                 ConnectionMessage.DISMISS_PRODUCT_INFO -> dismissProductInfo()
                 ConnectionMessage.ColorSelectionSectionScrollStat_SCROLL_TO -> updateColorSelectionSectionScrollStat(content.toInt())
+                ConnectionMessage.WindowsPickerDisplayedQuantity -> updateColorSelectionSectionScrollStat(content.toInt())
+
             }
         } ?: Log.d(tag, "📩 Unhandled message received: $payload")
     }
 
-    private fun updateScrollPosition(position: Int) {
+    private fun updateScrollPosition(value: Int) {
         updateDisplayController {
-            copy(clientDisplayerScrollPosition = position)
+            copy( windowsPickerDisplayedQuantity= value)
         }
     }
 
@@ -122,7 +125,7 @@ open class HeadViewModel(
         _uiState.update { it.copy(productDisplayController = update(it.productDisplayController)) }
     }
 
-    fun sendOrderToClient(orderName: String, data: Any? = null) {
+    fun sendOrderToClientDisplayer(orderName: String, data: Any? = null) {
         viewModelScope.launch {
             connectionManager.sendData("$orderName$data")
         }

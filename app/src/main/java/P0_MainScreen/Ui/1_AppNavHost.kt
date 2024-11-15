@@ -73,7 +73,7 @@ fun AppNavHost(
                                     pendingIndexColor
                                 )
                                 opnerSaleWindows=true
-                                appViewModels.headViewModel.sendOrderToClient(
+                                appViewModels.headViewModel.sendOrderToClientDisplayer(
                                     ConnectionMessage.PRODUCT_ID.prefix,
                                     relatedArticleBaseStats!!.idArticle.toLong()
                                 )
@@ -152,7 +152,7 @@ fun AppNavHost(
                 onDismiss = {
                     appViewModels.headViewModel.clearCurrentSale()
                     opnerSaleWindows=false
-                    appViewModels.headViewModel.sendOrderToClient(
+                    appViewModels.headViewModel.sendOrderToClientDisplayer(
                         ConnectionMessage.DISMISS_PRODUCT_INFO.prefix
                     )
                 },

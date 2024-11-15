@@ -58,6 +58,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.clientjetpack.ViewModel.ConnectionMessage
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -167,7 +168,10 @@ fun CompactQuantityPicker(
                     label = "dividerColor"
                 ).value,
                 startIndex = values.indexOfFirst { it == initialQuantity.toString() }.coerceAtLeast(0),
-                onItemStat = { viewModel.updateColorSelection(colorIndex, it.toInt()) }
+                onItemStat = {
+                    viewModel.updateColorSelection(colorIndex, it.toInt())
+                    viewModel.sendOrderToClientDisplayer(ConnectionMessage.ColorSelectionSectionScrollStat_SCROLL_TO.prefix, it.toInt())
+                }
             )
         }
     }

@@ -72,7 +72,7 @@ fun ConnexionCard(
                     onMessageChange = { messageText = it },
                     onSendClick = {
                         if (messageText.isNotEmpty()) {
-                            appViewModels.headViewModel.sendOrderToClient("Message", messageText)
+                            appViewModels.headViewModel.sendOrderToClientDisplayer("Message", messageText)
                             messageText = ""
                         }
                     },

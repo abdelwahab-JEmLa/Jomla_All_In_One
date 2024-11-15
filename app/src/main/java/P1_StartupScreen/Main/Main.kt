@@ -224,7 +224,7 @@ private fun HandleScrollBroadcast(
         snapshotFlow { gridState.firstVisibleItemIndex }
             .distinctUntilChanged()
             .collect { position ->
-              viewModel.sendOrderToClient("ScrollToPosition-> ",position)
+              viewModel.sendOrderToClientDisplayer("ScrollToPosition-> ",position)
             }
     }
 }

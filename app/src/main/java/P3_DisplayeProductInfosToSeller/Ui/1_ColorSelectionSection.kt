@@ -72,7 +72,7 @@ fun ColorSelectionSection(
                             .collect { position ->
                                 // Only send scroll position if there are actually items to scroll
                                 if (position >= 0 && position < colors.size - 1) {
-                                    viewModel.sendOrderToClient(ConnectionMessage.ColorSelectionSectionScrollStat_SCROLL_TO.prefix, position)
+                                    viewModel.sendOrderToClientDisplayer(ConnectionMessage.WindowsPickerDisplayedQuantity.prefix, position)
                                 }
                             }
                     }
