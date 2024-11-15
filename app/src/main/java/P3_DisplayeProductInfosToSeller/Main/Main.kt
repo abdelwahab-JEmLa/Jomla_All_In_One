@@ -1,16 +1,18 @@
 package P3_DisplayeProductInfosToSeller.Main
 
 import P2_EStorePresentationToClient.Ui.ProductNameSection
-import P3_DisplayeProductInfosToSeller.Ui.Objects.ActionsButtonRow
 import P3_DisplayeProductInfosToSeller.Ui.ColorSelectionSection
+import P3_DisplayeProductInfosToSeller.Ui.Objects.ActionsButtonRow
 import P3_DisplayeProductInfosToSeller.Ui.Objects.Details
 import P3_DisplayeProductInfosToSeller.Ui.Objects.DividerWithLabel
 import P3_DisplayeProductInfosToSeller.Ui.Objects.confirmExitDialog
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ColorsArticlesTabelle
 import a_RoomDB.SoldArticlesTabelle
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -23,6 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -61,7 +64,7 @@ fun P3DisplayeProductInfosToSeller(
 }
 
 @Composable
- fun MainUi(
+fun MainUi(
     modifier: Modifier = Modifier,
     articlesBaseStats: ArticlesBasesStatsTable?,
     colorsArticlesTabelleModel: List<ColorsArticlesTabelle>,
@@ -85,42 +88,49 @@ fun P3DisplayeProductInfosToSeller(
             shape = MaterialTheme.shapes.large,
             tonalElevation = 2.dp
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-            ) {
-                articlesBaseStats?.let { stats ->
-                    ProductNameSection(stats)
-                    DividerWithLabel()
-                    ColorSelectionSection(
-                        currentSale = currentSale,
-                        stats = stats,
-                        colorsArticlesTabelleModel = colorsArticlesTabelleModel,
-                        viewModel = viewModel,
-                        reloadTrigger = reloadTrigger
-                    )
-                    Details(isDetailsVisible, stats)
+            Box(modifier = Modifier.fillMaxSize()) {
+                // Scrollable content
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(bottom = 80.dp) // Add padding for the action buttons
+                ) {
+                    articlesBaseStats?.let { stats ->
+                        ProductNameSection(stats)
+                        DividerWithLabel()
+                        ColorSelectionSection(
+                            currentSale = currentSale,
+                            stats = stats,
+                            colorsArticlesTabelleModel = colorsArticlesTabelleModel,
+                            viewModel = viewModel,
+                            reloadTrigger = reloadTrigger
+                        )
+                        Details(isDetailsVisible, stats)
+                    }
                 }
 
-                ActionsButtonRow(  // TODO: fait que ca soit comme
-                    //a ne pase ce cache par le scroll tou s affiche on flotantn
-                    onConfirm = {
-                        viewModel.saveSaleTransactionToSoldAriclesList()
-                        onDismiss()
-                    },
-                    onCancel = {
-                        viewModel.deleteSoldArticle(currentSale.vid)
-                        onDismiss()
-                    }
-                )
+                // Floating action buttons
+                Surface(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .fillMaxWidth(),
+                    color = MaterialTheme.colorScheme.surface,
+                    tonalElevation = 3.dp
+                ) {
+                    ActionsButtonRow(
+                        modifier = Modifier.padding(8.dp),
+                        onConfirm = {
+                            viewModel.saveSaleTransactionToSoldAriclesList()
+                            onDismiss()
+                        },
+                        onCancel = {
+                            viewModel.deleteSoldArticle(currentSale.vid)
+                            onDismiss()
+                        }
+                    )
+                }
             }
         }
     }
 }
-
-
-
-
-
-
