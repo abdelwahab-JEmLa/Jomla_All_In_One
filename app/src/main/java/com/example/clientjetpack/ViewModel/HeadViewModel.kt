@@ -31,7 +31,6 @@ import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 
-// Define message types enum for better organization and type safety
 enum class ConnectionMessage(val prefix: String) {
     SCROLL_TO_POSITION("ScrollToPosition-> "),
     PRODUCT_ID("idProdect"),
@@ -47,7 +46,7 @@ enum class ConnectionMessage(val prefix: String) {
     }
 }
 
-class HeadViewModel(
+open class HeadViewModel(
     context: Context,
     private val database: AppDatabase,
 ) : ViewModel() {

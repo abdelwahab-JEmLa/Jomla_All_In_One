@@ -15,7 +15,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.clientjetpack.Models.UiState
 import com.example.clientjetpack.ViewModel.HeadViewModel
 
 @Composable
@@ -25,7 +24,7 @@ fun ColorsCardsP3(
     viewModel: HeadViewModel,
     modifier: Modifier = Modifier,
     relodeTigger: Int,
-    uiState: UiState,
+    colorsArticlesTabelleModel: List<ColorsArticlesTabelle>,
 ) {
     val colors = listOf(
         articlesBasesStatsTable.idcolor1,
@@ -34,7 +33,7 @@ fun ColorsCardsP3(
         articlesBasesStatsTable.idcolor4
     ).mapNotNull { colorId ->
         if (colorId != 0L) {
-            uiState.colorsArticlesTabelleModel.find { it.idColore == colorId }
+            colorsArticlesTabelleModel.find { it.idColore == colorId }
         } else null
     }
 

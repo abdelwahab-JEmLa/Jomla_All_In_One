@@ -6,6 +6,7 @@ import P3_DisplayeProductInfosToSeller.Ui.ColorsCardsP3
 import P3_DisplayeProductInfosToSeller.Ui.Details
 import P3_DisplayeProductInfosToSeller.Ui.confirmExitDialog
 import a_RoomDB.ArticlesBasesStatsTable
+import a_RoomDB.ColorsArticlesTabelle
 import a_RoomDB.SoldArticlesTabelle
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -44,42 +45,36 @@ fun P3DisplayeProductInfosToSeller(
     reloadTrigger: Int,
     modifier: Modifier = Modifier,
 ) {
-    val currentSale = viewModel.currentSaleInWindows.collectAsState().value
+    val currentSale by viewModel.currentSaleInWindows.collectAsState()
     val articlesBaseStats = currentSale?.let { sale ->
-        uiState.articlesBasesStatTables.find {
-            it.idArticle.toLong() == sale.idArticle
-        }
+        uiState.articlesBasesStatTables.find { it.idArticle.toLong() == sale.idArticle }
     }
 
     var isDetailsVisible by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) { isDetailsVisible = true }
 
-    LaunchedEffect(Unit) {
-        isDetailsVisible = true
-    }
-
-
-    if (currentSale != null) {
+    currentSale?.let {
         MainUi(
-            modifier,
-            articlesBaseStats,
-            currentSale,
-            viewModel,
-            reloadTrigger,
-            uiState,
-            isDetailsVisible,
-            onDismiss
+            modifier = modifier,
+            articlesBaseStats = articlesBaseStats,
+            colorsArticlesTabelleModel = uiState.colorsArticlesTabelleModel,
+            currentSale = it,
+            viewModel = viewModel,
+            reloadTrigger = reloadTrigger,
+            isDetailsVisible = isDetailsVisible,
+            onDismiss = onDismiss
         )
     }
 }
 
 @Composable
-private fun MainUi(
-    modifier: Modifier,
+ fun MainUi(
+    modifier: Modifier = Modifier,
     articlesBaseStats: ArticlesBasesStatsTable?,
+    colorsArticlesTabelleModel: List<ColorsArticlesTabelle>,
     currentSale: SoldArticlesTabelle,
     viewModel: HeadViewModel,
     reloadTrigger: Int,
-    uiState: UiState,
     isDetailsVisible: Boolean,
     onDismiss: () -> Unit
 ) {
@@ -88,94 +83,30 @@ private fun MainUi(
 
     Dialog(
         onDismissRequest = { showConfirmDialog = true },
-        properties = DialogProperties(
-            usePlatformDefaultWidth = false,
-            decorFitsSystemWindows = true
-        )
+        properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = true)
     ) {
         Surface(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(4.dp),
+            modifier = modifier.fillMaxSize().padding(4.dp),
             shape = MaterialTheme.shapes.large,
             tonalElevation = 2.dp
         ) {
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
+                modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())
             ) {
                 articlesBaseStats?.let { stats ->
                     ProductNameSection(stats)
-
-                    // Visual Divider with Label
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 3.dp, vertical = 3.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        HorizontalDivider(
-                            modifier = Modifier.weight(1f),
-                            color = MaterialTheme.colorScheme.outlineVariant
-                        )
-                        Text(
-                            text = "اختر اللون",
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(horizontal = 4.dp)
-                        )
-                        HorizontalDivider(
-                            modifier = Modifier.weight(1f),
-                            color = MaterialTheme.colorScheme.outlineVariant
-                        )
-                    }
-
-                    // Colors Selection with Animation
-                    AnimatedVisibility(
-                        visible = true,
-                        enter = fadeIn() + expandVertically()
-                    ) {
-                        ColorsCardsP3(
-                            currentSale = currentSale,
-                            articlesBasesStatsTable = stats,
-                            viewModel = viewModel,
-                            relodeTigger = reloadTrigger,
-                            uiState = uiState,
-                            modifier = Modifier.padding(horizontal = 4.dp),
-                        )
-                    }
-
-                    // Details Card with Animation
+                    DividerWithLabel()
+                    ColorSelectionSection(
+                        currentSale = currentSale,
+                        stats = stats,
+                        colorsArticlesTabelleModel = colorsArticlesTabelleModel,
+                        viewModel = viewModel,
+                        reloadTrigger = reloadTrigger
+                    )
                     Details(isDetailsVisible, stats)
                 }
 
                 ActionsButtonRow(
-                    // TODO:  fait que ca soit s affiche toutjoure au base du dialoge
-                    //comme button bar et fait anime infenie du button طلب
-                    //comme    LaunchedEffect(Unit) {
-                    //        while(true) {
-                    //            if(isRed) {
-                    //                delay(700)
-                    //                isRed = false
-                    //            }  else {
-                    //                delay(6000)
-                    //                isRed = true
-                    //            }
-                    //        }
-                    //    }
-                    //
-                    //    Card(
-                    //        modifier = Modifier
-                    //            .fillMaxSize()
-                    //            .wrapContentHeight(),
-                    //        elevation = CardDefaults.cardElevation(4.dp),
-                    //        colors = CardDefaults.cardColors(
-                    //            containerColor = animateColorAsState(
-                    //                if (isRed) Color.Red else Color.White,
-                    //                label = "backgroundColor"
-                    //            ).value
-                    //        )
                     onConfirm = {
                         viewModel.saveSaleTransactionToSoldAriclesList()
                         onDismiss()
@@ -183,20 +114,57 @@ private fun MainUi(
                     onCancel = {
                         viewModel.deleteSoldArticle(currentSale.vid)
                         onDismiss()
-                    },
+                    }
                 )
             }
         }
     }
 }
 
+@Composable
+private fun DividerWithLabel() {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 3.dp, vertical = 3.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        HorizontalDivider(
+            modifier = Modifier.weight(1f),
+            color = MaterialTheme.colorScheme.outlineVariant
+        )
+        Text(
+            text = "اختر اللون",
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(horizontal = 4.dp)
+        )
+        HorizontalDivider(
+            modifier = Modifier.weight(1f),
+            color = MaterialTheme.colorScheme.outlineVariant
+        )
+    }
+}
 
-
-
-
-
-
-
-
+@Composable
+private fun ColorSelectionSection(
+    currentSale: SoldArticlesTabelle,
+    stats: ArticlesBasesStatsTable,
+    colorsArticlesTabelleModel: List<ColorsArticlesTabelle>,
+    viewModel: HeadViewModel,
+    reloadTrigger: Int
+) {
+    AnimatedVisibility(
+        visible = true,
+        enter = fadeIn() + expandVertically()
+    ) {
+        ColorsCardsP3(
+            currentSale = currentSale,
+            articlesBasesStatsTable = stats,
+            colorsArticlesTabelleModel = colorsArticlesTabelleModel,
+            viewModel = viewModel,
+            relodeTigger = reloadTrigger,
+            modifier = Modifier.padding(horizontal = 4.dp)
+        )
+    }
+}
 
 
