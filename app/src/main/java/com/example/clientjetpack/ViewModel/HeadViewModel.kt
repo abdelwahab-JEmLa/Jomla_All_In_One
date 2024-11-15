@@ -35,7 +35,7 @@ enum class ConnectionMessage(val prefix: String) {
     SCROLL_TO_POSITION("ScrollToPosition-> "),
     PRODUCT_ID("idProdect"),
     DISMISS_PRODUCT_INFO("DismissWindowsInfosProduct") ,
-    ColorSelectionSectionScrollStat_SCROLL_TO("ColorSelectionSectionScrollStat") ,
+    ColorSelectionSectionScrollStatSCROLLTO("ColorSelectionSectionScrollStat") ,
     WindowsPickerDisplayedQuantity("windowsPickerDisplayedQuantity") ,
     ;
 
@@ -73,7 +73,7 @@ open class HeadViewModel(
                 ConnectionMessage.SCROLL_TO_POSITION -> updateScrollPosition(content.toInt())
                 ConnectionMessage.PRODUCT_ID -> updateDisplayedProductId(content.toLong())
                 ConnectionMessage.DISMISS_PRODUCT_INFO -> dismissProductInfo()
-                ConnectionMessage.ColorSelectionSectionScrollStat_SCROLL_TO -> updateColorSelectionSectionScrollStat(content.toInt())
+                ConnectionMessage.ColorSelectionSectionScrollStatSCROLLTO -> updateColorSelectionSectionScrollStat(content.toInt())
                 ConnectionMessage.WindowsPickerDisplayedQuantity -> updateColorSelectionSectionScrollStat(content.toInt())
 
             }

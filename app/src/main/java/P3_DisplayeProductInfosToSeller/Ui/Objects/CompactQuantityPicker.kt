@@ -170,7 +170,7 @@ fun CompactQuantityPicker(
                 startIndex = values.indexOfFirst { it == initialQuantity.toString() }.coerceAtLeast(0),
                 onItemStat = {
                     viewModel.updateColorSelection(colorIndex, it.toInt())
-                    viewModel.sendOrderToClientDisplayer(ConnectionMessage.ColorSelectionSectionScrollStat_SCROLL_TO.prefix, it.toInt())
+                    viewModel.sendOrderToClientDisplayer(ConnectionMessage.ColorSelectionSectionScrollStatSCROLLTO.prefix, it.toInt())
                 }
             )
         }
