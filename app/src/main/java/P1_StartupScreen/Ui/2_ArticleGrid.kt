@@ -326,7 +326,8 @@ private fun SmallDisplayerDualColor(
             contentScale = ContentScale.Crop, imageSize = imageSize
         )
 
-        ArticleDetails(
+        ArticleDetails1(
+            uiState=uiState,
             article = article,
             modifier = Modifier.padding(horizontal = 3.dp)
         )
@@ -375,9 +376,10 @@ private fun SmallDisplayerMultiColor(
         }
 
         // Details
-        ArticleDetails(
+        ArticleDetails1(
             article = article,
-            modifier = Modifier.padding(horizontal = 3.dp)
+            modifier = Modifier.padding(horizontal = 3.dp),
+            uiState = uiState
         )
     }
 }
@@ -392,7 +394,7 @@ private fun DemiDisplayerMultiColor(
     modifier: Modifier = Modifier, imageSize: DpSize
 ) {
     Column(modifier = modifier.padding(3.dp)) {
-        ArticleDetails(article)
+        ArticleDetails1(article, uiState = uiState)
 
         // Main image display
         ArticleImageWithOverlay(
@@ -444,7 +446,7 @@ private fun DemiDisplayerDualColor(
     modifier: Modifier = Modifier, imageSize: DpSize
 ) {
     Column(modifier = modifier.padding(3.dp)) {
-        ArticleDetails(article)
+        ArticleDetails1(article, uiState = uiState)
         ArticleImageWithOverlay(
             article = article,
             viewModel = viewModel,
@@ -490,7 +492,7 @@ private fun SmallSingleColorDisplayer(
                 uiState = uiState, imageSize = imageSize
             )
         }
-        ArticleDetails(article)
+        ArticleDetails1(article, uiState = uiState)
     }
 }
 @Composable
@@ -516,7 +518,7 @@ private fun DemiSingleColorDisplayer(
                 uiState = uiState, imageSize = imageSize
             )
         }
-        ArticleDetails(article)
+        ArticleDetails1(article, uiState = uiState)
     }
 }
 
@@ -973,9 +975,10 @@ private fun RequestBuilder<Drawable>.applyImageOptions(
 
 
 @Composable
-private fun ArticleDetails(
+private fun ArticleDetails1(
     article: ArticlesBasesStatsTable,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    uiState: UiState
 ) {
     Column(
         modifier = modifier,
@@ -985,9 +988,5 @@ private fun ArticleDetails(
             text = article.nomArticleFinale,
             style = MaterialTheme.typography.titleMedium
         )
-        Text(
-            text = "Prix: ${article.monPrixVent}",
-            style = MaterialTheme.typography.bodyMedium
-        )
-    }
+         }
 }

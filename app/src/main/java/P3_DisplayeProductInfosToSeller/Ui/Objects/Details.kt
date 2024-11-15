@@ -1,9 +1,13 @@
 package P3_DisplayeProductInfosToSeller.Ui.Objects
+
 import a_RoomDB.ArticlesBasesStatsTable
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInVertically
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -12,7 +16,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Store
+import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
@@ -20,26 +29,33 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @SuppressLint("DefaultLocale")
 @Composable
- fun ColumnScope.Details(
+fun ColumnScope.Details(
     isDetailsVisible: Boolean,
     article: ArticlesBasesStatsTable
 ) {
+    var isExpanded by remember { mutableStateOf(true) }
+
     AnimatedVisibility(
         visible = isDetailsVisible,
         enter = fadeIn() + expandVertically(),
         modifier = Modifier.padding(top = 4.dp)
     ) {
         ElevatedCard(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { isExpanded = !isExpanded },
             elevation = CardDefaults.elevatedCardElevation(defaultElevation = 3.dp)
         ) {
             Column(
@@ -47,146 +63,167 @@ import androidx.compose.ui.unit.dp
                     .fillMaxWidth()
                     .padding(4.dp)
             ) {
-                // Price Section
-                InfoRow(
-                    label = "السعر للوحدة",
-                    value = "${article.monPrixVent} ",
-                    unite = "دج"
-                )
-
-                InfoRow(
-                    label = "السعر بالجملة",
-                    value = "${
-                        String.format(
-                            "%.2f",
-                            article.monPrixVent / article.nmbrUnite.toFloat()
-                        )
-                    } ",
-                    unite = "دج"
-                )
-
-                HorizontalDivider(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp)
-                )
-
-                // Units Information
-                InfoRow(
-                    label = "عدد الحبات",
-                    value = "${article.nmbrUnite} ",
-                    unite = "وحدة"
-                )
-
-                // Carton Information
-                InfoRow(
-                    label = "في الكرتون",
-                    value = "${article.nmbrCaron} ",
-                    unite = "علبة"
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun InfoRow(
-    label: String,
-    value: String,
-    unite: String,
-
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        horizontalArrangement = Arrangement.End,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = unite,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(end = 8.dp)
-        )
-        Text(
-            text = value,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(end = 8.dp)
-        )
-
-        Icon(
-            Icons.Default.KeyboardArrowLeft,
-            contentDescription = null,
-            modifier = Modifier.size(20.dp),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun ProductDetailsSectionPreview() {
-    MaterialTheme {
-        ProductNameSection(
-            ArticlesBasesStatsTable(
-                nomArticleFinale = "Product Name",
-                nomArab = "اسم المنتج",
-                nmbrUnite = 12,
-                nmbrCaron = 24,
-                monPrixVent = 1200.0
-            )
-        )
-    }
-}
-@Composable
-private fun ProductNameSection(article: ArticlesBasesStatsTable) {
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(4.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        // Product Name Card
-        ElevatedCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 4.dp),
-            elevation = CardDefaults.elevatedCardElevation(defaultElevation = 6.dp)
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(4.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = article.nomArticleFinale,
-                    style = MaterialTheme.typography.headlineMedium.copy(
-                        fontWeight = FontWeight.Bold
-                    ),
-                    textAlign = TextAlign.Center
-                )
-
-                if (article.nomArab.isNotEmpty()) {
+                // Header section that's always visible
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Text(
-                        text = article.nomArab,
-                        style = MaterialTheme.typography.bodyLarge,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(top = 4.dp)
+                        text = "معلومات السعر",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
                     )
+                    Icon(
+                        imageVector = if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                        contentDescription = if (isExpanded) "Collapse" else "Expand"
+                    )
+                }
+
+                AnimatedVisibility(
+                    visible = isExpanded,
+                    enter = slideInVertically() + expandVertically(),
+                    exit = shrinkVertically()
+                ) {
+                    Column {
+                        // Wholesale Section
+                        PriceSection(
+                            title = "سعر البيع",
+                            icon = Icons.Default.ShoppingCart,
+                            items = listOf(
+                                PriceItem(
+                                    label = "السعر بالجملة",
+                                    value = "${article.monPrixVent}",
+                                    unite = "دج"
+                                ),
+                                PriceItem(
+                                    label = "السعر للوحدة",
+                                    value = String.format("%.2f", article.monPrixVent / article.nmbrUnite.toFloat()),
+                                    unite = "دج"
+                                )
+                            )
+                        )
+
+                        HorizontalDivider(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp)
+                        )
+
+                        // Purchase Section
+                        PriceSection(
+                            title = "سعر الشراء",
+                            icon = Icons.Default.Store,
+                            items = listOf(
+                                PriceItem(
+                                    label = "سعر الشراء للوحدة",
+                                    value = String.format("%.2f", article.monPrixAchat / article.nmbrUnite.toFloat()),
+                                    unite = "دج"
+                                ),
+                                PriceItem(
+                                    label = "سعر الشراء بالجملة",
+                                    value = String.format("%.2f", article.monPrixAchat),
+                                    unite = "دج"
+                                )
+                            )
+                        )
+
+                        HorizontalDivider(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp)
+                        )
+
+                        // Profit Section
+                        PriceSection(
+                            title = "الأرباح",
+                            icon = Icons.Default.TrendingUp,
+                            items = listOf(
+                                PriceItem(
+                                    label = "الربح بالجملة",
+                                    value = String.format("%.2f", article.monPrixVent - article.monPrixAchat),
+                                    unite = "دج"
+                                ),
+                                PriceItem(
+                                    label = "الربح للوحدة",
+                                    value = String.format(
+                                        "%.2f",
+                                        (article.monPrixVent - article.monPrixAchat) / article.nmbrUnite.toFloat()
+                                    ),
+                                    unite = "دج"
+                                )
+                            )
+                        )
+                    }
                 }
             }
         }
     }
 }
 
+private data class PriceItem(
+    val label: String,
+    val value: String,
+    val unite: String
+)
+
+@Composable
+private fun PriceSection(
+    title: String,
+    icon: ImageVector,
+    items: List<PriceItem>,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier.padding(vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(24.dp)
+            )
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(start = 8.dp)
+            )
+        }
+
+        items.forEach { item ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = item.unite,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.secondary
+                )
+                Text(
+                    text = item.value,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.secondary,
+                    modifier = Modifier.padding(horizontal = 8.dp)
+                )
+                Icon(
+                    Icons.Default.KeyboardArrowLeft,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = item.label,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+    }
+}
