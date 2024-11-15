@@ -2,6 +2,7 @@ package com.example.clientjetpack.ViewModel
 
 import P7_EStorePresentationToClient.Modules.ConnectionManager
 import a_RoomDB.AppSettingsSaverModel
+import a_RoomDB.ArticlesAcheteModele
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.CategoriesTabelle
 import a_RoomDB.ClientsModel
@@ -18,6 +19,9 @@ import com.example.clientjetpack.Models.UiState
 import com.example.clientjetpack.Modules.AppDatabase
 import com.google.firebase.database.BuildConfig
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -53,6 +57,8 @@ open class HeadViewModel(
     private val database: AppDatabase,
 ) : ViewModel() {
     private val tag = "HeadViewModel"
+    private val firestore = Firebase.firestore
+
     private val _uiState = MutableStateFlow(UiState(
         productDisplayController = ProductDisplayController()
     ))
@@ -65,7 +71,50 @@ open class HeadViewModel(
 
     init {
         observeConnectionState()
+        setupMaxPriceObserver()
     }
+
+    private fun setupMaxPriceObserver() {
+        viewModelScope.launch {
+            // Setup real-time listener for price changes
+            firestore.collection("HistoriqueDesFactures")
+                .addSnapshotListener { snapshot, e ->
+                    if (e != null) {
+                        Log.e(tag, "Listen failed.", e)
+                        return@addSnapshotListener
+                    }
+
+                    if (snapshot != null) {
+                        processHistoricalData(snapshot.documents)
+                    }
+                }
+        }
+    }
+
+    private fun processHistoricalData(documents: List<DocumentSnapshot>) {
+        try {
+            // Group sales by product ID and find max price for each
+            val maxPrices = documents.mapNotNull { doc ->
+                doc.toObject(ArticlesAcheteModele::class.java)?.let { article ->
+                    article.idArticle to article.monPrixVentFireStoreBM
+                }
+            }.groupBy({ it.first }, { it.second })
+                .mapValues { (_, prices) -> prices.maxOrNull() ?: 0.0 }
+
+     //       _uiState.update { it.copy(maxPrices = maxPrices) }
+            // TODO: Cannot find a parameter with this name: maxPrices 
+
+        } catch (e: Exception) {
+            Log.e(tag, "Error processing historical data", e)
+        }
+    }
+
+    // Extension function to get max price for a product
+    fun UiState.getMaxPrice(productId: Long): Double? {
+        // TODO: Function "getMaxPrice" is never used  
+        return maxPriceMap[productId]
+    }
+
 
     private fun handlePayload(payload: String) {
         ConnectionMessage.fromPayload(payload)?.let { (messageType, content) ->

@@ -17,6 +17,8 @@ data class UiState(
     val clientsModel: List<ClientsModel> = emptyList(),
     val suppliers: List<SuppliersTabelle> = emptyList(),
     val productDisplayController: ProductDisplayController,
+    val maxPriceMap: Map<Long, Double> = emptyMap() ,
+
     val isLoading: Boolean = false,
     val loadingProgress: Float = 0f,
     val error: String? = null,

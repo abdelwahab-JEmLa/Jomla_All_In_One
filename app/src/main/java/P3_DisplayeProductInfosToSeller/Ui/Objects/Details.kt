@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
@@ -23,7 +24,6 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PriceCheck
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Store
-import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
@@ -40,12 +40,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.clientjetpack.Models.UiState
 
 @SuppressLint("DefaultLocale")
 @Composable
 fun ColumnScope.Details(
     isDetailsVisible: Boolean,
-    article: ArticlesBasesStatsTable
+    article: ArticlesBasesStatsTable,
+    uiState: UiState,
+    viewModel: ViewModel
 ) {
     var isExpanded by remember { mutableStateOf(true) }
 
@@ -54,6 +59,7 @@ fun ColumnScope.Details(
     val clientPrixVentGros = clientPrixVentUnite * article.nmbrUnite
     val clientBenefice = clientPrixVentGros - article.monPrixVent
     val clientBeneficeUnite = clientBenefice / article.nmbrUnite
+    val maxPrice = viewModel.article.getMaxPrice(article.id)
 
     AnimatedVisibility(
         visible = isDetailsVisible,
@@ -71,17 +77,43 @@ fun ColumnScope.Details(
                     .fillMaxWidth()
                     .padding(4.dp)
             ) {
-                // Header section that's always visible
+                // Header with price info title
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = "معلومات السعر",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(
+                            text = "معلومات السعر",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
+                        // Display max sale price if available
+                        // TODO : fati que ici de change l affiche a un tablaeu
+                        // TODO : de droit a gauche la premier column ce nom
+                        // TODO : "Prix Base & ces calcule " il contien au bas
+                        //ces calcule normale
+                        // TODO : la 2 colone "Max Ancien prix & ces calcule"
+                        // TODO : ca contien le max prix de l article et au base cchaque et calcule comme
+                        // TODO :                                     PriceItem("س.وحدة", "%.2f".format(article.monPrixVent / article.nmbrUnite), "دج")
+                        // TODO : ici max prix / nmbr ute
+
+                        // TODO :et l autre comme  clientBeneficeUnite= clientPrixVentGros -  max prix
+                        // TODO : ..ect
+                         uiState.maxSalePrice?.let { maxPrice -
+                                 // TODO : Unresolved reference: maxSalePrice
+                            Text(
+                                text = "أكبر سعر:  maxPrice$ دج",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.secondary
+                            )
+                        }
+                    }
                     Icon(
                         imageVector = if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
                         contentDescription = if (isExpanded) "Collapse" else "Expand"
@@ -94,128 +126,71 @@ fun ColumnScope.Details(
                     exit = shrinkVertically()
                 ) {
                     Column {
-                        // My Wholesale Section
-                        PriceSection(
-                            title = "سعر البيع الخاص بي",
-                            icon = Icons.Default.Store,
-                            items = listOf(
-                                PriceItem(
-                                    label = "السعر بالجملة",
-                                    value = "${article.monPrixVent}",
-                                    unite = "دج"
-                                ),
-                                PriceItem(
-                                    label = "السعر للوحدة",
-                                    value = String.format("%.2f", article.monPrixVent / article.nmbrUnite.toFloat()),
-                                    unite = "دج"
+                        val sections = listOf(
+                            PriceSection(
+                                title = "س.البيع",
+                                icon = Icons.Default.Store,
+                                items = listOf(
+                                    PriceItem("س.جملة", "${article.monPrixVent}", "دج"),
+                                    PriceItem("س.وحدة", "%.2f".format(article.monPrixVent / article.nmbrUnite), "دج")
+                                )
+                            ),
+                            PriceSection(
+                                title = "س.شراء",
+                                icon = Icons.Default.ShoppingCart,
+                                items = listOf(
+                                    PriceItem("س.وحدة", "%.2f".format(article.monPrixAchat / article.nmbrUnite), "دج"),
+                                    PriceItem("س.جملة", "%.2f".format(article.monPrixAchat), "دج")
+                                )
+                            ),
+                            PriceSection(
+                                title = "ربحي",
+                                icon = Icons.AutoMirrored.Filled.TrendingUp,
+                                items = listOf(
+                                    PriceItem("ر.جملة", "%.2f".format(article.monPrixVent - article.monPrixAchat), "دج"),
+                                    PriceItem("ر.وحدة", "%.2f".format((article.monPrixVent - article.monPrixAchat) / article.nmbrUnite), "دج")
+                                )
+                            ),
+                            PriceSection(
+                                title = "س.عميل",
+                                icon = Icons.Default.Person,
+                                items = listOf(
+                                    PriceItem("س.وحدة", "%.2f".format(clientPrixVentUnite), "دج"),
+                                    PriceItem("س.جملة", "%.2f".format(clientPrixVentGros), "دج")
+                                )
+                            ),
+                            PriceSection(
+                                title = "ر.عميل",
+                                icon = Icons.Default.PriceCheck,
+                                items = listOf(
+                                    PriceItem("ر.جملة", "%.2f".format(clientBenefice), "دج"),
+                                    PriceItem("ر.وحدة", "%.2f".format(clientBeneficeUnite), "دج")
                                 )
                             )
                         )
 
-                        HorizontalDivider(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp)
-                        )
-
-                        // Purchase Section
-                        PriceSection(
-                            title = "سعر الشراء",
-                            icon = Icons.Default.ShoppingCart,
-                            items = listOf(
-                                PriceItem(
-                                    label = "سعر الشراء للوحدة",
-                                    value = String.format("%.2f", article.monPrixAchat / article.nmbrUnite.toFloat()),
-                                    unite = "دج"
-                                ),
-                                PriceItem(
-                                    label = "سعر الشراء بالجملة",
-                                    value = String.format("%.2f", article.monPrixAchat),
-                                    unite = "دج"
+                        sections.forEachIndexed { index, section ->
+                            if (index > 0) {
+                                HorizontalDivider(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 8.dp)
                                 )
-                            )
-                        )
-
-                        HorizontalDivider(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp)
-                        )
-
-                        // My Profit Section
-                        PriceSection(
-                            title = "أرباحي",
-                            icon = Icons.Default.TrendingUp,
-                            items = listOf(
-                                PriceItem(
-                                    label = "الربح بالجملة",
-                                    value = String.format("%.2f", article.monPrixVent - article.monPrixAchat),
-                                    unite = "دج"
-                                ),
-                                PriceItem(
-                                    label = "الربح للوحدة",
-                                    value = String.format(
-                                        "%.2f",
-                                        (article.monPrixVent - article.monPrixAchat) / article.nmbrUnite.toFloat()
-                                    ),
-                                    unite = "دج"
-                                )
-                            )
-                        )
-
-                        HorizontalDivider(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp)
-                        )
-
-                        // Client Price Section
-                        PriceSection(
-                            title = "سعر البيع للعميل",
-                            icon = Icons.Default.Person,
-                            items = listOf(
-                                PriceItem(
-                                    label = "سعر البيع للوحدة",
-                                    value = String.format("%.2f", clientPrixVentUnite),
-                                    unite = "دج"
-                                ),
-                                PriceItem(
-                                    label = "سعر البيع بالجملة",
-                                    value = String.format("%.2f", clientPrixVentGros),
-                                    unite = "دج"
-                                )
-                            )
-                        )
-
-                        HorizontalDivider(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp)
-                        )
-
-                        // Client Profit Section
-                        PriceSection(
-                            title = "أرباح العميل",
-                            icon = Icons.Default.PriceCheck,
-                            items = listOf(
-                                PriceItem(
-                                    label = "ربح العميل بالجملة",
-                                    value = String.format("%.2f", clientBenefice),
-                                    unite = "دج"
-                                ),
-                                PriceItem(
-                                    label = "ربح العميل للوحدة",
-                                    value = String.format("%.2f", clientBeneficeUnite),
-                                    unite = "دج"
-                                )
-                            )
-                        )
+                            }
+                            PriceSectionContent(section)
+                        }
                     }
                 }
             }
         }
     }
 }
+
+private data class PriceSection(
+    val title: String,
+    val icon: ImageVector,
+    val items: List<PriceItem>
+)
 
 private data class PriceItem(
     val label: String,
@@ -224,10 +199,8 @@ private data class PriceItem(
 )
 
 @Composable
-private fun PriceSection(
-    title: String,
-    icon: ImageVector,
-    items: List<PriceItem>,
+private fun PriceSectionContent(
+    section: PriceSection,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
@@ -236,20 +209,20 @@ private fun PriceSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                imageVector = icon,
+                imageVector = section.icon,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(24.dp)
             )
             Text(
-                text = title,
+                text = section.title,
                 style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(start = 8.dp)
             )
         }
 
-        items.forEach { item ->
+        section.items.forEach { item ->
             Row(
                 modifier = Modifier
                     .fillMaxWidth()

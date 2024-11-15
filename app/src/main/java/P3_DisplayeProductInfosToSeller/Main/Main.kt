@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.lifecycle.ViewModel
 import com.example.clientjetpack.Models.UiState
 import com.example.clientjetpack.ViewModel.HeadViewModel
 
@@ -58,7 +59,7 @@ fun P3DisplayeProductInfosToSeller(
             viewModel = viewModel,
             reloadTrigger = reloadTrigger,
             isDetailsVisible = isDetailsVisible,
-            onDismiss = onDismiss
+            onDismiss = onDismiss, uiState = _, viewModel = _
         )
     }
 }
@@ -72,7 +73,7 @@ fun MainUi(
     viewModel: HeadViewModel,
     reloadTrigger: Int,
     isDetailsVisible: Boolean,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit, uiState: UiState, viewModel: ViewModel
 ) {
     var showConfirmDialog by remember { mutableStateOf(false) }
     showConfirmDialog = confirmExitDialog(showConfirmDialog, viewModel, onDismiss)
@@ -106,7 +107,7 @@ fun MainUi(
                             viewModel = viewModel,
                             reloadTrigger = reloadTrigger
                         )
-                        Details(isDetailsVisible, stats)
+                        Details(isDetailsVisible, stats, uiState, viewModel)
                     }
                 }
 

@@ -65,7 +65,7 @@ fun MainUiPreview() {
             viewModel = viewModel,
             reloadTrigger = 0,
             isDetailsVisible = true,
-            onDismiss = {}
+            onDismiss = {}, uiState = _, viewModel = _
         )
     }
 }
