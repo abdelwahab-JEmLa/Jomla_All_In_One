@@ -79,12 +79,16 @@ fun P3DisplayeProductInfosToSeller(
         properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = true)
     ) {
         Surface(
-            modifier = modifier.fillMaxSize().padding(4.dp),
+            modifier = modifier
+                .fillMaxSize()
+                .padding(4.dp),
             shape = MaterialTheme.shapes.large,
             tonalElevation = 2.dp
         ) {
             Column(
-                modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
             ) {
                 articlesBaseStats?.let { stats ->
                     ProductNameSection(stats)
@@ -99,7 +103,8 @@ fun P3DisplayeProductInfosToSeller(
                     Details(isDetailsVisible, stats)
                 }
 
-                ActionsButtonRow(
+                ActionsButtonRow(  // TODO: fait que ca soit comme
+                    //a ne pase ce cache par le scroll tou s affiche on flotantn
                     onConfirm = {
                         viewModel.saveSaleTransactionToSoldAriclesList()
                         onDismiss()

@@ -1,8 +1,8 @@
 package P1_StartupScreen.Ui
 
-import com.example.clientjetpack.Models.UiState
-import P1_StartupScreen.ArticlePagingSource
-import com.example.clientjetpack.ViewModel.HeadViewModel
+import P1_StartupScreen.Main.ArticlePagingSource
+import P1_StartupScreen.Ui.Objects.CategoryHeader
+import P1_StartupScreen.Ui.Objects.ScrolleAdBanner
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.CategoriesTabelle
 import a_RoomDB.ColorsArticlesTabelle
@@ -78,7 +78,9 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.signature.ObjectKey
+import com.example.clientjetpack.Models.UiState
 import com.example.clientjetpack.R
+import com.example.clientjetpack.ViewModel.HeadViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -540,7 +542,7 @@ private fun ColorIndicator(
                     model = R.drawable.logo,
                     contentDescription = "Logo",
                     modifier = Modifier.size(
-                       if (demiSizeImage) 70.dp else 38.dp
+                        if (demiSizeImage) 70.dp else 38.dp
                     )
                 )
             } else {
@@ -930,9 +932,6 @@ fun AutoResizedText(
         }
     )
 }
-
-
-
 
 
 private fun RequestBuilder<Drawable>.applyImageOptions(

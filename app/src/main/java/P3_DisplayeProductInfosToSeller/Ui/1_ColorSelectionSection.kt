@@ -65,7 +65,8 @@ fun ColorsCardsP3(
     Box(
         modifier = modifier
             .fillMaxWidth()
-    ) {
+    ) {       // TODO: change le a un lazyGrid qui afffiche les couleur dispo
+
         when (colors.size) {
             1 -> SingleColorLayout(
                 currentSale=currentSale,

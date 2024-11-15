@@ -1,7 +1,7 @@
 package P0_MainScreen.Ui
 import P0_MainScreen.Ui.Objects.LoadingOverlay
 import P0_MainScreen.Ui.Objects.Screen
-import P1_StartupScreen.FragmentStartupScreen
+import P1_StartupScreen.Main.FragmentStartupScreen
 import P3_DisplayeProductInfosToSeller.Main.P3DisplayeProductInfosToSeller
 import P4_SoldCartScreen.SoldCartScreen
 import P5_DialogeClientsEditer.ClientSelectionDialog
@@ -84,7 +84,7 @@ fun AppNavHost(
                         isFabVisible=isFabVisible, onClickDonne = onClickDonne,
                         onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi,
 
-                    )
+                        )
 
                     if (uiState.isLoading) {
                         LoadingOverlay(

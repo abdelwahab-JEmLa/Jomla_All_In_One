@@ -1,4 +1,4 @@
-package P0_MainScreen
+package P0_MainScreen.Main
 
 import P0_MainScreen.Modules.HandleFullscreenMode
 import P0_MainScreen.Ui.AppNavHost

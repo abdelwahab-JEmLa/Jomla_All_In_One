@@ -1,7 +1,5 @@
-package P1_StartupScreen.Ui
+package P1_StartupScreen.Ui.Objects
 
-import com.example.clientjetpack.Models.UiState
-import com.example.clientjetpack.ViewModel.HeadViewModel
 import a_RoomDB.ArticlesBasesStatsTable
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -29,6 +27,8 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import com.example.clientjetpack.Models.UiState
+import com.example.clientjetpack.ViewModel.HeadViewModel
 import kotlinx.coroutines.launch
 
 @Composable

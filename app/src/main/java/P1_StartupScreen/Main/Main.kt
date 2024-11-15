@@ -1,9 +1,8 @@
-package P1_StartupScreen
+package P1_StartupScreen.Main
 
 import P0_MainScreen.Ui.Objects.LoadingOverlay
-import P1_StartupScreen.Main.FloatingActionButtonGroup
 import P1_StartupScreen.Ui.ArticleGridWithScrollbar
-import P1_StartupScreen.Ui.SearchFilterPB
+import P1_StartupScreen.Ui.Objects.SearchFilterPB
 import a_RoomDB.ArticlesBasesStatsTable
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
