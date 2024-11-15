@@ -59,7 +59,7 @@ fun DisplayArticleInfoToClientWindowsPreview() {
     )
 
     MaterialTheme {
-        WindowsPresentationInfoProduct(
+        WindowsPresentationInfoProductPackageN7(
             displayController = sampleProductDisplayController,
             articleStatsDataBase = sampleArticleStats,
             colorsArticlesList = sampleColorsList,

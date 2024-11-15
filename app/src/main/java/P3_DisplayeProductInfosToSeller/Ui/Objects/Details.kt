@@ -19,6 +19,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.PriceCheck
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Store
 import androidx.compose.material.icons.filled.TrendingUp
@@ -46,6 +48,12 @@ fun ColumnScope.Details(
     article: ArticlesBasesStatsTable
 ) {
     var isExpanded by remember { mutableStateOf(true) }
+
+    // Calculate client profits
+    val clientPrixVentUnite = article.clienPrixVentUnite ?: 0.0
+    val clientPrixVentGros = clientPrixVentUnite * article.nmbrUnite
+    val clientBenefice = clientPrixVentGros - article.monPrixVent
+    val clientBeneficeUnite = clientBenefice / article.nmbrUnite
 
     AnimatedVisibility(
         visible = isDetailsVisible,
@@ -86,10 +94,10 @@ fun ColumnScope.Details(
                     exit = shrinkVertically()
                 ) {
                     Column {
-                        // Wholesale Section
+                        // My Wholesale Section
                         PriceSection(
-                            title = "سعر البيع",
-                            icon = Icons.Default.ShoppingCart,
+                            title = "سعر البيع الخاص بي",
+                            icon = Icons.Default.Store,
                             items = listOf(
                                 PriceItem(
                                     label = "السعر بالجملة",
@@ -113,7 +121,7 @@ fun ColumnScope.Details(
                         // Purchase Section
                         PriceSection(
                             title = "سعر الشراء",
-                            icon = Icons.Default.Store,
+                            icon = Icons.Default.ShoppingCart,
                             items = listOf(
                                 PriceItem(
                                     label = "سعر الشراء للوحدة",
@@ -134,9 +142,9 @@ fun ColumnScope.Details(
                                 .padding(vertical = 8.dp)
                         )
 
-                        // Profit Section
+                        // My Profit Section
                         PriceSection(
-                            title = "الأرباح",
+                            title = "أرباحي",
                             icon = Icons.Default.TrendingUp,
                             items = listOf(
                                 PriceItem(
@@ -150,6 +158,54 @@ fun ColumnScope.Details(
                                         "%.2f",
                                         (article.monPrixVent - article.monPrixAchat) / article.nmbrUnite.toFloat()
                                     ),
+                                    unite = "دج"
+                                )
+                            )
+                        )
+
+                        HorizontalDivider(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp)
+                        )
+
+                        // Client Price Section
+                        PriceSection(
+                            title = "سعر البيع للعميل",
+                            icon = Icons.Default.Person,
+                            items = listOf(
+                                PriceItem(
+                                    label = "سعر البيع للوحدة",
+                                    value = String.format("%.2f", clientPrixVentUnite),
+                                    unite = "دج"
+                                ),
+                                PriceItem(
+                                    label = "سعر البيع بالجملة",
+                                    value = String.format("%.2f", clientPrixVentGros),
+                                    unite = "دج"
+                                )
+                            )
+                        )
+
+                        HorizontalDivider(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp)
+                        )
+
+                        // Client Profit Section
+                        PriceSection(
+                            title = "أرباح العميل",
+                            icon = Icons.Default.PriceCheck,
+                            items = listOf(
+                                PriceItem(
+                                    label = "ربح العميل بالجملة",
+                                    value = String.format("%.2f", clientBenefice),
+                                    unite = "دج"
+                                ),
+                                PriceItem(
+                                    label = "ربح العميل للوحدة",
+                                    value = String.format("%.2f", clientBeneficeUnite),
                                     unite = "دج"
                                 )
                             )
