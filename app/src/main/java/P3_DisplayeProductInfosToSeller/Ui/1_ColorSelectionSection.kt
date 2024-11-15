@@ -61,11 +61,11 @@ fun ColorsCardsP3(
             colorsArticlesTabelleModel.find { it.idColore == colorId }
         } else null
     }
-
     Box(
+        LazyRow(
         modifier = modifier
             .fillMaxWidth()
-    ) {       // TODO: change le a un lazyGrid qui afffiche les couleur dispo
+    ) {
 
         when (colors.size) {
             1 -> SingleColorLayout(
@@ -84,6 +84,62 @@ fun ColorsCardsP3(
             )
         }
     }
+        //TODO utilise ce ui  au liex SingleColorLayout et multiple l pour affiche on conservenet le fuctionement originale
+       // Card(
+    //        modifier = modifier
+    //            .fillMaxWidth()
+    //            .padding(8.dp),
+    //        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    //    ) {
+    //        Column(
+    //            modifier = Modifier
+    //                .fillMaxWidth()
+    //                .padding(8.dp),
+    //            verticalArrangement = Arrangement.spacedBy(8.dp)
+    //        ) {
+    //
+    //
+    //            // Show color variants only if no color is selected
+    //            if (displayController.windowsSelectedColorId == 0 && colors.size > 1) {
+    //                LazyRow(
+    //                    modifier = Modifier.fillMaxWidth(),
+    //                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+    //                    contentPadding = PaddingValues(horizontal = 8.dp)
+    //                ) {
+    //                    items(colors.drop(1)) { color ->
+    //                        Box(
+    //                            modifier = Modifier
+    //                                .size(200.dp)
+    //                                .clip(RoundedCornerShape(8.dp))
+    //                        ) {
+    //                            ColorItem(
+    //                                modifier = Modifier.fillMaxSize(),
+    //                                article = articlesBasesStatsTable,
+    //                                color = color,
+    //                                index = colors.indexOf(color),
+    //                                relodeTigger = relodeTigger,
+    //                            )
+    //                        }
+    //                    }
+    //                }
+    //            }
+    //            // Main large image - Show selected color or first color
+    //            Box(
+    //                modifier = Modifier
+    //                    .fillMaxWidth()
+    //                    .height(360.dp)
+    //            ) {
+    //                ColorItem(
+    //                    modifier = Modifier.fillMaxSize(),
+    //                    article = articlesBasesStatsTable,
+    //                    color = selectedColor ?: colors.firstOrNull(),
+    //                    index = if (selectedColor != null) colors.indexOf(selectedColor) else 0,
+    //                    relodeTigger = relodeTigger,
+    //                )
+    //            }
+    //        }
+    //    }
+    //
 }
 
 @Composable

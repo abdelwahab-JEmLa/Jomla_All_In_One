@@ -1,6 +1,5 @@
 package P2_EStorePresentationToClient.Ui
 
-import com.example.clientjetpack.Models.ProductDisplayController
 import P2_EStorePresentationToClient.Modules.ImageDisplayerPC
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ColorsArticlesTabelle
@@ -35,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.example.clientjetpack.Models.ProductDisplayController
 import com.example.clientjetpack.R
 
 // In 1_ColorSelectionSection.kt
@@ -71,24 +71,11 @@ fun ColorsCards(
                 .padding(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            // Main large image - Show selected color or first color
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(360.dp)
-            ) {
-                ColorItem(
-                    modifier = Modifier.fillMaxSize(),
-                    article = articlesBasesStatsTable,
-                    color = selectedColor ?: colors.firstOrNull(),
-                    index = if (selectedColor != null) colors.indexOf(selectedColor) else 0,
-                    relodeTigger = relodeTigger,
-                )
-            }
+
 
             // Show color variants only if no color is selected
             if (displayController.windowsSelectedColorId == 0 && colors.size > 1) {
-                LazyRow(   //TODO fait que le grid goToitem par  displayController.windowsBottomRowScrollPosition
+                LazyRow(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     contentPadding = PaddingValues(horizontal = 8.dp)
@@ -109,6 +96,20 @@ fun ColorsCards(
                         }
                     }
                 }
+            }
+            // Main large image - Show selected color or first color
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(360.dp)
+            ) {
+                ColorItem(
+                    modifier = Modifier.fillMaxSize(),
+                    article = articlesBasesStatsTable,
+                    color = selectedColor ?: colors.firstOrNull(),
+                    index = if (selectedColor != null) colors.indexOf(selectedColor) else 0,
+                    relodeTigger = relodeTigger,
+                )
             }
         }
     }

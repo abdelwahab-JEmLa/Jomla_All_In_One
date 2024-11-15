@@ -70,7 +70,8 @@ fun AppNavHost(
                                 appViewModels.headViewModel.openWindowsNewSaleWithUpdateCurrent(
                                     relatedArticleBaseStats!!.idArticle.toLong(),
                                     currentClientId,
-                                    pendingIndexColor)
+                                    pendingIndexColor
+                                )
                                 opnerSaleWindows=true
                                 appViewModels.headViewModel.sendOrderToClient(
                                     ConnectionMessage.PRODUCT_ID.prefix,
