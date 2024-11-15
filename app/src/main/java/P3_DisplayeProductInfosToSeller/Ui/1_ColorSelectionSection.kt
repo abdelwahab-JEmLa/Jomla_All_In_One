@@ -2,6 +2,9 @@ package P3_DisplayeProductInfosToSeller.Ui
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ColorsArticlesTabelle
 import a_RoomDB.SoldArticlesTabelle
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +20,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.clientjetpack.ViewModel.HeadViewModel
 
+@Composable
+ fun ColorSelectionSection(
+    currentSale: SoldArticlesTabelle,
+    stats: ArticlesBasesStatsTable,
+    colorsArticlesTabelleModel: List<ColorsArticlesTabelle>,
+    viewModel: HeadViewModel,
+    reloadTrigger: Int
+) {
+    AnimatedVisibility(
+        visible = true,
+        enter = fadeIn() + expandVertically()
+    ) {
+        ColorsCardsP3(
+            currentSale = currentSale,
+            articlesBasesStatsTable = stats,
+            colorsArticlesTabelleModel = colorsArticlesTabelleModel,
+            viewModel = viewModel,
+            relodeTigger = reloadTrigger,
+            modifier = Modifier.padding(horizontal = 4.dp)
+        )
+    }
+}
 @Composable
 fun ColorsCardsP3(
     currentSale: SoldArticlesTabelle?,

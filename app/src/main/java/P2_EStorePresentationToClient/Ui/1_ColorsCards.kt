@@ -37,7 +37,7 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.clientjetpack.R
 
-// In 1_ColorsCardsP3.kt
+// In 1_ColorSelectionSection.kt
 @Composable
 fun ColorsCards(
     displayController: ProductDisplayController,

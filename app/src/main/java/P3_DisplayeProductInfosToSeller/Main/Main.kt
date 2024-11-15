@@ -2,26 +2,20 @@ package P3_DisplayeProductInfosToSeller.Main
 
 import P2_EStorePresentationToClient.Ui.ProductNameSection
 import P3_DisplayeProductInfosToSeller.Ui.ActionsButtonRow
-import P3_DisplayeProductInfosToSeller.Ui.ColorsCardsP3
+import P3_DisplayeProductInfosToSeller.Ui.ColorSelectionSection
 import P3_DisplayeProductInfosToSeller.Ui.Details
+import P3_DisplayeProductInfosToSeller.Ui.DividerWithLabel
 import P3_DisplayeProductInfosToSeller.Ui.confirmExitDialog
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ColorsArticlesTabelle
 import a_RoomDB.SoldArticlesTabelle
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -29,7 +23,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -121,50 +114,8 @@ fun P3DisplayeProductInfosToSeller(
     }
 }
 
-@Composable
-private fun DividerWithLabel() {
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 3.dp, vertical = 3.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        HorizontalDivider(
-            modifier = Modifier.weight(1f),
-            color = MaterialTheme.colorScheme.outlineVariant
-        )
-        Text(
-            text = "اختر اللون",
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(horizontal = 4.dp)
-        )
-        HorizontalDivider(
-            modifier = Modifier.weight(1f),
-            color = MaterialTheme.colorScheme.outlineVariant
-        )
-    }
-}
 
-@Composable
-private fun ColorSelectionSection(
-    currentSale: SoldArticlesTabelle,
-    stats: ArticlesBasesStatsTable,
-    colorsArticlesTabelleModel: List<ColorsArticlesTabelle>,
-    viewModel: HeadViewModel,
-    reloadTrigger: Int
-) {
-    AnimatedVisibility(
-        visible = true,
-        enter = fadeIn() + expandVertically()
-    ) {
-        ColorsCardsP3(
-            currentSale = currentSale,
-            articlesBasesStatsTable = stats,
-            colorsArticlesTabelleModel = colorsArticlesTabelleModel,
-            viewModel = viewModel,
-            relodeTigger = reloadTrigger,
-            modifier = Modifier.padding(horizontal = 4.dp)
-        )
-    }
-}
+
+
 
 
