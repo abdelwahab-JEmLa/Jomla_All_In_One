@@ -103,7 +103,13 @@ fun ColumnScope.Details(
                         // TODO :                                     PriceItem("س.وحدة", "%.2f".format(article.monPrixVent / article.nmbrUnite), "دج")
                         // TODO : ici max prix / nmbr ute
 
-                        // TODO :et l autre comme  clientBeneficeUnite= clientPrixVentGros -  max prix
+                        // TODO :et l autre comme  clientBeneficeUnite= clientPrixVentGros -  max prix  
+
+                        //TODO :
+                        //  la 3 colone "Ancien prix de Client & ces calcule" 
+                        // comme lautre 
+                        
+                        
                         // TODO : ..ect
                          uiState.maxSalePrice?.let { maxPrice -
                                  // TODO : Unresolved reference: maxSalePrice

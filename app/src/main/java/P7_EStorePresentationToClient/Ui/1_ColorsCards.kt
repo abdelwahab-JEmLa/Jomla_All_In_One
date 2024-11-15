@@ -91,6 +91,9 @@ fun ColorsCards(
                 .padding(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            // TODO  fait que :
+            //  quen windowsSelectedColorId = la color fait elle soit on Main large image
+            //  et la color du main soit au dernier des lazy
             if (displayController.windowsSelectedColorId == 0 && colors.size > 1) {
                 LazyRow(
                     state = listState,
@@ -133,6 +136,7 @@ fun ColorsCards(
         }
     }
 }
+
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 private fun ColorItem(
