@@ -1,11 +1,11 @@
 package P3_DisplayeProductInfosToSeller.Main
 
 import P2_EStorePresentationToClient.Ui.ProductNameSection
-import P3_DisplayeProductInfosToSeller.Ui.ActionsButtonRow
+import P3_DisplayeProductInfosToSeller.Ui.Objects.ActionsButtonRow
 import P3_DisplayeProductInfosToSeller.Ui.ColorSelectionSection
-import P3_DisplayeProductInfosToSeller.Ui.Details
-import P3_DisplayeProductInfosToSeller.Ui.DividerWithLabel
-import P3_DisplayeProductInfosToSeller.Ui.confirmExitDialog
+import P3_DisplayeProductInfosToSeller.Ui.Objects.Details
+import P3_DisplayeProductInfosToSeller.Ui.Objects.DividerWithLabel
+import P3_DisplayeProductInfosToSeller.Ui.Objects.confirmExitDialog
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ColorsArticlesTabelle
 import a_RoomDB.SoldArticlesTabelle

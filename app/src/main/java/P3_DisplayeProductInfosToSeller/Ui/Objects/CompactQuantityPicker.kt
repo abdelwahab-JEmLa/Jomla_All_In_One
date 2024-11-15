@@ -1,4 +1,4 @@
-package P3_DisplayeProductInfosToSeller.Ui
+package P3_DisplayeProductInfosToSeller.Ui.Objects
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.calculateTargetValue

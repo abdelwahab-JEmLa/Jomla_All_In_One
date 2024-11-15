@@ -84,7 +84,7 @@ fun ColorsCardsP3(
             )
         }
     }
-        //TODO utilise ce ui  au liex SingleColorLayout et multiple l pour affiche on conservenet le fuctionement originale
+        //TODO utilise ce ui on comments  au liex SingleColorLayout et multiple l pour affiche on conservenet le fuctionement originale
        // Card(
     //        modifier = modifier
     //            .fillMaxWidth()
