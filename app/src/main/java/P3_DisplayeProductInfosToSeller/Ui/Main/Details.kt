@@ -47,11 +47,9 @@ fun ColumnScope.Details(
 ) {
     var isExpanded by remember { mutableStateOf(true) }
 
-    // Get current client ID from settings
     val currentClientId = uiState.appSettingsSaverModel
         .find { it.name == "clientBuyerNowId" }?.valueLong ?: 0
 
-    // Get price history data
     val allTimeMaxPrice = viewModel.getMaxPrice(article.idArticle)
     val priceHistory = viewModel.getHistoryProductForClient(article.idArticle, currentClientId)
 
@@ -71,10 +69,8 @@ fun ColumnScope.Details(
                     .fillMaxWidth()
                     .padding(8.dp)
             ) {
-                // Header
                 DetailHeader(isExpanded)
 
-                // Animated content
                 AnimatedVisibility(
                     visible = isExpanded,
                     enter = slideInVertically() + expandVertically(),
@@ -85,13 +81,11 @@ fun ColumnScope.Details(
                             .fillMaxWidth()
                             .padding(top = 8.dp)
                     ) {
-                        // Price table
                         PriceDetailsTable(
                             article = article,
                             allTimeMaxPrice = allTimeMaxPrice,
                             priceHistory = priceHistory
                         )
-
                     }
                 }
             }
@@ -111,7 +105,9 @@ private fun DetailHeader(isExpanded: Boolean) {
         Text(
             text = "معلومات الأسعار والأرباح",
             style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.weight(1f)
         )
         Icon(
             imageVector = if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
@@ -138,66 +134,40 @@ private fun PriceDetailsTable(
         // Headers row
         PriceGridRow(
             items = listOf(
-                "التفاصيل",
+                "س.الأعلى",
                 "س.أساس",
                 "س.السابق",
-                "س.الأعلى"
+                "التفاصيل"
             ),
             isHeader = true
         )
 
-        // Values rows
-        // Row 1: Wholesale price
-        PriceGridRow(
-            items = listOf(
-                "ب.الحزمة",
-                "%.2f ".format(article.monPrixVent),
-                "%.2f ".format(latestHistoryPrice),
-                "%.2f ".format(allTimeMaxPrice)
+        // Price rows with data
+        listOf(
+            RowData("ب.الحزمة", article.monPrixVent, latestHistoryPrice, allTimeMaxPrice),
+            RowData("ب.الوحدة", article.monPrixVent / article.nmbrUnite, latestHistoryPrice / article.nmbrUnite, allTimeMaxPrice / article.nmbrUnite),
+            RowData("ر.العميل", clientSoldPackage - article.monPrixVent, clientSoldPackage - latestHistoryPrice, clientSoldPackage - allTimeMaxPrice),
+            RowData("ر.خ.الحزمة", article.monPrixVent - article.monPrixAchat, latestHistoryPrice - article.monPrixAchat, allTimeMaxPrice - article.monPrixAchat),
+            RowData("س.ب.عم", clientSoldPackage, clientSoldPackage, clientSoldPackage)
+        ).forEach { rowData ->
+            PriceGridRow(
+                items = listOf(
+                    rowData.label,
+                    "%.2f ".format(rowData.baseValue),
+                    "%.2f ".format(rowData.previousValue),
+                    "%.2f ".format(rowData.maxValue)
+                )
             )
-        )
-
-        // Row 2: Unit price
-        PriceGridRow(
-            items = listOf(
-                "ب.الوحدة",
-                "%.2f ".format(article.monPrixVent / article.nmbrUnite),
-                "%.2f ".format(latestHistoryPrice / article.nmbrUnite),
-                "%.2f ".format(allTimeMaxPrice / article.nmbrUnite)
-            )
-        )
-
-        // Row 3: Client profit
-        PriceGridRow(
-            items = listOf(
-                "ر.العميل",
-                "%.2f ".format(clientSoldPackage - article.monPrixVent),
-                "%.2f ".format(clientSoldPackage - latestHistoryPrice),
-                "%.2f ".format(clientSoldPackage - allTimeMaxPrice)
-            )
-        )
-
-        // Row 4: Package profit
-        PriceGridRow(
-            items = listOf(
-                "ر.خ.الحزمة",
-                "%.2f ".format(article.monPrixVent - article.monPrixAchat),
-                "%.2f ".format(latestHistoryPrice - article.monPrixAchat),
-                "%.2f ".format(allTimeMaxPrice - article.monPrixAchat)
-            )
-        )
-
-        // Row 5: Client package price
-        PriceGridRow(
-            items = listOf(
-                "س.ب.عم",
-                "%.2f ".format(clientSoldPackage),
-                "%.2f ".format(clientSoldPackage),
-                "%.2f ".format(clientSoldPackage)
-            )
-        )
+        }
     }
 }
+
+private data class RowData(
+    val label: String,
+    val baseValue: Double,
+    val previousValue: Double,
+    val maxValue: Double
+)
 
 @Composable
 private fun PriceGridRow(
@@ -212,7 +182,8 @@ private fun PriceGridRow(
             PriceCard(
                 text = text,
                 isHeader = isHeader,
-                isHighlighted = index == 2,  // Previous price column
+                isFirstColumn = index == 0,
+                isHighlighted = index == 2,
                 modifier = Modifier.weight(1f),
                 textAlignment = if (index == 0) Alignment.Start else Alignment.End
             )
@@ -224,6 +195,7 @@ private fun PriceGridRow(
 private fun PriceCard(
     text: String,
     isHeader: Boolean,
+    isFirstColumn: Boolean,
     isHighlighted: Boolean,
     modifier: Modifier = Modifier,
     textAlignment: Alignment.Horizontal = Alignment.End
@@ -234,6 +206,7 @@ private fun PriceCard(
             containerColor = when {
                 isHeader -> MaterialTheme.colorScheme.surfaceVariant
                 isHighlighted -> MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.1f)
+                isFirstColumn -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
                 else -> MaterialTheme.colorScheme.surface
             }
         ),
@@ -244,21 +217,17 @@ private fun PriceCard(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(
-                    vertical = 4.dp,
-                    horizontal = 4.dp
-                ),
+                .padding(vertical = 4.dp, horizontal = 4.dp),
         ) {
             Text(
                 text = text,
-                style = if (isHeader) {
-                    MaterialTheme.typography.titleSmall.copy(
-                        fontWeight = FontWeight.Bold
-                    )
-                } else {
-                    MaterialTheme.typography.bodyMedium
+                style = when {
+                    isHeader -> MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
+                    isHighlighted -> MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.error)
+                    else -> MaterialTheme.typography.bodyMedium
                 },
-                textAlign = if (textAlignment == Alignment.Start) TextAlign.Start else TextAlign.End
+                textAlign = if (textAlignment == Alignment.Start) TextAlign.Start else TextAlign.End,
+                modifier = Modifier
             )
         }
     }
