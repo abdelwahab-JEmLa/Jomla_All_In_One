@@ -38,13 +38,10 @@ class MyApplication : Application() {
     }
 }
 
-
-
 data class AppViewModels(
     val headViewModel: HeadViewModel,
     val generativeAiViewModel: GenerativeAiViewModel,
 )
-
 
 // ViewModelFactory.kt
 class ViewModelFactory(

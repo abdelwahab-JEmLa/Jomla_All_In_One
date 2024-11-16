@@ -170,7 +170,7 @@ fun CompactQuantityPicker(
                     viewModel.updateColorSelection(colorIndex, it.toInt())
                     viewModel.sendOrderToClientDisplayer(ConnectionMessage.ColorSelectionSectionScrollStatSCROLLTO.prefix, it.toInt())
                 },
-                regleur = 5.5,
+                regleur = 4.5,
                 defrence = 17.0
             )
         }
