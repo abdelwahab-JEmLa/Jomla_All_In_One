@@ -1,6 +1,5 @@
 package P3_DisplayeProductInfosToSeller.Ui.Main
 
-
 import a_RoomDB.ArticlesBasesStatsTable
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
@@ -10,19 +9,17 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -34,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.clientjetpack.Models.PriceRecord
 import com.example.clientjetpack.Models.UiState
@@ -128,111 +126,140 @@ private fun PriceDetailsTable(
     allTimeMaxPrice: Double,
     priceHistory: List<PriceRecord>
 ) {
-    val clientSoldPackage =article.clienPrixVentUnite * article.nmbrUnite
+    val clientSoldPackage = article.clienPrixVentUnite * article.nmbrUnite
+    val latestHistoryPrice = priceHistory.lastOrNull()?.price ?: 0.0
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp)
+            .padding(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        // Headers
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            //TODO :
-            // fait que entre chaque une un divider
-
-            TableHeader("التفاصيل")
-            TableHeader("السعر الأساسي")
-
-            TableHeader("السعر السابق")
-            //TODO :
-            // fait que les element de du ca soi on rouge
-            TableHeader("أعلى سعر")
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-        HorizontalDivider()
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Price rows
-        val latestHistoryPrice = priceHistory.lastOrNull()?.price ?: 0.0
-
-        // Wholesale price row
-        PriceRow(
-            label = "ب.الحزمة",
-            basePrice = article.monPrixVent,
-            maxPrice = allTimeMaxPrice,
-            historyPrice = latestHistoryPrice
+        // Headers row
+        PriceGridRow(
+            items = listOf(
+                "التفاصيل",
+                "السعر الأساسي",
+                "السعر السابق",
+                "أعلى سعر"
+            ),
+            isHeader = true
         )
 
+        // Values rows
+        // Row 1: Wholesale price
+        PriceGridRow(
+            items = listOf(
+                "ب.الحزمة",
+                "%.2f دج".format(article.monPrixVent),
+                "%.2f دج".format(latestHistoryPrice),
+                "%.2f دج".format(allTimeMaxPrice)
+            )
+        )
 
-        // Unit price row
-        PriceRow(
-            label = "ب.الوحدة",
-            basePrice = article.monPrixVent / article.nmbrUnite,
-            maxPrice = allTimeMaxPrice / article.nmbrUnite,
-            historyPrice = latestHistoryPrice / article.nmbrUnite
+        // Row 2: Unit price
+        PriceGridRow(
+            items = listOf(
+                "ب.الوحدة",
+                "%.2f دج".format(article.monPrixVent / article.nmbrUnite),
+                "%.2f دج".format(latestHistoryPrice / article.nmbrUnite),
+                "%.2f دج".format(allTimeMaxPrice / article.nmbrUnite)
+            )
         )
-        // Client package profit row
-        PriceRow(
-            label = "ر.العميل",
-            basePrice = clientSoldPackage - article.monPrixVent,
-            maxPrice = clientSoldPackage -allTimeMaxPrice ,
-            historyPrice = clientSoldPackage-latestHistoryPrice
+
+        // Row 3: Client profit
+        PriceGridRow(
+            items = listOf(
+                "ر.العميل",
+                "%.2f دج".format(clientSoldPackage - article.monPrixVent),
+                "%.2f دج".format(clientSoldPackage - latestHistoryPrice),
+                "%.2f دج".format(clientSoldPackage - allTimeMaxPrice)
+            )
         )
-        // Regular profit row
-        PriceRow(
-            label = "ر.الحزمة",
-            basePrice = article.monPrixVent - article.monPrixAchat,
-            maxPrice = allTimeMaxPrice - article.monPrixAchat,
-            historyPrice = latestHistoryPrice - article.monPrixAchat
+
+        // Row 4: Package profit
+        PriceGridRow(
+            items = listOf(
+                "ر.الحزمة",
+                "%.2f دج".format(article.monPrixVent - article.monPrixAchat),
+                "%.2f دج".format(latestHistoryPrice - article.monPrixAchat),
+                "%.2f دج".format(allTimeMaxPrice - article.monPrixAchat)
+            )
         )
-        // Client package price row
-        PriceRow(
-            label = "سعر.ب.العميل",
-            basePrice = clientSoldPackage,
-            maxPrice = allTimeMaxPrice,
-            historyPrice = latestHistoryPrice
+
+        // Row 5: Client package price
+        PriceGridRow(
+            items = listOf(
+                "سعر.ب.العميل",
+                "%.2f دج".format(clientSoldPackage),
+                "%.2f دج".format(clientSoldPackage),
+                "%.2f دج".format(clientSoldPackage)
+            )
         )
     }
 }
 
 @Composable
-private fun TableHeader(text: String) {
-    Text(
-        text = text,
-        style = MaterialTheme.typography.titleSmall,
-        fontWeight = FontWeight.Bold,
-        modifier = Modifier.padding(4.dp)
-    )
-}
-
-@Composable
-private fun PriceRow(
-    label: String,
-    basePrice: Double,
-    maxPrice: Double,
-    historyPrice: Double
+private fun PriceGridRow(
+    items: List<String>,
+    isHeader: Boolean = false
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Text(text = label, style = MaterialTheme.typography.bodyMedium)
-        Text(text = "%.2f دج".format(basePrice))
-        Text(text = "%.2f دج".format(maxPrice))
-        Text(text = "%.2f دج".format(historyPrice))
-
+        items.forEachIndexed { index, text ->
+            PriceCard(
+                text = text,
+                isHeader = isHeader,
+                isHighlighted = index == 2,  // Previous price column
+                modifier = Modifier.weight(1f),
+                textAlignment = if (index == 0) Alignment.Start else Alignment.End
+            )
+        }
     }
 }
 
-
-
-
-
-
-
-
+@Composable
+private fun PriceCard(
+    text: String,
+    isHeader: Boolean,
+    isHighlighted: Boolean,
+    modifier: Modifier = Modifier,
+    textAlignment: Alignment.Horizontal = Alignment.End
+) {
+    ElevatedCard(
+        modifier = modifier,
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = when {
+                isHeader -> MaterialTheme.colorScheme.surfaceVariant
+                isHighlighted -> MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.1f)
+                else -> MaterialTheme.colorScheme.surface
+            }
+        ),
+        elevation = CardDefaults.elevatedCardElevation(
+            defaultElevation = if (isHeader) 4.dp else 2.dp
+        )
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    vertical = if (isHeader) 12.dp else 8.dp,
+                    horizontal = 8.dp
+                ),
+        ) {
+            Text(
+                text = text,
+                style = if (isHeader) {
+                    MaterialTheme.typography.titleSmall.copy(
+                        fontWeight = FontWeight.Bold
+                    )
+                } else {
+                    MaterialTheme.typography.bodyMedium
+                },
+                textAlign = if (textAlignment == Alignment.Start) TextAlign.Start else TextAlign.End
+            )
+        }
+    }
+}
