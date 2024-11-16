@@ -131,6 +131,7 @@ private fun PriceDetailsTable(
             .padding(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
+
         // Headers row
         PriceGridRow(
             items = listOf(
@@ -141,7 +142,6 @@ private fun PriceDetailsTable(
             ),
             isHeader = true
         )
-
         // Price rows with data
         listOf(
             RowData("ب.الحزمة", article.monPrixVent, latestHistoryPrice, allTimeMaxPrice),
@@ -152,10 +152,10 @@ private fun PriceDetailsTable(
         ).forEach { rowData ->
             PriceGridRow(
                 items = listOf(
-                    rowData.label,
+                    "%.2f ".format(rowData.maxValue),
                     "%.2f ".format(rowData.baseValue),
                     "%.2f ".format(rowData.previousValue),
-                    "%.2f ".format(rowData.maxValue)
+                    rowData.label,
                 )
             )
         }
