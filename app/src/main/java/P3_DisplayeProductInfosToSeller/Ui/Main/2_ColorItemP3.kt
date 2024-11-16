@@ -243,7 +243,7 @@ fun ColorItem3(
                             )
                             viewModel.sendOrderToClientDisplayer(
                                 WifiUpdateClientDisplayerStats.ClientWindowsSelectedColorId.prefix,
-                                it.toLong()
+                                color.idColore
                             )
                         }
                     )
