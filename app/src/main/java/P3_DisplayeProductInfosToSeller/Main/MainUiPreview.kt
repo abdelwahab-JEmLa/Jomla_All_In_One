@@ -53,7 +53,6 @@ fun P3_DisplayeProductInfosToSellerPreview() {
     // Base prices for our example
     val basePurchasePrice = 370.0
     val baseSellingPrice = 430.0
-    val maxPrice = 450.0
     val currentClientPrice = 440.0
 
     // Create sample price history with proper timestamps
@@ -62,16 +61,17 @@ fun P3_DisplayeProductInfosToSellerPreview() {
 
     // Enhanced price history map with more realistic data
     val samplePriceHistory = mapOf(
-        // History for current client (ID: 1)
         Pair(65L, 1L) to listOf(
             PriceRecord(430.0, 1L, currentTime - (oneDayInMillis * 7)),
             PriceRecord(435.0, 1L, currentTime - (oneDayInMillis * 5)),
             PriceRecord(currentClientPrice, 1L, currentTime - (oneDayInMillis * 2))
         ),
-        // History for other client (ID: 2) including max price
+        Pair(65L, 3L) to listOf(
+            PriceRecord(460.0, 3L, currentTime - (oneDayInMillis * 7)),
+        ),
         Pair(65L, 2L) to listOf(
             PriceRecord(440.0, 2L, currentTime - (oneDayInMillis * 6)),
-            PriceRecord(maxPrice, 2L, currentTime - (oneDayInMillis * 4)),
+            PriceRecord(460.0, 2L, currentTime - (oneDayInMillis * 4)),
             PriceRecord(445.0, 2L, currentTime - (oneDayInMillis * 1))
         )
     )
