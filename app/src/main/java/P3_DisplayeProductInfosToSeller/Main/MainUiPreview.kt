@@ -18,19 +18,37 @@ import com.example.clientjetpack.Modules.AppDatabase
 import com.example.clientjetpack.ViewModel.HeadViewModel
 
 @Preview(showBackground = true)
+@Preview(showBackground = true)
 @Composable
 fun P3_DisplayeProductInfosToSellerPreview() {
-//TODO :
-// pk le max prix et ancien = 0.0 regle le preview 
     val context = LocalContext.current
 
     // Base prices for our example
     val basePurchasePrice = 370.0
     val baseSellingPrice = 430.0
-    val maxPrice = 450.0  // Plus haut prix historique
-    val currentClientPrice = 440.0 // Prix pour le client actuel
+    val maxPrice = 450.0
+    val currentClientPrice = 440.0
 
-    // Sample data for preview
+    // Create sample price history with proper timestamps
+    val currentTime = System.currentTimeMillis()
+    val oneDayInMillis = 24 * 60 * 60 * 1000L
+
+    // Enhanced price history map with more realistic data
+    val samplePriceHistory = mapOf(
+        // History for current client (ID: 1)
+        Pair(65L, 1L) to listOf(
+            PriceRecord(430.0, 1L, currentTime - (oneDayInMillis * 7)),
+            PriceRecord(435.0, 1L, currentTime - (oneDayInMillis * 5)),
+            PriceRecord(currentClientPrice, 1L, currentTime - (oneDayInMillis * 2))
+        ),
+        // History for other client (ID: 2) including max price
+        Pair(65L, 2L) to listOf(
+            PriceRecord(440.0, 2L, currentTime - (oneDayInMillis * 6)),
+            PriceRecord(maxPrice, 2L, currentTime - (oneDayInMillis * 4)),
+            PriceRecord(445.0, 2L, currentTime - (oneDayInMillis * 1))
+        )
+    )
+
     val sampleArticleStats = ArticlesBasesStatsTable(
         idArticle = 65,
         nomArticleFinale = "Silca®",
@@ -59,12 +77,11 @@ fun P3_DisplayeProductInfosToSellerPreview() {
         idArticle = 65,
         nameArticle = "Silca®",
         clientSoldToItId = 1,
-        date = System.currentTimeMillis().toString(),
+        date = currentTime.toString(),
         color1IdPicked = 10,
         color1SoldQuantity = 1
     )
 
-    // Create view model using DatabaseModule
     val viewModel = remember(context) {
         HeadViewModel(
             context,
@@ -72,36 +89,16 @@ fun P3_DisplayeProductInfosToSellerPreview() {
         )
     }
 
-    // Create richer price history showing evolution of prices
-    val currentTime = System.currentTimeMillis()
-    val oneDayInMillis = 24 * 60 * 60 * 1000L
-
-    val samplePriceHistory = mapOf(
-        // History for client 1 (current client)
-        Pair(65L, 1L) to listOf(
-            PriceRecord(430.0, 1L, currentTime - (oneDayInMillis * 5)), // 5 days ago
-            PriceRecord(435.0, 1L, currentTime - (oneDayInMillis * 3)), // 3 days ago
-            PriceRecord(currentClientPrice, 1L, currentTime), // Current price
-        ),
-        // History for client 2 (includes max price)
-        Pair(65L, 2L) to listOf(
-            PriceRecord(440.0, 2L, currentTime - (oneDayInMillis * 4)), // 4 days ago
-            PriceRecord(maxPrice, 2L, currentTime - (oneDayInMillis * 2)), // 2 days ago (max price)
-            PriceRecord(445.0, 2L, currentTime), // Current price
-        )
-    )
-
-    // Create sample UiState with rich price history
+    // Create sample UiState with complete settings
     val sampleUiState = UiState(
         articlesBasesStatTables = listOf(sampleArticleStats),
         colorsArticlesTabelleModel = sampleColors,
         productDisplayController = ProductDisplayController(),
         maxPriceMap = samplePriceHistory,
-        // Add sample app settings to identify current client
         appSettingsSaverModel = listOf(
             AppSettingsSaverModel(
                 name = "clientBuyerNowId",
-                valueLong = 1L // Set current client to client 1
+                valueLong = 1L
             )
         )
     )

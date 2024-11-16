@@ -4,4 +4,3 @@
 ->and try not go out my logique
 ->essye de ne pa tro cree des sous functions si possible une fun
 
-->while using the best jetPack e commerce design apps
