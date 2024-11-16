@@ -57,7 +57,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.clientjetpack.ViewModel.WifiUpdateClientDisplayerStats
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -71,7 +70,8 @@ fun CompactQuantityPicker(
     colorIndex: Int,
     viewModel: HeadViewModel,
     initialQuantity: Int = 0,
-    height: Dp
+    height: Dp,
+    onPickerStatChange: (String) -> Unit
 ) {
     var isRed by remember { mutableStateOf(true) }
 
@@ -166,10 +166,7 @@ fun CompactQuantityPicker(
                     if (isRed) Color.White else Color.Red,
                     label = "dividerColor"
                 ).value,
-                onItemStat = {
-                    viewModel.updateColorSelection(colorIndex, it.toInt())
-                    viewModel.sendOrderToClientDisplayer(WifiUpdateClientDisplayerStats.ClientWindowsLazyRowSupColorsScrolle.prefix, it.toInt())
-                },
+                onItemStat = onPickerStatChange,
                 regleur = 4.5,
                 defrence = 17.0
             )

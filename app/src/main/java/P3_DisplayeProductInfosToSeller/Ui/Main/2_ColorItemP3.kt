@@ -48,6 +48,7 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.clientjetpack.R
 import com.example.clientjetpack.ViewModel.HeadViewModel
+import com.example.clientjetpack.ViewModel.WifiUpdateClientDisplayerStats
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -233,7 +234,18 @@ fun ColorItem3(
                         colorIndex = index,
                         viewModel = viewModel,
                         initialQuantity = currentQuantity,
-                        height=height
+                        height=height,
+                        onPickerStatChange = {
+                            viewModel.updateColorSelection(index, it.toInt())
+                            viewModel.sendOrderToClientDisplayer(
+                                WifiUpdateClientDisplayerStats.ClientWindowsLazyRowSupColorsScrolle.prefix,
+                                it.toInt()
+                            )
+                            viewModel.sendOrderToClientDisplayer(
+                                WifiUpdateClientDisplayerStats.ClientWindowsSelectedColorId.prefix,
+                                it.toLong()
+                            )
+                        }
                     )
                 }
             }

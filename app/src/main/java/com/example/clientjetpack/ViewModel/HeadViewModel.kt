@@ -38,10 +38,12 @@ import java.util.Locale
 
 enum class WifiUpdateClientDisplayerStats(val prefix: String) {
     ClientMainGridScrollPosition("ClientMainGridScrollPosition"),
-    ClientWindowsDisplayedProductId("ClientWindowsDisplayedProductId"),
-    DISMISS_PRODUCT_INFO("DismissWindowsInfosProduct") ,
     ClientWindowsLazyRowSupColorsScrolle("ClientWindowsLazyRowSupColorsScrolle") ,
+    ClientWindowsDisplayedProductId("ClientWindowsDisplayedProductId"),
+    ClientWindowsSelectedColorId("clientWindowsSelectedColorId"),
+    DISMISS_PRODUCT_INFO("DismissWindowsInfosProduct") ,
     WindowsPickerDisplayedQuantity("WindowsPickerDisplayedQuantity") ,
+
     ;
 
     companion object {
@@ -146,16 +148,13 @@ open class HeadViewModel(
                     copy( clientWindowsLazyRowSupColorsScroll= content.toInt()) }
                 WifiUpdateClientDisplayerStats.WindowsPickerDisplayedQuantity ->  updateDisplayController {
                     copy( clientWindowsPickerDisplayedQuantity= content.toInt()) }
-
+                WifiUpdateClientDisplayerStats.ClientWindowsSelectedColorId ->  updateDisplayController {
+                    copy( clientWindowsDisplayedProductId= content.toLong()) }
             }
         } ?: Log.d(tag, "📩 Unhandled message received: $payload")
     }
 
-    private fun dismissProductInfo() {
-        updateDisplayController {
-            copy(clientWindowsDisplayedProductId = null)
-        }
-    }
+
 
     private fun observeConnectionState() {
         viewModelScope.launch {

@@ -90,8 +90,8 @@ fun ColorsCards(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             // Main large image - Show selected color or default to first color
-            val mainColor = if (displayController.clientWindowsSelectedColorId != 0) {
-                colors.find { it.idColore.toInt() == displayController.clientWindowsSelectedColorId }
+            val mainColor = if (displayController.clientWindowsSelectedColorId != 0L) {
+                colors.find { it.idColore == displayController.clientWindowsSelectedColorId }
             } else {
                 colors.firstOrNull()
             }
