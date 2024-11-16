@@ -2,7 +2,7 @@ package P7_EStorePresentationToClient.Main
 
 import P7_EStorePresentationToClient.Ui.ColorsCards
 import P7_EStorePresentationToClient.Ui.CompactQuantityPickerPC
-import P7_EStorePresentationToClient.Ui.ProductNameSection
+import P7_EStorePresentationToClient.Ui.ProductNameSection7
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ColorsArticlesTabelle
 import androidx.compose.animation.AnimatedVisibility
@@ -67,7 +67,7 @@ fun WindowsPresentationInfoProductPackageN7(
                 modifier = Modifier
                     .verticalScroll(rememberScrollState())
             ) {
-                ProductNameSection(articleStatsDataBase)
+                ProductNameSection7(articleStatsDataBase)
 
                 Row(
                     modifier = Modifier

@@ -53,7 +53,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -122,7 +121,7 @@ fun CompactQuantityPicker(
                         viewModel.updateColorSelection(colorIndex, 0)
                         onClosePick()
                     },
-                    modifier = Modifier.size(48.dp)
+                    modifier = Modifier.size(20.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Delete,
@@ -149,15 +148,15 @@ fun CompactQuantityPicker(
             Picker(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 4.dp)
+                    .padding(horizontal = 2.dp)
                     .size(height),
                 items = values,
                 state = valuesPickerState,
-                visibleItemsCount = 3,
-                textModifier = Modifier.padding(4.dp),
+                startIndex = values.indexOfFirst { it == initialQuantity.toString() }.coerceAtLeast(0),
+                visibleItemsCount = 5,
+                textModifier = Modifier.padding(2.dp),
                 textStyle = TextStyle(
-                    fontSize = 25.sp,
-                    fontWeight = FontWeight.Bold,
+                    fontSize = 17.sp,
                     color = animateColorAsState(
                         if (isRed) Color.White else Color.Red,
                         label = "textColor"
@@ -167,11 +166,12 @@ fun CompactQuantityPicker(
                     if (isRed) Color.White else Color.Red,
                     label = "dividerColor"
                 ).value,
-                startIndex = values.indexOfFirst { it == initialQuantity.toString() }.coerceAtLeast(0),
                 onItemStat = {
                     viewModel.updateColorSelection(colorIndex, it.toInt())
                     viewModel.sendOrderToClientDisplayer(ConnectionMessage.ColorSelectionSectionScrollStatSCROLLTO.prefix, it.toInt())
-                }
+                },
+                regleur = 5.5,
+                defrence = 17.0
             )
         }
     }
@@ -188,8 +188,9 @@ fun Picker(
     textStyle: TextStyle = LocalTextStyle.current,
     dividerColor: Color = LocalContentColor.current,
     onItemStat: (String) -> Unit,
+    regleur: Double,
+    defrence: Double,
 ) {
-    var minusToReglePosition by remember { mutableStateOf(7.0) }
 
     val centerPosition = 1
     val listScrollCount = Integer.MAX_VALUE
@@ -222,7 +223,6 @@ fun Picker(
             .collect { item ->
                 state.selectedItem = item
                 onItemStat(item)
-                minusToReglePosition = 7.0
             }
     }
 
@@ -286,12 +286,12 @@ fun Picker(
         }
 
         HorizontalDivider(
-            modifier = Modifier.offset(y = (itemHeightDp- minusToReglePosition.dp) * 1),
+            modifier = Modifier.offset(y = (itemHeightDp+ regleur.dp) * 1),
             color = dividerColor
         )
 
         HorizontalDivider(
-            modifier = Modifier.offset(y = (itemHeightDp- minusToReglePosition.dp) * 2),
+            modifier = Modifier.offset(y = (itemHeightDp+ (regleur + defrence).dp) * 1),
             color = dividerColor
         )
     }

@@ -1,11 +1,10 @@
 package P3_DisplayeProductInfosToSeller.Main
 
 import P3_DisplayeProductInfosToSeller.Ui.Main.ColorSelectionSection
-import P3_DisplayeProductInfosToSeller.Ui.Objects.ActionsButtonRow
 import P3_DisplayeProductInfosToSeller.Ui.Main.Details
-import P3_DisplayeProductInfosToSeller.Ui.Objects.DividerWithLabel
+import P3_DisplayeProductInfosToSeller.Ui.Objects.ActionsButtonRow
+import P3_DisplayeProductInfosToSeller.Ui.Objects.ProductNameSection3
 import P3_DisplayeProductInfosToSeller.Ui.Objects.confirmExitDialog
-import P7_EStorePresentationToClient.Ui.ProductNameSection
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ColorsArticlesTabelle
 import a_RoomDB.SoldArticlesTabelle
@@ -98,8 +97,7 @@ fun MainUi(
                         .padding(bottom = 80.dp) // Add padding for the action buttons
                 ) {
                     articlesBaseStats?.let { stats ->
-                        ProductNameSection(stats)
-                        DividerWithLabel()
+                        ProductNameSection3(stats)
                         ColorSelectionSection(
                             currentSale = currentSale,
                             stats = stats,

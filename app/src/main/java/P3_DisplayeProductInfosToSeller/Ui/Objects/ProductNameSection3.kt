@@ -1,4 +1,4 @@
-package P7_EStorePresentationToClient.Ui
+package P3_DisplayeProductInfosToSeller.Ui.Objects
 
 import a_RoomDB.ArticlesBasesStatsTable
 import androidx.compose.foundation.layout.Arrangement
@@ -22,7 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ProductNameSection7(article: ArticlesBasesStatsTable) {
+fun ProductNameSection3(article: ArticlesBasesStatsTable) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -62,22 +62,28 @@ fun ProductNameSection7(article: ArticlesBasesStatsTable) {
                         horizontalArrangement = Arrangement.End,
                         modifier = Modifier.padding(start = 8.dp)
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Inventory,
-                            contentDescription = "Units",
-                            modifier = Modifier.size(24.dp)
+
+                        Text(
+                            text = "${article.nmbrUnite}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.padding(start = 4.dp)
+                        )
+                        Text(
+                            text = "حبة",
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.padding(start = 4.dp)
                         )
                         Text(
                             text = "/",
                             style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier.padding(start = 4.dp)
                         )
-
-                        Text(
-                            text = "حبة${article.nmbrUnite}",
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.padding(start = 4.dp)
+                        Icon(
+                            imageVector = Icons.Default.Inventory,
+                            contentDescription = "Units",
+                            modifier = Modifier.size(24.dp)
                         )
+
                     }
                 }
 
