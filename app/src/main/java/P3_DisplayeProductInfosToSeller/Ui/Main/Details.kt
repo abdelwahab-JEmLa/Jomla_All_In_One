@@ -139,9 +139,9 @@ private fun PriceDetailsTable(
         PriceGridRow(
             items = listOf(
                 "التفاصيل",
-                "السعر الأساسي",
-                "السعر السابق",
-                "أعلى سعر"
+                "س.أساس",
+                "س.السابق",
+                "س.الأعلى"
             ),
             isHeader = true
         )
@@ -151,9 +151,9 @@ private fun PriceDetailsTable(
         PriceGridRow(
             items = listOf(
                 "ب.الحزمة",
-                "%.2f دج".format(article.monPrixVent),
-                "%.2f دج".format(latestHistoryPrice),
-                "%.2f دج".format(allTimeMaxPrice)
+                "%.2f ".format(article.monPrixVent),
+                "%.2f ".format(latestHistoryPrice),
+                "%.2f ".format(allTimeMaxPrice)
             )
         )
 
@@ -161,9 +161,9 @@ private fun PriceDetailsTable(
         PriceGridRow(
             items = listOf(
                 "ب.الوحدة",
-                "%.2f دج".format(article.monPrixVent / article.nmbrUnite),
-                "%.2f دج".format(latestHistoryPrice / article.nmbrUnite),
-                "%.2f دج".format(allTimeMaxPrice / article.nmbrUnite)
+                "%.2f ".format(article.monPrixVent / article.nmbrUnite),
+                "%.2f ".format(latestHistoryPrice / article.nmbrUnite),
+                "%.2f ".format(allTimeMaxPrice / article.nmbrUnite)
             )
         )
 
@@ -171,29 +171,29 @@ private fun PriceDetailsTable(
         PriceGridRow(
             items = listOf(
                 "ر.العميل",
-                "%.2f دج".format(clientSoldPackage - article.monPrixVent),
-                "%.2f دج".format(clientSoldPackage - latestHistoryPrice),
-                "%.2f دج".format(clientSoldPackage - allTimeMaxPrice)
+                "%.2f ".format(clientSoldPackage - article.monPrixVent),
+                "%.2f ".format(clientSoldPackage - latestHistoryPrice),
+                "%.2f ".format(clientSoldPackage - allTimeMaxPrice)
             )
         )
 
         // Row 4: Package profit
         PriceGridRow(
             items = listOf(
-                "ر.الحزمة",
-                "%.2f دج".format(article.monPrixVent - article.monPrixAchat),
-                "%.2f دج".format(latestHistoryPrice - article.monPrixAchat),
-                "%.2f دج".format(allTimeMaxPrice - article.monPrixAchat)
+                "ر.خ.الحزمة",
+                "%.2f ".format(article.monPrixVent - article.monPrixAchat),
+                "%.2f ".format(latestHistoryPrice - article.monPrixAchat),
+                "%.2f ".format(allTimeMaxPrice - article.monPrixAchat)
             )
         )
 
         // Row 5: Client package price
         PriceGridRow(
             items = listOf(
-                "سعر.ب.العميل",
-                "%.2f دج".format(clientSoldPackage),
-                "%.2f دج".format(clientSoldPackage),
-                "%.2f دج".format(clientSoldPackage)
+                "س.ب.عم",
+                "%.2f ".format(clientSoldPackage),
+                "%.2f ".format(clientSoldPackage),
+                "%.2f ".format(clientSoldPackage)
             )
         )
     }
@@ -245,8 +245,8 @@ private fun PriceCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
-                    vertical = if (isHeader) 12.dp else 8.dp,
-                    horizontal = 8.dp
+                    vertical = 4.dp,
+                    horizontal = 4.dp
                 ),
         ) {
             Text(
