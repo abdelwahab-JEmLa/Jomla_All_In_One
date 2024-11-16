@@ -49,7 +49,7 @@ enum class WifiUpdateClientDisplayerStats(val prefix: String) {
     companion object {
         fun fromPayload(payload: String): Pair<WifiUpdateClientDisplayerStats, String>? {
             return entries.firstOrNull { payload.startsWith(it.prefix) }?.let {
-                it to payload.removePrefix(it.prefix)
+                    it to payload.removePrefix(it.prefix)
             }
         }
     }
@@ -147,7 +147,8 @@ open class HeadViewModel(
                 WifiUpdateClientDisplayerStats.ClientWindowsLazyRowSupColorsScrolle ->  updateDisplayController {
                     copy( clientWindowsLazyRowSupColorsScroll= content.toInt()) }
                 WifiUpdateClientDisplayerStats.WindowsPickerDisplayedQuantity ->  updateDisplayController {
-                    copy( clientWindowsPickerDisplayedQuantity= content.toInt()) }
+                    copy( clientWindowsPickerDisplayedQuantity= if (content=="0")
+                     1 else { content.toInt() }) }
                 WifiUpdateClientDisplayerStats.ClientWindowsSelectedColorId ->  updateDisplayController {
                     copy( clientWindowsDisplayedProductId= content.toLong()) }
             }

@@ -7,6 +7,8 @@ import P0_MainScreen.Ui.Objects.NavigationBarWithFab
 import P0_MainScreen.Ui.Objects.NavigationItems
 import P0_MainScreen.Ui.Objects.Screen
 import P7_EStorePresentationToClient.Main.WindowsPresentationInfoProductPackageN7
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -28,6 +30,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.clientjetpack.AppViewModels
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun MainScreen(
     appViewModels: AppViewModels
