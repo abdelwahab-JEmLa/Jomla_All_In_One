@@ -153,7 +153,7 @@ fun CompactQuantityPicker(
                     .size(height),
                 items = values,
                 state = valuesPickerState,
-                visibleItemsCount = 8,
+                visibleItemsCount = 3,
                 textModifier = Modifier.padding(4.dp),
                 textStyle = TextStyle(
                     fontSize = 25.sp,

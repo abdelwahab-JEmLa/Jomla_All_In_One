@@ -129,6 +129,7 @@ private fun PriceDetailsTable(
     allTimeMaxPrice: Double,
     priceHistory: List<PriceRecord>
 ) {
+    val clientSoldPackage =article.clienPrixVentUnite * article.nmbrUnite
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -170,9 +171,9 @@ private fun PriceDetailsTable(
         // Client package profit row
         PriceRow(
             label = "ر.العميل",
-            basePrice = (article.clienPrixVentUnite * article.nmbrUnite) - article.monPrixVent,
-            maxPrice = allTimeMaxPrice - article.monPrixVent,
-            historyPrice = latestHistoryPrice - article.monPrixVent
+            basePrice = clientSoldPackage - article.monPrixVent,
+            maxPrice = clientSoldPackage -allTimeMaxPrice ,
+            historyPrice = clientSoldPackage-latestHistoryPrice
         )
         // Regular profit row
         PriceRow(
@@ -184,7 +185,7 @@ private fun PriceDetailsTable(
         // Client package price row
         PriceRow(
             label = "سعر.ب.العميل",
-            basePrice = article.clienPrixVentUnite * article.nmbrUnite,
+            basePrice = clientSoldPackage,
             maxPrice = allTimeMaxPrice,
             historyPrice = latestHistoryPrice
         )
