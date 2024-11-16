@@ -94,12 +94,7 @@ fun ColumnScope.Details(
                             priceHistory = priceHistory
                         )
 
-                        // Statistics section
-                        StatisticsSection(
-                            article = article,
-                            allTimeMaxPrice = allTimeMaxPrice,
-                            priceHistory = priceHistory.lastOrNull()?.price ?: 0.0
-                        )
+
                     }
                 }
             }
@@ -124,54 +119,6 @@ private fun DetailHeader(isExpanded: Boolean) {
         Icon(
             imageVector = if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
             contentDescription = if (isExpanded) "طي" else "توسيع"
-        )
-    }
-}
-
-@Composable
-private fun StatisticsSection(
-    article: ArticlesBasesStatsTable,
-    allTimeMaxPrice: Double,
-    priceHistory: Double
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 16.dp)
-    ) {
-        Text(
-            text = "الإحصائيات",
-            style = MaterialTheme.typography.titleSmall,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-
-        // Calculate statistics
-        val stats = listOf(
-            "نسبة الربح الأساسية" to calculateProfitPercentage(article.monPrixVent, article.monPrixAchat),
-            "نسبة أعلى ربح" to calculateProfitPercentage(allTimeMaxPrice, article.monPrixAchat),
-            "نسبة الربح السابقة" to calculateProfitPercentage(priceHistory, article.monPrixAchat)
-        )
-
-        stats.forEach { (label, value) ->
-            StatisticRow(label, "%.1f%%".format(value))
-        }
-    }
-}
-
-@Composable
-private fun StatisticRow(label: String, value: String) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(text = label, style = MaterialTheme.typography.bodyMedium)
-        Text(
-            text = value,
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.Bold
         )
     }
 }
@@ -205,28 +152,41 @@ private fun PriceDetailsTable(
         // Price rows
         val latestHistoryPrice = priceHistory.lastOrNull()?.price ?: 0.0
 
-        // Unit price row
-        PriceRow(
-            label = "سعر الوحدة",
-            basePrice = article.monPrixVent / article.nmbrUnite,
-            maxPrice = allTimeMaxPrice / article.nmbrUnite,
-            historyPrice = latestHistoryPrice / article.nmbrUnite
-        )
-
         // Wholesale price row
         PriceRow(
-            label = "سعر الجملة",
+            label = "ب.الحزمة",
             basePrice = article.monPrixVent,
             maxPrice = allTimeMaxPrice,
             historyPrice = latestHistoryPrice
         )
 
-        // Profit row
+        // Unit price row
         PriceRow(
-            label = "الربح",
+            label = "ب.الوحدة",
+            basePrice = article.monPrixVent / article.nmbrUnite,
+            maxPrice = allTimeMaxPrice / article.nmbrUnite,
+            historyPrice = latestHistoryPrice / article.nmbrUnite
+        )
+        // Client package profit row
+        PriceRow(
+            label = "ر.العميل",
+            basePrice = (article.clienPrixVentUnite * article.nmbrUnite) - article.monPrixVent,
+            maxPrice = allTimeMaxPrice - article.monPrixVent,
+            historyPrice = latestHistoryPrice - article.monPrixVent
+        )
+        // Regular profit row
+        PriceRow(
+            label = "ر.الحزمة",
             basePrice = article.monPrixVent - article.monPrixAchat,
             maxPrice = allTimeMaxPrice - article.monPrixAchat,
             historyPrice = latestHistoryPrice - article.monPrixAchat
+        )
+        // Client package price row
+        PriceRow(
+            label = "سعر.ب.العميل",
+            basePrice = article.clienPrixVentUnite * article.nmbrUnite,
+            maxPrice = allTimeMaxPrice,
+            historyPrice = latestHistoryPrice
         )
     }
 }
@@ -261,11 +221,7 @@ private fun PriceRow(
     }
 }
 
-private fun calculateProfitPercentage(sellingPrice: Double, costPrice: Double): Double {
-    return if (costPrice != 0.0) {
-        ((sellingPrice - costPrice) / costPrice) * 100
-    } else 0.0
-}
+
 
 
 
