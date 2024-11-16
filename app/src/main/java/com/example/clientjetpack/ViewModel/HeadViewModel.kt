@@ -36,16 +36,16 @@ import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 
-enum class ConnectionMessage(val prefix: String) {
-    SCROLL_TO_POSITION("ScrollToPosition-> "),
-    PRODUCT_ID("idProdect"),
+enum class WifiUpdateClientDisplayerStats(val prefix: String) {
+    ClientMainGridScrollPosition("ClientMainGridScrollPosition"),
+    ClientWindowsDisplayedProductId("ClientWindowsDisplayedProductId"),
     DISMISS_PRODUCT_INFO("DismissWindowsInfosProduct") ,
-    ColorSelectionSectionScrollStatSCROLLTO("ColorSelectionSectionScrollStat") ,
-    WindowsPickerDisplayedQuantity("windowsPickerDisplayedQuantity") ,
+    ClientWindowsLazyRowSupColorsScrolle("ClientWindowsLazyRowSupColorsScrolle") ,
+    WindowsPickerDisplayedQuantity("WindowsPickerDisplayedQuantity") ,
     ;
 
     companion object {
-        fun fromPayload(payload: String): Pair<ConnectionMessage, String>? {
+        fun fromPayload(payload: String): Pair<WifiUpdateClientDisplayerStats, String>? {
             return entries.firstOrNull { payload.startsWith(it.prefix) }?.let {
                 it to payload.removePrefix(it.prefix)
             }
@@ -132,40 +132,28 @@ open class HeadViewModel(
 
 
 
-
+    /**Conexions*/
     private fun handlePayload(payload: String) {
-        ConnectionMessage.fromPayload(payload)?.let { (messageType, content) ->
+        WifiUpdateClientDisplayerStats.fromPayload(payload)?.let { (messageType, content) ->
             when (messageType) {
-                ConnectionMessage.SCROLL_TO_POSITION -> updateScrollPosition(content.toInt())
-                ConnectionMessage.PRODUCT_ID -> updateDisplayedProductId(content.toLong())
-                ConnectionMessage.DISMISS_PRODUCT_INFO -> dismissProductInfo()
-                ConnectionMessage.ColorSelectionSectionScrollStatSCROLLTO -> updateColorSelectionSectionScrollStat(content.toInt())
-                ConnectionMessage.WindowsPickerDisplayedQuantity -> updateColorSelectionSectionScrollStat(content.toInt())
+                WifiUpdateClientDisplayerStats.ClientMainGridScrollPosition -> updateDisplayController {
+                    copy( mainGridScrollPosition= content.toInt()) }
+                WifiUpdateClientDisplayerStats.ClientWindowsDisplayedProductId -> updateDisplayController {
+                    copy( clientWindowsDisplayedProductId= content.toLong()) }
+                WifiUpdateClientDisplayerStats.DISMISS_PRODUCT_INFO -> updateDisplayController {
+                    copy( clientWindowsDisplayedProductId= null) }
+                WifiUpdateClientDisplayerStats.ClientWindowsLazyRowSupColorsScrolle ->  updateDisplayController {
+                    copy( clientWindowsLazyRowSupColorsScrolle= content.toInt()) }
+                WifiUpdateClientDisplayerStats.WindowsPickerDisplayedQuantity ->  updateDisplayController {
+                    copy( clientWindowsPickerDisplayedQuantity= content.toInt()) }
 
             }
         } ?: Log.d(tag, "📩 Unhandled message received: $payload")
     }
 
-    private fun updateScrollPosition(value: Int) {
-        updateDisplayController {
-            copy( windowsPickerDisplayedQuantity= value)
-        }
-    }
-
-    private fun updateColorSelectionSectionScrollStat(productId: Int) {
-        updateDisplayController {
-            copy(colorSelectionSectionScrollStat = productId)
-        }
-    }
-    private fun updateDisplayedProductId(productId: Long) {
-        updateDisplayController {
-            copy(windowsProductIdWhoInfoDisplayed = productId)
-        }
-    }
-
     private fun dismissProductInfo() {
         updateDisplayController {
-            copy(windowsProductIdWhoInfoDisplayed = null)
+            copy(clientWindowsDisplayedProductId = null)
         }
     }
 

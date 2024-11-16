@@ -97,7 +97,7 @@ fun MainUi(
     var savedScrollPosition by remember { mutableStateOf(0) }
 
     // Get the current scroll position directly from ProductDisplayController
-    val currentScrollPosition = uiState.productDisplayController.clientDisplayerScrollPosition
+    val currentScrollPosition = uiState.productDisplayController.mainGridScrollPosition
 
     LaunchedEffect(isFabVisible) {
         if (isFabVisible) {

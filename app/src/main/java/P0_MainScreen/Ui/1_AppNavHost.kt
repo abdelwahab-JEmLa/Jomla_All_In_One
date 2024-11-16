@@ -23,7 +23,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.clientjetpack.AppViewModels
-import com.example.clientjetpack.ViewModel.ConnectionMessage
+import com.example.clientjetpack.ViewModel.WifiUpdateClientDisplayerStats
 
 @Composable
 fun AppNavHost(
@@ -74,7 +74,7 @@ fun AppNavHost(
                                 )
                                 opnerSaleWindows=true
                                 appViewModels.headViewModel.sendOrderToClientDisplayer(
-                                    ConnectionMessage.PRODUCT_ID.prefix,
+                                    WifiUpdateClientDisplayerStats.ClientWindowsDisplayedProductId.prefix,
                                     relatedArticleBaseStats!!.idArticle.toLong()
                                 )
                             }
@@ -153,7 +153,7 @@ fun AppNavHost(
                     appViewModels.headViewModel.clearCurrentSale()
                     opnerSaleWindows=false
                     appViewModels.headViewModel.sendOrderToClientDisplayer(
-                        ConnectionMessage.DISMISS_PRODUCT_INFO.prefix
+                        WifiUpdateClientDisplayerStats.DISMISS_PRODUCT_INFO.prefix
                     )
                 },
                 reloadTrigger = reloadTrigger,

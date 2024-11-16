@@ -23,7 +23,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.example.clientjetpack.ViewModel.ConnectionMessage
+import com.example.clientjetpack.ViewModel.WifiUpdateClientDisplayerStats
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import kotlinx.coroutines.flow.distinctUntilChanged
 
@@ -72,7 +72,7 @@ fun ColorSelectionSection(
                             .collect { position ->
                                 // Only send scroll position if there are actually items to scroll
                                 if (position >= 0 && position < colors.size - 1) {
-                                    viewModel.sendOrderToClientDisplayer(ConnectionMessage.WindowsPickerDisplayedQuantity.prefix, position)
+                                    viewModel.sendOrderToClientDisplayer(WifiUpdateClientDisplayerStats.WindowsPickerDisplayedQuantity.prefix, position)
                                 }
                             }
                     }

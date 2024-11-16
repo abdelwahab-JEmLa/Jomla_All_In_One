@@ -11,8 +11,8 @@ import com.example.clientjetpack.Models.ProductDisplayController
 @Composable
 fun DisplayArticleInfoToClientWindowsPreview() {
     val sampleProductDisplayController = ProductDisplayController(
-        windowsSelectedColorId = 29,
-        windowsPickerDisplayedQuantity = 25
+        clientWindowsSelectedColorId = 29,
+        clientWindowsPickerDisplayedQuantity = 25
     )
 
     val sampleArticleStats = ArticlesBasesStatsTable(

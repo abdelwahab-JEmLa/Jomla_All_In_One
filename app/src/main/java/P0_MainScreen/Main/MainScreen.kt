@@ -39,7 +39,7 @@ fun MainScreen(
     HandleFullscreenMode(productDisplayController)
 
 
-    val displayProductDataBase = productDisplayController.windowsProductIdWhoInfoDisplayed?.let { id ->
+    val displayProductDataBase = productDisplayController.clientWindowsDisplayedProductId?.let { id ->
         uiState.articlesBasesStatTables.find { it.idArticle.toLong() == id }
     }
 

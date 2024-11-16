@@ -113,13 +113,13 @@ fun WindowsPresentationInfoProductPackageN7(
                     }
 
                     AnimatedVisibility(
-                        visible = displayController.windowsSelectedColorId > 0,
+                        visible = displayController.clientWindowsSelectedColorId > 0,
                         modifier = Modifier.weight(0.2f),
                         enter = slideInHorizontally(),
                         exit = slideOutHorizontally()
                     ) {
                         CompactQuantityPickerPC(
-                            initialQuantity = displayController.windowsPickerDisplayedQuantity,
+                            initialQuantity = displayController.clientWindowsPickerDisplayedQuantity,
                             height = 600.dp
                         )
                     }

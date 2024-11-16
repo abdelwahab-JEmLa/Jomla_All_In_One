@@ -57,7 +57,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.clientjetpack.ViewModel.ConnectionMessage
+import com.example.clientjetpack.ViewModel.WifiUpdateClientDisplayerStats
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -168,7 +168,7 @@ fun CompactQuantityPicker(
                 ).value,
                 onItemStat = {
                     viewModel.updateColorSelection(colorIndex, it.toInt())
-                    viewModel.sendOrderToClientDisplayer(ConnectionMessage.ColorSelectionSectionScrollStatSCROLLTO.prefix, it.toInt())
+                    viewModel.sendOrderToClientDisplayer(WifiUpdateClientDisplayerStats.ClientWindowsLazyRowSupColorsScrolle.prefix, it.toInt())
                 },
                 regleur = 4.5,
                 defrence = 17.0

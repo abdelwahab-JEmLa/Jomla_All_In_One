@@ -65,11 +65,11 @@ fun ColorsCards(
     val listState = rememberLazyListState()
 
     // Handle scroll synchronization
-    LaunchedEffect(displayController.colorSelectionSectionScrollStat) {
+    LaunchedEffect(displayController.clientWindowsLazyRowSupColorsScrolle) {
         if (displayController.isHostPhone) return@LaunchedEffect
         try {
             scope.launch {
-                listState.animateScrollToItem(displayController.colorSelectionSectionScrollStat)
+                listState.animateScrollToItem(displayController.clientWindowsLazyRowSupColorsScrolle)
                 delay(300)
             }
         } catch (e: Exception) {
@@ -90,8 +90,8 @@ fun ColorsCards(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             // Main large image - Show selected color or default to first color
-            val mainColor = if (displayController.windowsSelectedColorId != 0) {
-                colors.find { it.idColore.toInt() == displayController.windowsSelectedColorId }
+            val mainColor = if (displayController.clientWindowsSelectedColorId != 0) {
+                colors.find { it.idColore.toInt() == displayController.clientWindowsSelectedColorId }
             } else {
                 colors.firstOrNull()
             }
