@@ -1,5 +1,4 @@
-package P3_DisplayeProductInfosToSeller.Ui.Objects
-
+package P3_DisplayeProductInfosToSeller.Ui.Main
 
 import a_RoomDB.ArticlesBasesStatsTable
 import android.annotation.SuppressLint
@@ -10,6 +9,7 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -26,6 +26,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.clientjetpack.Models.PriceRecord
@@ -49,11 +51,9 @@ fun ColumnScope.Details(
 ) {
     var isExpanded by remember { mutableStateOf(true) }
 
-    // Get current client ID from settings
     val currentClientId = uiState.appSettingsSaverModel
         .find { it.name == "clientBuyerNowId" }?.valueLong ?: 0
 
-    // Get price history data
     val allTimeMaxPrice = viewModel.getMaxPrice(article.idArticle)
     val priceHistory = viewModel.getHistoryProductForClient(article.idArticle, currentClientId)
 
@@ -71,12 +71,10 @@ fun ColumnScope.Details(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp)
+                    .padding(12.dp)
             ) {
-                // Header
                 DetailHeader(isExpanded)
 
-                // Animated content
                 AnimatedVisibility(
                     visible = isExpanded,
                     enter = slideInVertically() + expandVertically(),
@@ -87,14 +85,11 @@ fun ColumnScope.Details(
                             .fillMaxWidth()
                             .padding(top = 8.dp)
                     ) {
-                        // Price table
                         PriceDetailsTable(
                             article = article,
                             allTimeMaxPrice = allTimeMaxPrice,
                             priceHistory = priceHistory
                         )
-
-
                     }
                 }
             }
@@ -107,7 +102,7 @@ private fun DetailHeader(isExpanded: Boolean) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 8.dp),
+            .padding(bottom = 12.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -129,66 +124,177 @@ private fun PriceDetailsTable(
     allTimeMaxPrice: Double,
     priceHistory: List<PriceRecord>
 ) {
-    val clientSoldPackage =article.clienPrixVentUnite * article.nmbrUnite
+    val clientSoldPackage = article.clienPrixVentUnite * article.nmbrUnite
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
     ) {
-        // Headers
+        // Headers with dividers
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            TableHeader("التفاصيل")
-            TableHeader("السعر الأساسي")
-            TableHeader("أعلى سعر")
-            TableHeader("السعر السابق")
+            RowItemWithDivider(
+                showDivider = true
+            ) {
+                TableHeader("التفاصيل")
+            }
+
+            RowItemWithDivider(
+                showDivider = true
+            ) {
+                TableHeader("السعر الأساسي")
+            }
+
+            RowItemWithDivider(
+                showDivider = true
+            ) {
+                TableHeader("السعر السابق")
+            }
+
+            RowItemWithDivider(
+                showDivider = false
+            ) {
+                TableHeader("أعلى سعر")
+            }
         }
 
         Spacer(modifier = Modifier.height(8.dp))
         HorizontalDivider()
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Price rows
         val latestHistoryPrice = priceHistory.lastOrNull()?.price ?: 0.0
 
-        // Wholesale price row
-        PriceRow(
+        PriceRowWithDividers(
             label = "ب.الحزمة",
             basePrice = article.monPrixVent,
             maxPrice = allTimeMaxPrice,
             historyPrice = latestHistoryPrice
         )
 
-        // Unit price row
-        PriceRow(
+        PriceRowWithDividers(
             label = "ب.الوحدة",
             basePrice = article.monPrixVent / article.nmbrUnite,
             maxPrice = allTimeMaxPrice / article.nmbrUnite,
             historyPrice = latestHistoryPrice / article.nmbrUnite
         )
-        // Client package profit row
-        PriceRow(
+
+        PriceRowWithDividers(
             label = "ر.العميل",
             basePrice = clientSoldPackage - article.monPrixVent,
-            maxPrice = clientSoldPackage -allTimeMaxPrice ,
-            historyPrice = clientSoldPackage-latestHistoryPrice
+            maxPrice = clientSoldPackage - allTimeMaxPrice,
+            historyPrice = clientSoldPackage - latestHistoryPrice,
+            isProfitRow = true
         )
-        // Regular profit row
-        PriceRow(
+
+        PriceRowWithDividers(
             label = "ر.الحزمة",
             basePrice = article.monPrixVent - article.monPrixAchat,
             maxPrice = allTimeMaxPrice - article.monPrixAchat,
-            historyPrice = latestHistoryPrice - article.monPrixAchat
+            historyPrice = latestHistoryPrice - article.monPrixAchat,
+            isProfitRow = true
         )
-        // Client package price row
-        PriceRow(
+
+        PriceRowWithDividers(
             label = "سعر.ب.العميل",
             basePrice = clientSoldPackage,
             maxPrice = allTimeMaxPrice,
-            historyPrice = latestHistoryPrice
+            historyPrice = latestHistoryPrice,
+            showBottomDivider = false
         )
+    }
+}
+
+@Composable
+private fun RowItemWithDivider(
+    showDivider: Boolean,
+    content: @Composable () -> Unit
+) {
+    Row(
+        modifier = Modifier,
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier.weight(1f),
+            contentAlignment = Alignment.Center
+        ) {
+            content()
+        }
+        if (showDivider) {
+            VerticalDivider(
+                modifier = Modifier
+                    .height(24.dp)
+                    .padding(horizontal = 8.dp),
+                color = MaterialTheme.colorScheme.surfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
+private fun PriceRowWithDividers(
+    label: String,
+    basePrice: Double,
+    maxPrice: Double,
+    historyPrice: Double,
+    isProfitRow: Boolean = false,
+    showBottomDivider: Boolean = true
+) {
+    val textColor = if (isProfitRow) MaterialTheme.colorScheme.primary else Color.Unspecified
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        RowItemWithDivider(
+            showDivider = true
+        ) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.bodyMedium,
+                color = textColor
+            )
+        }
+
+        RowItemWithDivider(
+            showDivider = true
+        ) {
+            Text(
+                text = "%.2f دج".format(basePrice),
+                color = textColor
+            )
+        }
+
+        RowItemWithDivider(
+            showDivider = true
+        ) {
+            Text(
+                text = "%.2f دج".format(historyPrice),
+                color = if (historyPrice < basePrice) MaterialTheme.colorScheme.error else textColor
+            )
+        }
+
+        RowItemWithDivider(
+            showDivider = false
+        ) {
+            Text(
+                text = "%.2f دج".format(maxPrice),
+                color = textColor
+            )
+        }
+    }
+
+    if (showBottomDivider) {
+        Spacer(modifier = Modifier.height(4.dp))
+        HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant)
+        Spacer(modifier = Modifier.height(4.dp))
     }
 }
 
@@ -201,31 +307,3 @@ private fun TableHeader(text: String) {
         modifier = Modifier.padding(4.dp)
     )
 }
-
-@Composable
-private fun PriceRow(
-    label: String,
-    basePrice: Double,
-    maxPrice: Double,
-    historyPrice: Double
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(text = label, style = MaterialTheme.typography.bodyMedium)
-        Text(text = "%.2f دج".format(basePrice))
-        Text(text = "%.2f دج".format(maxPrice))
-        Text(text = "%.2f دج".format(historyPrice))
-    }
-}
-
-
-
-
-
-
-
-

@@ -1,8 +1,8 @@
 package P3_DisplayeProductInfosToSeller.Main
 
-import P3_DisplayeProductInfosToSeller.Ui.ColorSelectionSection
+import P3_DisplayeProductInfosToSeller.Ui.Main.ColorSelectionSection
 import P3_DisplayeProductInfosToSeller.Ui.Objects.ActionsButtonRow
-import P3_DisplayeProductInfosToSeller.Ui.Objects.Details
+import P3_DisplayeProductInfosToSeller.Ui.Main.Details
 import P3_DisplayeProductInfosToSeller.Ui.Objects.DividerWithLabel
 import P3_DisplayeProductInfosToSeller.Ui.Objects.confirmExitDialog
 import P7_EStorePresentationToClient.Ui.ProductNameSection
