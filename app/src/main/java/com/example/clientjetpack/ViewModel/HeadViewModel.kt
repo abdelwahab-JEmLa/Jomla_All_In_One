@@ -2,7 +2,6 @@ package com.example.clientjetpack.ViewModel
 
 import P7_EStorePresentationToClient.Modules.ConnectionManager
 import a_RoomDB.AppSettingsSaverModel
-import a_RoomDB.ArticlesAcheteModele
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.CategoriesTabelle
 import a_RoomDB.ClientsModel
@@ -14,6 +13,8 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.clientjetpack.Models.ArticlesAcheteModele
+import com.example.clientjetpack.Models.PriceRecord
 import com.example.clientjetpack.Models.ProductDisplayController
 import com.example.clientjetpack.Models.UiState
 import com.example.clientjetpack.Modules.AppDatabase
@@ -90,30 +91,46 @@ open class HeadViewModel(
                 }
         }
     }
-
     private fun processHistoricalData(documents: List<DocumentSnapshot>) {
         try {
-            // Group sales by product ID and find max price for each
-            val maxPrices = documents.mapNotNull { doc ->
+            val priceHistory = documents.mapNotNull { doc ->
                 doc.toObject(ArticlesAcheteModele::class.java)?.let { article ->
-                    article.idArticle to article.monPrixVentFireStoreBM
+                    val productId = article.idArticle.toLong()
+                    val clientId = article.idClient?.toLongOrNull() ?: 0L
+                    val price = article.monPrixVentFireStoreBM
+                    val date = article.dateDachate.toLongOrNull() ?: System.currentTimeMillis()
+
+                    Triple(productId, clientId, PriceRecord(price, clientId, date))
                 }
-            }.groupBy({ it.first }, { it.second })
-                .mapValues { (_, prices) -> prices.maxOrNull() ?: 0.0 }
+            }.groupBy(
+                keySelector = { Pair(it.first, it.second) },
+                valueTransform = { it.third }
+            )
 
-     //       _uiState.update { it.copy(maxPrices = maxPrices) }
-            // TODO: Cannot find a parameter with this name: maxPrices 
-
+            _uiState.update { currentState ->
+                currentState.copy(maxPriceMap = priceHistory)
+            }
         } catch (e: Exception) {
             Log.e(tag, "Error processing historical data", e)
         }
     }
 
-    // Extension function to get max price for a product
-    fun UiState.getMaxPrice(productId: Long): Double? {
-        // TODO: Function "getMaxPrice" is never used  
-        return maxPriceMap[productId]
+    fun getMaxPrice(productId: Int): Double {
+        return uiState.value.maxPriceMap
+            .filter { it.key.first == productId.toLong() }
+            .values
+            .flatten()
+            .maxOfOrNull { it.price } ?: 0.0
     }
+
+    fun getHistoryProductForClient(productId: Int, clientId: Long): List<PriceRecord> {
+        val key = Pair(productId.toLong(), clientId)
+        return uiState.value.maxPriceMap[key] ?: emptyList()
+    }
+
+
+
+
 
 
     private fun handlePayload(payload: String) {

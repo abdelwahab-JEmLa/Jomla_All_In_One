@@ -61,14 +61,12 @@ fun ColorsCards(
         } else null
     }
 
-    val selectedColor = colors.find { it.idColore.toInt() == displayController.windowsSelectedColorId }
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
 
     // Handle scroll synchronization
     LaunchedEffect(displayController.colorSelectionSectionScrollStat) {
         if (displayController.isHostPhone) return@LaunchedEffect
-
         try {
             scope.launch {
                 listState.animateScrollToItem(displayController.colorSelectionSectionScrollStat)
@@ -91,19 +89,23 @@ fun ColorsCards(
                 .padding(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            // Main large image - Show selected color or default to first color
+            val mainColor = if (displayController.windowsSelectedColorId != 0) {
+                colors.find { it.idColore.toInt() == displayController.windowsSelectedColorId }
+            } else {
+                colors.firstOrNull()
+            }
 
 
-            // TODO  fait que :
-            //  quen windowsSelectedColorId = la color fait elle soit on Main large image
-            //  et la color du main soit au dernier des lazy
-            if (displayController.windowsSelectedColorId == 0 && colors.size > 1) {
+            // Additional color options
+            if (colors.size > 1) {
                 LazyRow(
                     state = listState,
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     contentPadding = PaddingValues(horizontal = 8.dp)
                 ) {
-                    items(colors.drop(1)) { color ->
+                    items(colors.filter { it != mainColor }) { color ->
                         Box(
                             modifier = Modifier
                                 .size(200.dp)
@@ -120,8 +122,6 @@ fun ColorsCards(
                     }
                 }
             }
-
-            // Main large image
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -130,11 +130,12 @@ fun ColorsCards(
                 ColorItem(
                     modifier = Modifier.fillMaxSize(),
                     article = articlesBasesStatsTable,
-                    color = selectedColor ?: colors.firstOrNull(),
-                    index = if (selectedColor != null) colors.indexOf(selectedColor) else 0,
+                    color = mainColor,
+                    index = colors.indexOf(mainColor),
                     relodeTigger = relodeTigger,
                 )
             }
+
         }
     }
 }

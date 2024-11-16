@@ -58,7 +58,8 @@ fun P3DisplayeProductInfosToSeller(
             viewModel = viewModel,
             reloadTrigger = reloadTrigger,
             isDetailsVisible = isDetailsVisible,
-            onDismiss = onDismiss, uiState = uiState
+            onDismiss = onDismiss,
+            uiState = uiState
         )
     }
 }

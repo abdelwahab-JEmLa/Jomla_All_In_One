@@ -8,6 +8,7 @@ import a_RoomDB.ColorsArticlesTabelle
 import a_RoomDB.SoldArticlesTabelle
 import a_RoomDB.SuppliersTabelle
 
+// First, let's update the UiState data class with maxSalePrice
 data class UiState(
     val appSettingsSaverModel: List<AppSettingsSaverModel> = emptyList(),
     val articlesBasesStatTables: List<ArticlesBasesStatsTable> = emptyList(),
@@ -17,9 +18,14 @@ data class UiState(
     val clientsModel: List<ClientsModel> = emptyList(),
     val suppliers: List<SuppliersTabelle> = emptyList(),
     val productDisplayController: ProductDisplayController,
-    val maxPriceMap: Map<Long, Double> = emptyMap() ,
-
+    val maxPriceMap: Map<Pair<Long, Long>, List<PriceRecord>> = emptyMap(), // productId to (clientId, price history)
     val isLoading: Boolean = false,
     val loadingProgress: Float = 0f,
-    val error: String? = null,
-    )
+    val error: String? = null
+)
+// Update the price mapping to include client ID
+data class PriceRecord(
+    val price: Double,
+    val clientId: Long,
+    val date: Long
+)
