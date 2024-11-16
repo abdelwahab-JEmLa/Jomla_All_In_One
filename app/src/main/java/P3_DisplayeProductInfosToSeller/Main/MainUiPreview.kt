@@ -1,8 +1,6 @@
 package P3_DisplayeProductInfosToSeller.Main
 
 import a_RoomDB.AppSettingsSaverModel
-
-
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ColorsArticlesTabelle
 import a_RoomDB.SoldArticlesTabelle
@@ -16,8 +14,37 @@ import com.example.clientjetpack.Models.ProductDisplayController
 import com.example.clientjetpack.Models.UiState
 import com.example.clientjetpack.Modules.AppDatabase
 import com.example.clientjetpack.ViewModel.HeadViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
-@Preview(showBackground = true)
+// Custom PreviewHeadViewModel that extends HeadViewModel
+class PreviewHeadViewModel(
+    context: android.content.Context,
+    database: AppDatabase,
+    private val previewPriceHistory: Map<Pair<Long, Long>, List<PriceRecord>>
+) : HeadViewModel(context, database) {
+
+    private val _previewUiState = MutableStateFlow(UiState(
+        productDisplayController = ProductDisplayController(),
+        maxPriceMap = previewPriceHistory
+    ))
+
+    override val uiState: StateFlow<UiState> = _previewUiState
+
+    override fun getMaxPrice(productId: Int): Double {
+        return previewPriceHistory
+            .filter { it.key.first == productId.toLong() }
+            .values
+            .flatten()
+            .maxOfOrNull { it.price } ?: 0.0
+    }
+
+    override fun getHistoryProductForClient(productId: Int, clientId: Long): List<PriceRecord> {
+        val key = Pair(productId.toLong(), clientId)
+        return previewPriceHistory[key] ?: emptyList()
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun P3_DisplayeProductInfosToSellerPreview() {
@@ -82,10 +109,12 @@ fun P3_DisplayeProductInfosToSellerPreview() {
         color1SoldQuantity = 1
     )
 
+    // Use the custom PreviewHeadViewModel instead of the regular HeadViewModel
     val viewModel = remember(context) {
-        HeadViewModel(
+        PreviewHeadViewModel(
             context,
-            AppDatabase.DatabaseModule.getDatabase(context)
+            AppDatabase.DatabaseModule.getDatabase(context),
+            samplePriceHistory
         )
     }
 

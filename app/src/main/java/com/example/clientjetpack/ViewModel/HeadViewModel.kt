@@ -63,7 +63,7 @@ open class HeadViewModel(
     private val _uiState = MutableStateFlow(UiState(
         productDisplayController = ProductDisplayController()
     ))
-    val uiState = _uiState.asStateFlow()
+    open val uiState = _uiState.asStateFlow()
 
     private val connectionManager = ConnectionManager(
         context = context,
@@ -115,7 +115,7 @@ open class HeadViewModel(
         }
     }
 
-    fun getMaxPrice(productId: Int): Double {
+    open fun getMaxPrice(productId: Int): Double {
         return uiState.value.maxPriceMap
             .filter { it.key.first == productId.toLong() }
             .values
@@ -123,7 +123,7 @@ open class HeadViewModel(
             .maxOfOrNull { it.price } ?: 0.0
     }
 
-    fun getHistoryProductForClient(productId: Int, clientId: Long): List<PriceRecord> {
+    open fun getHistoryProductForClient(productId: Int, clientId: Long): List<PriceRecord> {
         val key = Pair(productId.toLong(), clientId)
         return uiState.value.maxPriceMap[key] ?: emptyList()
     }
