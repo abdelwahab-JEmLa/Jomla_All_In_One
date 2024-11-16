@@ -47,7 +47,7 @@ fun ScrolleAdBanner(
                 val totalSteps = 35
                 val stepSize = cardWidth / totalSteps
 
-                // Smooth scroll to next card
+                // Smooth scroll to  card
                 for (step in 0 until totalSteps) {
                     val nextPosition = (currentBannerIndex * cardWidth) + (step * stepSize)
                     scrollState.scrollTo(nextPosition.toInt())

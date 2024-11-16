@@ -91,6 +91,8 @@ fun ColorsCards(
                 .padding(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+
+
             // TODO  fait que :
             //  quen windowsSelectedColorId = la color fait elle soit on Main large image
             //  et la color du main soit au dernier des lazy
