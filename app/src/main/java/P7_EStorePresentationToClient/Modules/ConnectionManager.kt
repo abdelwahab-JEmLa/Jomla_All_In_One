@@ -73,10 +73,7 @@ class ConnectionManager(
                 is String -> {
                     Payload.fromBytes(data.toByteArray())
                 }
-                is Int -> {
-                    Log.d(TAG, "📤 Envoi de l'entier: $data")
-                    Payload.fromBytes("INT:$data".toByteArray())
-                }
+
                 else -> {
                     Log.e(TAG, "❌ Type de données non supporté: ${data.javaClass}")
                     return

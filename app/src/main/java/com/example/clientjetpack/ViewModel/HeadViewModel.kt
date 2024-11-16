@@ -150,7 +150,7 @@ open class HeadViewModel(
                     copy( clientWindowsPickerDisplayedQuantity= if (content=="0")
                      1 else { content.toInt() }) }
                 WifiUpdateClientDisplayerStats.ClientWindowsSelectedColorId ->  updateDisplayController {
-                    copy( clientWindowsDisplayedProductId= content.toLong()) }
+                    copy( clientWindowsSelectedColorId= content.toLong()) }
             }
         } ?: Log.d(tag, "📩 Unhandled message received: $payload")
     }
