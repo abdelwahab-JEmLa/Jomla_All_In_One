@@ -32,6 +32,7 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.clientjetpack.Models.UiState
 import com.example.clientjetpack.ViewModel.HeadViewModel
+import com.example.clientjetpack.ViewModel.WifiUpdateClientDisplayerStats
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -224,7 +225,10 @@ private fun HandleScrollBroadcast(
         snapshotFlow { gridState.firstVisibleItemIndex }
             .distinctUntilChanged()
             .collect { position ->
-              viewModel.sendOrderToClientDisplayer("ScrollToPosition-> ",position)
+              viewModel.sendOrderToClientDisplayer(
+                  WifiUpdateClientDisplayerStats.ClientMainGridScrollPosition.prefix,
+                  position
+              )
             }
     }
 }

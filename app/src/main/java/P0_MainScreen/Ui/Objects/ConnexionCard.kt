@@ -1,6 +1,7 @@
 package P0_MainScreen.Ui.Objects
 
 import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import com.example.clientjetpack.AppViewModels
 import com.example.clientjetpack.Models.ProductDisplayController
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun ConnexionCard(
     productDisplayController: ProductDisplayController,

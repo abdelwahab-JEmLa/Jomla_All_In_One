@@ -65,11 +65,11 @@ fun ColorsCards(
     val listState = rememberLazyListState()
 
     // Handle scroll synchronization
-    LaunchedEffect(displayController.clientWindowsLazyRowSupColorsScrolle) {
+    LaunchedEffect(displayController.clientWindowsLazyRowSupColorsScroll) {
         if (displayController.isHostPhone) return@LaunchedEffect
         try {
             scope.launch {
-                listState.animateScrollToItem(displayController.clientWindowsLazyRowSupColorsScrolle)
+                listState.animateScrollToItem(displayController.clientWindowsLazyRowSupColorsScroll)
                 delay(300)
             }
         } catch (e: Exception) {

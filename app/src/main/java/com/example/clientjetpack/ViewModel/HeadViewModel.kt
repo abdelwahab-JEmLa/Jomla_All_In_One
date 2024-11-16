@@ -143,7 +143,7 @@ open class HeadViewModel(
                 WifiUpdateClientDisplayerStats.DISMISS_PRODUCT_INFO -> updateDisplayController {
                     copy( clientWindowsDisplayedProductId= null) }
                 WifiUpdateClientDisplayerStats.ClientWindowsLazyRowSupColorsScrolle ->  updateDisplayController {
-                    copy( clientWindowsLazyRowSupColorsScrolle= content.toInt()) }
+                    copy( clientWindowsLazyRowSupColorsScroll= content.toInt()) }
                 WifiUpdateClientDisplayerStats.WindowsPickerDisplayedQuantity ->  updateDisplayController {
                     copy( clientWindowsPickerDisplayedQuantity= content.toInt()) }
 
