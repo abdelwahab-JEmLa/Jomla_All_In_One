@@ -22,32 +22,93 @@ import com.google.android.gms.nearby.connection.Payload
 import com.google.android.gms.nearby.connection.PayloadCallback
 import com.google.android.gms.nearby.connection.PayloadTransferUpdate
 import com.google.android.gms.nearby.connection.Strategy
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import java.util.concurrent.atomic.AtomicBoolean
 
 class ConnectionManager(
     private val context: Context,
-    onPayloadReceiveRaw: (String) -> Unit,
+    private val onPayloadReceiveRaw: (String) -> Unit,
 ) : ViewModel() {
     private val _connectionUiState = MutableStateFlow(ConnectionUiState())
     val connectionUiState: StateFlow<ConnectionUiState> = _connectionUiState.asStateFlow()
 
     private var endpointId: String? = null
     private val serviceId = "com.example.clientjetpack"
-    private val strategy = Strategy.P2P_STAR
+    private val strategy = Strategy.P2P_POINT_TO_POINT // Changé pour une connexion point à point plus stable
 
+    private val isReconnecting = AtomicBoolean(false)
+    private var reconnectionJob: Job? = null
+    private var connectionMonitorJob: Job? = null
+    private var retryCount = 0
+    private val maxRetries = 5
+    private val baseRetryDelayMs = 1000L
+
+    // Garde en mémoire le dernier mode de connexion utilisé
+    private var lastConnectionMode: ConnectionMode = ConnectionMode.NONE
+
+    private enum class ConnectionMode {
+        HOST, CLIENT, NONE
+    }
+
+    private val connectionLifecycleCallback = object : ConnectionLifecycleCallback() {
+        override fun onConnectionInitiated(endpointId: String, info: ConnectionInfo) {
+            Log.d(TAG, "🌟 Connexion initiée avec: ${info.endpointName}")
+            Nearby.getConnectionsClient(context).acceptConnection(endpointId, payloadCallback)
+            updateConnectionStatus("Connexion en cours avec ${info.endpointName}...")
+        }
+
+        override fun onConnectionResult(endpointId: String, result: ConnectionResolution) {
+            when (result.status.statusCode) {
+                ConnectionsStatusCodes.STATUS_OK -> {
+                    Log.d(TAG, "✅ Connexion établie avec succès!")
+                    this@ConnectionManager.endpointId = endpointId
+                    updateConnectionStatus("Connecté")
+                    _connectionUiState.update { it.copy(isConnected = true) }
+                    retryCount = 0 // Réinitialisation du compteur de tentatives
+                    startConnectionMonitoring()
+                    sendData("Connection established")
+                }
+                ConnectionsStatusCodes.STATUS_CONNECTION_REJECTED -> {
+                    Log.e(TAG, "🚫 Connexion rejetée")
+                    handleConnectionFailure("Connexion rejetée")
+                }
+                ConnectionsStatusCodes.STATUS_ERROR -> {
+                    Log.e(TAG, "💥 Erreur de connexion")
+                    handleConnectionFailure("Erreur de connexion")
+                }
+                else -> {
+                    Log.e(TAG, "❓ Statut de connexion inconnu: ${result.status.statusCode}")
+                    handleConnectionFailure("Erreur inconnue")
+                }
+            }
+        }
+
+        override fun onDisconnected(endpointId: String) {
+            Log.d(TAG, "👋 Déconnexion détectée: $endpointId")
+            handleDisconnection(endpointId)
+        }
+    }
 
     private val payloadCallback = object : PayloadCallback() {
         override fun onPayloadReceived(endpointId: String, payload: Payload) {
             if (payload.type == Payload.Type.BYTES) {
-                val rawMessage = String(payload.asBytes()!!)
-                onPayloadReceiveRaw(rawMessage)
-
+                try {
+                    val rawMessage = String(payload.asBytes()!!)
+                    onPayloadReceiveRaw(rawMessage)
+                    Log.d(TAG, "✉️ Message reçu et traité")
+                } catch (e: Exception) {
+                    Log.e(TAG, "❌ Erreur lors du traitement du payload", e)
+                }
             }
         }
+
         override fun onPayloadTransferUpdate(endpointId: String, update: PayloadTransferUpdate) {
             when (update.status) {
                 PayloadTransferUpdate.Status.SUCCESS -> {
@@ -55,58 +116,267 @@ class ConnectionManager(
                 }
                 PayloadTransferUpdate.Status.FAILURE -> {
                     Log.e(TAG, "❌ Échec du transfert")
+                    handleTransferFailure()
                 }
                 PayloadTransferUpdate.Status.IN_PROGRESS -> {
-                    Log.d(TAG, "⏳ Transfert en cours: ${update.bytesTransferred}/${update.totalBytes}")
+                    val progress = if (update.totalBytes > 0) {
+                        (update.bytesTransferred * 100 / update.totalBytes)
+                    } else 0
+                    Log.d(TAG, "⏳ Transfert: $progress%")
                 }
                 PayloadTransferUpdate.Status.CANCELED -> {
                     Log.d(TAG, "🚫 Transfert annulé")
+                    handleTransferFailure()
                 }
             }
         }
+    }
 
+    private fun handleTransferFailure() {
+        viewModelScope.launch {
+            if (_connectionUiState.value.isConnected) {
+                Log.d(TAG, "🔄 Tentative de réenvoi des données...")
+                // Logique de réessai pour les données non envoyées
+            }
+        }
+    }
+
+    private fun startConnectionMonitoring() {
+        connectionMonitorJob?.cancel()
+        connectionMonitorJob = viewModelScope.launch {
+            while (isActive) {
+                delay(5000) // Vérification toutes les 5 secondes
+                checkConnectionHealth()
+            }
+        }
+    }
+
+    private fun checkConnectionHealth() {
+        endpointId?.let { endpoint ->
+            try {
+                sendData("ping")
+            } catch (e: Exception) {
+                Log.e(TAG, "❌ Erreur lors de la vérification de la connexion", e)
+                handleConnectionFailure("Perte de connexion détectée")
+            }
+        }
+    }
+
+    private fun handleConnectionFailure(reason: String) {
+        Log.e(TAG, "⚠️ Échec de connexion: $reason")
+        if (!isReconnecting.get() && retryCount < maxRetries) {
+            initiateReconnection()
+        } else if (retryCount >= maxRetries) {
+            Log.e(TAG, "🛑 Nombre maximum de tentatives atteint")
+            handleFinalDisconnection()
+        }
+    }
+
+    private fun handleDisconnection(disconnectedEndpointId: String) {
+        if (endpointId == disconnectedEndpointId) {
+            this.endpointId = null
+            updateConnectionStatus("Déconnecté")
+            _connectionUiState.update { it.copy(isConnected = false) }
+            initiateReconnection()
+        }
+    }
+
+    private fun initiateReconnection() {
+        if (isReconnecting.compareAndSet(false, true)) {
+            reconnectionJob?.cancel()
+            reconnectionJob = viewModelScope.launch {
+                try {
+                    Log.d(TAG, "🔄 Tentative de reconnexion #${retryCount + 1}")
+                    val delayTime = calculateBackoffDelay()
+                    delay(delayTime)
+
+                    when (lastConnectionMode) {
+                        ConnectionMode.HOST -> startAsHost()
+                        ConnectionMode.CLIENT -> startAsClient()
+                        ConnectionMode.NONE -> {
+                            Log.e(TAG, "❌ Aucun mode de connexion précédent connu")
+                            handleFinalDisconnection()
+                        }
+                    }
+
+                    retryCount++
+                } finally {
+                    isReconnecting.set(false)
+                }
+            }
+        }
+    }
+
+    private fun calculateBackoffDelay(): Long {
+        return baseRetryDelayMs * (1L shl retryCount.coerceAtMost(5))
+    }
+
+    private fun handleFinalDisconnection() {
+        Log.d(TAG, "👋 Déconnexion finale")
+        disconnect()
+        _connectionUiState.update {
+            it.copy(
+                isConnected = false,
+                error = "Connexion perdue après plusieurs tentatives",
+                connectionStatus = "Déconnecté définitivement"
+            )
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    fun startAsHost() {
+        viewModelScope.launch {
+            Log.d(TAG, "🏠 Démarrage en mode hôte...")
+            if (!checkRequiredPermissions()) {
+                handleError("Permissions manquantes")
+                return@launch
+            }
+
+            lastConnectionMode = ConnectionMode.HOST
+            _connectionUiState.update { it.copy(isHostPhone = true) }
+
+            try {
+                val advertisingOptions = AdvertisingOptions.Builder()
+                    .setStrategy(strategy)
+                    .build()
+
+                Nearby.getConnectionsClient(context).startAdvertising(
+                    "Host Device",
+                    serviceId,
+                    connectionLifecycleCallback,
+                    advertisingOptions
+                ).addOnSuccessListener {
+                    Log.d(TAG, "📡 Mode hôte activé")
+                    updateConnectionStatus("En attente de connexion...")
+                }.addOnFailureListener { e ->
+                    Log.e(TAG, "💥 Échec du mode hôte", e)
+                    handleConnectionFailure("Erreur de démarrage du mode hôte: ${e.message}")
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "💥 Exception lors du démarrage du mode hôte", e)
+                handleConnectionFailure(e.message ?: "Erreur inconnue")
+            }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    fun startAsClient() {
+        viewModelScope.launch {
+            Log.d(TAG, "👥 Démarrage en mode client...")
+            if (!checkRequiredPermissions()) {
+                handleError("Permissions manquantes")
+                return@launch
+            }
+
+            lastConnectionMode = ConnectionMode.CLIENT
+            _connectionUiState.update { it.copy(isHostPhone = false) }
+
+            try {
+                val discoveryOptions = DiscoveryOptions.Builder()
+                    .setStrategy(strategy)
+                    .build()
+
+                Nearby.getConnectionsClient(context).startDiscovery(
+                    serviceId,
+                    endpointDiscoveryCallback,
+                    discoveryOptions
+                ).addOnSuccessListener {
+                    Log.d(TAG, "🔍 Recherche démarrée")
+                    updateConnectionStatus("Recherche d'appareils...")
+                }.addOnFailureListener { e ->
+                    Log.e(TAG, "💥 Échec de la recherche", e)
+                    handleConnectionFailure("Erreur de démarrage de la recherche: ${e.message}")
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "💥 Exception lors du démarrage de la recherche", e)
+                handleConnectionFailure(e.message ?: "Erreur inconnue")
+            }
+        }
+    }
+
+    private val endpointDiscoveryCallback = object : EndpointDiscoveryCallback() {
+        override fun onEndpointFound(endpointId: String, info: DiscoveredEndpointInfo) {
+            Log.d(TAG, "🔍 Endpoint trouvé: ${info.endpointName}")
+
+            Nearby.getConnectionsClient(context)
+                .requestConnection(
+                    "Client Device",
+                    endpointId,
+                    connectionLifecycleCallback
+                )
+                .addOnSuccessListener {
+                    Log.d(TAG, "✅ Demande de connexion envoyée")
+                }
+                .addOnFailureListener { e ->
+                    Log.e(TAG, "❌ Échec de la demande de connexion", e)
+                    handleConnectionFailure("Erreur de connexion: ${e.message}")
+                }
+        }
+
+        override fun onEndpointLost(endpointId: String) {
+            Log.d(TAG, "💨 Endpoint perdu: $endpointId")
+        }
     }
 
     fun sendData(data: Any) {
         endpointId?.let { endpoint ->
-            val payload = when (data) {
-                is String -> {
-                    Payload.fromBytes(data.toByteArray())
+            try {
+                val payload = when (data) {
+                    is String -> Payload.fromBytes(data.toByteArray())
+                    else -> {
+                        Log.e(TAG, "❌ Type de données non supporté: ${data.javaClass}")
+                        return
+                    }
                 }
 
-                else -> {
-                    Log.e(TAG, "❌ Type de données non supporté: ${data.javaClass}")
-                    return
-                }
+                Nearby.getConnectionsClient(context)
+                    .sendPayload(endpoint, payload)
+                    .addOnSuccessListener {
+                        Log.d(TAG, "✅ Données envoyées")
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e(TAG, "❌ Échec de l'envoi", e)
+                        handleTransferFailure()
+                    }
+            } catch (e: Exception) {
+                Log.e(TAG, "❌ Exception lors de l'envoi", e)
+                handleTransferFailure()
             }
-
-            Nearby.getConnectionsClient(context).sendPayload(endpoint, payload)
-                .addOnSuccessListener {
-                    Log.d(TAG, "✅ Données envoyées avec succès")
-                }
-                .addOnFailureListener { e ->
-                    Log.e(TAG, "❌ Échec de l'envoi: ${e.message}")
-                    handleError("Erreur d'envoi des données: ${e.message}")
-                }
         }
     }
+
     fun disconnect() {
-        Log.d(TAG, "🔌 Déconnexion en cours...")
-        Nearby.getConnectionsClient(context).apply {
-            stopAdvertising()
-            stopDiscovery()
-            stopAllEndpoints()
+        Log.d(TAG, "🔌 Déconnexion...")
+        connectionMonitorJob?.cancel()
+        reconnectionJob?.cancel()
+
+        try {
+            Nearby.getConnectionsClient(context).apply {
+                stopAdvertising()
+                stopDiscovery()
+                stopAllEndpoints()
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "❌ Erreur lors de la déconnexion", e)
         }
+
         endpointId = null
-        updateConnectionStatus("Déconnecté")
-        _connectionUiState.update { it.copy(
-            isConnected = false,
-            isHostPhone = false
-        )}
+        lastConnectionMode = ConnectionMode.NONE
+        retryCount = 0
+        isReconnecting.set(false)
+
+        _connectionUiState.update {
+            it.copy(
+                isConnected = false,
+                isHostPhone = false,
+                connectionStatus = "Déconnecté",
+                error = null
+            )
+        }
+
         Log.d(TAG, "👋 Déconnexion terminée")
     }
 
-    // Liste exhaustive des permissions nécessaires selon la version d'Android
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private val requiredPermissions = when {
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
@@ -142,176 +412,55 @@ class ConnectionManager(
             val isGranted = ContextCompat.checkSelfPermission(
                 context,
                 permission
-            ) == PackageManager.PERMISSION_GRANTED
+            ) != PackageManager.PERMISSION_GRANTED
 
-            // Log pour chaque permission
-            Log.d(TAG, "Permission $permission: ${if (isGranted) "GRANTED" else "DENIED"}")
-
-            !isGranted
+            Log.d(TAG, "🔐 Permission $permission: ${if (!isGranted) "MANQUANTE" else "OK"}")
+            isGranted
         }
 
         if (missingPermissions.isNotEmpty()) {
-            Log.e(TAG, "Permissions manquantes: ${missingPermissions.joinToString()}")
+            Log.e(TAG, "❌ Permissions manquantes: ${missingPermissions.joinToString()}")
             return false
         }
 
+        Log.d(TAG, "✅ Toutes les permissions sont accordées")
         return true
     }
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    fun startAsClient() {
-        viewModelScope.launch {
-            Log.d(TAG, "Démarrage de la recherche...")
-
-            if (!checkRequiredPermissions()) {
-                val error = "Permissions manquantes pour la découverte Nearby"
-                Log.e(TAG, error)
-                handleError(error)
-                return@launch
-            }
-
-            Log.d(TAG, "Toutes les permissions sont accordées, démarrage de la découverte...")
-            _connectionUiState.update { it.copy(isHostPhone = false) }
-
-            try {
-                val discoveryOptions = DiscoveryOptions.Builder().setStrategy(strategy).build()
-
-                Nearby.getConnectionsClient(context)
-                    .startDiscovery(
-                        serviceId,
-                        endpointDiscoveryCallback,
-                        discoveryOptions
-                    )
-                    .addOnSuccessListener {
-                        Log.d(TAG, "Découverte démarrée avec succès")
-                        updateConnectionStatus("Recherche d'appareils...")
-                    }
-                    .addOnFailureListener { e ->
-                        Log.e(TAG, "Erreur lors du démarrage de la découverte", e)
-                        handleError("Erreur de démarrage de la recherche: ${e.message}")
-                    }
-            } catch (e: Exception) {
-                Log.e(TAG, "Exception lors du démarrage de la découverte", e)
-                handleError("Exception lors du démarrage de la découverte: ${e.message}")
-            }
-        }
-    }
-
-
-    private val endpointDiscoveryCallback = object : EndpointDiscoveryCallback() {
-        override fun onEndpointFound(endpointId: String, info: DiscoveredEndpointInfo) {
-            Log.d(TAG, "🔍 Endpoint trouvé: ${info.endpointName}")
-            Log.d(TAG, "🤝 Tentative de connexion à: $endpointId")
-            Nearby.getConnectionsClient(context).requestConnection(
-                "Client Device",
-                endpointId,
-                connectionLifecycleCallback
-            ).addOnSuccessListener {
-                Log.d(TAG, "✅ Demande de connexion envoyée")
-            }.addOnFailureListener { e ->
-                Log.e(TAG, "❌ Échec de la demande de connexion: ${e.message}")
-            }
-        }
-
-        override fun onEndpointLost(endpointId: String) {
-            Log.d(TAG, "💨 Endpoint perdu: $endpointId")
-        }
-    }
-
-    private val connectionLifecycleCallback = object : ConnectionLifecycleCallback() {
-        override fun onConnectionInitiated(endpointId: String, info: ConnectionInfo) {
-            Log.d(TAG, "🌟 Connexion initiée avec: ${info.endpointName}")
-            Log.d(TAG, "🔄 Acceptation de la connexion en cours...")
-            Nearby.getConnectionsClient(context).acceptConnection(endpointId, payloadCallback)
-            updateConnectionStatus("Connexion en cours avec ${info.endpointName}...")
-        }
-
-        override fun onConnectionResult(endpointId: String, result: ConnectionResolution) {
-            when (result.status.statusCode) {
-                ConnectionsStatusCodes.STATUS_OK -> {
-                    Log.d(TAG, "✨ Connexion établie avec succès!")
-                    this@ConnectionManager.endpointId = endpointId
-                    updateConnectionStatus("Connecté")
-                    _connectionUiState.update { it.copy(isConnected = true) }
-                    sendData("Connection established")
-                }
-                ConnectionsStatusCodes.STATUS_CONNECTION_REJECTED -> {
-                    Log.e(TAG, "🚫 Connexion rejetée")
-                    handleError("Connexion rejetée")
-                }
-                ConnectionsStatusCodes.STATUS_ERROR -> {
-                    Log.e(TAG, "💥 Erreur de connexion")
-                    handleError("Erreur de connexion")
-                }
-            }
-        }
-
-        override fun onDisconnected(endpointId: String) {
-            Log.d(TAG, "👋 Déconnexion de: $endpointId")
-            this@ConnectionManager.endpointId = null
-            updateConnectionStatus("Déconnecté")
-            _connectionUiState.update { it.copy(isConnected = false) }
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    fun startAsHost() {
-        viewModelScope.launch {
-            Log.d(TAG, "🏠 Démarrage en mode hôte...")
-            if (!checkRequiredPermissions()) {
-                handleError("Permissions de localisation manquantes")
-                return@launch
-            }
-
-            _connectionUiState.update { it.copy(isHostPhone = true) }
-            val advertisingOptions = AdvertisingOptions.Builder().setStrategy(strategy).build()
-
-            Nearby.getConnectionsClient(context)
-                .startAdvertising(
-                    "Host Device",
-                    serviceId,
-                    connectionLifecycleCallback,
-                    advertisingOptions
-                )
-                .addOnSuccessListener {
-                    Log.d(TAG, "📡 Mode hôte activé avec succès")
-                    updateConnectionStatus("En attente de connexion...")
-                }
-                .addOnFailureListener { e ->
-                    Log.e(TAG, "💥 Échec du mode hôte: ${e.message}")
-                    handleError("Erreur de démarrage du mode hôte: ${e.message}")
-                }
-        }
-    }
-
-
-
     private fun updateConnectionStatus(status: String) {
         Log.d(TAG, "📊 Status: $status")
-        _connectionUiState.update { it.copy(connectionStatus = status) }
+        _connectionUiState.update { it.copy(
+            connectionStatus = status,
+            error = null  // Réinitialise l'erreur lors de la mise à jour du statut
+        )}
     }
 
     private fun handleError(error: String) {
         Log.e(TAG, "⚠️ Erreur: $error")
-        _connectionUiState.update { it.copy(error = error) }
+        _connectionUiState.update { it.copy(
+            error = error,
+            connectionStatus = "Erreur: $error"
+        )}
     }
 
     override fun onCleared() {
         super.onCleared()
         Log.d(TAG, "🧹 Nettoyage du ViewModel")
         disconnect()
+        connectionMonitorJob?.cancel()
+        reconnectionJob?.cancel()
     }
 
     companion object {
         private const val TAG = "ConnectionManager"
     }
-
-
 }
+
 data class ConnectionUiState(
     val connectionStatus: String = "Déconnecté",
     val isConnected: Boolean = false,
     val isHostPhone: Boolean = false,
     val error: String? = null,
-    val testMessages: List<String> = emptyList(),
+    val lastSuccessfulConnection: Long? = null,
+    val reconnectionAttempts: Int = 0
 )

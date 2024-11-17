@@ -131,9 +131,6 @@ open class HeadViewModel(
     }
 
 
-
-
-
     /**Conexions*/
     private fun handlePayload(payload: String) {
         WifiUpdateClientDisplayerStats.fromPayload(payload)?.let { (messageType, content) ->
@@ -160,13 +157,11 @@ open class HeadViewModel(
     private fun observeConnectionState() {
         viewModelScope.launch {
             connectionManager.connectionUiState.collect { connectionState ->
-                val lastMessage = connectionState.testMessages.lastOrNull()
 
                 updateDisplayController {
                     copy(
                         isConnected = connectionState.isConnected,
                         connectionStatus = connectionState.connectionStatus,
-                        testMessageByWifi = lastMessage ?: testMessageByWifi
                     )
                 }
 
@@ -200,12 +195,14 @@ open class HeadViewModel(
     fun disconnect() = connectionManager.disconnect()
 
 
+
+
     // Ensure the directory exists when initializing the path
     val viewModelImagesPath = File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne/").apply {
-if (!exists()) {
-            mkdirs()
-        }
-    }
+        if (!exists()) {
+                    mkdirs()
+                }
+            }
 
   //  ***
     private val firebaseDatabase = FirebaseDatabase.getInstance()

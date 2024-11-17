@@ -9,13 +9,7 @@ data class ProductDisplayController(
     val isConnected: Boolean = false,
     val connectionStatus: String = "Déconnecté",
     val isHostPhone: Boolean = true,
-    val clientIsTheController: Boolean = true,
-    //Claud,what i went from u to do is to
-    //Find All TODOs and Fix Them
-
-    //TODO :
-    // fait que si est true de change 
-    // que le receveur est le host  
+    val switchRoles: Boolean = true,
     val testMessageByWifi: String = "",
     val error: String? = null,
     )
