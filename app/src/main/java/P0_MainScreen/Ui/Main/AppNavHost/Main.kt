@@ -120,6 +120,7 @@ fun AppNavHost(
                     )
                 }
             }
+
             composable(
                 route = Screen.ClientProductDisplay.route,
                 arguments = listOf(
@@ -141,7 +142,6 @@ fun AppNavHost(
                     )
                 }
             }
-
         }
 
         // Overlay dialogs and windows
