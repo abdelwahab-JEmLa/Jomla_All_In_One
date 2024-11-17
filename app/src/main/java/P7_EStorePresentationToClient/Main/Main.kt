@@ -1,6 +1,6 @@
 package P7_EStorePresentationToClient.Main
 
-import P7_EStorePresentationToClient.Ui.ColorsCards
+import P7_EStorePresentationToClient.Ui.ColorsCards7
 import P7_EStorePresentationToClient.Ui.ProductNameSection7
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ColorsArticlesTabelle
@@ -91,7 +91,7 @@ fun FragmentDisplayeInfoProductToClient7(
                         modifier = Modifier.weight(0.8f),
                         enter = fadeIn() + expandVertically()
                     ) {
-                        ColorsCards(
+                        ColorsCards7(
                             displayController = displayController,
                             articlesBasesStatsTable = articleStatsDataBase,
                             modifier = Modifier.fillMaxWidth(),

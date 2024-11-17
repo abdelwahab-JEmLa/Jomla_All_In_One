@@ -47,15 +47,24 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun ColorsCards(
+fun ColorsCards7(
     displayController: ProductDisplayController,
     articlesBasesStatsTable: ArticlesBasesStatsTable,
     modifier: Modifier = Modifier,
     relodeTigger: Int,
     colorsArticlesList: List<ColorsArticlesTabelle>,
 ) {
-    // Track the previous main color ID
+    // Track both local and controller-based color selection
+    var mainColorId by remember { mutableStateOf(articlesBasesStatsTable.idcolor1) }
     var previousMainColorId by remember { mutableStateOf<Long?>(null) }
+
+    // Update mainColorId when clientWindowsSelectedColorId changes
+    LaunchedEffect(displayController.clientWindowsSelectedColorId) {
+        if (displayController.clientWindowsSelectedColorId != 0L) {
+            previousMainColorId = mainColorId
+            mainColorId = displayController.clientWindowsSelectedColorId
+        }
+    }
 
     val colors = listOf(
         articlesBasesStatsTable.idcolor1,
@@ -71,18 +80,11 @@ fun ColorsCards(
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
 
-    // Update previous main color when main color changes
-    LaunchedEffect(displayController.clientWindowsSelectedColorId) {
-        if (displayController.clientWindowsSelectedColorId != 0L &&
-            displayController.clientWindowsSelectedColorId != previousMainColorId) {
-            previousMainColorId = displayController.clientWindowsSelectedColorId
-        }
-    }
-
+    // Handle auto-scroll for client windows
     LaunchedEffect(displayController.clientWindowsLazyRowSupColorsScroll) {
         if (!displayController.isHostPhone && colors.size > 1) {
-            try {
-                scope.launch {
+            scope.launch {
+                try {
                     val targetIndex = displayController.clientWindowsLazyRowSupColorsScroll.coerceIn(
                         0,
                         (colors.size - 2).coerceAtLeast(0)
@@ -92,118 +94,88 @@ fun ColorsCards(
                         scrollOffset = 0
                     )
                     delay(300)
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
             }
         }
     }
 
-    Card(
+    Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(8.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
         ) {
-            // Main color display
-            val mainColor = if (displayController.clientWindowsSelectedColorId != 0L) {
-                colors.find { it.idColore == displayController.clientWindowsSelectedColorId }
-            } else {
-                colors.firstOrNull()
-            }
-
-            when (colors.size) {
-                2 -> {
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .weight(0.6f)
-                                .height(360.dp)
-                        ) {
-                            ColorItem(
-                                modifier = Modifier.fillMaxSize(),
-                                article = articlesBasesStatsTable,
-                                color = mainColor,
-                                index = colors.indexOf(mainColor),
-                                relodeTigger = relodeTigger,
-                            )
-                        }
-
-                        val secondaryColor = colors.find { it != mainColor }
-                        Box(
-                            modifier = Modifier
-                                .weight(0.4f)
-                                .height(360.dp)
-                        ) {
-                            ColorItem(
-                                modifier = Modifier.fillMaxSize(),
-                                article = articlesBasesStatsTable,
-                                color = secondaryColor,
-                                index = colors.indexOf(secondaryColor),
-                                relodeTigger = relodeTigger,
-                            )
-                        }
-                    }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                // Main color display
+                val mainColor = if (displayController.clientWindowsSelectedColorId != 0L) {
+                    colors.find { it.idColore == displayController.clientWindowsSelectedColorId }
+                } else {
+                    colors.find { it.idColore == mainColorId } ?: colors.firstOrNull()
                 }
-                else -> {
+
+                mainColor?.let {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(360.dp)
+                            .clip(MaterialTheme.shapes.medium)
                     ) {
-                        ColorItem(
+                        ColorItem7(
                             modifier = Modifier.fillMaxSize(),
                             article = articlesBasesStatsTable,
-                            color = mainColor,
-                            index = colors.indexOf(mainColor),
+                            color = it,
+                            index = 0,
                             relodeTigger = relodeTigger,
                         )
                     }
+                }
 
-                    if (colors.size > 1) {
-                        // Organiser les couleurs comme dans ColorSelectionSection
-                        val subColors = colors.filter { it != mainColor }
-                        val arrangedColors = if (previousMainColorId != null) {
-                            // Trouver l'ancienne couleur principale et la mettre à la fin
-                            val oldMainColor = subColors.find { it.idColore == previousMainColorId }
-                            if (oldMainColor != null) {
-                                val otherColors = subColors.filter { it != oldMainColor }
-                                otherColors + oldMainColor
-                            } else {
-                                subColors
+                // Additional colors display
+                if (colors.size > 1) {
+                    val currentMainColorId = if (displayController.clientWindowsSelectedColorId != 0L) {
+                        displayController.clientWindowsSelectedColorId
+                    } else {
+                        mainColorId
+                    }
+
+                    val arrangedColors = colors
+                        .filter { it.idColore != currentMainColorId }
+                        .sortedBy { color ->
+                            when (color.idColore) {
+                                previousMainColorId -> 1
+                                else -> 0
                             }
-                        } else {
-                            subColors
                         }
 
-                        LazyRow(
-                            state = listState,
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            contentPadding = PaddingValues(horizontal = 8.dp)
-                        ) {
-                            items(arrangedColors) { color ->
-                                Box(
-                                    modifier = Modifier
-                                        .size(200.dp)
-                                        .clip(RoundedCornerShape(8.dp))
-                                ) {
-                                    ColorItem(
-                                        modifier = Modifier.fillMaxSize(),
-                                        article = articlesBasesStatsTable,
-                                        color = color,
-                                        index = colors.indexOf(color),
-                                        relodeTigger = relodeTigger,
-                                    )
-                                }
+                    LazyRow(
+                        state = listState,
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        contentPadding = PaddingValues(horizontal = 8.dp)
+                    ) {
+                        items(arrangedColors) { color ->
+                            Box(
+                                modifier = Modifier
+                                    .size(250.dp)
+                                    .clip(MaterialTheme.shapes.medium)
+                            ) {
+                                ColorItem7(
+                                    modifier = Modifier.fillMaxSize(),
+                                    article = articlesBasesStatsTable,
+                                    color = color,
+                                    index = arrangedColors.indexOf(color) + 1,
+                                    relodeTigger = relodeTigger,
+                                )
                             }
                         }
                     }
@@ -212,9 +184,10 @@ fun ColorsCards(
         }
     }
 }
+
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-private fun ColorItem(
+private fun ColorItem7(
     modifier: Modifier,
     article: ArticlesBasesStatsTable,
     color: ColorsArticlesTabelle?,
@@ -226,7 +199,6 @@ private fun ColorItem(
         shape = RoundedCornerShape(8.dp)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            // Image
             ImageDisplayerPC(
                 modifier = Modifier.fillMaxSize(),
                 article = article,
@@ -234,18 +206,19 @@ private fun ColorItem(
                 reloadKey = relodeTigger
             )
 
-            // Color info overlay at bottom
             color?.let { colorData ->
-                Surface(
+                Box(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .fillMaxWidth()
                         .background(
                             Brush.verticalGradient(
-                                colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.3f))
+                                colors = listOf(
+                                    Color.Transparent,
+                                    Color.Black.copy(alpha = 0.3f)
+                                )
                             )
-                        ),
-                    color = Color.Transparent
+                        )
                 ) {
                     Row(
                         modifier = Modifier
@@ -254,7 +227,6 @@ private fun ColorItem(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        // Color name
                         Text(
                             text = colorData.nameColore,
                             style = MaterialTheme.typography.titleMedium,
@@ -263,7 +235,6 @@ private fun ColorItem(
                             modifier = Modifier.weight(1f)
                         )
 
-                        // Color icon
                         Surface(
                             shape = CircleShape,
                             color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
