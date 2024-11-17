@@ -61,6 +61,7 @@ fun ColorItem3(
     relodeTigger: Int,
     viewModel: HeadViewModel,
     height: Dp,
+    updateColorToBeMAin: (Long) -> Unit,
 ) {
     var showPicker by remember {
         mutableStateOf(
@@ -101,7 +102,7 @@ fun ColorItem3(
         ) {
             Box(
                 modifier = Modifier
-                    .weight(0.7f)
+                    .weight(if (showPicker) 0.7f else 1f)  // Adjust weight based on picker visibility
                     .fillMaxHeight()
             ) {
                 ImageDisplayer(
@@ -117,12 +118,11 @@ fun ColorItem3(
                         .fillMaxWidth()
                         .align(Alignment.BottomCenter)
                 ) {
-
-
+                    // Note: Removed extra blank line here
                     AnimatedVisibility(
                         visible = !showPicker,
-                        enter = fadeIn(),
-                        exit = fadeOut()
+                        enter = fadeIn() + slideInHorizontally { it },
+                        exit = fadeOut() + slideOutHorizontally { -it }
                     ) {
                         color?.let { colorData ->
                             Box(
@@ -174,30 +174,33 @@ fun ColorItem3(
                                             border = BorderStroke(1.dp, Color.White.copy(alpha = 0.95f))
                                         ) {}
 
-
                                         Surface(
                                             shape = CircleShape,
                                             color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f),
                                             tonalElevation = 4.dp,
                                             shadowElevation = 4.dp
                                         ) {
-                                            if (colorData.iconColore == "©" || colorData.iconColore == "💯"|| colorData.iconColore == "") {
+                                            if (colorData.iconColore == "©" || colorData.iconColore == "💯" || colorData.iconColore == "") {
                                                 GlideImage(
                                                     model = R.drawable.logo,
                                                     contentDescription = "Logo",
                                                     modifier = Modifier
-                                                        .size(
-                                                            38.dp
-                                                        )
-                                                        .clickable { showPicker = true }
+                                                        .size(38.dp)
+                                                        .clickable {
+                                                            showPicker = true
+                                                            updateColorToBeMAin(color.idColore)
+                                                        }
                                                 )
                                             } else {
                                                 Text(
                                                     text = colorData.iconColore,
-                                                    fontSize =  38.sp,
-                                                    fontWeight = FontWeight.Bold ,
+                                                    fontSize = 38.sp,
+                                                    fontWeight = FontWeight.Bold,
                                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                                    modifier = Modifier.clickable { showPicker = true }
+                                                    modifier = Modifier.clickable {
+                                                        showPicker = true
+                                                        updateColorToBeMAin(color.idColore)
+                                                    }
                                                 )
                                             }
                                         }
@@ -206,7 +209,10 @@ fun ColorItem3(
                                                 .align(Alignment.Center)
                                                 .offset(x = 15.dp, y = 18.dp)
                                                 .size(40.dp)
-                                                .clickable { showPicker = true }
+                                                .clickable {
+                                                    showPicker = true
+                                                    updateColorToBeMAin(color.idColore)
+                                                }
                                         ) {
                                             GlideImage(
                                                 model = R.drawable.hand,
@@ -225,8 +231,8 @@ fun ColorItem3(
             AnimatedVisibility(
                 visible = showPicker,
                 modifier = Modifier.weight(0.3f),
-                enter = slideInHorizontally(),
-                exit = slideOutHorizontally()
+                enter = slideInHorizontally { it },
+                exit = slideOutHorizontally { it }
             ) {
                 if (showPicker && color != null) {
                     CompactQuantityPicker(
@@ -234,7 +240,7 @@ fun ColorItem3(
                         colorIndex = index,
                         viewModel = viewModel,
                         initialQuantity = currentQuantity,
-                        height=height,
+                        height = height,
                         onPickerStatChange = {
                             viewModel.updateColorSelection(index, it.toInt())
                             viewModel.sendOrderToClientDisplayer(

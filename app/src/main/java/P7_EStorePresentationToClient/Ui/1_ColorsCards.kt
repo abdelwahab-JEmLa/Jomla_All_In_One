@@ -96,46 +96,88 @@ fun ColorsCards(
                 colors.firstOrNull()
             }
 
-
-            // Additional color options
-            if (colors.size > 1) {
-                LazyRow(
-                    state = listState,
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    contentPadding = PaddingValues(horizontal = 8.dp)
-                ) {
-                    items(colors.filter { it != mainColor }) { color ->
+            // Handle different layouts based on number of colors
+            when (colors.size) {
+                2 -> {
+                    // For exactly 2 colors, use Row layout to fill max width
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        // Main color takes 60% of the width
                         Box(
                             modifier = Modifier
-                                .size(200.dp)
-                                .clip(RoundedCornerShape(8.dp))
+                                .weight(0.6f)
+                                .height(360.dp)
                         ) {
                             ColorItem(
                                 modifier = Modifier.fillMaxSize(),
                                 article = articlesBasesStatsTable,
-                                color = color,
-                                index = colors.indexOf(color),
+                                color = mainColor,
+                                index = colors.indexOf(mainColor),
+                                relodeTigger = relodeTigger,
+                            )
+                        }
+
+                        // Secondary color takes 40% of the width
+                        val secondaryColor = colors.find { it != mainColor }
+                        Box(
+                            modifier = Modifier
+                                .weight(0.4f)
+                                .height(360.dp)
+                        ) {
+                            ColorItem(
+                                modifier = Modifier.fillMaxSize(),
+                                article = articlesBasesStatsTable,
+                                color = secondaryColor,
+                                index = colors.indexOf(secondaryColor),
                                 relodeTigger = relodeTigger,
                             )
                         }
                     }
                 }
-            }
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(360.dp)
-            ) {
-                ColorItem(
-                    modifier = Modifier.fillMaxSize(),
-                    article = articlesBasesStatsTable,
-                    color = mainColor,
-                    index = colors.indexOf(mainColor),
-                    relodeTigger = relodeTigger,
-                )
-            }
+                else -> {
+                    // Original layout for 1 or 3+ colors
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(360.dp)
+                    ) {
+                        ColorItem(
+                            modifier = Modifier.fillMaxSize(),
+                            article = articlesBasesStatsTable,
+                            color = mainColor,
+                            index = colors.indexOf(mainColor),
+                            relodeTigger = relodeTigger,
+                        )
+                    }
 
+                    if (colors.size > 1) {
+                        LazyRow(
+                            state = listState,
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            contentPadding = PaddingValues(horizontal = 8.dp)
+                        ) {
+                            items(colors.filter { it != mainColor }) { color ->
+                                Box(
+                                    modifier = Modifier
+                                        .size(200.dp)
+                                        .clip(RoundedCornerShape(8.dp))
+                                ) {
+                                    ColorItem(
+                                        modifier = Modifier.fillMaxSize(),
+                                        article = articlesBasesStatsTable,
+                                        color = color,
+                                        index = colors.indexOf(color),
+                                        relodeTigger = relodeTigger,
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

@@ -166,7 +166,6 @@ fun CompactQuantityPicker(
                     if (isRed) Color.White else Color.Red,
                     label = "dividerColor"
                 ).value,
-                onItemStat = onPickerStatChange,
                 regleur = 4.5,
                 defrence = 17.0
             )
@@ -184,7 +183,7 @@ fun Picker(
     textModifier: Modifier = Modifier,
     textStyle: TextStyle = LocalTextStyle.current,
     dividerColor: Color = LocalContentColor.current,
-    onItemStat: (String) -> Unit,
+    onItemStat: ((String) -> Unit)?=null,
     regleur: Double,
     defrence: Double,
 ) {
@@ -219,7 +218,9 @@ fun Picker(
             .distinctUntilChanged()
             .collect { item ->
                 state.selectedItem = item
-                onItemStat(item)
+                if (onItemStat != null) {
+                    onItemStat(item)
+                }
             }
     }
 
