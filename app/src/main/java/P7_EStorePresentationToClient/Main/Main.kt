@@ -28,12 +28,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import com.example.clientjetpack.Models.ProductDisplayController
 
 @Composable
-fun WindowsPresentationInfoProductPackageN7(
+fun FragmentDisplayeInfoProductToClient7(
     displayController: ProductDisplayController,
     articleStatsDataBase: ArticlesBasesStatsTable,
     colorsArticlesList: List<ColorsArticlesTabelle>,
@@ -46,24 +44,17 @@ fun WindowsPresentationInfoProductPackageN7(
         isPickerVisible = true
     }
 
-    Dialog(
-        onDismissRequest = {},
-        properties = DialogProperties(
-            usePlatformDefaultWidth = false,
-            decorFitsSystemWindows = true
-        )
+    Surface(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(4.dp),
+        shape = MaterialTheme.shapes.large,
+        tonalElevation = 2.dp
     ) {
-        Surface(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(4.dp),
-            shape = MaterialTheme.shapes.large,
-            tonalElevation = 2.dp
+        Column(
+            modifier = Modifier
+                .verticalScroll(rememberScrollState())
         ) {
-            Column(
-                modifier = Modifier
-                    .verticalScroll(rememberScrollState())
-            ) {
                 ProductNameSection7(articleStatsDataBase)
 
                 Row(
@@ -109,7 +100,7 @@ fun WindowsPresentationInfoProductPackageN7(
                         )
                     }
                 }
-            }
+
         }
     }
 }

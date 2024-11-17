@@ -1,12 +1,11 @@
 package P0_MainScreen.Main
 
 import P0_MainScreen.Modules.HandleFullscreenMode
-import P0_MainScreen.Ui.AppNavHost
+import P0_MainScreen.Ui.Main.AppNavHost.AppNavHost
+import P0_MainScreen.Ui.Main.AppNavHost.NavigationBarWithFab
+import P0_MainScreen.Ui.Main.AppNavHost.NavigationItems
+import P0_MainScreen.Ui.Main.AppNavHost.Screen
 import P0_MainScreen.Ui.Objects.ConnexionCard
-import P0_MainScreen.Ui.Objects.NavigationBarWithFab
-import P0_MainScreen.Ui.Objects.NavigationItems
-import P0_MainScreen.Ui.Objects.Screen
-import P7_EStorePresentationToClient.Main.WindowsPresentationInfoProductPackageN7
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
@@ -14,10 +13,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProgressIndicatorDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,98 +36,127 @@ import com.example.clientjetpack.AppViewModels
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun MainScreen(
-    appViewModels: AppViewModels
+    appViewModels: AppViewModels,
+    modifier: Modifier = Modifier
 ) {
     val headViewModel = appViewModels.headViewModel
     val uiState by headViewModel.uiState.collectAsState()
-    val productDisplayController =   uiState.productDisplayController
+    val productDisplayController = uiState.productDisplayController
 
+    // Handle fullscreen mode
     HandleFullscreenMode(productDisplayController)
 
-
-    val displayProductDataBase = productDisplayController.clientWindowsDisplayedProductId?.let { id ->
-        uiState.articlesBasesStatTables.find { it.idArticle.toLong() == id }
-    }
-
+    // Navigation setup
     val navController = rememberNavController()
     val items = NavigationItems.getItems()
+    val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
+
+    // State management
     var isNavBarVisible by remember { mutableStateOf(true) }
     var isFabVisible by remember { mutableStateOf(false) }
     var isDisplayedConnexionWifiVisible by remember { mutableStateOf(false) }
-    val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            if (isDisplayedConnexionWifiVisible || !productDisplayController.isConnected) {
-                ConnexionCard(
-                    productDisplayController,
-                    appViewModels,
-                    onClickToStartAsClient = {
-                        isNavBarVisible = false
-                        isFabVisible = false
+    // Handle product display navigation
+    LaunchedEffect(productDisplayController.clientWindowsDisplayedProductId) {
+        productDisplayController.clientWindowsDisplayedProductId?.let { productId ->
+            navController.navigate(Screen.ClientProductDisplay.createRoute(productId)) {
+                // Pop up to the start destination to avoid building up a large stack of destinations
+                popUpTo(navController.graph.startDestinationId) {
+                    saveState = true
+                }
+                // Avoid multiple copies of the same destination when reselecting the same item
+                launchSingleTop = true
+                // Restore state when reselecting a previously selected item
+                restoreState = true
+            }
+        }
+    }
+
+    Surface(
+        modifier = modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            Column(modifier = Modifier.fillMaxSize()) {
+                // WiFi Connection Card
+                AnimatedVisibility(
+                    visible = isDisplayedConnexionWifiVisible || !productDisplayController.isConnected
+                ) {
+                    ConnexionCard(
+                        productDisplayController = productDisplayController,
+                        appViewModels = appViewModels,
+                        onClickToStartAsClient = {
+                            isNavBarVisible = false
+                            isFabVisible = false
+                        }
+                    )
+                }
+
+                // Main Content Area
+                Box(modifier = Modifier.weight(1f)) {
+                    AppNavHost(
+                        appViewModels = appViewModels,
+                        navController = navController,
+                        onToggleNavBar = { isNavBarVisible = !isNavBarVisible },
+                        isFabVisible = isFabVisible,
+                        onClickDonne = { isFabVisible = false },
+                        onClickToDisplayeConexionWifi = {
+                            isDisplayedConnexionWifiVisible = !isDisplayedConnexionWifiVisible
+                        },
+                        modifier = Modifier.fillMaxSize()
+                    )
+
+                    // Disable interactions when not host phone
+                    if (!productDisplayController.isHostPhone && productDisplayController.isConnected) {
+                        Box(
+                            modifier = Modifier
+                                .matchParentSize()
+                                .clickable(enabled = false) { }
+                        )
                     }
+                }
+            }
+
+            // Navigation Bar with FAB
+            AnimatedVisibility(
+                visible = productDisplayController.isHostPhone || !productDisplayController.isConnected,
+                modifier = Modifier.align(Alignment.BottomCenter)
+            ) {
+                NavigationBarWithFab(
+                    items = items.filter { it != Screen.ToggleFab },
+                    currentRoute = currentRoute,
+                    onNavigate = { route ->
+                        navController.navigate(route) {
+                            popUpTo(navController.graph.startDestinationId) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
+                    isFabVisible = isFabVisible,
+                    onToggleFabVisibility = {
+                        isFabVisible = !isFabVisible
+                        isDisplayedConnexionWifiVisible = false
+                    },
+                    modifier = Modifier.padding(bottom = 8.dp)
                 )
             }
-            Box(modifier = Modifier.weight(1f)) {
-                AppNavHost(
-                    appViewModels = appViewModels,
-                    navController = navController,
-                    onToggleNavBar = { isNavBarVisible = !isNavBarVisible },
-                    isFabVisible = isFabVisible,
-                    onClickDonne = { isFabVisible = false },
-                    onClickToDisplayeConexionWifi = {
-                        isDisplayedConnexionWifiVisible = !isDisplayedConnexionWifiVisible
-                    },
-                )
 
-                if (!productDisplayController.isHostPhone && productDisplayController.isConnected) {
-                    Box(
-                        modifier = Modifier
-                            .matchParentSize()
-                            .clickable(enabled = false) { }
+            // Loading Indicator
+            if (uiState.isLoading) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(
+                        progress = { uiState.loadingProgress / 100f },
+                        modifier = Modifier.size(48.dp),
+                        trackColor = ProgressIndicatorDefaults.circularTrackColor,
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             }
         }
-
-        AnimatedVisibility(
-            visible = productDisplayController.isHostPhone || !productDisplayController.isConnected,
-            modifier = Modifier.align(Alignment.BottomCenter)
-        ) {
-            NavigationBarWithFab(
-                items = items.filter { it != Screen.ToggleFab },
-                currentRoute = currentRoute,
-                onNavigate = { route ->
-                    navController.navigate(route) {
-                        popUpTo(navController.graph.startDestinationId)
-                        launchSingleTop = true
-                    }
-                },
-                isFabVisible = isFabVisible,
-                onToggleFabVisibility = {
-                    isFabVisible = !isFabVisible
-                    isDisplayedConnexionWifiVisible = false
-                }
-            )
-        }
-
-        if (uiState.isLoading) {
-            CircularProgressIndicator(
-                progress = { uiState.loadingProgress },
-                modifier = Modifier
-                    .size(48.dp)
-                    .align(Alignment.Center),
-                trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
-            )
-        }
-    }
-
-    if (displayProductDataBase != null) {
-        WindowsPresentationInfoProductPackageN7(
-            displayController = productDisplayController,
-            articleStatsDataBase = displayProductDataBase,
-            colorsArticlesList = uiState.colorsArticlesTabelleModel,
-            reloadTrigger = 0
-        )
     }
 }

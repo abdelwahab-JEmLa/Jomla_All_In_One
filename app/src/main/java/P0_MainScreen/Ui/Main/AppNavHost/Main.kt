@@ -1,11 +1,11 @@
-package P0_MainScreen.Ui
+package P0_MainScreen.Ui.Main.AppNavHost
 import P0_MainScreen.Ui.Objects.LoadingOverlay
-import P0_MainScreen.Ui.Objects.Screen
 import P1_StartupScreen.Main.FragmentStartupScreen
 import P3_DisplayeProductInfosToSeller.Main.P3DisplayeProductInfosToSeller
 import P4_SoldCartScreen.SoldCartScreen
 import P5_DialogeClientsEditer.ClientSelectionDialog
 import P6_AiGroupeForSupplier.GenerativeAiScreen
+import P7_EStorePresentationToClient.Main.FragmentDisplayeInfoProductToClient7
 import a_RoomDB.ArticlesBasesStatsTable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,8 +20,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.example.clientjetpack.AppViewModels
 import com.example.clientjetpack.ViewModel.WifiUpdateClientDisplayerStats
 
@@ -31,9 +33,12 @@ fun AppNavHost(
     navController: NavHostController,
     onToggleNavBar: () -> Unit,
     modifier: Modifier = Modifier,
-    isFabVisible: Boolean, onClickDonne: () -> Unit, onClickToDisplayeConexionWifi: () -> Unit
+    isFabVisible: Boolean,
+    onClickDonne: () -> Unit,
+    onClickToDisplayeConexionWifi: () -> Unit
 ) {
     val uiState by appViewModels.headViewModel.uiState.collectAsState()
+
 
     // Get current client from settings
     val currentClientId = uiState.appSettingsSaverModel
@@ -72,7 +77,7 @@ fun AppNavHost(
                                     currentClientId,
                                     pendingIndexColor
                                 )
-                                opnerSaleWindows=true
+                                opnerSaleWindows = true
                                 appViewModels.headViewModel.sendOrderToClientDisplayer(
                                     WifiUpdateClientDisplayerStats.ClientWindowsDisplayedProductId.prefix,
                                     relatedArticleBaseStats!!.idArticle.toLong()
@@ -115,6 +120,28 @@ fun AppNavHost(
                     )
                 }
             }
+            composable(
+                route = Screen.ClientProductDisplay.route,
+                arguments = listOf(
+                    navArgument("productId") { type = NavType.LongType }
+                )
+            ) { backStackEntry ->
+                val productId = backStackEntry.arguments?.getLong("productId")
+                val displayProductDataBase = productId?.let { id ->
+                    uiState.articlesBasesStatTables.find { it.idArticle.toLong() == id }
+                }
+
+                if (displayProductDataBase != null) {
+                    FragmentDisplayeInfoProductToClient7(
+                        displayController = uiState.productDisplayController,
+                        articleStatsDataBase = displayProductDataBase,
+                        colorsArticlesList = uiState.colorsArticlesTabelleModel,
+                        reloadTrigger = reloadTrigger,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+            }
+
         }
 
         // Overlay dialogs and windows

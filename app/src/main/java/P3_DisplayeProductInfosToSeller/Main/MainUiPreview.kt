@@ -4,7 +4,6 @@ import a_RoomDB.AppSettingsSaverModel
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ColorsArticlesTabelle
 import a_RoomDB.SoldArticlesTabelle
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
@@ -132,16 +131,4 @@ fun P3_DisplayeProductInfosToSellerPreview() {
         )
     )
 
-    MaterialTheme {
-        MainUi(
-            articlesBaseStats = sampleArticleStats,
-            colorsArticlesTabelleModel = sampleColors,
-            currentSale = sampleSale,
-            viewModel = viewModel,
-            reloadTrigger = 0,
-            isDetailsVisible = true,
-            onDismiss = {},
-            uiState = sampleUiState
-        )
-    }
 }

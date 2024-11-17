@@ -334,6 +334,13 @@ if (!exists()) {
             }
         }
     }
+    // Add a callback for navigation
+    private var _onNavigateToSellerProduct = { _: Long -> }
+
+    fun setNavigationCallback(callback: (Long) -> Unit) {
+        _onNavigateToSellerProduct = callback
+    }
+
     fun openWindowsNewSaleWithUpdateCurrent(
         relatedArticleDataBaseId: Long,
         currentClient: Long,
@@ -341,30 +348,83 @@ if (!exists()) {
     ) {
         viewModelScope.launch {
             try {
-                val maxId = _uiState.value.soldArticlesModel
+                // Get the current UI state once to avoid race conditions
+                val currentState = _uiState.value
+
+                // Find the maximum VID from existing sales
+                val maxId = currentState.soldArticlesModel
                     .filterNotNull()
                     .maxOfOrNull { it.vid } ?: 0
 
-                val article = _uiState.value.articlesBasesStatTables
+                // Find the related article
+                val article = currentState.articlesBasesStatTables
                     .find { it.idArticle.toLong() == relatedArticleDataBaseId }
+                    ?: throw IllegalStateException("Article not found with ID: $relatedArticleDataBaseId")
 
+                // Create base sale object
                 val newSale = SoldArticlesTabelle(
                     vid = maxId + 1,
                     idArticle = relatedArticleDataBaseId,
-                        nameArticle = article?.nomArticleFinale ?: "",
-                        clientSoldToItId = currentClient,
-                        date = System.currentTimeMillis().toString()
-                    ).let { sale ->
-                        when (indexColor) {
-                            0 -> sale.copy(color1IdPicked = article?.idcolor1 ?: 0, color1SoldQuantity = 1)
-                            1 -> sale.copy(color2IdPicked = article?.idcolor2 ?: 0, color2SoldQuantity = 1)
-                            2 -> sale.copy(color3IdPicked = article?.idcolor3 ?: 0, color3SoldQuantity = 1)
-                            3 -> sale.copy(color4IdPicked = article?.idcolor4 ?: 0, color4SoldQuantity = 1)
-                            else -> sale
-                        }
-                    }
+                    nameArticle = article.nomArticleFinale,
+                    clientSoldToItId = currentClient,
+                    date = System.currentTimeMillis().toString()
+                )
 
-                _currentSaleInWindows.value = newSale
+                // Apply color selection based on index
+                val updatedSale = when (indexColor) {
+                    0 -> newSale.copy(
+                        color1IdPicked = article.idcolor1,
+                        color1SoldQuantity = 1,
+                        // Reset other colors
+                        color2IdPicked = 0,
+                        color2SoldQuantity = 0,
+                        color3IdPicked = 0,
+                        color3SoldQuantity = 0,
+                        color4IdPicked = 0,
+                        color4SoldQuantity = 0
+                    )
+                    1 -> newSale.copy(
+                        color2IdPicked = article.idcolor2,
+                        color2SoldQuantity = 1,
+                        // Reset other colors
+                        color1IdPicked = 0,
+                        color1SoldQuantity = 0,
+                        color3IdPicked = 0,
+                        color3SoldQuantity = 0,
+                        color4IdPicked = 0,
+                        color4SoldQuantity = 0
+                    )
+                    2 -> newSale.copy(
+                        color3IdPicked = article.idcolor3,
+                        color3SoldQuantity = 1,
+                        // Reset other colors
+                        color1IdPicked = 0,
+                        color1SoldQuantity = 0,
+                        color2IdPicked = 0,
+                        color2SoldQuantity = 0,
+                        color4IdPicked = 0,
+                        color4SoldQuantity = 0
+                    )
+                    3 -> newSale.copy(
+                        color4IdPicked = article.idcolor4,
+                        color4SoldQuantity = 1,
+                        // Reset other colors
+                        color1IdPicked = 0,
+                        color1SoldQuantity = 0,
+                        color2IdPicked = 0,
+                        color2SoldQuantity = 0,
+                        color3IdPicked = 0,
+                        color3SoldQuantity = 0
+                    )
+                    else -> throw IllegalArgumentException("Invalid color index: $indexColor")
+                }
+
+                // Update the current sale in windows
+                _currentSaleInWindows.value = updatedSale
+
+                // Trigger navigation via callback
+                _onNavigateToSellerProduct(updatedSale.vid)
+
             } catch (e: Exception) {
                 _uiState.update { it.copy(error = "Failed to update sale: ${e.message}") }
             }

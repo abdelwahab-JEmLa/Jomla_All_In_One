@@ -1,4 +1,4 @@
-package P0_MainScreen.Ui.Objects
+package P0_MainScreen.Ui.Main.AppNavHost
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CreditScore
 import androidx.compose.material.icons.filled.EditRoad
+import androidx.compose.material.icons.filled.ProductionQuantityLimits
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -146,5 +147,14 @@ sealed class Screen(
         title = "Toggle FAB",
         color = Color(0xFF2196F3)
     )
+    data object ClientProductDisplay : Screen(
+        route = "client_product_display/{productId}",
+        icon = Icons.Default.ProductionQuantityLimits,
+        title = "Product Display",
+        color = Color(0xFF2196F3)
+    ) {
+        fun createRoute(productId: Long) = "client_product_display/$productId"
+    }
+
 }
 

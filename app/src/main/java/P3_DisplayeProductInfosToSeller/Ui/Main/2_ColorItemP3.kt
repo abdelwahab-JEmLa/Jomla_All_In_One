@@ -6,8 +6,6 @@ import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ColorsArticlesTabelle
 import a_RoomDB.SoldArticlesTabelle
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.BorderStroke
@@ -102,7 +100,7 @@ fun ColorItem3(
         ) {
             Box(
                 modifier = Modifier
-                    .weight(if (showPicker) 0.7f else 1f)  // Adjust weight based on picker visibility
+                    .weight(0.7f)  // Keep consistent weight regardless of picker visibility
                     .fillMaxHeight()
             ) {
                 ImageDisplayer(
@@ -118,108 +116,101 @@ fun ColorItem3(
                         .fillMaxWidth()
                         .align(Alignment.BottomCenter)
                 ) {
-                    // Note: Removed extra blank line here
-                    AnimatedVisibility(
-                        visible = !showPicker,
-                        enter = fadeIn() + slideInHorizontally { it },
-                        exit = fadeOut() + slideOutHorizontally { -it }
-                    ) {
-                        color?.let { colorData ->
-                            Box(
+                    color?.let { colorData ->
+                        Box(
+                            modifier = Modifier
+                                .padding(3.dp)
+                                .fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Row(
                                 modifier = Modifier
-                                    .padding(3.dp)
-                                    .fillMaxWidth(),
-                                contentAlignment = Alignment.Center
+                                    .fillMaxWidth()
+                                    .height(IntrinsicSize.Min),
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Row(
+                                Box(
                                     modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(IntrinsicSize.Min),
-                                    verticalAlignment = Alignment.CenterVertically
+                                        .weight(0.6f)
+                                        .wrapContentHeight(),
+                                    contentAlignment = Alignment.Center
                                 ) {
-                                    Box(
-                                        modifier = Modifier
-                                            .weight(0.6f)
-                                            .wrapContentHeight(),
-                                        contentAlignment = Alignment.Center
+                                    Surface(
+                                        modifier = Modifier.matchParentSize(),
+                                        shape = CircleShape,
+                                        color = Color.White.copy(alpha = 0.7f),
+                                        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.9f))
+                                    ) {}
+
+                                    AutoResizedText(
+                                        text = colorData.nameColore,
+                                        modifier = Modifier.clickable { showPicker = true },
+                                        color = Color.Black,
+                                        style = MaterialTheme.typography.headlineMedium.copy(
+                                            fontWeight = FontWeight.Bold
+                                        ),
+                                        maxLines = 1
+                                    )
+                                }
+
+                                Box(
+                                    modifier = Modifier
+                                        .weight(0.4f)
+                                        .wrapContentHeight(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Surface(
+                                        modifier = Modifier.matchParentSize(),
+                                        shape = CircleShape,
+                                        color = Color.White.copy(alpha = 0.8f),
+                                        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.95f))
+                                    ) {}
+
+                                    Surface(
+                                        shape = CircleShape,
+                                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f),
+                                        tonalElevation = 4.dp,
+                                        shadowElevation = 4.dp
                                     ) {
-                                        Surface(
-                                            modifier = Modifier.matchParentSize(),
-                                            shape = CircleShape,
-                                            color = Color.White.copy(alpha = 0.7f),
-                                            border = BorderStroke(1.dp, Color.White.copy(alpha = 0.9f))
-                                        ) {}
-
-                                        AutoResizedText(
-                                            text = colorData.nameColore,
-                                            modifier = Modifier.clickable { showPicker = true },
-                                            color = Color.Black,
-                                            style = MaterialTheme.typography.headlineMedium.copy(
-                                                fontWeight = FontWeight.Bold
-                                            ),
-                                            maxLines = 1
-                                        )
-                                    }
-
-                                    Box(
-                                        modifier = Modifier
-                                            .weight(0.4f)
-                                            .wrapContentHeight(),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Surface(
-                                            modifier = Modifier.matchParentSize(),
-                                            shape = CircleShape,
-                                            color = Color.White.copy(alpha = 0.8f),
-                                            border = BorderStroke(1.dp, Color.White.copy(alpha = 0.95f))
-                                        ) {}
-
-                                        Surface(
-                                            shape = CircleShape,
-                                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f),
-                                            tonalElevation = 4.dp,
-                                            shadowElevation = 4.dp
-                                        ) {
-                                            if (colorData.iconColore == "©" || colorData.iconColore == "💯" || colorData.iconColore == "") {
-                                                GlideImage(
-                                                    model = R.drawable.logo,
-                                                    contentDescription = "Logo",
-                                                    modifier = Modifier
-                                                        .size(38.dp)
-                                                        .clickable {
-                                                            showPicker = true
-                                                            updateColorToBeMAin(color.idColore)
-                                                        }
-                                                )
-                                            } else {
-                                                Text(
-                                                    text = colorData.iconColore,
-                                                    fontSize = 38.sp,
-                                                    fontWeight = FontWeight.Bold,
-                                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                                    modifier = Modifier.clickable {
+                                        if (colorData.iconColore == "©" || colorData.iconColore == "💯" || colorData.iconColore == "") {
+                                            GlideImage(
+                                                model = R.drawable.logo,
+                                                contentDescription = "Logo",
+                                                modifier = Modifier
+                                                    .size(38.dp)
+                                                    .clickable {
                                                         showPicker = true
                                                         updateColorToBeMAin(color.idColore)
                                                     }
-                                                )
-                                            }
-                                        }
-                                        Box(
-                                            modifier = Modifier
-                                                .align(Alignment.Center)
-                                                .offset(x = 15.dp, y = 18.dp)
-                                                .size(40.dp)
-                                                .clickable {
+                                            )
+                                        } else {
+                                            Text(
+                                                text = colorData.iconColore,
+                                                fontSize = 38.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                modifier = Modifier.clickable {
                                                     showPicker = true
                                                     updateColorToBeMAin(color.idColore)
                                                 }
-                                        ) {
-                                            GlideImage(
-                                                model = R.drawable.hand,
-                                                contentDescription = "Click indicator",
-                                                contentScale = ContentScale.Fit
                                             )
                                         }
+                                    }
+                                    Box(
+                                        modifier = Modifier
+                                            .align(Alignment.Center)
+                                            .offset(x = 15.dp, y = 18.dp)
+                                            .size(40.dp)
+                                            .clickable {
+                                                showPicker = true
+                                                updateColorToBeMAin(color.idColore)
+                                            }
+                                    ) {
+                                        GlideImage(
+                                            model = R.drawable.hand,
+                                            contentDescription = "Click indicator",
+                                            contentScale = ContentScale.Fit
+                                        )
                                     }
                                 }
                             }
