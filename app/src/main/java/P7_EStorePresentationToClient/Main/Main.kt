@@ -1,15 +1,12 @@
 package P7_EStorePresentationToClient.Main
 
 import P7_EStorePresentationToClient.Ui.ColorsCards
-import P7_EStorePresentationToClient.Ui.CompactQuantityPickerPC
 import P7_EStorePresentationToClient.Ui.ProductNameSection7
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ColorsArticlesTabelle
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -109,18 +106,6 @@ fun WindowsPresentationInfoProductPackageN7(
                             modifier = Modifier.fillMaxWidth(),
                             relodeTigger = reloadTrigger,
                             colorsArticlesList = colorsArticlesList
-                        )
-                    }
-
-                    AnimatedVisibility(
-                        visible = displayController.clientWindowsSelectedColorId > 0,
-                        modifier = Modifier.weight(0.2f),
-                        enter = slideInHorizontally(),
-                        exit = slideOutHorizontally()
-                    ) {
-                        CompactQuantityPickerPC(
-                            initialQuantity = displayController.clientWindowsPickerDisplayedQuantity,
-                            height = 600.dp
                         )
                     }
                 }
