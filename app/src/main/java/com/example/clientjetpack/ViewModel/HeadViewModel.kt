@@ -152,8 +152,6 @@ open class HeadViewModel(
         } ?: Log.d(tag, "📩 Unhandled message received: $payload")
     }
 
-
-
     private fun observeConnectionState() {
         viewModelScope.launch {
             connectionManager.connectionUiState.collect { connectionState ->
