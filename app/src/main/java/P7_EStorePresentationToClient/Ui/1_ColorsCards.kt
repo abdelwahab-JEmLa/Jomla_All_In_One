@@ -26,7 +26,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,6 +54,9 @@ fun ColorsCards(
     relodeTigger: Int,
     colorsArticlesList: List<ColorsArticlesTabelle>,
 ) {
+    // Track the previous main color ID
+    var previousMainColorId by remember { mutableStateOf<Long?>(null) }
+
     val colors = listOf(
         articlesBasesStatsTable.idcolor1,
         articlesBasesStatsTable.idcolor2,
@@ -64,16 +71,31 @@ fun ColorsCards(
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
 
-    // Handle scroll synchronization
+    // Update previous main color when main color changes
+    LaunchedEffect(displayController.clientWindowsSelectedColorId) {
+        if (displayController.clientWindowsSelectedColorId != 0L &&
+            displayController.clientWindowsSelectedColorId != previousMainColorId) {
+            previousMainColorId = displayController.clientWindowsSelectedColorId
+        }
+    }
+
     LaunchedEffect(displayController.clientWindowsLazyRowSupColorsScroll) {
-        if (displayController.isHostPhone) return@LaunchedEffect
-        try {
-            scope.launch {
-                listState.animateScrollToItem(displayController.clientWindowsLazyRowSupColorsScroll)
-                delay(300)
+        if (!displayController.isHostPhone && colors.size > 1) {
+            try {
+                scope.launch {
+                    val targetIndex = displayController.clientWindowsLazyRowSupColorsScroll.coerceIn(
+                        0,
+                        (colors.size - 2).coerceAtLeast(0)
+                    )
+                    listState.animateScrollToItem(
+                        index = targetIndex,
+                        scrollOffset = 0
+                    )
+                    delay(300)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
-        } catch (e: Exception) {
-            // Safely handle any scroll errors
         }
     }
 
@@ -89,21 +111,18 @@ fun ColorsCards(
                 .padding(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            // Main large image - Show selected color or default to first color
+            // Main color display
             val mainColor = if (displayController.clientWindowsSelectedColorId != 0L) {
                 colors.find { it.idColore == displayController.clientWindowsSelectedColorId }
             } else {
                 colors.firstOrNull()
             }
 
-            // Handle different layouts based on number of colors
             when (colors.size) {
                 2 -> {
-                    // For exactly 2 colors, use Row layout to fill max width
                     Column(
                         modifier = Modifier.fillMaxWidth(),
                     ) {
-                        // Main color takes 60% of the width
                         Box(
                             modifier = Modifier
                                 .weight(0.6f)
@@ -118,7 +137,6 @@ fun ColorsCards(
                             )
                         }
 
-                        // Secondary color takes 40% of the width
                         val secondaryColor = colors.find { it != mainColor }
                         Box(
                             modifier = Modifier
@@ -136,7 +154,6 @@ fun ColorsCards(
                     }
                 }
                 else -> {
-                    // Original layout for 1 or 3+ colors
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -152,13 +169,28 @@ fun ColorsCards(
                     }
 
                     if (colors.size > 1) {
+                        // Organiser les couleurs comme dans ColorSelectionSection
+                        val subColors = colors.filter { it != mainColor }
+                        val arrangedColors = if (previousMainColorId != null) {
+                            // Trouver l'ancienne couleur principale et la mettre à la fin
+                            val oldMainColor = subColors.find { it.idColore == previousMainColorId }
+                            if (oldMainColor != null) {
+                                val otherColors = subColors.filter { it != oldMainColor }
+                                otherColors + oldMainColor
+                            } else {
+                                subColors
+                            }
+                        } else {
+                            subColors
+                        }
+
                         LazyRow(
                             state = listState,
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             contentPadding = PaddingValues(horizontal = 8.dp)
                         ) {
-                            items(colors.filter { it != mainColor }) { color ->
+                            items(arrangedColors) { color ->
                                 Box(
                                     modifier = Modifier
                                         .size(200.dp)
@@ -180,7 +212,6 @@ fun ColorsCards(
         }
     }
 }
-
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 private fun ColorItem(

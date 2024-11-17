@@ -40,8 +40,8 @@ fun ColorSelectionSection(
     viewModel: HeadViewModel,
     reloadTrigger: Int,
 ) {
-    // Track the current main color ID
     var mainColorId by remember { mutableStateOf(stats.idcolor1) }
+    var previousMainColorId by remember { mutableStateOf<Long?>(null) }
 
     Column(
         modifier = Modifier
@@ -69,17 +69,17 @@ fun ColorSelectionSection(
                     } else null
                 }
 
-                // Function to update the main color
+                // Fonction mise à jour qui garde trace de l'ancienne couleur principale
                 val updateMainColor: (Long) -> Unit = { newMainColorId ->
+                    previousMainColorId = mainColorId
                     mainColorId = newMainColorId
-                    // Notify the client displayer about the color change
                     viewModel.sendOrderToClientDisplayer(
                         WifiUpdateClientDisplayerStats.ClientWindowsSelectedColorId.prefix,
                         newMainColorId
                     )
                 }
 
-                // Display the main color
+                // Affichage de la couleur principale
                 val mainColor = colors.find { it.idColore == mainColorId } ?: colors.firstOrNull()
                 mainColor?.let {
                     Box(
@@ -93,7 +93,7 @@ fun ColorSelectionSection(
                             currentSale = currentSale,
                             article = stats,
                             color = it,
-                            index = colors.indexOf(it),
+                            index = 0,
                             relodeTigger = reloadTrigger,
                             viewModel = viewModel,
                             height = 150.dp,
@@ -102,7 +102,7 @@ fun ColorSelectionSection(
                     }
                 }
 
-                // Display additional colors
+                // Affichage des couleurs supplémentaires
                 if (colors.size > 1) {
                     val listState = rememberLazyListState()
 
@@ -112,12 +112,22 @@ fun ColorSelectionSection(
                             .collect { position ->
                                 if (position >= 0 && position < colors.size - 1) {
                                     viewModel.sendOrderToClientDisplayer(
-                                        WifiUpdateClientDisplayerStats.WindowsPickerDisplayedQuantity.prefix,
+                                        WifiUpdateClientDisplayerStats.ClientWindowsLazyRowSupColorsScrolle.prefix,
                                         position
                                     )
                                 }
                             }
                     }
+
+                    // Réorganiser les couleurs avec l'ancienne couleur principale à la fin
+                    val arrangedColors = colors
+                        .filter { it.idColore != mainColorId }
+                        .sortedBy { color ->
+                            when (color.idColore) {
+                                previousMainColorId -> 1  // Met l'ancienne couleur principale à la fin
+                                else -> 0  // Garde l'ordre original pour les autres
+                            }
+                        }
 
                     LazyRow(
                         state = listState,
@@ -125,7 +135,7 @@ fun ColorSelectionSection(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         contentPadding = PaddingValues(horizontal = 8.dp)
                     ) {
-                        items(colors.filter { it.idColore != mainColorId }) { color ->
+                        items(arrangedColors) { color ->
                             Box(
                                 modifier = Modifier
                                     .size(200.dp)
@@ -136,7 +146,7 @@ fun ColorSelectionSection(
                                     currentSale = currentSale,
                                     article = stats,
                                     color = color,
-                                    index = colors.indexOf(color),
+                                    index = arrangedColors.indexOf(color) + 1,
                                     relodeTigger = reloadTrigger,
                                     viewModel = viewModel,
                                     height = 200.dp,
