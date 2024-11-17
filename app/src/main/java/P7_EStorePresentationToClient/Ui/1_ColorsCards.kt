@@ -100,9 +100,8 @@ fun ColorsCards(
             when (colors.size) {
                 2 -> {
                     // For exactly 2 colors, use Row layout to fill max width
-                    Row(
+                    Column(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         // Main color takes 60% of the width
                         Box(
