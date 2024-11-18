@@ -1,6 +1,5 @@
 package com.example.clientjetpack.Modules
 
-import a_RoomDB.AppSettingsSaverModel
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.CategoriesTabelle
 import a_RoomDB.ClientsModel
@@ -12,6 +11,8 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
+import com.example.clientjetpack.Models.AppSettingsSaverModel
+import com.example.clientjetpack.Models.DevicesTypeManager
 import java.util.Date
 
 @Database(
@@ -21,7 +22,8 @@ import java.util.Date
         ColorsArticlesTabelle::class,
         SoldArticlesTabelle::class,
         ClientsModel::class,
-        AppSettingsSaverModel::class
+        AppSettingsSaverModel::class ,
+        DevicesTypeManager::class ,
     ],
     version = 1,
     exportSchema = false
@@ -35,6 +37,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun soldArticlesModelDao(): SoldArticlesTabelleDao
     abstract fun clientsModelDao(): ClientsModelDao
     abstract fun appSettingsSaverModelDao(): AppSettingsSaverModelDao
+    abstract fun devicesTypeManagerDao(): DevicesTypeManagerDao
 
     // DatabaseModule.kt
     object DatabaseModule {

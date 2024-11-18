@@ -1,6 +1,5 @@
-package P1_StartupScreen.Main
+package P1_StartupScreen.Main.FloatingActionButtonGroup
 
-import com.example.clientjetpack.ViewModel.HeadViewModel
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
@@ -24,6 +23,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Details
+import androidx.compose.material.icons.filled.Devices
 import androidx.compose.material.icons.filled.DoNotDisturbAlt
 import androidx.compose.material.icons.filled.EditCalendar
 import androidx.compose.material.icons.filled.GridView
@@ -49,6 +49,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import com.example.clientjetpack.ViewModel.HeadViewModel
 import kotlin.math.roundToInt
 
 @Composable
@@ -67,6 +68,7 @@ fun FloatingActionButtonGroup(
     var clearDataClickCount by remember { mutableIntStateOf(0) }
     var clearDataGrouprurClickCount by remember { mutableIntStateOf(0) }
     var buttonChangeUiStat1 by remember { mutableStateOf(false) }
+    var showDeviceDialog by remember { mutableStateOf(false) }
 
     // State for drag position
     var offsetX by remember { mutableFloatStateOf(0f) }
@@ -79,7 +81,12 @@ fun FloatingActionButtonGroup(
             clearDataGrouprurClickCount = 0
         }
     }
-
+    if (showDeviceDialog) {
+        DeviceManagementDialog(
+            viewModel = viewModel,
+            onDismiss = { showDeviceDialog = false }
+        )
+    }
     Column(
         horizontalAlignment = Alignment.End,
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -115,6 +122,12 @@ fun FloatingActionButtonGroup(
                         .padding(bottom = 8.dp) // Reduced bottom padding since we added it to parent
                 ) {
                     listOf(
+                        FabData(
+                            icon = Icons.Default.Devices,
+                            label = "Manage Devices",
+                            color = Color(0xFF9C27B0),
+                            onClick = { showDeviceDialog = true }
+                        ),
                         FabData(
                             icon = Icons.Default.SettingsInputComponent,
                             label = "Displaye Conexion Wifi" ,

@@ -13,6 +13,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import com.example.clientjetpack.Models.AppSettingsSaverModel
+import com.example.clientjetpack.Models.DevicesTypeManager
 
 @Dao
 interface ArticlesBasesStatsModelDao {
@@ -130,6 +131,18 @@ interface AppSettingsSaverModelDao{
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(items: List<AppSettingsSaverModel>)
+
+}
+@Dao
+interface DevicesTypeManagerDao{
+    @Query("SELECT * FROM DevicesTypeManager ORDER BY id")
+    suspend fun getAll(): MutableList<DevicesTypeManager>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(item: DevicesTypeManager)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(items: List<DevicesTypeManager>)
 
 }
 

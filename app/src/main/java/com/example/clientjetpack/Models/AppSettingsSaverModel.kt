@@ -12,8 +12,6 @@ data class AppSettingsSaverModel(
     val valueBoolean: Boolean = false,
     val valueLong: Long = 0,
     val date: Date = Date(),
-    val nameDevicesSaver: String = "",
-    val nameDevicesHost: String = "",
     ) {
     // No-argument constructor for Firebase
     constructor() : this(0)

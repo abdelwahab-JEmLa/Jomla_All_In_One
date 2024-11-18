@@ -1,6 +1,5 @@
 package P3_DisplayeProductInfosToSeller.Main
 
-import a_RoomDB.AppSettingsSaverModel
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ColorsArticlesTabelle
 import a_RoomDB.SoldArticlesTabelle
@@ -8,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.clientjetpack.Models.AppSettingsSaverModel
 import com.example.clientjetpack.Models.PriceRecord
 import com.example.clientjetpack.Models.ProductDisplayController
 import com.example.clientjetpack.Models.UiState

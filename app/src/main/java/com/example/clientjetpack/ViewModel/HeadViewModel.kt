@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.clientjetpack.Models.AppSettingsSaverModel
 import com.example.clientjetpack.Models.ArticlesAcheteModele
+import com.example.clientjetpack.Models.DevicesTypeManager
 import com.example.clientjetpack.Models.PriceRecord
 import com.example.clientjetpack.Models.ProductDisplayController
 import com.example.clientjetpack.Models.UiState
@@ -55,6 +56,8 @@ enum class WifiUpdateClientDisplayerStats(val prefix: String) {
     }
 }
 
+//Hi Claud,what i went from u to do is to
+//Find All TODOs and Fix Them
 open class HeadViewModel(
     context: Context,
     private val database: AppDatabase,
@@ -178,18 +181,142 @@ open class HeadViewModel(
         }
     }
 
+    private fun getRegisteredDevices(): List<String> {
+        return uiState.value.devicesTypeManager.map { it.name }
+    }
+
+    private suspend fun registerDeviceIfNeeded() {
+        val currentDevice = Build.MODEL.lowercase()
+        val registeredDevices = getRegisteredDevices()
+
+        if (!registeredDevices.any { currentDevice.contains(it.lowercase()) }) {
+            val newDevice = DevicesTypeManager(
+                id = System.currentTimeMillis(), // or use your ID generation strategy
+                name = currentDevice,
+                isHost = false
+            )
+
+            // Update Room database
+            database.devicesTypeManagerDao().insert(newDevice)
+
+            // Update Firebase
+            refDevicesTypeManager
+                .child(newDevice.id.toString())
+                .setValue(newDevice)
+                .addOnSuccessListener {
+                    Log.d(tag, "Device registration successful: $currentDevice")
+                }
+                .addOnFailureListener { e ->
+                    Log.e(tag, "Error registering device", e)
+                }
+
+            // Update UI state
+            _uiState.update { currentState ->
+                currentState.copy(
+                    devicesTypeManager = currentState.devicesTypeManager + newDevice
+                )
+            }
+        }
+    }
+
+    fun addHostDevice(deviceName: String) {
+        viewModelScope.launch {
+            val device = uiState.value.devicesTypeManager.find { it.name == deviceName }
+                ?: return@launch
+
+            val updatedDevice = device.copy(isHost = true)
+
+            // Update Room database
+            database.devicesTypeManagerDao().insert(updatedDevice)
+
+            // Update Firebase
+            refDevicesTypeManager
+                .child(updatedDevice.id.toString())
+                .setValue(updatedDevice)
+                .addOnSuccessListener {
+                    Log.d(tag, "Host device added successfully: $deviceName")
+                }
+                .addOnFailureListener { e ->
+                    Log.e(tag, "Error adding host device", e)
+                }
+
+            // Update UI state
+            _uiState.update { currentState ->
+                currentState.copy(
+                    devicesTypeManager = currentState.devicesTypeManager.map {
+                        if (it.id == updatedDevice.id) updatedDevice else it
+                    }
+                )
+            }
+        }
+    }
+
+    fun removeHostDevice(deviceName: String) {
+        viewModelScope.launch {
+            val device = uiState.value.devicesTypeManager.find { it.name == deviceName }
+                ?: return@launch
+
+            val updatedDevice = device.copy(isHost = false)
+
+            // Update Room database
+            database.devicesTypeManagerDao().insert(updatedDevice)
+
+            // Update Firebase
+            refDevicesTypeManager
+                .child(updatedDevice.id.toString())
+                .setValue(updatedDevice)
+                .addOnSuccessListener {
+                    Log.d(tag, "Host device removed successfully: $deviceName")
+                }
+                .addOnFailureListener { e ->
+                    Log.e(tag, "Error removing host device", e)
+                }
+
+            // Update UI state
+            _uiState.update { currentState ->
+                currentState.copy(
+                    devicesTypeManager = currentState.devicesTypeManager.map {
+                        if (it.id == updatedDevice.id) updatedDevice else it
+                    }
+                )
+            }
+        }
+    }
+
+    private fun getHostDevices(): List<String> {
+        return uiState.value.devicesTypeManager
+            .filter { it.isHost }
+            .map { it.name }
+    }
+
     fun updateTypePhone(type: Boolean = false) {
         updateDisplayController {
             copy(isHostPhone = type)
         }
     }
 
+
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    suspend fun initializeConnection() {
+        val currentDevice = Build.MODEL.lowercase()
+        val isHostDevice = getHostDevices().any { deviceName ->
+            currentDevice.contains(deviceName)
+        }
+
+        registerDeviceIfNeeded()
+
+        if (isHostDevice) {
+            startAsHost()
+            updateTypePhone(true)
+        } else {
+            startAsClient()
+            updateTypePhone(false)
+        }
+    }
+
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun startAsHost() = connectionManager.startAsHost()
-    //Hi Claud,what i went from u to do is to
-    //Find All TODOs and Fix Them
-    //TODO :
-    // fait au lencement de verivier si     val nameDevicesHost: String = "", sinon lence startAsClient
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun startAsClient() = connectionManager.startAsClient()
@@ -214,6 +341,7 @@ open class HeadViewModel(
     private val refColorsArticles = firebaseDatabase.getReference("H_ColorsArticles")
     private val refSoldArticlesTabelle = firebaseDatabase.getReference("O_SoldArticlesTabelle")
     private val refClientsTabelle = firebaseDatabase.getReference("G_Clients")
+    private val refDevicesTypeManager = firebaseDatabase.getReference("P_DevicesTypeManager")
 
 
     private fun updateLoadingProgress(progress: Float) {
@@ -740,6 +868,7 @@ open class HeadViewModel(
 
                 appSettingsSaverModelInitialize(15f)
 
+                devicesTypeManagerInitialize(17f)
 
                 updateLoadingProgress(20f)
 
@@ -772,6 +901,14 @@ open class HeadViewModel(
                 setLoading(false)
             }
         }
+    }
+    private suspend fun devicesTypeManagerInitialize(fl: Float) {
+        val devicesTypeManagerSnapshot = refDevicesTypeManager.get().await()
+        val devicesTypeManager = devicesTypeManagerSnapshot.children.mapNotNull { snapshot ->
+            snapshot.getValue(DevicesTypeManager::class.java)
+        }
+        database.devicesTypeManagerDao().insertAll(devicesTypeManager)
+        updateLoadingProgress(fl)
     }
     private suspend fun appSettingsSaverModelInitialize(fl: Float) {
         val appSettingsSaverModelSnapshot = refAppSettingsSaverModel.get().await()
@@ -839,6 +976,7 @@ open class HeadViewModel(
             val colors = database.colorsArticlesDao().getAllOrdred()
             val soldArticles = database.soldArticlesModelDao().getAll()
             val clients = database.clientsModelDao().getAll()
+            val devicesTypeManager = database.devicesTypeManagerDao().getAll()
 
             createNewArrivaleCategoryIfNeeded(categories)
 
@@ -848,7 +986,8 @@ open class HeadViewModel(
                 categories = categories,
                 colorsArticlesTabelleModel = colors,
                 soldArticlesModel = soldArticles,
-                clientsModel = clients
+                clientsModel = clients,
+                devicesTypeManager= devicesTypeManager,
             ) }
         } catch (e: Exception) {
             _uiState.update { it.copy(error = e.message) }

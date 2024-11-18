@@ -1,6 +1,5 @@
 package com.example.clientjetpack.Models
 
-import a_RoomDB.AppSettingsSaverModel
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.CategoriesTabelle
 import a_RoomDB.ClientsModel
@@ -8,9 +7,10 @@ import a_RoomDB.ColorsArticlesTabelle
 import a_RoomDB.SoldArticlesTabelle
 import a_RoomDB.SuppliersTabelle
 
-// First, let's update the UiState data class with maxSalePrice
+// 1. First, update the UiState class to properly use devicesTypeManager
 data class UiState(
     val appSettingsSaverModel: List<AppSettingsSaverModel> = emptyList(),
+    val devicesTypeManager: List<DevicesTypeManager> = emptyList(),
     val articlesBasesStatTables: List<ArticlesBasesStatsTable> = emptyList(),
     val categories: List<CategoriesTabelle> = emptyList(),
     val colorsArticlesTabelleModel: List<ColorsArticlesTabelle> = emptyList(),
@@ -18,7 +18,7 @@ data class UiState(
     val clientsModel: List<ClientsModel> = emptyList(),
     val suppliers: List<SuppliersTabelle> = emptyList(),
     val productDisplayController: ProductDisplayController,
-    val maxPriceMap: Map<Pair<Long, Long>, List<PriceRecord>> = emptyMap(), // productId to (clientId, price history)
+    val maxPriceMap: Map<Pair<Long, Long>, List<PriceRecord>> = emptyMap(),
     val isLoading: Boolean = false,
     val loadingProgress: Float = 0f,
     val error: String? = null
