@@ -85,12 +85,12 @@ fun AppNavHost(
                             }
                         },
                         onClickToOpenClientsW = {
-                            showClientSelectionWithoutCondition=true
+                            showClientSelectionWithoutCondition = true
                         },
-                        isFabVisible=isFabVisible, onClickDonne = onClickDonne,
+                        isFabVisible = isFabVisible,
+                        onClickDonne = onClickDonne,
                         onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi,
-
-                        )
+                    )
 
                     if (uiState.isLoading) {
                         LoadingOverlay(
@@ -100,6 +100,7 @@ fun AppNavHost(
                     }
                 }
             }
+
 
             composable(Screen.SoldCart.route) {
                 Box(modifier = Modifier.fillMaxSize()) {
@@ -122,6 +123,7 @@ fun AppNavHost(
             }
 
             composable(
+
                 route = Screen.ClientProductDisplay.route,
                 arguments = listOf(
                     navArgument("productId") { type = NavType.LongType }

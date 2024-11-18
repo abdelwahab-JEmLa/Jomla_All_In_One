@@ -97,15 +97,39 @@ fun MainUi(
     val tag = if (uiState.productDisplayController.isHostPhone) "📱 ServerScreen" else "📱 ClientScreen"
     var savedScrollPosition by remember { mutableStateOf(0) }
 
-    // Get the current scroll position directly from ProductDisplayController
+    // Get the current scroll position from ProductDisplayController
     val currentScrollPosition = uiState.productDisplayController.mainGridScrollPosition
 
+    // Handle initial scroll position and screen returns
+    LaunchedEffect(currentScrollPosition) {
+        if (currentScrollPosition > 0) {
+            scope.launch {
+                try {
+                    // Animate scroll with custom duration and delay
+                    delay(100) // Small initial delay for smoother transition
+                    gridState.animateScrollToItem(
+                        index = currentScrollPosition,
+                        scrollOffset = 0
+                    )
+                } catch (e: Exception) {
+                    // Fallback to instant scroll if animation fails
+                    gridState.scrollToItem(currentScrollPosition)
+                }
+            }
+        }
+    }
+
+    // Handle FAB visibility changes
     LaunchedEffect(isFabVisible) {
         if (isFabVisible) {
             savedScrollPosition = gridState.firstVisibleItemIndex
         } else {
             scope.launch {
-                gridState.scrollToItem(savedScrollPosition)
+                try {
+                    gridState.animateScrollToItem(savedScrollPosition)
+                } catch (e: Exception) {
+                    gridState.scrollToItem(savedScrollPosition)
+                }
             }
         }
     }
@@ -240,6 +264,7 @@ private fun HandleClientScroll(
     gridState: LazyStaggeredGridState,
     tag: String
 ) {
+
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(scrollPosition) {

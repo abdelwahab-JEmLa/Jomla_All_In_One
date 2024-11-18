@@ -56,18 +56,26 @@ fun MainScreen(
     var isFabVisible by remember { mutableStateOf(false) }
     var isDisplayedConnexionWifiVisible by remember { mutableStateOf(false) }
 
-    // Handle product display navigation
+    //  Handle product display navigation
     LaunchedEffect(productDisplayController.clientWindowsDisplayedProductId) {
-        productDisplayController.clientWindowsDisplayedProductId?.let { productId ->
-            navController.navigate(Screen.ClientProductDisplay.createRoute(productId)) {
-                // Pop up to the start destination to avoid building up a large stack of destinations
+        if (productDisplayController.clientWindowsDisplayedProductId != null) {
+            // Navigate to product display when ID is present
+            navController.navigate(Screen.ClientProductDisplay.createRoute(productDisplayController.clientWindowsDisplayedProductId)) {
                 popUpTo(navController.graph.startDestinationId) {
                     saveState = true
                 }
-                // Avoid multiple copies of the same destination when reselecting the same item
                 launchSingleTop = true
-                // Restore state when reselecting a previously selected item
                 restoreState = true
+            }
+        } else {
+            // Navigate back to startup screen when ID becomes null
+            navController.navigate(Screen.EditDatabaseWithCreateNewArticles.route) {
+                // Pop up to remove all screens from the back stack
+                popUpTo(navController.graph.startDestinationId) {
+                    inclusive = true // Include the start destination in the pop
+                }
+                // Avoid multiple copies of the same destination
+                launchSingleTop = true
             }
         }
     }
