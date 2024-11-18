@@ -49,7 +49,7 @@ fun FragmentStartupScreen(
     onClickToOpenClientsW: () -> Unit,
     isFabVisible: Boolean,
     onClickDonne: () -> Unit,
-    onClickToDisplayeConexionWifi: () -> Unit
+    onClickToDisplayeConexionWifi: () -> Unit, scrollTiger: Int
 ) {
     var gridColumns by remember { mutableStateOf(2) }
     var showFilter by remember { mutableStateOf(false) }
@@ -75,6 +75,7 @@ fun FragmentStartupScreen(
             filterText=""
             onClickDonne() },
         onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi,
+        scrollTiger,
     )
 }
 
@@ -95,21 +96,19 @@ fun MainUi(
     isFabVisible: Boolean,
     onClickDonne: () -> Unit,
     onClickToDisplayeConexionWifi: () -> Unit,
+    scrollTiger: Int,
 ) {
     val scope = rememberCoroutineScope()
     val tag = if (uiState.productDisplayController.isHostPhone) "📱 ServerScreen" else "📱 ClientScreen"
     var savedScrollPosition by rememberSaveable() { mutableStateOf(0) }
+    var hostSavePosition by rememberSaveable() { mutableStateOf(0) }
 
     // Get the current scroll position from ProductDisplayController
     val currentScrollPosition = uiState.productDisplayController.mainGridScrollPosition
 
     // Handle initial scroll position and screen returns
     LaunchedEffect(currentScrollPosition) {//-->
-        //Hi Claud,what i went from u to do is to
-        //Find All TODOs and Fix Them 
 
-        //TODO:
-        // pk ca ne revien pas a la position sauv quand je quit au SoldCartScreen et revien a lui 
         if (currentScrollPosition > 0) {
             scope.launch {
                 try {
@@ -126,7 +125,23 @@ fun MainUi(
             }
         }
     }
+    LaunchedEffect(currentScrollPosition,) {//-->
+        if (uiState.productDisplayController.isHostPhone) {
+            scope.launch {
+                try {
+                    // Animate scroll with custom duration and delay
+                    delay(100) // Small initial delay for smoother transition
+                    gridState.animateScrollToItem(
+                        index = hostSavePosition,
+                        scrollOffset = 0
+                    )
+                } catch (e: Exception) {
+                    gridState.scrollToItem(hostSavePosition)
+                }
+            }
+        }
 
+    }
     // Handle FAB visibility changes
     LaunchedEffect(isFabVisible) {
         if (isFabVisible) {
@@ -147,7 +162,8 @@ fun MainUi(
         isHostPhone = uiState.productDisplayController.isHostPhone,
         isConnected = uiState.productDisplayController.isConnected,
         gridState = gridState,
-        viewModel = viewModel
+        viewModel = viewModel,
+        onScrollHostChange = {hostSavePosition=it}
     )
 
     HandleClientScroll(
@@ -172,13 +188,9 @@ fun MainUi(
                 uiState = uiState,
                 onClickDonne = onClickDonne
             )
-            //-->
-            //Hi Claud,what i went from u to do is to
-            //Find All TODOs and Fix Them 
+            if (uiState.productDisplayController.isHostPhone || uiState.productDisplayController.isConnected) {
 
-            //TODO:
-            // ne pas l affiche si !Host&& !conected
-            Box(modifier = Modifier.weight(1f)) {
+                Box(modifier = Modifier.weight(1f)) {
                 ArticleGridWithScrollbar(
                     uiState = uiState,
                     gridColumns = gridColumns,
@@ -190,6 +202,7 @@ fun MainUi(
                     onClickToOpenWindos = onClickToOpenWindos
                 )
             }
+        }
         }
 
         AnimatedFabGroup(
@@ -255,6 +268,7 @@ private fun HandleScrollBroadcast(
     isConnected: Boolean,
     gridState: LazyStaggeredGridState,
     viewModel: HeadViewModel,
+    onScrollHostChange : (Int) -> Unit,
 ) {
     var lastScrollPosition by remember { mutableStateOf(0) }
     var isScrollInProgress by remember { mutableStateOf(false) }
@@ -289,6 +303,7 @@ private fun HandleScrollBroadcast(
                     isScrollInProgress = true
                     if (position != lastScrollPosition) {
                         lastScrollPosition = position
+                        onScrollHostChange(position)
                         Log.d(TAG, "Sending scroll position to client: $position")
                         viewModel.sendOrderToClientDisplayer(
                             WifiUpdateClientDisplayerStats.ClientMainGridScrollPosition.prefix,

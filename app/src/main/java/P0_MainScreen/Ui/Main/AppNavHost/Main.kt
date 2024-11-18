@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -52,6 +53,7 @@ fun AppNavHost(
     var relatedArticleBaseStats by rememberSaveable { mutableStateOf<ArticlesBasesStatsTable?>(null) }
     var pendingIndexColor by rememberSaveable { mutableIntStateOf(0) }
     val reloadTrigger by rememberSaveable { mutableIntStateOf(0) }
+    var scrollTiger by rememberSaveable { mutableIntStateOf(0) }
 
     Box(modifier = modifier.fillMaxSize()) {
         NavHost(
@@ -91,6 +93,7 @@ fun AppNavHost(
                         isFabVisible = isFabVisible,
                         onClickDonne = onClickDonne,
                         onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi,
+                        scrollTiger = scrollTiger,
                     )
 
                     if (uiState.isLoading) {
@@ -104,14 +107,18 @@ fun AppNavHost(
 
 
             composable(Screen.SoldCart.route) {
+                // Increment navigation count when entering SoldCart
+                LaunchedEffect(Unit) {
+                    scrollTiger++
+                }
+
                 Box(modifier = Modifier.fillMaxSize()) {
                     SoldCartScreen(
-
                         viewModel = appViewModels.headViewModel,
                         clientBuyerNow = currentClient,
                         uiState = uiState,
                         onConfirmOrder = {
-                            appViewModels.headViewModel.updateLongAppSetting("clientBuyerNowId",0)
+                            appViewModels.headViewModel.updateLongAppSetting("clientBuyerNowId", 0)
                         }
                     )
                 }

@@ -35,7 +35,7 @@ fun ConnexionCard(
 ) {
     var messageText by remember { mutableStateOf("") }
     val context = LocalContext.current
-    val isHostEnabled = Build.MODEL.lowercase().contains("m200")
+    val isHostEnabled = Build.MODEL.lowercase().contains("note")
 
     Card(
         modifier = Modifier
@@ -123,10 +123,12 @@ private fun ConnectionButtons(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        Button(
-            onClick = onHostClick,
-        ) {
-            Text("Mode Hôte")
+        if(isHostEnabled) {
+            Button(
+                onClick = onHostClick,
+            ) {
+                Text("Mode Hôte")
+            }
         }
         Button(onClick = onClientClick) {
             Text("Mode Client")
