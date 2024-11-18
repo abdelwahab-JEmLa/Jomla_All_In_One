@@ -1,14 +1,10 @@
-package P1_StartupScreen.Ui
-
-import a_RoomDB.ArticlesBasesStatsTable
+package P1_StartupScreen.Ui.ArticlesGrid.Res
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,53 +15,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import com.example.clientjetpack.Models.UiState
-import com.example.clientjetpack.ViewModel.HeadViewModel
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
-
-@Composable
-fun ArticleGridWithScrollbar(
-    uiState: UiState,
-    gridColumns: Int,
-    filterText: String,
-    showFilter: Boolean,
-    gridState: LazyStaggeredGridState,
-    viewModel: HeadViewModel,
-    reloadTrigger: Int,
-    modifier: Modifier = Modifier,
-    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
-) {
-    Box(modifier = modifier) {
-        ArticleGrid(
-            uiState = uiState,
-            gridColumns = gridColumns,
-            filterText = filterText,
-            showFilter = showFilter,
-            gridState = gridState,
-            viewModel = viewModel,
-            reloadTrigger = reloadTrigger,
-            onClickToOpenWindos = onClickToOpenWindos,
-            modifier = Modifier.fillMaxSize()
-        )
-
-        Scrollbar(
-            state = gridState,
-            modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .padding(end = 2.dp)
-                .alpha(0.8f)
-        )
-    }
-}
 
 @Composable
 fun Scrollbar(

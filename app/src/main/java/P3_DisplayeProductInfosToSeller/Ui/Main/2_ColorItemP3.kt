@@ -1,5 +1,5 @@
 package P3_DisplayeProductInfosToSeller.Ui.Main
-import P1_StartupScreen.Ui.AutoResizedText
+import P1_StartupScreen.Ui.ArticlesGrid.AutoResizedText
 import P3_DisplayeProductInfosToSeller.Modules.ImageDisplayer
 import P3_DisplayeProductInfosToSeller.Ui.Objects.CompactQuantityPicker
 import a_RoomDB.ArticlesBasesStatsTable
