@@ -131,7 +131,7 @@ private fun ConnectionButtons(
             }
         }
         Button(onClick = onClientClick) {
-            Text("Mode Client")
+            Text("Clic Conexion")
         }
     }
 
