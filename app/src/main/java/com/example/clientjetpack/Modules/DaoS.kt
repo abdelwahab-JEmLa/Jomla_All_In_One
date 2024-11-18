@@ -146,6 +146,7 @@ interface DevicesTypeManagerDao{
     @Query("SELECT MAX(id) FROM DevicesTypeManager")
     suspend fun getMaxId(): Long?
 
+    @Query("DELETE FROM DevicesTypeManager")
     suspend fun deleteAll()
 
 }

@@ -181,66 +181,7 @@ open class HeadViewModel(
         }
     }
 
-    private fun getRegisteredDevices(): List<String> {
-        return uiState.value.devicesTypeManager.map { it.name }
-    }
 
-    private suspend fun getNextDeviceId(): Long {
-        // Get max ID from local database
-        val maxLocalId = database.devicesTypeManagerDao().getMaxId() ?: 0L
-
-        // Get max ID from Firebase
-        val maxFirebaseId = try {
-            val snapshot = refDevicesTypeManager.get().await()
-            snapshot.children.maxOfOrNull { it.key?.toLongOrNull() ?: 0L } ?: 0L
-        } catch (e: Exception) {
-            Log.e(tag, "Error getting max Firebase ID", e)
-            0L
-        }
-
-        // Use the maximum of both to ensure uniqueness
-        return maxOf(maxLocalId, maxFirebaseId) + 1
-    }
-
-    private suspend fun registerDeviceIfNeeded() {
-        val currentDevice = Build.MODEL.lowercase()
-        val registeredDevices = getRegisteredDevices()
-
-        // Only proceed if the device doesn't exist
-        if (!registeredDevices.any { currentDevice.contains(it.lowercase()) }) {
-            // Generate new unique ID
-            val newId = getNextDeviceId()
-
-            val newDevice = DevicesTypeManager(
-                id = newId,
-                name = currentDevice,
-                isHost = false
-            )
-
-            try {
-                // Update Room database
-                database.devicesTypeManagerDao().insert(newDevice)
-
-                // Update Firebase
-                refDevicesTypeManager
-                    .child(newId.toString())
-                    .setValue(newDevice)
-                    .await() // Using await() for better error handling
-
-                Log.d(tag, "Device registration successful: $currentDevice")
-
-                // Update UI state
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        devicesTypeManager = currentState.devicesTypeManager + newDevice
-                    )
-                }
-            } catch (e: Exception) {
-                Log.e(tag, "Error registering device", e)
-                throw e // Re-throw to handle at caller level if needed
-            }
-        }
-    }
 
     fun addHostDevice(deviceName: String) {
         viewModelScope.launch {
@@ -327,13 +268,10 @@ open class HeadViewModel(
             currentDevice.contains(deviceName)
         }
 
-        registerDeviceIfNeeded()
 
         if (isHostDevice) {
-            startAsHost()
             updateTypePhone(true)
         } else {
-            startAsClient()
             updateTypePhone(false)
         }
     }
