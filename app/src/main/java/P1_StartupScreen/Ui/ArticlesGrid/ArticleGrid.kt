@@ -37,7 +37,6 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.clientjetpack.Models.UiState
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
@@ -79,12 +78,6 @@ fun ArticleGridWithScrollbar(
     }
 }
 
-private data class VisibleItemInfo(
-    val index: Int,
-    val itemId: Int,
-    val offset: Int
-)
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ArticleGrid(
@@ -98,11 +91,12 @@ fun ArticleGrid(
     modifier: Modifier = Modifier,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
 ) {
-    // État global pour suivre l'article visible
-    var currentVisibleItem by remember { mutableStateOf<VisibleItemInfo?>(null) }
-    var globalIndex by remember { mutableStateOf(0) }
+    // Track scroll state and first visible item
+    var lastSettledFirstVisible by remember { mutableStateOf(-1) }
+    var isSettled by remember { mutableStateOf(true) }
+    var currentCategory by remember { mutableStateOf<String?>(null) }
 
-    // Configuration du paging
+    // Configure paging
     val pagingConfig = remember {
         PagingConfig(
             pageSize = 3,
@@ -111,7 +105,7 @@ fun ArticleGrid(
         )
     }
 
-    // Création des pagers par catégorie
+    // Create category pagers
     val categoryPagers = remember(uiState.categories, filterText) {
         uiState.categories.associateWith { category ->
             Pager(pagingConfig) {
@@ -130,7 +124,7 @@ fun ArticleGrid(
         }
     }
 
-    // Collection des items paginés
+    // Collect paging items for each category
     val categoryPagingItems = remember(categoryPagers) {
         mutableMapOf<CategoriesTabelle, LazyPagingItems<ArticlesBasesStatsTable>>()
     }.apply {
@@ -139,31 +133,28 @@ fun ArticleGrid(
         }
     }
 
-    // Suivi des changements de scroll
+    // Track scroll state changes
     LaunchedEffect(gridState) {
-        snapshotFlow {
-            VisibleItemInfo(
-                index = gridState.firstVisibleItemIndex,
-                itemId = gridState.firstVisibleItemIndex,
-                offset = gridState.firstVisibleItemScrollOffset
-            )
-        }
-            .distinctUntilChanged()
-            .collect { visibleInfo ->
-                if (!gridState.isScrollInProgress) {
-                    delay(100) // Petit délai pour la stabilité
-                    currentVisibleItem = visibleInfo
-                    globalIndex = visibleInfo.index
+        snapshotFlow { ScrollState(
+            index = gridState.firstVisibleItemIndex,
+            isScrolling = gridState.isScrollInProgress
+        ) }.collect { scrollState ->
+            if (!scrollState.isScrolling) {
+                delay(100) // Brief delay for scroll settlement
+                lastSettledFirstVisible = scrollState.index
+                isSettled = true
 
-                    Log.d(TAG, """
-                    Scroll Update:
-                    - Global Index: $globalIndex
-                    - First Visible Index: ${visibleInfo.index}
-                    - Offset: ${visibleInfo.offset}
-                    - Is Scrolling: false
+                // Log settled position
+                Log.d(TAG, """
+                    Scroll Settled:
+                    - Index: ${scrollState.index}
+                    - Previous Index: $lastSettledFirstVisible
+                    - Category: $currentCategory
                 """.trimIndent())
-                }
+            } else {
+                isSettled = false
             }
+        }
     }
 
     LazyVerticalStaggeredGrid(
@@ -177,7 +168,7 @@ fun ArticleGrid(
         horizontalArrangement = Arrangement.spacedBy(3.dp),
         verticalItemSpacing = 3.dp
     ) {
-        // Bannière si pas de filtre
+        // Show banner if not filtering
         if (!showFilter) {
             item(span = StaggeredGridItemSpan.FullLine) {
                 ScrolleAdBanner(
@@ -188,24 +179,29 @@ fun ArticleGrid(
             }
         }
 
-        var currentIndex = 0
-
-        // Affichage des catégories dans l'ordre
+        // Display categories in order
         uiState.categories
             .sortedBy { if (it.nomCategorieInCategoriesTabele == "NewArrivale") 0 else 1 }
             .forEach { category ->
                 val lazyPagingItems = categoryPagingItems[category]
 
                 if (lazyPagingItems != null && lazyPagingItems.itemCount > 0) {
-                    // En-tête de catégorie si nécessaire
+                    // Log category layout
+                    Log.d(TAG, """
+                        Category Layout:
+                        - Name: ${category.nomCategorieInCategoriesTabele}
+                        - Items: ${lazyPagingItems.itemCount}
+                        - Is Host: ${uiState.productDisplayController.isHostPhone}
+                    """.trimIndent())
+
+                    // Show category header if needed
                     if (category.displayedHeader) {
                         item(span = StaggeredGridItemSpan.FullLine) {
                             CategoryHeader(category)
-                            currentIndex++
                         }
                     }
 
-                    // Affichage des articles
+                    // Display articles
                     items(
                         count = lazyPagingItems.itemCount,
                         span = { index ->
@@ -219,16 +215,20 @@ fun ArticleGrid(
                     ) { index ->
                         val article = lazyPagingItems[index]
                         article?.let {
-                            val actualIndex = currentIndex + index
-                            val isFirstVisible = actualIndex == globalIndex
+                            // Determine if this article should be highlighted
+                            val isFirstVisible = when {
+                                !isSettled -> index == lastSettledFirstVisible
+                                else -> index == gridState.firstVisibleItemIndex
+                            }
 
                             if (isFirstVisible) {
+                                currentCategory = category.nomCategorieInCategoriesTabele
                                 Log.d(TAG, """
                                     First Visible Article:
                                     - ID: ${it.idArticle}
-                                    - Global Index: $globalIndex
-                                    - Actual Index: $actualIndex
+                                    - Index: $index
                                     - Category: ${category.nomCategorieInCategoriesTabele}
+                                    - Settled: $isSettled
                                 """.trimIndent())
                             }
 
@@ -239,13 +239,19 @@ fun ArticleGrid(
                                 onClickToOpenWindos = onClickToOpenWindos,
                                 uiState = uiState,
                                 isFirstVisible = isFirstVisible,
-                                modifier = Modifier.animateItemPlacement()
+                                modifier = Modifier.animateItem(
+                                    fadeInSpec = null,
+                                    fadeOutSpec = null
+                                )
                             )
                         }
                     }
-
-                    currentIndex += lazyPagingItems.itemCount
                 }
             }
     }
 }
+
+private data class ScrollState(
+    val index: Int,
+    val isScrolling: Boolean
+)
