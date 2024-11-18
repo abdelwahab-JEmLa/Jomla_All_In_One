@@ -143,6 +143,10 @@ interface DevicesTypeManagerDao{
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(items: List<DevicesTypeManager>)
+    @Query("SELECT MAX(id) FROM DevicesTypeManager")
+    suspend fun getMaxId(): Long?
+
+    suspend fun deleteAll()
 
 }
 

@@ -80,10 +80,7 @@ fun MainScreen(
         }
     }
 
-    // Initialize connection using LaunchedEffect
-    LaunchedEffect(Unit) {
-        headViewModel.initializeConnection()
-    }
+
 
     Surface(
         modifier = modifier.fillMaxSize(),
@@ -171,5 +168,9 @@ fun MainScreen(
                 }
             }
         }
+    }
+    // Initialize connection using LaunchedEffect
+    LaunchedEffect(Unit) {
+        headViewModel.initializeConnection()
     }
 }
