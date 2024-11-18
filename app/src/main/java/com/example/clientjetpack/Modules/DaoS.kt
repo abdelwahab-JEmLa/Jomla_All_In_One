@@ -1,6 +1,5 @@
 package com.example.clientjetpack.Modules
 
-import a_RoomDB.AppSettingsSaverModel
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.CategoriesTabelle
 import a_RoomDB.ClientsModel
@@ -13,6 +12,8 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import com.example.clientjetpack.Models.AppSettingsSaverModel
+
 @Dao
 interface ArticlesBasesStatsModelDao {
     @Query("SELECT * FROM ArticlesBasesStatsTable ORDER BY idCategorie")
