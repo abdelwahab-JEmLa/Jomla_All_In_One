@@ -135,6 +135,7 @@ fun MainUi(
         }
     }
 
+
     HandleScrollBroadcast(
         isHostPhone = uiState.productDisplayController.isHostPhone,
         isConnected = uiState.productDisplayController.isConnected,
@@ -234,7 +235,6 @@ private fun AnimatedFabGroup(
         }
     }
 }
-
 @Composable
 private fun HandleScrollBroadcast(
     isHostPhone: Boolean,
@@ -242,18 +242,46 @@ private fun HandleScrollBroadcast(
     gridState: LazyStaggeredGridState,
     viewModel: HeadViewModel,
 ) {
+    var lastScrollPosition by remember { mutableStateOf(0) }
+    var isScrollInProgress by remember { mutableStateOf(false) }
+
     LaunchedEffect(isHostPhone, isConnected) {
         if (!isHostPhone || !isConnected) {
             return@LaunchedEffect
         }
 
-        snapshotFlow { gridState.firstVisibleItemIndex }
+        // Monitor scroll state
+        snapshotFlow {
+            gridState.firstVisibleItemIndex to gridState.firstVisibleItemScrollOffset
+        }
             .distinctUntilChanged()
-            .collect { position ->
-              viewModel.sendOrderToClientDisplayer(
-                  WifiUpdateClientDisplayerStats.ClientMainGridScrollPosition.prefix,
-                  position
-              )
+            .collect { (position, offset) ->
+                // Check if we're currently scrolling by comparing with stored position
+                val isDragging = when {
+                    gridState.layoutInfo.visibleItemsInfo.isEmpty() -> false
+                    offset > 0 -> true
+                    position != lastScrollPosition -> true
+                    else -> false
+                }
+
+                if (isDragging) {
+                    isScrollInProgress = true
+
+                    // Only send updates on significant changes
+                    if (position != lastScrollPosition) {
+                        lastScrollPosition = position
+                        viewModel.sendOrderToClientDisplayer(
+                            WifiUpdateClientDisplayerStats.ClientMainGridScrollPosition.prefix,
+                            position
+                        )
+                    }
+                } else if (isScrollInProgress) {
+                    isScrollInProgress = false
+                    viewModel.sendOrderToClientDisplayer(
+                        WifiUpdateClientDisplayerStats.ClientMainGridScrollPosition.prefix,
+                        position
+                    )
+                }
             }
     }
 }
@@ -265,21 +293,48 @@ private fun HandleClientScroll(
     gridState: LazyStaggeredGridState,
     tag: String
 ) {
-
     val scope = rememberCoroutineScope()
+    var isAnimating by remember { mutableStateOf(false) }
 
     LaunchedEffect(scrollPosition) {
         if (isHostPhone) return@LaunchedEffect
 
         try {
-            scope.launch {
-                gridState.animateScrollToItem(scrollPosition)
-                delay(300)
+            if (!isAnimating) {
+                isAnimating = true
+                scope.launch {
+                    // Smooth scroll to the received position
+                    gridState.animateScrollToItem(
+                        index = scrollPosition,
+                        scrollOffset = 0
+                    )
+                    delay(100)
+                    isAnimating = false
+                }
             }
         } catch (e: Exception) {
+            isAnimating = false
+            // Fallback to instant scroll
+            gridState.scrollToItem(scrollPosition)
         }
     }
 }
+
+
+private data class ScrollUpdate(
+    val position: Int,
+    val offset: Int
+)
+
+// Extension functions for scroll handling
+private fun Int.toScrollUpdate(): ScrollUpdate {
+    return ScrollUpdate(
+        position = this,
+        offset = 0
+    )
+}
+
+
 
 class ArticlePagingSource(
     private val articles: List<ArticlesBasesStatsTable>,
