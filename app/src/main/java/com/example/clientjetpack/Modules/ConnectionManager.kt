@@ -1,6 +1,7 @@
 package com.example.clientjetpack.Modules
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
@@ -35,12 +36,8 @@ import java.util.concurrent.atomic.AtomicBoolean
 class ConnectionManager(
     private val context: Context,
     private val onPayloadReceiveRaw: (String) -> Unit,
-) : ViewModel() {  //-->
-//Hi Claud,what i went from u to do is to
-//Find All TODOs and Fix Them
+) : ViewModel() {
 
-    //TODO:
-    // fait que ca ce reconect quan la connxion est perdu est les roller son defini
     private val _connectionUiState = MutableStateFlow(ConnectionUiState())
     val connectionUiState: StateFlow<ConnectionUiState> = _connectionUiState.asStateFlow()
 
@@ -61,7 +58,78 @@ class ConnectionManager(
     private enum class ConnectionMode {
         HOST, CLIENT, NONE
     }
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private fun initiateReconnection() {
+        if (isReconnecting.compareAndSet(false, true)) {
+            reconnectionJob?.cancel()
+            reconnectionJob = viewModelScope.launch {
+                try {
+                    Log.d(TAG, "🔄 Tentative de reconnexion #${retryCount + 1}")
 
+                    delay(2000)
+
+                    // If still disconnected after initial delay, start exponential backoff
+                    if (!_connectionUiState.value.isConnected) {
+                        val backoffDelay = calculateBackoffDelay()
+                        delay(backoffDelay)
+
+                        // Update UI state to show reconnection attempt
+                        _connectionUiState.update { it.copy(
+                            connectionStatus = "Tentative de reconnexion #${retryCount + 1}",
+                            reconnectionAttempts = retryCount + 1
+                        )}
+
+                        when (lastConnectionMode) {
+                            ConnectionMode.HOST -> startAsHost()
+                            ConnectionMode.CLIENT -> startAsClient()
+                            ConnectionMode.NONE -> {
+                                Log.e(TAG, "❌ Aucun mode de connexion précédent connu")
+                                handleFinalDisconnection()
+                            }
+                        }
+
+                        retryCount++
+
+                        // Update last attempt timestamp
+                        _connectionUiState.update { it.copy(
+                            lastSuccessfulConnection = System.currentTimeMillis()
+                        )}
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "💥 Erreur lors de la tentative de reconnexion", e)
+                    handleError("Échec de la reconnexion: ${e.message}")
+                } finally {
+                    isReconnecting.set(false)
+                }
+            }
+        }
+    }
+
+    // Add a new function to check if we should attempt reconnection
+    private fun shouldAttemptReconnection(): Boolean {
+        return !_connectionUiState.value.isConnected &&
+                retryCount < maxRetries &&
+                lastConnectionMode != ConnectionMode.NONE
+    }
+
+    // Update handleDisconnection to use the new logic
+    @SuppressLint("NewApi")
+    private fun handleDisconnection(disconnectedEndpointId: String) {
+        if (endpointId == disconnectedEndpointId) {
+            this.endpointId = null
+            updateConnectionStatus("Déconnecté")
+            _connectionUiState.update { it.copy(
+                isConnected = false,
+                lastSuccessfulConnection = System.currentTimeMillis()
+            )}
+
+            if (shouldAttemptReconnection()) {
+                initiateReconnection()
+            } else {
+                handleFinalDisconnection()
+            }
+        }
+    }
     private val connectionLifecycleCallback = object : ConnectionLifecycleCallback() {
         override fun onConnectionInitiated(endpointId: String, info: ConnectionInfo) {
             Log.d(TAG, "🌟 Connexion initiée avec: ${info.endpointName}")
@@ -167,6 +235,7 @@ class ConnectionManager(
         }
     }
 
+    @SuppressLint("NewApi")
     private fun handleConnectionFailure(reason: String) {
         Log.e(TAG, "⚠️ Échec de connexion: $reason")
         if (!isReconnecting.get() && retryCount < maxRetries) {
@@ -177,41 +246,7 @@ class ConnectionManager(
         }
     }
 
-    private fun handleDisconnection(disconnectedEndpointId: String) {
-        if (endpointId == disconnectedEndpointId) {
-            this.endpointId = null
-            updateConnectionStatus("Déconnecté")
-            _connectionUiState.update { it.copy(isConnected = false) }
-            initiateReconnection()
-        }
-    }
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    private fun initiateReconnection() {
-        if (isReconnecting.compareAndSet(false, true)) {
-            reconnectionJob?.cancel()
-            reconnectionJob = viewModelScope.launch {
-                try {
-                    Log.d(TAG, "🔄 Tentative de reconnexion #${retryCount + 1}")
-                    val delayTime = calculateBackoffDelay()
-                    delay(delayTime)
-
-                    when (lastConnectionMode) {
-                        ConnectionMode.HOST -> startAsHost()
-                        ConnectionMode.CLIENT -> startAsClient()
-                        ConnectionMode.NONE -> {
-                            Log.e(TAG, "❌ Aucun mode de connexion précédent connu")
-                            handleFinalDisconnection()
-                        }
-                    }
-
-                    retryCount++
-                } finally {
-                    isReconnecting.set(false)
-                }
-            }
-        }
-    }
 
     private fun calculateBackoffDelay(): Long {
         return baseRetryDelayMs * (1L shl retryCount.coerceAtMost(5))
