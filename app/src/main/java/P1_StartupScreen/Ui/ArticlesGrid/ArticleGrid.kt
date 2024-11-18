@@ -1,11 +1,13 @@
 package P1_StartupScreen.Ui.ArticlesGrid
 
 import P1_StartupScreen.Main.ArticlePagingSource
+import P1_StartupScreen.Ui.ArticlesGrid.ArticleItem.ArticleItem
 import P1_StartupScreen.Ui.ArticlesGrid.Res.Scrollbar
 import P1_StartupScreen.Ui.Objects.CategoryHeader
 import P1_StartupScreen.Ui.Objects.ScrolleAdBanner
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.CategoriesTabelle
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -17,7 +19,9 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -63,8 +67,10 @@ fun ArticleGridWithScrollbar(
         )
     }
 }
+private const val TAG = "ArticleGridDebug"
 
 
+// Update the ArticleGrid to track first visible item
 @Composable
 fun ArticleGrid(
     uiState: UiState,
@@ -112,6 +118,19 @@ fun ArticleGrid(
         categoryPagingItems[category] = pagingItems
     }
 
+    // Log grid state changes
+    LaunchedEffect(gridState) {
+        snapshotFlow { gridState.firstVisibleItemIndex }
+            .collect { firstVisibleIndex ->
+                Log.d(TAG, """
+                    Grid State Update:
+                    - First Visible Index: $firstVisibleIndex
+                    - Is Host: ${uiState.productDisplayController.isHostPhone}
+                    - Total Categories: ${uiState.categories.size}
+                """.trimIndent())
+            }
+    }
+
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Fixed(if (uiState.categories.any {
                 it.nomCategorieInCategoriesTabele == "NewArrivale"
@@ -139,6 +158,12 @@ fun ArticleGrid(
             val lazyPagingItems = categoryPagingItems[category]
 
             if (lazyPagingItems != null && lazyPagingItems.itemCount > 0) {
+                Log.d(TAG, """
+                    Category Layout:
+                    - Category: ${category.nomCategorieInCategoriesTabele}
+                    - Items Count: ${lazyPagingItems.itemCount}
+                """.trimIndent())
+
                 // Show category header if needed
                 if (category.displayedHeader) {
                     item(span = StaggeredGridItemSpan.FullLine) {
@@ -146,7 +171,6 @@ fun ArticleGrid(
                     }
                 }
 
-                // Display category items
                 items(
                     count = lazyPagingItems.itemCount,
                     span = { index ->
@@ -160,12 +184,24 @@ fun ArticleGrid(
                 ) { index ->
                     val article = lazyPagingItems[index]
                     article?.let {
+                        val isFirstVisible = index == gridState.firstVisibleItemIndex
+
+                        if (isFirstVisible) {
+                            Log.d(TAG, """
+                                First Visible Article:
+                                - Article ID: ${it.idArticle}
+                                - Index: $index
+                                - Category: ${category.nomCategorieInCategoriesTabele}
+                            """.trimIndent())
+                        }
+
                         ArticleItem(
                             article = it,
                             viewModel = viewModel,
                             reloadTrigger = reloadTrigger,
                             onClickToOpenWindos = onClickToOpenWindos,
-                            uiState = uiState
+                            uiState = uiState,
+                            isFirstVisible = isFirstVisible
                         )
                     }
                 }

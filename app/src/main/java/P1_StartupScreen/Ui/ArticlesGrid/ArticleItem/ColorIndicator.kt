@@ -1,6 +1,9 @@
-package P1_StartupScreen.Ui.ArticlesGrid
+package P1_StartupScreen.Ui.ArticlesGrid.ArticleItem
+import P1_StartupScreen.Ui.ArticlesGrid.ArticleItem.ColorIndicator
+import P1_StartupScreen.Ui.ArticlesGrid.AutoResizedText
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ColorsArticlesTabelle
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -37,48 +40,6 @@ import com.example.clientjetpack.Models.UiState
 import com.example.clientjetpack.R
 import com.example.clientjetpack.ViewModel.HeadViewModel
 
-// Update the ArticleItem to use the new layout logic
-@Composable
-fun ArticleItem(
-    article: ArticlesBasesStatsTable,
-    viewModel: HeadViewModel,
-    reloadTrigger: Int,
-    modifier: Modifier = Modifier,
-    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
-    uiState: UiState,
-) { //-->
-//Hi Claud,what i went from u to do is to
-//Find All TODOs and Fix Them 
-
-//TODO:
-//  fait que si le telephone est hos ajout au topEnd un cercle elecated card qui contien icon de donne quend le product est first visible
-    val colorCount = countColors(article)
-
-    Card(
-        modifier = modifier
-            .padding(4.dp)
-            .fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        val layout = when {
-            article.imageDimention == "Demi" && colorCount == 1 -> ArticleLayout.DemiUno
-            article.imageDimention == "Demi" && colorCount == 2 -> ArticleLayout.DemiDual
-            article.imageDimention == "Demi" && colorCount > 2 -> ArticleLayout.DemiMulti
-            colorCount == 1 -> ArticleLayout.SmallUno
-            colorCount == 2 -> ArticleLayout.SmallDual
-            colorCount > 2 -> ArticleLayout.SmallMulti
-            else -> ArticleLayout.SmallUno
-        }
-
-        layout.Content(
-            article = article,
-            viewModel = viewModel,
-            reloadTrigger = reloadTrigger,
-            onClickToOpenWindos = onClickToOpenWindos,
-            uiState = uiState
-        )
-    }
-}
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun ColorIndicator(
@@ -130,66 +91,6 @@ fun ColorIndicator(
     }
 }
 
-
-@Composable
-fun ArticleImageWithOverlay(
-    article: ArticlesBasesStatsTable,
-    viewModel: HeadViewModel,
-    colorIndex: Int,
-    reloadTrigger: Int,
-    uiState: UiState,
-    modifier: Modifier = Modifier,
-    contentScale: ContentScale = ContentScale.Fit,
-    onClickToOpenWindow: (ArticlesBasesStatsTable, Int) -> Unit,
-    imageSize: DpSize
-) {
-    Surface(
-        modifier = modifier,
-        shape = MaterialTheme.shapes.medium,
-        tonalElevation = 2.dp,
-        shadowElevation = 4.dp
-    ) {
-        Box(
-            modifier = Modifier
-                .clickable { onClickToOpenWindow(article, colorIndex) }
-                .fillMaxSize()
-        ) {
-            val imageExists = remember(article.idArticle, colorIndex, reloadTrigger) {
-                checkImageExists(viewModel, article, colorIndex, reloadTrigger)
-            }
-
-            ImageDisplayer(
-                article = article,
-                viewModel = viewModel,
-                indexColor = colorIndex,
-                reloadKey = reloadTrigger,
-                onClickToOpenWindow = onClickToOpenWindow,
-                uiState = uiState,
-                showOverlay = !imageExists,
-                imageScale = contentScale,
-                imageSize = imageSize
-            )
-
-            if (imageExists) {
-                article.getColorIdForIndex(colorIndex)?.let { colorId ->
-                    uiState.colorsArticlesTabelleModel.find { it.idColore == colorId }?.let { color ->
-                        ColorIndicator(
-                            iconColore = color.iconColore,
-                            modifier = Modifier
-                                .padding(3.dp)
-                                .align(Alignment.BottomEnd)
-                                .wrapContentSize()
-                                .offset(x = (-10).dp, y = (-15).dp)
-                            ,
-                            imageSize = imageSize,
-                            onClickToOpenWindow = { onClickToOpenWindow(article, colorIndex) }
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun ColorOverlay(

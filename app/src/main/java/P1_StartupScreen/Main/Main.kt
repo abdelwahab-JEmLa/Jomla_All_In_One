@@ -5,6 +5,7 @@ import P1_StartupScreen.Main.FloatingActionButtonGroup.FloatingActionButtonGroup
 import P1_StartupScreen.Ui.ArticlesGrid.ArticleGridWithScrollbar
 import P1_StartupScreen.Ui.Objects.SearchFilterPB
 import a_RoomDB.ArticlesBasesStatsTable
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -213,7 +214,7 @@ private fun AnimatedFabGroup(
     onClickToOpenClientsListW: () -> Unit,
     onClickToDisplayeConexionWifi: () -> Unit,
 ) {
-    Box(
+    Box(                               
         modifier = Modifier
             .padding(bottom = 16.dp, end = 16.dp),
         contentAlignment = Alignment.BottomEnd
@@ -235,6 +236,8 @@ private fun AnimatedFabGroup(
         }
     }
 }
+private const val TAG = "ArticleGridDebug"
+
 @Composable
 private fun HandleScrollBroadcast(
     isHostPhone: Boolean,
@@ -247,16 +250,23 @@ private fun HandleScrollBroadcast(
 
     LaunchedEffect(isHostPhone, isConnected) {
         if (!isHostPhone || !isConnected) {
+            Log.d(TAG, "HandleScrollBroadcast: Not handling scroll - isHost: $isHostPhone, isConnected: $isConnected")
             return@LaunchedEffect
         }
 
-        // Monitor scroll state
         snapshotFlow {
             gridState.firstVisibleItemIndex to gridState.firstVisibleItemScrollOffset
         }
             .distinctUntilChanged()
             .collect { (position, offset) ->
-                // Check if we're currently scrolling by comparing with stored position
+                Log.d(TAG, """
+                Scroll Update:
+                - Position: $position
+                - Offset: $offset
+                - Last Position: $lastScrollPosition
+                - Is Scrolling: $isScrollInProgress
+            """.trimIndent())
+
                 val isDragging = when {
                     gridState.layoutInfo.visibleItemsInfo.isEmpty() -> false
                     offset > 0 -> true
@@ -266,10 +276,9 @@ private fun HandleScrollBroadcast(
 
                 if (isDragging) {
                     isScrollInProgress = true
-
-                    // Only send updates on significant changes
                     if (position != lastScrollPosition) {
                         lastScrollPosition = position
+                        Log.d(TAG, "Sending scroll position to client: $position")
                         viewModel.sendOrderToClientDisplayer(
                             WifiUpdateClientDisplayerStats.ClientMainGridScrollPosition.prefix,
                             position
@@ -277,6 +286,7 @@ private fun HandleScrollBroadcast(
                     }
                 } else if (isScrollInProgress) {
                     isScrollInProgress = false
+                    Log.d(TAG, "Final scroll position sent to client: $position")
                     viewModel.sendOrderToClientDisplayer(
                         WifiUpdateClientDisplayerStats.ClientMainGridScrollPosition.prefix,
                         position

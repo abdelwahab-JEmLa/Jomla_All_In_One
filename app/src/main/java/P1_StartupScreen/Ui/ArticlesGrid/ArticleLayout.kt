@@ -1,5 +1,6 @@
 package P1_StartupScreen.Ui.ArticlesGrid
 
+import P1_StartupScreen.Ui.ArticlesGrid.ArticleItem.ArticleImageWithOverlay
 import a_RoomDB.ArticlesBasesStatsTable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
