@@ -186,6 +186,10 @@ open class HeadViewModel(
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun startAsHost() = connectionManager.startAsHost()
+    //Hi Claud,what i went from u to do is to
+    //Find All TODOs and Fix Them
+    //TODO :
+    // fait au lencement de verivier si     val nameDevicesHost: String = "", sinon lence startAsClient
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun startAsClient() = connectionManager.startAsClient()
