@@ -56,8 +56,7 @@ enum class WifiUpdateClientDisplayerStats(val prefix: String) {
     }
 }
 
-//Hi Claud,what i went from u to do is to
-//Find All TODOs and Fix Them
+
 open class HeadViewModel(
     context: Context,
     private val database: AppDatabase,
