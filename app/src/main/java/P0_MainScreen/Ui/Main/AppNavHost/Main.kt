@@ -1,4 +1,5 @@
 package P0_MainScreen.Ui.Main.AppNavHost
+
 import P0_MainScreen.Ui.Objects.LoadingOverlay
 import P1_StartupScreen.Main.FragmentStartupScreen
 import P3_DisplayeProductInfosToSeller.Main.P3DisplayeProductInfosToSeller
@@ -38,7 +39,6 @@ fun AppNavHost(
     onClickToDisplayeConexionWifi: () -> Unit
 ) {
     val uiState by appViewModels.headViewModel.uiState.collectAsState()
-
 
     // Get current client from settings
     val currentClientId = uiState.appSettingsSaverModel
