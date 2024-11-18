@@ -1,6 +1,6 @@
 package com.example.clientjetpack.ViewModel
 
-import P7_EStorePresentationToClient.Modules.ConnectionManager
+import com.example.clientjetpack.Modules.ConnectionManager
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.CategoriesTabelle
 import a_RoomDB.ClientsModel

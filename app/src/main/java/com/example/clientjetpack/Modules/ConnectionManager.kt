@@ -1,4 +1,4 @@
-package P7_EStorePresentationToClient.Modules
+package com.example.clientjetpack.Modules
 
 import android.Manifest
 import android.content.Context
@@ -35,7 +35,12 @@ import java.util.concurrent.atomic.AtomicBoolean
 class ConnectionManager(
     private val context: Context,
     private val onPayloadReceiveRaw: (String) -> Unit,
-) : ViewModel() {
+) : ViewModel() {  //-->
+//Hi Claud,what i went from u to do is to
+//Find All TODOs and Fix Them
+
+    //TODO:
+    // fait que ca ce reconect quan la connxion est perdu est les roller son defini
     private val _connectionUiState = MutableStateFlow(ConnectionUiState())
     val connectionUiState: StateFlow<ConnectionUiState> = _connectionUiState.asStateFlow()
 
@@ -181,6 +186,7 @@ class ConnectionManager(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun initiateReconnection() {
         if (isReconnecting.compareAndSet(false, true)) {
             reconnectionJob?.cancel()

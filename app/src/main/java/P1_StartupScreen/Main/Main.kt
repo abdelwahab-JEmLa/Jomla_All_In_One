@@ -24,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -97,13 +98,18 @@ fun MainUi(
 ) {
     val scope = rememberCoroutineScope()
     val tag = if (uiState.productDisplayController.isHostPhone) "📱 ServerScreen" else "📱 ClientScreen"
-    var savedScrollPosition by remember { mutableStateOf(0) }
+    var savedScrollPosition by rememberSaveable() { mutableStateOf(0) }
 
     // Get the current scroll position from ProductDisplayController
     val currentScrollPosition = uiState.productDisplayController.mainGridScrollPosition
 
     // Handle initial scroll position and screen returns
-    LaunchedEffect(currentScrollPosition) {
+    LaunchedEffect(currentScrollPosition) {//-->
+        //Hi Claud,what i went from u to do is to
+        //Find All TODOs and Fix Them 
+
+        //TODO:
+        // pk ca ne revien pas a la position sauv quand je quit au SoldCartScreen et revien a lui 
         if (currentScrollPosition > 0) {
             scope.launch {
                 try {
@@ -166,7 +172,12 @@ fun MainUi(
                 uiState = uiState,
                 onClickDonne = onClickDonne
             )
+            //-->
+            //Hi Claud,what i went from u to do is to
+            //Find All TODOs and Fix Them 
 
+            //TODO:
+            // ne pas l affiche si !Host&& !conected
             Box(modifier = Modifier.weight(1f)) {
                 ArticleGridWithScrollbar(
                     uiState = uiState,

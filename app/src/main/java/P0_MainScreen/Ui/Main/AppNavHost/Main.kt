@@ -62,13 +62,7 @@ fun AppNavHost(
             composable(Screen.EditDatabaseWithCreateNewArticles.route) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     FragmentStartupScreen(
-                        //Hi Claud,what i went from u to do is to
-                        //Find All TODOs and Fix Them
 
-                        //TODO:
-                        // fait d enregste la position du scroll
-                        // de
-                        //  pour revenire de
                         viewModel = appViewModels.headViewModel,
                         onToggleNavBar = onToggleNavBar,
                         reloadTrigger = reloadTrigger,
