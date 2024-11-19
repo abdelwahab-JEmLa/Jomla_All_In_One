@@ -81,77 +81,89 @@ fun ColorsCards7(
         }
     }
 
-    Card(
+    Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        LazyColumn(
-            state = listState,
+        Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(vertical = 8.dp)
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
         ) {
-            // Main color item
-            item {
-                val mainColor = if (displayController.clientWindowsSelectedColorId != 0L) {
-                    colors.find { it.idColore == displayController.clientWindowsSelectedColorId }
-                } else {
-                    colors.find { it.idColore == mainColorId } ?: colors.firstOrNull()
-                }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    // Set a fixed height or use weight to avoid infinite height constraints
+                    .height(600.dp)
+            ) {
+                LazyColumn(
+                    state = listState,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    contentPadding = PaddingValues(vertical = 8.dp)
+                ) {
+                    // Main color item
+                    item {
+                        val mainColor = if (displayController.clientWindowsSelectedColorId != 0L) {
+                            colors.find { it.idColore == displayController.clientWindowsSelectedColorId }
+                        } else {
+                            colors.find { it.idColore == mainColorId } ?: colors.firstOrNull()
+                        }
 
-                mainColor?.let {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(360.dp)
-                            .clip(MaterialTheme.shapes.medium)
-                    ) {
-                        ColorItem7(
-                            modifier = Modifier.fillMaxSize(),
-                            article = articlesBasesStatsTable,
-                            color = it,
-                            index = 0,
-                            relodeTigger = relodeTigger,
-                        )
-                    }
-                }
-            }
-
-            // Additional colors
-            if (colors.size > 1) {
-                val currentMainColorId = if (displayController.clientWindowsSelectedColorId != 0L) {
-                    displayController.clientWindowsSelectedColorId
-                } else {
-                    mainColorId
-                }
-
-                val arrangedColors = colors
-                    .filter { it.idColore != currentMainColorId }
-                    .sortedBy { color ->
-                        when (color.idColore) {
-                            previousMainColorId -> 1
-                            else -> 0
+                        mainColor?.let {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(360.dp)
+                                    .clip(MaterialTheme.shapes.medium)
+                            ) {
+                                ColorItem7(
+                                    modifier = Modifier.fillMaxSize(),
+                                    article = articlesBasesStatsTable,
+                                    color = it,
+                                    index = 0,
+                                    relodeTigger = relodeTigger,
+                                )
+                            }
                         }
                     }
 
-                items(arrangedColors) { color ->
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(150.dp)
-                            .clip(MaterialTheme.shapes.medium)
-                    ) {
-                        ColorItem7(
-                            modifier = Modifier.fillMaxSize(),
-                            article = articlesBasesStatsTable,
-                            color = color,
-                            index = arrangedColors.indexOf(color) + 1,
-                            relodeTigger = relodeTigger,
-                        )
+                    // Additional colors
+                    if (colors.size > 1) {
+                        val currentMainColorId = if (displayController.clientWindowsSelectedColorId != 0L) {
+                            displayController.clientWindowsSelectedColorId
+                        } else {
+                            mainColorId
+                        }
+
+                        val arrangedColors = colors
+                            .filter { it.idColore != currentMainColorId }
+                            .sortedBy { color ->
+                                when (color.idColore) {
+                                    previousMainColorId -> 1
+                                    else -> 0
+                                }
+                            }
+
+                        items(arrangedColors) { color ->
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(150.dp)
+                                    .clip(MaterialTheme.shapes.medium)
+                            ) {
+                                ColorItem7(
+                                    modifier = Modifier.fillMaxSize(),
+                                    article = articlesBasesStatsTable,
+                                    color = color,
+                                    index = arrangedColors.indexOf(color) + 1,
+                                    relodeTigger = relodeTigger,
+                                )
+                            }
+                        }
                     }
                 }
             }
