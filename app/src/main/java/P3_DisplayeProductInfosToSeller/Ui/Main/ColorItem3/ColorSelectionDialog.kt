@@ -131,7 +131,7 @@ private fun QuantityButton(
     ) {
         Text(
             text = quantity.toString(),
-            fontSize = 20.sp,
+            fontSize = 15.sp,
             fontWeight = FontWeight.Bold,
             color = if (isSelected)
                 MaterialTheme.colorScheme.onPrimary

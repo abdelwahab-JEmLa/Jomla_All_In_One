@@ -4,6 +4,7 @@ import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ColorsArticlesTabelle
 import a_RoomDB.SoldArticlesTabelle
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -35,6 +37,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.clientjetpack.R
@@ -56,7 +59,6 @@ fun ColorItem3(
     var showDialog by remember { mutableStateOf(false) }
     var isSelected by remember { mutableStateOf(false) }
 
-    // Calculate current quantity based on color index
     val currentQuantity = remember(index, currentSale) {
         when (index) {
             0 -> currentSale?.color1SoldQuantity
@@ -67,52 +69,55 @@ fun ColorItem3(
         } ?: 0
     }
 
-    // Animation for selection highlight
     val cardElevation by animateFloatAsState(
         targetValue = if (isSelected) 8f else 2f,
         label = "cardElevation"
     )
 
-    // Main Card using ElevatedCard instead of Card
-    ElevatedCard(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(4.dp)
-            .clickable {
-                isSelected = true
-                showDialog = true
-                color?.let { updateColorToBeMain(it.idColore) }
-            },
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        ),
-        elevation = CardDefaults.elevatedCardElevation(
-            defaultElevation = cardElevation.dp
-        )
+    Box(
+        modifier = modifier.height(height)
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            // Quantity Indicator Badge
-            if (currentQuantity > 0) {  //-->
-                //Hi Claud,what i went from u to do is to
-                //Find All TODOs and Fix Them
+        // Quantity Badge - Now properly positioned above all content
+        if (currentQuantity > 0) {
+            QuantityBadge(
+                quantity = currentQuantity,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(8.dp)
+                    .zIndex(1f) // Ensures badge stays on top
+            )
+        }
 
-                //TODO:
-                // fait que ca soit au dessu de tiyt
-                QuantityBadge(
-                    quantity = currentQuantity,
-                    modifier = Modifier
-                        .align(Alignment.TopStart)
-                        .padding(8.dp)
-                )
-            }
-
-            Column(modifier = Modifier.fillMaxSize()) {
-                // Product Image
+        ElevatedCard(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(4.dp)
+                .clickable {
+                    isSelected = true
+                    showDialog = true
+                    color?.let { updateColorToBeMain(it.idColore) }
+                },
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.elevatedCardColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+                contentColor = MaterialTheme.colorScheme.onSurface
+            ),
+            elevation = CardDefaults.elevatedCardElevation(
+                defaultElevation = cardElevation.dp
+            )
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                // Product Image with proper aspect ratio
                 Box(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp))
                 ) {
                     ImageDisplayer3(
                         modifier = Modifier.fillMaxSize(),
@@ -121,9 +126,14 @@ fun ColorItem3(
                         indexColor = index,
                         reloadKey = reloadTrigger
                     )
+
+                    // Out of stock overlay
+                    if (currentQuantity == 0) {
+                        OutOfStockOverlay()
+                    }
                 }
 
-                // Color Information Section
+                // Color Information with improved layout
                 color?.let { colorData ->
                     ColorInfoSection(
                         colorData = colorData,
@@ -137,7 +147,7 @@ fun ColorItem3(
         }
     }
 
-    // Quantity Selection Dialog
+    // Dialog with improved UI
     if (showDialog && color != null) {
         ColorSelectionDialog(
             onDismiss = {
@@ -163,6 +173,26 @@ fun ColorItem3(
 }
 
 @Composable
+private fun OutOfStockOverlay() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                Color.Black.copy(alpha = 0.6f),
+                shape = RoundedCornerShape(8.dp)
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "Out of Stock",
+            color = Color.White,
+            style = MaterialTheme.typography.labelLarge,
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+@Composable
 private fun QuantityBadge(
     quantity: Int,
     modifier: Modifier = Modifier
@@ -170,14 +200,15 @@ private fun QuantityBadge(
     Surface(
         modifier = modifier,
         shape = CircleShape,
-        color = Color.Red.copy(alpha = 0.9f)
+        color = MaterialTheme.colorScheme.error,
+        contentColor = MaterialTheme.colorScheme.onError
     ) {
         Text(
             text = quantity.toString(),
-            color = Color.White,
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-            fontWeight = FontWeight.Bold,
-            fontSize = 14.sp
+            style = MaterialTheme.typography.labelMedium.copy(
+                fontWeight = FontWeight.Bold
+            )
         )
     }
 }
