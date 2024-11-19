@@ -1,7 +1,13 @@
 package P7_EStorePresentationToClient.Ui
+
 import P7_EStorePresentationToClient.Modules.ImageDisplayerPC
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ColorsArticlesTabelle
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,22 +19,25 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.clientjetpack.R
 
-// 2. ColorItem7.kt modifications:
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun ColorItem7(
@@ -38,11 +47,24 @@ fun ColorItem7(
     index: Int,
     relodeTigger: Int,
 ) {
+    // Animation for the icon fade effect
+    val infiniteTransition = rememberInfiniteTransition(label = "")
+    val iconAlpha by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = 0.6f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1000),
+            repeatMode = RepeatMode.Reverse
+        ), label = ""
+    )
+
     Card(
         modifier = modifier,
-        shape = RoundedCornerShape(0.dp) // Supprimé l'arrondi des coins
+        shape = RoundedCornerShape(0.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
+            // Image Display
             ImageDisplayerPC(
                 modifier = Modifier.fillMaxSize(),
                 article = article,
@@ -50,6 +72,7 @@ fun ColorItem7(
                 reloadKey = relodeTigger
             )
 
+            // Gradient Overlay and Content
             color?.let { colorData ->
                 Box(
                     modifier = Modifier
@@ -59,50 +82,117 @@ fun ColorItem7(
                             Brush.verticalGradient(
                                 colors = listOf(
                                     Color.Transparent,
-                                    Color.Black.copy(alpha = 0.3f)
+                                    Color.Black.copy(alpha = 0.5f)
                                 )
                             )
                         )
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .padding(4.dp) // Réduit le padding
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = colorData.nameColore,
-                            style = MaterialTheme.typography.titleMedium,
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.weight(1f)
-                        )
-
-                        // Increased icon size from 32.dp to 40.dp
-                        Surface(
-                            shape = CircleShape,
-                            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
-                            modifier = Modifier.size(40.dp)
+                    if (index > 0) {
+                        // Centered Row for index > 0
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Box(
-                                modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.Center
+                            // Color Name
+                            Text(
+                                text = colorData.nameColore,
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White,
+                                    textAlign = TextAlign.Center
+                                ),
+                                modifier = Modifier.padding(end = 8.dp)
+                            )
+
+                            // Icon Container
+                            Surface(
+                                shape = CircleShape,
+                                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .alpha(iconAlpha)
                             ) {
-                                when {
-                                    colorData.iconColore in listOf("©", "💯", "") -> {
-                                        GlideImage(
-                                            model = R.drawable.logo,
-                                            contentDescription = "Logo",
-                                            modifier = Modifier.size(32.dp) // Increased from 24.dp
-                                        )
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    when {
+                                        colorData.iconColore in listOf("©", "💯", "") -> {
+                                            GlideImage(
+                                                model = R.drawable.logo,
+                                                contentDescription = "Brand Logo",
+                                                modifier = Modifier.size(32.dp)
+                                            )
+                                        }
+                                        else -> {
+                                            Text(
+                                                text = colorData.iconColore,
+                                                fontSize = 24.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                textAlign = TextAlign.Center,
+                                                color = MaterialTheme.colorScheme.onSurface
+                                            )
+                                        }
                                     }
-                                    else -> {
-                                        Text(
-                                            text = colorData.iconColore,
-                                            fontSize = 24.sp, // Increased from 18.sp
-                                            fontWeight = FontWeight.Bold
-                                        )
+                                }
+                            }
+                        }
+                    } else {
+                        // Original layout for index 0
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 12.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = colorData.nameColore,
+                                    style = MaterialTheme.typography.titleMedium.copy(
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color.White,
+                                        textAlign = TextAlign.Start
+                                    ),
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .padding(end = 8.dp)
+                                )
+
+                                Surface(
+                                    shape = CircleShape,
+                                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
+                                    modifier = Modifier
+                                        .size(40.dp)
+                                        .alpha(iconAlpha)
+                                ) {
+                                    Box(
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        when {
+                                            colorData.iconColore in listOf("©", "💯", "") -> {
+                                                GlideImage(
+                                                    model = R.drawable.logo,
+                                                    contentDescription = "Brand Logo",
+                                                    modifier = Modifier.size(32.dp)
+                                                )
+                                            }
+                                            else -> {
+                                                Text(
+                                                    text = colorData.iconColore,
+                                                    fontSize = 24.sp,
+                                                    fontWeight = FontWeight.Bold,
+                                                    textAlign = TextAlign.Center,
+                                                    color = MaterialTheme.colorScheme.onSurface
+                                                )
+                                            }
+                                        }
                                     }
                                 }
                             }
