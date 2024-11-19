@@ -19,7 +19,7 @@ fun HandleFullscreenMode(productDisplayController: ProductDisplayController) {
 
     LaunchedEffect(productDisplayController.isConnected) {
         window?.let { currentWindow ->
-            if (productDisplayController.isConnected) {
+            if (productDisplayController.isConnected && !productDisplayController.isHostPhone) {
                 WindowCompat.setDecorFitsSystemWindows(currentWindow, false)
                 currentWindow.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
                 WindowInsetsControllerCompat(currentWindow, view).apply {
