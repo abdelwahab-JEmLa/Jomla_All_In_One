@@ -2,6 +2,7 @@ package com.example.clientjetpack.Models
 
 data class ProductDisplayController(
     val clientWindowsDisplayedProductId: Long? = null,
+    val searchWindowsDisplaye: String = "",
     val clientWindowsPickerDisplayedQuantity: Int = 0,
     val clientWindowsSelectedColorId: Long = 0,
     val clientWindowsLazyRowSupColorsScroll: Int = 0,

@@ -28,6 +28,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.example.clientjetpack.Models.UiState
 import com.example.clientjetpack.ViewModel.HeadViewModel
+import com.example.clientjetpack.ViewModel.WifiUpdateClientDisplayerStats
 import kotlinx.coroutines.launch
 
 @Composable
@@ -58,19 +59,7 @@ fun SearchFilterPB(
                 .fillMaxWidth()
                 .padding(3.dp)
                 .focusRequester(focusRequester),
-            leadingIcon = {
-                IconButton(
-                    onClick = {
-                        scope.launch {
-                            viewModel.addNewEmptyArticle(filterText)?.let { newArticle ->
-                                onAddNotInBaseArticle(newArticle, 0)
-                            }
-                        }
-                    }
-                ) {
-                    Icon(Icons.Default.Add, contentDescription = "Add New Article")
-                }
-            },
+
             trailingIcon = {
                 IconButton(
                     onClick = {
@@ -79,6 +68,10 @@ fun SearchFilterPB(
                                 onAddNotInBaseArticle(newArticle, 0)
                             }
                         }
+                        viewModel.sendOrderToClientDisplayer(
+                            WifiUpdateClientDisplayerStats.SearchWindowsDisplaye.prefix,
+                            filterText
+                        )
                     }
                 ) {
                     Icon(Icons.Default.Add, contentDescription = "Search")

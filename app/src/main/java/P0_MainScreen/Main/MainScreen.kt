@@ -7,6 +7,7 @@ import P0_MainScreen.Ui.Main.AppNavHost.NavigationItems
 import P0_MainScreen.Ui.Main.AppNavHost.Screen
 import P0_MainScreen.Ui.Objects.ConnexionCard
 import P7_EStorePresentationToClient.Main.FragmentDisplayeInfoProductToClient7
+import P7_EStorePresentationToClient.Main.SearchArticle
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
@@ -161,8 +162,15 @@ fun MainScreen(
                         modifier = Modifier.fillMaxSize()
                     )
                 }
+
             }
-            // Loading Indicator
+            // Search Display Dialog
+            if (productDisplayController.searchWindowsDisplaye.isNotEmpty()) {
+                SearchArticle(
+                    dsipayeText = productDisplayController.searchWindowsDisplaye
+                )
+            }
+
             if (uiState.isLoading) {
                 Box(
                     modifier = Modifier.fillMaxSize(),

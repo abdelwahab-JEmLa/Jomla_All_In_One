@@ -1,6 +1,5 @@
 package com.example.clientjetpack.ViewModel
 
-import com.example.clientjetpack.Modules.ConnectionManager
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.CategoriesTabelle
 import a_RoomDB.ClientsModel
@@ -19,6 +18,7 @@ import com.example.clientjetpack.Models.PriceRecord
 import com.example.clientjetpack.Models.ProductDisplayController
 import com.example.clientjetpack.Models.UiState
 import com.example.clientjetpack.Modules.AppDatabase
+import com.example.clientjetpack.Modules.ConnectionManager
 import com.google.firebase.database.BuildConfig
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.DocumentSnapshot
@@ -44,6 +44,7 @@ enum class WifiUpdateClientDisplayerStats(val prefix: String) {
     ClientWindowsSelectedColorId("clientWindowsSelectedColorId"),
     DISMISS_PRODUCT_INFO("DismissWindowsInfosProduct") ,
     WindowsPickerDisplayedQuantity("WindowsPickerDisplayedQuantity") ,
+    SearchWindowsDisplaye("SearchWindowsDisplaye") ,
 
     ;
 
@@ -142,7 +143,9 @@ open class HeadViewModel(
                 WifiUpdateClientDisplayerStats.ClientWindowsDisplayedProductId -> updateDisplayController {
                     copy( clientWindowsDisplayedProductId= content.toLong()) }
                 WifiUpdateClientDisplayerStats.DISMISS_PRODUCT_INFO -> updateDisplayController {
-                    copy( clientWindowsDisplayedProductId= null) }
+                    copy( clientWindowsDisplayedProductId= null,
+                        searchWindowsDisplaye=""
+                    ) }
                 WifiUpdateClientDisplayerStats.ClientWindowsLazyRowSupColorsScrolle ->  updateDisplayController {
                     copy( clientWindowsLazyRowSupColorsScroll= content.toInt()) }
                 WifiUpdateClientDisplayerStats.WindowsPickerDisplayedQuantity ->  updateDisplayController {
@@ -150,6 +153,9 @@ open class HeadViewModel(
                      1 else { content.toInt() }) }
                 WifiUpdateClientDisplayerStats.ClientWindowsSelectedColorId ->  updateDisplayController {
                     copy( clientWindowsSelectedColorId= content.toLong()) }
+                WifiUpdateClientDisplayerStats.SearchWindowsDisplaye ->  updateDisplayController {
+                    copy( searchWindowsDisplaye =  content) }
+
             }
         } ?: Log.d(tag, "📩 Unhandled message received: $payload")
     }
