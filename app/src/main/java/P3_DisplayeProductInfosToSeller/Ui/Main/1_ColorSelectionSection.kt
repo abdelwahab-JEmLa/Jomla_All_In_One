@@ -46,7 +46,7 @@ fun ColorSelectionSection(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(horizontal = 4.dp, vertical = 4.dp)
     ) {
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -85,7 +85,7 @@ fun ColorSelectionSection(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(150.dp)
+                            .height(240.dp)
                             .clip(MaterialTheme.shapes.medium)
                     ) {
                         ColorItem3(
@@ -96,7 +96,7 @@ fun ColorSelectionSection(
                             index = 0,
                             reloadTrigger = reloadTrigger,
                             viewModel = viewModel,
-                            height = 200.dp,
+                            height = 240.dp,
                             updateColorToBeMain = updateMainColor
                         )
                     }
@@ -138,7 +138,7 @@ fun ColorSelectionSection(
                         items(arrangedColors) { color ->
                             Box(
                                 modifier = Modifier
-                                    .size(200.dp)
+                                    .size(60.dp)
                                     .clip(MaterialTheme.shapes.medium)
                             ) {
                                 ColorItem3(
@@ -149,7 +149,7 @@ fun ColorSelectionSection(
                                     index = arrangedColors.indexOf(color) + 1,
                                     reloadTrigger = reloadTrigger,
                                     viewModel = viewModel,
-                                    height = 200.dp,
+                                    height = 60.dp,
                                     updateColorToBeMain =  updateMainColor
                                 )
                             }

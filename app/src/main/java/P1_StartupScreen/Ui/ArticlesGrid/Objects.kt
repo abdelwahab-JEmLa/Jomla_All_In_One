@@ -47,7 +47,6 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.signature.ObjectKey
 import com.example.clientjetpack.Models.UiState
-import com.example.clientjetpack.R
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -156,29 +155,26 @@ import java.io.File
     }
 }
 
-// Also update ColorOverlayWithBlur to use the same blur technique
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
- fun ColorOverlayWithBlur(
+fun ColorOverlayWithBlur(
     color: ColorsArticlesTabelle,
     cornerRadius: Dp,
     onClickToOpenWindow: () -> Unit,
 ) {
+
     Box {
-        GlideImage(
-            model = R.drawable.logo,
-            contentScale = ContentScale.Crop,
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .clip(RoundedCornerShape(cornerRadius))
+                .background(Color.White) // White background holder
                 .graphicsLayer {
                     renderEffect = BlurEffect(
                         radiusX = 25f,
                         radiusY = 25f,
                         edgeTreatment = TileMode.Decal
                     )
-                },
-            contentDescription = null
+                }
         )
 
         Box(
@@ -197,7 +193,6 @@ import java.io.File
         )
     }
 }
-
 
 
 
