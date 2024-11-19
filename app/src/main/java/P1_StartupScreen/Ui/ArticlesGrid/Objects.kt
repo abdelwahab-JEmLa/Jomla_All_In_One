@@ -181,7 +181,7 @@ fun ColorOverlayWithBlur(
             modifier = Modifier
                 .fillMaxSize()
                 .clip(RoundedCornerShape(cornerRadius))
-                .background(Color.Black.copy(alpha = 0.4f))
+                .background(Color.Black.copy(alpha = 0.15f))
         )
 
         ColorOverlay(
