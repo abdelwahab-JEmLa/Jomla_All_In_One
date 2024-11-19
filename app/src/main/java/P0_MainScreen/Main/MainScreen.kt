@@ -58,7 +58,7 @@ fun MainScreen(
     var isFabVisible by remember { mutableStateOf(false) }
     var isDisplayedConnexionWifiVisible by remember { mutableStateOf(false) }
     var showProductDisplay by remember { mutableStateOf(false) }
-    var lockHost by remember { mutableStateOf(true) }
+    var lockHost by remember { mutableStateOf(false) }
 
     LaunchedEffect(productDisplayController.clientWindowsDisplayedProductId) {
         showProductDisplay = productDisplayController.clientWindowsDisplayedProductId != null

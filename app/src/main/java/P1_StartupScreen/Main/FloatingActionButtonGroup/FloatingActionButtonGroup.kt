@@ -97,7 +97,7 @@ fun FloatingActionButtonGroup(
         modifier = modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .padding(top = 16.dp, bottom = 72.dp) // Added top padding to start higher
+            .padding(top = 30.dp, bottom = 60.dp) // Added top padding to start higher
             .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
             .pointerInput(Unit) {
                 detectDragGestures { change, dragAmount ->
