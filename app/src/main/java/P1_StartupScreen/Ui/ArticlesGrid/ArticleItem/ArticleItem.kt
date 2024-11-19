@@ -1,6 +1,6 @@
 package P1_StartupScreen.Ui.ArticlesGrid.ArticleItem
 import P1_StartupScreen.Ui.ArticlesGrid.ArticleLayout
-import P1_StartupScreen.Ui.ArticlesGrid.ImageDisplayer
+import P1_StartupScreen.Ui.ArticlesGrid.ImageDisplayer1
 import P1_StartupScreen.Ui.ArticlesGrid.checkImageExists
 import P1_StartupScreen.Ui.ArticlesGrid.countColors
 import P1_StartupScreen.Ui.ArticlesGrid.getColorIdForIndex
@@ -119,7 +119,7 @@ fun ArticleImageWithOverlay(
                 checkImageExists(viewModel, article, colorIndex, reloadTrigger)
             }
 
-            ImageDisplayer(
+            ImageDisplayer1(
                 article = article,
                 viewModel = viewModel,
                 indexColor = colorIndex,

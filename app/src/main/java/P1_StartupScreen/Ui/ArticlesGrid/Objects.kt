@@ -57,7 +57,7 @@ import java.io.File
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
- fun ImageDisplayer(
+ fun ImageDisplayer1(
     modifier: Modifier = Modifier,
     article: ArticlesBasesStatsTable,
     viewModel: HeadViewModel,
