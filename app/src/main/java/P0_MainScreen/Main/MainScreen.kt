@@ -6,6 +6,7 @@ import P0_MainScreen.Ui.Main.AppNavHost.NavigationBarWithFab
 import P0_MainScreen.Ui.Main.AppNavHost.NavigationItems
 import P0_MainScreen.Ui.Main.AppNavHost.Screen
 import P0_MainScreen.Ui.Objects.ConnexionCard
+import P7_EStorePresentationToClient.Main.FragmentDisplayeInfoProductToClient7
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
@@ -55,27 +56,19 @@ fun MainScreen(
     var isNavBarVisible by remember { mutableStateOf(true) }
     var isFabVisible by remember { mutableStateOf(false) }
     var isDisplayedConnexionWifiVisible by remember { mutableStateOf(false) }
+    var showProductDisplay by remember { mutableStateOf(false) }
 
-    //  Handle product display navigation
     LaunchedEffect(productDisplayController.clientWindowsDisplayedProductId) {
-        if (productDisplayController.clientWindowsDisplayedProductId != null) {
-            // Navigate to product display when ID is present
-            navController.navigate(Screen.ClientProductDisplay.createRoute(productDisplayController.clientWindowsDisplayedProductId)) {
-                popUpTo(navController.graph.startDestinationId) {
-                    saveState = true
+        showProductDisplay = productDisplayController.clientWindowsDisplayedProductId != null
+        if (productDisplayController.clientWindowsDisplayedProductId == null) {
+            // Only navigate back if we're not already on the startup screen
+            if (currentRoute != Screen.EditDatabaseWithCreateNewArticles.route) {
+                navController.navigate(Screen.EditDatabaseWithCreateNewArticles.route) {
+                    popUpTo(navController.graph.startDestinationId) {
+                        inclusive = true
+                    }
+                    launchSingleTop = true
                 }
-                launchSingleTop = true
-                restoreState = true
-            }
-        } else {
-            // Navigate back to startup screen when ID becomes null
-            navController.navigate(Screen.EditDatabaseWithCreateNewArticles.route) {
-                // Pop up to remove all screens from the back stack
-                popUpTo(navController.graph.startDestinationId) {
-                    inclusive = true // Include the start destination in the pop
-                }
-                // Avoid multiple copies of the same destination
-                launchSingleTop = true
             }
         }
     }
@@ -152,7 +145,23 @@ fun MainScreen(
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
             }
+            // Product Display Dialog
+            if (showProductDisplay) {
+                val productId = productDisplayController.clientWindowsDisplayedProductId
+                val displayProductDataBase = productId?.let { id ->
+                    uiState.articlesBasesStatTables.find { it.idArticle.toLong() == id }
+                }
 
+                if (displayProductDataBase != null) {
+                    FragmentDisplayeInfoProductToClient7(
+                        displayController = productDisplayController,
+                        articleStatsDataBase = displayProductDataBase,
+                        colorsArticlesList = uiState.colorsArticlesTabelleModel,
+                        reloadTrigger = 0, // Use state if needed
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+            }
             // Loading Indicator
             if (uiState.isLoading) {
                 Box(
