@@ -1,78 +1,55 @@
 package P3_DisplayeProductInfosToSeller.Ui.Main
-import P1_StartupScreen.Ui.ArticlesGrid.AutoResizedText
-import P3_DisplayeProductInfosToSeller.Modules.ImageDisplayer
-import P3_DisplayeProductInfosToSeller.Ui.Objects.CompactQuantityPicker
+import P3_DisplayeProductInfosToSeller.Modules.ImageDisplayer3
+import P4_SoldCartScreen.ImageDisplayer4
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ColorsArticlesTabelle
 import a_RoomDB.SoldArticlesTabelle
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.animation.*
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.clientjetpack.R
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import com.example.clientjetpack.ViewModel.WifiUpdateClientDisplayerStats
 
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun ColorItem3(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     currentSale: SoldArticlesTabelle?,
     article: ArticlesBasesStatsTable,
     color: ColorsArticlesTabelle?,
     index: Int,
-    relodeTigger: Int,
+    reloadTrigger: Int,
     viewModel: HeadViewModel,
     height: Dp,
-    updateColorToBeMAin: (Long) -> Unit,
+    updateColorToBeMain: (Long) -> Unit,
 ) {
-    var showPicker by remember {
-        mutableStateOf(
-            when (index) {
-                0 -> currentSale?.color1SoldQuantity
-                1 -> currentSale?.color2SoldQuantity
-                2 -> currentSale?.color3SoldQuantity
-                3 -> currentSale?.color4SoldQuantity
-                else -> null
-            }?.let { it > 0 } ?: false
-        )
-    }
+    var showDialog by remember { mutableStateOf(false) }
+    var isSelected by remember { mutableStateOf(false) }
 
+    // Calculate current quantity based on color index
     val currentQuantity = remember(index, currentSale) {
         when (index) {
             0 -> currentSale?.color1SoldQuantity
@@ -83,169 +60,292 @@ fun ColorItem3(
         } ?: 0
     }
 
-    LaunchedEffect(showPicker) {
-        if (!showPicker) {
-            viewModel.saveSaleTransactionToSoldAriclesList()
-        }
-    }
+    // Animation for selection highlight
+    val cardElevation by animateFloatAsState(
+        targetValue = if (isSelected) 8f else 2f,
+        label = "cardElevation"
+    )
 
-    Card(
-        modifier = Modifier
+    // Main Card using ElevatedCard instead of Card
+    ElevatedCard(
+        modifier = modifier
             .fillMaxWidth()
             .padding(4.dp)
+            .clickable {
+                isSelected = true
+                showDialog = true
+                color?.let { updateColorToBeMain(it.idColore) }
+            },
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.elevatedCardElevation(
+            defaultElevation = cardElevation.dp
+        )
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Box(
-                modifier = Modifier
-                    .weight(0.7f)  // Keep consistent weight regardless of picker visibility
-                    .fillMaxHeight()
-            ) {
-                ImageDisplayer(
-                    modifier = Modifier.fillMaxSize(),
-                    article = article,
-                    viewModel = viewModel,
-                    indexColor = index,
-                    reloadKey = relodeTigger
-                )
-
-                Column(
+        Box(modifier = Modifier.fillMaxSize()) {
+            // Quantity Indicator Badge
+            if (currentQuantity > 0) {
+                QuantityBadge(
+                    quantity = currentQuantity,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.BottomCenter)
-                ) {
-                    color?.let { colorData ->
-                        Box(
-                            modifier = Modifier
-                                .padding(3.dp)
-                                .fillMaxWidth(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(IntrinsicSize.Min),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .weight(0.6f)
-                                        .wrapContentHeight(),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Surface(
-                                        modifier = Modifier.matchParentSize(),
-                                        shape = CircleShape,
-                                        color = Color.White.copy(alpha = 0.7f),
-                                        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.9f))
-                                    ) {}
-
-                                    AutoResizedText(
-                                        text = colorData.nameColore,
-                                        modifier = Modifier.clickable { showPicker = true },
-                                        color = Color.Black,
-                                        style = MaterialTheme.typography.headlineMedium.copy(
-                                            fontWeight = FontWeight.Bold
-                                        ),
-                                        maxLines = 1
-                                    )
-                                }
-
-                                Box(
-                                    modifier = Modifier
-                                        .weight(0.4f)
-                                        .wrapContentHeight(),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Surface(
-                                        modifier = Modifier.matchParentSize(),
-                                        shape = CircleShape,
-                                        color = Color.White.copy(alpha = 0.8f),
-                                        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.95f))
-                                    ) {}
-
-                                    Surface(
-                                        shape = CircleShape,
-                                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f),
-                                        tonalElevation = 4.dp,
-                                        shadowElevation = 4.dp
-                                    ) {
-                                        if (colorData.iconColore == "©" || colorData.iconColore == "💯" || colorData.iconColore == "") {
-                                            GlideImage(
-                                                model = R.drawable.logo,
-                                                contentDescription = "Logo",
-                                                modifier = Modifier
-                                                    .size(38.dp)
-                                                    .clickable {
-                                                        showPicker = true
-                                                        updateColorToBeMAin(color.idColore)
-                                                    }
-                                            )
-                                        } else {
-                                            Text(
-                                                text = colorData.iconColore,
-                                                fontSize = 38.sp,
-                                                fontWeight = FontWeight.Bold,
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                                modifier = Modifier.clickable {
-                                                    showPicker = true
-                                                    updateColorToBeMAin(color.idColore)
-                                                }
-                                            )
-                                        }
-                                    }
-                                    Box(
-                                        modifier = Modifier
-                                            .align(Alignment.Center)
-                                            .offset(x = 15.dp, y = 18.dp)
-                                            .size(40.dp)
-                                            .clickable {
-                                                showPicker = true
-                                                updateColorToBeMAin(color.idColore)
-                                            }
-                                    ) {
-                                        GlideImage(
-                                            model = R.drawable.hand,
-                                            contentDescription = "Click indicator",
-                                            contentScale = ContentScale.Fit
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                        .align(Alignment.TopStart)
+                        .padding(8.dp)
+                )
             }
 
-            AnimatedVisibility(
-                visible = showPicker,
-                modifier = Modifier.weight(0.3f),
-                enter = slideInHorizontally { it },
-                exit = slideOutHorizontally { it }
-            ) {
-                if (showPicker && color != null) {
-                    CompactQuantityPicker(
-                        onClosePick = { showPicker = false },
-                        colorIndex = index,
+            Column(modifier = Modifier.fillMaxSize()) {
+                // Product Image
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                ) {
+                    ImageDisplayer3(
+                        modifier = Modifier.fillMaxSize(),
+                        article = article,
                         viewModel = viewModel,
-                        initialQuantity = currentQuantity,
-                        height = height,
-                        onPickerStatChange = {
-                            viewModel.updateColorSelection(index, it.toInt())
-                            viewModel.sendOrderToClientDisplayer(
-                                WifiUpdateClientDisplayerStats.ClientWindowsLazyRowSupColorsScrolle.prefix,
-                                it.toInt()
-                            )
-                            viewModel.sendOrderToClientDisplayer(
-                                WifiUpdateClientDisplayerStats.ClientWindowsSelectedColorId.prefix,
-                                color.idColore
-                            )
+                        indexColor = index,
+                        reloadKey = reloadTrigger
+                    )
+                }
+
+                // Color Information Section
+                color?.let { colorData ->
+                    ColorInfoSection(
+                        colorData = colorData,
+                        onColorClick = {
+                            showDialog = true
+                            updateColorToBeMain(colorData.idColore)
                         }
                     )
                 }
             }
         }
     }
+
+    // Quantity Selection Dialog
+    if (showDialog && color != null) {
+        ColorSelectionDialog(
+            onDismiss = {
+                showDialog = false
+                isSelected = false
+            },
+            currentQuantity = currentQuantity,
+            colorName = color.nameColore,
+            onQuantitySelected = { quantity ->
+                viewModel.updateColorSelection(index, quantity)
+                viewModel.sendOrderToClientDisplayer(
+                    WifiUpdateClientDisplayerStats.ClientWindowsLazyRowSupColorsScrolle.prefix,
+                    quantity
+                )
+                viewModel.sendOrderToClientDisplayer(
+                    WifiUpdateClientDisplayerStats.ClientWindowsSelectedColorId.prefix,
+                    color.idColore
+                )
+                viewModel.saveSaleTransactionToSoldAriclesList()
+            }
+        )
+    }
 }
+
+@Composable
+private fun QuantityBadge(
+    quantity: Int,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier,
+        shape = CircleShape,
+        color = Color.Red.copy(alpha = 0.9f)
+    ) {
+        Text(
+            text = quantity.toString(),
+            color = Color.White,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            fontWeight = FontWeight.Bold,
+            fontSize = 14.sp
+        )
+    }
+}
+
+@Composable
+private fun ColorInfoSection(
+    colorData: ColorsArticlesTabelle,
+    onColorClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Color Name
+        Text(
+            text = colorData.nameColore,
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = 8.dp),
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Medium,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+
+        // Color Icon
+        ColorIcon(
+            iconColore = colorData.iconColore,
+            onClick = onColorClick
+        )
+    }
+}
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+private fun ColorIcon(
+    iconColore: String,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .size(40.dp)
+            .clip(CircleShape)
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center
+    ) {
+        when {
+            iconColore == "©" || iconColore == "💯" || iconColore.isEmpty() -> {
+                GlideImage(
+                    model = R.drawable.logo,
+                    contentDescription = "Color logo",
+                    modifier = Modifier.size(32.dp),
+                    contentScale = ContentScale.Fit
+                )
+            }
+            else -> {
+                Text(
+                    text = iconColore,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ColorSelectionDialog(
+    onDismiss: () -> Unit,
+    currentQuantity: Int,
+    colorName: String,
+    onQuantitySelected: (Int) -> Unit
+) {
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            shape = RoundedCornerShape(16.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                // Dialog Header
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp)
+                ) {
+                    Text(
+                        text = colorName,
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+
+                    IconButton(
+                        onClick = onDismiss,
+                        modifier = Modifier.align(Alignment.TopEnd)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Close"
+                        )
+                    }
+                }
+
+                // Quantity Grid
+                QuantityGrid(
+                    currentQuantity = currentQuantity,
+                    onQuantitySelected = { quantity ->
+                        onQuantitySelected(quantity)
+                        onDismiss()
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun QuantityGrid(
+    currentQuantity: Int,
+    onQuantitySelected: (Int) -> Unit
+) {
+    val quantities = remember {
+        listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 40, 50)
+    }
+
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(4),
+        contentPadding = PaddingValues(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier.height(240.dp)
+    ) {
+        items(quantities.size) { index ->
+            val quantity = quantities[index]
+            QuantityButton(
+                quantity = quantity,
+                isSelected = quantity == currentQuantity,
+                onClick = { onQuantitySelected(quantity) }
+            )
+        }
+    }
+}
+
+@Composable
+private fun QuantityButton(
+    quantity: Int,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    Button(
+        onClick = onClick,
+        modifier = Modifier
+            .fillMaxWidth()
+            .aspectRatio(1f),
+        shape = RoundedCornerShape(8.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = if (isSelected)
+                MaterialTheme.colorScheme.primary
+            else
+                MaterialTheme.colorScheme.primaryContainer
+        )
+    ) {
+        Text(
+            text = quantity.toString(),
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            color = if (isSelected)
+                MaterialTheme.colorScheme.onPrimary
+            else
+                MaterialTheme.colorScheme.onPrimaryContainer
+        )
+    }
+}
+
+
