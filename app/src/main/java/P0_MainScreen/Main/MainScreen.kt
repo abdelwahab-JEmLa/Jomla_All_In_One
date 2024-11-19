@@ -58,6 +58,7 @@ fun MainScreen(
     var isFabVisible by remember { mutableStateOf(false) }
     var isDisplayedConnexionWifiVisible by remember { mutableStateOf(false) }
     var showProductDisplay by remember { mutableStateOf(false) }
+    var lockHost by remember { mutableStateOf(true) }
 
     LaunchedEffect(productDisplayController.clientWindowsDisplayedProductId) {
         showProductDisplay = productDisplayController.clientWindowsDisplayedProductId != null
@@ -92,7 +93,8 @@ fun MainScreen(
                         onClickToStartAsClient = {
                             isNavBarVisible = false
                             isFabVisible = false
-                        }
+                        } ,
+                        lockHost
                     )
                 }
 
@@ -107,7 +109,7 @@ fun MainScreen(
                         onClickDonne = { isFabVisible = false },
                         onClickToDisplayeConexionWifi = {
                             isDisplayedConnexionWifiVisible = !isDisplayedConnexionWifiVisible
-                        }
+                        }, onToggleLockHost = {lockHost=!lockHost}
                     )
 
                     // Disable interactions when not host phone

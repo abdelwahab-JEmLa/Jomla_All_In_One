@@ -49,7 +49,7 @@ fun FragmentStartupScreen(
     onClickToOpenClientsW: () -> Unit,
     isFabVisible: Boolean,
     onClickDonne: () -> Unit,
-    onClickToDisplayeConexionWifi: () -> Unit, scrollTiger: Int
+    onClickToDisplayeConexionWifi: () -> Unit, scrollTiger: Int, onToggleLockHost: () -> Unit
 ) {
     var gridColumns by remember { mutableStateOf(2) }
     var showFilter by remember { mutableStateOf(false) }
@@ -75,7 +75,7 @@ fun FragmentStartupScreen(
             filterText=""
             onClickDonne() },
         onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi,
-        scrollTiger,
+        scrollTiger, onToggleLockHost = onToggleLockHost,
     )
 }
 
@@ -96,7 +96,7 @@ fun MainUi(
     isFabVisible: Boolean,
     onClickDonne: () -> Unit,
     onClickToDisplayeConexionWifi: () -> Unit,
-    scrollTiger: Int,
+    scrollTiger: Int, onToggleLockHost: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val tag = if (uiState.productDisplayController.isHostPhone) "📱 ServerScreen" else "📱 ClientScreen"
@@ -214,7 +214,7 @@ fun MainUi(
             onToggleOutlineFilter = onToggleFilter,
             onChangeGridColumns = onChangeGridColumns,
             onClickToOpenClientsListW = onClickToOpenClientsW,
-            onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi
+            onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi, onToggleLockHost = onToggleLockHost
         )
 
         if (uiState.isLoading) {
@@ -236,7 +236,7 @@ private fun AnimatedFabGroup(
     onToggleOutlineFilter: () -> Unit,
     onChangeGridColumns: (Int) -> Unit,
     onClickToOpenClientsListW: () -> Unit,
-    onClickToDisplayeConexionWifi: () -> Unit,
+    onClickToDisplayeConexionWifi: () -> Unit, onToggleLockHost: () -> Unit,
 ) {
     Box(                               
         modifier = Modifier
@@ -255,7 +255,8 @@ private fun AnimatedFabGroup(
                 onToggleOutlineFilter = onToggleOutlineFilter,
                 onChangeGridColumns = onChangeGridColumns,
                 onClickToOpenClientsListW = onClickToOpenClientsListW,
-                onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi
+                onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi,
+                onToggleLockHost
             )
         }
     }

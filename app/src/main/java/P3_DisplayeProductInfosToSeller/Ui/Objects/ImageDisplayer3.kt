@@ -1,4 +1,4 @@
-package P3_DisplayeProductInfosToSeller.Modules
+package P3_DisplayeProductInfosToSeller.Ui.Objects
 import a_RoomDB.ArticlesBasesStatsTable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -57,7 +57,7 @@ fun ImageDisplayer3(
             val painter = rememberAsyncImagePainter(
                 ImageRequest.Builder(context)
                     .data(imageSource)
-                    .size(350,350)
+                    .size(240,240)
                     .crossfade(true)
                     .setParameter("key", requestKey, memoryCacheKey = requestKey)
                     .build()

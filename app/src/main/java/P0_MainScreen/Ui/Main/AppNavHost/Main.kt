@@ -34,7 +34,7 @@ fun AppNavHost(
     modifier: Modifier = Modifier,
     isFabVisible: Boolean,
     onClickDonne: () -> Unit,
-    onClickToDisplayeConexionWifi: () -> Unit
+    onClickToDisplayeConexionWifi: () -> Unit, onToggleLockHost: () -> Unit
 ) {
     val uiState by appViewModels.headViewModel.uiState.collectAsState()
 
@@ -90,7 +90,7 @@ fun AppNavHost(
                         isFabVisible = isFabVisible,
                         onClickDonne = onClickDonne,
                         onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi,
-                        scrollTiger = scrollTiger,
+                        scrollTiger = scrollTiger, onToggleLockHost = onToggleLockHost,
                     )
 
                     if (uiState.isLoading) {

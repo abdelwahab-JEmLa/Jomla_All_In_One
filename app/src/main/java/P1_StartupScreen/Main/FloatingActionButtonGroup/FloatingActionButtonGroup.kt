@@ -27,6 +27,7 @@ import androidx.compose.material.icons.filled.Devices
 import androidx.compose.material.icons.filled.DoNotDisturbAlt
 import androidx.compose.material.icons.filled.EditCalendar
 import androidx.compose.material.icons.filled.GridView
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.SettingsInputComponent
 import androidx.compose.material3.FloatingActionButton
@@ -61,7 +62,9 @@ fun FloatingActionButtonGroup(
     onChangeGridColumns: (Int) -> Unit,
     onClickToOpenClientsListW: () -> Unit,
     onClickToDisplayeConexionWifi: () -> Unit,
-) {
+    onToggleLockHost: () -> Unit,
+
+    ) {
     var currentGridColumns by remember { mutableIntStateOf(2) }
     var showLabels by remember { mutableStateOf(true) }
     var isExpanded by remember { mutableStateOf(false) }
@@ -69,6 +72,7 @@ fun FloatingActionButtonGroup(
     var clearDataGrouprurClickCount by remember { mutableIntStateOf(0) }
     var buttonChangeUiStat1 by remember { mutableStateOf(false) }
     var showDeviceDialog by remember { mutableStateOf(false) }
+    var toggleButon1 by remember { mutableStateOf(false) }
 
     // State for drag position
     var offsetX by remember { mutableFloatStateOf(0f) }
@@ -122,6 +126,15 @@ fun FloatingActionButtonGroup(
                         .padding(bottom = 8.dp) // Reduced bottom padding since we added it to parent
                 ) {
                     listOf(
+                        FabData(
+                            icon = if (toggleButon1) Icons.Default.Close else Icons.Default.Lock,
+                            label = if (toggleButon1) " onToggleLockHost()" else " onToggleLockHost()",
+                            color = Color(0xFFFFC107),
+                            onClick = {
+                                toggleButon1 = !toggleButon1
+                                onToggleLockHost()
+                            }
+                        ),
                         FabData(
                             icon = Icons.Default.Devices,
                             label = "Manage Devices",

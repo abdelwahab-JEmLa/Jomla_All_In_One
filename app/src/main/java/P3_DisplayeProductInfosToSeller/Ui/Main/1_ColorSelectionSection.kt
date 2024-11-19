@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -85,7 +85,7 @@ fun ColorSelectionSection(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(240.dp)
+                            .height(270.dp)
                             .clip(MaterialTheme.shapes.medium)
                     ) {
                         ColorItem3(
@@ -138,7 +138,8 @@ fun ColorSelectionSection(
                         items(arrangedColors) { color ->
                             Box(
                                 modifier = Modifier
-                                    .size(60.dp)
+                                    .height(60.dp)
+                                    .width(140.dp)
                                     .clip(MaterialTheme.shapes.medium)
                             ) {
                                 ColorItem3(

@@ -31,11 +31,12 @@ import com.example.clientjetpack.Models.ProductDisplayController
 fun ConnexionCard(
     productDisplayController: ProductDisplayController,
     appViewModels: AppViewModels,
-    onClickToStartAsClient: () -> Unit
+    onClickToStartAsClient: () -> Unit,
+    lockHost: Boolean
 ) {
     var messageText by remember { mutableStateOf("") }
     val context = LocalContext.current
-    val isHostEnabled = Build.MODEL.lowercase().contains("m200")
+    val isHostEnabled = Build.MODEL.lowercase().contains("note")
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -65,7 +66,8 @@ fun ConnexionCard(
                             updateTypePhone()
                         }
                         onClickToStartAsClient()
-                    }
+                    },
+                    lockHost
                 )
             } else {
                 MessageSection(
@@ -116,13 +118,14 @@ private fun ConnectionStatus(productDisplayController: ProductDisplayController)
 private fun ConnectionButtons(
     isHostEnabled: Boolean,
     onHostClick: () -> Unit,
-    onClientClick: () -> Unit
+    onClientClick: () -> Unit,
+    lockHost: Boolean
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        if(isHostEnabled) {
+        if(isHostEnabled || !lockHost) {
             Button(
                 onClick = onHostClick,
             ) {
