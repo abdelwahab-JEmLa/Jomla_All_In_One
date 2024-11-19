@@ -51,9 +51,9 @@ fun ColorItem7(
     val infiniteTransition = rememberInfiniteTransition(label = "")
     val iconAlpha by infiniteTransition.animateFloat(
         initialValue = 1f,
-        targetValue = 0.6f,
+        targetValue = 0.04f,
         animationSpec = infiniteRepeatable(
-            animation = tween(1000),
+            animation = tween(700),
             repeatMode = RepeatMode.Reverse
         ), label = ""
     )
@@ -82,7 +82,7 @@ fun ColorItem7(
                             Brush.verticalGradient(
                                 colors = listOf(
                                     Color.Transparent,
-                                    Color.Black.copy(alpha = 0.5f)
+                                    Color.Black.copy(alpha = 0.3f)
                                 )
                             )
                         )
@@ -92,14 +92,14 @@ fun ColorItem7(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(16.dp),
+                                .padding(4.dp),
                             horizontalArrangement = Arrangement.Center,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             // Color Name
                             Text(
                                 text = colorData.nameColore,
-                                style = MaterialTheme.typography.titleMedium.copy(
+                                style = MaterialTheme.typography.titleLarge.copy(
                                     fontWeight = FontWeight.Bold,
                                     color = Color.White,
                                     textAlign = TextAlign.Center
@@ -112,7 +112,7 @@ fun ColorItem7(
                                 shape = CircleShape,
                                 color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
                                 modifier = Modifier
-                                    .size(40.dp)
+                                    .size(60.dp)
                                     .alpha(iconAlpha)
                             ) {
                                 Box(
@@ -124,13 +124,13 @@ fun ColorItem7(
                                             GlideImage(
                                                 model = R.drawable.logo,
                                                 contentDescription = "Brand Logo",
-                                                modifier = Modifier.size(32.dp)
+                                                modifier = Modifier.size(60.dp)
                                             )
                                         }
                                         else -> {
                                             Text(
                                                 text = colorData.iconColore,
-                                                fontSize = 24.sp,
+                                                fontSize = 35.sp,
                                                 fontWeight = FontWeight.Bold,
                                                 textAlign = TextAlign.Center,
                                                 color = MaterialTheme.colorScheme.onSurface
@@ -145,7 +145,7 @@ fun ColorItem7(
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 12.dp)
+
                         ) {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
@@ -154,7 +154,7 @@ fun ColorItem7(
                             ) {
                                 Text(
                                     text = colorData.nameColore,
-                                    style = MaterialTheme.typography.titleMedium.copy(
+                                    style = MaterialTheme.typography.titleLarge.copy(
                                         fontWeight = FontWeight.Bold,
                                         color = Color.White,
                                         textAlign = TextAlign.Start
@@ -168,7 +168,7 @@ fun ColorItem7(
                                     shape = CircleShape,
                                     color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
                                     modifier = Modifier
-                                        .size(40.dp)
+                                        .size(60.dp)
                                         .alpha(iconAlpha)
                                 ) {
                                     Box(
@@ -186,7 +186,7 @@ fun ColorItem7(
                                             else -> {
                                                 Text(
                                                     text = colorData.iconColore,
-                                                    fontSize = 24.sp,
+                                                    fontSize = 35.sp,
                                                     fontWeight = FontWeight.Bold,
                                                     textAlign = TextAlign.Center,
                                                     color = MaterialTheme.colorScheme.onSurface

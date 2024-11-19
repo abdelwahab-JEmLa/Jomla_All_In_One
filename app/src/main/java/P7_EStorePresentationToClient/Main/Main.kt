@@ -63,7 +63,7 @@ fun ProductDisplayDialog(
                     modifier = Modifier
                         .fillMaxSize()
                         .verticalScroll(rememberScrollState())
-                        .padding(16.dp)
+                        .padding(4.dp)
                 ) {
                     // Product information
                     ProductNameSection7(articleStatsDataBase)
