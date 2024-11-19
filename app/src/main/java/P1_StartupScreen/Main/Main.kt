@@ -107,7 +107,7 @@ fun MainUi(
     val currentScrollPosition = uiState.productDisplayController.mainGridScrollPosition
 
     // Handle initial scroll position and screen returns
-    LaunchedEffect(currentScrollPosition) {//-->
+    LaunchedEffect(currentScrollPosition) {
 
         if (currentScrollPosition > 0) {
             scope.launch {
@@ -130,7 +130,7 @@ fun MainUi(
             scope.launch {
                 try {
                     // Animate scroll with custom duration and delay
-                    delay(100) // Small initial delay for smoother transition
+                    delay(1500) // Small initial delay for smoother transition
                     gridState.animateScrollToItem(
                         index = hostSavePosition,
                         scrollOffset = 0

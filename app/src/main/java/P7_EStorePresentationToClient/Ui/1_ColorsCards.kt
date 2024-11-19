@@ -127,7 +127,64 @@ fun ColorsCards7(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(360.dp)
+                            .height(360.dp)  //-->
+                            //Hi Claud,what i went from u to do is to
+                            //Find All TODOs and Fix Them 
+
+                            //TODO:
+                            // fait que si @Composable
+                            // fun ImageDisplayer(
+                            //    modifier: Modifier = Modifier,
+                            //    article: ArticlesBasesStatsTable,
+                            //    viewModel: HeadViewModel,
+                            //    indexColor: Int = 0,
+                            //    reloadKey: Any = Unit
+                            //) {
+                            //    val context = LocalContext.current
+                            //    val viewModelImagesPath = viewModel.viewModelImagesPath
+                            //
+                            //    val baseImagePath = remember(viewModelImagesPath, article.idArticle, indexColor) {
+                            //        File(viewModelImagesPath, "${article.idArticle}_${if (indexColor == -1) "Unite" else (indexColor + 1)}")
+                            //            .absolutePath
+                            //    }
+                            //
+                            //    val imageExist by remember(baseImagePath, reloadKey) {
+                            //        mutableStateOf(
+                            //            listOf("jpg", "webp").firstNotNullOfOrNull { extension ->
+                            //                val file = File("$baseImagePath.$extension")
+                            //                if (file.exists() && file.canRead()) {
+                            //                    file.absolutePath
+                            //                } else null
+                            //            }
+                            //        )
+                            //    }
+                            //
+                            //    val imageSource = remember(imageExist) {
+                            //        imageExist?.let { File(it) } ?: R.drawable.logo
+                            //    }
+                            //
+                            //    val requestKey = remember(article.idArticle, indexColor, reloadKey) {
+                            //        "${article.idArticle}_${if (indexColor == -1) "Unite" else indexColor}_$reloadKey"
+                            //    }
+                            //
+                            //    Box(modifier = modifier.fillMaxWidth()) {
+                            //        val painter = rememberAsyncImagePainter(
+                            //            ImageRequest.Builder(context)
+                            //                .data(imageSource)
+                            //                .size(350,350)  // Use original size to maintain aspect ratio
+                            //                .crossfade(true)
+                            //                .setParameter("key", requestKey, memoryCacheKey = requestKey)
+                            //                .build()
+                            //        )
+                            //
+                            //        Image(
+                            //            painter = painter,
+                            //            contentDescription = "Article image ${article.idArticle} color ${indexColor + 1}",
+                            //            modifier = Modifier.fillMaxWidth(),
+                            //            contentScale = ContentScale.FillWidth
+                            //        )
+                            //    }
+                            //} images avec index1 n exist pas que les lazy row heigh soi 150 et change a lazy column
                             .clip(MaterialTheme.shapes.medium)
                     ) {
                         ColorItem7(
@@ -246,7 +303,12 @@ private fun ColorItem7(
                             ) {
                                 when {
                                     colorData.iconColore in listOf("©", "💯", "") -> {
-                                        GlideImage(
+                                        GlideImage(        //-->
+                                            //Hi Claud,what i went from u to do is to
+                                            //Find All TODOs and Fix Them 
+
+                                            //TODO:
+                                            // change le auneimage blanche san rien
                                             model = R.drawable.logo,
                                             contentDescription = "Logo",
                                             modifier = Modifier.size(24.dp)

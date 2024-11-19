@@ -46,7 +46,12 @@ fun ImageDisplayerPC(
     }
 
     val imageSource = remember(imageExist) {
-        imageExist?.let { File(it) } ?: R.drawable.logo
+        imageExist?.let { File(it) } ?: R.drawable.logo  //-->
+        //Hi Claud,what i went from u to do is to
+        //Find All TODOs and Fix Them
+
+        //TODO:
+        // change le aune image blanche
     }
 
     val requestKey = remember(article.idArticle, indexColor, reloadKey) {
