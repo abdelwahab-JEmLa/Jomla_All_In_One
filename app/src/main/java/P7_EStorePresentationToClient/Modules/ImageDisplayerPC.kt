@@ -1,20 +1,18 @@
 package P7_EStorePresentationToClient.Modules
 import a_RoomDB.ArticlesBasesStatsTable
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import java.io.File
 
+// 3. ImageDisplayerPC.kt modifications:
 @Composable
 fun ImageDisplayerPC(
     modifier: Modifier = Modifier,
@@ -46,9 +44,7 @@ fun ImageDisplayerPC(
     }
 
     Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(Color.White)
+        modifier = modifier.fillMaxSize() // Changé pour remplir tout l'espace disponible
     ) {
         if (imagePath != null) {
             val painter = rememberAsyncImagePainter(
@@ -61,8 +57,8 @@ fun ImageDisplayerPC(
             Image(
                 painter = painter,
                 contentDescription = "Article image ${article.idArticle} color ${indexColor + 1}",
-                modifier = Modifier.fillMaxSize(), // Changed to fillMaxSize
-                contentScale = ContentScale.FillBounds // Changed to FillBounds for full width
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.FillBounds
             )
         }
     }

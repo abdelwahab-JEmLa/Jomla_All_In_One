@@ -8,13 +8,11 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -23,7 +21,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.example.clientjetpack.Models.ProductDisplayController
 import kotlinx.coroutines.delay
@@ -88,8 +85,7 @@ fun ColorsCards7(
     ) {
         Card(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+                .fillMaxWidth(),  // Supprimé le padding horizontal et vertical
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
         ) {
             Box(
@@ -99,11 +95,9 @@ fun ColorsCards7(
             ) {
                 LazyColumn(
                     state = listState,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    contentPadding = PaddingValues(vertical = 8.dp)
+                    modifier = Modifier.fillMaxSize(), // Supprimé le padding
+                    verticalArrangement = Arrangement.spacedBy(4.dp), // Réduit l'espacement entre les éléments
+                    contentPadding = PaddingValues(0.dp) // Supprimé le padding vertical
                 ) {
                     // Main color item
                     item {
@@ -118,7 +112,6 @@ fun ColorsCards7(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(360.dp)
-                                    .clip(MaterialTheme.shapes.medium)
                             ) {
                                 ColorItem7(
                                     modifier = Modifier.fillMaxSize(),
@@ -131,7 +124,7 @@ fun ColorsCards7(
                         }
                     }
 
-                    // Additional colors with reduced height (from 100.dp to 80.dp)
+                    // Additional colors
                     if (colors.size > 1) {
                         val currentMainColorId = if (displayController.clientWindowsSelectedColorId != 0L) {
                             displayController.clientWindowsSelectedColorId
@@ -152,8 +145,7 @@ fun ColorsCards7(
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(80.dp) // Reduced from 100.dp
-                                    .clip(MaterialTheme.shapes.medium)
+                                    .height(80.dp)
                             ) {
                                 ColorItem7(
                                     modifier = Modifier.fillMaxSize(),

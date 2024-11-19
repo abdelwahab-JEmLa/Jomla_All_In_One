@@ -28,7 +28,7 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.clientjetpack.R
 
-// 1. ColorItem7.kt - Updated to fill max width for images and increase icon size
+// 2. ColorItem7.kt modifications:
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun ColorItem7(
@@ -40,10 +40,9 @@ fun ColorItem7(
 ) {
     Card(
         modifier = modifier,
-        shape = RoundedCornerShape(8.dp)
+        shape = RoundedCornerShape(0.dp) // Supprimé l'arrondi des coins
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            // Updated ImageDisplayerPC to fill max width
             ImageDisplayerPC(
                 modifier = Modifier.fillMaxSize(),
                 article = article,
@@ -67,7 +66,7 @@ fun ColorItem7(
                 ) {
                     Row(
                         modifier = Modifier
-                            .padding(8.dp)
+                            .padding(4.dp) // Réduit le padding
                             .fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically

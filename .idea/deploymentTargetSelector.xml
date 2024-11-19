@@ -34,14 +34,22 @@
       </SelectionState>
       <SelectionState runConfigName="DisplayArticleInfoToClientWindowsPreview (1)">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-11-19T01:38:23.099755500Z">
+        <DropdownSelection timestamp="2024-11-19T02:13:10.889895800Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="PhysicalDevice" identifier="serial=fee5ca0c" />
+              <DeviceId pluginId="PhysicalDevice" identifier="serial=99897HYH7DZHQ4YT" />
             </handle>
           </Target>
         </DropdownSelection>
-        <DialogSelection />
+        <DialogSelection>
+          <targets>
+            <Target type="DEFAULT_BOOT">
+              <handle>
+                <DeviceId pluginId="PhysicalDevice" identifier="serial=99897HYH7DZHQ4YT" />
+              </handle>
+            </Target>
+          </targets>
+        </DialogSelection>
       </SelectionState>
       <SelectionState runConfigName="P3_DisplayeProductInfosToSellerPreview">
         <option name="selectionMode" value="DROPDOWN" />
