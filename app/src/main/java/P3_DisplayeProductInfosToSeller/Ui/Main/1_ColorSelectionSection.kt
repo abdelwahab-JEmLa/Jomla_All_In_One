@@ -1,5 +1,6 @@
 package P3_DisplayeProductInfosToSeller.Ui.Main
 
+import P3_DisplayeProductInfosToSeller.Ui.Main.ColorItem3.ColorItem3
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ColorsArticlesTabelle
 import a_RoomDB.SoldArticlesTabelle
