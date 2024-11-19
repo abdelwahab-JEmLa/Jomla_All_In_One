@@ -126,11 +126,6 @@ fun ColorItem3(
                         indexColor = index,
                         reloadKey = reloadTrigger
                     )
-
-                    // Out of stock overlay
-                    if (currentQuantity == 0) {
-                        OutOfStockOverlay()
-                    }
                 }
 
                 // Color Information with improved layout
@@ -173,26 +168,6 @@ fun ColorItem3(
 }
 
 @Composable
-private fun OutOfStockOverlay() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                Color.Black.copy(alpha = 0.6f),
-                shape = RoundedCornerShape(8.dp)
-            ),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "Out of Stock",
-            color = Color.White,
-            style = MaterialTheme.typography.labelLarge,
-            fontWeight = FontWeight.Bold
-        )
-    }
-}
-
-@Composable
 private fun QuantityBadge(
     quantity: Int,
     modifier: Modifier = Modifier
@@ -221,11 +196,10 @@ private fun ColorInfoSection(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
+            .padding(horizontal = 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Color Name
         Text(
             text = colorData.nameColore,
             modifier = Modifier
@@ -237,7 +211,6 @@ private fun ColorInfoSection(
             overflow = TextOverflow.Ellipsis
         )
 
-        // Color Icon
         ColorIcon(
             iconColore = colorData.iconColore,
             onClick = onColorClick
@@ -251,30 +224,36 @@ private fun ColorIcon(
     iconColore: String,
     onClick: () -> Unit
 ) {
-    Box(
+    Surface(
         modifier = Modifier
             .size(40.dp)
             .clip(CircleShape)
             .clickable(onClick = onClick),
-        contentAlignment = Alignment.Center
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        contentColor = MaterialTheme.colorScheme.onSurfaceVariant
     ) {
-        when {
-            iconColore == "©" || iconColore == "💯" || iconColore.isEmpty() -> {
-                GlideImage(
-                    model = R.drawable.logo,
-                    contentDescription = "Color logo",
-                    modifier = Modifier.size(32.dp),
-                    contentScale = ContentScale.Fit
-                )
-            }
-            else -> {
-                Text(
-                    text = iconColore,
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold
-                )
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            when {
+                iconColore == "©" || iconColore == "💯" || iconColore.isEmpty() -> {
+                    GlideImage(
+                        model = R.drawable.logo,
+                        contentDescription = "Color logo",
+                        modifier = Modifier.size(32.dp),
+                        contentScale = ContentScale.Fit
+                    )
+                }
+                else -> {
+                    Text(
+                        text = iconColore,
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
+                }
             }
         }
     }
 }
-
