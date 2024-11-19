@@ -81,6 +81,7 @@ fun ColorsCards7(
         }
     }
 
+
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -94,7 +95,6 @@ fun ColorsCards7(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    // Set a fixed height or use weight to avoid infinite height constraints
                     .height(600.dp)
             ) {
                 LazyColumn(
@@ -131,7 +131,7 @@ fun ColorsCards7(
                         }
                     }
 
-                    // Additional colors
+                    // Additional colors with reduced height (from 100.dp to 80.dp)
                     if (colors.size > 1) {
                         val currentMainColorId = if (displayController.clientWindowsSelectedColorId != 0L) {
                             displayController.clientWindowsSelectedColorId
@@ -152,7 +152,7 @@ fun ColorsCards7(
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(150.dp)
+                                    .height(80.dp) // Reduced from 100.dp
                                     .clip(MaterialTheme.shapes.medium)
                             ) {
                                 ColorItem7(
