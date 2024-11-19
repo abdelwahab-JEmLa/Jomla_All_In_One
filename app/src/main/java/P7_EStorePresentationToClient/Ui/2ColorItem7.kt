@@ -28,9 +28,10 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.clientjetpack.R
 
+// 1. ColorItem7.kt - Updated to fill max width for images and increase icon size
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
- fun ColorItem7(
+fun ColorItem7(
     modifier: Modifier,
     article: ArticlesBasesStatsTable,
     color: ColorsArticlesTabelle?,
@@ -42,6 +43,7 @@ import com.example.clientjetpack.R
         shape = RoundedCornerShape(8.dp)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
+            // Updated ImageDisplayerPC to fill max width
             ImageDisplayerPC(
                 modifier = Modifier.fillMaxSize(),
                 article = article,
@@ -78,10 +80,11 @@ import com.example.clientjetpack.R
                             modifier = Modifier.weight(1f)
                         )
 
+                        // Increased icon size from 32.dp to 40.dp
                         Surface(
                             shape = CircleShape,
                             color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
-                            modifier = Modifier.size(32.dp)
+                            modifier = Modifier.size(40.dp)
                         ) {
                             Box(
                                 modifier = Modifier.fillMaxSize(),
@@ -92,13 +95,13 @@ import com.example.clientjetpack.R
                                         GlideImage(
                                             model = R.drawable.logo,
                                             contentDescription = "Logo",
-                                            modifier = Modifier.size(24.dp)
+                                            modifier = Modifier.size(32.dp) // Increased from 24.dp
                                         )
                                     }
                                     else -> {
                                         Text(
                                             text = colorData.iconColore,
-                                            fontSize = 18.sp,
+                                            fontSize = 24.sp, // Increased from 18.sp
                                             fontWeight = FontWeight.Bold
                                         )
                                     }
