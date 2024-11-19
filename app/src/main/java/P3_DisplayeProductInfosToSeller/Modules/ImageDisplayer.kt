@@ -1,6 +1,7 @@
 package P3_DisplayeProductInfosToSeller.Modules
 import a_RoomDB.ArticlesBasesStatsTable
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
@@ -8,11 +9,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
-import com.example.clientjetpack.R
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import java.io.File
 
@@ -44,7 +45,7 @@ fun ImageDisplayer3(
     }
 
     val imageSource = remember(imageExist) {
-        imageExist?.let { File(it) } ?: R.drawable.logo
+        imageExist?.let { File(it) }
     }
 
     val requestKey = remember(article.idArticle, indexColor, reloadKey) {
@@ -52,20 +53,28 @@ fun ImageDisplayer3(
     }
 
     Box(modifier = modifier.fillMaxWidth()) {
-        val painter = rememberAsyncImagePainter(
-            ImageRequest.Builder(context)
-                .data(imageSource)
-                .size(350,350)  // Use original size to maintain aspect ratio
-                .crossfade(true)
-                .setParameter("key", requestKey, memoryCacheKey = requestKey)
-                .build()
-        )
+        if (imageSource != null) {
+            val painter = rememberAsyncImagePainter(
+                ImageRequest.Builder(context)
+                    .data(imageSource)
+                    .size(350,350)
+                    .crossfade(true)
+                    .setParameter("key", requestKey, memoryCacheKey = requestKey)
+                    .build()
+            )
 
-        Image(
-            painter = painter,
-            contentDescription = "Article image ${article.idArticle} color ${indexColor + 1}",
-            modifier = Modifier.fillMaxWidth(),
-            contentScale = ContentScale.FillWidth
-        )
+            Image(
+                painter = painter,
+                contentDescription = "Article image ${article.idArticle} color ${indexColor + 1}",
+                modifier = Modifier.fillMaxWidth(),
+                contentScale = ContentScale.FillWidth
+            )
+        } else {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White)
+            )
+        }
     }
 }
