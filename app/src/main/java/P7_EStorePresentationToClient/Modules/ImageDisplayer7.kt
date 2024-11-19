@@ -12,9 +12,9 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import java.io.File
 
-// 3. ImageDisplayerPC.kt modifications:
+// 3. ImageDisplayer7.kt modifications:
 @Composable
-fun ImageDisplayerPC(
+fun ImageDisplayer7(
     modifier: Modifier = Modifier,
     article: ArticlesBasesStatsTable,
     indexColor: Int = 0,

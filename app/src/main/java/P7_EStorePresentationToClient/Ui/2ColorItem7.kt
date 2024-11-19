@@ -1,6 +1,6 @@
 package P7_EStorePresentationToClient.Ui
 
-import P7_EStorePresentationToClient.Modules.ImageDisplayerPC
+import P7_EStorePresentationToClient.Modules.ImageDisplayer7
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ColorsArticlesTabelle
 import androidx.compose.animation.core.RepeatMode
@@ -65,7 +65,7 @@ fun ColorItem7(
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             // Image Display
-            ImageDisplayerPC(
+            ImageDisplayer7(
                 modifier = Modifier.fillMaxSize(),
                 article = article,
                 indexColor = index,
