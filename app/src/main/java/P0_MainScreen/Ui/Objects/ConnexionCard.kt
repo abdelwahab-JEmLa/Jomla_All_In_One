@@ -35,8 +35,7 @@ fun ConnexionCard(
 ) {
     var messageText by remember { mutableStateOf("") }
     val context = LocalContext.current
-    val isHostEnabled = Build.MODEL.lowercase().contains("note")
-
+    val isHostEnabled = Build.MODEL.lowercase().contains("m200")
     Card(
         modifier = Modifier
             .fillMaxWidth()

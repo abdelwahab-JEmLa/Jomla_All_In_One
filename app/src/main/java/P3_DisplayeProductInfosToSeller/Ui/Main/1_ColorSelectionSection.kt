@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -89,15 +88,15 @@ fun ColorSelectionSection(
                             .clip(MaterialTheme.shapes.medium)
                     ) {
                         ColorItem3(
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier,
                             currentSale = currentSale,
                             article = stats,
                             color = it,
                             index = 0,
-                            relodeTigger = reloadTrigger,
+                            reloadTrigger = reloadTrigger,
                             viewModel = viewModel,
-                            height = 150.dp,
-                            updateColorToBeMAin = updateMainColor
+                            height = 200.dp,
+                            updateColorToBeMain = updateMainColor
                         )
                     }
                 }
@@ -142,15 +141,15 @@ fun ColorSelectionSection(
                                     .clip(MaterialTheme.shapes.medium)
                             ) {
                                 ColorItem3(
-                                    modifier = Modifier.fillMaxSize(),
+                                    modifier = Modifier,
                                     currentSale = currentSale,
                                     article = stats,
                                     color = color,
                                     index = arrangedColors.indexOf(color) + 1,
-                                    relodeTigger = reloadTrigger,
+                                    reloadTrigger = reloadTrigger,
                                     viewModel = viewModel,
                                     height = 200.dp,
-                                    updateColorToBeMAin = updateMainColor
+                                    updateColorToBeMain =  updateMainColor
                                 )
                             }
                         }

@@ -17,7 +17,7 @@ import com.example.clientjetpack.ViewModel.HeadViewModel
 import java.io.File
 
 @Composable
- fun ImageDisplayer(
+fun ImageDisplayer3(
     modifier: Modifier = Modifier,
     article: ArticlesBasesStatsTable,
     viewModel: HeadViewModel,

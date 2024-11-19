@@ -1,4 +1,4 @@
-package P3_DisplayeProductInfosToSeller.Ui.Objects
+package Z_Learn.A_AncienImplem
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.calculateTargetValue
@@ -65,7 +65,7 @@ import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 @Composable
-fun CompactQuantityPicker(
+fun CompactQuantityPickerA(
     onClosePick: () -> Unit,
     colorIndex: Int,
     viewModel: HeadViewModel,

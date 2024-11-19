@@ -1,7 +1,5 @@
 package P4_SoldCartScreen
 
-import com.example.clientjetpack.Models.UiState
-import com.example.clientjetpack.ViewModel.HeadViewModel
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ClientsModel
 import a_RoomDB.ColorsArticlesTabelle
@@ -59,7 +57,9 @@ import androidx.compose.ui.zIndex
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
+import com.example.clientjetpack.Models.UiState
 import com.example.clientjetpack.R
+import com.example.clientjetpack.ViewModel.HeadViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
@@ -223,7 +223,7 @@ fun CartSummaryCard(
 }
 
 @Composable
-fun ImageDisplayer(
+fun ImageDisplayer4(
     modifier: Modifier = Modifier,
     article: ArticlesBasesStatsTable,
     viewModel: HeadViewModel,
@@ -458,7 +458,7 @@ private fun ColorItemWithQuantity(
         }
 
         // Image with Quantity Overlay
-        ImageDisplayer(
+        ImageDisplayer4(
             modifier = Modifier.fillMaxSize(),
             article = article,
             viewModel = viewModel,
