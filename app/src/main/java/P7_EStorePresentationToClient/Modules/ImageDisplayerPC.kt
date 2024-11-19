@@ -3,6 +3,7 @@ import a_RoomDB.ArticlesBasesStatsTable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -60,8 +61,8 @@ fun ImageDisplayerPC(
             Image(
                 painter = painter,
                 contentDescription = "Article image ${article.idArticle} color ${indexColor + 1}",
-                modifier = Modifier.fillMaxWidth(),
-                contentScale = ContentScale.FillWidth
+                modifier = Modifier.fillMaxSize(), // Changed to fillMaxSize
+                contentScale = ContentScale.FillBounds // Changed to FillBounds for full width
             )
         }
     }
