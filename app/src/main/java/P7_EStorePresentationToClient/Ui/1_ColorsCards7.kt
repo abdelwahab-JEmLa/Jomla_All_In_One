@@ -124,7 +124,7 @@ fun ColorsCards7(
                         }
                     }
 
-                    // Additional colors
+                    // Additional colors  2.
                     if (colors.size > 1) {
                         val currentMainColorId = if (displayController.clientWindowsSelectedColorId != 0L) {
                             displayController.clientWindowsSelectedColorId
