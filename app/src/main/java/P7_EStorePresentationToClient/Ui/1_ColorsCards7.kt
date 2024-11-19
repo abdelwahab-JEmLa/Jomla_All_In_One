@@ -96,7 +96,7 @@ fun ColorsCards7(
                 LazyColumn(
                     state = listState,
                     modifier = Modifier.fillMaxSize(), // Supprimé le padding
-                    verticalArrangement = Arrangement.spacedBy(4.dp), // Réduit l'espacement entre les éléments
+                    verticalArrangement = Arrangement.spacedBy(10.dp), // Réduit l'espacement entre les éléments
                     contentPadding = PaddingValues(0.dp) // Supprimé le padding vertical
                 ) {
                     // Main color item
@@ -145,7 +145,7 @@ fun ColorsCards7(
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(80.dp)
+                                    .height(70.dp)
                             ) {
                                 ColorItem7(
                                     modifier = Modifier.fillMaxSize(),
