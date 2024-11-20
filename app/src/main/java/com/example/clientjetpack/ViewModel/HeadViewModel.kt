@@ -583,20 +583,21 @@ open class HeadViewModel(
                     // Update Room database
                     database.soldArticlesModelDao().insert(updatedSale)
 
-                    // Update Firebase
+                // Update UI state
+                _uiState.update { state ->
+                    state.copy(
+                        soldArticlesModel = state.soldArticlesModel.map { article ->
+                            if (article?.vid == updatedSale.vid) updatedSale else article
+                        }
+                    )
+                }
+
+                // Update Firebase
                     firebaseDatabase.getReference("O_SoldArticlesTabelle")
                         .child(updatedSale.vid.toString())
                         .setValue(updatedSale)
                         .await()
 
-                    // Update UI state
-                    _uiState.update { state ->
-                        state.copy(
-                            soldArticlesModel = state.soldArticlesModel.map { article ->
-                                if (article?.vid == updatedSale.vid) updatedSale else article
-                            }
-                        )
-                    }
 
 
             } catch (e: Exception) {

@@ -75,7 +75,13 @@ fun ColorItem3(
         modifier = modifier.height(height)
     ) {
         // Quantity Badge - Now properly positioned above all content
-        if (currentQuantity > 0) {
+        if (currentQuantity > 0) {//-->
+            //Hi Claud,what i went from u to do is to
+            //Find All TODOs and Fix Them 
+
+            //TODO:
+            // trouve pk quand je click sur uen sub color ca chnage on 
+            // devenent main main
             QuantityBadge(
                 quantity = currentQuantity,
                 modifier = Modifier
