@@ -80,8 +80,7 @@ fun ColorItem3(
             //Find All TODOs and Fix Them 
 
             //TODO:
-            // trouve pk quand je click sur uen sub color ca chnage on 
-            // devenent main main
+            // trouve pk quand je click sur la quantity n a
             QuantityBadge(
                 quantity = currentQuantity,
                 modifier = Modifier

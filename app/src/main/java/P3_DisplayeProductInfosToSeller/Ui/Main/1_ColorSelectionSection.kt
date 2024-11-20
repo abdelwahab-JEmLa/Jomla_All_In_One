@@ -41,7 +41,7 @@ fun ColorSelectionSection(
     reloadTrigger: Int,
 ) {
     var mainColorId by remember { mutableStateOf(stats.idcolor1) }
-    var previousMainColorId by remember { mutableStateOf<Long?>(null) }
+    var colorsListToEdite by remember { mutableStateOf(emptyList<ColorsArticlesTabelle>()) }
 
     // Initialize rankings on first composition
     LaunchedEffect(Unit) {
@@ -54,13 +54,14 @@ fun ColorSelectionSection(
         ).filter { it != 0L }
 
         // Initialize rankings for all colors if not already set
-        validColors.forEachIndexed { index, colorId ->
-            colorsArticlesTabelleModel.find { it.idColore == colorId }?.let { color ->
-                if (color.rankingTmpToDisplaye == 0) {
-                    color.rankingTmpToDisplaye = index + 1
-                }
+        val initialColorsList = validColors.mapIndexedNotNull { index, colorId ->
+            colorsArticlesTabelleModel.find { it.idColore == colorId }?.apply {
+                rankingTmpToDisplaye = index + 1
             }
         }
+
+        // Update colorsListToEdite with the initialized list
+        colorsListToEdite = initialColorsList
     }
 
     // Function to update color rankings when main color changes
@@ -69,35 +70,62 @@ fun ColorSelectionSection(
         val newMainColor = colorsArticlesTabelleModel.find { it.idColore == newMainColorId }
 
         if (oldMainColor != null && newMainColor != null) {
-            val newRank = newMainColor.rankingTmpToDisplaye
+            // Create a new mutable list to store updated colors
+            val updatedColorsList = colorsListToEdite.toMutableList()
+            val oldRank = newMainColor.rankingTmpToDisplaye
+            val lastRank = updatedColorsList.size
 
-            // Update rankings for all affected colors
-            colorsArticlesTabelleModel.forEach { color ->
+            // Example of how rankings change when clicking color with rank 3:
+            // Before: [1, 2, 3, 4]
+            // After:  [3, 2, 4, 1]
+            updatedColorsList.forEach { color ->
                 when {
+                    // The clicked color becomes rank 1
                     color.idColore == newMainColorId -> {
                         color.rankingTmpToDisplaye = 1
                     }
+                    // The previous main color goes to last position
                     color.idColore == mainColorId -> {
-                        color.rankingTmpToDisplaye = colorsArticlesTabelleModel.size
+                        color.rankingTmpToDisplaye = lastRank
                     }
-                    color.rankingTmpToDisplaye in (1..newRank) -> {
-                        color.rankingTmpToDisplaye++
+                    // Colors between new main and old main shift as needed
+                    color.rankingTmpToDisplaye > oldRank -> {
+                        // Colors after clicked color move up one position
+                        color.rankingTmpToDisplaye -= 1
+                    }
+                    // Other colors maintain their position
+                    else -> {
+                        // No change needed
                     }
                 }
             }
-        } else if (newMainColor != null) {
-            // If there was no previous main color, just set the new one as main
-            newMainColor.rankingTmpToDisplaye = 1
 
-            // Shift other colors up
-            colorsArticlesTabelleModel
-                .filter { it.idColore != newMainColorId }
-                .forEach { color ->
-                    if (color.rankingTmpToDisplaye < newMainColor.rankingTmpToDisplaye) {
-                        color.rankingTmpToDisplaye++
+            // Sort and update colorsListToEdite
+            colorsListToEdite = updatedColorsList.sortedBy { it.rankingTmpToDisplaye }
+        } else if (newMainColor != null) {
+            // Create a new mutable list for the case of no previous main color
+            val updatedColorsList = colorsListToEdite.toMutableList()
+            val oldRank = newMainColor.rankingTmpToDisplaye
+
+            updatedColorsList.forEach { color ->
+                when {
+                    // The clicked color becomes rank 1
+                    color.idColore == newMainColorId -> {
+                        color.rankingTmpToDisplaye = 1
+                    }
+                    // Colors after clicked color move up one position
+                    color.rankingTmpToDisplaye > oldRank -> {
+                        color.rankingTmpToDisplaye -= 1
                     }
                 }
+            }
+
+            // Sort and update colorsListToEdite
+            colorsListToEdite = updatedColorsList.sortedBy { it.rankingTmpToDisplaye }
         }
+
+        // Update mainColorId after rankings are updated
+        mainColorId = newMainColorId
     }
 
     Column(
@@ -115,22 +143,11 @@ fun ColorSelectionSection(
                     .padding(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // Get all valid colors and sort them by temporary display order
-                val allColors = listOf(
-                    stats.idcolor1,
-                    stats.idcolor2,
-                    stats.idcolor3,
-                    stats.idcolor4
-                ).mapNotNull { colorId ->
-                    if (colorId != 0L) {
-                        colorsArticlesTabelleModel.find { it.idColore == colorId }
-                    } else null
-                }.sortedBy { it.rankingTmpToDisplaye }
+                // The rest of the UI code uses colorsListToEdite directly
+                // since it's now properly maintained...
 
                 // Updated main color handler with ranking update
                 val updateMainColor: (Long) -> Unit = { newMainColorId ->
-                    previousMainColorId = mainColorId
-                    mainColorId = newMainColorId
                     updateColorRankings(newMainColorId)
                     viewModel.sendOrderToClientDisplayer(
                         WifiUpdateClientDisplayerStats.ClientWindowsSelectedColorId.prefix,
@@ -138,9 +155,8 @@ fun ColorSelectionSection(
                     )
                 }
 
-                // Rest of the component remains the same...
                 // Display main color and sub-colors as before
-                val mainColor = allColors.firstOrNull()
+                val mainColor = colorsListToEdite.firstOrNull()
                 mainColor?.let {
                     Box(
                         modifier = Modifier
@@ -162,14 +178,14 @@ fun ColorSelectionSection(
                     }
                 }
 
-                if (allColors.size > 1) {
+                if (colorsListToEdite.size > 1) {
                     val listState = rememberLazyListState()
 
                     LaunchedEffect(listState) {
                         snapshotFlow { listState.firstVisibleItemIndex }
                             .distinctUntilChanged()
                             .collect { position ->
-                                if (position >= 0 && position < allColors.size - 1) {
+                                if (position >= 0 && position < colorsListToEdite.size - 1) {
                                     viewModel.sendOrderToClientDisplayer(
                                         WifiUpdateClientDisplayerStats.ClientWindowsLazyRowSupColorsScrolle.prefix,
                                         position
@@ -178,7 +194,7 @@ fun ColorSelectionSection(
                             }
                     }
 
-                    val subColors = allColors.drop(1)
+                    val subColors = colorsListToEdite.drop(1)
 
                     LazyRow(
                         state = listState,
