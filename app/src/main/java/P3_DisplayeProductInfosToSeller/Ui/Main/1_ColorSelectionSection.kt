@@ -131,7 +131,7 @@ fun ColorSelectionSection(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 4.dp, vertical = 4.dp)
+            .padding(horizontal = 2.dp, vertical = 2.dp)
     ) {
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -140,8 +140,8 @@ fun ColorSelectionSection(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                    .padding(2.dp),
+                verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
 
                 // Updated main color handler with ranking update
@@ -223,8 +223,8 @@ fun ColorSelectionSection(
                     LazyRow(
                         state = listState,
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        contentPadding = PaddingValues(horizontal = 8.dp)
+                        horizontalArrangement = Arrangement.spacedBy(2.dp),
+                        contentPadding = PaddingValues(horizontal = 2.dp)
                     ) {
                         items(
                             items = subColors,
@@ -233,7 +233,7 @@ fun ColorSelectionSection(
                             Box(
                                 modifier = Modifier
                                     .height(60.dp)
-                                    .width(140.dp)
+                                    .width(170.dp)
                                     .clip(MaterialTheme.shapes.medium)
                             ) {
                                 ColorItem3(

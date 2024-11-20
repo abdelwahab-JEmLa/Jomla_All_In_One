@@ -15,12 +15,8 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ExpandLess
-import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,7 +26,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.clientjetpack.Models.PriceRecord
@@ -67,9 +62,9 @@ fun ColumnScope.Details(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp)
+                    .padding(2.dp)
             ) {
-                DetailHeader(isExpanded)
+          //      DetailHeader(isExpanded)
 
                 AnimatedVisibility(
                     visible = isExpanded,
@@ -79,7 +74,7 @@ fun ColumnScope.Details(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 8.dp)
+                            .padding(top = 2.dp)
                     ) {
                         PriceDetailsTable(
                             article = article,
@@ -106,7 +101,7 @@ private fun PriceDetailsTable(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
+            .padding(2.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         // Headers row with smaller text
@@ -175,9 +170,9 @@ private fun PriceCard(
                 text = text,
                 // Reduced text size for all text
                 style = when {
-                    isHeader -> MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold)
-                    isHighlighted -> MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.error)
-                    else -> MaterialTheme.typography.labelSmall
+                    isHeader -> MaterialTheme.typography.labelSmall.copy()
+                    isHighlighted -> MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.error)
+                    else -> MaterialTheme.typography.bodyMedium
                 },
                 textAlign = if (textAlignment == Alignment.Start) TextAlign.Start else TextAlign.End,
                 modifier = Modifier
@@ -185,28 +180,7 @@ private fun PriceCard(
         }
     }
 }
-@Composable
-private fun DetailHeader(isExpanded: Boolean) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = "معلومات الأسعار والأرباح",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.weight(1f)
-        )
-        Icon(
-            imageVector = if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-            contentDescription = if (isExpanded) "طي" else "توسيع"
-        )
-    }
-}
+
 
 
 

@@ -88,7 +88,7 @@ fun ColorItem3(
                 quantity = currentQuantity,
                 modifier = Modifier
                     .align(Alignment.TopEnd)
-                    .padding(8.dp)
+                    .padding(2.dp)
                     .zIndex(1f)
             )
         }
@@ -96,7 +96,7 @@ fun ColorItem3(
         ElevatedCard(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(4.dp)
+                .padding(2.dp)
                 .clickable {
                     isSelected = true
                     showDialog = true
@@ -125,8 +125,8 @@ fun ColorItem3(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                    .padding(2.dp),
+                verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
                 // Product Image with proper aspect ratio
                 Box(
@@ -231,8 +231,8 @@ private fun ColorInfoSection(
             text = colorData.nameColore,
             modifier = Modifier
                 .weight(1f)
-                .padding(end = 8.dp),
-            style = MaterialTheme.typography.bodyLarge,
+                .padding(end = 2.dp),
+            style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.Medium,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
