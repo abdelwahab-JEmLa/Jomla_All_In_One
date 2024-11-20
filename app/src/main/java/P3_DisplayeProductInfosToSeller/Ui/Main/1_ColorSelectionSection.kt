@@ -43,6 +43,63 @@ fun ColorSelectionSection(
     var mainColorId by remember { mutableStateOf(stats.idcolor1) }
     var previousMainColorId by remember { mutableStateOf<Long?>(null) }
 
+    // Initialize rankings on first composition
+    LaunchedEffect(Unit) {
+        // Get all valid colors
+        val validColors = listOf(
+            stats.idcolor1,
+            stats.idcolor2,
+            stats.idcolor3,
+            stats.idcolor4
+        ).filter { it != 0L }
+
+        // Initialize rankings for all colors if not already set
+        validColors.forEachIndexed { index, colorId ->
+            colorsArticlesTabelleModel.find { it.idColore == colorId }?.let { color ->
+                if (color.rankingTmpToDisplaye == 0) {
+                    color.rankingTmpToDisplaye = index + 1
+                }
+            }
+        }
+    }
+
+    // Function to update color rankings when main color changes
+    fun updateColorRankings(newMainColorId: Long) {
+        val oldMainColor = colorsArticlesTabelleModel.find { it.idColore == mainColorId }
+        val newMainColor = colorsArticlesTabelleModel.find { it.idColore == newMainColorId }
+
+        if (oldMainColor != null && newMainColor != null) {
+            val newRank = newMainColor.rankingTmpToDisplaye
+
+            // Update rankings for all affected colors
+            colorsArticlesTabelleModel.forEach { color ->
+                when {
+                    color.idColore == newMainColorId -> {
+                        color.rankingTmpToDisplaye = 1
+                    }
+                    color.idColore == mainColorId -> {
+                        color.rankingTmpToDisplaye = colorsArticlesTabelleModel.size
+                    }
+                    color.rankingTmpToDisplaye in (1..newRank) -> {
+                        color.rankingTmpToDisplaye++
+                    }
+                }
+            }
+        } else if (newMainColor != null) {
+            // If there was no previous main color, just set the new one as main
+            newMainColor.rankingTmpToDisplaye = 1
+
+            // Shift other colors up
+            colorsArticlesTabelleModel
+                .filter { it.idColore != newMainColorId }
+                .forEach { color ->
+                    if (color.rankingTmpToDisplaye < newMainColor.rankingTmpToDisplaye) {
+                        color.rankingTmpToDisplaye++
+                    }
+                }
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -58,7 +115,8 @@ fun ColorSelectionSection(
                     .padding(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                val colors = listOf(
+                // Get all valid colors and sort them by temporary display order
+                val allColors = listOf(
                     stats.idcolor1,
                     stats.idcolor2,
                     stats.idcolor3,
@@ -67,20 +125,22 @@ fun ColorSelectionSection(
                     if (colorId != 0L) {
                         colorsArticlesTabelleModel.find { it.idColore == colorId }
                     } else null
-                }
+                }.sortedBy { it.rankingTmpToDisplaye }
 
-                // Fonction mise à jour qui garde trace de l'ancienne couleur principale
+                // Updated main color handler with ranking update
                 val updateMainColor: (Long) -> Unit = { newMainColorId ->
                     previousMainColorId = mainColorId
                     mainColorId = newMainColorId
+                    updateColorRankings(newMainColorId)
                     viewModel.sendOrderToClientDisplayer(
                         WifiUpdateClientDisplayerStats.ClientWindowsSelectedColorId.prefix,
                         newMainColorId
                     )
                 }
 
-                // Affichage de la couleur principale
-                val mainColor = colors.find { it.idColore == mainColorId } ?: colors.firstOrNull()
+                // Rest of the component remains the same...
+                // Display main color and sub-colors as before
+                val mainColor = allColors.firstOrNull()
                 mainColor?.let {
                     Box(
                         modifier = Modifier
@@ -102,15 +162,14 @@ fun ColorSelectionSection(
                     }
                 }
 
-                // Affichage des couleurs supplémentaires
-                if (colors.size > 1) {
+                if (allColors.size > 1) {
                     val listState = rememberLazyListState()
 
                     LaunchedEffect(listState) {
                         snapshotFlow { listState.firstVisibleItemIndex }
                             .distinctUntilChanged()
                             .collect { position ->
-                                if (position >= 0 && position < colors.size - 1) {
+                                if (position >= 0 && position < allColors.size - 1) {
                                     viewModel.sendOrderToClientDisplayer(
                                         WifiUpdateClientDisplayerStats.ClientWindowsLazyRowSupColorsScrolle.prefix,
                                         position
@@ -119,15 +178,7 @@ fun ColorSelectionSection(
                             }
                     }
 
-                    // Réorganiser les couleurs avec l'ancienne couleur principale à la fin
-                    val arrangedColors = colors
-                        .filter { it.idColore != mainColorId }
-                        .sortedBy { color ->
-                            when (color.idColore) {
-                                previousMainColorId -> 1  // Met l'ancienne couleur principale à la fin
-                                else -> 0  // Garde l'ordre original pour les autres
-                            }
-                        }
+                    val subColors = allColors.drop(1)
 
                     LazyRow(
                         state = listState,
@@ -135,7 +186,10 @@ fun ColorSelectionSection(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         contentPadding = PaddingValues(horizontal = 8.dp)
                     ) {
-                        items(arrangedColors) { color ->
+                        items(
+                            items = subColors,
+                            key = { color -> color.idColore }
+                        ) { color ->
                             Box(
                                 modifier = Modifier
                                     .height(60.dp)
@@ -147,11 +201,11 @@ fun ColorSelectionSection(
                                     currentSale = currentSale,
                                     article = stats,
                                     color = color,
-                                    index = arrangedColors.indexOf(color) + 1,
+                                    index = color.rankingTmpToDisplaye - 1,
                                     reloadTrigger = reloadTrigger,
                                     viewModel = viewModel,
                                     height = 60.dp,
-                                    updateColorToBeMain =  updateMainColor
+                                    updateColorToBeMain = updateMainColor
                                 )
                             }
                         }
