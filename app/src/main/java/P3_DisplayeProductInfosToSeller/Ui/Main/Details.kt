@@ -20,10 +20,6 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -38,9 +34,11 @@ fun ColumnScope.Details(
     isDetailsVisible: Boolean,
     article: ArticlesBasesStatsTable,
     uiState: UiState,
-    viewModel: HeadViewModel
-) {
-    var isExpanded by remember { mutableStateOf(true) }
+    viewModel: HeadViewModel,
+    lockExpandedPrices: Boolean,
+    onToggleLockExpandedPricex: () -> Unit,
+
+    ) {
 
     val currentClientId = uiState.appSettingsSaverModel
         .find { it.name == "clientBuyerNowId" }?.valueLong ?: 0
@@ -56,7 +54,7 @@ fun ColumnScope.Details(
         ElevatedCard(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { isExpanded = !isExpanded },
+                .clickable { onToggleLockExpandedPricex() },
             elevation = CardDefaults.elevatedCardElevation(defaultElevation = 3.dp)
         ) {
             Column(
@@ -67,7 +65,7 @@ fun ColumnScope.Details(
           //      DetailHeader(isExpanded)
 
                 AnimatedVisibility(
-                    visible = isExpanded,
+                    visible = lockExpandedPrices,
                     enter = slideInVertically() + expandVertically(),
                     exit = shrinkVertically()
                 ) {

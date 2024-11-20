@@ -85,7 +85,8 @@ fun MainScreen(
             Column(modifier = Modifier.fillMaxSize()) {
                 // WiFi Connection Card
                 AnimatedVisibility(
-                    visible = isDisplayedConnexionWifiVisible || !productDisplayController.isConnected
+                    visible = isDisplayedConnexionWifiVisible ||
+                            !productDisplayController.isConnected && !lockHost
                 ) {
                     ConnexionCard(
                         productDisplayController = productDisplayController,

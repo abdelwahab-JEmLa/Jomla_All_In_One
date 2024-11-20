@@ -38,7 +38,8 @@ fun P3DisplayeProductInfosToSeller(
     viewModel: HeadViewModel,
     onDismiss: () -> Unit,
     reloadTrigger: Int,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier, lockExpandedPrices: Boolean,
+    onToggleLockExpandedPricex: () -> Unit,
 ) {
     val currentSale by viewModel.currentSaleInWindows.collectAsState()
     val articlesBaseStats = currentSale?.let { sale ->
@@ -58,7 +59,7 @@ fun P3DisplayeProductInfosToSeller(
             reloadTrigger = reloadTrigger,
             isDetailsVisible = isDetailsVisible,
             onDismiss = onDismiss,
-            uiState = uiState
+            uiState = uiState, lockExpandedPrices = lockExpandedPrices, onToggleLockExpandedPricex = onToggleLockExpandedPricex
         )
     }
 }
@@ -72,7 +73,8 @@ fun MainUi(
     viewModel: HeadViewModel,
     reloadTrigger: Int,
     isDetailsVisible: Boolean,
-    onDismiss: () -> Unit, uiState: UiState
+    onDismiss: () -> Unit, uiState: UiState, lockExpandedPrices: Boolean,
+    onToggleLockExpandedPricex: () -> Unit
 ) {
     var showConfirmDialog by remember { mutableStateOf(false) }
     showConfirmDialog = confirmExitDialog(showConfirmDialog, viewModel, onDismiss)
@@ -105,7 +107,14 @@ fun MainUi(
                             viewModel = viewModel,
                             reloadTrigger = reloadTrigger
                         )
-                        Details(isDetailsVisible, stats, uiState, viewModel)
+                        Details(
+                            isDetailsVisible,
+                            stats,
+                            uiState,
+                            viewModel,
+                            lockExpandedPrices,
+                            onToggleLockExpandedPricex
+                        )
                     }
                 }
 

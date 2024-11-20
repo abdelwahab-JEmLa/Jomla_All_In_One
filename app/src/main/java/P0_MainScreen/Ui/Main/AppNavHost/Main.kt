@@ -51,6 +51,7 @@ fun AppNavHost(
     var pendingIndexColor by rememberSaveable { mutableIntStateOf(0) }
     val reloadTrigger by rememberSaveable { mutableIntStateOf(0) }
     var scrollTiger by rememberSaveable { mutableIntStateOf(0) }
+    var lockExpandedPrices by rememberSaveable { mutableStateOf(false) }
 
     Box(modifier = modifier.fillMaxSize()) {
         NavHost(
@@ -91,6 +92,7 @@ fun AppNavHost(
                         onClickDonne = onClickDonne,
                         onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi,
                         scrollTiger = scrollTiger, onToggleLockHost = onToggleLockHost,
+                        onToggleLockExpandedPricex = { lockExpandedPrices =!lockExpandedPrices },
                     )
 
                     if (uiState.isLoading) {
@@ -168,7 +170,8 @@ fun AppNavHost(
                         WifiUpdateClientDisplayerStats.DISMISS_PRODUCT_INFO.prefix
                     )
                 },
-                reloadTrigger = reloadTrigger,
+                reloadTrigger = reloadTrigger, lockExpandedPrices = lockExpandedPrices,
+                onToggleLockExpandedPricex = { lockExpandedPrices =!lockExpandedPrices },
             )
         }
 

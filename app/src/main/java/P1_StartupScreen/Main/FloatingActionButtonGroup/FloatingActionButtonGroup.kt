@@ -21,6 +21,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.CloudDownload
+import androidx.compose.material.icons.filled.CoPresent
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Details
 import androidx.compose.material.icons.filled.Devices
@@ -63,6 +64,9 @@ fun FloatingActionButtonGroup(
     onClickToOpenClientsListW: () -> Unit,
     onClickToDisplayeConexionWifi: () -> Unit,
     onToggleLockHost: () -> Unit,
+    onToggleLockExpandedPricex: () -> Unit,
+
+
 
     ) {
     var currentGridColumns by remember { mutableIntStateOf(2) }
@@ -72,7 +76,8 @@ fun FloatingActionButtonGroup(
     var clearDataGrouprurClickCount by remember { mutableIntStateOf(0) }
     var buttonChangeUiStat1 by remember { mutableStateOf(false) }
     var showDeviceDialog by remember { mutableStateOf(false) }
-    var toggleButon1 by remember { mutableStateOf(false) }
+    var toggleButton1 by remember { mutableStateOf(false) }
+    var toggleButton2 by remember { mutableStateOf(false) }
 
     // State for drag position
     var offsetX by remember { mutableFloatStateOf(0f) }
@@ -127,11 +132,20 @@ fun FloatingActionButtonGroup(
                 ) {
                     listOf(
                         FabData(
-                            icon = if (toggleButon1) Icons.Default.Close else Icons.Default.Lock,
-                            label = if (toggleButon1) " onToggleLockHost()" else " onToggleLockHost()",
+                            icon = if (toggleButton2) Icons.Default.Close else Icons.Default.CoPresent,
+                            label = if (toggleButton2) " onToggleLockExpandedPrice()" else " onToggleLockExpandedPrice()",
+                            color = Color(0xFF3F51B5),
+                            onClick = {
+                                toggleButton2 = !toggleButton2
+                                onToggleLockExpandedPricex()
+                            }
+                        ),
+                        FabData(
+                            icon = if (toggleButton1) Icons.Default.Close else Icons.Default.Lock,
+                            label = if (toggleButton1) " onToggleLockHost()" else " onToggleLockHost()",
                             color = Color(0xFFFFC107),
                             onClick = {
-                                toggleButon1 = !toggleButon1
+                                toggleButton1 = !toggleButton1
                                 onToggleLockHost()
                             }
                         ),

@@ -49,7 +49,8 @@ fun FragmentStartupScreen(
     onClickToOpenClientsW: () -> Unit,
     isFabVisible: Boolean,
     onClickDonne: () -> Unit,
-    onClickToDisplayeConexionWifi: () -> Unit, scrollTiger: Int, onToggleLockHost: () -> Unit
+    onClickToDisplayeConexionWifi: () -> Unit, scrollTiger: Int, onToggleLockHost: () -> Unit,
+    onToggleLockExpandedPricex: () -> Unit
 ) {
     var gridColumns by remember { mutableStateOf(2) }
     var showFilter by remember { mutableStateOf(false) }
@@ -76,6 +77,7 @@ fun FragmentStartupScreen(
             onClickDonne() },
         onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi,
         scrollTiger, onToggleLockHost = onToggleLockHost,
+        onToggleLockExpandedPricex = onToggleLockExpandedPricex,
     )
 }
 
@@ -96,7 +98,7 @@ fun MainUi(
     isFabVisible: Boolean,
     onClickDonne: () -> Unit,
     onClickToDisplayeConexionWifi: () -> Unit,
-    scrollTiger: Int, onToggleLockHost: () -> Unit,
+    scrollTiger: Int, onToggleLockHost: () -> Unit, onToggleLockExpandedPricex: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val tag = if (uiState.productDisplayController.isHostPhone) "📱 ServerScreen" else "📱 ClientScreen"
@@ -214,7 +216,8 @@ fun MainUi(
             onToggleOutlineFilter = onToggleFilter,
             onChangeGridColumns = onChangeGridColumns,
             onClickToOpenClientsListW = onClickToOpenClientsW,
-            onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi, onToggleLockHost = onToggleLockHost
+            onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi, onToggleLockHost = onToggleLockHost,
+            onToggleLockExpandedPricex = onToggleLockExpandedPricex
         )
 
         if (uiState.isLoading) {
@@ -237,6 +240,7 @@ private fun AnimatedFabGroup(
     onChangeGridColumns: (Int) -> Unit,
     onClickToOpenClientsListW: () -> Unit,
     onClickToDisplayeConexionWifi: () -> Unit, onToggleLockHost: () -> Unit,
+    onToggleLockExpandedPricex: () -> Unit,
 ) {
     Box(                               
         modifier = Modifier
@@ -256,7 +260,8 @@ private fun AnimatedFabGroup(
                 onChangeGridColumns = onChangeGridColumns,
                 onClickToOpenClientsListW = onClickToOpenClientsListW,
                 onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi,
-                onToggleLockHost
+                onToggleLockHost,
+                onToggleLockExpandedPricex
             )
         }
     }
@@ -389,7 +394,7 @@ class ArticlePagingSource(
     }
 
     private fun filterArticles() = if (filterText.isEmpty()) {
-        articles.filter { it.idForSearchArticles <= 0 && it.diponibilityState == "" }
+        articles.filter { it.idForSearchArticles <= 0 && it.diponibilityState == ""  && !it.nomArticleFinale.contains("New")}
     } else {
         articles.filter { article ->
             article.nomArticleFinale.contains(filterText, ignoreCase = true) ||
