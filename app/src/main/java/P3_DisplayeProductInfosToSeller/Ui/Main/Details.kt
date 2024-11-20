@@ -93,28 +93,6 @@ fun ColumnScope.Details(
     }
 }
 
-@Composable
-private fun DetailHeader(isExpanded: Boolean) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = "معلومات الأسعار والأرباح",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.weight(1f)
-        )
-        Icon(
-            imageVector = if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-            contentDescription = if (isExpanded) "طي" else "توسيع"
-        )
-    }
-}
 
 @Composable
 private fun PriceDetailsTable(
@@ -131,8 +109,7 @@ private fun PriceDetailsTable(
             .padding(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-
-        // Headers row
+        // Headers row with smaller text
         PriceGridRow(
             items = listOf(
                 "س.الأعلى",
@@ -142,14 +119,18 @@ private fun PriceDetailsTable(
             ),
             isHeader = true
         )
-        // Price rows with data
+
+        // Price rows with data - Only show non-zero values
         listOf(
             RowData("ب.الحزمة", article.monPrixVent, latestHistoryPrice, allTimeMaxPrice),
             RowData("ب.الوحدة", article.monPrixVent / article.nmbrUnite, latestHistoryPrice / article.nmbrUnite, allTimeMaxPrice / article.nmbrUnite),
             RowData("ر.العميل", clientSoldPackage - article.monPrixVent, clientSoldPackage - latestHistoryPrice, clientSoldPackage - allTimeMaxPrice),
             RowData("ر.خ.الحزمة", article.monPrixVent - article.monPrixAchat, latestHistoryPrice - article.monPrixAchat, allTimeMaxPrice - article.monPrixAchat),
             RowData("س.ب.عم", clientSoldPackage, clientSoldPackage, clientSoldPackage)
-        ).forEach { rowData ->
+        ).filter { rowData ->
+            // Filter out rows where all values are 0
+            !(rowData.baseValue == 0.0 && rowData.previousValue == 0.0 && rowData.maxValue == 0.0)
+        }.forEach { rowData ->
             PriceGridRow(
                 items = listOf(
                     "%.2f ".format(rowData.maxValue),
@@ -157,35 +138,6 @@ private fun PriceDetailsTable(
                     "%.2f ".format(rowData.previousValue),
                     rowData.label,
                 )
-            )
-        }
-    }
-}
-
-private data class RowData(
-    val label: String,
-    val baseValue: Double,
-    val previousValue: Double,
-    val maxValue: Double
-)
-
-@Composable
-private fun PriceGridRow(
-    items: List<String>,
-    isHeader: Boolean = false
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        items.forEachIndexed { index, text ->
-            PriceCard(
-                text = text,
-                isHeader = isHeader,
-                isFirstColumn = index == 0,
-                isHighlighted = index == 2,
-                modifier = Modifier.weight(1f),
-                textAlignment = if (index == 0) Alignment.Start else Alignment.End
             )
         }
     }
@@ -221,10 +173,11 @@ private fun PriceCard(
         ) {
             Text(
                 text = text,
+                // Reduced text size for all text
                 style = when {
-                    isHeader -> MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
-                    isHighlighted -> MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.error)
-                    else -> MaterialTheme.typography.bodyMedium
+                    isHeader -> MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold)
+                    isHighlighted -> MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.error)
+                    else -> MaterialTheme.typography.labelSmall
                 },
                 textAlign = if (textAlignment == Alignment.Start) TextAlign.Start else TextAlign.End,
                 modifier = Modifier
@@ -232,3 +185,57 @@ private fun PriceCard(
         }
     }
 }
+@Composable
+private fun DetailHeader(isExpanded: Boolean) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = "معلومات الأسعار والأرباح",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.weight(1f)
+        )
+        Icon(
+            imageVector = if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+            contentDescription = if (isExpanded) "طي" else "توسيع"
+        )
+    }
+}
+
+
+
+private data class RowData(
+    val label: String,
+    val baseValue: Double,
+    val previousValue: Double,
+    val maxValue: Double
+)
+
+@Composable
+private fun PriceGridRow(
+    items: List<String>,
+    isHeader: Boolean = false
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items.forEachIndexed { index, text ->
+            PriceCard(
+                text = text,
+                isHeader = isHeader,
+                isFirstColumn = index == 0,
+                isHighlighted = index == 2,
+                modifier = Modifier.weight(1f),
+                textAlignment = if (index == 0) Alignment.Start else Alignment.End
+            )
+        }
+    }
+}
+

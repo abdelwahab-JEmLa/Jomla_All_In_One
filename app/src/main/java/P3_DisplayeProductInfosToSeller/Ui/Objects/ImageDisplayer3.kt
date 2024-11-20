@@ -24,7 +24,12 @@ fun ImageDisplayer3(
     viewModel: HeadViewModel,
     indexColor: Int = 0,
     reloadKey: Any = Unit
-) {
+) {  //-->
+//Hi Claud,what i went from u to do is to
+//Find All TODOs and Fix Them
+
+//TODO:
+// deminue la taille oroginale de l image
     val context = LocalContext.current
     val viewModelImagesPath = viewModel.viewModelImagesPath
 
@@ -57,7 +62,7 @@ fun ImageDisplayer3(
             val painter = rememberAsyncImagePainter(
                 ImageRequest.Builder(context)
                     .data(imageSource)
-                    .size(240,240)
+                    .size(150,150)
                     .crossfade(true)
                     .setParameter("key", requestKey, memoryCacheKey = requestKey)
                     .build()

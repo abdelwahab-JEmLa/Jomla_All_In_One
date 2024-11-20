@@ -8,7 +8,6 @@ import P1_StartupScreen.Ui.Objects.ScrolleAdBanner
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.CategoriesTabelle
 import android.util.Log
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -56,6 +55,16 @@ fun ArticleGridWithScrollbar(
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
 ) {
     Box(modifier = modifier) {
+        // Scrollbar first (will be on the left)
+        Scrollbar(
+            state = gridState,
+            modifier = Modifier
+                .align(Alignment.CenterStart)  // Align to left instead of right
+                .padding(start = 2.dp)         // Padding from left edge
+                .alpha(0.8f)
+        )
+
+        // Grid second
         ArticleGrid(
             uiState = uiState,
             gridColumns = gridColumns,
@@ -67,18 +76,9 @@ fun ArticleGridWithScrollbar(
             onClickToOpenWindos = onClickToOpenWindos,
             modifier = Modifier.fillMaxSize()
         )
-
-        Scrollbar(
-            state = gridState,
-            modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .padding(end = 2.dp)
-                .alpha(0.8f)
-        )
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ArticleGrid(
     uiState: UiState,

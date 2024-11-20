@@ -38,19 +38,19 @@ fun ProductNameSection3(article: ArticlesBasesStatsTable) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(4.dp),
+                    ,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 8.dp),
+                        ,
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
                         text = article.nomArticleFinale,
-                        style = MaterialTheme.typography.headlineMedium.copy(
+                        style = MaterialTheme.typography.headlineSmall.copy(
                             fontWeight = FontWeight.Bold
                         ),
                         modifier = Modifier.weight(1f),
@@ -60,28 +60,28 @@ fun ProductNameSection3(article: ArticlesBasesStatsTable) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.End,
-                        modifier = Modifier.padding(start = 8.dp)
+                        modifier = Modifier
                     ) {
 
                         Text(
                             text = "${article.nmbrUnite}",
-                            style = MaterialTheme.typography.bodyMedium,
+                            style = MaterialTheme.typography.bodySmall,
                             modifier = Modifier.padding(start = 4.dp)
                         )
                         Text(
                             text = "حبة",
-                            style = MaterialTheme.typography.bodyMedium,
+                            style = MaterialTheme.typography.bodySmall,
                             modifier = Modifier.padding(start = 4.dp)
                         )
                         Text(
                             text = "/",
-                            style = MaterialTheme.typography.bodyMedium,
+                            style = MaterialTheme.typography.bodySmall,
                             modifier = Modifier.padding(start = 4.dp)
                         )
                         Icon(
                             imageVector = Icons.Default.Inventory,
                             contentDescription = "Units",
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier.size(15.dp)
                         )
 
                     }
@@ -90,9 +90,9 @@ fun ProductNameSection3(article: ArticlesBasesStatsTable) {
                 if (article.nomArab.isNotEmpty()) {
                     Text(
                         text = article.nomArab,
-                        style = MaterialTheme.typography.bodyLarge,
+                        style = MaterialTheme.typography.bodySmall,
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(top = 4.dp)
+                        modifier = Modifier.padding(top = 1.dp)
                     )
                 }
             }
