@@ -1,6 +1,5 @@
 package com.example.clientjetpack.Models
 
-import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 
@@ -36,21 +35,11 @@ data class ProductDisplayController(
     fun getColorArrangement(): List<ColorArrangement> {
         return try {
             if (newArregmentColorsJsonStruct.isEmpty()) {
-                Log.d("ProductDisplayController", "Empty JSON string")
                 return emptyList()
             }
-
-            // Log the JSON for debugging
-            Log.d("ProductDisplayController", "Parsing JSON: $newArregmentColorsJsonStruct")
-
-            // Parse using Gson
             val wrapper = gson.fromJson(newArregmentColorsJsonStruct, ColorArrangementWrapper::class.java)
-            Log.d("ProductDisplayController", "Successfully parsed ${wrapper.NewArregmentColorsJsonStruct.size} colors")
-
             wrapper.NewArregmentColorsJsonStruct
         } catch (e: Exception) {
-            Log.e("ProductDisplayController", "Error parsing JSON: ${e.message}")
-            Log.e("ProductDisplayController", "Stack trace:", e)
             emptyList()
         }
     }

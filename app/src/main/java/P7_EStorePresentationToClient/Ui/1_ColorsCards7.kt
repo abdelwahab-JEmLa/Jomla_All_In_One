@@ -37,54 +37,32 @@ fun ColorsCards7(
     colorsArticlesList: List<ColorsArticlesTabelle>,
 ) {
     var colorsListToDisplaye by remember { mutableStateOf(emptyList<ColorsArticlesTabelle>()) }
-
+    val colorArrangements = remember(displayController.newArregmentColorsJsonStruct) {
+        displayController.getColorArrangement()
+    }
     // Add a tag for logs
     val TAG = "ColorsCards7Debug"
 
-    // Log initial values
-    LaunchedEffect(Unit) {
-        Log.d(TAG, "Initial values:")
-        Log.d(TAG, "Colors list size: ${colorsArticlesList.size}")
-        Log.d(TAG, "Articles stats table: ${articlesBasesStatsTable}")
-        Log.d(TAG, "Is host phone: ${displayController.isHostPhone}")
-    }
 
     // Update colors list based on newArregmentColorsJsonStruct
     LaunchedEffect(displayController.newArregmentColorsJsonStruct) {
-        Log.d(TAG, "LaunchedEffect triggered with new arrangement JSON")
-        Log.d(TAG, "JSON content: ${displayController.newArregmentColorsJsonStruct}")
-
         colorsListToDisplaye = try {
             val arrangement = displayController.getColorArrangement()
-            Log.d(TAG, "Parsed arrangement size: ${arrangement.size}")
-            Log.d(TAG, "Arrangement content: $arrangement")
-
             if (arrangement.isEmpty()) {
-                Log.d(TAG, "Empty arrangement, using default list")
                 getDefaultColorsList(articlesBasesStatsTable, colorsArticlesList)
             } else {
                 arrangement.mapNotNull { arrangedColor ->
-                    Log.d(TAG, "Looking for color ID: ${arrangedColor.idColore}")
-                    colorsArticlesList.find { it.idColore == arrangedColor.idColore }?.also { foundColor ->
-                        Log.d(TAG, "Found color: $foundColor")
-                    } ?: run {
-                        Log.w(TAG, "Color not found for ID: ${arrangedColor.idColore}")
-                        null
-                    }
+                    colorsArticlesList.find { it.idColore == arrangedColor.idColore }
                 }.takeIf { it.isNotEmpty() } ?: getDefaultColorsList(articlesBasesStatsTable, colorsArticlesList)
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error in color arrangement", e)
             getDefaultColorsList(articlesBasesStatsTable, colorsArticlesList)
         }
-
-        Log.d(TAG, "Final list size: ${colorsListToDisplaye.size}")
     }
 
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
 
-    // Handle scroll position updates
     LaunchedEffect(displayController.clientWindowsLazyRowSupColorsScroll) {
         if (!displayController.isHostPhone && colorsListToDisplaye.size > 1) {
             scope.launch {
@@ -93,13 +71,10 @@ fun ColorsCards7(
                         0,
                         (colorsListToDisplaye.size - 2).coerceAtLeast(0)
                     )
-                    Log.d(TAG, "Animating scroll to index: $targetIndex")
                     listState.animateScrollToItem(index = targetIndex)
                     delay(300)
-                    Log.d(TAG, "Scroll animation completed")
                 } catch (e: Exception) {
-                    Log.e(TAG, "Error during scroll animation", e)
-                    e.printStackTrace()
+                    // Silent catch - no logging needed
                 }
             }
         }
@@ -136,9 +111,10 @@ fun ColorsCards7(
                                     color = mainColor,
                                     index = 0,
                                     relodeTigger = relodeTigger,
+                                    colorArrangement = colorArrangements.find { it.idColore == mainColor.idColore }
                                 )
                             }
-                        } ?: Log.w(TAG, "No main color available")
+                        }
                     }
 
                     // Secondary colors
@@ -155,6 +131,7 @@ fun ColorsCards7(
                                 color = color,
                                 index = colorsListToDisplaye.indexOf(color),
                                 relodeTigger = relodeTigger,
+                                colorArrangement = colorArrangements.find { it.idColore == color.idColore }
                             )
                         }
                     }
@@ -163,19 +140,10 @@ fun ColorsCards7(
         }
     }
 }
-
 private fun getDefaultColorsList(
     articlesBasesStatsTable: ArticlesBasesStatsTable,
     colorsArticlesList: List<ColorsArticlesTabelle>
 ): List<ColorsArticlesTabelle> {
-    val TAG = "ColorsCards7Debug"
-    Log.d(TAG, "Getting default colors list")
-    Log.d(TAG, "Default color IDs: [" +
-            "color1: ${articlesBasesStatsTable.idcolor1}, " +
-            "color2: ${articlesBasesStatsTable.idcolor2}, " +
-            "color3: ${articlesBasesStatsTable.idcolor3}, " +
-            "color4: ${articlesBasesStatsTable.idcolor4}]")
-
     return listOf(
         articlesBasesStatsTable.idcolor1,
         articlesBasesStatsTable.idcolor2,
@@ -183,17 +151,9 @@ private fun getDefaultColorsList(
         articlesBasesStatsTable.idcolor4
     ).mapNotNull { colorId ->
         if (colorId != 0L) {
-            colorsArticlesList.find { it.idColore == colorId }?.also { foundColor ->
-                Log.d(TAG, "Found color for ID $colorId: ${foundColor.idColore}")
-            } ?: run {
-                Log.w(TAG, "No matching color found for ID: $colorId")
-                null
-            }
+            colorsArticlesList.find { it.idColore == colorId }
         } else {
-            Log.d(TAG, "Skipping color ID 0")
             null
         }
-    }.also { resultList ->
-        Log.d(TAG, "Default colors list created with ${resultList.size} colors")
     }
 }

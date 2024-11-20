@@ -36,7 +36,29 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.example.clientjetpack.Models.ColorArrangement
 import com.example.clientjetpack.R
+
+@Composable
+private fun QuantityBadge(
+    quantity: Int,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier,
+        shape = CircleShape,
+        color = MaterialTheme.colorScheme.error,
+        contentColor = MaterialTheme.colorScheme.onError
+    ) {
+        Text(
+            text = quantity.toString(),
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            style = MaterialTheme.typography.labelMedium.copy(
+                fontWeight = FontWeight.Bold
+            )
+        )
+    }
+}
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -46,8 +68,8 @@ fun ColorItem7(
     color: ColorsArticlesTabelle?,
     index: Int,
     relodeTigger: Int,
+    colorArrangement: ColorArrangement? = null // Add this parameter
 ) {
-    // Animation for the icon fade effect
     val infiniteTransition = rememberInfiniteTransition(label = "")
     val iconAlpha by infiniteTransition.animateFloat(
         initialValue = 1f,
@@ -64,7 +86,7 @@ fun ColorItem7(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            // Image Display
+            // Image Display (remains the same)
             ImageDisplayer7(
                 modifier = Modifier.fillMaxSize(),
                 article = article,
@@ -72,7 +94,19 @@ fun ColorItem7(
                 reloadKey = relodeTigger
             )
 
-            // Gradient Overlay and Content
+            // Add QuantityBadge if there's a quantity to display
+            colorArrangement?.let { arrangement ->
+                if (arrangement.colorSoldQuantity > 0) {
+                    QuantityBadge(
+                        quantity = arrangement.colorSoldQuantity,
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(8.dp)
+                    )
+                }
+            }
+
+            // Gradient Overlay and Content (remains the same)
             color?.let { colorData ->
                 Box(
                     modifier = Modifier
