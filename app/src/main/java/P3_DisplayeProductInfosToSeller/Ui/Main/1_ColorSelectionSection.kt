@@ -143,8 +143,6 @@ fun ColorSelectionSection(
                     .padding(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // The rest of the UI code uses colorsListToEdite directly
-                // since it's now properly maintained...
 
                 // Updated main color handler with ranking update
                 val updateMainColor: (Long) -> Unit = { newMainColorId ->

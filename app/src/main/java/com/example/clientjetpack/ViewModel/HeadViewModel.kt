@@ -65,7 +65,7 @@ open class HeadViewModel(
     private val tag = "HeadViewModel"
     private val firestore = Firebase.firestore
 
-    private val _uiState = MutableStateFlow(UiState(
+    val _uiState = MutableStateFlow(UiState(
         productDisplayController = ProductDisplayController()
     ))
     open val uiState = _uiState.asStateFlow()
@@ -329,7 +329,7 @@ open class HeadViewModel(
 
 
 
-    private val _currentSaleInWindows = MutableStateFlow<SoldArticlesTabelle?>(null)
+    val _currentSaleInWindows = MutableStateFlow<SoldArticlesTabelle?>(null)
     val currentSaleInWindows = _currentSaleInWindows.asStateFlow()
 
     fun clearSoldArticlesData() {
@@ -524,30 +524,46 @@ open class HeadViewModel(
         }
     }
 
-    fun updateColorSelection(colorIndex: Int, quantity: Int) {
+    fun updateColorSelection(colorId: Long, quantity: Int) {
         viewModelScope.launch {
             _currentSaleInWindows.value?.let { sale ->
                 val article = _uiState.value.articlesBasesStatTables
                     .find { it.idArticle.toLong() == sale.idArticle }
 
-                val updatedSale = when (colorIndex) {
-                    0 -> sale.copy(
-                        color1IdPicked = article?.idcolor1?.takeIf { it != 0L } ?: sale.color1IdPicked,
-                        color1SoldQuantity = quantity
-                    )
-                    1 -> sale.copy(
-                        color2IdPicked = article?.idcolor2?.takeIf { it != 0L } ?: sale.color2IdPicked,
-                        color2SoldQuantity = quantity
-                    )
-                    2 -> sale.copy(
-                        color3IdPicked = article?.idcolor3?.takeIf { it != 0L } ?: sale.color3IdPicked,
-                        color3SoldQuantity = quantity
-                    )
-                    3 -> sale.copy(
-                        color4IdPicked = article?.idcolor4?.takeIf { it != 0L } ?: sale.color4IdPicked,
-                        color4SoldQuantity = quantity
-                    )
-                    else -> sale
+                // Find which color slot to update by searching through colorIdPicked fields
+                val updatedSale = when (colorId) {
+                    sale.color1IdPicked -> sale.copy(color1SoldQuantity = quantity)
+                    sale.color2IdPicked -> sale.copy(color2SoldQuantity = quantity)
+                    sale.color3IdPicked -> sale.copy(color3SoldQuantity = quantity)
+                    sale.color4IdPicked -> sale.copy(color4SoldQuantity = quantity)
+                    else -> {
+                        // If color not found in existing slots, find first empty slot (0L)
+                        when {
+                            sale.color1IdPicked == 0L -> sale.copy(
+                                color1IdPicked = colorId,
+                                color1SoldQuantity = quantity
+                            )
+                            sale.color2IdPicked == 0L -> sale.copy(
+                                color2IdPicked = colorId,
+                                color2SoldQuantity = quantity
+                            )
+                            sale.color3IdPicked == 0L -> sale.copy(
+                                color3IdPicked = colorId,
+                                color3SoldQuantity = quantity
+                            )
+                            sale.color4IdPicked == 0L -> sale.copy(
+                                color4IdPicked = colorId,
+                                color4SoldQuantity = quantity
+                            )
+                            else -> {
+                                // If no empty slots, update first slot as fallback
+                                sale.copy(
+                                    color1IdPicked = colorId,
+                                    color1SoldQuantity = quantity
+                                )
+                            }
+                        }
+                    }
                 }
 
                 try {
@@ -567,6 +583,79 @@ open class HeadViewModel(
             }
         }
     }
+
+    //fun HeadViewModel.updateColorSelection(colorId: Long, quantity: Int) {
+//    viewModelScope.launch {
+//        _currentSaleInWindows.value?.let { sale ->
+//            val updatedSale = when {
+//                // Case 1: Color exists in one of the slots
+//                sale.color1IdPicked == colorId -> sale.copy(color1SoldQuantity = quantity)
+//                sale.color2IdPicked == colorId -> sale.copy(color2SoldQuantity = quantity)
+//                sale.color3IdPicked == colorId -> sale.copy(color3SoldQuantity = quantity)
+//                sale.color4IdPicked == colorId -> sale.copy(color4SoldQuantity = quantity)
+//
+//                // Case 2: Find first empty slot for new color
+//                else -> findEmptySlotAndUpdate(sale, colorId, quantity)
+//            }
+//
+//            try {
+//                val totalQuantity = updatedSale.calculateTotalQuantity()
+//
+//                if (totalQuantity == 0) {
+//                    deleteSoldArticle(updatedSale.vid)
+//                } else {
+//                    _currentSaleInWindows.value = updatedSale
+//                    // Update UI state to reflect changes
+//                    _uiState.update { currentState ->
+//                        currentState.copy(
+//                            selectedColorId = colorId,
+//                            lastUpdatedQuantity = quantity
+//                        )
+//                    }
+//                }
+//            } catch (e: Exception) {
+//                _uiState.update { it.copy(error = "Failed to update sale: ${e.message}") }
+//            }
+//        }
+//    }
+//}
+//
+//private fun findEmptySlotAndUpdate(
+//    sale: SoldArticlesTabelle,
+//    colorId: Long,
+//    quantity: Int
+//): SoldArticlesTabelle {
+//    return when {
+//        sale.color1IdPicked == 0L -> sale.copy(
+//            color1IdPicked = colorId,
+//            color1SoldQuantity = quantity
+//        )
+//        sale.color2IdPicked == 0L -> sale.copy(
+//            color2IdPicked = colorId,
+//            color2SoldQuantity = quantity
+//        )
+//        sale.color3IdPicked == 0L -> sale.copy(
+//            color3IdPicked = colorId,
+//            color3SoldQuantity = quantity
+//        )
+//        sale.color4IdPicked == 0L -> sale.copy(
+//            color4IdPicked = colorId,
+//            color4SoldQuantity = quantity
+//        )
+//        else -> sale.copy( // Update first slot if no empty slots
+//            color1IdPicked = colorId,
+//            color1SoldQuantity = quantity
+//        )
+//    }
+//}
+//
+//private fun SoldArticlesTabelle.calculateTotalQuantity(): Int {
+//    return color1SoldQuantity +
+//            color2SoldQuantity +
+//            color3SoldQuantity +
+//            color4SoldQuantity
+//}
+
     fun resetColorSelectionFromSoldArt(soldArticle: SoldArticlesTabelle, colorIndex: Int) {
         viewModelScope.launch {
             try {

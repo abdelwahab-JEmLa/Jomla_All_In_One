@@ -118,7 +118,6 @@ fun CompactQuantityPickerA(
             ) {
                 IconButton(
                     onClick = {
-                        viewModel.updateColorSelection(colorIndex, 0)
                         onClosePick()
                     },
                     modifier = Modifier.size(20.dp)

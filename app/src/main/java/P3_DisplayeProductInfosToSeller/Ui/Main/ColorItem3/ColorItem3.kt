@@ -56,37 +56,40 @@ fun ColorItem3(
     var showDialog by remember { mutableStateOf(false) }
     var isSelected by remember { mutableStateOf(false) }
 
-    val currentQuantity = remember(index, currentSale) {
-        when (index) {
-            0 -> currentSale?.color1SoldQuantity
-            1 -> currentSale?.color2SoldQuantity
-            2 -> currentSale?.color3SoldQuantity
-            3 -> currentSale?.color4SoldQuantity
-            else -> null
+    // Enhanced quantity tracking that considers the color's position
+    val currentQuantity = remember(color?.idColore, currentSale) {
+        currentSale?.let { sale ->
+            when (color?.idColore) {
+                sale.color1IdPicked -> sale.color1SoldQuantity
+                sale.color2IdPicked -> sale.color2SoldQuantity
+                sale.color3IdPicked -> sale.color3SoldQuantity
+                sale.color4IdPicked -> sale.color4SoldQuantity
+                else -> 0
+            }
         } ?: 0
     }
 
+    // Track whether this color is currently selected as main
+    val isMainColor = remember(color?.idColore, currentSale) {
+        color?.idColore == currentSale?.color1IdPicked
+    }
+
     val cardElevation by animateFloatAsState(
-        targetValue = if (isSelected) 8f else 2f,
+        targetValue = if (isSelected || isMainColor) 8f else 2f,
         label = "cardElevation"
     )
 
     Box(
         modifier = modifier.height(height)
     ) {
-        // Quantity Badge - Now properly positioned above all content
-        if (currentQuantity > 0) {//-->
-            //Hi Claud,what i went from u to do is to
-            //Find All TODOs and Fix Them 
-
-            //TODO:
-            // trouve pk quand je click sur la quantity n a
+        // Enhanced quantity badge with improved positioning and visibility logic
+        if (currentQuantity > 0) {
             QuantityBadge(
                 quantity = currentQuantity,
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .padding(8.dp)
-                    .zIndex(1f) // Ensures badge stays on top
+                    .zIndex(1f)
             )
         }
 
@@ -97,12 +100,23 @@ fun ColorItem3(
                 .clickable {
                     isSelected = true
                     showDialog = true
-                    color?.let { updateColorToBeMain(it.idColore) }
+                    color?.let {
+                        updateColorToBeMain(it.idColore)
+                        // Update client display immediately
+                        viewModel.sendOrderToClientDisplayer(
+                            WifiUpdateClientDisplayerStats.ClientWindowsSelectedColorId.prefix,
+                            it.idColore
+                        )
+                    }
                 },
             shape = RoundedCornerShape(12.dp),
             colors = CardDefaults.elevatedCardColors(
-                containerColor = MaterialTheme.colorScheme.surface,
-                contentColor = MaterialTheme.colorScheme.onSurface
+                containerColor = if (isMainColor)
+                    MaterialTheme.colorScheme.primaryContainer
+                else MaterialTheme.colorScheme.surface,
+                contentColor = if (isMainColor)
+                    MaterialTheme.colorScheme.onPrimaryContainer
+                else MaterialTheme.colorScheme.onSurface
             ),
             elevation = CardDefaults.elevatedCardElevation(
                 defaultElevation = cardElevation.dp
@@ -144,7 +158,7 @@ fun ColorItem3(
         }
     }
 
-    // Dialog with improved UI
+    // Enhanced dialog with improved quantity validation
     if (showDialog && color != null) {
         ColorSelectionDialog(
             onDismiss = {
@@ -153,21 +167,32 @@ fun ColorItem3(
             },
             currentQuantity = currentQuantity,
             colorName = color.nameColore,
-            onQuantitySelected = { quantity ->
-                viewModel.updateColorSelection(index, quantity)
-                viewModel.sendOrderToClientDisplayer(
-                    WifiUpdateClientDisplayerStats.ClientWindowsLazyRowSupColorsScrolle.prefix,
-                    quantity
-                )
-                viewModel.sendOrderToClientDisplayer(
-                    WifiUpdateClientDisplayerStats.ClientWindowsSelectedColorId.prefix,
-                    color.idColore
-                )
-                viewModel.saveSaleTransactionToSoldAriclesList()
+            onQuantitySelected = { newQuantity ->
+                // Validate quantity before updating
+                    viewModel.updateColorSelection(color.idColore, newQuantity)
+
+                    // Update scroll position for sub-colors
+                    viewModel.sendOrderToClientDisplayer(
+                        WifiUpdateClientDisplayerStats.ClientWindowsLazyRowSupColorsScrolle.prefix,
+                        index
+                    )
+
+                    // Update selected color
+                    viewModel.sendOrderToClientDisplayer(
+                        WifiUpdateClientDisplayerStats.ClientWindowsSelectedColorId.prefix,
+                        color.idColore
+                    )
+
+                    // Save the transaction
+                    viewModel.saveSaleTransactionToSoldAriclesList()
+
+                showDialog = false
+                isSelected = false
             }
         )
     }
 }
+
 
 @Composable
 private fun QuantityBadge(
@@ -222,7 +247,7 @@ private fun ColorInfoSection(
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-private fun ColorIcon(
+ fun ColorIcon(
     iconColore: String,
     onClick: () -> Unit
 ) {
@@ -259,3 +284,4 @@ private fun ColorIcon(
         }
     }
 }
+
