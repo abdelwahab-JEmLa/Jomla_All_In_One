@@ -148,8 +148,34 @@ fun ColorSelectionSection(
                 val updateMainColor: (Long) -> Unit = { newMainColorId ->
                     updateColorRankings(newMainColorId)
                     viewModel.sendOrderToClientDisplayer(
-                        WifiUpdateClientDisplayerStats.ClientWindowsSelectedColorId.prefix,
-                        newMainColorId
+                        WifiUpdateClientDisplayerStats.NewArregmentColorsJsonStruct.prefix,
+                        buildString {
+                            append("""{"NewArregmentColorsJsonStruct":[""")
+
+                            colorsListToEdite.forEachIndexed { index, color ->
+                                // Find the corresponding color quantity from currentSale
+                                val colorQuantity = when (color.idColore) {
+                                    currentSale.color1IdPicked -> currentSale.color1SoldQuantity
+                                    currentSale.color2IdPicked -> currentSale.color2SoldQuantity
+                                    currentSale.color3IdPicked -> currentSale.color3SoldQuantity
+                                    currentSale.color4IdPicked -> currentSale.color4SoldQuantity
+                                    else -> 0
+                                }
+
+                                append("""
+                                        {
+                                            "idColore": ${color.idColore},
+                                            "colorSoldQuantity": $colorQuantity
+                                        }""".trimIndent())
+
+                                // Add comma if not the last element
+                                if (index < colorsListToEdite.size - 1) {
+                                    append(",")
+                                }
+                            }
+
+                            append("]}")
+                        }
                     )
                 }
 

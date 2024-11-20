@@ -2,6 +2,7 @@ package P7_EStorePresentationToClient.Ui
 
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ColorsArticlesTabelle
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -26,6 +27,7 @@ import com.example.clientjetpack.Models.ProductDisplayController
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+
 @Composable
 fun ColorsCards7(
     displayController: ProductDisplayController,
@@ -34,58 +36,78 @@ fun ColorsCards7(
     relodeTigger: Int,
     colorsArticlesList: List<ColorsArticlesTabelle>,
 ) {
-    var mainColorId by remember { mutableStateOf(articlesBasesStatsTable.idcolor1) }
-    var previousMainColorId by remember { mutableStateOf<Long?>(null) }
+    var colorsListToDisplaye by remember { mutableStateOf(emptyList<ColorsArticlesTabelle>()) }
 
-    LaunchedEffect(displayController.clientWindowsSelectedColorId) {
-        if (displayController.clientWindowsSelectedColorId != 0L) {
-            previousMainColorId = mainColorId
-            mainColorId = displayController.clientWindowsSelectedColorId
+    // Add a tag for logs
+    val TAG = "ColorsCards7Debug"
+
+    // Log initial values
+    LaunchedEffect(Unit) {
+        Log.d(TAG, "Initial values:")
+        Log.d(TAG, "Colors list size: ${colorsArticlesList.size}")
+        Log.d(TAG, "Articles stats table: ${articlesBasesStatsTable}")
+        Log.d(TAG, "Is host phone: ${displayController.isHostPhone}")
+    }
+
+    // Update colors list based on newArregmentColorsJsonStruct
+    LaunchedEffect(displayController.newArregmentColorsJsonStruct) {
+        Log.d(TAG, "LaunchedEffect triggered with new arrangement JSON")
+        Log.d(TAG, "JSON content: ${displayController.newArregmentColorsJsonStruct}")
+
+        colorsListToDisplaye = try {
+            val arrangement = displayController.getColorArrangement()
+            Log.d(TAG, "Parsed arrangement size: ${arrangement.size}")
+            Log.d(TAG, "Arrangement content: $arrangement")
+
+            if (arrangement.isEmpty()) {
+                Log.d(TAG, "Empty arrangement, using default list")
+                getDefaultColorsList(articlesBasesStatsTable, colorsArticlesList)
+            } else {
+                arrangement.mapNotNull { arrangedColor ->
+                    Log.d(TAG, "Looking for color ID: ${arrangedColor.idColore}")
+                    colorsArticlesList.find { it.idColore == arrangedColor.idColore }?.also { foundColor ->
+                        Log.d(TAG, "Found color: $foundColor")
+                    } ?: run {
+                        Log.w(TAG, "Color not found for ID: ${arrangedColor.idColore}")
+                        null
+                    }
+                }.takeIf { it.isNotEmpty() } ?: getDefaultColorsList(articlesBasesStatsTable, colorsArticlesList)
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in color arrangement", e)
+            getDefaultColorsList(articlesBasesStatsTable, colorsArticlesList)
         }
+
+        Log.d(TAG, "Final list size: ${colorsListToDisplaye.size}")
     }
 
-    val colors = listOf(
-        articlesBasesStatsTable.idcolor1,
-        articlesBasesStatsTable.idcolor2,
-        articlesBasesStatsTable.idcolor3,
-        articlesBasesStatsTable.idcolor4
-    ).mapNotNull { colorId ->
-        if (colorId != 0L) {
-            colorsArticlesList.find { it.idColore == colorId }
-        } else null
-    }
-
-    val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
 
+    // Handle scroll position updates
     LaunchedEffect(displayController.clientWindowsLazyRowSupColorsScroll) {
-        if (!displayController.isHostPhone && colors.size > 1) {
+        if (!displayController.isHostPhone && colorsListToDisplaye.size > 1) {
             scope.launch {
                 try {
                     val targetIndex = displayController.clientWindowsLazyRowSupColorsScroll.coerceIn(
                         0,
-                        (colors.size - 2).coerceAtLeast(0)
+                        (colorsListToDisplaye.size - 2).coerceAtLeast(0)
                     )
-                    listState.animateScrollToItem(
-                        index = targetIndex,
-                        scrollOffset = 0
-                    )
+                    Log.d(TAG, "Animating scroll to index: $targetIndex")
+                    listState.animateScrollToItem(index = targetIndex)
                     delay(300)
+                    Log.d(TAG, "Scroll animation completed")
                 } catch (e: Exception) {
+                    Log.e(TAG, "Error during scroll animation", e)
                     e.printStackTrace()
                 }
             }
         }
     }
 
-
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-    ) {
+    Box(modifier = modifier.fillMaxWidth()) {
         Card(
-            modifier = Modifier
-                .fillMaxWidth(),  // Supprimé le padding horizontal et vertical
+            modifier = Modifier.fillMaxWidth(),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
         ) {
             Box(
@@ -95,19 +117,14 @@ fun ColorsCards7(
             ) {
                 LazyColumn(
                     state = listState,
-                    modifier = Modifier.fillMaxSize(), // Supprimé le padding
-                    verticalArrangement = Arrangement.spacedBy(10.dp), // Réduit l'espacement entre les éléments
-                    contentPadding = PaddingValues(0.dp) // Supprimé le padding vertical
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    contentPadding = PaddingValues(0.dp)
                 ) {
-                    // Main color item
+                    // Main color (first in list)
                     item {
-                        val mainColor = if (displayController.clientWindowsSelectedColorId != 0L) {
-                            colors.find { it.idColore == displayController.clientWindowsSelectedColorId }
-                        } else {
-                            colors.find { it.idColore == mainColorId } ?: colors.firstOrNull()
-                        }
-
-                        mainColor?.let {
+                        colorsListToDisplaye.firstOrNull()?.let { mainColor ->
+                            Log.d(TAG, "Rendering main color: ${mainColor.idColore}")
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -116,49 +133,67 @@ fun ColorsCards7(
                                 ColorItem7(
                                     modifier = Modifier.fillMaxSize(),
                                     article = articlesBasesStatsTable,
-                                    color = it,
+                                    color = mainColor,
                                     index = 0,
                                     relodeTigger = relodeTigger,
                                 )
                             }
-                        }
+                        } ?: Log.w(TAG, "No main color available")
                     }
 
-                    // Additional colors  2.
-                    if (colors.size > 1) {
-                        val currentMainColorId = if (displayController.clientWindowsSelectedColorId != 0L) {
-                            displayController.clientWindowsSelectedColorId
-                        } else {
-                            mainColorId
-                        }
-
-                        val arrangedColors = colors
-                            .filter { it.idColore != currentMainColorId }
-                            .sortedBy { color ->
-                                when (color.idColore) {
-                                    previousMainColorId -> 1
-                                    else -> 0
-                                }
-                            }
-
-                        items(arrangedColors) { color ->
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(70.dp)
-                            ) {
-                                ColorItem7(
-                                    modifier = Modifier.fillMaxSize(),
-                                    article = articlesBasesStatsTable,
-                                    color = color,
-                                    index = arrangedColors.indexOf(color) + 1,
-                                    relodeTigger = relodeTigger,
-                                )
-                            }
+                    // Secondary colors
+                    items(colorsListToDisplaye.drop(1)) { color ->
+                        Log.d(TAG, "Rendering secondary color: ${color.idColore}")
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(70.dp)
+                        ) {
+                            ColorItem7(
+                                modifier = Modifier.fillMaxSize(),
+                                article = articlesBasesStatsTable,
+                                color = color,
+                                index = colorsListToDisplaye.indexOf(color),
+                                relodeTigger = relodeTigger,
+                            )
                         }
                     }
                 }
             }
         }
+    }
+}
+
+private fun getDefaultColorsList(
+    articlesBasesStatsTable: ArticlesBasesStatsTable,
+    colorsArticlesList: List<ColorsArticlesTabelle>
+): List<ColorsArticlesTabelle> {
+    val TAG = "ColorsCards7Debug"
+    Log.d(TAG, "Getting default colors list")
+    Log.d(TAG, "Default color IDs: [" +
+            "color1: ${articlesBasesStatsTable.idcolor1}, " +
+            "color2: ${articlesBasesStatsTable.idcolor2}, " +
+            "color3: ${articlesBasesStatsTable.idcolor3}, " +
+            "color4: ${articlesBasesStatsTable.idcolor4}]")
+
+    return listOf(
+        articlesBasesStatsTable.idcolor1,
+        articlesBasesStatsTable.idcolor2,
+        articlesBasesStatsTable.idcolor3,
+        articlesBasesStatsTable.idcolor4
+    ).mapNotNull { colorId ->
+        if (colorId != 0L) {
+            colorsArticlesList.find { it.idColore == colorId }?.also { foundColor ->
+                Log.d(TAG, "Found color for ID $colorId: ${foundColor.idColore}")
+            } ?: run {
+                Log.w(TAG, "No matching color found for ID: $colorId")
+                null
+            }
+        } else {
+            Log.d(TAG, "Skipping color ID 0")
+            null
+        }
+    }.also { resultList ->
+        Log.d(TAG, "Default colors list created with ${resultList.size} colors")
     }
 }

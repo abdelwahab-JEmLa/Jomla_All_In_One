@@ -45,7 +45,7 @@ enum class WifiUpdateClientDisplayerStats(val prefix: String) {
     DISMISS_PRODUCT_INFO("DismissWindowsInfosProduct") ,
     WindowsPickerDisplayedQuantity("WindowsPickerDisplayedQuantity") ,
     SearchWindowsDisplaye("SearchWindowsDisplaye") ,
-
+    NewArregmentColorsJsonStruct("NewArregmentColorsJsonStruct")
     ;
 
     companion object {
@@ -154,8 +154,14 @@ open class HeadViewModel(
                 WifiUpdateClientDisplayerStats.ClientWindowsSelectedColorId ->  updateDisplayController {
                     copy( clientWindowsSelectedColorId= content.toLong()) }
                 WifiUpdateClientDisplayerStats.SearchWindowsDisplaye ->  updateDisplayController {
-                    copy( searchWindowsDisplaye =  content) }
+                    copy( searchWindowsDisplaye =  content) } 
+                        WifiUpdateClientDisplayerStats.NewArregmentColorsJsonStruct ->  updateDisplayController {
+                copy( newArregmentColorsJsonStruct =  content) } //-->
+                //Hi Claud,what i went from u to do is to
+                //Find All TODOs and Fix Them 
 
+                //TODO:
+                // le send va update ca 
             }
         } ?: Log.d(tag, "📩 Unhandled message received: $payload")
     }
