@@ -34,7 +34,8 @@ fun AppNavHost(
     modifier: Modifier = Modifier,
     isFabVisible: Boolean,
     onClickDonne: () -> Unit,
-    onClickToDisplayeConexionWifi: () -> Unit, onToggleLockHost: () -> Unit
+    onClickToDisplayeConexionWifi: () -> Unit,
+    onToggleLockHost: () -> Unit
 ) {
     val uiState by appViewModels.headViewModel.uiState.collectAsState()
 
@@ -174,6 +175,5 @@ fun AppNavHost(
                 onToggleLockExpandedPricex = { lockExpandedPrices =!lockExpandedPrices },
             )
         }
-
     }
 }

@@ -65,9 +65,6 @@ fun FloatingActionButtonGroup(
     onClickToDisplayeConexionWifi: () -> Unit,
     onToggleLockHost: () -> Unit,
     onToggleLockExpandedPricex: () -> Unit,
-
-
-
     ) {
     var currentGridColumns by remember { mutableIntStateOf(2) }
     var showLabels by remember { mutableStateOf(true) }

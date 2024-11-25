@@ -2,6 +2,7 @@ package P5_DialogeClientsEditer
 
 import a_RoomDB.ClientsModel
 import a_RoomDB.SoldArticlesTabelle
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,6 +31,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,6 +44,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.clientjetpack.ViewModel.HeadViewModel
+import java.util.UUID
+
+private const val TAG = "ClientSelectionDialog"
 
 @Composable
 fun ClientSelectionDialog(
@@ -54,10 +59,29 @@ fun ClientSelectionDialog(
     var searchQuery by remember { mutableStateOf("") }
     var showAddClientDialog by remember { mutableStateOf(false) }
 
+    // Log initial data
+    LaunchedEffect(clients, soldArticle) {
+        Log.d(TAG, "Initial Data: ${clients.size} clients, ${soldArticle.size} sold articles")
+        clients.forEach { client ->
+            Log.v(TAG, "Client ID: ${client.idClientsSu}, Name: ${client.nomClientsSu}")
+        }
+    }
+
+    // Monitor search query changes
+    LaunchedEffect(searchQuery) {
+        if (searchQuery.length >= 2) {
+            Log.d(TAG, "Search query updated: $searchQuery")
+        }
+    }
+
     if (showAddClientDialog) {
         AddClientDialog(
-            onDismiss = { showAddClientDialog = false },
+            onDismiss = {
+                Log.d(TAG, "Add client dialog dismissed")
+                showAddClientDialog = false
+            },
             onConfirm = { name ->
+                Log.i(TAG, "Adding new client: $name")
                 viewModel.addNewClient(name)
                 showAddClientDialog = false
             }
@@ -65,7 +89,10 @@ fun ClientSelectionDialog(
     }
 
     Dialog(
-        onDismissRequest = onDismiss,
+        onDismissRequest = {
+            Log.d(TAG, "Main dialog dismissed")
+            onDismiss()
+        },
         properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
         Card(
@@ -81,63 +108,43 @@ fun ClientSelectionDialog(
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-                // Header and search components remain the same...
                 Text(
                     text = "Select Client",
                     style = MaterialTheme.typography.headlineMedium,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    OutlinedTextField(
-                        value = searchQuery,
-                        onValueChange = { searchQuery = it },
-                        label = { Text("Search Client") },
-                        modifier = Modifier.weight(1f),
-                        singleLine = true,
-                        leadingIcon = {
-                            Icon(
-                                Icons.Default.Search,
-                                contentDescription = "Search"
-                            )
-                        },
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedContainerColor = MaterialTheme.colorScheme.surface,
-                            unfocusedContainerColor = MaterialTheme.colorScheme.surface
-                        )
-                    )
-
-                    FloatingActionButton(
-                        onClick = { showAddClientDialog = true },
-                        modifier = Modifier.size(40.dp),
-                        containerColor = MaterialTheme.colorScheme.primaryContainer
-                    ) {
-                        Icon(
-                            Icons.Default.Add,
-                            contentDescription = "Add Client",
-                            tint = MaterialTheme.colorScheme.onPrimaryContainer
-                        )
+                // Search and Add Client Row
+                SearchAndAddClientRow(
+                    searchQuery = searchQuery,
+                    onSearchQueryChange = {
+                        Log.d(TAG, "Search query changed to: $it")
+                        searchQuery = it
+                    },
+                    onAddClientClick = {
+                        Log.d(TAG, "Add client button clicked")
+                        showAddClientDialog = true
                     }
-                }
+                )
 
-                // Updated client grouping and LazyColumn implementation
+                // Client Grouping with Logging
                 val groupedClients = remember(clients, soldArticle, searchQuery) {
+                    Log.d(TAG, "Regrouping clients. Search query: $searchQuery")
+
                     val filteredClients = if (searchQuery.length >= 2) {
-                        clients.filter {
-                            it.nomClientsSu.contains(searchQuery, ignoreCase = true)
+                        clients.filter { client ->
+                            client.nomClientsSu.contains(searchQuery, ignoreCase = true).also { matches ->
+                                Log.v(TAG, "Filter: ${client.nomClientsSu} matches search: $matches")
+                            }
                         }
                     } else {
                         clients
                     }
 
                     filteredClients.groupBy { client ->
-                        soldArticle.any { it?.clientSoldToItId == client.idClientsSu }
+                        soldArticle.any { it?.clientSoldToItId == client.idClientsSu }.also { hasOrders ->
+                            Log.v(TAG, "Client ${client.idClientsSu} has orders: $hasOrders")
+                        }
                     }
                 }
 
@@ -147,18 +154,25 @@ fun ClientSelectionDialog(
                         .weight(1f),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    // Active Clients Section with unique keys
+                    // Active Clients Section
                     if (!groupedClients[true].isNullOrEmpty()) {
-                        item(key = "active_header") {
-                            ListHeader(text = "Active Clients")
+                        item(key = "active_header_${UUID.randomUUID()}") {
+                            ListHeader("Active Clients")
+                            Log.d(TAG, "Rendering Active Clients section: ${groupedClients[true]?.size} clients")
                         }
+
                         items(
                             items = groupedClients[true] ?: emptyList(),
-                            key = { "active_${it.idClientsSu}" } // Prefix to ensure uniqueness
+                            key = { client ->
+                                "active_${client.idClientsSu}_${UUID.randomUUID()}".also { key ->
+                                    Log.v(TAG, "Generated key for active client ${client.idClientsSu}: $key")
+                                }
+                            }
                         ) { client ->
                             ClientItem(
                                 client = client,
                                 onClick = {
+                                    Log.i(TAG, "Active client selected: ${client.idClientsSu}")
                                     onClientSelected(client)
                                     onDismiss()
                                 }
@@ -166,28 +180,36 @@ fun ClientSelectionDialog(
                         }
                     }
 
-                    // Separator with unique key
+                    // Separator
                     if (!groupedClients[true].isNullOrEmpty() && !groupedClients[false].isNullOrEmpty()) {
-                        item(key = "separator") {
+                        item(key = "separator_${UUID.randomUUID()}") {
                             Divider(
                                 modifier = Modifier.padding(vertical = 8.dp),
                                 color = MaterialTheme.colorScheme.outlineVariant
                             )
+                            Log.d(TAG, "Rendering separator between sections")
                         }
                     }
 
-                    // Other Clients Section with unique keys
+                    // Other Clients Section
                     if (!groupedClients[false].isNullOrEmpty()) {
-                        item(key = "other_header") {
-                            ListHeader(text = "Other Clients")
+                        item(key = "other_header_${UUID.randomUUID()}") {
+                            ListHeader("Other Clients")
+                            Log.d(TAG, "Rendering Other Clients section: ${groupedClients[false]?.size} clients")
                         }
+
                         items(
                             items = groupedClients[false] ?: emptyList(),
-                            key = { "other_${it.idClientsSu}" } // Prefix to ensure uniqueness
+                            key = { client ->
+                                "inactive_${client.idClientsSu}_${UUID.randomUUID()}".also { key ->
+                                    Log.v(TAG, "Generated key for inactive client ${client.idClientsSu}: $key")
+                                }
+                            }
                         ) { client ->
                             ClientItem(
                                 client = client,
                                 onClick = {
+                                    Log.i(TAG, "Inactive client selected: ${client.idClientsSu}")
                                     onClientSelected(client)
                                     onDismiss()
                                 }
@@ -195,10 +217,11 @@ fun ClientSelectionDialog(
                         }
                     }
 
-                    // No Results Message with unique key
+                    // No Results Message
                     if (searchQuery.length >= 2 && groupedClients.isEmpty()) {
-                        item(key = "no_results") {
+                        item(key = "no_results_${UUID.randomUUID()}") {
                             NoResultsMessage(searchQuery = searchQuery)
+                            Log.d(TAG, "Showing no results message for query: $searchQuery")
                         }
                     }
                 }
@@ -206,6 +229,52 @@ fun ClientSelectionDialog(
         }
     }
 }
+
+@Composable
+private fun SearchAndAddClientRow(
+    searchQuery: String,
+    onSearchQueryChange: (String) -> Unit,
+    onAddClientClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        OutlinedTextField(
+            value = searchQuery,
+            onValueChange = onSearchQueryChange,
+            label = { Text("Search Client") },
+            modifier = Modifier.weight(1f),
+            singleLine = true,
+            leadingIcon = {
+                Icon(
+                    Icons.Default.Search,
+                    contentDescription = "Search"
+                )
+            },
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface
+            )
+        )
+
+        FloatingActionButton(
+            onClick = onAddClientClick,
+            modifier = Modifier.size(40.dp),
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        ) {
+            Icon(
+                Icons.Default.Add,
+                contentDescription = "Add Client",
+                tint = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+        }
+    }
+}
+
 @Composable
 private fun ListHeader(text: String) {
     Text(
@@ -221,6 +290,10 @@ private fun ClientItem(
     client: ClientsModel,
     onClick: () -> Unit
 ) {
+    LaunchedEffect(client.idClientsSu) {
+        Log.v(TAG, "Rendering ClientItem for ID: ${client.idClientsSu}")
+    }
+
     Surface(
         onClick = onClick,
         shape = RoundedCornerShape(8.dp),
@@ -290,6 +363,7 @@ private fun NoResultsMessage(searchQuery: String) {
         )
     }
 }
+
 
 @Composable
 private fun AddClientDialog(
