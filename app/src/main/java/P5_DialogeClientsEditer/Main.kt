@@ -81,14 +81,13 @@ fun ClientSelectionDialog(
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-                // Header
+                // Header and search components remain the same...
                 Text(
                     text = "Select Client",
                     style = MaterialTheme.typography.headlineMedium,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
-                // Search and Add Client Row
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -127,7 +126,7 @@ fun ClientSelectionDialog(
                     }
                 }
 
-                // Client Lists
+                // Updated client grouping and LazyColumn implementation
                 val groupedClients = remember(clients, soldArticle, searchQuery) {
                     val filteredClients = if (searchQuery.length >= 2) {
                         clients.filter {
@@ -148,14 +147,14 @@ fun ClientSelectionDialog(
                         .weight(1f),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    // Active Clients Section
+                    // Active Clients Section with unique keys
                     if (!groupedClients[true].isNullOrEmpty()) {
-                        item {
+                        item(key = "active_header") {
                             ListHeader(text = "Active Clients")
                         }
                         items(
                             items = groupedClients[true] ?: emptyList(),
-                            key = { it.idClientsSu }
+                            key = { "active_${it.idClientsSu}" } // Prefix to ensure uniqueness
                         ) { client ->
                             ClientItem(
                                 client = client,
@@ -167,9 +166,9 @@ fun ClientSelectionDialog(
                         }
                     }
 
-                    // Separator if both sections are present
+                    // Separator with unique key
                     if (!groupedClients[true].isNullOrEmpty() && !groupedClients[false].isNullOrEmpty()) {
-                        item {
+                        item(key = "separator") {
                             Divider(
                                 modifier = Modifier.padding(vertical = 8.dp),
                                 color = MaterialTheme.colorScheme.outlineVariant
@@ -177,14 +176,14 @@ fun ClientSelectionDialog(
                         }
                     }
 
-                    // Other Clients Section
+                    // Other Clients Section with unique keys
                     if (!groupedClients[false].isNullOrEmpty()) {
-                        item {
+                        item(key = "other_header") {
                             ListHeader(text = "Other Clients")
                         }
                         items(
                             items = groupedClients[false] ?: emptyList(),
-                            key = { it.idClientsSu }
+                            key = { "other_${it.idClientsSu}" } // Prefix to ensure uniqueness
                         ) { client ->
                             ClientItem(
                                 client = client,
@@ -196,9 +195,9 @@ fun ClientSelectionDialog(
                         }
                     }
 
-                    // No Results Message
+                    // No Results Message with unique key
                     if (searchQuery.length >= 2 && groupedClients.isEmpty()) {
-                        item {
+                        item(key = "no_results") {
                             NoResultsMessage(searchQuery = searchQuery)
                         }
                     }
@@ -207,7 +206,6 @@ fun ClientSelectionDialog(
         }
     }
 }
-
 @Composable
 private fun ListHeader(text: String) {
     Text(
