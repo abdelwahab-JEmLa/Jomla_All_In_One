@@ -11,6 +11,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
+import com.example.Models.DiviseurDeDisplayProductForEachClient
 import com.example.clientjetpack.Models.AppSettingsSaverModel
 import com.example.clientjetpack.Models.DevicesTypeManager
 import java.util.Date
@@ -24,6 +25,10 @@ import java.util.Date
         ClientsModel::class,
         AppSettingsSaverModel::class ,
         DevicesTypeManager::class ,
+
+        DiviseurDeDisplayProductForEachClient::class ,
+
+
     ],
     version = 1,
     exportSchema = false
@@ -38,7 +43,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun clientsModelDao(): ClientsModelDao
     abstract fun appSettingsSaverModelDao(): AppSettingsSaverModelDao
     abstract fun devicesTypeManagerDao(): DevicesTypeManagerDao
-
+    abstract fun diviseurDeDisplayProductForEachClientDao(): DiviseurDeDisplayProductForEachClientDao
     // DatabaseModule.kt
     object DatabaseModule {
         @Volatile

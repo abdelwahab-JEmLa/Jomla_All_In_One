@@ -5,6 +5,7 @@ import P1_StartupScreen.Main.FloatingActionButtonGroup.FloatingActionButtonGroup
 import P1_StartupScreen.Ui.ArticlesGrid.ArticleGridWithScrollbar
 import P1_StartupScreen.Ui.Objects.SearchFilterPB
 import a_RoomDB.ArticlesBasesStatsTable
+import a_RoomDB.ClientsModel
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -50,7 +51,7 @@ fun FragmentStartupScreen(
     isFabVisible: Boolean,
     onClickDonne: () -> Unit,
     onClickToDisplayeConexionWifi: () -> Unit, scrollTiger: Int, onToggleLockHost: () -> Unit,
-    onToggleLockExpandedPricex: () -> Unit
+    onToggleLockExpandedPricex: () -> Unit, currentClient: ClientsModel?
 ) {
     var gridColumns by remember { mutableStateOf(2) }
     var showFilter by remember { mutableStateOf(false) }
@@ -77,7 +78,7 @@ fun FragmentStartupScreen(
             onClickDonne() },
         onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi,
         scrollTiger, onToggleLockHost = onToggleLockHost,
-        onToggleLockExpandedPricex = onToggleLockExpandedPricex,
+        onToggleLockExpandedPricex = onToggleLockExpandedPricex, currentClient = currentClient,
     )
 }
 
@@ -99,6 +100,7 @@ fun MainUi(
     onClickDonne: () -> Unit,
     onClickToDisplayeConexionWifi: () -> Unit,
     scrollTiger: Int, onToggleLockHost: () -> Unit, onToggleLockExpandedPricex: () -> Unit,
+    currentClient: ClientsModel?,
 ) {
     val scope = rememberCoroutineScope()
     val tag = if (uiState.productDisplayController.isHostPhone) "📱 ServerScreen" else "📱 ClientScreen"
@@ -201,7 +203,7 @@ fun MainUi(
                     gridState = gridState,
                     viewModel = viewModel,
                     reloadTrigger = reloadTrigger,
-                    onClickToOpenWindos = onClickToOpenWindos
+                    onClickToOpenWindos = onClickToOpenWindos, currentClient = currentClient
                 )
             }
         }

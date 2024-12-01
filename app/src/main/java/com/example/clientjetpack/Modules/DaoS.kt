@@ -12,8 +12,32 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import com.example.Models.DiviseurDeDisplayProductForEachClient
 import com.example.clientjetpack.Models.AppSettingsSaverModel
 import com.example.clientjetpack.Models.DevicesTypeManager
+
+@Dao
+interface DiviseurDeDisplayProductForEachClientDao {
+    @Query("SELECT * FROM DiviseurDeDisplayProductForEachClient ")
+    suspend fun getAll(): MutableList<DiviseurDeDisplayProductForEachClient>
+
+    @Transaction
+    suspend fun transaction(block: suspend DiviseurDeDisplayProductForEachClientDao.() -> Unit) {
+        block()
+    }
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(category: DiviseurDeDisplayProductForEachClient)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(item: List<DiviseurDeDisplayProductForEachClient>)
+
+    @Query("DELETE FROM DiviseurDeDisplayProductForEachClient")
+    suspend fun deleteAll()
+
+    @Update
+    suspend fun updateAll(item: List<DiviseurDeDisplayProductForEachClient>)
+}
 
 @Dao
 interface ArticlesBasesStatsModelDao {

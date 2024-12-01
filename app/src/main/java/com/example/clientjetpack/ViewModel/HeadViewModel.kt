@@ -11,6 +11,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.Models.DiviseurDeDisplayProductForEachClient
 import com.example.clientjetpack.Models.AppSettingsSaverModel
 import com.example.clientjetpack.Models.ArticlesAcheteModele
 import com.example.clientjetpack.Models.DevicesTypeManager
@@ -314,6 +315,7 @@ open class HeadViewModel(
     private val refSoldArticlesTabelle = firebaseDatabase.getReference("O_SoldArticlesTabelle")
     private val refClientsTabelle = firebaseDatabase.getReference("G_Clients")
     private val refDevicesTypeManager = firebaseDatabase.getReference("P_DevicesTypeManager")
+    private val diviseurDeDisplayProductForEachClientRef = firebaseDatabase.getReference("3_DiviseurDeDisplayProductForEachClient")
 
 
     private fun updateLoadingProgress(progress: Float) {
@@ -921,6 +923,7 @@ open class HeadViewModel(
             }
         }
     }
+
     fun importFromFirebase() {
         viewModelScope.launch {
             try {
@@ -948,6 +951,8 @@ open class HeadViewModel(
                 colorInitialize(80f)
                 clientsInitialize(82f)
                 soldArticlesTabelleIntia(85f)
+                diviseurDeDisplayProductForEachClientInit(85f)
+
 
                 val articlesSnapshot = refDBJetPackExport.get().await()
                 val articles = articlesSnapshot.children.mapNotNull { snapshot ->
@@ -964,6 +969,18 @@ open class HeadViewModel(
             }
         }
     }
+    private suspend fun diviseurDeDisplayProductForEachClientInit(fl: Float) {
+        val snapshot = diviseurDeDisplayProductForEachClientRef.get().await()
+        val it = snapshot.children.mapNotNull { snapshot ->
+            snapshot.getValue(DiviseurDeDisplayProductForEachClient::class.java)
+        }
+
+        database.diviseurDeDisplayProductForEachClientDao().deleteAll()
+
+        database.diviseurDeDisplayProductForEachClientDao().insertAll(it)
+        updateLoadingProgress(fl)
+    }
+
     private suspend fun devicesTypeManagerInitialize(fl: Float) {
         val devicesTypeManagerSnapshot = refDevicesTypeManager.get().await()
         val devicesTypeManager = devicesTypeManagerSnapshot.children.mapNotNull { snapshot ->
@@ -1043,6 +1060,8 @@ open class HeadViewModel(
             val clients = database.clientsModelDao().getAll()
             val devicesTypeManager = database.devicesTypeManagerDao().getAll()
 
+            val diviseurDeDisplayProductForEachClient = database.diviseurDeDisplayProductForEachClientDao().getAll()
+
             createNewArrivaleCategoryIfNeeded(categories)
 
             _uiState.update { it.copy(
@@ -1053,7 +1072,10 @@ open class HeadViewModel(
                 soldArticlesModel = soldArticles,
                 clientsModel = clients,
                 devicesTypeManager= devicesTypeManager,
-            ) }
+
+                diviseurDeDisplayProductForEachClient= diviseurDeDisplayProductForEachClient,
+
+                ) }
         } catch (e: Exception) {
             _uiState.update { it.copy(error = e.message) }
         } finally {

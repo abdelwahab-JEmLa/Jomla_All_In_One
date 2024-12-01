@@ -7,6 +7,7 @@ import P1_StartupScreen.Ui.Objects.CategoryHeader
 import P1_StartupScreen.Ui.Objects.ScrolleAdBanner
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.CategoriesTabelle
+import a_RoomDB.ClientsModel
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -52,7 +53,7 @@ fun ArticleGridWithScrollbar(
     viewModel: HeadViewModel,
     reloadTrigger: Int,
     modifier: Modifier = Modifier,
-    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
+    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit, currentClient: ClientsModel?,
 ) {
     Box(modifier = modifier) {
         // Scrollbar first (will be on the left)
@@ -73,8 +74,9 @@ fun ArticleGridWithScrollbar(
             gridState = gridState,
             viewModel = viewModel,
             reloadTrigger = reloadTrigger,
+            modifier = Modifier.fillMaxSize(),
             onClickToOpenWindos = onClickToOpenWindos,
-            modifier = Modifier.fillMaxSize()
+            currentClient
         )
     }
 }
@@ -90,14 +92,16 @@ fun ArticleGrid(
     reloadTrigger: Int,
     modifier: Modifier = Modifier,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
+    currentClient: ClientsModel?,
 ) {
     // Track scroll state and first visible item
     var lastSettledFirstVisible by remember { mutableStateOf(-1) }
     var isSettled by remember { mutableStateOf(true) }
     var currentCategory by remember { mutableStateOf<String?>(null) }
 
-    // Configure paging
+    // Configure paging with assembly monitoring
     val pagingConfig = remember {
+        Log.d(TAG, "Initializing paging configuration for grid assembly")
         PagingConfig(
             pageSize = 3,
             enablePlaceholders = true,
@@ -105,9 +109,27 @@ fun ArticleGrid(
         )
     }
 
-    // Create category pagers
+    // Create category pagers with assembly tracking
     val categoryPagers = remember(uiState.categories, filterText) {
+        Log.d(TAG, """
+            Starting Grid Assembly:
+            - Total Categories: ${uiState.categories.size}
+            - Filter: ${if (filterText.isEmpty()) "None" else filterText}
+            - Articles Total: ${uiState.articlesBasesStatTables.size}
+        """.trimIndent())
+
         uiState.categories.associateWith { category ->
+            Log.d(TAG, """
+                Processing Category:
+                - Name: ${category.nomCategorieInCategoriesTabele}
+                - Articles: ${uiState.articlesBasesStatTables.count { 
+                    if (category.nomCategorieInCategoriesTabele == "NewArrivale") 
+                        it.itsNewArrivale 
+                    else 
+                        it.nomCategorie == category.nomCategorieInCategoriesTabele && !it.itsNewArrivale 
+                }}
+            """.trimIndent())
+
             Pager(pagingConfig) {
                 ArticlePagingSource(
                     articles = when {
@@ -119,7 +141,9 @@ fun ArticleGrid(
                             }
                     },
                     filterText = filterText
-                )
+                ).also { source ->
+                    Log.d(TAG, "Created PagingSource for ${category.nomCategorieInCategoriesTabele}")
+                }
             }
         }
     }
@@ -186,13 +210,6 @@ fun ArticleGrid(
                 val lazyPagingItems = categoryPagingItems[category]
 
                 if (lazyPagingItems != null && lazyPagingItems.itemCount > 0) {
-                    // Log category layout
-                    Log.d(TAG, """
-                        Category Layout:
-                        - Name: ${category.nomCategorieInCategoriesTabele}
-                        - Items: ${lazyPagingItems.itemCount}
-                        - Is Host: ${uiState.productDisplayController.isHostPhone}
-                    """.trimIndent())
 
                     // Show category header if needed
                     if (category.displayedHeader) {
@@ -206,7 +223,17 @@ fun ArticleGrid(
                         count = lazyPagingItems.itemCount,
                         span = { index ->
                             val article = lazyPagingItems[index]
-                            if (article?.imageDimention == "Demi") {
+
+                            val currentProductByCurrentClient = uiState.diviseurDeDisplayProductForEachClient.find {
+                                it.keyVid == "${currentClient?.idClientsSu}->${article?.idArticle}"
+                            }
+                            val currentProductByClientStandard = uiState.diviseurDeDisplayProductForEachClient.find {
+                                it.keyVid == "100->${article?.idArticle}"
+                            }
+                            val switcher = currentProductByCurrentClient?.itsBigImage
+                                ?: currentProductByClientStandard?.itsBigImage
+
+                            if (switcher == true) {
                                 StaggeredGridItemSpan.FullLine
                             } else {
                                 StaggeredGridItemSpan.SingleLane
@@ -223,13 +250,6 @@ fun ArticleGrid(
 
                             if (isFirstVisible) {
                                 currentCategory = category.nomCategorieInCategoriesTabele
-                                Log.d(TAG, """
-                                    First Visible Article:
-                                    - ID: ${it.idArticle}
-                                    - Index: $index
-                                    - Category: ${category.nomCategorieInCategoriesTabele}
-                                    - Settled: $isSettled
-                                """.trimIndent())
                             }
 
                             ArticleItem(
@@ -242,7 +262,8 @@ fun ArticleGrid(
                                 modifier = Modifier.animateItem(
                                     fadeInSpec = null,
                                     fadeOutSpec = null
-                                )
+                                ),
+                                currentClient = currentClient
                             )
                         }
                     }

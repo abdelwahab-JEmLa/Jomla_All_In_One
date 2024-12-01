@@ -6,6 +6,7 @@ import a_RoomDB.ClientsModel
 import a_RoomDB.ColorsArticlesTabelle
 import a_RoomDB.SoldArticlesTabelle
 import a_RoomDB.SuppliersTabelle
+import com.example.Models.DiviseurDeDisplayProductForEachClient
 
 // 1. First, update the UiState class to properly use devicesTypeManager
 data class UiState(
@@ -17,6 +18,9 @@ data class UiState(
     val soldArticlesModel: List<SoldArticlesTabelle?> = emptyList(),
     val clientsModel: List<ClientsModel> = emptyList(),
     val suppliers: List<SuppliersTabelle> = emptyList(),
+
+    val diviseurDeDisplayProductForEachClient: List<DiviseurDeDisplayProductForEachClient> = emptyList(),
+
     val productDisplayController: ProductDisplayController,
     val maxPriceMap: Map<Pair<Long, Long>, List<PriceRecord>> = emptyMap(),
     val isLoading: Boolean = false,

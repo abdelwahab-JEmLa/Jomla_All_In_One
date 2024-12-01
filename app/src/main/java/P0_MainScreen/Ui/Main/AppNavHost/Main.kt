@@ -63,7 +63,6 @@ fun AppNavHost(
             composable(Screen.EditDatabaseWithCreateNewArticles.route) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     FragmentStartupScreen(
-
                         viewModel = appViewModels.headViewModel,
                         onToggleNavBar = onToggleNavBar,
                         reloadTrigger = reloadTrigger,
@@ -94,6 +93,7 @@ fun AppNavHost(
                         onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi,
                         scrollTiger = scrollTiger, onToggleLockHost = onToggleLockHost,
                         onToggleLockExpandedPricex = { lockExpandedPrices =!lockExpandedPrices },
+                        currentClient = currentClient,
                     )
 
                     if (uiState.isLoading) {

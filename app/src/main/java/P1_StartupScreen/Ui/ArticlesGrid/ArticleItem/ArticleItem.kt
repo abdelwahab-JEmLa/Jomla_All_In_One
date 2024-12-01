@@ -5,7 +5,7 @@ import P1_StartupScreen.Ui.ArticlesGrid.checkImageExists
 import P1_StartupScreen.Ui.ArticlesGrid.countColors
 import P1_StartupScreen.Ui.ArticlesGrid.getColorIdForIndex
 import a_RoomDB.ArticlesBasesStatsTable
-import android.util.Log
+import a_RoomDB.ClientsModel
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -38,27 +38,18 @@ fun ArticleItem(
     modifier: Modifier = Modifier,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     uiState: UiState,
-    isFirstVisible: Boolean = false
+    isFirstVisible: Boolean = false,
+    currentClient: ClientsModel?
 ) {
     val colorCount = countColors(article)
 
-    // Log article visibility state
-    Log.d(
-        TAG, """
-        ArticleItem State:
-        - Article ID: ${article.idArticle}
-        - Is Host: ${uiState.productDisplayController.isHostPhone}
-        - Is First Visible: $isFirstVisible
-        - Color Count: $colorCount
-    """.trimIndent())
+
 
     val cardColor = when {
         uiState.productDisplayController.isHostPhone && isFirstVisible -> {
-            Log.d(TAG, "Setting RED color for first visible article ${article.idArticle}")
             Color.Red
         }
         else -> {
-            Log.d(TAG, "Setting DEFAULT color for article ${article.idArticle}")
             MaterialTheme.colorScheme.surface
         }
     }
@@ -70,10 +61,21 @@ fun ArticleItem(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(containerColor = cardColor)
     ) {
+
+        val currentProductByCurrentClient = uiState.diviseurDeDisplayProductForEachClient.find {
+            it.keyVid == "${currentClient?.idClientsSu}->${article.idArticle}"
+        }
+        val currentProductByClientStandard = uiState.diviseurDeDisplayProductForEachClient.find {
+            it.keyVid == "100->${article.idArticle}"
+        }
+
+        val switcher = currentProductByCurrentClient?.itsBigImage
+            ?: currentProductByClientStandard?.itsBigImage
+
         val layout = when {
-            article.imageDimention == "Demi" && colorCount == 1 -> ArticleLayout.DemiUno
-            article.imageDimention == "Demi" && colorCount == 2 -> ArticleLayout.DemiDual
-            article.imageDimention == "Demi" && colorCount > 2 -> ArticleLayout.DemiMulti
+            switcher == true && colorCount == 1 -> ArticleLayout.DemiUno
+            switcher == true && colorCount == 2 -> ArticleLayout.DemiDual
+            switcher == true && colorCount > 2 -> ArticleLayout.DemiMulti
             colorCount == 1 -> ArticleLayout.SmallUno
             colorCount == 2 -> ArticleLayout.SmallDual
             colorCount > 2 -> ArticleLayout.SmallMulti
