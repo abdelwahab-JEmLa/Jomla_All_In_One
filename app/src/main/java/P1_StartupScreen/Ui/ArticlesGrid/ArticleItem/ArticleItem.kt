@@ -1,4 +1,5 @@
 package P1_StartupScreen.Ui.ArticlesGrid.ArticleItem
+
 import P1_StartupScreen.Ui.ArticlesGrid.ArticleLayout
 import P1_StartupScreen.Ui.ArticlesGrid.ImageDisplayer1
 import P1_StartupScreen.Ui.ArticlesGrid.checkImageExists
@@ -28,8 +29,6 @@ import androidx.compose.ui.unit.dp
 import com.example.clientjetpack.Models.UiState
 import com.example.clientjetpack.ViewModel.HeadViewModel
 
-private const val TAG = "ArticleGridDebug"
-
 @Composable
 fun ArticleItem(
     article: ArticlesBasesStatsTable,
@@ -42,8 +41,6 @@ fun ArticleItem(
     currentClient: ClientsModel?
 ) {
     val colorCount = countColors(article)
-
-
 
     val cardColor = when {
         uiState.productDisplayController.isHostPhone && isFirstVisible -> {
@@ -65,6 +62,7 @@ fun ArticleItem(
         val currentProductByCurrentClient = uiState.diviseurDeDisplayProductForEachClient.find {
             it.keyVid == "${currentClient?.idClientsSu}->${article.idArticle}"
         }
+
         val currentProductByClientStandard = uiState.diviseurDeDisplayProductForEachClient.find {
             it.keyVid == "100->${article.idArticle}"
         }

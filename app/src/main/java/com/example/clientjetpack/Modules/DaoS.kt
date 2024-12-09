@@ -155,6 +155,8 @@ interface AppSettingsSaverModelDao{
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(items: List<AppSettingsSaverModel>)
+    @Query("DELETE FROM AppSettingsSaverModel")
+    suspend fun deleteAll()
 
 }
 @Dao

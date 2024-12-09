@@ -21,7 +21,10 @@ import com.example.clientjetpack.Models.UiState
 import com.example.clientjetpack.Modules.AppDatabase
 import com.example.clientjetpack.Modules.ConnectionManager
 import com.google.firebase.database.BuildConfig
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -57,7 +60,6 @@ enum class WifiUpdateClientDisplayerStats(val prefix: String) {
         }
     }
 }
-
 
 open class HeadViewModel(
     context: Context,
@@ -791,8 +793,6 @@ open class HeadViewModel(
                         date = Date()
                     )
 
-                // Update local database
-                database.appSettingsSaverModelDao().insert(currentSetting)
 
                 // Update Firebase
                 firebaseDatabase.getReference("A_AppSettingsSaverModel")
@@ -800,13 +800,7 @@ open class HeadViewModel(
                     .setValue(currentSetting)
                     .await()
 
-                _uiState.update { state ->
-                    state.copy(
-                        appSettingsSaverModel = state.appSettingsSaverModel.map {
-                            if (it.name == name) currentSetting else it
-                        }
-                    )
-                }
+
             } catch (e: Exception) {
                 _uiState.update { it.copy(error = e.message) }
             }
@@ -931,7 +925,7 @@ open class HeadViewModel(
                 updateLoadingProgress(10f)
 
 
-                appSettingsSaverModelInitialize(15f)
+
 
                 devicesTypeManagerInitialize(17f)
 
@@ -992,13 +986,29 @@ open class HeadViewModel(
         database.devicesTypeManagerDao().insertAll(devicesTypeManager)
         updateLoadingProgress(fl)
     }
-    private suspend fun appSettingsSaverModelInitialize(fl: Float) {
-        val appSettingsSaverModelSnapshot = refAppSettingsSaverModel.get().await()
-        val appSettingsSaverModel = appSettingsSaverModelSnapshot.children.mapNotNull { snapshot ->
-            snapshot.getValue(AppSettingsSaverModel::class.java)
-        }
-        database.appSettingsSaverModelDao().insertAll(appSettingsSaverModel)
-        updateLoadingProgress(fl)
+
+    private fun setupAppSettingsListener() {
+        refAppSettingsSaverModel.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                viewModelScope.launch {
+                    // Convert Firebase snapshot to Room entities
+                    val appSettings = snapshot.children.mapNotNull { childSnapshot ->
+                        childSnapshot.getValue(AppSettingsSaverModel::class.java)
+                    }
+
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            appSettingsSaverModel = appSettings
+                        )
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle any errors
+                _uiState.update { it.copy(error = error.message) }
+            }
+        })
     }
     private suspend fun clientsInitialize(fl: Float) {
         val clientsSnapshot = refClientsTabelle.get().await()
@@ -1040,18 +1050,7 @@ open class HeadViewModel(
                 updateLoadingProgress(progress)
                 delay(100)
             }
-
-            // Load all settings including client setting
-            val settings = database.appSettingsSaverModelDao().getAll()
-            if (!settings.any { it.name == "clientBuyerNowId" }) {
-                database.appSettingsSaverModelDao().insert(
-                    AppSettingsSaverModel(
-                        id = System.currentTimeMillis(),
-                        name = "clientBuyerNowId",
-                        valueLong = 0
-                    )
-                )
-            }
+            setupAppSettingsListener()
 
             val articles = database.articlesBasesStatsModelDao().getAll()
             val categories = database.categoriesModelDao().getAll()
@@ -1065,7 +1064,7 @@ open class HeadViewModel(
             createNewArrivaleCategoryIfNeeded(categories)
 
             _uiState.update { it.copy(
-                appSettingsSaverModel = database.appSettingsSaverModelDao().getAll(),
+
                 articlesBasesStatTables = articles,
                 categories = categories,
                 colorsArticlesTabelleModel = colors,
