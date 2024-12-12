@@ -383,6 +383,8 @@ private fun Int.toScrollUpdate(): ScrollUpdate {
 class ArticlePagingSource(
     private val articles: List<ArticlesBasesStatsTable>,
     private val filterText: String,
+    private val currentClient: ClientsModel?,
+    private val uiState: UiState,
 ) : PagingSource<Int, ArticlesBasesStatsTable>() {
     private val pageSize = 10
     private val cachedFilteredArticles = mutableMapOf<Int, List<ArticlesBasesStatsTable>>()
@@ -395,12 +397,27 @@ class ArticlePagingSource(
         }
     }
 
-    private fun filterArticles() = if (filterText.isEmpty()) {
-        articles.filter { it.idForSearchArticles <= 0 && it.diponibilityState == ""  && !it.nomArticleFinale.contains("New")}
-    } else {
-        articles.filter { article ->
-            article.nomArticleFinale.contains(filterText, ignoreCase = true) ||
-                    article.idForSearchArticles > 0
+    private fun filterArticles(): List<ArticlesBasesStatsTable> {
+        return if (filterText.isEmpty()) {
+            articles.filter { article ->
+                val currentProductByCurrentClient = uiState.diviseurDeDisplayProductForEachClient.find { divis1 ->
+                    divis1.keyVid == "${currentClient?.idClientsSu}->${article.idArticle}"
+                }
+                val currentProductByClientStandard = uiState.diviseurDeDisplayProductForEachClient.find {divis2 ->
+                    divis2.keyVid == "100->${article.idArticle}"
+                }
+                val denied = currentProductByCurrentClient?.deniedFromDislplayToClient
+                    ?: currentProductByClientStandard?.deniedFromDislplayToClient
+
+                article.idForSearchArticles <= 0 &&
+                        article.diponibilityState.isEmpty() &&
+                        !article.nomArticleFinale.contains("New")
+            }
+        } else {
+            articles.filter { article ->
+                article.nomArticleFinale.contains(filterText, ignoreCase = true) ||
+                        article.idForSearchArticles > 0
+            }
         }
     }
 
@@ -409,7 +426,9 @@ class ArticlePagingSource(
 
         return try {
             val filteredArticles = cachedFilteredArticles.getOrPut(page) {
-                filterArticles().drop(page * pageSize).take(pageSize)
+                filterArticles()
+                    .drop(page * pageSize)
+                    .take(pageSize)
             }
 
             LoadResult.Page(
@@ -420,10 +439,14 @@ class ArticlePagingSource(
         } catch (e: Exception) {
             LoadResult.Error(e)
         } finally {
-            // Clear cache for pages that are no longer needed
-            cachedFilteredArticles.keys
-                .filter { it < page - 1 || it > page + 1 }
-                .forEach { cachedFilteredArticles.remove(it) }
+            // Clean up cache to prevent memory leaks
+            cleanupCache(page)
         }
+    }
+
+    private fun cleanupCache(currentPage: Int) {
+        cachedFilteredArticles.keys
+            .filter { it < currentPage - 1 || it > currentPage + 1 }
+            .forEach { cachedFilteredArticles.remove(it) }
     }
 }

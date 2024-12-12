@@ -140,7 +140,11 @@ fun ArticleGrid(
                                 it.nomCategorie == category.nomCategorieInCategoriesTabele && !it.itsNewArrivale
                             }
                     },
-                    filterText = filterText
+                    filterText = filterText,
+                    currentClient=currentClient,
+                    uiState=uiState
+
+
                 ).also { source ->
                     Log.d(TAG, "Created PagingSource for ${category.nomCategorieInCategoriesTabele}")
                 }
@@ -233,7 +237,7 @@ fun ArticleGrid(
                             val switcher = currentProductByCurrentClient?.itsBigImage
                                 ?: currentProductByClientStandard?.itsBigImage
 
-                            if (switcher == true) {
+                            if (article?.diponibilityState !="") {
                                 StaggeredGridItemSpan.FullLine
                             } else {
                                 StaggeredGridItemSpan.SingleLane

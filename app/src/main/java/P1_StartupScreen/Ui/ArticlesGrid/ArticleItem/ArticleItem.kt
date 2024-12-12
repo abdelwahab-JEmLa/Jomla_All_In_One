@@ -71,9 +71,9 @@ fun ArticleItem(
             ?: currentProductByClientStandard?.itsBigImage
 
         val layout = when {
-            switcher == true && colorCount == 1 -> ArticleLayout.DemiUno
-            switcher == true && colorCount == 2 -> ArticleLayout.DemiDual
-            switcher == true && colorCount > 2 -> ArticleLayout.DemiMulti
+            article.diponibilityState !="" && colorCount == 1 -> ArticleLayout.DemiUno
+            article.diponibilityState !="" && colorCount == 2 -> ArticleLayout.DemiDual
+            article.diponibilityState !="" && colorCount > 2 -> ArticleLayout.DemiMulti
             colorCount == 1 -> ArticleLayout.SmallUno
             colorCount == 2 -> ArticleLayout.SmallDual
             colorCount > 2 -> ArticleLayout.SmallMulti
