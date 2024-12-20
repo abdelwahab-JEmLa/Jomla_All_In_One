@@ -3,7 +3,6 @@ package a_RoomDB
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-
 @Entity
 data class ArticlesBasesStatsTable(
     @PrimaryKey var idArticle: Int = 0,
