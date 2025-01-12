@@ -1,4 +1,4 @@
-package P1_StartupScreen.Main.FloatingActionButtonGroup
+package Packages.Z_F1._ArticlesFacade.FloatingActionButtonGroup
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

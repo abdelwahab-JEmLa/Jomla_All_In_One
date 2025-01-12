@@ -1,6 +1,6 @@
-package P1_StartupScreen.Ui.ArticlesGrid
+package Packages.Z_F1.Ui.ArticlesGrid
 
-import P1_StartupScreen.Ui.ArticlesGrid.ArticleItem.ColorOverlay
+import Packages.Z_F1.Ui.ArticlesGrid.ArticleItem.ColorOverlay
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ColorsArticlesTabelle
 import android.graphics.drawable.Drawable

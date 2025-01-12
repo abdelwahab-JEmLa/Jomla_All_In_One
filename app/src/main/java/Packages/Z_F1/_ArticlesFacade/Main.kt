@@ -1,9 +1,9 @@
-package P1_StartupScreen.Main
+package Packages.Z_F1._ArticlesFacade
 
 import P0_MainScreen.Ui.Objects.LoadingOverlay
-import P1_StartupScreen.Main.FloatingActionButtonGroup.FloatingActionButtonGroup
-import P1_StartupScreen.Ui.ArticlesGrid.ArticleGridWithScrollbar
-import P1_StartupScreen.Ui.Objects.SearchFilterPB
+import Packages.Z_F1._ArticlesFacade.FloatingActionButtonGroup.FloatingActionButtonGroup
+import Packages.Z_F1.Ui.ArticlesGrid.ArticleGridWithScrollbar
+import Packages.Z_F1.Ui.Objects.SearchFilterPB
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ClientsModel
 import android.util.Log
@@ -292,7 +292,8 @@ private fun HandleScrollBroadcast(
         }
             .distinctUntilChanged()
             .collect { (position, offset) ->
-                Log.d(TAG, """
+                Log.d(
+                    TAG, """
                 Scroll Update:
                 - Position: $position
                 - Offset: $offset

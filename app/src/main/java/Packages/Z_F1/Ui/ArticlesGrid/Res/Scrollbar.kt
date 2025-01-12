@@ -1,4 +1,4 @@
-package P1_StartupScreen.Ui.ArticlesGrid.Res
+package Packages.Z_F1.Ui.ArticlesGrid.Res
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background

@@ -1,4 +1,4 @@
-package P1_StartupScreen.Ui.Objects
+package Packages.Z_F1.Ui.Objects
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.horizontalScroll

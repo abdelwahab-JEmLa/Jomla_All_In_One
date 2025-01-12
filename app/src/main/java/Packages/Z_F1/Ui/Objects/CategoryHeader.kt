@@ -1,4 +1,4 @@
-package P1_StartupScreen.Ui.Objects
+package Packages.Z_F1.Ui.Objects
 import a_RoomDB.CategoriesTabelle
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

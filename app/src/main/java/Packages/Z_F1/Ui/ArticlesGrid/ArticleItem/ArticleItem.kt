@@ -1,10 +1,10 @@
-package P1_StartupScreen.Ui.ArticlesGrid.ArticleItem
+package Packages.Z_F1.Ui.ArticlesGrid.ArticleItem
 
-import P1_StartupScreen.Ui.ArticlesGrid.ArticleLayout
-import P1_StartupScreen.Ui.ArticlesGrid.ImageDisplayer1
-import P1_StartupScreen.Ui.ArticlesGrid.checkImageExists
-import P1_StartupScreen.Ui.ArticlesGrid.countColors
-import P1_StartupScreen.Ui.ArticlesGrid.getColorIdForIndex
+import Packages.Z_F1.Ui.ArticlesGrid.ArticleLayout
+import Packages.Z_F1.Ui.ArticlesGrid.ImageDisplayer1
+import Packages.Z_F1.Ui.ArticlesGrid.checkImageExists
+import Packages.Z_F1.Ui.ArticlesGrid.countColors
+import Packages.Z_F1.Ui.ArticlesGrid.getColorIdForIndex
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ClientsModel
 import androidx.compose.foundation.clickable

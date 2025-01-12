@@ -1,10 +1,10 @@
-package P1_StartupScreen.Ui.ArticlesGrid
+package Packages.Z_F1.Ui.ArticlesGrid
 
-import P1_StartupScreen.Main.ArticlePagingSource
-import P1_StartupScreen.Ui.ArticlesGrid.ArticleItem.ArticleItem
-import P1_StartupScreen.Ui.ArticlesGrid.Res.Scrollbar
-import P1_StartupScreen.Ui.Objects.CategoryHeader
-import P1_StartupScreen.Ui.Objects.ScrolleAdBanner
+import Packages.Z_F1._ArticlesFacade.ArticlePagingSource
+import Packages.Z_F1.Ui.ArticlesGrid.ArticleItem.ArticleItem
+import Packages.Z_F1.Ui.ArticlesGrid.Res.Scrollbar
+import Packages.Z_F1.Ui.Objects.CategoryHeader
+import Packages.Z_F1.Ui.Objects.ScrolleAdBanner
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.CategoriesTabelle
 import a_RoomDB.ClientsModel
@@ -111,7 +111,8 @@ fun ArticleGrid(
 
     // Create category pagers with assembly tracking
     val categoryPagers = remember(uiState.categories, filterText) {
-        Log.d(TAG, """
+        Log.d(
+            TAG, """
             Starting Grid Assembly:
             - Total Categories: ${uiState.categories.size}
             - Filter: ${if (filterText.isEmpty()) "None" else filterText}
@@ -119,7 +120,8 @@ fun ArticleGrid(
         """.trimIndent())
 
         uiState.categories.associateWith { category ->
-            Log.d(TAG, """
+            Log.d(
+                TAG, """
                 Processing Category:
                 - Name: ${category.nomCategorieInCategoriesTabele}
                 - Articles: ${uiState.articlesBasesStatTables.count { 
@@ -173,7 +175,8 @@ fun ArticleGrid(
                 isSettled = true
 
                 // Log settled position
-                Log.d(TAG, """
+                Log.d(
+                    TAG, """
                     Scroll Settled:
                     - Index: ${scrollState.index}
                     - Previous Index: $lastSettledFirstVisible
