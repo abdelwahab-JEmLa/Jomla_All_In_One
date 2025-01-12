@@ -2,6 +2,7 @@ package com.example.clientjetpack
 
 import P0_MainScreen.Main.MainScreen
 import P6_AiGroupeForSupplier.GenerativeAiViewModel
+import Y_AppsFather.Kotlin.ViewModelInitApp
 import android.app.Application
 import android.content.Context
 import android.os.Build
@@ -40,6 +41,7 @@ class MyApplication : Application() {
 
 data class AppViewModels(
     val headViewModel: HeadViewModel,
+    val viewModelInitApp: ViewModelInitApp,
     val generativeAiViewModel: GenerativeAiViewModel,
 )
 
@@ -56,6 +58,11 @@ class ViewModelFactory(
                     context.applicationContext,
                     database,
                 ) as T
+            modelClass.isAssignableFrom(ViewModelInitApp::class.java) ->
+                HeadViewModel(
+                    context.applicationContext,
+                    database,
+                ) as T
             modelClass.isAssignableFrom(GenerativeAiViewModel::class.java) ->
                 GenerativeAiViewModel() as T
             else -> throw IllegalArgumentException("Unknown ViewModel: ${modelClass.name}")
@@ -68,11 +75,13 @@ class MainActivity : ComponentActivity() {
     private val permissionHandler by lazy { PermissionHandler(this) }
     private val viewModelFactory by lazy { ViewModelFactory(applicationContext, database) }
     private val headViewModel: HeadViewModel by viewModels { viewModelFactory }
+    private val viewModelInitApp: ViewModelInitApp by viewModels { viewModelFactory }
     private val generativeAiViewModel: GenerativeAiViewModel by viewModels { viewModelFactory }
 
     private val appViewModels by lazy {
         AppViewModels(
             headViewModel = headViewModel,
+            viewModelInitApp = viewModelInitApp,
             generativeAiViewModel = generativeAiViewModel,
         )
     }

@@ -1,11 +1,12 @@
 package P0_MainScreen.Ui.Main.AppNavHost
 
 import P0_MainScreen.Ui.Objects.LoadingOverlay
-import Packages.P1._ArticlesStartFacade.FragmentStartupScreen
-import Packages.Z_P3._DisplayProductInfosToSeller.P3DisplayeProductInfosToSeller
 import P4_SoldCartScreen.SoldCartScreen
 import P5_DialogeClientsEditer.ClientSelectionDialog
 import P6_AiGroupeForSupplier.GenerativeAiScreen
+import Packages.P1._ArticlesStartFacade.FragmentStartupScreen
+import Packages.Z_P3._DisplayProductInfosToSeller.P3DisplayeProductInfosToSeller
+import Y_AppsFather.Kotlin.ViewModelInitApp
 import a_RoomDB.ArticlesBasesStatsTable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,7 +36,7 @@ fun AppNavHost(
     isFabVisible: Boolean,
     onClickDonne: () -> Unit,
     onClickToDisplayeConexionWifi: () -> Unit,
-    onToggleLockHost: () -> Unit
+    onToggleLockHost: () -> Unit, viewModelInitApp: ViewModelInitApp
 ) {
     val uiState by appViewModels.headViewModel.uiState.collectAsState()
 
@@ -173,6 +174,7 @@ fun AppNavHost(
                 },
                 reloadTrigger = reloadTrigger, lockExpandedPrices = lockExpandedPrices,
                 onToggleLockExpandedPricex = { lockExpandedPrices =!lockExpandedPrices },
+                viewModelInitApp = viewModelInitApp,
             )
         }
     }

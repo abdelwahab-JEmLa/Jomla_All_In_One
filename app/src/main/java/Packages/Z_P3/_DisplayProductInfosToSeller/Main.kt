@@ -5,6 +5,7 @@ import Packages.Z_P3.Ui.Main.Details
 import Packages.Z_P3.Ui.Objects.ActionsButtonRow
 import Packages.Z_P3.Ui.Objects.ProductNameSection3
 import Packages.Z_P3.Ui.Objects.confirmExitDialog
+import Y_AppsFather.Kotlin.ViewModelInitApp
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ColorsArticlesTabelle
 import a_RoomDB.SoldArticlesTabelle
@@ -39,7 +40,7 @@ fun P3DisplayeProductInfosToSeller(
     onDismiss: () -> Unit,
     reloadTrigger: Int,
     modifier: Modifier = Modifier, lockExpandedPrices: Boolean,
-    onToggleLockExpandedPricex: () -> Unit,
+    onToggleLockExpandedPricex: () -> Unit, viewModelInitApp: ViewModelInitApp,
 ) {
     val currentSale by viewModel.currentSaleInWindows.collectAsState()
     val articlesBaseStats = currentSale?.let { sale ->
@@ -59,7 +60,8 @@ fun P3DisplayeProductInfosToSeller(
             reloadTrigger = reloadTrigger,
             isDetailsVisible = isDetailsVisible,
             onDismiss = onDismiss,
-            uiState = uiState, lockExpandedPrices = lockExpandedPrices, onToggleLockExpandedPricex = onToggleLockExpandedPricex
+            uiState = uiState, lockExpandedPrices = lockExpandedPrices, onToggleLockExpandedPricex = onToggleLockExpandedPricex,
+            viewModelInitApp = viewModelInitApp
         )
     }
 }
@@ -74,7 +76,7 @@ fun MainUi(
     reloadTrigger: Int,
     isDetailsVisible: Boolean,
     onDismiss: () -> Unit, uiState: UiState, lockExpandedPrices: Boolean,
-    onToggleLockExpandedPricex: () -> Unit
+    onToggleLockExpandedPricex: () -> Unit, viewModelInitApp: ViewModelInitApp
 ) {
     var showConfirmDialog by remember { mutableStateOf(false) }
     showConfirmDialog = confirmExitDialog(showConfirmDialog, viewModel, onDismiss)
@@ -105,7 +107,7 @@ fun MainUi(
                             stats = stats,
                             colorsArticlesTabelleModel = colorsArticlesTabelleModel,
                             viewModel = viewModel,
-                            reloadTrigger = reloadTrigger
+                            reloadTrigger = reloadTrigger, viewModelInitApp = viewModelInitApp
                         )
                         Details(
                             isDetailsVisible,

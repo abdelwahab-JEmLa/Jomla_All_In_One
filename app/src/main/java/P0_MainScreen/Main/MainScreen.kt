@@ -103,6 +103,7 @@ fun MainScreen(
                 Box(modifier = Modifier.weight(1f)) {
                     AppNavHost(
                         appViewModels = appViewModels,
+                        viewModelInitApp = appViewModels.viewModelInitApp,
                         navController = navController,
                         onToggleNavBar = { isNavBarVisible = !isNavBarVisible },
                         modifier = Modifier.fillMaxSize(),

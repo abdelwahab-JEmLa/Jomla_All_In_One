@@ -1,6 +1,7 @@
 package Packages.Z_P3.Ui.Main
 
 import Packages.Z_P3.Ui.Main.ColorItem3.ColorItem3
+import Y_AppsFather.Kotlin.ViewModelInitApp
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ColorsArticlesTabelle
 import a_RoomDB.SoldArticlesTabelle
@@ -38,7 +39,7 @@ fun ColorSelectionSection(
     stats: ArticlesBasesStatsTable,
     colorsArticlesTabelleModel: List<ColorsArticlesTabelle>,
     viewModel: HeadViewModel,
-    reloadTrigger: Int,
+    reloadTrigger: Int, viewModelInitApp: ViewModelInitApp,
 ) {
     var mainColorId by remember { mutableStateOf(stats.idcolor1) }
     var colorsListToEdite by remember { mutableStateOf(emptyList<ColorsArticlesTabelle>()) }
@@ -197,7 +198,8 @@ fun ColorSelectionSection(
                             reloadTrigger = reloadTrigger,
                             viewModel = viewModel,
                             height = 240.dp,
-                            updateColorToBeMain = updateMainColor
+                            updateColorToBeMain = updateMainColor,
+                            viewModelInitApp
                         )
                     }
                 }
@@ -245,7 +247,8 @@ fun ColorSelectionSection(
                                     reloadTrigger = reloadTrigger,
                                     viewModel = viewModel,
                                     height = 60.dp,
-                                    updateColorToBeMain = updateMainColor
+                                    updateColorToBeMain = updateMainColor,
+                                    viewModelInitApp
                                 )
                             }
                         }
