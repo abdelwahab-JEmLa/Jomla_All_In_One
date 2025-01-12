@@ -1,8 +1,8 @@
 package P0_MainScreen.Ui.Main.AppNavHost
 
 import P0_MainScreen.Ui.Objects.LoadingOverlay
-import Packages.Z_F1._ArticlesFacade.FragmentStartupScreen
-import P3_DisplayeProductInfosToSeller.Main.P3DisplayeProductInfosToSeller
+import Packages.P1._ArticlesStartFacade.FragmentStartupScreen
+import Packages.Z_P3._DisplayProductInfosToSeller.P3DisplayeProductInfosToSeller
 import P4_SoldCartScreen.SoldCartScreen
 import P5_DialogeClientsEditer.ClientSelectionDialog
 import P6_AiGroupeForSupplier.GenerativeAiScreen
