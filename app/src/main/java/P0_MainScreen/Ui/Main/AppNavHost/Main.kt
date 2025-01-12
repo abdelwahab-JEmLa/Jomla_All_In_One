@@ -175,6 +175,7 @@ fun AppNavHost(
                 reloadTrigger = reloadTrigger, lockExpandedPrices = lockExpandedPrices,
                 onToggleLockExpandedPricex = { lockExpandedPrices =!lockExpandedPrices },
                 viewModelInitApp = viewModelInitApp,
+                currentClient=currentClient,
             )
         }
     }

@@ -7,6 +7,7 @@ import Packages.Z_P3.Ui.Objects.ProductNameSection3
 import Packages.Z_P3.Ui.Objects.confirmExitDialog
 import Y_AppsFather.Kotlin.ViewModelInitApp
 import a_RoomDB.ArticlesBasesStatsTable
+import a_RoomDB.ClientsModel
 import a_RoomDB.ColorsArticlesTabelle
 import a_RoomDB.SoldArticlesTabelle
 import androidx.compose.foundation.layout.Box
@@ -41,6 +42,7 @@ fun P3DisplayeProductInfosToSeller(
     reloadTrigger: Int,
     modifier: Modifier = Modifier, lockExpandedPrices: Boolean,
     onToggleLockExpandedPricex: () -> Unit, viewModelInitApp: ViewModelInitApp,
+    currentClient: ClientsModel?,
 ) {
     val currentSale by viewModel.currentSaleInWindows.collectAsState()
     val articlesBaseStats = currentSale?.let { sale ->
@@ -61,7 +63,7 @@ fun P3DisplayeProductInfosToSeller(
             isDetailsVisible = isDetailsVisible,
             onDismiss = onDismiss,
             uiState = uiState, lockExpandedPrices = lockExpandedPrices, onToggleLockExpandedPricex = onToggleLockExpandedPricex,
-            viewModelInitApp = viewModelInitApp
+            viewModelInitApp = viewModelInitApp, currentClient = currentClient
         )
     }
 }
@@ -76,7 +78,8 @@ fun MainUi(
     reloadTrigger: Int,
     isDetailsVisible: Boolean,
     onDismiss: () -> Unit, uiState: UiState, lockExpandedPrices: Boolean,
-    onToggleLockExpandedPricex: () -> Unit, viewModelInitApp: ViewModelInitApp
+    onToggleLockExpandedPricex: () -> Unit, viewModelInitApp: ViewModelInitApp,
+    currentClient: ClientsModel?
 ) {
     var showConfirmDialog by remember { mutableStateOf(false) }
     showConfirmDialog = confirmExitDialog(showConfirmDialog, viewModel, onDismiss)
@@ -107,7 +110,8 @@ fun MainUi(
                             stats = stats,
                             colorsArticlesTabelleModel = colorsArticlesTabelleModel,
                             viewModel = viewModel,
-                            reloadTrigger = reloadTrigger, viewModelInitApp = viewModelInitApp
+                            reloadTrigger = reloadTrigger, viewModelInitApp = viewModelInitApp,
+                            currentClient = currentClient
                         )
                         Details(
                             isDetailsVisible,

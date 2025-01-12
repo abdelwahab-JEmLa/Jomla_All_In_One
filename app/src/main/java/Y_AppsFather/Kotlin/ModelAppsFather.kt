@@ -231,6 +231,7 @@ open class ModelAppsFather(
 
         @IgnoreExtraProperties
         class ClientBonVentModel(
+            vid: Long = 0,
             init_clientInformations: ClientInformations? = null,
             init_colours_achete: List<ColorAchatModel> = emptyList(),
         ) {
@@ -249,8 +250,8 @@ open class ModelAppsFather(
 
             @IgnoreExtraProperties
             data class ClientInformations(
-                val id: Long = 0,
-                val nom: String = "",
+                var id: Long = 0,
+                var nom: String = "",
                 val couleur: String = ""
             ) {
                 var auFilterFAB: Boolean by mutableStateOf(false)

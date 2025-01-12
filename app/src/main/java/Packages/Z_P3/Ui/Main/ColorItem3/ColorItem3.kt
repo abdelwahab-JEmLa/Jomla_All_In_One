@@ -2,6 +2,7 @@ package Packages.Z_P3.Ui.Main.ColorItem3
 import Packages.Z_P3.Ui.Objects.ImageDisplayer3
 import Y_AppsFather.Kotlin.ViewModelInitApp
 import a_RoomDB.ArticlesBasesStatsTable
+import a_RoomDB.ClientsModel
 import a_RoomDB.ColorsArticlesTabelle
 import a_RoomDB.SoldArticlesTabelle
 import androidx.compose.animation.core.animateFloatAsState
@@ -53,7 +54,7 @@ fun ColorItem3(
     viewModel: HeadViewModel,
     height: Dp,
     updateColorToBeMain: (Long) -> Unit,
-    viewModelInitApp: ViewModelInitApp,
+    viewModelInitApp: ViewModelInitApp, currentClient: ClientsModel?,
 ) {
     var showDialog by remember { mutableStateOf(false) }
     var isSelected by remember { mutableStateOf(false) }
@@ -163,6 +164,8 @@ fun ColorItem3(
     // Enhanced dialog with improved quantity validation
     if (showDialog && color != null) {
         ColorSelectionDialog(
+            currentSale=currentSale,
+            viewModelInitApp=viewModelInitApp,
             onDismiss = {
                 showDialog = false
                 isSelected = false
@@ -172,9 +175,7 @@ fun ColorItem3(
             onQuantitySelected = { newQuantity ->
                 // Validate quantity before updating
                     viewModel.updateColorSelection(color.idColore, newQuantity)
-                currentSale
 
-                    viewModelInitApp._modelAppsFather.produitsMainDataBase.add()
 
                     // Update scroll position for sub-colors
                     viewModel.sendOrderToClientDisplayer(
@@ -193,7 +194,7 @@ fun ColorItem3(
 
                 showDialog = false
                 isSelected = false
-            }
+            }, currentClient = currentClient
         )
     }
 }

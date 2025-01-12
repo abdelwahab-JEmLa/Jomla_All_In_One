@@ -1,4 +1,8 @@
-package Packages.Z_P3.Ui.Main.ColorItem3
+package Packages.Z_P3.Ui.M ain.ColorItem3
+import Y_AppsFather.Kotlin.ModelAppsFather
+import Y_AppsFather.Kotlin.ViewModelInitApp
+import a_RoomDB.ClientsModel
+import a_RoomDB.SoldArticlesTabelle
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,7 +37,9 @@ import androidx.compose.ui.window.Dialog
     onDismiss: () -> Unit,
     currentQuantity: Int,
     colorName: String,
-    onQuantitySelected: (Int) -> Unit
+    onQuantitySelected: (Int) -> Unit,
+    currentSale: SoldArticlesTabelle?,
+    viewModelInitApp: ViewModelInitApp, currentClient: ClientsModel?
 ) {
     Dialog(onDismissRequest = onDismiss) {
         Card(
@@ -76,7 +82,10 @@ import androidx.compose.ui.window.Dialog
                     onQuantitySelected = { quantity ->
                         onQuantitySelected(quantity)
                         onDismiss()
-                    }
+                    },
+                    currentSale =currentSale,
+                    viewModelInitApp =viewModelInitApp,
+                    currentClient
                 )
             }
         }
@@ -86,7 +95,10 @@ import androidx.compose.ui.window.Dialog
 @Composable
 private fun QuantityGrid(
     currentQuantity: Int,
-    onQuantitySelected: (Int) -> Unit
+    onQuantitySelected: (Int) -> Unit,
+    currentSale: SoldArticlesTabelle?,
+    viewModelInitApp: ViewModelInitApp,
+    currentClient: ClientsModel?
 ) {
     val quantities = remember {
         listOf(0,1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11,12,13,14, 15, 20, 21, 22, 23,24, 25, 30, 40, 50)
@@ -104,7 +116,30 @@ private fun QuantityGrid(
             QuantityButton(
                 quantity = quantity,
                 isSelected = quantity == currentQuantity,
-                onClick = { onQuantitySelected(quantity) }
+                onClick = {
+                    onQuantitySelected(quantity)
+                    currentSale
+                    val neveauAchate= ModelAppsFather.ProduitModel.ClientBonVentModel(
+                         vid = 1,
+                    ).apply {
+                        if (currentClient != null) {
+                            clientInformations?.id=currentClient.vidSu
+                            clientInformations?.nom =currentClient.nomClientsSu
+                        }
+                        colours_Achete.add(
+                            ModelAppsFather.ProduitModel.ClientBonVentModel.ColorAchatModel(
+                               quantity_Achete = quantity
+                            )
+                        )
+                    }
+                    if (currentSale != null) {
+                        viewModelInitApp._modelAppsFather
+                            .produitsMainDataBase.find { it.id==currentSale.vid }
+                            .apply {pro->
+                                pro.  = neveauAchate
+                            }
+                    }
+                }
             )
         }
     }
