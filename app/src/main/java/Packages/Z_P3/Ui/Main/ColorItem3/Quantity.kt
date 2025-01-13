@@ -65,7 +65,7 @@ fun QuantityButton(
                 colorDetails?.let { color ->
                     colours_Achete.add(
                         _ModelAppsFather.ProduitModel.ClientBonVentModel.ColorAchatModel(
-                            vidPosition = color.idColore,
+                            couleurId = color.idColore,
                             nom = color.nameColore,
                             quantity_Achete = quantity,
                             imogi = color.iconColore
@@ -90,11 +90,11 @@ fun QuantityButton(
                                 val updatedSale = existingSale.apply {
                                     // Update existing color or add new one
                                     val colorIndex = colours_Achete.indexOfFirst {
-                                        it.nom == colorDetails?.nameColore
+                                        it.couleurId == colorDetails?.idColore
                                     }
                                     if (colorIndex != -1) {
                                         colours_Achete[colorIndex] = _ModelAppsFather.ProduitModel.ClientBonVentModel.ColorAchatModel(
-                                            vidPosition = colours_Achete[colorIndex].vidPosition,
+                                            couleurId = colorDetails?.idColore?: 0,
                                             nom = colorDetails?.nameColore ?: "",
                                             quantity_Achete = quantity,
                                             imogi = colorDetails?.iconColore ?: ""
@@ -102,7 +102,7 @@ fun QuantityButton(
                                     } else {
                                         colours_Achete.add(
                                             _ModelAppsFather.ProduitModel.ClientBonVentModel.ColorAchatModel(
-                                                vidPosition =colorDetails?.idColore ?: 0,
+                                                couleurId =colorDetails?.idColore ?: 0,
                                                 nom = colorDetails?.nameColore ?: "",
                                                 quantity_Achete = quantity,
                                                 imogi = colorDetails?.iconColore ?: ""

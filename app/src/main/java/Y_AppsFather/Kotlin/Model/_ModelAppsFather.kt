@@ -201,16 +201,16 @@ open class _ModelAppsFather(
 
                                     produit.bonsVentDeCetteCota
                                         .flatMap { it.colours_Achete }
-                                        .groupBy { it.nom }
-                                        .forEach { (colorName, colorList) ->
-                                            Log.d("CalculeSelf", "Processing color: $colorName")
+                                        .groupBy { it.couleurId }
+                                        .forEach { (couleurId, colorList) ->
+                                            Log.d("CalculeSelf", "Processing color: $couleurId")
 
                                             colorList.firstOrNull()?.let { firstColor ->
                                                 val totalQuantity = colorList.sumOf { it.quantity_Achete }
 
                                                 val newCommendee = ColoursGoutsCommendee(
-                                                    id = firstColor.vidPosition,
-                                                    nom = colorName,
+                                                    id = couleurId,
+                                                    nom = firstColor.nom,
                                                     emoji = firstColor.imogi
                                                 ).apply {
                                                     quantityAchete = totalQuantity
@@ -218,7 +218,7 @@ open class _ModelAppsFather(
 
                                                 if (newCommendee.quantityAchete > 0) {
                                                     processedColors.add(newCommendee)
-                                                    Log.d("CalculeSelf", "Added to processed colors: $colorName, quantity: $totalQuantity")
+                                                    Log.d("CalculeSelf", "Added to processed colors: $couleurId, quantity: $totalQuantity")
                                                 }
                                             }
                                         }
@@ -329,6 +329,7 @@ open class _ModelAppsFather(
             @IgnoreExtraProperties
             class ColorAchatModel(
                 var vidPosition: Long = 0,
+                var couleurId: Long = 0,
                 var nom: String = "",
                 var quantity_Achete: Int = 0,
                 var imogi: String = ""
@@ -434,9 +435,6 @@ open class _ModelAppsFather(
                 }
             }
         }
-
-
-
 
         fun updateProduit(
             product: ProduitModel,
