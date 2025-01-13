@@ -584,6 +584,7 @@ open class HeadViewModel(
 
                     if (totalQuantity == 0) {
                         deleteSoldArticle(updatedSale.vid)
+
                     } else {
                         _currentSaleInWindows.value = updatedSale
                     }

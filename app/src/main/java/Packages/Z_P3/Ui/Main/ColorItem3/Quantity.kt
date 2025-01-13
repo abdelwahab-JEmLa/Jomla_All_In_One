@@ -87,7 +87,7 @@ private fun handleQuantitySelection(
 
         // Get or create sale
         val existingSaleIndex = product.bonsVentDeCetteCota
-            .indexOfFirst { it.clientInformations?.id == currentClient?.vidSu }
+            .indexOfFirst { it.clientInformations?.id == currentClient?.idClientsSu }
 
         if (existingSaleIndex != -1) {
             // Update existing sale
@@ -107,7 +107,7 @@ private fun handleQuantitySelection(
             ).apply {
                 clientInformations = currentClient?.let {
                     _ModelAppsFather.ProduitModel.ClientBonVentModel.ClientInformations(
-                        id = it.vidSu,
+                        id = it.idClientsSu,
                         nom = it.nomClientsSu,
                         couleur = it.couleurSu
                     ).apply {
@@ -120,10 +120,7 @@ private fun handleQuantitySelection(
             product.bonsVentDeCetteCota.add(newSale)
         }
 
-        // Update Firebase and recalculate
         _ModelAppsFather.updateProduit(product, viewModelInitApp)
-      //  _ModelAppsFather.ProduitModel.GrossistBonCommandes.calculeSelf(viewModelInitApp, product)
-
     } catch (e: Exception) {
         Log.e("QuantityButton", "Error updating sale", e)
     }
