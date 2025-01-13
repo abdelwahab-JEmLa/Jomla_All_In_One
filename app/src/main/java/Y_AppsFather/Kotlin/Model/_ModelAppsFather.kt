@@ -26,46 +26,6 @@ open class _ModelAppsFather(
     var produitsMainDataBase: SnapshotStateList<ProduitModel> =
         initial_Produits_Main_DataBase.toMutableStateList()
 
-    val groupedProductsPatGrossist: List<Pair<ProduitModel.GrossistBonCommandes.GrossistInformations, List<ProduitModel>>>
-        get() = produitsMainDataBase
-            .mapNotNull { product ->
-                product.bonCommendDeCetteCota?.grossistInformations?.let { grossistInfo ->
-                    grossistInfo to product
-                }
-            }
-            .groupBy(
-                keySelector = { it.first },
-                valueTransform = { it.second }
-            )
-            .toList()
-            .sortedBy { (grossist, _) ->
-                grossist.positionInGrossistsList
-            }
-
-    val groupedProductsParClients: List<Pair<ProduitModel.ClientBonVentModel.ClientInformations, List<ProduitModel>>>
-        get() = produitsMainDataBase
-            .asSequence()
-            .filter { product ->
-                product.bonsVentDeCetteCota.isNotEmpty() &&
-                        product.bonsVentDeCetteCota.any { it.clientInformations != null }
-            }
-            .flatMap { product ->
-                product.bonsVentDeCetteCota.mapNotNull { bonVent ->
-                    bonVent.clientInformations?.let { clientInfo ->
-                        clientInfo to product
-                    }
-                }
-            }
-            .groupBy(
-                keySelector = { it.first },
-                valueTransform = { it.second }
-            )
-            .toList()
-            .sortedBy { (client, _) ->
-                client.positionDonClientsList
-            }
-            .toList()
-
     @IgnoreExtraProperties
     class ProduitModel(
         var id: Long = 0,
@@ -177,12 +137,6 @@ open class _ModelAppsFather(
             var coloursEtGoutsCommendee: SnapshotStateList<ColoursGoutsCommendee> =
                 init_coloursEtGoutsCommendee.toMutableStateList()
 
-            var coloursEtGoutsCommendeList: List<ColoursGoutsCommendee>
-                get() = coloursEtGoutsCommendee.toList()
-                set(value) {
-                    coloursEtGoutsCommendee.clear()
-                    coloursEtGoutsCommendee.addAll(value)
-                }
 
             @IgnoreExtraProperties
             data class GrossistInformations(
@@ -193,29 +147,6 @@ open class _ModelAppsFather(
                 var auFilterFAB: Boolean by mutableStateOf(false)
                 var positionInGrossistsList: Int
                         by mutableIntStateOf(0)
-
-                override fun equals(other: Any?): Boolean {
-                    if (this === other) return true
-                    if (other !is GrossistInformations) return false
-                    return id == other.id &&
-                            nom == other.nom &&
-                            couleur == other.couleur
-                }
-
-                override fun hashCode(): Int {
-                    return Objects.hash(id, nom, couleur)
-                }
-
-                companion object {
-                    fun produitGroupeurParGrossistInfos(
-                        produitsMainDataBase: List<ProduitModel>
-                    ): List<Pair<GrossistInformations, List<ProduitModel>>> {
-                        return produitsMainDataBase
-                            .filter { it.bonCommendDeCetteCota?.grossistInformations != null }
-                            .groupBy { it.bonCommendDeCetteCota!!.grossistInformations!! }
-                            .toList()
-                    }
-                }
             }
 
             @IgnoreExtraProperties
@@ -227,6 +158,7 @@ open class _ModelAppsFather(
             ) {
                 var quantityAchete: Int by mutableIntStateOf(init_quantityAchete)
             }
+
         }
 
         @IgnoreExtraProperties

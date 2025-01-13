@@ -1,5 +1,6 @@
-package Y_AppsFather.Kotlin.Model
+package Y_AppsFather.Kotlin.Model.Res
 
+import Y_AppsFather.Kotlin.Model._ModelAppsFather
 import Y_AppsFather.Kotlin.Model._ModelAppsFather.ProduitModel
 import Y_AppsFather.Kotlin.Model._ModelAppsFather.ProduitModel.GrossistBonCommandes.GrossistInformations
 
