@@ -2,8 +2,6 @@ package com.example.Z_AppsFather.Kotlin._3.Init
 
 import Y_AppsFather.Kotlin.ModelAppsFather
 import Y_AppsFather.Kotlin.ModelAppsFather.Companion.UpdateFireBase
-import Y_AppsFather.Kotlin.ViewModelInitApp
-import com.example.Z_AppsFather.Kotlin._1.Model.Parent.AncienResourcesDataBaseMain
 import com.example.Z_AppsFather.Kotlin._3.Init.Z.Parent.GetAncienDataBasesMain
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -44,30 +42,9 @@ private fun distributeQuantitiesAmongGrossists(
     }
 }
 
-suspend fun initializer(
-    viewModelProduits: ViewModelInitApp,
-    _appsHeadModel: ModelAppsFather,
-    initializationProgress: Float,
-    onInitProgress: () -> (Int, AncienResourcesDataBaseMain) -> Unit
-) {
-    val NOMBRE_ENTRE = 100
-
-    if (NOMBRE_ENTRE == 0) {
-        LoadFromFirebaseHandler
-            .loadFromFirebase(viewModelProduits)
-    } else {
-        CreeNewStart(
-            _appsHeadModel,
-            NOMBRE_ENTRE,
-            onInitProgress(),
-        )
-    }
-}
-
 suspend fun CreeNewStart(
     _appsHeadModel: ModelAppsFather,
     NOMBRE_ENTRE: Int,
-    onInitProgress: (Int, AncienResourcesDataBaseMain) -> Unit
 ) {
     try {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
@@ -218,7 +195,6 @@ suspend fun CreeNewStart(
 
             // Add product to main database
             _appsHeadModel.produitsMainDataBase.add(depuitAncienDataBase)
-            onInitProgress(index, ancienData)
         }
 
         // Clear and update Firebase database

@@ -1,9 +1,9 @@
 package com.example.Z_AppsFather.Kotlin._3.Init
 
-import androidx.compose.runtime.toMutableStateList
 import Y_AppsFather.Kotlin.ModelAppsFather
 import Y_AppsFather.Kotlin.ModelAppsFather.ProduitModel
 import Y_AppsFather.Kotlin.ViewModelInitApp
+import androidx.compose.runtime.toMutableStateList
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.GenericTypeIndicator
@@ -80,19 +80,19 @@ object LoadFromFirebaseHandler {
                     historiqueBonsCommendList = it
                 }
 
-                snapshot.child("bonCommendDeCetteCota").let { bonCommendSnapshot ->
-                    if (bonCommendSnapshot.exists()) {
-                        bonCommendDeCetteCota = bonCommendSnapshot.getValue(ProduitModel.GrossistBonCommandes::class.java)?.apply {
-                            grossistInformations = snapshot.child("bonCommendDeCetteCota/grossistInformations")
-                                .getValue(ProduitModel.GrossistBonCommandes.GrossistInformations::class.java)
-
-                            parseList<ProduitModel.GrossistBonCommandes.ColoursGoutsCommendee>(
-                                "coloursEtGoutsCommendeeList",
-                                bonCommendSnapshot
-                            ) { coloursEtGoutsCommendeList = it }
-                        }
-                    }
-                }
+//                snapshot.child("bonCommendDeCetteCota").let { bonCommendSnapshot ->
+//                    if (bonCommendSnapshot.exists()) {
+//                        bonCommendDeCetteCota = bonCommendSnapshot.getValue(ProduitModel.GrossistBonCommandes::class.java)?.apply {
+//                            grossistInformations = snapshot.child("bonCommendDeCetteCota/grossistInformations")
+//                                .getValue(ProduitModel.GrossistBonCommandes.GrossistInformations::class.java)
+//
+//                            parseList<ProduitModel.GrossistBonCommandes.ColoursGoutsCommendee>(
+//                                "coloursEtGoutsCommendeeList",
+//                                bonCommendSnapshot
+//                            ) { coloursEtGoutsCommendeList = it }
+//                        }
+//                    }
+//                }
             }
         } catch (e: Exception) {
             null

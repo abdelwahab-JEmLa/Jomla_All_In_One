@@ -2,6 +2,7 @@ package Y_AppsFather.Kotlin
 
 import Y_AppsFather.Kotlin.ModelAppsFather.Companion.produitsFireBaseRef
 import Y_AppsFather.Kotlin.ModelAppsFather.ProduitModel
+import Y_AppsFather.Z_AppsFather.Kotlin._3.Init.calculateurOktapuluse
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -12,7 +13,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.Z_AppsFather.Kotlin._1.Model.ParamatersAppsModel
-import com.example.Z_AppsFather.Kotlin._3.Init.initializer
+import com.example.Z_AppsFather.Kotlin._3.Init.CreeNewStart
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -58,12 +59,18 @@ class ViewModelInitApp : ViewModel() {
         viewModelScope.launch {
             try {
                 isInitializing = true
-                initializer(this@ViewModelInitApp,_modelAppsFather, initializationProgress) {
-                    { index, ancienData ->
-                        initializationProgress =
-                            0.1f + (0.8f * (index + 1) / ancienData.produitsDatabase.size)
-                    }
+                
+                val NOMBRE_ENTRE = 0
+
+                if (NOMBRE_ENTRE == 0) {
+                    calculateurOktapuluse(this@ViewModelInitApp)
+                } else {
+                    CreeNewStart(
+                        _modelAppsFather,
+                        NOMBRE_ENTRE,
+                    )
                 }
+               
                 updateProduitsAvecBonsGrossist()
                 setupDataListeners()
                 initializationComplete = true
