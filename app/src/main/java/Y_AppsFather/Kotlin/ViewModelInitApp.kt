@@ -3,6 +3,7 @@ package Y_AppsFather.Kotlin
 import Y_AppsFather.Kotlin.Model._ModelAppsFather
 import Y_AppsFather.Kotlin.Model._ModelAppsFather.Companion.produitsFireBaseRef
 import Y_AppsFather.Kotlin.Model._ModelAppsFather.ProduitModel
+import Y_AppsFather.Kotlin.Model._ModelAppsFather.ProduitModel.GrossistBonCommandes.Companion.observeProductUpdates
 import Y_AppsFather.Z_AppsFather.Kotlin._3.Init.calculateurOktapuluse
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -19,6 +20,9 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class ViewModelInitApp : ViewModel() {
@@ -30,9 +34,11 @@ class ViewModelInitApp : ViewModel() {
 
     var _produitsAvecBonsGrossist = mutableStateListOf<ProduitModel>()
     val produitsAvecBonsGrossist: List<ProduitModel> get() = _produitsAvecBonsGrossist
+
     // Add this getter for when we need the mutable list
     val produitsAvecBonsGrossistMutable: SnapshotStateList<ProduitModel> get() = _produitsAvecBonsGrossist
-
+    private val _productFlow = MutableStateFlow<Map<Long, ProduitModel>>(emptyMap())
+    val productFlow: StateFlow<Map<Long, ProduitModel>> = _productFlow.asStateFlow()
 
     fun updateProduitsAvecBonsGrossist() {
         _produitsAvecBonsGrossist.clear()
@@ -58,8 +64,8 @@ class ViewModelInitApp : ViewModel() {
         viewModelScope.launch {
             try {
                 this@ViewModelInitApp.isLoading = true
-                
-                val NOMBRE_ENTRE = 1000
+
+                val NOMBRE_ENTRE = 0
 
                 if (NOMBRE_ENTRE == 0) {
                     calculateurOktapuluse(this@ViewModelInitApp)
@@ -69,9 +75,10 @@ class ViewModelInitApp : ViewModel() {
                         NOMBRE_ENTRE,
                     )
                 }
-               
                 updateProduitsAvecBonsGrossist()
                 setupDataListeners()
+                // In ViewModelInitApp.kt, replace the problematic line with:
+                observeProductUpdates(viewModelScope, this@ViewModelInitApp)
                 initializationComplete = true
             } catch (e: Exception) {
                 Log.e("ViewModelInitApp", "Initialization failed", e)
@@ -82,26 +89,66 @@ class ViewModelInitApp : ViewModel() {
             }
         }
     }
+
     private fun setupDataListeners() {
-        produitsFireBaseRef.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                viewModelScope.launch {
-                    snapshot.children.forEach { child ->
-                        child.getValue(ProduitModel::class.java)
-                            ?.let { updatedProduct ->
-                                val index = _modelAppsFather.produitsMainDataBase.indexOfFirst { it.id == updatedProduct.id }
-                                if (index != -1) {
-                                    _modelAppsFather.produitsMainDataBase[index] = updatedProduct
-                                    updateProduitsAvecBonsGrossist()
+        viewModelScope.launch {
+            _modelAppsFather.produitsMainDataBase.forEach { produit ->
+                produitsFireBaseRef.child(produit.id.toString())
+                    .child("bonsVentDeCettaCota")
+                    .addValueEventListener(object : ValueEventListener {
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            viewModelScope.launch {
+                                try {
+                                    val updatedBonsVent = snapshot.children.mapNotNull { child ->
+                                        child.getValue(ProduitModel.ClientBonVentModel::class.java)
+                                    }
+
+                                    val index =
+                                        _modelAppsFather.produitsMainDataBase.indexOfFirst { it.id == produit.id }
+                                    if (index != -1) {
+                                        val updatedProduct =
+                                            _modelAppsFather.produitsMainDataBase[index].apply {
+                                                bonsVentDeCetteCota.clear()
+                                                bonsVentDeCetteCota.addAll(updatedBonsVent)
+                                            }
+
+                                        // Emit the single updated product
+                                        _productFlow.value =
+                                            mapOf(updatedProduct.id to updatedProduct)
+
+                                        updateProduitsAvecBonsGrossist()
+                                    }
+                                } catch (e: Exception) {
+                                    Log.e(
+                                        "ViewModelInitApp",
+                                        "Error updating bonsVentDeCetteCota for product ${produit.id}",
+                                        e
+                                    )
                                 }
                             }
-                    }
-                }
-            }
+                        }
 
-            override fun onCancelled(error: DatabaseError) {
-                Log.e("ViewModelInitApp", "Firebase listener cancelled", error.toException())
+                        override fun onCancelled(error: DatabaseError) {
+                            Log.e(
+                                "ViewModelInitApp",
+                                "Firebase bonsVentDeCetteCota listener cancelled for product ${produit.id}",
+                                error.toException()
+                            )
+                        }
+                    })
             }
+        }
+    }
+
+    // Clean up when ViewModel is cleared
+    override fun onCleared() {
+        super.onCleared()
+        viewModelScope.launch {
+            _productFlow.value = emptyMap()
+        }
+        produitsFireBaseRef.removeEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {}
+            override fun onCancelled(error: DatabaseError) {}
         })
     }
 }

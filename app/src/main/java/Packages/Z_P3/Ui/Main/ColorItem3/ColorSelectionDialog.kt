@@ -1,6 +1,5 @@
 package Packages.Z_P3.Ui.Main.ColorItem3
 
-import Y_AppsFather.Kotlin.Model._ModelAppsFather
 import Y_AppsFather.Kotlin.ViewModelInitApp
 import a_RoomDB.ClientsModel
 import a_RoomDB.ColorsArticlesTabelle
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -18,8 +16,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -29,9 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 
 @Composable
@@ -42,7 +36,7 @@ import androidx.compose.ui.window.Dialog
     onQuantitySelected: (Int) -> Unit,
     currentSale: SoldArticlesTabelle?,
     viewModelInitApp: ViewModelInitApp, currentClient: ClientsModel?, indexColoreAcheter: Int,
-     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>
+    colorsArticlesTabelleModele: List<ColorsArticlesTabelle>
 ) {
     Dialog(onDismissRequest = onDismiss) {
         Card(
@@ -133,96 +127,3 @@ private fun QuantityGrid(
     }
 }
 
-@Composable
-private fun QuantityButton(
-    quantity: Int,
-    isSelected: Boolean,
-    onClick: () -> Unit,
-    currentSale: SoldArticlesTabelle?,
-    viewModelInitApp: ViewModelInitApp,
-    currentClient: ClientsModel?,
-    indexColoreAcheter: Int,
-    colorsArticlesTabelleModele: List<ColorsArticlesTabelle>
-) {
-    Button(
-        onClick = {
-            onClick()
-            // Find the current color based on index
-            val currentColorId = when (indexColoreAcheter) {
-                0 -> currentSale?.color1IdPicked
-                1 -> currentSale?.color2IdPicked
-                2 -> currentSale?.color3IdPicked
-                3 -> currentSale?.color4IdPicked
-                else -> null
-            }
-
-            // Find the corresponding color details
-            val colorDetails = colorsArticlesTabelleModele.find { it.idColore == currentColorId }
-
-            // Create new purchase model
-            val newPurchase = _ModelAppsFather.ProduitModel.ClientBonVentModel(
-                vid = currentSale?.vid ?: System.currentTimeMillis()
-            ).apply {
-                // Set client information if available
-                if (currentClient != null) {
-                    clientInformations = _ModelAppsFather.ProduitModel.ClientBonVentModel.ClientInformations(
-                        id = currentClient.vidSu,
-                        nom = currentClient.nomClientsSu,
-                        couleur = currentClient.couleurSu
-                    )
-                }
-
-                // Add color purchase details
-                colorDetails?.let { color ->
-                    colours_Achete.add(
-                        _ModelAppsFather.ProduitModel.ClientBonVentModel.ColorAchatModel(
-                            vidPosition = System.currentTimeMillis(),
-                            nom = color.nameColore,
-                            quantity_Achete = quantity,
-                            imogi = color.iconColore
-                        )
-                    )
-                }
-            }
-
-            // Update the database
-            if (currentSale != null) {
-                viewModelInitApp._modelAppsFather.produitsMainDataBase
-                    .find { it.id == currentSale.idArticle }?.let { product ->
-                        // Find and update existing sale or add new one
-                        val existingSaleIndex = product.bonsVentDeCetteCota.indexOfFirst {
-                            it.clientInformations?.id == currentClient?.vidSu
-                        }
-                        if (existingSaleIndex != -1) {
-                            product.bonsVentDeCetteCota[existingSaleIndex] = newPurchase
-                        } else {
-                            product.bonsVentDeCetteCota.add(newPurchase)
-                        }
-
-                        // Update Firebase
-                        _ModelAppsFather.updateProduit(product, viewModelInitApp)
-                    }
-            }
-        },
-        modifier = Modifier
-            .fillMaxWidth()
-            .aspectRatio(1f),
-        shape = RoundedCornerShape(8.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = if (isSelected)
-                MaterialTheme.colorScheme.primary
-            else
-                MaterialTheme.colorScheme.primaryContainer
-        )
-    ) {
-        Text(
-            text = quantity.toString(),
-            fontSize = 15.sp,
-            fontWeight = FontWeight.Bold,
-            color = if (isSelected)
-                MaterialTheme.colorScheme.onPrimary
-            else
-                MaterialTheme.colorScheme.onPrimaryContainer
-        )
-    }
-}

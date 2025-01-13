@@ -39,7 +39,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.example.clientjetpack.Models.UiState
 import com.example.clientjetpack.R
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import com.example.clientjetpack.ViewModel.WifiUpdateClientDisplayerStats

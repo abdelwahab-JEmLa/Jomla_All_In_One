@@ -41,7 +41,7 @@ fun ColorSelectionSection(
     colorsArticlesTabelleModel: List<ColorsArticlesTabelle>,
     viewModel: HeadViewModel,
     reloadTrigger: Int, viewModelInitApp: ViewModelInitApp, currentClient: ClientsModel?,
-     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
+    colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
 ) {
     var mainColorId by remember { mutableStateOf(stats.idcolor1) }
     var colorsListToEdite by remember { mutableStateOf(emptyList<ColorsArticlesTabelle>()) }
