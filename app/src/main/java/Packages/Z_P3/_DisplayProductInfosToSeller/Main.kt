@@ -63,7 +63,7 @@ fun P3DisplayeProductInfosToSeller(
             isDetailsVisible = isDetailsVisible,
             onDismiss = onDismiss,
             uiState = uiState, lockExpandedPrices = lockExpandedPrices, onToggleLockExpandedPricex = onToggleLockExpandedPricex,
-            viewModelInitApp = viewModelInitApp, currentClient = currentClient
+            viewModelInitApp = viewModelInitApp, currentClient = currentClient,colorsArticlesTabelleModele = viewModel._uiState.value.colorsArticlesTabelleModel
         )
     }
 }
@@ -79,7 +79,8 @@ fun MainUi(
     isDetailsVisible: Boolean,
     onDismiss: () -> Unit, uiState: UiState, lockExpandedPrices: Boolean,
     onToggleLockExpandedPricex: () -> Unit, viewModelInitApp: ViewModelInitApp,
-    currentClient: ClientsModel?
+    currentClient: ClientsModel?,
+    colorsArticlesTabelleModele: List<ColorsArticlesTabelle>
 ) {
     var showConfirmDialog by remember { mutableStateOf(false) }
     showConfirmDialog = confirmExitDialog(showConfirmDialog, viewModel, onDismiss)
@@ -111,7 +112,8 @@ fun MainUi(
                             colorsArticlesTabelleModel = colorsArticlesTabelleModel,
                             viewModel = viewModel,
                             reloadTrigger = reloadTrigger, viewModelInitApp = viewModelInitApp,
-                            currentClient = currentClient
+                            currentClient = currentClient,
+                            colorsArticlesTabelleModele = colorsArticlesTabelleModele,
                         )
                         Details(
                             isDetailsVisible,

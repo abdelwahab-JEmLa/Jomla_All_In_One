@@ -1,7 +1,9 @@
-package Packages.Z_P3.Ui.M ain.ColorItem3
+package Packages.Z_P3.Ui.Main.ColorItem3
+
 import Y_AppsFather.Kotlin.ModelAppsFather
 import Y_AppsFather.Kotlin.ViewModelInitApp
 import a_RoomDB.ClientsModel
+import a_RoomDB.ColorsArticlesTabelle
 import a_RoomDB.SoldArticlesTabelle
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -39,7 +41,8 @@ import androidx.compose.ui.window.Dialog
     colorName: String,
     onQuantitySelected: (Int) -> Unit,
     currentSale: SoldArticlesTabelle?,
-    viewModelInitApp: ViewModelInitApp, currentClient: ClientsModel?
+    viewModelInitApp: ViewModelInitApp, currentClient: ClientsModel?, indexColoreAcheter: Int,
+     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>
 ) {
     Dialog(onDismissRequest = onDismiss) {
         Card(
@@ -85,7 +88,7 @@ import androidx.compose.ui.window.Dialog
                     },
                     currentSale =currentSale,
                     viewModelInitApp =viewModelInitApp,
-                    currentClient
+                    currentClient,indexColoreAcheter,  colorsArticlesTabelleModele = colorsArticlesTabelleModele
                 )
             }
         }
@@ -98,7 +101,9 @@ private fun QuantityGrid(
     onQuantitySelected: (Int) -> Unit,
     currentSale: SoldArticlesTabelle?,
     viewModelInitApp: ViewModelInitApp,
-    currentClient: ClientsModel?
+    currentClient: ClientsModel?,
+    indexColoreAcheter: Int,
+    colorsArticlesTabelleModele: List<ColorsArticlesTabelle>
 ) {
     val quantities = remember {
         listOf(0,1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11,12,13,14, 15, 20, 21, 22, 23,24, 25, 30, 40, 50)
@@ -118,28 +123,11 @@ private fun QuantityGrid(
                 isSelected = quantity == currentQuantity,
                 onClick = {
                     onQuantitySelected(quantity)
-                    currentSale
-                    val neveauAchate= ModelAppsFather.ProduitModel.ClientBonVentModel(
-                         vid = 1,
-                    ).apply {
-                        if (currentClient != null) {
-                            clientInformations?.id=currentClient.vidSu
-                            clientInformations?.nom =currentClient.nomClientsSu
-                        }
-                        colours_Achete.add(
-                            ModelAppsFather.ProduitModel.ClientBonVentModel.ColorAchatModel(
-                               quantity_Achete = quantity
-                            )
-                        )
-                    }
-                    if (currentSale != null) {
-                        viewModelInitApp._modelAppsFather
-                            .produitsMainDataBase.find { it.id==currentSale.vid }
-                            .apply {pro->
-                                pro.  = neveauAchate
-                            }
-                    }
-                }
+
+                },
+                currentSale,
+                viewModelInitApp,
+                currentClient, indexColoreAcheter,  colorsArticlesTabelleModele
             )
         }
     }
@@ -149,10 +137,73 @@ private fun QuantityGrid(
 private fun QuantityButton(
     quantity: Int,
     isSelected: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    currentSale: SoldArticlesTabelle?,
+    viewModelInitApp: ViewModelInitApp,
+    currentClient: ClientsModel?,
+    indexColoreAcheter: Int,
+    colorsArticlesTabelleModele: List<ColorsArticlesTabelle>
 ) {
     Button(
-        onClick = onClick,
+        onClick = {
+            onClick()
+            // Find the current color based on index
+            val currentColorId = when (indexColoreAcheter) {
+                0 -> currentSale?.color1IdPicked
+                1 -> currentSale?.color2IdPicked
+                2 -> currentSale?.color3IdPicked
+                3 -> currentSale?.color4IdPicked
+                else -> null
+            }
+
+            // Find the corresponding color details
+            val colorDetails = colorsArticlesTabelleModele.find { it.idColore == currentColorId }
+
+            // Create new purchase model
+            val newPurchase = ModelAppsFather.ProduitModel.ClientBonVentModel(
+                vid = currentSale?.vid ?: System.currentTimeMillis()
+            ).apply {
+                // Set client information if available
+                if (currentClient != null) {
+                    clientInformations = ModelAppsFather.ProduitModel.ClientBonVentModel.ClientInformations(
+                        id = currentClient.vidSu,
+                        nom = currentClient.nomClientsSu,
+                        couleur = currentClient.couleurSu
+                    )
+                }
+
+                // Add color purchase details
+                colorDetails?.let { color ->
+                    colours_Achete.add(
+                        ModelAppsFather.ProduitModel.ClientBonVentModel.ColorAchatModel(
+                            vidPosition = System.currentTimeMillis(),
+                            nom = color.nameColore,
+                            quantity_Achete = quantity,
+                            imogi = color.iconColore
+                        )
+                    )
+                }
+            }
+
+            // Update the database
+            if (currentSale != null) {
+                viewModelInitApp._modelAppsFather.produitsMainDataBase
+                    .find { it.id == currentSale.vid }?.let { product ->
+                        // Find and update existing sale or add new one
+                        val existingSaleIndex = product.bonsVentDeCetteCota.indexOfFirst {
+                            it.clientInformations?.id == currentClient?.vidSu
+                        }
+                        if (existingSaleIndex != -1) {
+                            product.bonsVentDeCetteCota[existingSaleIndex] = newPurchase
+                        } else {
+                            product.bonsVentDeCetteCota.add(newPurchase)
+                        }
+
+                        // Update Firebase
+                        ModelAppsFather.updateProduct_produitsAvecBonsGrossist(product, viewModelInitApp)
+                    }
+            }
+        },
         modifier = Modifier
             .fillMaxWidth()
             .aspectRatio(1f),
@@ -175,5 +226,3 @@ private fun QuantityButton(
         )
     }
 }
-
-

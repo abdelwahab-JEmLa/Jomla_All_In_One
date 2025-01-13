@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.example.clientjetpack.Models.UiState
 import com.example.clientjetpack.R
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import com.example.clientjetpack.ViewModel.WifiUpdateClientDisplayerStats
@@ -55,6 +56,7 @@ fun ColorItem3(
     height: Dp,
     updateColorToBeMain: (Long) -> Unit,
     viewModelInitApp: ViewModelInitApp, currentClient: ClientsModel?,
+    colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
 ) {
     var showDialog by remember { mutableStateOf(false) }
     var isSelected by remember { mutableStateOf(false) }
@@ -194,7 +196,8 @@ fun ColorItem3(
 
                 showDialog = false
                 isSelected = false
-            }, currentClient = currentClient
+            }, currentClient = currentClient,
+            indexColoreAcheter=index, colorsArticlesTabelleModele = colorsArticlesTabelleModele
         )
     }
 }

@@ -41,6 +41,7 @@ fun ColorSelectionSection(
     colorsArticlesTabelleModel: List<ColorsArticlesTabelle>,
     viewModel: HeadViewModel,
     reloadTrigger: Int, viewModelInitApp: ViewModelInitApp, currentClient: ClientsModel?,
+     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
 ) {
     var mainColorId by remember { mutableStateOf(stats.idcolor1) }
     var colorsListToEdite by remember { mutableStateOf(emptyList<ColorsArticlesTabelle>()) }
@@ -200,7 +201,8 @@ fun ColorSelectionSection(
                             viewModel = viewModel,
                             height = 240.dp,
                             updateColorToBeMain = updateMainColor,
-                            viewModelInitApp, currentClient = currentClient
+                            viewModelInitApp, currentClient = currentClient,
+                            colorsArticlesTabelleModele = colorsArticlesTabelleModele
                         )
                     }
                 }
@@ -249,7 +251,8 @@ fun ColorSelectionSection(
                                     viewModel = viewModel,
                                     height = 60.dp,
                                     updateColorToBeMain = updateMainColor,
-                                    viewModelInitApp, currentClient = currentClient
+                                    viewModelInitApp, currentClient = currentClient,
+                                    colorsArticlesTabelleModele = colorsArticlesTabelleModele
                                 )
                             }
                         }

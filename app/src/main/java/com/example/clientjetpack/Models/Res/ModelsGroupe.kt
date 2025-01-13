@@ -69,7 +69,6 @@ data class ColorsArticlesTabelle(
     constructor() : this(0)
 }
 
-
 @Entity
 data class CategoriesTabelle(
     @PrimaryKey(autoGenerate = true)
@@ -115,7 +114,6 @@ data class ClientsModel(
     ) {
     constructor() : this(0)
 }
-
 
 data class ArticlesRecived(
     val aa_vid: Long = 0,
