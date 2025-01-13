@@ -1,4 +1,4 @@
-package com.example.Z_AppsFather.Kotlin._3.Init
+package Y_AppsFather.Z_AppsFather.Kotlin._3.Init
 
 import Y_AppsFather.Kotlin.ModelAppsFather
 import Y_AppsFather.Kotlin.ModelAppsFather.ProduitModel
@@ -21,9 +21,8 @@ object LoadFromFirebaseHandler {
         initViewModel.apply {
             _modelAppsFather.produitsMainDataBase.clear()
             _modelAppsFather.produitsMainDataBase.addAll(products)
-
             updateProduitsAvecBonsGrossist()
-            initializationProgress = 1f
+            this.loadingProgress = 1f
         }
     } catch (e: Exception) {
         throw e

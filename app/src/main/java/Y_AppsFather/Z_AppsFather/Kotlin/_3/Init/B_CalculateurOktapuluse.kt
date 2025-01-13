@@ -1,7 +1,6 @@
 package Y_AppsFather.Z_AppsFather.Kotlin._3.Init
 
 import Y_AppsFather.Kotlin.ViewModelInitApp
-import com.example.Z_AppsFather.Kotlin._3.Init.LoadFromFirebaseHandler
 
 suspend fun calculateurOktapuluse(viewModelInitApp: ViewModelInitApp) {
     try {
@@ -17,7 +16,6 @@ suspend fun calculateurOktapuluse(viewModelInitApp: ViewModelInitApp) {
         val products = viewModelInitApp.produitsMainDataBase
         val totalProducts = products.size
         products.forEachIndexed { index, produit ->
-            produit.statuesBase.sonImageBesoinActualisation = true
             // Update progress for each product processed
             viewModelInitApp.loadingProgress = 0.4f + (0.3f * (index + 1) / totalProducts)
         }
@@ -26,8 +24,8 @@ suspend fun calculateurOktapuluse(viewModelInitApp: ViewModelInitApp) {
         viewModelInitApp.loadingProgress = 0.7f
         viewModelInitApp.apply {
             updateProduitsAvecBonsGrossist()
-            loadingProgress = 0.9f
-            initializationProgress = 1f
+            this.loadingProgress = 0.9f
+            this.loadingProgress = 1f
         }
 
         // Complete

@@ -4,43 +4,8 @@ import Y_AppsFather.Kotlin.ModelAppsFather
 import Y_AppsFather.Kotlin.ModelAppsFather.Companion.UpdateFireBase
 import com.example.Z_AppsFather.Kotlin._3.Init.Z.Parent.GetAncienDataBasesMain
 import java.text.SimpleDateFormat
-import java.util.Calendar
 import java.util.Locale
-import kotlin.random.Random
 
-// Calculate total sales quantities per color from bon vents
-private fun calculateTotalSalesQuantities(depuitAncienDataBase: ModelAppsFather.ProduitModel): Map<Long, Int> {
-    return depuitAncienDataBase.bonsVentDeCetteCota
-        .flatMap { bonVent -> bonVent.colours_Achete }
-        .groupBy { it.vidPosition }
-        .mapValues { (_, colorSales) ->
-            colorSales.sumOf { it.quantity_Achete }
-        }
-}
-
-// Distribute total quantities among grossists
-private fun distributeQuantitiesAmongGrossists(
-    totalQuantities: Map<Long, Int>,
-    colors: List<ModelAppsFather.ProduitModel.ColourEtGout_Model>,
-    grossist: Triple<Long, String, String>
-): List<ModelAppsFather.ProduitModel.GrossistBonCommandes.ColoursGoutsCommendee> {
-    return colors.map { couleur ->
-        val totalQuantity = totalQuantities[couleur.position_Du_Couleur_Au_Produit] ?: 0
-        // Add some randomness but keep it proportional to total sales
-        val quantity = if (totalQuantity > 0) {
-            (totalQuantity * (0.8 + Random.nextDouble() * 0.4)).toInt() // Random factor between 80% and 120%
-        } else {
-            Random.nextInt(10, 51) // Fallback to original random range if no sales data
-        }
-
-        ModelAppsFather.ProduitModel.GrossistBonCommandes.ColoursGoutsCommendee(
-            id = couleur.position_Du_Couleur_Au_Produit,
-            nom = couleur.nom,
-            emoji = couleur.imogi,
-            init_quantityAchete = quantity
-        )
-    }
-}
 
 suspend fun CreeNewStart(
     _appsHeadModel: ModelAppsFather,
@@ -94,6 +59,7 @@ suspend fun CreeNewStart(
                     )
                 }
             }
+                  /*
 
             // Generate sales history
             repeat(Random.nextInt(1, 6)) { _ ->
@@ -192,7 +158,7 @@ suspend fun CreeNewStart(
                     (pro.bonCommendDeCetteCota?.positionProduitDonGrossistChoisiPourAcheterCeProduit
                         ?: 0) > 0 && pro.itsTempProduit
             }
-
+               */
             // Add product to main database
             _appsHeadModel.produitsMainDataBase.add(depuitAncienDataBase)
         }
@@ -205,3 +171,38 @@ suspend fun CreeNewStart(
         throw e
     }
 }
+   /*
+// Calculate total sales quantities per color from bon vents
+private fun calculateTotalSalesQuantities(depuitAncienDataBase: ModelAppsFather.ProduitModel): Map<Long, Int> {
+    return depuitAncienDataBase.bonsVentDeCetteCota
+        .flatMap { bonVent -> bonVent.colours_Achete }
+        .groupBy { it.vidPosition }
+        .mapValues { (_, colorSales) ->
+            colorSales.sumOf { it.quantity_Achete }
+        }
+}
+
+// Distribute total quantities among grossists
+private fun distributeQuantitiesAmongGrossists(
+    totalQuantities: Map<Long, Int>,
+    colors: List<ModelAppsFather.ProduitModel.ColourEtGout_Model>,
+    grossist: Triple<Long, String, String>
+): List<ModelAppsFather.ProduitModel.GrossistBonCommandes.ColoursGoutsCommendee> {
+    return colors.map { couleur ->
+        val totalQuantity = totalQuantities[couleur.position_Du_Couleur_Au_Produit] ?: 0
+        // Add some randomness but keep it proportional to total sales
+        val quantity = if (totalQuantity > 0) {
+            (totalQuantity * (0.8 + Random.nextDouble() * 0.4)).toInt() // Random factor between 80% and 120%
+        } else {
+            Random.nextInt(10, 51) // Fallback to original random range if no sales data
+        }
+
+        ModelAppsFather.ProduitModel.GrossistBonCommandes.ColoursGoutsCommendee(
+            id = couleur.position_Du_Couleur_Au_Produit,
+            nom = couleur.nom,
+            emoji = couleur.imogi,
+            init_quantityAchete = quantity
+        )
+    }
+}
+    */

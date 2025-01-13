@@ -45,8 +45,6 @@ class ViewModelInitApp : ViewModel() {
             )
     }
 
-    var initializationProgress by mutableFloatStateOf(0f)
-    var isInitializing by mutableStateOf(false)
     var initializationComplete by mutableStateOf(false)
 
     var isLoading by mutableStateOf(false)
@@ -58,9 +56,9 @@ class ViewModelInitApp : ViewModel() {
     init {
         viewModelScope.launch {
             try {
-                isInitializing = true
+                this@ViewModelInitApp.isLoading = true
                 
-                val NOMBRE_ENTRE = 0
+                val NOMBRE_ENTRE = 1000
 
                 if (NOMBRE_ENTRE == 0) {
                     calculateurOktapuluse(this@ViewModelInitApp)
@@ -76,10 +74,10 @@ class ViewModelInitApp : ViewModel() {
                 initializationComplete = true
             } catch (e: Exception) {
                 Log.e("ViewModelInitApp", "Initialization failed", e)
-                initializationProgress = 0f
+                this@ViewModelInitApp.loadingProgress = 0f
                 initializationComplete = false
             } finally {
-                isInitializing = false
+                this@ViewModelInitApp.isLoading = false
             }
         }
     }
