@@ -1,6 +1,9 @@
 package Packages.Z_P3._DisplayProductInfosToSeller
 
+import Packages.Z_P3.Ui.Main.ColorSelectionSection
+import Packages.Z_P3.Ui.Main.Details
 import Packages.Z_P3.Ui.Objects.ActionsButtonRow
+import Packages.Z_P3.Ui.Objects.ProductNameSection3
 import Packages.Z_P3.Ui.Objects.confirmExitDialog
 import Y_AppsFather.Kotlin.Model._ModelAppsFather
 import Y_AppsFather.Kotlin.ViewModelInitApp
@@ -9,9 +12,12 @@ import a_RoomDB.ClientsModel
 import a_RoomDB.ColorsArticlesTabelle
 import a_RoomDB.SoldArticlesTabelle
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -72,11 +78,8 @@ fun MainUi(
     viewModel: HeadViewModel,
     reloadTrigger: Int,
     isDetailsVisible: Boolean,
-    onDismiss: () -> Unit,
-    uiState: UiState,
-    lockExpandedPrices: Boolean,
-    onToggleLockExpandedPricex: () -> Unit,
-    viewModelInitApp: ViewModelInitApp,
+    onDismiss: () -> Unit, uiState: UiState, lockExpandedPrices: Boolean,
+    onToggleLockExpandedPricex: () -> Unit, viewModelInitApp: ViewModelInitApp,
     currentClient: ClientsModel?,
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>
 ) {
@@ -95,9 +98,36 @@ fun MainUi(
             tonalElevation = 2.dp
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
-                // ... previous Column content remains the same ...
+                // Scrollable content
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(bottom = 80.dp) // Add padding for the action buttons
+                ) {
+                    articlesBaseStats?.let { stats ->
+                        ProductNameSection3(stats)
+                        ColorSelectionSection(
+                            currentSale = currentSale,
+                            stats = stats,
+                            colorsArticlesTabelleModel = colorsArticlesTabelleModel,
+                            viewModel = viewModel,
+                            reloadTrigger = reloadTrigger, viewModelInitApp = viewModelInitApp,
+                            currentClient = currentClient,
+                            colorsArticlesTabelleModele = colorsArticlesTabelleModele,
+                        )
+                        Details(
+                            isDetailsVisible,
+                            stats,
+                            uiState,
+                            viewModel,
+                            lockExpandedPrices,
+                            onToggleLockExpandedPricex
+                        )
+                    }
+                }
 
-                // Updated action buttons section with fixed cancel logic
+                // Floating action buttons
                 Surface(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
@@ -114,19 +144,14 @@ fun MainUi(
                         onCancel = {
                             viewModel.deleteSoldArticle(currentSale.vid)
                             onDismiss()
-
-                            // Find the product and update it
                             viewModelInitApp._modelAppsFather.produitsMainDataBase
-                                .find { it.id == currentSale.idArticle }?.let { product ->
-                                    // Find and remove the specific sale for the current client
-                                    product.bonsVentDeCetteCota
-                                        .removeIf { bonsVent ->
-                                            bonsVent.clientInformations?.id == currentClient?.idClientsSu
-                                        }
+                                .find { it.id==currentSale.idArticle }
+                                ?.bonsVentDeCetteCota?.find {
+                                    it.clientInformations?.id==currentClient?.idClientsSu }.remove //->
+                            //TODO(FIXME):Fix erreur Function invocation 'remove(...)' expected
 
-                                    // Update the product in Firebase
-                                    _ModelAppsFather.updateProduit(product, viewModelInitApp)
-                                }
+                            _ModelAppsFather.updateProduit(product, viewModelInitApp)
+
                         }
                     )
                 }
