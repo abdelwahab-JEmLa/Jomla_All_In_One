@@ -8,6 +8,7 @@ import P0_MainScreen.Ui.Main.AppNavHost.Screen
 import P0_MainScreen.Ui.Objects.ConnexionCard
 import P7_EStorePresentationToClient.Main.FragmentDisplayeInfoProductToClient7
 import P7_EStorePresentationToClient.Main.SearchArticle
+import Y_AppsFather.Kotlin.ViewModelInitApp
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
@@ -31,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.clientjetpack.AppViewModels
@@ -39,7 +41,8 @@ import com.example.clientjetpack.AppViewModels
 @Composable
 fun MainScreen(
     appViewModels: AppViewModels,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModelInitApp: ViewModelInitApp = viewModel(),
 ) {
     val headViewModel = appViewModels.headViewModel
     val uiState by headViewModel.uiState.collectAsState()
@@ -103,7 +106,7 @@ fun MainScreen(
                 Box(modifier = Modifier.weight(1f)) {
                     AppNavHost(
                         appViewModels = appViewModels,
-                        viewModelInitApp = appViewModels.viewModelInitApp,
+                        viewModelInitApp = viewModelInitApp,
                         navController = navController,
                         onToggleNavBar = { isNavBarVisible = !isNavBarVisible },
                         modifier = Modifier.fillMaxSize(),

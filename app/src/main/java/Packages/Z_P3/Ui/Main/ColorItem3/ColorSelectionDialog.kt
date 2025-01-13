@@ -188,7 +188,7 @@ private fun QuantityButton(
             // Update the database
             if (currentSale != null) {
                 viewModelInitApp._modelAppsFather.produitsMainDataBase
-                    .find { it.id == currentSale.vid }?.let { product ->
+                    .find { it.id == currentSale.idArticle }?.let { product ->
                         // Find and update existing sale or add new one
                         val existingSaleIndex = product.bonsVentDeCetteCota.indexOfFirst {
                             it.clientInformations?.id == currentClient?.vidSu

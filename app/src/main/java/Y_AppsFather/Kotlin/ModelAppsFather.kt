@@ -339,10 +339,10 @@ open class ModelAppsFather(
                     produitsFireBaseRef.child(product.id.toString()).setValue(product).await()
 
                     // Update _produitsAvecBonsGrossist
-                    val index = viewModelProduits._produitsAvecBonsGrossist.indexOfFirst { it.id == product.id }
+                    val index = viewModelProduits._modelAppsFather.produitsMainDataBase.indexOfFirst { it.id == product.id }
                     if (index != -1) {
                         // Direct update of the SnapshotStateList
-                        viewModelProduits._produitsAvecBonsGrossist[index] = product
+                        viewModelProduits._modelAppsFather.produitsMainDataBase[index] = product
                     }
 
                     Log.d("ViewModelInitApp", "Successfully updated product ${product.id}")

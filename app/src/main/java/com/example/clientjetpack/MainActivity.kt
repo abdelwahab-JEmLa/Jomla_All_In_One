@@ -41,7 +41,6 @@ class MyApplication : Application() {
 
 data class AppViewModels(
     val headViewModel: HeadViewModel,
-    val viewModelInitApp: ViewModelInitApp,
     val generativeAiViewModel: GenerativeAiViewModel,
 )
 
@@ -54,11 +53,6 @@ class ViewModelFactory(
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when {
             modelClass.isAssignableFrom(HeadViewModel::class.java) ->
-                HeadViewModel(
-                    context.applicationContext,
-                    database,
-                ) as T
-            modelClass.isAssignableFrom(ViewModelInitApp::class.java) ->
                 HeadViewModel(
                     context.applicationContext,
                     database,
@@ -81,7 +75,6 @@ class MainActivity : ComponentActivity() {
     private val appViewModels by lazy {
         AppViewModels(
             headViewModel = headViewModel,
-            viewModelInitApp = viewModelInitApp,
             generativeAiViewModel = generativeAiViewModel,
         )
     }
