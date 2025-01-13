@@ -369,17 +369,17 @@ open class _ModelAppsFather(
                     "/IMGs" +
                     "/BaseDonne"
 
-        fun createNewProduct(viewModelInitApp: ViewModelInitApp): _ModelAppsFather.ProduitModel {
+        fun createNewProduct(viewModelInitApp: ViewModelInitApp, nameArticle: String ?= null ):ProduitModel {
             val maxId = viewModelInitApp._modelAppsFather.produitsMainDataBase
                 .maxOfOrNull { it.id } ?: 0
 
-            return _ModelAppsFather.ProduitModel(
+            return ProduitModel(
                 id = maxId + 1,
                 itsTempProduit = true,
-                init_nom = "New Product ${maxId + 1}"
+                init_nom = nameArticle?:"New Product ${maxId + 1}"
             ).apply {
                 coloursEtGouts.add(
-                    _ModelAppsFather.ProduitModel.ColourEtGout_Model(
+                    ProduitModel.ColourEtGout_Model(
                         sonImageNeExistPas = true
                     )
                 )

@@ -75,7 +75,7 @@ private fun handleQuantitySelection(
         // Find or create product
         val product = viewModelInitApp._modelAppsFather.produitsMainDataBase
             .find { it.id == currentSale?.idArticle }
-            ?: createNewProduct(viewModelInitApp)
+            ?: createNewProduct(viewModelInitApp,currentSale?.nameArticle!!)
 
         // Create or update color purchase
         val colorPurchase = _ModelAppsFather.ProduitModel.ClientBonVentModel.ColorAchatModel(
