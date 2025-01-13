@@ -78,8 +78,11 @@ fun MainUi(
     viewModel: HeadViewModel,
     reloadTrigger: Int,
     isDetailsVisible: Boolean,
-    onDismiss: () -> Unit, uiState: UiState, lockExpandedPrices: Boolean,
-    onToggleLockExpandedPricex: () -> Unit, viewModelInitApp: ViewModelInitApp,
+    onDismiss: () -> Unit,
+    uiState: UiState,
+    lockExpandedPrices: Boolean,
+    onToggleLockExpandedPricex: () -> Unit,
+    viewModelInitApp: ViewModelInitApp,
     currentClient: ClientsModel?,
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>
 ) {
@@ -127,7 +130,7 @@ fun MainUi(
                     }
                 }
 
-                // Floating action buttons
+                // Updated action buttons section with fixed cancel logic
                 Surface(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
@@ -144,14 +147,19 @@ fun MainUi(
                         onCancel = {
                             viewModel.deleteSoldArticle(currentSale.vid)
                             onDismiss()
+
+                            // Find the product and update it
                             viewModelInitApp._modelAppsFather.produitsMainDataBase
-                                .find { it.id==currentSale.idArticle }
-                                ?.bonsVentDeCetteCota?.find {
-                                    it.clientInformations?.id==currentClient?.idClientsSu }.remove //->
-                            //TODO(FIXME):Fix erreur Function invocation 'remove(...)' expected
+                                .find { it.id == currentSale.idArticle }?.let { product ->
+                                    // Find and remove the specific sale for the current client
+                                    product.bonsVentDeCetteCota
+                                        .removeIf { bonsVent ->
+                                            bonsVent.clientInformations?.id == currentClient?.idClientsSu
+                                        }
 
-                            _ModelAppsFather.updateProduit(product, viewModelInitApp)
-
+                                    // Update the product in Firebase
+                                    _ModelAppsFather.updateProduit(product, viewModelInitApp)
+                                }
                         }
                     )
                 }
