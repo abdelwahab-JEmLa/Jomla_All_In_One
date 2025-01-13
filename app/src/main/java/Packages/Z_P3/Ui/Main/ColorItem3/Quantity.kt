@@ -27,24 +27,11 @@ fun QuantityButton(
     currentSale: SoldArticlesTabelle?,
     viewModelInitApp: ViewModelInitApp,
     currentClient: ClientsModel?,
-    indexColoreAcheter: Int,
-    colorsArticlesTabelleModele: List<ColorsArticlesTabelle>
+    colorDetails: ColorsArticlesTabelle
 ) {
     Button(
         onClick = {
             onClick()
-            // Find the current color based on index
-            val currentColorId = when (indexColoreAcheter) {
-                0 -> currentSale?.color1IdPicked
-                1 -> currentSale?.color2IdPicked
-                2 -> currentSale?.color3IdPicked
-                3 -> currentSale?.color4IdPicked
-                else -> null
-            }
-
-            // Find the corresponding color details
-            val colorDetails = colorsArticlesTabelleModele.find { it.idColore == currentColorId }
-
             // Create new purchase model with proper initialization
             val newPurchase = _ModelAppsFather.ProduitModel.ClientBonVentModel(
                 vid = currentSale?.vid ?: System.currentTimeMillis()

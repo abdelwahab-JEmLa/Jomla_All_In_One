@@ -196,7 +196,7 @@ fun ColorItem3(
                 showDialog = false
                 isSelected = false
             }, currentClient = currentClient,
-            indexColoreAcheter=index, colorsArticlesTabelleModele = colorsArticlesTabelleModele
+            indexColoreAcheter=index, colorsArticlesTabelleModele = colorsArticlesTabelleModele,color=color
         )
     }
 }

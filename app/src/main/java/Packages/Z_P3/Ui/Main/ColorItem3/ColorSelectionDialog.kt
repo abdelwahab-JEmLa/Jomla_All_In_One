@@ -36,7 +36,8 @@ import androidx.compose.ui.window.Dialog
     onQuantitySelected: (Int) -> Unit,
     currentSale: SoldArticlesTabelle?,
     viewModelInitApp: ViewModelInitApp, currentClient: ClientsModel?, indexColoreAcheter: Int,
-    colorsArticlesTabelleModele: List<ColorsArticlesTabelle>
+    colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
+    color: ColorsArticlesTabelle
 ) {
     Dialog(onDismissRequest = onDismiss) {
         Card(
@@ -82,7 +83,9 @@ import androidx.compose.ui.window.Dialog
                     },
                     currentSale =currentSale,
                     viewModelInitApp =viewModelInitApp,
-                    currentClient,indexColoreAcheter,  colorsArticlesTabelleModele = colorsArticlesTabelleModele
+                    currentClient,indexColoreAcheter,
+                    colorsArticlesTabelleModele = colorsArticlesTabelleModele  ,
+                    color=color
                 )
             }
         }
@@ -97,7 +100,8 @@ private fun QuantityGrid(
     viewModelInitApp: ViewModelInitApp,
     currentClient: ClientsModel?,
     indexColoreAcheter: Int,
-    colorsArticlesTabelleModele: List<ColorsArticlesTabelle>
+    colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
+    color: ColorsArticlesTabelle
 ) {
     val quantities = remember {
         listOf(0,1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11,12,13,14, 15, 20, 21, 22, 23,24, 25, 30, 40, 50)
@@ -121,7 +125,7 @@ private fun QuantityGrid(
                 },
                 currentSale,
                 viewModelInitApp,
-                currentClient, indexColoreAcheter,  colorsArticlesTabelleModele
+                currentClient, color
             )
         }
     }
