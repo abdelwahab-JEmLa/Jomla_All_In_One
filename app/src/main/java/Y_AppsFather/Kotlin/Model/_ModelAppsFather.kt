@@ -179,37 +179,68 @@ open class _ModelAppsFather(
                     initViewModel._modelAppsFather.produitsMainDataBase
                         .filter { it.id == product.id }
                         .forEach { produit ->
-                            produit.bonCommendDeCetteCota = GrossistBonCommandes().apply {
-                                vid = System.currentTimeMillis()
-                                grossistInformations = GrossistInformations(
-                                    id = vid,
-                                    nom = "Non Defini",
-                                    couleur = "#FF0000"
-                                )
+                            try {
+                                // Create new GrossistBonCommandes with proper initialization
+                                val newBonCommande = GrossistBonCommandes().apply {
+                                    vid = System.currentTimeMillis()
+                                    grossistInformations = GrossistInformations(
+                                        id = vid,
+                                        nom = "Non Defini",
+                                        couleur = "#FF0000"
+                                    ).apply {
+                                        auFilterFAB = false
+                                        positionInGrossistsList = 0
+                                    }
 
-                                // Calculate quantities directly from bonsVentDeCetteCota
-                                produit.bonsVentDeCetteCota
-                                    .flatMap { it.colours_Achete }
-                                    .groupBy { it.nom }
-                                    .forEach { (nom, couleurs) ->
-                                        val firstColor = couleurs.first()
-                                        coloursEtGoutsCommendee.add(
-                                            ColoursGoutsCommendee(
+                                    // Clear existing commendee list to prevent duplicates
+                                    coloursEtGoutsCommendee.clear()
+
+                                    // Group and calculate quantities with null safety
+                                    val groupedColors = produit.bonsVentDeCetteCota
+                                        .flatMap { bonVente ->
+                                            bonVente.colours_Achete.map { it }
+                                        }
+                                        .groupBy { it.nom }
+
+                                    // Process each color group
+                                    groupedColors.forEach { (colorName, colorList) ->
+                                        colorList.firstOrNull()?.let { firstColor ->
+                                            // Create new commendee with proper initialization
+                                            val newCommendee = ColoursGoutsCommendee(
                                                 id = firstColor.vidPosition,
-                                                nom = nom,
+                                                nom = colorName,
                                                 emoji = firstColor.imogi
                                             ).apply {
-                                                quantityAchete =
-                                                    couleurs.sumOf { it.quantity_Achete }
+                                                // Calculate total quantity for this color
+                                                quantityAchete = colorList.sumOf { it.quantity_Achete }
                                             }
-                                        )
-                                    }
-                            }
 
-                            // Update Firebase
-                            produitsFireBaseRef.child(produit.id.toString())
-                                .child("bonCommendDeCetteCota")
-                                .setValue(produit.bonCommendDeCetteCota)
+                                            // Add to the list only if quantity > 0
+                                            if (newCommendee.quantityAchete > 0) {
+                                                coloursEtGoutsCommendee.add(newCommendee)
+                                            }
+                                        }
+                                    }
+                                }
+
+                                // Update the product with new bon commande
+                                produit.bonCommendDeCetteCota = newBonCommande
+
+                                // Update Firebase with error handling
+                                try {
+                                    produitsFireBaseRef.child(produit.id.toString())
+                                        .child("bonCommendDeCetteCota")
+                                        .setValue(newBonCommande)
+                                        .addOnFailureListener { exception ->
+                                            Log.e("calculeSelf", "Firebase update failed", exception)
+                                        }
+                                } catch (e: Exception) {
+                                    Log.e("calculeSelf", "Firebase update error", e)
+                                }
+
+                            } catch (e: Exception) {
+                                Log.e("calculeSelf", "Calculation error for product ${produit.id}", e)
+                            }
                         }
                 }
             }
