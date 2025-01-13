@@ -1,5 +1,6 @@
 package Y_AppsFather.Z_AppsFather.Kotlin._3.Init
 
+import Y_AppsFather.Kotlin.Model._ModelAppsFather.ProduitModel.GrossistBonCommandes.Companion.initCalculeSelf
 import Y_AppsFather.Kotlin.ViewModelInitApp
 
 suspend fun calculateurOktapuluse(viewModelInitApp: ViewModelInitApp) {
@@ -23,6 +24,7 @@ suspend fun calculateurOktapuluse(viewModelInitApp: ViewModelInitApp) {
         // Update grossist and final steps - 30% of progress
         viewModelInitApp.loadingProgress = 0.7f
         viewModelInitApp.apply {
+            initCalculeSelf(viewModelInitApp)
             updateProduitsAvecBonsGrossist()
             this.loadingProgress = 0.9f
             this.loadingProgress = 1f

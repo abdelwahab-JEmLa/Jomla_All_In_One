@@ -121,7 +121,6 @@ open class _ModelAppsFather(
             var date_String_Divise: String = "",
             var time_String_Divise: String = "",
             var currentCreditBalance: Double = 0.0,
-            init_position_Produit_Don_Grossist_Choisi_Pour_Acheter_CeProduit: Int = 0,
             init_coloursEtGoutsCommendee: List<ColoursGoutsCommendee> = emptyList(),
         ) {
             var grossistInformations: GrossistInformations? by mutableStateOf(
@@ -129,9 +128,8 @@ open class _ModelAppsFather(
             )
 
             var cPositionCheyCeGrossit: Boolean by mutableStateOf(false)
-            var positionProduitDonGrossistChoisiPourAcheterCeProduit: Int by mutableStateOf(
-                init_position_Produit_Don_Grossist_Choisi_Pour_Acheter_CeProduit
-            )
+            var positionProduitDonGrossistChoisiPourAcheterCeProduit: Int 
+            by mutableStateOf(0)
 
             @get:Exclude
             var coloursEtGoutsCommendee: SnapshotStateList<ColoursGoutsCommendee> =
@@ -154,12 +152,51 @@ open class _ModelAppsFather(
                 val id: Long = 0,
                 val nom: String = "",
                 val emoji: String = "",
-                init_quantityAchete: Int = 0
             ) {
-                var quantityAchete: Int by mutableIntStateOf(init_quantityAchete)
+                var quantityAchete: Int by mutableIntStateOf(0)
+            }
+            companion object {
+                fun initCalculeSelf(initViewModel: ViewModelInitApp) {
+                    initViewModel._modelAppsFather.produitsMainDataBase.forEach { produit ->
+                        produit.bonCommendDeCetteCota?.let { bonCommande ->
+                            // Simple timestamp-based vid
+                            bonCommande.vid = System.currentTimeMillis()
+
+                            // Simple grossist info
+                            bonCommande.grossistInformations = GrossistInformations(
+                                id = bonCommande.vid,
+                                nom = "Grossist_${bonCommande.vid % 1000}",
+                                couleur = "#FF0000"
+                            )
+
+                            // Sum quantities from bons vents
+                            produit.bonsVentDeCetteCota.forEach { bonVent ->
+                                bonVent.colours_Achete.forEach { colorAchat ->
+                                    val existingColor = bonCommande.coloursEtGoutsCommendee.find {
+                                        it.nom == colorAchat.nom
+                                    }
+
+                                    if (existingColor != null) {
+                                        existingColor.quantityAchete += colorAchat.quantity_Achete
+                                    } else {
+                                        bonCommande.coloursEtGoutsCommendee.add(
+                                            ColoursGoutsCommendee(
+                                                id = colorAchat.vidPosition,
+                                                nom = colorAchat.nom,
+                                                emoji = colorAchat.imogi
+                                            ).apply {
+                                                quantityAchete = colorAchat.quantity_Achete
+                                            }
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
-        }
+            }
 
         @IgnoreExtraProperties
         class ClientBonVentModel(
