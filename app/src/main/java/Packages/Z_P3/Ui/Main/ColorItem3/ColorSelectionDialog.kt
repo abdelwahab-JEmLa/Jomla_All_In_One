@@ -200,7 +200,7 @@ private fun QuantityButton(
                         }
 
                         // Update Firebase
-                        _ModelAppsFather.updateProduct_produitsAvecBonsGrossist(product, viewModelInitApp)
+                        _ModelAppsFather.updateProduit(product, viewModelInitApp)
                     }
             }
         },

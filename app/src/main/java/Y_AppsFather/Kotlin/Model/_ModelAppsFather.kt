@@ -128,8 +128,8 @@ open class _ModelAppsFather(
             )
 
             var cPositionCheyCeGrossit: Boolean by mutableStateOf(false)
-            var positionProduitDonGrossistChoisiPourAcheterCeProduit: Int 
-            by mutableStateOf(0)
+            var positionProduitDonGrossistChoisiPourAcheterCeProduit: Int
+                    by mutableStateOf(0)
 
             @get:Exclude
             var coloursEtGoutsCommendee: SnapshotStateList<ColoursGoutsCommendee> =
@@ -155,48 +155,47 @@ open class _ModelAppsFather(
             ) {
                 var quantityAchete: Int by mutableIntStateOf(0)
             }
+
             companion object {
                 fun initCalculeSelf(initViewModel: ViewModelInitApp) {
-                    initViewModel._modelAppsFather.produitsMainDataBase.forEach { produit ->
-                        produit.bonCommendDeCetteCota?.let { bonCommande ->
-                            // Simple timestamp-based vid
-                            bonCommande.vid = System.currentTimeMillis()
+                    initViewModel._modelAppsFather.produitsMainDataBase
+                        .filter { it.bonsVentDeCetteCota.isNotEmpty() }
+                        .forEach { produit ->
+                            // Initialize or get bonCommande
+                            produit.bonCommendDeCetteCota = GrossistBonCommandes().apply {
+                                vid = System.currentTimeMillis()
+                                grossistInformations = GrossistInformations(
+                                    id = vid,
+                                    nom = "Grossist_${vid % 1000}",
+                                    couleur = "#FF0000"
+                                )
 
-                            // Simple grossist info
-                            bonCommande.grossistInformations = GrossistInformations(
-                                id = bonCommande.vid,
-                                nom = "Grossist_${bonCommande.vid % 1000}",
-                                couleur = "#FF0000"
-                            )
-
-                            // Sum quantities from bons vents
-                            produit.bonsVentDeCetteCota.forEach { bonVent ->
-                                bonVent.colours_Achete.forEach { colorAchat ->
-                                    val existingColor = bonCommande.coloursEtGoutsCommendee.find {
-                                        it.nom == colorAchat.nom
-                                    }
-
-                                    if (existingColor != null) {
-                                        existingColor.quantityAchete += colorAchat.quantity_Achete
-                                    } else {
-                                        bonCommande.coloursEtGoutsCommendee.add(
+                                // Calculate quantities directly from bonsVentDeCetteCota
+                                produit.bonsVentDeCetteCota
+                                    .flatMap { it.colours_Achete }
+                                    .groupBy { it.nom }
+                                    .forEach { (nom, couleurs) ->
+                                        val firstColor = couleurs.first()
+                                        coloursEtGoutsCommendee.add(
                                             ColoursGoutsCommendee(
-                                                id = colorAchat.vidPosition,
-                                                nom = colorAchat.nom,
-                                                emoji = colorAchat.imogi
+                                                id = firstColor.vidPosition,
+                                                nom = nom,
+                                                emoji = firstColor.imogi
                                             ).apply {
-                                                quantityAchete = colorAchat.quantity_Achete
+                                                quantityAchete = couleurs.sumOf { it.quantity_Achete }
                                             }
                                         )
                                     }
-                                }
                             }
+
+                            // Update Firebase
+                            produitsFireBaseRef.child(produit.id.toString())
+                                .child("bonCommendDeCetteCota")
+                                .setValue(produit.bonCommendDeCetteCota)
                         }
-                    }
                 }
             }
-
-            }
+        }
 
         @IgnoreExtraProperties
         class ClientBonVentModel(
@@ -226,6 +225,7 @@ open class _ModelAppsFather(
                 var auFilterFAB: Boolean by mutableStateOf(false)
                 var positionDonClientsList: Int
                         by mutableIntStateOf(0)
+
                 override fun equals(other: Any?): Boolean {
                     if (this === other) return true
                     if (other !is ClientInformations) return false
@@ -284,7 +284,7 @@ open class _ModelAppsFather(
             }
         }
 
-         suspend fun UpdateFireBase(updatedProducts: List<ProduitModel>) {
+        suspend fun UpdateFireBase(updatedProducts: List<ProduitModel>) {
             updatedProducts.chunked(5).forEach { chunk ->
                 chunk.forEach { product ->
                     try {
@@ -298,7 +298,7 @@ open class _ModelAppsFather(
             }
         }
 
-        fun updateProduct_produitsAvecBonsGrossist(
+        fun updateProduit( //Renamed from updateProduct_produitsAvecBonsGrossist
             product: ProduitModel,
             viewModelProduits: ViewModelInitApp
         ) {
@@ -308,7 +308,8 @@ open class _ModelAppsFather(
                     produitsFireBaseRef.child(product.id.toString()).setValue(product).await()
 
                     // Update _produitsAvecBonsGrossist
-                    val index = viewModelProduits._modelAppsFather.produitsMainDataBase.indexOfFirst { it.id == product.id }
+                    val index =
+                        viewModelProduits._modelAppsFather.produitsMainDataBase.indexOfFirst { it.id == product.id }
                     if (index != -1) {
                         // Direct update of the SnapshotStateList
                         viewModelProduits._modelAppsFather.produitsMainDataBase[index] = product
