@@ -65,7 +65,7 @@ fun QuantityButton(
                 colorDetails?.let { color ->
                     colours_Achete.add(
                         _ModelAppsFather.ProduitModel.ClientBonVentModel.ColorAchatModel(
-                            vidPosition = System.currentTimeMillis(),
+                            vidPosition = color.idColore,
                             nom = color.nameColore,
                             quantity_Achete = quantity,
                             imogi = color.iconColore
@@ -102,7 +102,7 @@ fun QuantityButton(
                                     } else {
                                         colours_Achete.add(
                                             _ModelAppsFather.ProduitModel.ClientBonVentModel.ColorAchatModel(
-                                                vidPosition = System.currentTimeMillis(),
+                                                vidPosition =colorDetails?.idColore ?: 0,
                                                 nom = colorDetails?.nameColore ?: "",
                                                 quantity_Achete = quantity,
                                                 imogi = colorDetails?.iconColore ?: ""
