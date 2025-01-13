@@ -180,7 +180,6 @@ open class _ModelAppsFather(
                         .filter { it.id == product.id }
                         .forEach { produit ->
                             try {
-                                // Create new GrossistBonCommandes with proper initialization
                                 val newBonCommande = GrossistBonCommandes().apply {
                                     vid = System.currentTimeMillis()
                                     grossistInformations = GrossistInformations(
@@ -192,55 +191,93 @@ open class _ModelAppsFather(
                                         positionInGrossistsList = 0
                                     }
 
-                                    // Clear existing commendee list to prevent duplicates
+                                    // Initialize empty list for Firebase
                                     coloursEtGoutsCommendee.clear()
 
-                                    // Group and calculate quantities with null safety
-                                    val groupedColors = produit.bonsVentDeCetteCota
-                                        .flatMap { bonVente ->
-                                            bonVente.colours_Achete.map { it }
-                                        }
+                                    Log.d("CalculeSelf", "Started processing for product ${produit.id}")
+
+                                    // Create a temporary list to hold the processed colors
+                                    val processedColors = mutableListOf<ColoursGoutsCommendee>()
+
+                                    produit.bonsVentDeCetteCota
+                                        .flatMap { it.colours_Achete }
                                         .groupBy { it.nom }
+                                        .forEach { (colorName, colorList) ->
+                                            Log.d("CalculeSelf", "Processing color: $colorName")
 
-                                    // Process each color group
-                                    groupedColors.forEach { (colorName, colorList) ->
-                                        colorList.firstOrNull()?.let { firstColor ->
-                                            // Create new commendee with proper initialization
-                                            val newCommendee = ColoursGoutsCommendee(
-                                                id = firstColor.vidPosition,
-                                                nom = colorName,
-                                                emoji = firstColor.imogi
-                                            ).apply {
-                                                // Calculate total quantity for this color
-                                                quantityAchete = colorList.sumOf { it.quantity_Achete }
-                                            }
+                                            colorList.firstOrNull()?.let { firstColor ->
+                                                val totalQuantity = colorList.sumOf { it.quantity_Achete }
 
-                                            // Add to the list only if quantity > 0
-                                            if (newCommendee.quantityAchete > 0) {
-                                                coloursEtGoutsCommendee.add(newCommendee)
+                                                val newCommendee = ColoursGoutsCommendee(
+                                                    id = firstColor.vidPosition,
+                                                    nom = colorName,
+                                                    emoji = firstColor.imogi
+                                                ).apply {
+                                                    quantityAchete = totalQuantity
+                                                }
+
+                                                if (newCommendee.quantityAchete > 0) {
+                                                    processedColors.add(newCommendee)
+                                                    Log.d("CalculeSelf", "Added to processed colors: $colorName, quantity: $totalQuantity")
+                                                }
                                             }
                                         }
-                                    }
+
+                                    // Add all processed colors to the commendee list
+                                    coloursEtGoutsCommendee.addAll(processedColors)
+
+                                    Log.d("CalculeSelf", "Final coloursEtGoutsCommendee size: ${coloursEtGoutsCommendee.size}")
                                 }
 
-                                // Update the product with new bon commande
                                 produit.bonCommendDeCetteCota = newBonCommande
 
-                                // Update Firebase with error handling
-                                try {
-                                    produitsFireBaseRef.child(produit.id.toString())
-                                        .child("bonCommendDeCetteCota")
-                                        .setValue(newBonCommande)
-                                        .addOnFailureListener { exception ->
-                                            Log.e("calculeSelf", "Firebase update failed", exception)
-                                        }
-                                } catch (e: Exception) {
-                                    Log.e("calculeSelf", "Firebase update error", e)
-                                }
+                                updateChildren(newBonCommande, produit)
 
                             } catch (e: Exception) {
-                                Log.e("calculeSelf", "Calculation error for product ${produit.id}", e)
+                                Log.e("CalculeSelf", "Calculation error for product ${produit.id}", e)
+                                e.printStackTrace()
                             }
+                        }
+                }
+
+                 fun updateChildren(
+                    newBonCommande: GrossistBonCommandes,
+                    produit: ProduitModel
+                ) {
+                    // Create a map for Firebase update
+                    val updates = mapOf(
+                        "bonCommendDeCetteCota" to mapOf(
+                            "vid" to newBonCommande.vid,
+                            "grossistInformations" to newBonCommande.grossistInformations,
+                            "coloursEtGoutsCommendeeList" to newBonCommande.coloursEtGoutsCommendee.map { commendee ->
+                                mapOf(
+                                    "id" to commendee.id,
+                                    "nom" to commendee.nom,
+                                    "emoji" to commendee.emoji,
+                                    "quantityAchete" to commendee.quantityAchete
+                                )
+                            },
+                            "date" to newBonCommande.date,
+                            "date_String_Divise" to newBonCommande.date_String_Divise,
+                            "time_String_Divise" to newBonCommande.time_String_Divise,
+                            "currentCreditBalance" to newBonCommande.currentCreditBalance,
+                            "cpositionCheyCeGrossit" to newBonCommande.cPositionCheyCeGrossit,
+                            "positionProduitDonGrossistChoisiPourAcheterCeProduit" to
+                                    newBonCommande.positionProduitDonGrossistChoisiPourAcheterCeProduit
+                        )
+                    )
+
+                    // Update Firebase with explicit structure
+                    produitsFireBaseRef.child(produit.id.toString())
+                        .updateChildren(updates)
+                        .addOnSuccessListener {
+                            Log.d(
+                                "CalculeSelf",
+                                "Successfully updated Firebase for product ${produit.id}"
+                            )
+                        }
+                        .addOnFailureListener { exception ->
+                            Log.e("CalculeSelf", "Firebase update failed", exception)
                         }
                 }
             }
