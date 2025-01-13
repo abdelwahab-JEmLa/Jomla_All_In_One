@@ -1,7 +1,8 @@
 package Y_AppsFather.Kotlin
 
-import Y_AppsFather.Kotlin.ModelAppsFather.Companion.produitsFireBaseRef
-import Y_AppsFather.Kotlin.ModelAppsFather.ProduitModel
+import Y_AppsFather.Kotlin.Model._ModelAppsFather
+import Y_AppsFather.Kotlin.Model._ModelAppsFather.Companion.produitsFireBaseRef
+import Y_AppsFather.Kotlin.Model._ModelAppsFather.ProduitModel
 import Y_AppsFather.Z_AppsFather.Kotlin._3.Init.calculateurOktapuluse
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -23,8 +24,8 @@ import kotlinx.coroutines.launch
 class ViewModelInitApp : ViewModel() {
     var _paramatersAppsViewModelModel by mutableStateOf(ParamatersAppsModel())
 
-    var _modelAppsFather by mutableStateOf(ModelAppsFather())
-    val modelAppsFather: ModelAppsFather get() = _modelAppsFather
+    var _modelAppsFather by mutableStateOf(_ModelAppsFather())
+    val modelAppsFather: _ModelAppsFather get() = _modelAppsFather
     val produitsMainDataBase = _modelAppsFather.produitsMainDataBase
 
     var _produitsAvecBonsGrossist = mutableStateListOf<ProduitModel>()

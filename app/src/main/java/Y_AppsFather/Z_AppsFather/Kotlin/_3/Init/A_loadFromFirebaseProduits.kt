@@ -1,7 +1,7 @@
 package Y_AppsFather.Z_AppsFather.Kotlin._3.Init
 
-import Y_AppsFather.Kotlin.ModelAppsFather
-import Y_AppsFather.Kotlin.ModelAppsFather.ProduitModel
+import Y_AppsFather.Kotlin.Model._ModelAppsFather
+import Y_AppsFather.Kotlin.Model._ModelAppsFather.ProduitModel
 import Y_AppsFather.Kotlin.ViewModelInitApp
 import androidx.compose.runtime.toMutableStateList
 import com.google.firebase.database.DataSnapshot
@@ -29,7 +29,7 @@ object LoadFromFirebaseHandler {
     }
 
     private suspend fun loadProducts() = suspendCancellableCoroutine { continuation ->
-        ModelAppsFather.produitsFireBaseRef.addListenerForSingleValueEvent(object : ValueEventListener {
+        _ModelAppsFather.produitsFireBaseRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) = try {
                 val products = snapshot.children
                     .mapNotNull { parseProduct(it) }

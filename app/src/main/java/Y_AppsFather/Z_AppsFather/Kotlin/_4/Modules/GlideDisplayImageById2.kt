@@ -1,6 +1,6 @@
 package Y_AppsFather.Z_AppsFather.Kotlin._4.Modules
 
-import Y_AppsFather.Kotlin.ModelAppsFather.Companion.imagesProduitsLocalExternalStorageBasePath
+import Y_AppsFather.Kotlin.Model._ModelAppsFather.Companion.imagesProduitsLocalExternalStorageBasePath
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize

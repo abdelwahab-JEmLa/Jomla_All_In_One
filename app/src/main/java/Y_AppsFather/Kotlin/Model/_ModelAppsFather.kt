@@ -1,5 +1,6 @@
-package Y_AppsFather.Kotlin
+package Y_AppsFather.Kotlin.Model
 
+import Y_AppsFather.Kotlin.ViewModelInitApp
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -18,7 +19,7 @@ import kotlinx.coroutines.tasks.await
 import java.util.Objects
 
 @IgnoreExtraProperties
-open class ModelAppsFather(
+open class _ModelAppsFather(
     initial_Produits_Main_DataBase: List<ProduitModel> = emptyList()
 ) {
     @get:Exclude
@@ -171,7 +172,6 @@ open class ModelAppsFather(
             var positionProduitDonGrossistChoisiPourAcheterCeProduit: Int by mutableStateOf(
                 init_position_Produit_Don_Grossist_Choisi_Pour_Acheter_CeProduit
             )
-
 
             @get:Exclude
             var coloursEtGoutsCommendee: SnapshotStateList<ColoursGoutsCommendee> =

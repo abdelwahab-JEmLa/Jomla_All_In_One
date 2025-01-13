@@ -1,5 +1,5 @@
 // ParamatersAppsViewModel.kt
-package com.example.Z_AppsFather.Kotlin._2.ViewModel
+package Y_AppsFather.Z_AppsFather.Kotlin._2.ViewModel
 
 import android.util.Log
 import androidx.compose.runtime.getValue

@@ -1,14 +1,14 @@
 package com.example.Z_AppsFather.Kotlin._3.Init
 
-import Y_AppsFather.Kotlin.ModelAppsFather
-import Y_AppsFather.Kotlin.ModelAppsFather.Companion.UpdateFireBase
+import Y_AppsFather.Kotlin.Model._ModelAppsFather
+import Y_AppsFather.Kotlin.Model._ModelAppsFather.Companion.UpdateFireBase
 import com.example.Z_AppsFather.Kotlin._3.Init.Z.Parent.GetAncienDataBasesMain
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 
 suspend fun CreeNewStart(
-    _appsHeadModel: ModelAppsFather,
+    _appsHeadModel: _ModelAppsFather,
     NOMBRE_ENTRE: Int,
 ) {
     try {
@@ -33,7 +33,7 @@ suspend fun CreeNewStart(
 
         // Process each product in the ancien database
         ancienData.produitsDatabase.forEachIndexed { index, ancien ->
-            val depuitAncienDataBase = ModelAppsFather.ProduitModel(
+            val depuitAncienDataBase = _ModelAppsFather.ProduitModel(
                 id = ancien.idArticle,
                 itsTempProduit = ancien.idArticle > 2000,
                 init_nom = ancien.nomArticleFinale,
@@ -50,7 +50,7 @@ suspend fun CreeNewStart(
             ).forEach { (colorId, position) ->
                 ancienData.couleurs_List.find { it.idColore == colorId }?.let { couleur ->
                     depuitAncienDataBase.coloursEtGouts.add(
-                        ModelAppsFather.ProduitModel.ColourEtGout_Model(
+                        _ModelAppsFather.ProduitModel.ColourEtGout_Model(
                             position_Du_Couleur_Au_Produit = position,
                             nom = couleur.nameColore,
                             imogi = couleur.iconColore,
@@ -69,15 +69,15 @@ suspend fun CreeNewStart(
 
                 val (clientId, clientName, clientColor) = clients.random()
 
-                val bonVent = ModelAppsFather.ProduitModel.ClientBonVentModel(
-                    init_clientInformations = ModelAppsFather.ProduitModel.ClientBonVentModel.ClientInformations(
+                val bonVent = _ModelAppsFather.ProduitModel.ClientBonVentModel(
+                    init_clientInformations = _ModelAppsFather.ProduitModel.ClientBonVentModel.ClientInformations(
                         id = clientId,
                         nom = clientName,
                         couleur = clientColor
                     ),
                     init_colours_achete = depuitAncienDataBase.coloursEtGouts.take(Random.nextInt(1, 4))
                         .map { couleur ->
-                            ModelAppsFather.ProduitModel.ClientBonVentModel.ColorAchatModel(
+                            _ModelAppsFather.ProduitModel.ClientBonVentModel.ColorAchatModel(
                                 vidPosition = couleur.position_Du_Couleur_Au_Produit,
                                 nom = couleur.nom,
                                 quantity_Achete = Random.nextInt(1, 11),
@@ -92,15 +92,15 @@ suspend fun CreeNewStart(
             repeat(Random.nextInt(1, 4)) { _ ->
                 val (clientId, clientName, clientColor) = clients.random()
 
-                val bonVent = ModelAppsFather.ProduitModel.ClientBonVentModel(
-                    init_clientInformations = ModelAppsFather.ProduitModel.ClientBonVentModel.ClientInformations(
+                val bonVent = _ModelAppsFather.ProduitModel.ClientBonVentModel(
+                    init_clientInformations = _ModelAppsFather.ProduitModel.ClientBonVentModel.ClientInformations(
                         id = clientId,
                         nom = clientName,
                         couleur = clientColor
                     ),
                     init_colours_achete = depuitAncienDataBase.coloursEtGouts.take(Random.nextInt(1, 4))
                         .map { couleur ->
-                            ModelAppsFather.ProduitModel.ClientBonVentModel.ColorAchatModel(
+                            _ModelAppsFather.ProduitModel.ClientBonVentModel.ColorAchatModel(
                                 vidPosition = couleur.position_Du_Couleur_Au_Produit,
                                 nom = couleur.nom,
                                 quantity_Achete = Random.nextInt(1, 11),
@@ -126,9 +126,9 @@ suspend fun CreeNewStart(
                     depuitAncienDataBase.coloursEtGouts.take(Random.nextInt(1, 5))
                 }
 
-                val grossiste = ModelAppsFather.ProduitModel.GrossistBonCommandes(
+                val grossiste = _ModelAppsFather.ProduitModel.GrossistBonCommandes(
                     vid = grossistId,
-                    init_grossistInformations = ModelAppsFather.ProduitModel.GrossistBonCommandes.GrossistInformations(
+                    init_grossistInformations = _ModelAppsFather.ProduitModel.GrossistBonCommandes.GrossistInformations(
                         id = grossistId,
                         nom = grossistName,
                         couleur = grossistColor
@@ -164,7 +164,7 @@ suspend fun CreeNewStart(
         }
 
         // Clear and update Firebase database
-        ModelAppsFather.produitsFireBaseRef.removeValue()
+        _ModelAppsFather.produitsFireBaseRef.removeValue()
         UpdateFireBase(_appsHeadModel.produitsMainDataBase)
 
     } catch (e: Exception) {
@@ -173,7 +173,7 @@ suspend fun CreeNewStart(
 }
    /*
 // Calculate total sales quantities per color from bon vents
-private fun calculateTotalSalesQuantities(depuitAncienDataBase: ModelAppsFather.ProduitModel): Map<Long, Int> {
+private fun calculateTotalSalesQuantities(depuitAncienDataBase: _ModelAppsFather.ProduitModel): Map<Long, Int> {
     return depuitAncienDataBase.bonsVentDeCetteCota
         .flatMap { bonVent -> bonVent.colours_Achete }
         .groupBy { it.vidPosition }
@@ -185,9 +185,9 @@ private fun calculateTotalSalesQuantities(depuitAncienDataBase: ModelAppsFather.
 // Distribute total quantities among grossists
 private fun distributeQuantitiesAmongGrossists(
     totalQuantities: Map<Long, Int>,
-    colors: List<ModelAppsFather.ProduitModel.ColourEtGout_Model>,
+    colors: List<_ModelAppsFather.ProduitModel.ColourEtGout_Model>,
     grossist: Triple<Long, String, String>
-): List<ModelAppsFather.ProduitModel.GrossistBonCommandes.ColoursGoutsCommendee> {
+): List<_ModelAppsFather.ProduitModel.GrossistBonCommandes.ColoursGoutsCommendee> {
     return colors.map { couleur ->
         val totalQuantity = totalQuantities[couleur.position_Du_Couleur_Au_Produit] ?: 0
         // Add some randomness but keep it proportional to total sales
@@ -197,7 +197,7 @@ private fun distributeQuantitiesAmongGrossists(
             Random.nextInt(10, 51) // Fallback to original random range if no sales data
         }
 
-        ModelAppsFather.ProduitModel.GrossistBonCommandes.ColoursGoutsCommendee(
+        _ModelAppsFather.ProduitModel.GrossistBonCommandes.ColoursGoutsCommendee(
             id = couleur.position_Du_Couleur_Au_Produit,
             nom = couleur.nom,
             emoji = couleur.imogi,

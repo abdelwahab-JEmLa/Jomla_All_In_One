@@ -1,6 +1,6 @@
 package Packages.Z_P3.Ui.Main.ColorItem3
 
-import Y_AppsFather.Kotlin.ModelAppsFather
+import Y_AppsFather.Kotlin.Model._ModelAppsFather
 import Y_AppsFather.Kotlin.ViewModelInitApp
 import a_RoomDB.ClientsModel
 import a_RoomDB.ColorsArticlesTabelle
@@ -160,12 +160,12 @@ private fun QuantityButton(
             val colorDetails = colorsArticlesTabelleModele.find { it.idColore == currentColorId }
 
             // Create new purchase model
-            val newPurchase = ModelAppsFather.ProduitModel.ClientBonVentModel(
+            val newPurchase = _ModelAppsFather.ProduitModel.ClientBonVentModel(
                 vid = currentSale?.vid ?: System.currentTimeMillis()
             ).apply {
                 // Set client information if available
                 if (currentClient != null) {
-                    clientInformations = ModelAppsFather.ProduitModel.ClientBonVentModel.ClientInformations(
+                    clientInformations = _ModelAppsFather.ProduitModel.ClientBonVentModel.ClientInformations(
                         id = currentClient.vidSu,
                         nom = currentClient.nomClientsSu,
                         couleur = currentClient.couleurSu
@@ -175,7 +175,7 @@ private fun QuantityButton(
                 // Add color purchase details
                 colorDetails?.let { color ->
                     colours_Achete.add(
-                        ModelAppsFather.ProduitModel.ClientBonVentModel.ColorAchatModel(
+                        _ModelAppsFather.ProduitModel.ClientBonVentModel.ColorAchatModel(
                             vidPosition = System.currentTimeMillis(),
                             nom = color.nameColore,
                             quantity_Achete = quantity,
@@ -200,7 +200,7 @@ private fun QuantityButton(
                         }
 
                         // Update Firebase
-                        ModelAppsFather.updateProduct_produitsAvecBonsGrossist(product, viewModelInitApp)
+                        _ModelAppsFather.updateProduct_produitsAvecBonsGrossist(product, viewModelInitApp)
                     }
             }
         },
