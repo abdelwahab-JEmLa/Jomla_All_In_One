@@ -14,7 +14,6 @@ import com.google.firebase.database.Exclude
 import com.google.firebase.database.IgnoreExtraProperties
 import com.google.firebase.database.database
 import com.google.firebase.storage.storage
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.util.Objects
@@ -158,20 +157,42 @@ open class _ModelAppsFather(
             }
 
             companion object {
-                fun observeProductUpdates(
-                    scope: CoroutineScope,
-                    initViewModel: ViewModelInitApp
-                ) {
-                    scope.launch {
-                        initViewModel.productFlow.collect { updatedProducts ->
-                            updatedProducts.forEach { (_, produit) ->
-                                // Create new bon commande only if needed
-                                if (produit.bonCommendDeCetteCota == null && produit.bonsVentDeCetteCota.isNotEmpty()) {
+                fun calculeSelf(initViewModel: ViewModelInitApp, product: ProduitModel) {
+                    initViewModel._modelAppsFather.produitsMainDataBase
+                        .filter { it.id == product.id }
+                        .forEach { produit ->
+                            produit.bonCommendDeCetteCota = GrossistBonCommandes().apply {
+                                vid = System.currentTimeMillis()
+                                grossistInformations = GrossistInformations(
+                                    id = vid,
+                                    nom = "Non Defini",
+                                    couleur = "#FF0000"
+                                )
 
-                                }
+                                // Calculate quantities directly from bonsVentDeCetteCota
+                                produit.bonsVentDeCetteCota
+                                    .flatMap { it.colours_Achete }
+                                    .groupBy { it.nom }
+                                    .forEach { (nom, couleurs) ->
+                                        val firstColor = couleurs.first()
+                                        coloursEtGoutsCommendee.add(
+                                            ColoursGoutsCommendee(
+                                                id = firstColor.vidPosition,
+                                                nom = nom,
+                                                emoji = firstColor.imogi
+                                            ).apply {
+                                                quantityAchete =
+                                                    couleurs.sumOf { it.quantity_Achete }
+                                            }
+                                        )
+                                    }
                             }
+
+                            // Update Firebase
+                            produitsFireBaseRef.child(produit.id.toString())
+                                .child("bonCommendDeCetteCota")
+                                .setValue(produit.bonCommendDeCetteCota)
                         }
-                    }
                 }
             }
         }

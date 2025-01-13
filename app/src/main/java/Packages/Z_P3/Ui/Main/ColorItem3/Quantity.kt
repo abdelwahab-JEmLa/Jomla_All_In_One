@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun QuantityButton(
+ fun QuantityButton(
     quantity: Int,
     isSelected: Boolean,
     onClick: () -> Unit,
@@ -32,97 +32,62 @@ fun QuantityButton(
     Button(
         onClick = {
             onClick()
-
-            // 1. Get current color ID based on index
-            val currentColorId = currentSale?.let { sale ->
-                when (indexColoreAcheter) {
-                    0 -> sale.color1IdPicked
-                    1 -> sale.color2IdPicked
-                    2 -> sale.color3IdPicked
-                    3 -> sale.color4IdPicked
-                    else -> null
-                }
+            // Find the current color based on index
+            val currentColorId = when (indexColoreAcheter) {
+                0 -> currentSale?.color1IdPicked
+                1 -> currentSale?.color2IdPicked
+                2 -> currentSale?.color3IdPicked
+                3 -> currentSale?.color4IdPicked
+                else -> null
             }
 
-            // 2. Find color details and product
+            // Find the corresponding color details
             val colorDetails = colorsArticlesTabelleModele.find { it.idColore == currentColorId }
-            val product = currentSale?.let { sale ->
-                viewModelInitApp._modelAppsFather.produitsMainDataBase.find { it.id == sale.idArticle }
-            }
 
-            // 3. Update product if found
-            product?.let { currentProduct ->
-                // Create bon commande if it doesn't exist
-                if (currentProduct.bonCommendDeCetteCota == null) {
-                    val timeNow = System.currentTimeMillis()
-                    currentProduct.bonCommendDeCetteCota = _ModelAppsFather.ProduitModel.GrossistBonCommandes().apply {
-                        vid = timeNow
-                        grossistInformations = _ModelAppsFather.ProduitModel.GrossistBonCommandes.GrossistInformations(
-                            id = timeNow,
-                            nom = "Grossist_${timeNow % 1000}",
-                            couleur = "#FF0000"
-                        )
-                    }
+            // Create new purchase model
+            val newPurchase = _ModelAppsFather.ProduitModel.ClientBonVentModel(
+                vid = currentSale?.vid ?: System.currentTimeMillis()
+            ).apply {
+                // Set client information if available
+                if (currentClient != null) {
+                    clientInformations = _ModelAppsFather.ProduitModel.ClientBonVentModel.ClientInformations(
+                        id = currentClient.vidSu,
+                        nom = currentClient.nomClientsSu,
+                        couleur = currentClient.couleurSu
+                    )
                 }
 
-                // Update color quantity
+                // Add color purchase details
                 colorDetails?.let { color ->
-                    val existingColorEntry = currentProduct.bonCommendDeCetteCota?.coloursEtGoutsCommendee?.find {
-                        it.nom == color.nameColore
-                    }
-
-                    if (existingColorEntry != null) {
-                        existingColorEntry.quantityAchete += quantity
-                    } else {
-                        currentProduct.bonCommendDeCetteCota?.coloursEtGoutsCommendee?.add(
-                            _ModelAppsFather.ProduitModel.GrossistBonCommandes.ColoursGoutsCommendee(
-                                id = color.idColore,
-                                nom = color.nameColore,
-                                emoji = color.iconColore
-                            ).apply {
-                                quantityAchete = quantity
-                            }
+                    colours_Achete.add(
+                        _ModelAppsFather.ProduitModel.ClientBonVentModel.ColorAchatModel(
+                            vidPosition = System.currentTimeMillis(),
+                            nom = color.nameColore,
+                            quantity_Achete = quantity,
+                            imogi = color.iconColore
                         )
-                    }
+                    )
+                }
+            }
 
-                    // Create new purchase model
-                    val newPurchase = _ModelAppsFather.ProduitModel.ClientBonVentModel(
-                        vid = currentSale.vid ?: System.currentTimeMillis()
-                    ).apply {
-                        // Set client information
-                        currentClient?.let { client ->
-                            clientInformations = _ModelAppsFather.ProduitModel.ClientBonVentModel.ClientInformations(
-                                id = client.vidSu,
-                                nom = client.nomClientsSu,
-                                couleur = client.couleurSu
-                            )
+            // Update the database
+            if (currentSale != null) {
+                viewModelInitApp._modelAppsFather.produitsMainDataBase
+                    .find { it.id == currentSale.idArticle }?.let { product ->
+                        // Find and update existing sale or add new one
+                        val existingSaleIndex = product.bonsVentDeCetteCota.indexOfFirst {
+                            it.clientInformations?.id == currentClient?.vidSu
+                        }
+                        if (existingSaleIndex != -1) {
+                            product.bonsVentDeCetteCota[existingSaleIndex] = newPurchase
+                        } else {
+                            product.bonsVentDeCetteCota.add(newPurchase)
                         }
 
-                        // Add color purchase details
-                        colours_Achete.add(
-                            _ModelAppsFather.ProduitModel.ClientBonVentModel.ColorAchatModel(
-                                vidPosition = System.currentTimeMillis(),
-                                nom = color.nameColore,
-                                quantity_Achete = quantity,
-                                imogi = color.iconColore
-                            )
-                        )
+                        // Update Firebase
+                        _ModelAppsFather.updateProduit(product, viewModelInitApp)
+                        _ModelAppsFather.ProduitModel.GrossistBonCommandes.calculeSelf( viewModelInitApp,product,)
                     }
-
-                    // Update or add sale
-                    val existingSaleIndex = currentProduct.bonsVentDeCetteCota.indexOfFirst {
-                        it.clientInformations?.id == currentClient?.vidSu
-                    }
-
-                    if (existingSaleIndex != -1) {
-                        currentProduct.bonsVentDeCetteCota[existingSaleIndex] = newPurchase
-                    } else {
-                        currentProduct.bonsVentDeCetteCota.add(newPurchase)
-                    }
-
-                    // Update Firebase
-                    _ModelAppsFather.updateProduit(currentProduct, viewModelInitApp)
-                }
             }
         },
         modifier = Modifier
@@ -130,16 +95,20 @@ fun QuantityButton(
             .aspectRatio(1f),
         shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = if (isSelected) MaterialTheme.colorScheme.primary
-            else MaterialTheme.colorScheme.primaryContainer
+            containerColor = if (isSelected)
+                MaterialTheme.colorScheme.primary
+            else
+                MaterialTheme.colorScheme.primaryContainer
         )
     ) {
         Text(
             text = quantity.toString(),
             fontSize = 15.sp,
             fontWeight = FontWeight.Bold,
-            color = if (isSelected) MaterialTheme.colorScheme.onPrimary
-            else MaterialTheme.colorScheme.onPrimaryContainer
+            color = if (isSelected)
+                MaterialTheme.colorScheme.onPrimary
+            else
+                MaterialTheme.colorScheme.onPrimaryContainer
         )
     }
 }
