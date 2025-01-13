@@ -1,5 +1,6 @@
-package com.example.Z_AppsFather.Kotlin._4.Modules
+package Y_AppsFather.Z_AppsFather.Kotlin._4.Modules
 
+import Y_AppsFather.Kotlin.ModelAppsFather.Companion.imagesProduitsLocalExternalStorageBasePath
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,9 +27,8 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.signature.ObjectKey
-import Y_AppsFather.Kotlin.ModelAppsFather.Companion.imagesProduitsLocalExternalStorageBasePath
 import com.example.Z_AppsFather.Kotlin._1.Model.Parent.ArticleInfosModel
-import com.example.c_serveur.R
+import com.example.clientjetpack.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
