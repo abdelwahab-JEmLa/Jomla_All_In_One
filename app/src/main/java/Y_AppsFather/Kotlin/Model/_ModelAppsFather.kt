@@ -1,5 +1,8 @@
 package Y_AppsFather.Kotlin.Model
 
+import Y_AppsFather.Kotlin.BonType
+import Y_AppsFather.Kotlin.Model._ModelAppsFather.ProduitModel.ClientBonVentModel
+import Y_AppsFather.Kotlin.Model._ModelAppsFather.ProduitModel.GrossistBonCommandes
 import Y_AppsFather.Kotlin.ViewModelInitApp
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -14,6 +17,7 @@ import com.google.firebase.database.Exclude
 import com.google.firebase.database.IgnoreExtraProperties
 import com.google.firebase.database.database
 import com.google.firebase.storage.storage
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.util.Objects
@@ -157,6 +161,20 @@ open class _ModelAppsFather(
             }
 
             companion object {
+                fun updateSelf(
+                    produit: ProduitModel,
+                    bonCommande: GrossistBonCommandes,
+                    viewModelProduits: ViewModelInitApp
+                ) {
+                    produit.bonCommendDeCetteCota = bonCommande
+                    val index =
+                        viewModelProduits._modelAppsFather.produitsMainDataBase.indexOfFirst { it.id == produit.id }
+                    if (index != -1) {
+                        // Direct update of the SnapshotStateList
+                        viewModelProduits._modelAppsFather.produitsMainDataBase[index] = produit
+                    }
+                }
+
                 fun calculeSelf(initViewModel: ViewModelInitApp, product: ProduitModel) {
                     initViewModel._modelAppsFather.produitsMainDataBase
                         .filter { it.id == product.id }
@@ -247,8 +265,23 @@ open class _ModelAppsFather(
                 var quantity_Achete: Int = 0,
                 var imogi: String = ""
             )
+            companion object {
+                fun updateSelf(
+                    produit: ProduitModel,
+                    bonVente: ClientBonVentModel ,
+                    viewModelProduits: ViewModelInitApp
+                ) {
+                    produit.bonsVentDeCetteCota.removeAll { it.clientInformations?.id == bonVente.clientInformations?.id }
+                    produit.bonsVentDeCetteCota.add(bonVente)
+                    val index =
+                        viewModelProduits._modelAppsFather.produitsMainDataBase.indexOfFirst { it.id == produit.id }
+                    if (index != -1) {
+                        // Direct update of the SnapshotStateList
+                        viewModelProduits._modelAppsFather.produitsMainDataBase[index] = produit
+                    }
+                }
+            }
         }
-
     }
 
     companion object {
@@ -300,7 +333,44 @@ open class _ModelAppsFather(
             }
         }
 
-        fun updateProduit( //Renamed from updateProduct_produitsAvecBonsGrossist
+        fun collectBonType(
+            viewModel: ViewModelInitApp,
+            scope: CoroutineScope
+        ) {
+            scope.launch {
+                viewModel.bonTypeFlow.collect { bonType ->
+                    when (bonType) {
+                        is BonType.BonVente -> {
+                            // Handle bon vente updates
+                            val bonVente = bonType.data
+                            viewModel._modelAppsFather.produitsMainDataBase
+                                .filter { it.bonsVentDeCetteCota.any { bv -> bv.clientInformations?.id == bonVente.clientInformations?.id } }
+                                .forEach { produit ->
+                                    ClientBonVentModel.updateSelf(produit, bonVente,viewModel)
+                                    GrossistBonCommandes.calculeSelf(viewModel, produit)
+                                }
+                        }
+
+                        is BonType.BonCommande -> {
+                            // Handle bon commande updates
+                            val bonCommande = bonType.data
+                            viewModel._modelAppsFather.produitsMainDataBase
+                                .filter { it.bonCommendDeCetteCota?.grossistInformations?.id == bonCommande.grossistInformations?.id }
+                                .forEach { produit ->
+                                    GrossistBonCommandes.updateSelf(produit, bonCommande, viewModel)
+                                }
+                        }
+
+                        null -> {}
+                    }
+                }
+            }
+        }
+
+
+
+
+        fun updateProduit(
             product: ProduitModel,
             viewModelProduits: ViewModelInitApp
         ) {

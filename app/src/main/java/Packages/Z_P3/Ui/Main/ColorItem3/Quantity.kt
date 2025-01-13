@@ -86,7 +86,8 @@ import androidx.compose.ui.unit.sp
 
                         // Update Firebase
                         _ModelAppsFather.updateProduit(product, viewModelInitApp)
-                        _ModelAppsFather.ProduitModel.GrossistBonCommandes.calculeSelf( viewModelInitApp,product,)
+                        _ModelAppsFather.ProduitModel.GrossistBonCommandes
+                            .calculeSelf( viewModelInitApp,product,)
                     }
             }
         },

@@ -17,6 +17,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class ViewModelInitApp : ViewModel() {
@@ -28,6 +29,11 @@ class ViewModelInitApp : ViewModel() {
     var isLoading by mutableStateOf(false)
     var initializationComplete by mutableStateOf(false)
 
+    private val _bonCommandeFlow = MutableStateFlow<ProduitModel.GrossistBonCommandes?>(null)
+    val bonCommandeFlow = _bonCommandeFlow.asStateFlow()
+    private val _bonTypeFlow = MutableStateFlow<BonType<*>?>(null)
+    val bonTypeFlow = _bonTypeFlow.asStateFlow()
+
     init {
         viewModelScope.launch {
             try {
@@ -35,6 +41,9 @@ class ViewModelInitApp : ViewModel() {
                 if (0 == 0) calculateurOktapuluse(this@ViewModelInitApp)
                 else CreeNewStart(_modelAppsFather, 0)
                 setupSimpleDataListener()
+
+                _ModelAppsFather.collectBonType(this@ViewModelInitApp, viewModelScope)
+
                 initializationComplete = true
             } catch (e: Exception) {
                 Log.e("ViewModelInitApp", "Init failed", e)
@@ -44,6 +53,18 @@ class ViewModelInitApp : ViewModel() {
         }
     }
 
+//    fun updateProduitsAvecBonsGrossist() {
+//        _produitsAvecBonsGrossist.clear()
+//        _produitsAvecBonsGrossist
+//            .addAll(produitsMainDataBase
+//                .filter { it.bonCommendDeCetteCota != null }
+//                .sortedBy {
+//                    it.bonCommendDeCetteCota
+//                        ?.positionProduitDonGrossistChoisiPourAcheterCeProduit
+//                }
+//            )
+//    }
+
     private fun setupSimpleDataListener() {
         _modelAppsFather.produitsMainDataBase.forEach { produit ->
             produitsFireBaseRef.child(produit.id.toString())
@@ -51,42 +72,21 @@ class ViewModelInitApp : ViewModel() {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         viewModelScope.launch {
                             try {
-                                // Update bons de vente
-                                snapshot.child("bonsVentDeCetteCota").children
-                                    .mapNotNull { it.getValue(ProduitModel.ClientBonVentModel::class.java) }
-                                    .let { newBonsVent ->
-                                        val index = _modelAppsFather.produitsMainDataBase
-                                            .indexOfFirst { it.id == produit.id }
-
-                                        if (index != -1) {
-                                            _modelAppsFather.produitsMainDataBase[index].apply {
-                                                bonsVentDeCetteCota.clear()
-                                                bonsVentDeCetteCota.addAll(newBonsVent)
-                                            }
-                                        }
+                                // Update bon de commande
+                                snapshot.child("bonCommendDeCetteCota")
+                                    .getValue(ProduitModel.GrossistBonCommandes::class.java)
+                                    ?.let { newBonCommande ->
+                                        _bonCommandeFlow.value = newBonCommande
+                                        _bonTypeFlow.value = BonType.BonCommande(newBonCommande)
                                     }
 
                                 // Update bon de commande
                                 snapshot.child("bonCommendDeCetteCota")
                                     .getValue(ProduitModel.GrossistBonCommandes::class.java)
                                     ?.let { newBonCommande ->
-                                        val index = _modelAppsFather.produitsMainDataBase
-                                            .indexOfFirst { it.id == produit.id }
-
-                                        if (index != -1) {
-                                            _modelAppsFather.produitsMainDataBase[index]
-                                                .bonCommendDeCetteCota = newBonCommande
-                                        }
+                                        _bonCommandeFlow.value = newBonCommande
+                                        _bonTypeFlow.value = BonType.BonCommande(newBonCommande)
                                     }
-
-                                // Update product flow and grossist list
-                                val updatedProduct = _modelAppsFather.produitsMainDataBase
-                                    .find { it.id == produit.id }
-
-                                updatedProduct?.let {
-                                    _productFlow.value = mapOf(it.id to it)
-                                    updateProduitsAvecBonsGrossist()
-                                }
 
                             } catch (e: Exception) {
                                 Log.e("ViewModelInitApp", "Update failed for ${produit.id}", e)
@@ -100,20 +100,8 @@ class ViewModelInitApp : ViewModel() {
                 })
         }
     }
-
-    private fun updateProduitsAvecBonsGrossist() {
-        _produitsAvecBonsGrossist.clear()
-        _produitsAvecBonsGrossist.addAll(
-            _modelAppsFather.produitsMainDataBase
-                .filter { it.bonCommendDeCetteCota != null }
-                .sortedBy { it.bonCommendDeCetteCota?.positionProduitDonGrossistChoisiPourAcheterCeProduit }
-        )
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        viewModelScope.launch {
-            _productFlow.value = emptyMap()
-        }
-    }
+}
+sealed class BonType<T> {
+    class BonVente(val data: ProduitModel.ClientBonVentModel) : BonType<ProduitModel.ClientBonVentModel>()
+    class BonCommande(val data: ProduitModel.GrossistBonCommandes) : BonType<ProduitModel.GrossistBonCommandes>()
 }
