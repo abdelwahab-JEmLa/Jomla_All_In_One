@@ -122,7 +122,7 @@ private fun handleQuantitySelection(
 
         // Update Firebase and recalculate
         _ModelAppsFather.updateProduit(product, viewModelInitApp)
-        _ModelAppsFather.ProduitModel.GrossistBonCommandes.calculeSelf(viewModelInitApp, product)
+      //  _ModelAppsFather.ProduitModel.GrossistBonCommandes.calculeSelf(viewModelInitApp, product)
 
     } catch (e: Exception) {
         Log.e("QuantityButton", "Error updating sale", e)
