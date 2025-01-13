@@ -6,6 +6,7 @@ import Y_AppsFather.Kotlin.Model._ModelAppsFather.ProduitModel
 import Y_AppsFather.Z_AppsFather.Kotlin._3.Init.calculateurOktapuluse
 import android.util.Log
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -24,10 +25,12 @@ class ViewModelInitApp : ViewModel() {
     var _paramatersAppsViewModelModel by mutableStateOf(ParamatersAppsModel())
     var _modelAppsFather by mutableStateOf(_ModelAppsFather())
     var _produitsAvecBonsGrossist = mutableStateListOf<ProduitModel>()
+    val modelAppsFather: _ModelAppsFather get() = _modelAppsFather
+    val produitsMainDataBase = _modelAppsFather.produitsMainDataBase
 
     private val _productFlow = MutableStateFlow<Map<Long, ProduitModel>>(emptyMap())
     var isLoading by mutableStateOf(false)
-    var initializationComplete by mutableStateOf(false)
+    var loadingProgress by mutableFloatStateOf(0f)
 
     private val _bonCommandeFlow = MutableStateFlow<ProduitModel.GrossistBonCommandes?>(null)
     val bonCommandeFlow = _bonCommandeFlow.asStateFlow()
@@ -44,7 +47,7 @@ class ViewModelInitApp : ViewModel() {
 
                 _ModelAppsFather.collectBonType(this@ViewModelInitApp, viewModelScope)
 
-                initializationComplete = true
+                isLoading = true
             } catch (e: Exception) {
                 Log.e("ViewModelInitApp", "Init failed", e)
             } finally {
@@ -53,17 +56,17 @@ class ViewModelInitApp : ViewModel() {
         }
     }
 
-//    fun updateProduitsAvecBonsGrossist() {
-//        _produitsAvecBonsGrossist.clear()
-//        _produitsAvecBonsGrossist
-//            .addAll(produitsMainDataBase
-//                .filter { it.bonCommendDeCetteCota != null }
-//                .sortedBy {
-//                    it.bonCommendDeCetteCota
-//                        ?.positionProduitDonGrossistChoisiPourAcheterCeProduit
-//                }
-//            )
-//    }
+    fun updateProduitsAvecBonsGrossist() {
+        _produitsAvecBonsGrossist.clear()
+        _produitsAvecBonsGrossist
+            .addAll(_modelAppsFather.produitsMainDataBase
+                .filter { it.bonCommendDeCetteCota != null }
+                .sortedBy {
+                    it.bonCommendDeCetteCota
+                        ?.positionProduitDonGrossistChoisiPourAcheterCeProduit
+                }
+            )
+    }
 
     private fun setupSimpleDataListener() {
         _modelAppsFather.produitsMainDataBase.forEach { produit ->
