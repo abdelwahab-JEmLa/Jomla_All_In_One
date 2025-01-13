@@ -112,8 +112,9 @@ open class _ModelAppsFather(
         @IgnoreExtraProperties
         class ColourEtGout_Model(
             var position_Du_Couleur_Au_Produit: Long = 0,
-            var nom: String = "",
-            var imogi: String = "",
+            val id: Long = 0,
+            var nom: String = "Non Defini",
+            var imogi: String = "🎨",
             var sonImageNeExistPas: Boolean = false,
         )
 
@@ -368,7 +369,24 @@ open class _ModelAppsFather(
                     "/IMGs" +
                     "/BaseDonne"
 
+        fun createNewProduct(viewModelInitApp: ViewModelInitApp): _ModelAppsFather.ProduitModel {
+            val maxId = viewModelInitApp._modelAppsFather.produitsMainDataBase
+                .maxOfOrNull { it.id } ?: 0
 
+            return _ModelAppsFather.ProduitModel(
+                id = maxId + 1,
+                itsTempProduit = true,
+                init_nom = "New Product ${maxId + 1}"
+            ).apply {
+                coloursEtGouts.add(
+                    _ModelAppsFather.ProduitModel.ColourEtGout_Model(
+                        sonImageNeExistPas = true
+                    )
+                )
+            }.also {
+                viewModelInitApp._modelAppsFather.produitsMainDataBase.add(it)
+            }
+        }
         fun update_produitsAvecBonsGrossist(
             updatedProducts: List<ProduitModel>, // Change parameter type to List
             viewModelProduits: ViewModelInitApp
