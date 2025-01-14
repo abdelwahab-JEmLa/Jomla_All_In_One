@@ -44,7 +44,7 @@ class ViewModelInitApp : ViewModel() {
         viewModelScope.launch {
             try {
                 isLoading = true
-                val nmr= 0
+                val nmr = 0
                 if (nmr == 0) calculateurOktapuluse(this@ViewModelInitApp)
                 else CreeNewStart(_modelAppsFather, nmr)
                 setupDataListeners()
