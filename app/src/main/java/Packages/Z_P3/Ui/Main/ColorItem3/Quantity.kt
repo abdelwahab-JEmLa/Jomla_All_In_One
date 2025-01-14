@@ -30,15 +30,6 @@ fun QuantityButton(
     currentClient: ClientsModel?,
     colorDetails: ColorsArticlesTabelle
 ) {
-    if (currentSale?.clientSoldToItId == colorDetails.idColore) {
-        handleQuantitySelection(
-            1,
-            currentSale,
-            currentClient,
-            colorDetails,
-            viewModelInitApp
-        )
-    }
 
     Button(
         onClick = {

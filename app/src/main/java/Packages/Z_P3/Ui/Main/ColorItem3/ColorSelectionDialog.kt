@@ -29,13 +29,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 
 @Composable
- fun ColorSelectionDialog(
+fun ColorSelectionDialog(
     onDismiss: () -> Unit,
     currentQuantity: Int,
     colorName: String,
     onQuantitySelected: (Int) -> Unit,
     currentSale: SoldArticlesTabelle?,
-    viewModelInitApp: ViewModelInitApp, currentClient: ClientsModel?, indexColoreAcheter: Int,
+    viewModelInitApp: ViewModelInitApp,
+    currentClient: ClientsModel?,
+    indexColoreAcheter: Int,
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
     color: ColorsArticlesTabelle
 ) {
@@ -81,17 +83,17 @@ import androidx.compose.ui.window.Dialog
                         onQuantitySelected(quantity)
                         onDismiss()
                     },
-                    currentSale =currentSale,
-                    viewModelInitApp =viewModelInitApp,
-                    currentClient,indexColoreAcheter,
-                    colorsArticlesTabelleModele = colorsArticlesTabelleModele  ,
-                    color=color
+                    currentSale = currentSale,
+                    viewModelInitApp = viewModelInitApp,
+                    currentClient = currentClient,
+                    indexColoreAcheter = indexColoreAcheter,
+                    colorsArticlesTabelleModele = colorsArticlesTabelleModele,
+                    color = color
                 )
             }
         }
     }
 }
-
 @Composable
 private fun QuantityGrid(
     currentQuantity: Int,
@@ -104,7 +106,33 @@ private fun QuantityGrid(
     color: ColorsArticlesTabelle
 ) {
     val quantities = remember {
-        listOf(0,1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11,12,13,14, 15, 20, 21, 22, 23,24, 25, 30, 40, 50)
+        listOf(
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            30,
+            40,
+            50
+        )
     }
 
     LazyVerticalGrid(

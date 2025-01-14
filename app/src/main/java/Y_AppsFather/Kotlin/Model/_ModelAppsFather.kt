@@ -1,5 +1,6 @@
 package Y_AppsFather.Kotlin.Model
 
+import Y_AppsFather.Kotlin.Model._ModelAppsFather.ProduitModel.GrossistBonCommandes.Companion.updateChildren
 import Y_AppsFather.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -100,35 +101,7 @@ open class _ModelAppsFather(
                 historiqueBonsCommend.addAll(value)
             }
 
-        private fun createDerivedBonCommande(): GrossistBonCommandes? {
-            val processedColors = mutableListOf<GrossistBonCommandes.ColoursGoutsCommendee>()
-
-            bonsVentDeCetteCota
-                .flatMap { it.colours_Achete }
-                .groupBy { it.couleurId }
-                .forEach { (couleurId, colorList) ->
-                    colorList.firstOrNull()?.let { firstColor ->
-                        val totalQuantity = colorList.sumOf { it.quantity_Achete }
-
-                        val newCommendee = GrossistBonCommandes.ColoursGoutsCommendee(
-                            id = couleurId,
-                            nom = firstColor.nom,
-                            emoji = firstColor.imogi
-                        ).apply {
-                            quantityAchete = totalQuantity
-                        }
-
-                        if (newCommendee.quantityAchete > 0) {
-                            processedColors.add(newCommendee)
-                        }
-                    }
-                }
-
-            // Return null if there are no processed colors
-            if (processedColors.isEmpty()) {
-                return null
-            }
-
+        private fun createDerivedBonCommande(): GrossistBonCommandes {
             return GrossistBonCommandes().apply {
                 grossistInformations = GrossistBonCommandes.GrossistInformations(
                     id = 0L,
@@ -139,13 +112,38 @@ open class _ModelAppsFather(
                     positionInGrossistsList = 0
                 }
 
+                val processedColors = mutableListOf<GrossistBonCommandes.ColoursGoutsCommendee>()
+
+                bonsVentDeCetteCota
+                    .flatMap { it.colours_Achete }
+                    .groupBy { it.couleurId }
+                    .forEach { (couleurId, colorList) ->
+                        colorList.firstOrNull()?.let { firstColor ->
+                            val totalQuantity = colorList.sumOf { it.quantity_Achete }
+
+                            val newCommendee = GrossistBonCommandes.ColoursGoutsCommendee(
+                                id = couleurId,
+                                nom = firstColor.nom,
+                                emoji = firstColor.imogi
+                            ).apply {
+                                quantityAchete = totalQuantity
+                            }
+
+                            if (newCommendee.quantityAchete > 0) {
+                                processedColors.add(newCommendee)
+                            }
+                        }
+                    }
+
                 coloursEtGoutsCommendee.clear()
                 coloursEtGoutsCommendee.addAll(processedColors)
             }
+
         }
 
         fun updateBonCommande() {
             _bonCommendDeCetteCota = createDerivedBonCommande()
+            updateChildren(_bonCommendDeCetteCota!!,this)
         }
 
         @IgnoreExtraProperties

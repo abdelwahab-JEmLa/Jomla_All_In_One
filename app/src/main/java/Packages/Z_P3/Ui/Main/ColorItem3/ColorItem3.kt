@@ -1,5 +1,8 @@
 package Packages.Z_P3.Ui.Main.ColorItem3
+
 import Packages.Z_P3.Ui.Objects.ImageDisplayer3
+import Y_AppsFather.Kotlin.Model._ModelAppsFather
+import Y_AppsFather.Kotlin.Model._ModelAppsFather.Companion.createNewProduct
 import Y_AppsFather.Kotlin.ViewModel.ViewModelInitApp
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ClientsModel
@@ -24,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,7 +52,7 @@ fun ColorItem3(
     modifier: Modifier = Modifier,
     currentSale: SoldArticlesTabelle?,
     article: ArticlesBasesStatsTable,
-    color: ColorsArticlesTabelle?,
+    color: ColorsArticlesTabelle,
     index: Int,
     reloadTrigger: Int,
     viewModel: HeadViewModel,
@@ -63,7 +67,7 @@ fun ColorItem3(
     // Enhanced quantity tracking that considers the color's position
     val currentQuantity = remember(color?.idColore, currentSale) {
         currentSale?.let { sale ->
-            when (color?.idColore) {
+            when (color.idColore) {
                 sale.color1IdPicked -> sale.color1SoldQuantity
                 sale.color2IdPicked -> sale.color2SoldQuantity
                 sale.color3IdPicked -> sale.color3SoldQuantity
@@ -82,6 +86,64 @@ fun ColorItem3(
         targetValue = if (isSelected || isMainColor) 8f else 2f,
         label = "cardElevation"
     )
+
+    LaunchedEffect(key1 = currentSale?.idArticle) {
+        if (color.idColore==currentSale?.color1IdPicked) {
+            val product = viewModelInitApp._modelAppsFather.produitsMainDataBase
+                .find { it.id == currentSale?.idArticle }
+                ?: createNewProduct(viewModelInitApp, currentSale?.nameArticle!!)
+
+            // Create or update color purchase
+            val colorPurchase = _ModelAppsFather.ProduitModel.ClientBonVentModel.ColorAchatModel(
+                couleurId = color.idColore,
+                nom = color.nameColore,
+                quantity_Achete = 1,
+                imogi = color.iconColore
+            )
+
+            // Get or create sale
+            val existingSaleIndex = product.bonsVentDeCetteCota
+                .indexOfFirst { it.clientInformations?.id == currentClient?.idClientsSu }
+
+            if (existingSaleIndex != -1) {
+                // Update existing sale
+                val existingSale = product.bonsVentDeCetteCota[existingSaleIndex]
+                val colorIndex = existingSale.colours_Achete
+                    .indexOfFirst { it.couleurId == color.idColore }
+
+                if (colorIndex != -1) {
+                    existingSale.colours_Achete[colorIndex] = colorPurchase
+                } else {
+                    existingSale.colours_Achete.add(colorPurchase)
+
+                }
+            } else {
+                // Create new sale
+                val newSale = _ModelAppsFather.ProduitModel.ClientBonVentModel(
+                    vid = currentSale?.vid ?: System.currentTimeMillis()
+                ).apply {
+                    clientInformations = currentClient?.let {
+                        _ModelAppsFather.ProduitModel.ClientBonVentModel.ClientInformations(
+                            id = it.idClientsSu,
+                            nom = it.nomClientsSu,
+                            couleur = it.couleurSu
+                        ).apply {
+                            positionDonClientsList = 0
+                            auFilterFAB = false
+                        }
+                    }
+                    colours_Achete.add(colorPurchase)
+                }
+                product.bonCommendDeCetteCota
+
+                product.bonsVentDeCetteCota.add(newSale)
+
+            }
+
+            _ModelAppsFather.updateProduit(product, viewModelInitApp)
+            product.updateBonCommande()
+        }
+    }
 
     Box(
         modifier = modifier.height(height)
@@ -165,8 +227,8 @@ fun ColorItem3(
     // Enhanced dialog with improved quantity validation
     if (showDialog && color != null) {
         ColorSelectionDialog(
-            currentSale=currentSale,
-            viewModelInitApp=viewModelInitApp,
+            currentSale = currentSale,
+            viewModelInitApp = viewModelInitApp,
             onDismiss = {
                 showDialog = false
                 isSelected = false
@@ -175,28 +237,31 @@ fun ColorItem3(
             colorName = color.nameColore,
             onQuantitySelected = { newQuantity ->
                 // Validate quantity before updating
-                    viewModel.updateColorSelection(color.idColore, newQuantity)
+                viewModel.updateColorSelection(color.idColore, newQuantity)
 
 
-                    // Update scroll position for sub-colors
-                    viewModel.sendOrderToClientDisplayer(
-                        WifiUpdateClientDisplayerStats.ClientWindowsLazyRowSupColorsScrolle.prefix,
-                        index
-                    )
+                // Update scroll position for sub-colors
+                viewModel.sendOrderToClientDisplayer(
+                    WifiUpdateClientDisplayerStats.ClientWindowsLazyRowSupColorsScrolle.prefix,
+                    index
+                )
 
-                    // Update selected color
-                    viewModel.sendOrderToClientDisplayer(
-                        WifiUpdateClientDisplayerStats.ClientWindowsSelectedColorId.prefix,
-                        color.idColore
-                    )
+                // Update selected color
+                viewModel.sendOrderToClientDisplayer(
+                    WifiUpdateClientDisplayerStats.ClientWindowsSelectedColorId.prefix,
+                    color.idColore
+                )
 
-                    // Save the transaction
-                    viewModel.saveSaleTransactionToSoldAriclesList()
+                // Save the transaction
+                viewModel.saveSaleTransactionToSoldAriclesList()
 
                 showDialog = false
                 isSelected = false
-            }, currentClient = currentClient,
-            indexColoreAcheter=index, colorsArticlesTabelleModele = colorsArticlesTabelleModele,color=color
+            },
+            currentClient = currentClient,
+            indexColoreAcheter = index,
+            colorsArticlesTabelleModele = colorsArticlesTabelleModele,
+            color = color
         )
     }
 }
@@ -255,7 +320,7 @@ private fun ColorInfoSection(
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
- fun ColorIcon(
+fun ColorIcon(
     iconColore: String,
     onClick: () -> Unit
 ) {
@@ -280,6 +345,7 @@ private fun ColorInfoSection(
                         contentScale = ContentScale.Fit
                     )
                 }
+
                 else -> {
                     Text(
                         text = iconColore,
