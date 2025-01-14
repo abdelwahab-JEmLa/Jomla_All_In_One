@@ -1,6 +1,8 @@
 package P4_SoldCartScreen
 
 import Y_AppsFather.Kotlin.Model._ModelAppsFather.Companion.updateProduit
+
+i mport Y_AppsFather.Kotlin.Model._ModelAppsFather.Companion.updateProduit
 import Y_AppsFather.Kotlin.ViewModelInitApp
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ClientsModel
@@ -468,8 +470,9 @@ private fun ColorItemWithQuantity(
                     viewModelInitApp._modelAppsFather.produitsMainDataBase
                         .find { it.id.toInt() == article.idArticle }?.let { product ->
                             // Find and remove the specific sale for the current client
-                            product.bonsVentDeCetteCota.forEach { bonVente ->
-                                // Remove the color from the purchased colors list
+                            product.bonsVentDeCetteCota
+                                .filter { it.clientInformations?.id ==clientBuyerNow.idClientsSu }
+                                .forEach { bonVente ->
                                 bonVente.colours_Achete.removeIf { it.couleurId == colorId }
                             }
 
