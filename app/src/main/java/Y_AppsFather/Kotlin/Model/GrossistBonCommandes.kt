@@ -1,10 +1,9 @@
-package Y_AppsFather.Kotlin.Model.Res
+package Y_AppsFather.Kotlin.Model
 
-import Y_AppsFather.Kotlin.Model._ModelAppsFather
 import Y_AppsFather.Kotlin.Model._ModelAppsFather.Companion.produitsFireBaseRef
 import Y_AppsFather.Kotlin.Model._ModelAppsFather.ProduitModel.GrossistBonCommandes
 import Y_AppsFather.Kotlin.Model._ModelAppsFather.ProduitModel.GrossistBonCommandes.ColoursGoutsCommendee
-import Y_AppsFather.Kotlin.ViewModelInitApp
+import Y_AppsFather.Kotlin.ViewModel.ViewModelInitApp
 import android.util.Log
 
 open class ExtensionGrossistBonCommandes {

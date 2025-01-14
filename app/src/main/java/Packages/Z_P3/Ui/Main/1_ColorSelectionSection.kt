@@ -1,7 +1,7 @@
 package Packages.Z_P3.Ui.Main
 
 import Packages.Z_P3.Ui.Main.ColorItem3.ColorItem3
-import Y_AppsFather.Kotlin.ViewModelInitApp
+import Y_AppsFather.Kotlin.ViewModel.ViewModelInitApp
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ClientsModel
 import a_RoomDB.ColorsArticlesTabelle

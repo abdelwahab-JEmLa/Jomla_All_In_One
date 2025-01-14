@@ -1,8 +1,8 @@
-package Y_AppsFather.Kotlin
+package Y_AppsFather.Kotlin.ViewModel
 
 import Y_AppsFather.Kotlin.Model._ModelAppsFather
-import Y_AppsFather.Kotlin.Model._ModelAppsFather.Companion.produitsFireBaseRef
 import Y_AppsFather.Kotlin.Model._ModelAppsFather.ProduitModel
+import Y_AppsFather.Kotlin.ViewModel.Extensions.setupSimpleDataListener
 import Y_AppsFather.Z_AppsFather.Kotlin._3.Init.calculateurOktapuluse
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -14,9 +14,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.Z_AppsFather.Kotlin._1.Model.ParamatersAppsModel
 import com.example.Z_AppsFather.Kotlin._3.Init.CreeNewStart
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -32,9 +29,9 @@ class ViewModelInitApp : ViewModel() {
     var isLoading by mutableStateOf(false)
     var loadingProgress by mutableFloatStateOf(0f)
 
-    private val _bonCommandeFlow = MutableStateFlow<ProduitModel.GrossistBonCommandes?>(null)
+    val _bonCommandeFlow = MutableStateFlow<ProduitModel.GrossistBonCommandes?>(null)
     val bonCommandeFlow = _bonCommandeFlow.asStateFlow()
-    private val _bonTypeFlow = MutableStateFlow<BonType<*>?>(null)
+    val _bonTypeFlow = MutableStateFlow<BonType<*>?>(null)
     val bonTypeFlow = _bonTypeFlow.asStateFlow()
 
     init {
@@ -68,41 +65,6 @@ class ViewModelInitApp : ViewModel() {
             )
     }
 
-    private fun setupSimpleDataListener() {
-        _modelAppsFather.produitsMainDataBase.forEach { produit ->
-            produitsFireBaseRef.child(produit.id.toString())
-                .addValueEventListener(object : ValueEventListener {
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        viewModelScope.launch {
-                            try {
-                                // Update bon de commande
-                                snapshot.child("bonCommendDeCetteCota")
-                                    .getValue(ProduitModel.GrossistBonCommandes::class.java)
-                                    ?.let { newBonCommande ->
-                                        _bonCommandeFlow.value = newBonCommande
-                                        _bonTypeFlow.value = BonType.BonCommande(newBonCommande)
-                                    }
-
-                                // Update bon de commande
-                                snapshot.child("bonCommendDeCetteCota")
-                                    .getValue(ProduitModel.GrossistBonCommandes::class.java)
-                                    ?.let { newBonCommande ->
-                                        _bonCommandeFlow.value = newBonCommande
-                                        _bonTypeFlow.value = BonType.BonCommande(newBonCommande)
-                                    }
-
-                            } catch (e: Exception) {
-                                Log.e("ViewModelInitApp", "Update failed for ${produit.id}", e)
-                            }
-                        }
-                    }
-
-                    override fun onCancelled(error: DatabaseError) {
-                        Log.e("ViewModelInitApp", "Firebase error: ${error.message}")
-                    }
-                })
-        }
-    }
 }
 sealed class BonType<T> {
     class BonVente(val data: ProduitModel.ClientBonVentModel) : BonType<ProduitModel.ClientBonVentModel>()

@@ -1,8 +1,6 @@
 package Y_AppsFather.Kotlin.Model
 
-import Y_AppsFather.Kotlin.Model.Res.ExtensionGrossistBonCommandes
-import Y_AppsFather.Kotlin.Model.Res.ExtensionProduitModel
-import Y_AppsFather.Kotlin.ViewModelInitApp
+import Y_AppsFather.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf

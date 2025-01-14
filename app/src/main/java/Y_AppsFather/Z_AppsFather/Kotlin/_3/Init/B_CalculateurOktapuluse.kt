@@ -1,6 +1,6 @@
 package Y_AppsFather.Z_AppsFather.Kotlin._3.Init
 
-import Y_AppsFather.Kotlin.ViewModelInitApp
+import Y_AppsFather.Kotlin.ViewModel.ViewModelInitApp
 
 suspend fun calculateurOktapuluse(viewModelInitApp: ViewModelInitApp) {
     try {

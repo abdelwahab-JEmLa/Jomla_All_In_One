@@ -8,7 +8,7 @@ import P0_MainScreen.Ui.Main.AppNavHost.Screen
 import P0_MainScreen.Ui.Objects.ConnexionCard
 import P7_EStorePresentationToClient.Main.FragmentDisplayeInfoProductToClient7
 import P7_EStorePresentationToClient.Main.SearchArticle
-import Y_AppsFather.Kotlin.ViewModelInitApp
+import Y_AppsFather.Kotlin.ViewModel.ViewModelInitApp
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
