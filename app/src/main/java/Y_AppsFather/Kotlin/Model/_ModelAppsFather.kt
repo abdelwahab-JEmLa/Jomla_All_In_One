@@ -1,25 +1,16 @@
 package Y_AppsFather.Kotlin.Model
 
-import Y_AppsFather.Kotlin.BonType
-import Y_AppsFather.Kotlin.Model._ModelAppsFather.ProduitModel.ClientBonVentModel
-import Y_AppsFather.Kotlin.Model._ModelAppsFather.ProduitModel.GrossistBonCommandes
+import Y_AppsFather.Kotlin.Model.Res.ExtensionGrossistBonCommandes
+import Y_AppsFather.Kotlin.Model.Res.ExtensionProduitModel
 import Y_AppsFather.Kotlin.ViewModelInitApp
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
-import androidx.lifecycle.viewModelScope
-import com.google.firebase.Firebase
 import com.google.firebase.database.Exclude
 import com.google.firebase.database.IgnoreExtraProperties
-import com.google.firebase.database.database
-import com.google.firebase.storage.storage
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import java.util.Objects
 
 @IgnoreExtraProperties
@@ -34,20 +25,16 @@ open class _ModelAppsFather(
     class ProduitModel(
         var id: Long = 0,
         var itsTempProduit: Boolean = false,
-        init_nom: String = "",
-        init_besoin_To_Be_Updated: Boolean = false,
-        initialNon_Trouve: Boolean = false,
         init_colours_Et_Gouts: List<ColourEtGout_Model> = emptyList(),
         init_bonCommendDeCetteCota: GrossistBonCommandes? = null,
         initBonsVentDeCetteCota: List<ClientBonVentModel> = emptyList(),
-        init_visible: Boolean = true,
         init_historiqueBonsVents: List<ClientBonVentModel> = emptyList(),
         init_historiqueBonsCommend: List<GrossistBonCommandes> = emptyList(),
     ) {
-        var nom: String by mutableStateOf(init_nom)
-        var besoinToBeUpdated: Boolean by mutableStateOf(init_besoin_To_Be_Updated)
-        var non_Trouve: Boolean by mutableStateOf(initialNon_Trouve)
-        var isVisible: Boolean by mutableStateOf(init_visible)
+        var nom: String by mutableStateOf("")
+        var besoinToBeUpdated: Boolean by mutableStateOf(false)
+        var non_Trouve: Boolean by mutableStateOf(false)
+        var isVisible: Boolean by mutableStateOf(true)
 
         var statuesBase: StatuesBase by mutableStateOf(StatuesBase())
 
@@ -119,7 +106,7 @@ open class _ModelAppsFather(
         )
 
         @IgnoreExtraProperties
-        class GrossistBonCommandes(
+        open class GrossistBonCommandes(
             var vid: Long = 0,
             init_grossistInformations: GrossistInformations? = null,
             var date: String = "",
@@ -161,127 +148,7 @@ open class _ModelAppsFather(
                 var quantityAchete: Int by mutableIntStateOf(0)
             }
 
-            companion object {
-                fun updateSelf(
-                    produit: ProduitModel,
-                    bonCommande: GrossistBonCommandes,
-                    viewModelProduits: ViewModelInitApp
-                ) {
-                    produit.bonCommendDeCetteCota = bonCommande
-                    val index =
-                        viewModelProduits._modelAppsFather.produitsMainDataBase.indexOfFirst { it.id == produit.id }
-                    if (index != -1) {
-                        // Direct update of the SnapshotStateList
-                        viewModelProduits._modelAppsFather.produitsMainDataBase[index] = produit
-                    }
-                }
-
-                fun calculeSelf(initViewModel: ViewModelInitApp, product: ProduitModel) {
-                    initViewModel._modelAppsFather.produitsMainDataBase
-                        .filter { it.id == product.id }
-                        .forEach { produit ->
-                            try {
-                                val newBonCommande = GrossistBonCommandes().apply {
-                                    vid = System.currentTimeMillis()
-                                    grossistInformations = GrossistInformations(
-                                        id = vid,
-                                        nom = "Non Defini",
-                                        couleur = "#FF0000"
-                                    ).apply {
-                                        auFilterFAB = false
-                                        positionInGrossistsList = 0
-                                    }
-
-                                    // Initialize empty list for Firebase
-                                    coloursEtGoutsCommendee.clear()
-
-                                    Log.d("CalculeSelf", "Started processing for product ${produit.id}")
-
-                                    // Create a temporary list to hold the processed colors
-                                    val processedColors = mutableListOf<ColoursGoutsCommendee>()
-
-                                    produit.bonsVentDeCetteCota
-                                        .flatMap { it.colours_Achete }
-                                        .groupBy { it.couleurId }
-                                        .forEach { (couleurId, colorList) ->
-                                            Log.d("CalculeSelf", "Processing color: $couleurId")
-
-                                            colorList.firstOrNull()?.let { firstColor ->
-                                                val totalQuantity = colorList.sumOf { it.quantity_Achete }
-
-                                                val newCommendee = ColoursGoutsCommendee(
-                                                    id = couleurId,
-                                                    nom = firstColor.nom,
-                                                    emoji = firstColor.imogi
-                                                ).apply {
-                                                    quantityAchete = totalQuantity
-                                                }
-
-                                                if (newCommendee.quantityAchete > 0) {
-                                                    processedColors.add(newCommendee)
-                                                    Log.d("CalculeSelf", "Added to processed colors: $couleurId, quantity: $totalQuantity")
-                                                }
-                                            }
-                                        }
-
-                                    // Add all processed colors to the commendee list
-                                    coloursEtGoutsCommendee.addAll(processedColors)
-
-                                    Log.d("CalculeSelf", "Final coloursEtGoutsCommendee size: ${coloursEtGoutsCommendee.size}")
-                                }
-
-                                produit.bonCommendDeCetteCota = newBonCommande
-
-                                updateChildren(newBonCommande, produit)
-
-                            } catch (e: Exception) {
-                                Log.e("CalculeSelf", "Calculation error for product ${produit.id}", e)
-                                e.printStackTrace()
-                            }
-                        }
-                }
-
-                 fun updateChildren(
-                    newBonCommande: GrossistBonCommandes,
-                    produit: ProduitModel
-                ) {
-                    // Create a map for Firebase update
-                    val updates = mapOf(
-                        "bonCommendDeCetteCota" to mapOf(
-                            "vid" to newBonCommande.vid,
-                            "grossistInformations" to newBonCommande.grossistInformations,
-                            "coloursEtGoutsCommendeeList" to newBonCommande.coloursEtGoutsCommendee.map { commendee ->
-                                mapOf(
-                                    "id" to commendee.id,
-                                    "nom" to commendee.nom,
-                                    "emoji" to commendee.emoji,
-                                    "quantityAchete" to commendee.quantityAchete
-                                )
-                            },
-                            "date" to newBonCommande.date,
-                            "date_String_Divise" to newBonCommande.date_String_Divise,
-                            "time_String_Divise" to newBonCommande.time_String_Divise,
-                            "currentCreditBalance" to newBonCommande.currentCreditBalance,
-                            "cpositionCheyCeGrossit" to newBonCommande.cPositionCheyCeGrossit,
-                            "positionProduitDonGrossistChoisiPourAcheterCeProduit" to
-                                    newBonCommande.positionProduitDonGrossistChoisiPourAcheterCeProduit
-                        )
-                    )
-
-                    // Update Firebase with explicit structure
-                    produitsFireBaseRef.child(produit.id.toString())
-                        .updateChildren(updates)
-                        .addOnSuccessListener {
-                            Log.d(
-                                "CalculeSelf",
-                                "Successfully updated Firebase for product ${produit.id}"
-                            )
-                        }
-                        .addOnFailureListener { exception ->
-                            Log.e("CalculeSelf", "Firebase update failed", exception)
-                        }
-                }
-            }
+            companion object : ExtensionGrossistBonCommandes()
         }
 
         @IgnoreExtraProperties
@@ -353,129 +220,5 @@ open class _ModelAppsFather(
             }
         }
     }
-
-    companion object {
-        val produitsFireBaseRef = Firebase.database
-            .getReference("0_UiState_3_Host_Package_3_Prototype11Dec")
-            .child("produits")
-
-        val imagesProduitsFireBaseStorageRef = Firebase.storage.reference
-            .child("Images Articles Data Base")
-            .child("produits")
-
-        const val imagesProduitsLocalExternalStorageBasePath =
-            "/storage/emulated/0/" +
-                    "Abdelwahab_jeMla.com" +
-                    "/IMGs" +
-                    "/BaseDonne"
-
-        fun createNewProduct(viewModelInitApp: ViewModelInitApp, nameArticle: String ?= null ):ProduitModel {
-            val maxId = viewModelInitApp._modelAppsFather.produitsMainDataBase
-                .maxOfOrNull { it.id } ?: 0
-
-            return ProduitModel(
-                id = maxId + 1,
-                itsTempProduit = true,
-                init_nom = nameArticle?:"New Product ${maxId + 1}"
-            ).apply {
-                coloursEtGouts.add(
-                    ProduitModel.ColourEtGout_Model(
-                        sonImageNeExistPas = true
-                    )
-                )
-            }.also {
-                viewModelInitApp._modelAppsFather.produitsMainDataBase.add(it)
-            }
-        }
-        fun update_produitsAvecBonsGrossist(
-            updatedProducts: List<ProduitModel>, // Change parameter type to List
-            viewModelProduits: ViewModelInitApp
-        ) {
-            viewModelProduits.viewModelScope.launch {
-                try {
-                    // Update local state
-                    viewModelProduits._produitsAvecBonsGrossist.clear()
-                    viewModelProduits._produitsAvecBonsGrossist.addAll(updatedProducts)
-
-                    // Then update Firebase in chunks to prevent overwhelming the connection
-                    UpdateFireBase(updatedProducts)
-                } catch (e: Exception) {
-                    Log.e("Firebase", "Error updating products", e)
-                    throw e
-                }
-            }
-        }
-
-        suspend fun UpdateFireBase(updatedProducts: List<ProduitModel>) {
-            updatedProducts.chunked(5).forEach { chunk ->
-                chunk.forEach { product ->
-                    try {
-                        produitsFireBaseRef.child(product.id.toString()).setValue(product)
-                            .await()
-                        Log.d("Firebase", "Successfully updated product ${product.id}")
-                    } catch (e: Exception) {
-                        Log.e("Firebase", "Failed to update product ${product.id}", e)
-                    }
-                }
-            }
-        }
-
-        fun collectBonType(
-            viewModel: ViewModelInitApp,
-            scope: CoroutineScope
-        ) {
-            scope.launch {
-                viewModel.bonTypeFlow.collect { bonType ->
-                    when (bonType) {
-                        is BonType.BonVente -> {
-                            // Handle bon vente updates
-                            val bonVente = bonType.data
-                            viewModel._modelAppsFather.produitsMainDataBase
-                                .filter { it.bonsVentDeCetteCota.any { bv -> bv.clientInformations?.id == bonVente.clientInformations?.id } }
-                                .forEach { produit ->
-                                    ClientBonVentModel.updateSelf(produit, bonVente,viewModel)
-                                    GrossistBonCommandes.calculeSelf(viewModel, produit)
-                                }
-                        }
-
-                        is BonType.BonCommande -> {
-                            // Handle bon commande updates
-                            val bonCommande = bonType.data
-                            viewModel._modelAppsFather.produitsMainDataBase
-                                .filter { it.bonCommendDeCetteCota?.grossistInformations?.id == bonCommande.grossistInformations?.id }
-                                .forEach { produit ->
-                                    GrossistBonCommandes.updateSelf(produit, bonCommande, viewModel)
-                                }
-                        }
-
-                        null -> {}
-                    }
-                }
-            }
-        }
-
-        fun updateProduit(
-            product: ProduitModel,
-            viewModelProduits: ViewModelInitApp
-        ) {
-            viewModelProduits.viewModelScope.launch {
-                try {
-                    // Update Firebase
-                    produitsFireBaseRef.child(product.id.toString()).setValue(product).await()
-
-                    // Update _produitsAvecBonsGrossist
-                    val index =
-                        viewModelProduits._modelAppsFather.produitsMainDataBase.indexOfFirst { it.id == product.id }
-                    if (index != -1) {
-                        // Direct update of the SnapshotStateList
-                        viewModelProduits._modelAppsFather.produitsMainDataBase[index] = product
-                    }
-
-                    Log.d("ViewModelInitApp", "Successfully updated product ${product.id}")
-                } catch (e: Exception) {
-                    Log.e("ViewModelInitApp", "Failed to update product ${product.id}", e)
-                }
-            }
-        }
-    }
+    companion object : ExtensionProduitModel()
 }

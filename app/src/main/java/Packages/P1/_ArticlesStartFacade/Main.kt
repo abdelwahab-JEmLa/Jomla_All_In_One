@@ -371,7 +371,7 @@ private data class ScrollUpdate(
     val offset: Int
 )
 
-// Extension functions for scroll handling
+// ExtensionProduitModel functions for scroll handling
 private fun Int.toScrollUpdate(): ScrollUpdate {
     return ScrollUpdate(
         position = this,

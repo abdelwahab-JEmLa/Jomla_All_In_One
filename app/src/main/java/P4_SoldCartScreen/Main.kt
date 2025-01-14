@@ -2,7 +2,6 @@ package P4_SoldCartScreen
 
 import Y_AppsFather.Kotlin.Model._ModelAppsFather.Companion.updateProduit
 
-i mport Y_AppsFather.Kotlin.Model._ModelAppsFather.Companion.updateProduit
 import Y_AppsFather.Kotlin.ViewModelInitApp
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ClientsModel
