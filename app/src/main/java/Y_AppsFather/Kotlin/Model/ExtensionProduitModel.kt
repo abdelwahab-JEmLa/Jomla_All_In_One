@@ -2,7 +2,7 @@ package Y_AppsFather.Kotlin.Model
 
 import Y_AppsFather.Kotlin.Model._ModelAppsFather.ProduitModel.ClientBonVentModel
 import Y_AppsFather.Kotlin.Model._ModelAppsFather.ProduitModel.GrossistBonCommandes
-import Y_AppsFather.Kotlin.ViewModel.BonType
+import Y_AppsFather.Kotlin.ViewModel.Extensions.BonType
 import Y_AppsFather.Kotlin.ViewModel.ViewModelInitApp
 import android.util.Log
 import androidx.lifecycle.viewModelScope
@@ -20,7 +20,7 @@ open class ExtensionProduitModel {
     val imagesProduitsFireBaseStorageRef = Firebase.storage.reference
         .child("Images Articles Data Base")
         .child("produits")
-     val imagesProduitsLocalExternalStorageBasePath =
+    val imagesProduitsLocalExternalStorageBasePath =
         "/storage/emulated/0/" +
                 "Abdelwahab_jeMla.com" +
                 "/IMGs" +
@@ -95,7 +95,7 @@ open class ExtensionProduitModel {
                             .filter { it.bonsVentDeCetteCota.any { bv -> bv.clientInformations?.id == bonVente.clientInformations?.id } }
                             .forEach { produit ->
                                 ClientBonVentModel.updateSelf(produit, bonVente, viewModel)
-                                GrossistBonCommandes.calculeSelf(viewModel, produit)
+                                GrossistBonCommandes.calculeSelf(produit, viewModel)
                             }
                     }
 

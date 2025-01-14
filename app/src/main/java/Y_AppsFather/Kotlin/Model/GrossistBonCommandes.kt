@@ -21,8 +21,8 @@ open class ExtensionGrossistBonCommandes {
         }
     }
 
-    fun calculeSelf(initViewModel: ViewModelInitApp, product: _ModelAppsFather.ProduitModel) {
-        initViewModel._modelAppsFather.produitsMainDataBase
+    fun calculeSelf(product: _ModelAppsFather.ProduitModel, viewModelInitApp: ViewModelInitApp) {
+        viewModelInitApp._modelAppsFather.produitsMainDataBase
             .filter { it.id == product.id }
             .forEach { produit ->
                 try {

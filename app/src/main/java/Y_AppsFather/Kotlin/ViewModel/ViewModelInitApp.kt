@@ -2,6 +2,7 @@ package Y_AppsFather.Kotlin.ViewModel
 
 import Y_AppsFather.Kotlin.Model._ModelAppsFather
 import Y_AppsFather.Kotlin.Model._ModelAppsFather.ProduitModel
+import Y_AppsFather.Kotlin.ViewModel.Extensions.BonType
 import Y_AppsFather.Kotlin.ViewModel.Extensions.setupSimpleDataListener
 import Y_AppsFather.Z_AppsFather.Kotlin._3.Init.calculateurOktapuluse
 import android.util.Log
@@ -30,6 +31,7 @@ class ViewModelInitApp : ViewModel() {
     var loadingProgress by mutableFloatStateOf(0f)
 
     val _bonCommandeFlow = MutableStateFlow<ProduitModel.GrossistBonCommandes?>(null)
+    val _bonVentFlow = MutableStateFlow<ProduitModel.ClientBonVentModel?>(null)
     val bonCommandeFlow = _bonCommandeFlow.asStateFlow()
     val _bonTypeFlow = MutableStateFlow<BonType<*>?>(null)
     val bonTypeFlow = _bonTypeFlow.asStateFlow()
@@ -65,8 +67,4 @@ class ViewModelInitApp : ViewModel() {
             )
     }
 
-}
-sealed class BonType<T> {
-    class BonVente(val data: ProduitModel.ClientBonVentModel) : BonType<ProduitModel.ClientBonVentModel>()
-    class BonCommande(val data: ProduitModel.GrossistBonCommandes) : BonType<ProduitModel.GrossistBonCommandes>()
 }
