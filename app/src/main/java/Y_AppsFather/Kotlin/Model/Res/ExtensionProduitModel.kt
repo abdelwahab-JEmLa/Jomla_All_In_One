@@ -37,8 +37,8 @@ open class ExtensionProduitModel {
         return _ModelAppsFather.ProduitModel(
             id = maxId + 1,
             itsTempProduit = true,
-            init_nom = nameArticle ?: "New Product ${maxId + 1}"
         ).apply {
+            nom = nameArticle ?: "New Product ${maxId + 1}"
             coloursEtGouts.add(
                 _ModelAppsFather.ProduitModel.ColourEtGout_Model(
                     sonImageNeExistPas = true

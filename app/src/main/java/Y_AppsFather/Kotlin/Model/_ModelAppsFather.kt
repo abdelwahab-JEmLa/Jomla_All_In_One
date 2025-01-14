@@ -25,16 +25,20 @@ open class _ModelAppsFather(
     class ProduitModel(
         var id: Long = 0,
         var itsTempProduit: Boolean = false,
+        init_nom: String = "",
+        init_besoin_To_Be_Updated: Boolean = false,
+        initialNon_Trouve: Boolean = false,
         init_colours_Et_Gouts: List<ColourEtGout_Model> = emptyList(),
         init_bonCommendDeCetteCota: GrossistBonCommandes? = null,
         initBonsVentDeCetteCota: List<ClientBonVentModel> = emptyList(),
+        init_visible: Boolean = true,
         init_historiqueBonsVents: List<ClientBonVentModel> = emptyList(),
         init_historiqueBonsCommend: List<GrossistBonCommandes> = emptyList(),
     ) {
-        var nom: String by mutableStateOf("")
-        var besoinToBeUpdated: Boolean by mutableStateOf(false)
-        var non_Trouve: Boolean by mutableStateOf(false)
-        var isVisible: Boolean by mutableStateOf(true)
+        var nom: String by mutableStateOf(init_nom)
+        var besoinToBeUpdated: Boolean by mutableStateOf(init_besoin_To_Be_Updated)
+        var non_Trouve: Boolean by mutableStateOf(initialNon_Trouve)
+        var isVisible: Boolean by mutableStateOf(init_visible)
 
         var statuesBase: StatuesBase by mutableStateOf(StatuesBase())
 
