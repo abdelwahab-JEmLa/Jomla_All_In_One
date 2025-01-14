@@ -99,6 +99,7 @@ private fun handleQuantitySelection(
                 existingSale.colours_Achete[colorIndex] = colorPurchase
             } else {
                 existingSale.colours_Achete.add(colorPurchase)
+
             }
         } else {
             // Create new sale
@@ -117,10 +118,16 @@ private fun handleQuantitySelection(
                 }
                 colours_Achete.add(colorPurchase)
             }
+
+            product.bonCommendDeCetteCota
+
             product.bonsVentDeCetteCota.add(newSale)
+
         }
 
         _ModelAppsFather.updateProduit(product, viewModelInitApp)
+        product.updateBonCommande()
+
     } catch (e: Exception) {
         Log.e("QuantityButton", "Error updating sale", e)
     }
