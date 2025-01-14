@@ -1,5 +1,7 @@
 package P4_SoldCartScreen
 
+import Y_AppsFather.Kotlin.Model._ModelAppsFather.Companion.updateProduit
+import Y_AppsFather.Kotlin.ViewModelInitApp
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ClientsModel
 import a_RoomDB.ColorsArticlesTabelle
@@ -70,7 +72,7 @@ fun SoldCartScreen(
     modifier: Modifier = Modifier,
     clientBuyerNow: ClientsModel? = null,
     uiState: UiState,
-    onConfirmOrder: () -> Unit
+    onConfirmOrder: () -> Unit, viewModelInitApp: ViewModelInitApp
 ) {
     var showOrderSuccess by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
@@ -137,18 +139,22 @@ fun SoldCartScreen(
                     key = { it.vid }
                 ) { soldArticle ->
                     val baseArticle = uiState.articlesBasesStatTables.find {
-                        it.idArticle.toLong() ==  soldArticle.idArticle
+                        it.idArticle.toLong() == soldArticle.idArticle
                     }
 
                     if (baseArticle != null) {
-                        CartItem(
-                            soldArticle = soldArticle,
-                            baseArticle = baseArticle,
-                            colors = uiState.colorsArticlesTabelleModel,
-                            viewModel = viewModel,
-                            onOpenArticleStats = {_,_->},
-                            uiState = uiState
-                        )
+                        if (clientBuyerNow != null) {
+                            CartItem(
+                                soldArticle = soldArticle,
+                                baseArticle = baseArticle,
+                                colors = uiState.colorsArticlesTabelleModel,
+                                viewModel = viewModel,
+                                onOpenArticleStats = { _, _ -> },
+                                uiState = uiState,
+                                viewModelInitApp = viewModelInitApp,
+                                clientBuyerNow = clientBuyerNow
+                            )
+                        }
                     }
                 }
             }
@@ -167,6 +173,7 @@ fun SoldCartScreen(
         }
     }
 }
+
 // First, let's add the missing extension function for SoldArticlesTabelle
 fun SoldArticlesTabelle.getTotalQuantity(): Int {
     return color1SoldQuantity + color2SoldQuantity + color3SoldQuantity + color4SoldQuantity
@@ -236,7 +243,10 @@ fun ImageDisplayer4(
     val viewModelImagesPath = viewModel.viewModelImagesPath
 
     val baseImagePath = remember(viewModelImagesPath, article.idArticle, indexColor) {
-        File(viewModelImagesPath, "${article.idArticle}_${if (indexColor == -1) "Unite" else (indexColor + 1)}")
+        File(
+            viewModelImagesPath,
+            "${article.idArticle}_${if (indexColor == -1) "Unite" else (indexColor + 1)}"
+        )
             .absolutePath
     }
 
@@ -286,9 +296,6 @@ fun ImageDisplayer4(
 }
 
 
-
-
-
 @Composable
 fun CartItem(
     soldArticle: SoldArticlesTabelle,
@@ -296,7 +303,7 @@ fun CartItem(
     colors: List<ColorsArticlesTabelle>,
     viewModel: HeadViewModel,
     onOpenArticleStats: (ArticlesBasesStatsTable, Int) -> Unit,
-    uiState: UiState
+    uiState: UiState, viewModelInitApp: ViewModelInitApp, clientBuyerNow: ClientsModel
 ) {
     ElevatedCard(
         elevation = CardDefaults.elevatedCardElevation(
@@ -346,11 +353,18 @@ fun CartItem(
                                 article = baseArticle,
                                 colorIndex = index,
                                 quantity = quantity,
-                                onDelete = { viewModel.resetColorSelectionFromSoldArt(soldArticle,index) },
+                                onDelete = {
+                                    viewModel.resetColorSelectionFromSoldArt(
+                                        soldArticle,
+                                        index
+                                    )
+                                },
                                 viewModel = viewModel,
                                 onOpenArticleStats = onOpenArticleStats,
                                 uiState = uiState,
-                                colors = colors
+                                colors = colors,
+                                viewModelInitApp = viewModelInitApp,
+                                clientBuyerNow = clientBuyerNow
                             )
                         }
                     }
@@ -359,8 +373,9 @@ fun CartItem(
         }
     }
 }
+
 @Composable
- fun EmptyCartMessage() {
+fun EmptyCartMessage() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -388,7 +403,7 @@ fun CartItem(
 }
 
 @Composable
- fun OrderSuccessMessage() {
+fun OrderSuccessMessage() {
     Surface(
         color = MaterialTheme.colorScheme.primaryContainer,
         shape = MaterialTheme.shapes.medium,
@@ -416,7 +431,6 @@ fun CartItem(
 }
 
 
-
 @Composable
 private fun ColorItemWithQuantity(
     article: ArticlesBasesStatsTable,
@@ -427,7 +441,9 @@ private fun ColorItemWithQuantity(
     onOpenArticleStats: (ArticlesBasesStatsTable, Int) -> Unit,
     uiState: UiState,
     colors: List<ColorsArticlesTabelle>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModelInitApp: ViewModelInitApp,
+    clientBuyerNow: ClientsModel
 ) {
     ElevatedCard(
         modifier = modifier
@@ -437,70 +453,90 @@ private fun ColorItemWithQuantity(
     ) {
         Box(
             modifier = Modifier.fillMaxSize()
-        )  {
-        // Delete Button
-        IconButton(
-            onClick = onDelete,
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .zIndex(1f)
-                .background(
-                    color = MaterialTheme.colorScheme.error,
-                    shape = CircleShape
-                )
-                .padding(4.dp)
         ) {
-            Icon(
-                imageVector = Icons.Default.Delete,
-                contentDescription = "Delete color",
-                tint = Color.White
-            )
-        }
+            // Delete Button
+            IconButton(
+                onClick = {
+                    onDelete()
+                    val colorId = when (colorIndex) {
+                        0 -> article.idcolor1
+                        1 -> article.idcolor2
+                        2 -> article.idcolor3
+                        3 -> article.idcolor4
+                        else -> 0L
+                    }
+                    viewModelInitApp._modelAppsFather.produitsMainDataBase
+                        .find { it.id.toInt() == article.idArticle }?.let { product ->
+                            // Find and remove the specific sale for the current client
+                            product.bonsVentDeCetteCota.forEach { bonVente ->
+                                // Remove the color from the purchased colors list
+                                bonVente.colours_Achete.removeIf { it.couleurId == colorId }
+                            }
 
-        // Image with Quantity Overlay
-        ImageDisplayer4(
-            modifier = Modifier.fillMaxSize(),
-            article = article,
-            viewModel = viewModel,
-            indexColor = colorIndex,
-            onClickToOpenWindos = onOpenArticleStats,
-            uiState = uiState
-        )
-
-        // Color info overlay
-        Column(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .background(
-                    color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
+                            // Update the product in Firebase
+                            updateProduit(product, viewModelInitApp)
+                        }
+                },
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .zIndex(1f)
+                    .background(
+                        color = MaterialTheme.colorScheme.error,
+                        shape = CircleShape
+                    )
+                    .padding(4.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Delete color",
+                    tint = Color.White
                 )
-                .padding(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            // Get color name
-            val colorId = when (colorIndex) {
-                0 -> article.idcolor1
-                1 -> article.idcolor2
-                2 -> article.idcolor3
-                3 -> article.idcolor4
-                else -> 0L
             }
-            val colorName = colors.find { it.idColore == colorId }?.nameColore ?: ""
 
-            Text(
-                text = colorName,
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
+            // Image with Quantity Overlay
+            ImageDisplayer4(
+                modifier = Modifier.fillMaxSize(),
+                article = article,
+                viewModel = viewModel,
+                indexColor = colorIndex,
+                onClickToOpenWindos = onOpenArticleStats,
+                uiState = uiState
             )
-            Text(
-                text = "×$quantity",
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
-                fontWeight = FontWeight.Bold
-            )
+
+            // Color info overlay
+            Column(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .background(
+                        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
+                    )
+                    .padding(8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // Get color name
+                val colorId = when (colorIndex) {
+                    0 -> article.idcolor1
+                    1 -> article.idcolor2
+                    2 -> article.idcolor3
+                    3 -> article.idcolor4
+                    else -> 0L
+                }
+                val colorName = colors.find { it.idColore == colorId }?.nameColore ?: ""
+
+                Text(
+                    text = colorName,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+                Text(
+                    text = "×$quantity",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    fontWeight = FontWeight.Bold
+                )
+            }
         }
-    }
     }
 }
 

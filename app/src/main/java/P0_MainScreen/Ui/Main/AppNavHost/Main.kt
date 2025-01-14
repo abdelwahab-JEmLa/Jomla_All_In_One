@@ -120,7 +120,7 @@ fun AppNavHost(
                         uiState = uiState,
                         onConfirmOrder = {
                             appViewModels.headViewModel.updateLongAppSetting("clientBuyerNowId", 0)
-                        }
+                        }, viewModelInitApp = viewModelInitApp
                     )
                 }
             }
