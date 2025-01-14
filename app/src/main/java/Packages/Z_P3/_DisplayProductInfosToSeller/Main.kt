@@ -6,6 +6,7 @@ import Packages.Z_P3.Ui.Objects.ActionsButtonRow
 import Packages.Z_P3.Ui.Objects.ProductNameSection3
 import Packages.Z_P3.Ui.Objects.confirmExitDialog
 import Y_AppsFather.Kotlin.Model._ModelAppsFather
+import Y_AppsFather.Kotlin.Model._ModelAppsFather.Companion.produitsFireBaseRef
 import Y_AppsFather.Kotlin.ViewModel.ViewModelInitApp
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ClientsModel
@@ -66,6 +67,7 @@ fun P3DisplayeProductInfosToSeller(
             uiState = uiState, lockExpandedPrices = lockExpandedPrices, onToggleLockExpandedPricex = onToggleLockExpandedPricex,
             viewModelInitApp = viewModelInitApp, currentClient = currentClient,colorsArticlesTabelleModele = viewModel._uiState.value.colorsArticlesTabelleModel
         )
+
     }
 }
 
@@ -147,17 +149,22 @@ fun MainUi(
                         onCancel = {
                             viewModel.deleteSoldArticle(currentSale.vid)
                             onDismiss()
-
+                            viewModelInitApp._modelAppsFather.produitsMainDataBase
+                                .removeIf { it.id == currentSale.idArticle && it.itsTempProduit}
+                                .also {
+                                    produitsFireBaseRef
+                                    .child(currentSale.idArticle.toString())
+                                    .removeValue()
+                                }
                             // Find the product and update it
                             viewModelInitApp._modelAppsFather.produitsMainDataBase
                                 .find { it.id == currentSale.idArticle }?.let { product ->
-                                    // Find and remove the specific sale for the current client
+
                                     product.bonsVentDeCetteCota
                                         .removeIf { bonsVent ->
                                             bonsVent.clientInformations?.id == currentClient?.idClientsSu
                                         }
 
-                                    // Update the product in Firebase
                                     _ModelAppsFather.updateProduit(product, viewModelInitApp)
                                 }
                         }

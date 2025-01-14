@@ -1,9 +1,9 @@
 package Packages.P1._ArticlesStartFacade
 
 import P0_MainScreen.Ui.Objects.LoadingOverlay
-import Packages.P1._ArticlesStartFacade.FloatingActionButtonGroup.FloatingActionButtonGroup
 import Packages.P1.Ui.ArticlesGrid.ArticleGridWithScrollbar
 import Packages.P1.Ui.Objects.SearchFilterPB
+import Packages.P1._ArticlesStartFacade.FloatingActionButtonGroup.FloatingActionButtonGroup
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ClientsModel
 import android.util.Log
@@ -80,6 +80,7 @@ fun FragmentStartupScreen(
         scrollTiger, onToggleLockHost = onToggleLockHost,
         onToggleLockExpandedPricex = onToggleLockExpandedPricex, currentClient = currentClient,
     )
+
 }
 
 @Composable

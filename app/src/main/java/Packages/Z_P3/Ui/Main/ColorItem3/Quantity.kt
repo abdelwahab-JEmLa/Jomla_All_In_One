@@ -30,6 +30,16 @@ fun QuantityButton(
     currentClient: ClientsModel?,
     colorDetails: ColorsArticlesTabelle
 ) {
+    if (currentSale?.color1SoldQuantity?.toLong() == colorDetails.idColore) {
+        handleQuantitySelection(
+            1,
+            currentSale,
+            currentClient,
+            colorDetails,
+            viewModelInitApp
+        )
+    }
+
     Button(
         onClick = {
             onClick()
@@ -64,7 +74,7 @@ fun QuantityButton(
     }
 }
 
-private fun handleQuantitySelection(
+fun handleQuantitySelection(
     quantity: Int,
     currentSale: SoldArticlesTabelle?,
     currentClient: ClientsModel?,
@@ -75,12 +85,12 @@ private fun handleQuantitySelection(
         // Find or create product
         val product = viewModelInitApp._modelAppsFather.produitsMainDataBase
             .find { it.id == currentSale?.idArticle }
-            ?: createNewProduct(viewModelInitApp,currentSale?.nameArticle!!)
+            ?: createNewProduct(viewModelInitApp, currentSale?.nameArticle!!)
 
         // Create or update color purchase
         val colorPurchase = _ModelAppsFather.ProduitModel.ClientBonVentModel.ColorAchatModel(
-            couleurId = colorDetails.idColore ,
-            nom = colorDetails.nameColore ,
+            couleurId = colorDetails.idColore,
+            nom = colorDetails.nameColore,
             quantity_Achete = quantity,
             imogi = colorDetails.iconColore
         )
@@ -118,7 +128,6 @@ private fun handleQuantitySelection(
                 }
                 colours_Achete.add(colorPurchase)
             }
-
             product.bonCommendDeCetteCota
 
             product.bonsVentDeCetteCota.add(newSale)
