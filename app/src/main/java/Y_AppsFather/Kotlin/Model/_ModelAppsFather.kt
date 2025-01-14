@@ -1,5 +1,6 @@
 package Y_AppsFather.Kotlin.Model
 
+import Y_AppsFather.Kotlin.Model._ModelAppsFather.ProduitModel.GrossistBonCommandes.Companion.updateChildren
 import Y_AppsFather.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -11,7 +12,6 @@ import com.google.firebase.database.Exclude
 import com.google.firebase.database.IgnoreExtraProperties
 import java.util.Objects
 
-@IgnoreExtraProperties
 open class _ModelAppsFather(
     initial_Produits_Main_DataBase: List<ProduitModel> = emptyList()
 ) {
@@ -51,9 +51,21 @@ open class _ModelAppsFather(
                 coloursEtGouts.addAll(value)
             }
 
-        var bonCommendDeCetteCota: GrossistBonCommandes? by mutableStateOf(
+        // Nouvelle implémentation avec derived state pour bonCommendDeCetteCota
+        private var _bonCommendDeCetteCota by mutableStateOf<GrossistBonCommandes?>(
             init_bonCommendDeCetteCota
         )
+
+        var bonCommendDeCetteCota: GrossistBonCommandes?
+            get() {
+                if (_bonCommendDeCetteCota == null && bonsVentDeCetteCota.isNotEmpty()) {
+                    _bonCommendDeCetteCota = createDerivedBonCommande()
+                }
+                return _bonCommendDeCetteCota
+            }
+            set(value) {
+                _bonCommendDeCetteCota = value
+            }
 
         @get:Exclude
         var bonsVentDeCetteCota: SnapshotStateList<ClientBonVentModel> =
@@ -64,6 +76,7 @@ open class _ModelAppsFather(
             set(value) {
                 bonsVentDeCetteCota.clear()
                 bonsVentDeCetteCota.addAll(value)
+                updateBonCommande() // Update derived state when sales data changes
             }
 
         @get:Exclude
@@ -87,6 +100,51 @@ open class _ModelAppsFather(
                 historiqueBonsCommend.clear()
                 historiqueBonsCommend.addAll(value)
             }
+
+        private fun createDerivedBonCommande(): GrossistBonCommandes {
+            return GrossistBonCommandes().apply {
+                grossistInformations = GrossistBonCommandes.GrossistInformations(
+                    id = 0L,
+                    nom = "Non Defini",
+                    couleur = "#FF0000"
+                ).apply {
+                    auFilterFAB = false
+                    positionInGrossistsList = 0
+                }
+
+                val processedColors = mutableListOf<GrossistBonCommandes.ColoursGoutsCommendee>()
+
+                bonsVentDeCetteCota
+                    .flatMap { it.colours_Achete }
+                    .groupBy { it.couleurId }
+                    .forEach { (couleurId, colorList) ->
+                        colorList.firstOrNull()?.let { firstColor ->
+                            val totalQuantity = colorList.sumOf { it.quantity_Achete }
+
+                            val newCommendee = GrossistBonCommandes.ColoursGoutsCommendee(
+                                id = couleurId,
+                                nom = firstColor.nom,
+                                emoji = firstColor.imogi
+                            ).apply {
+                                quantityAchete = totalQuantity
+                            }
+
+                            if (newCommendee.quantityAchete > 0) {
+                                processedColors.add(newCommendee)
+                            }
+                        }
+                    }
+
+                coloursEtGoutsCommendee.clear()
+                coloursEtGoutsCommendee.addAll(processedColors)
+            }
+
+        }
+
+        fun updateBonCommande() {
+            _bonCommendDeCetteCota = createDerivedBonCommande()
+            updateChildren(_bonCommendDeCetteCota!!,this)
+        }
 
         @IgnoreExtraProperties
         class StatuesBase(
@@ -120,15 +178,12 @@ open class _ModelAppsFather(
             var grossistInformations: GrossistInformations? by mutableStateOf(
                 init_grossistInformations
             )
-
             var cPositionCheyCeGrossit: Boolean by mutableStateOf(false)
-            var positionProduitDonGrossistChoisiPourAcheterCeProduit: Int
-                    by mutableStateOf(0)
+            var positionProduitDonGrossistChoisiPourAcheterCeProduit: Int by mutableStateOf(0)
 
             @get:Exclude
             var coloursEtGoutsCommendee: SnapshotStateList<ColoursGoutsCommendee> =
                 init_coloursEtGoutsCommendee.toMutableStateList()
-
 
             @IgnoreExtraProperties
             data class GrossistInformations(
@@ -137,8 +192,7 @@ open class _ModelAppsFather(
                 val couleur: String = ""
             ) {
                 var auFilterFAB: Boolean by mutableStateOf(false)
-                var positionInGrossistsList: Int
-                        by mutableIntStateOf(0)
+                var positionInGrossistsList: Int by mutableIntStateOf(0)
             }
 
             @IgnoreExtraProperties
@@ -179,8 +233,7 @@ open class _ModelAppsFather(
                 val couleur: String = ""
             ) {
                 var auFilterFAB: Boolean by mutableStateOf(false)
-                var positionDonClientsList: Int
-                        by mutableIntStateOf(0)
+                var positionDonClientsList: Int by mutableIntStateOf(0)
 
                 override fun equals(other: Any?): Boolean {
                     if (this === other) return true
@@ -193,7 +246,6 @@ open class _ModelAppsFather(
                 override fun hashCode(): Int {
                     return Objects.hash(id, nom, couleur)
                 }
-
             }
 
             @IgnoreExtraProperties
@@ -204,10 +256,11 @@ open class _ModelAppsFather(
                 var quantity_Achete: Int = 0,
                 var imogi: String = ""
             )
+
             companion object {
                 fun updateSelf(
                     produit: ProduitModel,
-                    bonVente: ClientBonVentModel ,
+                    bonVente: ClientBonVentModel,
                     viewModelProduits: ViewModelInitApp
                 ) {
                     produit.bonsVentDeCetteCota.removeAll { it.clientInformations?.id == bonVente.clientInformations?.id }
@@ -215,7 +268,7 @@ open class _ModelAppsFather(
                     val index =
                         viewModelProduits._modelAppsFather.produitsMainDataBase.indexOfFirst { it.id == produit.id }
                     if (index != -1) {
-                        // Direct update of the SnapshotStateList
+                        produit.updateBonCommande() // Update derived state after modifying sales data
                         viewModelProduits._modelAppsFather.produitsMainDataBase[index] = produit
                     }
                 }

@@ -4,6 +4,7 @@ import Y_AppsFather.Kotlin.Model._ModelAppsFather
 import Y_AppsFather.Kotlin.Model._ModelAppsFather.Companion.produitsFireBaseRef
 import Y_AppsFather.Kotlin.Model._ModelAppsFather.ProduitModel
 import Y_AppsFather.Kotlin.ViewModel.Extensions.BonType
+import Y_AppsFather.Z_AppsFather.Kotlin._3.Init.CreeNewStart
 import Y_AppsFather.Z_AppsFather.Kotlin._3.Init.LoadFromFirebaseHandler.parseProduct
 import Y_AppsFather.Z_AppsFather.Kotlin._3.Init.calculateurOktapuluse
 import android.util.Log
@@ -15,7 +16,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.Z_AppsFather.Kotlin._1.Model.ParamatersAppsModel
-import com.example.Z_AppsFather.Kotlin._3.Init.CreeNewStart
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -44,8 +44,9 @@ class ViewModelInitApp : ViewModel() {
         viewModelScope.launch {
             try {
                 isLoading = true
-                if (0 == 0) calculateurOktapuluse(this@ViewModelInitApp)
-                else CreeNewStart(_modelAppsFather, 0)
+                val nmr= 0
+                if (nmr == 0) calculateurOktapuluse(this@ViewModelInitApp)
+                else CreeNewStart(_modelAppsFather, nmr)
                 setupDataListeners()
 
                 _ModelAppsFather.collectBonType(this@ViewModelInitApp, viewModelScope)
@@ -58,17 +59,19 @@ class ViewModelInitApp : ViewModel() {
             }
         }
     }
+    // In ViewModelInitApp.kt
 
     fun updateProduitsAvecBonsGrossist() {
         _produitsAvecBonsGrossist.clear()
-        _produitsAvecBonsGrossist
-            .addAll(_modelAppsFather.produitsMainDataBase
+        _produitsAvecBonsGrossist.addAll(
+            _modelAppsFather.produitsMainDataBase
                 .filter { it.bonCommendDeCetteCota != null }
+                .onEach { it.updateBonCommande() } // Update the derived state
                 .sortedBy {
                     it.bonCommendDeCetteCota
                         ?.positionProduitDonGrossistChoisiPourAcheterCeProduit
                 }
-            )
+        )
     }
 
     private fun setupDataListeners() {
@@ -84,6 +87,9 @@ class ViewModelInitApp : ViewModel() {
                                     val index =
                                         _modelAppsFather.produitsMainDataBase.indexOfFirst { it.id == updatedProduct.id }
                                     if (index != -1) {
+                                        if (updatedProduct.bonsVentDeCetteCota.isNotEmpty()) {
+                                            updatedProduct.updateBonCommande()
+                                        }
                                         _modelAppsFather.produitsMainDataBase[index] =
                                             updatedProduct
                                         updateProduitsAvecBonsGrossist()

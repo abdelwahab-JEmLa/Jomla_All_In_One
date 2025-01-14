@@ -28,12 +28,9 @@ open class ExtensionGrossistBonCommandes {
             .filter { it.id == product.id }
             .forEach { produit ->
                 try {
-                    Log.d("CalculeSelf", "Processing product ${produit.id}")
-                    Log.d("CalculeSelf", "Current bonsVentDeCetteCota size: ${produit.bonsVentDeCetteCota.size}")
 
                     val newBonCommande = GrossistBonCommandes().apply {
                         vid = System.currentTimeMillis()
-                        Log.d("CalculeSelf", "Created new bon commande with vid: $vid")
 
                         grossistInformations = _ModelAppsFather.ProduitModel.GrossistBonCommandes.GrossistInformations(
                             id = vid,
@@ -43,27 +40,21 @@ open class ExtensionGrossistBonCommandes {
                             auFilterFAB = false
                             positionInGrossistsList = 0
                         }
-                        Log.d("CalculeSelf", "Set grossist information")
 
                         // Initialize empty list for Firebase
                         coloursEtGoutsCommendee.clear()
-                        Log.d("CalculeSelf", "Cleared existing colours")
 
                         // Create a temporary list to hold the processed colors
-                        val processedColors = mutableListOf<_ModelAppsFather.ProduitModel.GrossistBonCommandes.ColoursGoutsCommendee>()
+                        val processedColors = mutableListOf<ColoursGoutsCommendee>()
 
-                        val bonsVentSize = produit.bonsVentDeCetteCota.size
-                        Log.d("CalculeSelf", "Processing ${bonsVentSize} bons vent")
 
                         produit.bonsVentDeCetteCota
                             .flatMap { it.colours_Achete }
                             .groupBy { it.couleurId }
                             .forEach { (couleurId, colorList) ->
-                                Log.d("CalculeSelf", "Processing color $couleurId with ${colorList.size} entries")
 
                                 colorList.firstOrNull()?.let { firstColor ->
                                     val totalQuantity = colorList.sumOf { it.quantity_Achete }
-                                    Log.d("CalculeSelf", "Total quantity for color $couleurId: $totalQuantity")
 
                                     val newCommendee = ColoursGoutsCommendee(
                                         id = couleurId,
@@ -75,20 +66,15 @@ open class ExtensionGrossistBonCommandes {
 
                                     if (newCommendee.quantityAchete > 0) {
                                         processedColors.add(newCommendee)
-                                        Log.d("CalculeSelf", "Added color $couleurId to processed colors")
                                     }
-                                } ?: Log.w("CalculeSelf", "No first color found for colorId $couleurId")
+                                }
                             }
 
-                        // Add all processed colors to the commendee list
                         coloursEtGoutsCommendee.addAll(processedColors)
-                        Log.d("CalculeSelf", "Added ${processedColors.size} colors to commendee list")
                     }
 
-                    Log.d("CalculeSelf", "Setting new bon commande for product ${produit.id}")
                     produit.bonCommendDeCetteCota = newBonCommande
 
-                    Log.d("CalculeSelf", "Updating children in Firebase")
                     updateChildren(newBonCommande, produit)
 
                 } catch (e: Exception) {
@@ -99,7 +85,7 @@ open class ExtensionGrossistBonCommandes {
             }
     }
     fun updateChildren(
-        newBonCommande: _ModelAppsFather.ProduitModel.GrossistBonCommandes,
+        newBonCommande: GrossistBonCommandes,
         produit: _ModelAppsFather.ProduitModel
     ) {
         // Create a map for Firebase update
@@ -107,14 +93,7 @@ open class ExtensionGrossistBonCommandes {
             "bonCommendDeCetteCota" to mapOf(
                 "vid" to newBonCommande.vid,
                 "grossistInformations" to newBonCommande.grossistInformations,
-                "coloursEtGoutsCommendeeList" to newBonCommande.coloursEtGoutsCommendee.map { commendee ->
-                    mapOf(
-                        "id" to commendee.id,
-                        "nom" to commendee.nom,
-                        "emoji" to commendee.emoji,
-                        "quantityAchete" to commendee.quantityAchete
-                    )
-                },
+                "coloursEtGoutsCommendeeList" to newBonCommande.coloursEtGoutsCommendee,
                 "date" to newBonCommande.date,
                 "date_String_Divise" to newBonCommande.date_String_Divise,
                 "time_String_Divise" to newBonCommande.time_String_Divise,
