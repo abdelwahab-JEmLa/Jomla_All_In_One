@@ -45,7 +45,7 @@ object LoadFromFirebaseHandler {
         })
     }
 
-    private fun parseProduct(snapshot: DataSnapshot): ProduitModel? {
+    fun parseProduct(snapshot: DataSnapshot): ProduitModel? {
         val productId = snapshot.key?.toLongOrNull() ?: return null
         val productMap = snapshot.value as? Map<*, *> ?: return null
 

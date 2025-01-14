@@ -1,10 +1,11 @@
 package Y_AppsFather.Kotlin.ViewModel.Extensions
 
 import Y_AppsFather.Kotlin.Model._ModelAppsFather
+
+/*
+import Y_AppsFather.Kotlin.Model._ModelAppsFather
 import Y_AppsFather.Kotlin.Model._ModelAppsFather.Companion.produitsFireBaseRef
 import Y_AppsFather.Kotlin.Model._ModelAppsFather.ProduitModel
-import Y_AppsFather.Kotlin.Model._ModelAppsFather.ProduitModel.ClientBonVentModel
-import Y_AppsFather.Kotlin.Model._ModelAppsFather.ProduitModel.GrossistBonCommandes
 import Y_AppsFather.Kotlin.ViewModel.ViewModelInitApp
 import android.util.Log
 import androidx.lifecycle.viewModelScope
@@ -13,97 +14,105 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.launch
 
+
+// In setupSimpleDataListener.kt
 fun ViewModelInitApp.setupSimpleDataListener() {
-    _modelAppsFather.produitsMainDataBase.forEach { produit ->
-        Log.d("DataListener", "Setting up listener for product ${produit.id}")
+_modelAppsFather.produitsMainDataBase.forEach { produit ->
+  Log.d("SetupListener", "Setting up listener for product ${produit.id}")
+  produitsFireBaseRef.child(produit.id.toString())
+      .addValueEventListener(object : ValueEventListener {
+          override fun onDataChange(snapshot: DataSnapshot) {
+              viewModelScope.launch {
+                  try {
+                      Log.d("SetupListener", "Data changed for product ${produit.id}")
 
-        produitsFireBaseRef.child(produit.id.toString())
-            .addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    viewModelScope.launch {
-                        try {
-                            // Log initial state
-                            Log.d("DataListener", """
-                                Product state before update:
-                                ID: ${produit.id}
-                                Name: ${produit.nom}
-                                Has bonsVentDeCetteCota: ${produit.bonsVentDeCetteCota.isNotEmpty()}
-                                Has bonCommendDeCetteCota: ${produit.bonCommendDeCetteCota != null}
-                            """.trimIndent())
+                      // Check and create bon vent if needed
+                      if (!snapshot.hasChild("bonsVentDeCetteCota")) {
+                          Log.d("SetupListener", "Creating default bonsVentDeCetteCota for product ${produit.id}")
+                          val defaultBonVent = _ModelAppsFather.ProduitModel.ClientBonVentModel(
+                              vid = System.currentTimeMillis(),
+                              init_clientInformations = _ModelAppsFather.ProduitModel.ClientBonVentModel.ClientInformations(
+                                  id = System.currentTimeMillis(),
+                                  nom = "Client Initial",
+                                  couleur = "#000000"
+                              ),
+                              init_colours_achete = emptyList()
+                          )
+                          produitsFireBaseRef.child(produit.id.toString())
+                              .child("bonsVentDeCetteCota")
+                              .setValue(defaultBonVent)
+                              .addOnSuccessListener {
+                                  Log.d("SetupListener", "Default bonsVentDeCetteCota created successfully")
+                              }
+                              .addOnFailureListener { e ->
+                                  Log.e("SetupListener", "Failed to create default bonsVentDeCetteCota", e)
+                              }
+                      }
 
-                            // Handle bonsVentDeCetteCota
-                            val bonVentSnapshot = snapshot.child("bonsVentDeCetteCota")
-                            if (bonVentSnapshot.exists()) {
-                                val bonVentValue = bonVentSnapshot.getValue(ClientBonVentModel::class.java)
-                                Log.d("DataListener", "Parsed bonVentValue: $bonVentValue")
+                      snapshot.child("bonsVentDeCetteCota")
+                          .getValue(_ModelAppsFather.ProduitModel.ClientBonVentModel::class.java)
+                          ?.let { newBonVent ->
+                              Log.d("SetupListener", "Processing bon vent for product ${produit.id}")
+                              produit.bonsVentDeCetteCota.clear()
+                              produit.bonsVentDeCetteCota.add(newBonVent)
 
-                                if (bonVentValue != null) {
-                                    Log.d("DataListener", "Updating bonsVentDeCetteCota for product ${produit.id}")
-                                    ClientBonVentModel.updateSelf(
-                                        produit,
-                                        bonVentValue,
-                                        this@setupSimpleDataListener
-                                    )
+                              // Check and create bon commande if needed
+                              if (!snapshot.hasChild("bonCommendDeCetteCota")) {
+                                  Log.d("SetupListener", "Creating default bonCommendDeCetteCota")
+                                  val defaultBonCommande = _ModelAppsFather.ProduitModel.GrossistBonCommandes().apply {
+                                      vid = System.currentTimeMillis()
+                                      grossistInformations = _ModelAppsFather.ProduitModel.GrossistBonCommandes.GrossistInformations(
+                                          id = vid,
+                                          nom = "Grossist Initial",
+                                          couleur = "#000000"
+                                      )
+                                      date = java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault())
+                                          .format(java.util.Date())
+                                      date_String_Divise = date
+                                      time_String_Divise = java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault())
+                                          .format(java.util.Date())
+                                  }
+                                  produitsFireBaseRef.child(produit.id.toString())
+                                      .child("bonCommendDeCetteCota")
+                                      .setValue(defaultBonCommande)
+                                      .addOnSuccessListener {
+                                          Log.d("SetupListener", "Default bonCommendDeCetteCota created successfully")
+                                      }
+                                      .addOnFailureListener { e ->
+                                          Log.e("SetupListener", "Failed to create default bonCommendDeCetteCota", e)
+                                      }
+                              }
 
-                                    GrossistBonCommandes.calculeSelf(
-                                        produit,
-                                        this@setupSimpleDataListener
-                                    )
-                                } else {
-                                    Log.w("DataListener", "bonVentValue was null for product ${produit.id}")
-                                }
-                            } else {
-                                Log.d("DataListener", "No bonsVentDeCetteCota node for product ${produit.id}")
-                            }
+                              Log.d("SetupListener", "Calling calculeSelf for product ${produit.id}")
+                              ProduitModel.GrossistBonCommandes.calculeSelf(
+                                  produit,
+                                  this@setupSimpleDataListener
+                              )
+                          }
 
-                            // Handle bonCommendDeCetteCota
-                            val bonCommandeSnapshot = snapshot.child("bonCommendDeCetteCota")
-                            if (bonCommandeSnapshot.exists()) {
-                                val bonCommandeValue = bonCommandeSnapshot.getValue(GrossistBonCommandes::class.java)
-                                Log.d("DataListener", "Parsed bonCommandeValue: $bonCommandeValue")
+                      // Update bon de commande
+                      snapshot.child("bonCommendDeCetteCota")
+                          .getValue(_ModelAppsFather.ProduitModel.GrossistBonCommandes::class.java)
+                          ?.let { newBonCommande ->
+                              Log.d("SetupListener", "Updating bon commande for product ${produit.id}")
+                              produit.bonCommendDeCetteCota = newBonCommande
+                          }
 
-                                if (bonCommandeValue != null) {
-                                    Log.d("DataListener", "Updating bonCommendDeCetteCota for product ${produit.id}")
-                                    produit.bonCommendDeCetteCota = bonCommandeValue
-                                } else {
-                                    Log.w("DataListener", "bonCommandeValue was null for product ${produit.id}")
-                                }
-                            } else {
-                                Log.d("DataListener", "No bonCommendDeCetteCota node for product ${produit.id}")
-                            }
+                  } catch (e: Exception) {
+                      Log.e("SetupListener", "Update failed for ${produit.id}", e)
+                      e.printStackTrace()
+                  }
+              }
+          }
 
-                            // Log final state
-                            Log.d("DataListener", """
-                                Product state after update:
-                                ID: ${produit.id}
-                                Name: ${produit.nom}
-                                Has bonsVentDeCetteCota: ${produit.bonsVentDeCetteCota.isNotEmpty()}
-                                Has bonCommendDeCetteCota: ${produit.bonCommendDeCetteCota != null}
-                            """.trimIndent())
-
-                        } catch (e: Exception) {
-                            Log.e("DataListener", """
-                                Error updating product ${produit.id}
-                                Error type: ${e.javaClass.simpleName}
-                                Message: ${e.message}
-                                Stack trace: ${e.stackTraceToString()}
-                            """.trimIndent())
-                        }
-                    }
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    Log.e("DataListener", """
-                        Firebase error for product ${produit.id}:
-                        Code: ${error.code}
-                        Message: ${error.message}
-                        Details: ${error.details}
-                    """.trimIndent())
-                }
-            })
-    }
+          override fun onCancelled(error: DatabaseError) {
+              Log.e("SetupListener", "Firebase error for product ${produit.id}: ${error.message}")
+          }
+      })
 }
+}
+*/
 sealed class BonType<T> {
     class BonVente(val data: _ModelAppsFather.ProduitModel.ClientBonVentModel) : BonType<_ModelAppsFather.ProduitModel.ClientBonVentModel>()
-    class BonCommande(val data: _ModelAppsFather.ProduitModel.GrossistBonCommandes) : BonType<ProduitModel.GrossistBonCommandes>()
+    class BonCommande(val data: _ModelAppsFather.ProduitModel.GrossistBonCommandes) : BonType<_ModelAppsFather.ProduitModel.GrossistBonCommandes>()
 }

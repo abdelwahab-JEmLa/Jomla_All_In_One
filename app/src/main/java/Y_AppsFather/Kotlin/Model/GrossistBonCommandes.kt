@@ -21,13 +21,20 @@ open class ExtensionGrossistBonCommandes {
         }
     }
 
+    // In GrossistBonCommandes.kt
     fun calculeSelf(product: _ModelAppsFather.ProduitModel, viewModelInitApp: ViewModelInitApp) {
+        Log.d("CalculeSelf", "Starting calculeSelf for product ${product.id}")
         viewModelInitApp._modelAppsFather.produitsMainDataBase
             .filter { it.id == product.id }
             .forEach { produit ->
                 try {
+                    Log.d("CalculeSelf", "Processing product ${produit.id}")
+                    Log.d("CalculeSelf", "Current bonsVentDeCetteCota size: ${produit.bonsVentDeCetteCota.size}")
+
                     val newBonCommande = GrossistBonCommandes().apply {
                         vid = System.currentTimeMillis()
+                        Log.d("CalculeSelf", "Created new bon commande with vid: $vid")
+
                         grossistInformations = _ModelAppsFather.ProduitModel.GrossistBonCommandes.GrossistInformations(
                             id = vid,
                             nom = "Non Defini",
@@ -36,24 +43,27 @@ open class ExtensionGrossistBonCommandes {
                             auFilterFAB = false
                             positionInGrossistsList = 0
                         }
+                        Log.d("CalculeSelf", "Set grossist information")
 
                         // Initialize empty list for Firebase
                         coloursEtGoutsCommendee.clear()
-
-                        Log.d("CalculeSelf", "Started processing for product ${produit.id}")
+                        Log.d("CalculeSelf", "Cleared existing colours")
 
                         // Create a temporary list to hold the processed colors
-                        val processedColors =
-                            mutableListOf<_ModelAppsFather.ProduitModel.GrossistBonCommandes.ColoursGoutsCommendee>()
+                        val processedColors = mutableListOf<_ModelAppsFather.ProduitModel.GrossistBonCommandes.ColoursGoutsCommendee>()
+
+                        val bonsVentSize = produit.bonsVentDeCetteCota.size
+                        Log.d("CalculeSelf", "Processing ${bonsVentSize} bons vent")
 
                         produit.bonsVentDeCetteCota
                             .flatMap { it.colours_Achete }
                             .groupBy { it.couleurId }
                             .forEach { (couleurId, colorList) ->
-                                Log.d("CalculeSelf", "Processing color: $couleurId")
+                                Log.d("CalculeSelf", "Processing color $couleurId with ${colorList.size} entries")
 
                                 colorList.firstOrNull()?.let { firstColor ->
                                     val totalQuantity = colorList.sumOf { it.quantity_Achete }
+                                    Log.d("CalculeSelf", "Total quantity for color $couleurId: $totalQuantity")
 
                                     val newCommendee = ColoursGoutsCommendee(
                                         id = couleurId,
@@ -65,34 +75,29 @@ open class ExtensionGrossistBonCommandes {
 
                                     if (newCommendee.quantityAchete > 0) {
                                         processedColors.add(newCommendee)
-                                        Log.d(
-                                            "CalculeSelf",
-                                            "Added to processed colors: $couleurId, quantity: $totalQuantity"
-                                        )
+                                        Log.d("CalculeSelf", "Added color $couleurId to processed colors")
                                     }
-                                }
+                                } ?: Log.w("CalculeSelf", "No first color found for colorId $couleurId")
                             }
 
                         // Add all processed colors to the commendee list
                         coloursEtGoutsCommendee.addAll(processedColors)
-
-                        Log.d(
-                            "CalculeSelf",
-                            "Final coloursEtGoutsCommendee size: ${coloursEtGoutsCommendee.size}"
-                        )
+                        Log.d("CalculeSelf", "Added ${processedColors.size} colors to commendee list")
                     }
 
+                    Log.d("CalculeSelf", "Setting new bon commande for product ${produit.id}")
                     produit.bonCommendDeCetteCota = newBonCommande
 
+                    Log.d("CalculeSelf", "Updating children in Firebase")
                     updateChildren(newBonCommande, produit)
 
                 } catch (e: Exception) {
                     Log.e("CalculeSelf", "Calculation error for product ${produit.id}", e)
+                    Log.e("CalculeSelf", "Stack trace: ${e.stackTraceToString()}")
                     e.printStackTrace()
                 }
             }
     }
-
     fun updateChildren(
         newBonCommande: _ModelAppsFather.ProduitModel.GrossistBonCommandes,
         produit: _ModelAppsFather.ProduitModel
