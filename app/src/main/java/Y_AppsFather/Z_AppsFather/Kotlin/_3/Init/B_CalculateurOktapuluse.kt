@@ -2,7 +2,7 @@ package Y_AppsFather.Z_AppsFather.Kotlin._3.Init
 
 import Y_AppsFather.Kotlin.ViewModel.ViewModelInitApp
 
-suspend fun calculateurOktapuluse(viewModelInitApp: ViewModelInitApp) {
+suspend fun loadCalculateurOktapuluse(viewModelInitApp: ViewModelInitApp) {
     try {
         viewModelInitApp.isLoading = true
         viewModelInitApp.loadingProgress = 0f

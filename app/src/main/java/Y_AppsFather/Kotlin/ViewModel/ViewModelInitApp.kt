@@ -6,7 +6,7 @@ import Y_AppsFather.Kotlin.Model._ModelAppsFather.ProduitModel
 import Y_AppsFather.Kotlin.ViewModel.Extensions.BonType
 import Y_AppsFather.Z_AppsFather.Kotlin._3.Init.CreeNewStart
 import Y_AppsFather.Z_AppsFather.Kotlin._3.Init.LoadFromFirebaseHandler.parseProduct
-import Y_AppsFather.Z_AppsFather.Kotlin._3.Init.calculateurOktapuluse
+import Y_AppsFather.Z_AppsFather.Kotlin._3.Init.loadCalculateurOktapuluse
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -44,9 +44,12 @@ class ViewModelInitApp : ViewModel() {
         viewModelScope.launch {
             try {
                 isLoading = true
-                val nmr = 0
-                if (nmr == 0) calculateurOktapuluse(this@ViewModelInitApp)
-                else CreeNewStart(_modelAppsFather, nmr)
+                val nmr = 1000
+                if (nmr == 0)
+                    loadCalculateurOktapuluse(this@ViewModelInitApp)
+                else
+                    CreeNewStart(_modelAppsFather, nmr)
+
                 setupDataListeners()
 
                 _ModelAppsFather.collectBonType(this@ViewModelInitApp, viewModelScope)
