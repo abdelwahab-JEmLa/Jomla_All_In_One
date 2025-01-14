@@ -48,7 +48,7 @@ class ViewModelInitApp : ViewModel() {
                 if (nmr == 0)
                     loadCalculateurOktapuluse(this@ViewModelInitApp)
                 else
-                    CreeNewStart(_modelAppsFather, nmr)
+                    CreeNewStart(_modelAppsFather)
 
                 setupDataListeners()
 

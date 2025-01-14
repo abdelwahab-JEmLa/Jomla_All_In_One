@@ -4,16 +4,11 @@ import Y_AppsFather.Kotlin.Model._ModelAppsFather
 import Y_AppsFather.Kotlin.Model._ModelAppsFather.Companion.UpdateFireBase
 import Y_AppsFather.Z_AppsFather.Kotlin._3.Init.Z.Parent.GetAncienDataBasesMain
 import android.util.Log
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 suspend fun CreeNewStart(
     _appsHeadModel: _ModelAppsFather,
-    NOMBRE_ENTRE: Int,
 ) {
     try {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-
         val ancienData = GetAncienDataBasesMain()
 
         // Process products
