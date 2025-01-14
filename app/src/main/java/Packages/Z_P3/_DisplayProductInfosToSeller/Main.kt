@@ -163,6 +163,11 @@ fun MainUi(
                                     product.bonsVentDeCetteCota
                                         .removeIf { bonsVent ->
                                             bonsVent.clientInformations?.id == currentClient?.idClientsSu
+                                        }.also {
+                                            produitsFireBaseRef
+                                                .child(currentSale.idArticle.toString())
+                                                .child("bonsVentDeCetteCota")
+                                                .removeValue()
                                         }
 
                                     _ModelAppsFather.updateProduit(product, viewModelInitApp)
