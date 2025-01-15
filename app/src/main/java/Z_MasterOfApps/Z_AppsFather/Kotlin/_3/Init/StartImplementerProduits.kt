@@ -1,8 +1,8 @@
-package Y_AppsFather.Z_AppsFather.Kotlin._3.Init
+package Z_MasterOfApps.Z_AppsFather.Kotlin._3.Init
 
-import Y_AppsFather.Kotlin.Model._ModelAppsFather
-import Y_AppsFather.Kotlin.Model._ModelAppsFather.Companion.UpdateFireBase
-import Y_AppsFather.Z_AppsFather.Kotlin._3.Init.Z.Parent.GetAncienDataBasesMain
+import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
+import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.UpdateFireBase
+import Z_MasterOfApps.Z_AppsFather.Kotlin._3.Init.Z.Parent.GetAncienDataBasesMain
 import android.util.Log
 
 suspend fun CreeNewStart(
@@ -21,7 +21,6 @@ suspend fun CreeNewStart(
                     init_besoin_To_Be_Updated = true
                 )
 
-                // Add colors/tastes with logging
                 var colorsAdded = 0
                 listOf(
                     ancien.idcolor1 to 1L,

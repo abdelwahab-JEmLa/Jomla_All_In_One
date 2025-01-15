@@ -1,15 +1,13 @@
-package Y_AppsFather.Kotlin.Model
+package Z_MasterOfApps.Kotlin.Model
 
-import Y_AppsFather.Kotlin.Model._ModelAppsFather.Companion.produitsFireBaseRef
-import Y_AppsFather.Kotlin.Model._ModelAppsFather.ProduitModel.GrossistBonCommandes
-import Y_AppsFather.Kotlin.Model._ModelAppsFather.ProduitModel.GrossistBonCommandes.ColoursGoutsCommendee
-import Y_AppsFather.Kotlin.ViewModel.ViewModelInitApp
+import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.produitsFireBaseRef
+import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.util.Log
 
-open class ExtensionGrossistBonCommandes {
+open class GrossistBonCommandesExtension {
     fun updateSelf(
         produit: _ModelAppsFather.ProduitModel,
-        bonCommande: GrossistBonCommandes,
+        bonCommande: _ModelAppsFather.ProduitModel.GrossistBonCommandes,
         viewModelProduits: ViewModelInitApp
     ) {
         produit.bonCommendDeCetteCota = bonCommande
@@ -29,10 +27,10 @@ open class ExtensionGrossistBonCommandes {
             .forEach { produit ->
                 try {
 
-                    val newBonCommande = GrossistBonCommandes().apply {
+                    val newBonCommande = _ModelAppsFather.ProduitModel.GrossistBonCommandes().apply {
                         vid = System.currentTimeMillis()
 
-                        grossistInformations = GrossistBonCommandes.GrossistInformations(
+                        grossistInformations = _ModelAppsFather.ProduitModel.GrossistBonCommandes.GrossistInformations(
                             id = vid,
                             nom = "Non Defini",
                             couleur = "#FF0000"
@@ -45,7 +43,7 @@ open class ExtensionGrossistBonCommandes {
                         coloursEtGoutsCommendee.clear()
 
                         // Create a temporary list to hold the processed colors
-                        val processedColors = mutableListOf<ColoursGoutsCommendee>()
+                        val processedColors = mutableListOf<_ModelAppsFather.ProduitModel.GrossistBonCommandes.ColoursGoutsCommendee>()
 
 
                         produit.bonsVentDeCetteCota
@@ -56,7 +54,7 @@ open class ExtensionGrossistBonCommandes {
                                 colorList.firstOrNull()?.let { firstColor ->
                                     val totalQuantity = colorList.sumOf { it.quantity_Achete }
 
-                                    val newCommendee = ColoursGoutsCommendee(
+                                    val newCommendee = _ModelAppsFather.ProduitModel.GrossistBonCommandes.ColoursGoutsCommendee(
                                         id = couleurId,
                                         nom = firstColor.nom,
                                         emoji = firstColor.imogi
@@ -85,7 +83,7 @@ open class ExtensionGrossistBonCommandes {
             }
     }
     fun updateChildren(
-        newBonCommande: GrossistBonCommandes,
+        newBonCommande: _ModelAppsFather.ProduitModel.GrossistBonCommandes,
         produit: _ModelAppsFather.ProduitModel
     ) {
         // Create a map for Firebase update

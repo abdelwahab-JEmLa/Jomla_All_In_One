@@ -1,9 +1,9 @@
 package Packages.Z_P3.Ui.Main.ColorItem3
 
 import Packages.Z_P3.Ui.Objects.ImageDisplayer3
-import Y_AppsFather.Kotlin.Model._ModelAppsFather
-import Y_AppsFather.Kotlin.Model._ModelAppsFather.Companion.createNewProduct
-import Y_AppsFather.Kotlin.ViewModel.ViewModelInitApp
+import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
+import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.createNewProduct
+import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ClientsModel
 import a_RoomDB.ColorsArticlesTabelle
@@ -141,7 +141,7 @@ fun ColorItem3(
             }
 
             _ModelAppsFather.updateProduit(product, viewModelInitApp)
-            product.updateBonCommande()
+         //   product.updateBonCommande()
         }
     }
 

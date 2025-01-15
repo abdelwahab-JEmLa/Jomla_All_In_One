@@ -1,10 +1,8 @@
-package Y_AppsFather.Kotlin.Model.Res
+package Z_MasterOfApps.Kotlin.Model.Res
 
-import Y_AppsFather.Kotlin.Model._ModelAppsFather
-import Y_AppsFather.Kotlin.Model._ModelAppsFather.ProduitModel
-import Y_AppsFather.Kotlin.Model._ModelAppsFather.ProduitModel.GrossistBonCommandes.GrossistInformations
+import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 
-val _ModelAppsFather.groupedProductsPatGrossist: List<Pair<GrossistInformations, List<ProduitModel>>>
+val _ModelAppsFather.groupedProductsPatGrossist: List<Pair<_ModelAppsFather.ProduitModel.GrossistBonCommandes.GrossistInformations, List<_ModelAppsFather.ProduitModel>>>
     get() = produitsMainDataBase
         .mapNotNull { product ->
             product.bonCommendDeCetteCota?.grossistInformations?.let { grossistInfo ->
@@ -20,7 +18,7 @@ val _ModelAppsFather.groupedProductsPatGrossist: List<Pair<GrossistInformations,
             grossist.positionInGrossistsList
         }
 
-val _ModelAppsFather.groupedProductsParClients: List<Pair<ProduitModel.ClientBonVentModel.ClientInformations, List<ProduitModel>>>
+val _ModelAppsFather.groupedProductsParClients: List<Pair<_ModelAppsFather.ProduitModel.ClientBonVentModel.ClientInformations, List<_ModelAppsFather.ProduitModel>>>
     get() = produitsMainDataBase
         .asSequence()
         .filter { product ->

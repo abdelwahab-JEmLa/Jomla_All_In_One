@@ -1,5 +1,5 @@
 // Add this to a new file: ArticleLoggingUtil.kt
-package com.example.Z_AppsFather.Kotlin._4.Modules
+package Z_MasterOfApps.Z_AppsFather.Kotlin._4.Modules
 
 import android.util.Log
 import com.example.Z_AppsFather.Kotlin._1.Model.Parent.ArticleInfosModel

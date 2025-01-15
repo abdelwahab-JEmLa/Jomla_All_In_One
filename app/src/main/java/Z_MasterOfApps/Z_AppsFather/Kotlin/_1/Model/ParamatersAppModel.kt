@@ -1,5 +1,5 @@
 // ParamatersAppsModel.kt
-package com.example.Z_AppsFather.Kotlin._1.Model
+package Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -8,21 +8,20 @@ import com.google.firebase.Firebase
 import com.google.firebase.database.database
 
 class ParamatersAppsModel {
-    // Using proper delegate pattern with non-null initial value
     var telephoneClientParamaters by mutableStateOf(TelephoneClientParamaters())
 
     var visibilityClientEditePositionDialog by mutableStateOf(false)
 
     var fabsVisibility by mutableStateOf(true)
 
-    var phoneClientSelectedAcheteur by mutableStateOf<Long?>(null)
+    var phoneClientSelectedAcheteur by mutableStateOf<Long?>(0)
 
     class TelephoneClientParamaters {
-        var selectedGrossistForClient by mutableStateOf<Long?>(null)
-        var selectedGrossistForServeur by mutableStateOf<Long?>(null)
+        var selectedGrossistForServeur by mutableStateOf<Long?>(0)
+        var selectedGrossistForClient by mutableStateOf<Long?>(0)
 
 
-        var selectedAcheteurForClient by mutableStateOf<Long?>(null)
+        var selectedAcheteurForClient by mutableStateOf<Long?>(0)
     }
     enum class DeviceMode {
         SERVER,

@@ -6,7 +6,7 @@ import P5_DialogeClientsEditer.ClientSelectionDialog
 import P6_AiGroupeForSupplier.GenerativeAiScreen
 import Packages.P1._ArticlesStartFacade.FragmentStartupScreen
 import Packages.Z_P3._DisplayProductInfosToSeller.P3DisplayeProductInfosToSeller
-import Y_AppsFather.Kotlin.ViewModel.ViewModelInitApp
+import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import a_RoomDB.ArticlesBasesStatsTable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize

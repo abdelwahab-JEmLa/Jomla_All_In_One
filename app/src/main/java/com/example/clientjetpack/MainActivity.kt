@@ -2,7 +2,7 @@ package com.example.clientjetpack
 
 import P0_MainScreen.Main.MainScreen
 import P6_AiGroupeForSupplier.GenerativeAiViewModel
-import Y_AppsFather.Kotlin.ViewModel.ViewModelInitApp
+import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.app.Application
 import android.content.Context
 import android.os.Build

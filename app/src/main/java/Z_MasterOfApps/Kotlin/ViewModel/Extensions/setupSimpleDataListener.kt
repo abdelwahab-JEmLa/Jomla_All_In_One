@@ -1,12 +1,13 @@
-package Y_AppsFather.Kotlin.ViewModel.Extensions
+package Z_MasterOfApps.Kotlin.ViewModel.Extensions
 
-import Y_AppsFather.Kotlin.Model._ModelAppsFather
+import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
+
 
 /*
-import Y_AppsFather.Kotlin.Model._ModelAppsFather
-import Y_AppsFather.Kotlin.Model._ModelAppsFather.Companion.produitsFireBaseRef
-import Y_AppsFather.Kotlin.Model._ModelAppsFather.ProduitModel
-import Y_AppsFather.Kotlin.ViewModel.ViewModelInitApp
+import com.example.Z_MasterOfApps.Kotlin.Model._ModelAppsFather
+import com.example.Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.produitsFireBaseRef
+import com.example.Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel
+import com.example.Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.database.DataSnapshot

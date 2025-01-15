@@ -1,10 +1,10 @@
-package Y_AppsFather.Z_AppsFather.Kotlin._3.Init.Z.Parent
+package Z_MasterOfApps.Z_AppsFather.Kotlin._3.Init.Z.Parent
 
-import Y_AppsFather.Z_AppsFather.Kotlin._1.Model.Parent.AncienResourcesDataBaseMain
-import Y_AppsFather.Z_AppsFather.Kotlin._1.Model.Parent.Ancien_ClientsDataBase_Main
-import Y_AppsFather.Z_AppsFather.Kotlin._1.Model.Parent.Ancien_ColorArticle_Main
-import Y_AppsFather.Z_AppsFather.Kotlin._1.Model.Parent.Ancien_SoldArticlesTabelle_Main
-import Y_AppsFather.Z_AppsFather.Kotlin._1.Model.Parent.ProduitsAncienDataBaseMain
+import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.Parent.AncienResourcesDataBaseMain
+import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.Parent.Ancien_ClientsDataBase_Main
+import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.Parent.Ancien_ColorArticle_Main
+import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.Parent.Ancien_SoldArticlesTabelle_Main
+import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.Parent.ProduitsAncienDataBaseMain
 import android.util.Log
 import com.google.firebase.Firebase
 import com.google.firebase.database.database

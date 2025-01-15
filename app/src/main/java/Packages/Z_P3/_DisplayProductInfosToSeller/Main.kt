@@ -5,9 +5,9 @@ import Packages.Z_P3.Ui.Main.Details
 import Packages.Z_P3.Ui.Objects.ActionsButtonRow
 import Packages.Z_P3.Ui.Objects.ProductNameSection3
 import Packages.Z_P3.Ui.Objects.confirmExitDialog
-import Y_AppsFather.Kotlin.Model._ModelAppsFather
-import Y_AppsFather.Kotlin.Model._ModelAppsFather.Companion.produitsFireBaseRef
-import Y_AppsFather.Kotlin.ViewModel.ViewModelInitApp
+import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
+import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.produitsFireBaseRef
+import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ClientsModel
 import a_RoomDB.ColorsArticlesTabelle
