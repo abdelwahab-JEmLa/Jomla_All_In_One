@@ -57,7 +57,7 @@ open class GrossistBonCommandesExtension {
                                     val newCommendee = _ModelAppsFather.ProduitModel.GrossistBonCommandes.ColoursGoutsCommendee(
                                         id = couleurId,
                                         nom = firstColor.nom,
-                                        emoji = firstColor.imogi
+                                        emogi = firstColor.imogi
                                     ).apply {
                                         quantityAchete = totalQuantity
                                     }

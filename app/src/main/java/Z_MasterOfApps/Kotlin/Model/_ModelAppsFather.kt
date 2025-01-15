@@ -135,7 +135,7 @@ open class _ModelAppsFather(
             class ColoursGoutsCommendee(
                 val id: Long = 1,
                 var nom: String = "Non Defini",
-                var imogi: String = "🎨",
+                var emogi: String = "🎨",
             ) {
                 var quantityAchete: Int by mutableIntStateOf(0)
 
@@ -149,7 +149,7 @@ open class _ModelAppsFather(
                                     ColoursGoutsCommendee(
                                         id = colorAchat.couleurId,
                                         nom = colorAchat.nom,
-                                        imogi = colorAchat.imogi
+                                        emogi = colorAchat.imogi
                                     )
                                 }
                                 existingColor.quantityAchete += colorAchat.quantity_Achete

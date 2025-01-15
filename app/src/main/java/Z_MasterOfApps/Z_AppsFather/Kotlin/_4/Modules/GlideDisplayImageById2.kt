@@ -1,4 +1,4 @@
-package com.example.Z_MasterOfApps.Z_AppsFather.Kotlin._4.Modules
+package Z_MasterOfApps.Z_AppsFather.Kotlin._4.Modules
 
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.imagesProduitsLocalExternalStorageBasePath
 import android.graphics.drawable.Drawable
@@ -27,7 +27,7 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.signature.ObjectKey
-import com.example.c_serveur.R
+import com.example.clientjetpack.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
