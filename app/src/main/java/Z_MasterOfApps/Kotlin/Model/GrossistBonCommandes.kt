@@ -32,7 +32,7 @@ open class ExtensionGrossistBonCommandes {
                     val newBonCommande = GrossistBonCommandes().apply {
                         vid = System.currentTimeMillis()
 
-                        grossistInformations = _ModelAppsFather.ProduitModel.GrossistBonCommandes.GrossistInformations(
+                        grossistInformations = GrossistBonCommandes.GrossistInformations(
                             id = vid,
                             nom = "Non Defini",
                             couleur = "#FF0000"

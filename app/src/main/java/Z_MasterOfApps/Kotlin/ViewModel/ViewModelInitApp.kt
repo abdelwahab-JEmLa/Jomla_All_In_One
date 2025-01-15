@@ -44,7 +44,7 @@ class ViewModelInitApp : ViewModel() {
         viewModelScope.launch {
             try {
                 isLoading = true
-                val nmr = 1000
+                val nmr = 0
                 if (nmr == 0)
                     loadCalculateurOktapuluse(this@ViewModelInitApp)
                 else
