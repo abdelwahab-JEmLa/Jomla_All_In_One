@@ -123,9 +123,9 @@ open class _ModelAppsFather(
 
             @IgnoreExtraProperties
             data class GrossistInformations(
-                val id: Long = 0,
-                val nom: String = "",
-                val couleur: String = ""
+                val id: Long = 1,
+                val nom: String = "Non Defini",
+                val couleur: String = "FFFFFF"
             ) {
                 var auFilterFAB: Boolean by mutableStateOf(false)
                 var positionInGrossistsList: Int by mutableIntStateOf(0)
@@ -133,9 +133,9 @@ open class _ModelAppsFather(
 
             @IgnoreExtraProperties
             class ColoursGoutsCommendee(
-                val id: Long = 0,
-                val nom: String = "",
-                val emoji: String = "",
+                val id: Long = 1,
+                var nom: String = "Non Defini",
+                var imogi: String = "🎨",
             ) {
                 var quantityAchete: Int by mutableIntStateOf(0)
 
@@ -149,7 +149,7 @@ open class _ModelAppsFather(
                                     ColoursGoutsCommendee(
                                         id = colorAchat.couleurId,
                                         nom = colorAchat.nom,
-                                        emoji = colorAchat.imogi
+                                        imogi = colorAchat.imogi
                                     )
                                 }
                                 existingColor.quantityAchete += colorAchat.quantity_Achete
