@@ -83,11 +83,11 @@ open class _ModelAppsFather(
 
         @IgnoreExtraProperties
         class ColourEtGout_Model(
-            var position_Du_Couleur_Au_Produit: Long = 0,
             val id: Long = 1,
             var nom: String = "Non Defini",
             var imogi: String = "🎨",
             var sonImageNeExistPas: Boolean = false,
+            var position_Du_Couleur_Au_Produit: Long = 0,
         )
 
         // Nouvelle implémentation avec derived state pour bonCommendDeCetteCota
