@@ -1,5 +1,6 @@
 package Z_MasterOfApps.Z_AppsFather.Kotlin._3.Init
 
+import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 
 suspend fun loadCalculateurOktapuluse(viewModelInitApp: ViewModelInitApp) {
@@ -9,11 +10,13 @@ suspend fun loadCalculateurOktapuluse(viewModelInitApp: ViewModelInitApp) {
 
         viewModelInitApp.loadingProgress = 0.4f
 
-        // Process products - 30% of progress
         val products = viewModelInitApp.produitsMainDataBase
         val totalProducts = products.size
         products.forEachIndexed { index, produit ->
-            // Update progress for each product processed
+            with(_ModelAppsFather.ProduitModel.Companion) {
+                produit.calculeSelfGrossistBonCommandesExtension()
+            }
+
             viewModelInitApp.loadingProgress = 0.4f + (0.3f * (index + 1) / totalProducts)
         }
 

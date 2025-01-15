@@ -1,6 +1,5 @@
 package Z_MasterOfApps.Kotlin.Model
 
-import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.GrossistBonCommandes.ColoursGoutsCommendee.Companion.derivedStateDeBColoursGoutsCommende
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -107,6 +106,7 @@ open class _ModelAppsFather(
             init_coloursEtGoutsCommendee: List<ColoursGoutsCommendee> = emptyList(),
         ) {
             var grossistInformations: GrossistInformations? by mutableStateOf(init_grossistInformations)
+            var mutableBasesStates: MutableBasesStates? by mutableStateOf(MutableBasesStates())
             var cPositionCheyCeGrossit: Boolean by mutableStateOf(false)
             var positionProduitDonGrossistChoisiPourAcheterCeProduit: Int by mutableStateOf(0)
 
@@ -132,37 +132,18 @@ open class _ModelAppsFather(
             }
 
             @IgnoreExtraProperties
+             class MutableBasesStates {
+                var cPositionCheyCeGrossit: Boolean by mutableStateOf(false)
+                var positionProduitDonGrossistChoisiPourAcheterCeProduit: Int by mutableStateOf(0)
+            }
+
+            @IgnoreExtraProperties
             class ColoursGoutsCommendee(
                 val id: Long = 1,
                 var nom: String = "Non Defini",
                 var emogi: String = "🎨",
             ) {
                 var quantityAchete: Int by mutableIntStateOf(0)
-
-                companion object {
-
-                    fun List<ClientBonVentModel>.derivedStateDeBColoursGoutsCommende(): SnapshotStateList<ColoursGoutsCommendee> {
-                        val processedColors = mutableMapOf<Long, ColoursGoutsCommendee>()
-
-                        this.forEach { bonVent ->
-                            bonVent.colours_Achete.forEach { colorAchat ->
-                                val existingColor = processedColors.getOrPut(colorAchat.couleurId) {
-                                    ColoursGoutsCommendee(
-                                        id = colorAchat.couleurId,
-                                        nom = colorAchat.nom,
-                                        emogi = colorAchat.imogi
-                                    )
-                                }
-                                existingColor.quantityAchete += colorAchat.quantity_Achete
-                            }
-                        }
-
-                        return processedColors.values
-                            .filter { it.quantityAchete > 0 }
-                            .toMutableStateList()
-                    }
-
-                }
             }
 
             companion object : GrossistBonCommandesExtension()
@@ -178,12 +159,8 @@ open class _ModelAppsFather(
             set(value) {
                 bonsVentDeCetteCota.clear()
                 bonsVentDeCetteCota.addAll(value)
-                // Update the bon commend if it exists
-                bonCommendDeCetteCota?.let { bonCommend ->
-                    bonCommend.coloursEtGoutsCommendeeList = value.derivedStateDeBColoursGoutsCommende()
-                }
-            }
 
+            }
 
         @IgnoreExtraProperties
         class ClientBonVentModel(
@@ -235,8 +212,49 @@ open class _ModelAppsFather(
                 var imogi: String = ""
             )
         }
-        // Add extension function to handle the derived state update
 
+        companion object {
+            // Move the extension function into ProduitModel's companion object
+            fun ProduitModel.calculeSelfGrossistBonCommandesExtension() {
+                // Update bonCommendDeCetteCota based on historiqueBonsCommend
+                if (historiqueBonsCommend.isNotEmpty()) {
+                    // Find the most recent bon commande
+                    val mostRecentBonCommande = historiqueBonsCommend.maxByOrNull { it.date }
+
+                    // Update the current bon commande
+                    bonCommendDeCetteCota = mostRecentBonCommande?.also { bonCommande ->
+                        // Ensure mutableBasesStates is initialized
+                        bonCommande.mutableBasesStates = bonCommande.mutableBasesStates
+                            ?: GrossistBonCommandes.MutableBasesStates()
+
+                        // Update position information
+                        bonCommande.mutableBasesStates?.apply {
+                            cPositionCheyCeGrossit = bonCommande.cPositionCheyCeGrossit
+                            positionProduitDonGrossistChoisiPourAcheterCeProduit =
+                                bonCommande.positionProduitDonGrossistChoisiPourAcheterCeProduit
+                        }
+
+                        // Ensure coloursEtGoutsCommendee is properly initialized
+                        if (bonCommande.coloursEtGoutsCommendee.isEmpty()) {
+                            // Initialize with default values based on current colors and tastes
+                            val newCommands = coloursEtGouts.map { colorEtGout ->
+                                GrossistBonCommandes.ColoursGoutsCommendee(
+                                    id = colorEtGout.id,
+                                    nom = colorEtGout.nom,
+                                    emogi = colorEtGout.imogi
+                                )
+                            }
+                            bonCommande.coloursEtGoutsCommendee.clear()
+                            bonCommande.coloursEtGoutsCommendee.addAll(newCommands)
+                        }
+                    }
+                } else {
+                    // If no historical bon commandes exist, reset the current one
+                    bonCommendDeCetteCota = null
+                }
+            }
+        }
     }
+
     companion object : ProduitModelExtension()
 }
