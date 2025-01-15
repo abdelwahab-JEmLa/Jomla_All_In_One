@@ -13,8 +13,9 @@ suspend fun loadCalculateurOktapuluse(viewModelInitApp: ViewModelInitApp) {
         val products = viewModelInitApp.produitsMainDataBase
         val totalProducts = products.size
         products.forEachIndexed { index, produit ->
+
             with(_ModelAppsFather.ProduitModel.Companion) {
-                produit.calculeSelfGrossistBonCommandesExtension()
+                produit.calculeSelfGrossistBonCommandesExtension(viewModelInitApp)
             }
 
             viewModelInitApp.loadingProgress = 0.4f + (0.3f * (index + 1) / totalProducts)

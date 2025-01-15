@@ -1,13 +1,18 @@
 package Z_MasterOfApps.Kotlin.Model
 
+import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
+import androidx.lifecycle.viewModelScope
 import com.google.firebase.database.Exclude
 import com.google.firebase.database.IgnoreExtraProperties
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import java.util.Objects
 
 open class _ModelAppsFather(
@@ -105,7 +110,9 @@ open class _ModelAppsFather(
             var currentCreditBalance: Double = 0.0,
             init_coloursEtGoutsCommendee: List<ColoursGoutsCommendee> = emptyList(),
         ) {
-            var grossistInformations: GrossistInformations? by mutableStateOf(init_grossistInformations)
+            var grossistInformations: GrossistInformations? by mutableStateOf(
+                init_grossistInformations
+            )
             var mutableBasesStates: MutableBasesStates? by mutableStateOf(MutableBasesStates())
             var cPositionCheyCeGrossit: Boolean by mutableStateOf(false)
             var positionProduitDonGrossistChoisiPourAcheterCeProduit: Int by mutableStateOf(0)
@@ -132,7 +139,7 @@ open class _ModelAppsFather(
             }
 
             @IgnoreExtraProperties
-             class MutableBasesStates {
+            class MutableBasesStates {
                 var cPositionCheyCeGrossit: Boolean by mutableStateOf(false)
                 var positionProduitDonGrossistChoisiPourAcheterCeProduit: Int by mutableStateOf(0)
             }
@@ -214,10 +221,33 @@ open class _ModelAppsFather(
         }
 
         companion object {
-            // Move the extension function into ProduitModel's companion object
-            fun ProduitModel.calculeSelfGrossistBonCommandesExtension() {
-                // Update bonCommendDeCetteCota based on historiqueBonsCommend
-                if (historiqueBonsCommend.isNotEmpty()) {
+            fun updateProduit(
+                product: _ModelAppsFather.ProduitModel,
+                viewModelProduits: ViewModelInitApp
+            ) {
+                viewModelProduits.viewModelScope.launch {
+                    try {
+                        // Update Firebase
+                        produitsFireBaseRef.child(product.id.toString()).setValue(product).await()
+
+                        // Update _produitsAvecBonsGrossist
+                        val index =
+                            viewModelProduits._modelAppsFather.produitsMainDataBase.indexOfFirst { it.id == product.id }
+                        if (index != -1) {
+                            // Direct update of the SnapshotStateList
+                            viewModelProduits._modelAppsFather.produitsMainDataBase[index] = product
+                        }
+
+                        Log.d("ViewModelInitApp", "Successfully updated product ${product.id}")
+                    } catch (e: Exception) {
+                        Log.e("ViewModelInitApp", "Failed to update product ${product.id}", e)
+                    }
+                }
+            }
+
+            fun ProduitModel.calculeSelfGrossistBonCommandesExtension(viewModelInitApp: ViewModelInitApp) {
+                // Only proceed if there are active sales records
+                if (bonsVentDeCetteCota.isNotEmpty()) {
                     // Find the most recent bon commande
                     val mostRecentBonCommande = historiqueBonsCommend.maxByOrNull { it.date }
 
@@ -234,26 +264,56 @@ open class _ModelAppsFather(
                                 bonCommande.positionProduitDonGrossistChoisiPourAcheterCeProduit
                         }
 
-                        // Ensure coloursEtGoutsCommendee is properly initialized
-                        if (bonCommande.coloursEtGoutsCommendee.isEmpty()) {
-                            // Initialize with default values based on current colors and tastes
-                            val newCommands = coloursEtGouts.map { colorEtGout ->
-                                GrossistBonCommandes.ColoursGoutsCommendee(
-                                    id = colorEtGout.id,
-                                    nom = colorEtGout.nom,
-                                    emogi = colorEtGout.imogi
-                                )
-                            }
-                            bonCommande.coloursEtGoutsCommendee.clear()
-                            bonCommande.coloursEtGoutsCommendee.addAll(newCommands)
+                        // If there's no grossist information, create default one from the most recent record
+                        if (bonCommande.grossistInformations == null) {
+                            bonCommande.grossistInformations = historiqueBonsCommend
+                                .lastOrNull()?.grossistInformations
+                                ?: GrossistBonCommandes.GrossistInformations(
+                                    id = 1,
+                                    nom = "Non Defini",
+                                    couleur = "#FFFFFF"
+                                ).apply {
+                                    auFilterFAB = false
+                                    positionInGrossistsList = 0
+                                }
                         }
+
+                        // Clear existing colors before processing
+                        bonCommande.coloursEtGoutsCommendee.clear()
+
+                        // Process and aggregate colors from active sales
+                        val processedColors = bonsVentDeCetteCota
+                            .flatMap { it.colours_Achete }
+                            .groupBy { it.couleurId }
+                            .mapNotNull { (couleurId, colorList) ->
+                                colorList.firstOrNull()?.let { firstColor ->
+                                    val totalQuantity = colorList.sumOf { it.quantity_Achete }
+
+                                    if (totalQuantity > 0) {
+                                        GrossistBonCommandes.ColoursGoutsCommendee(
+                                            id = couleurId,
+                                            nom = firstColor.nom,
+                                            emogi = firstColor.imogi
+                                        ).apply {
+                                            quantityAchete = totalQuantity
+                                        }
+                                    } else null
+                                }
+                            }
+
+                        // Add all processed colors to the bon commande
+                        bonCommande.coloursEtGoutsCommendee.addAll(processedColors)
                     }
+
+                    // Update the product after processing
+                    updateProduit(this, viewModelInitApp)
                 } else {
-                    // If no historical bon commandes exist, reset the current one
+                    // If there are no active sales, clear the current bon commande
                     bonCommendDeCetteCota = null
                 }
             }
         }
+
     }
 
     companion object : ProduitModelExtension()

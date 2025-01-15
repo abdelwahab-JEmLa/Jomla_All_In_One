@@ -70,7 +70,7 @@ class ViewModelInitApp : ViewModel() {
                                     val index = _modelAppsFather.produitsMainDataBase.indexOfFirst { it.id == updatedProduct.id }
 
                                     with(_ModelAppsFather.ProduitModel.Companion) {
-                                        updatedProduct.calculeSelfGrossistBonCommandesExtension()
+                                        updatedProduct.calculeSelfGrossistBonCommandesExtension(this@ViewModelInitApp)
                                     }
 
                                     if (index != -1) {
