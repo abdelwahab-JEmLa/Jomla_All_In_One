@@ -119,7 +119,6 @@ fun handleQuantitySelection(
                 }
                 colours_Achete.add(colorPurchase)
             }
-            product.bonCommendDeCetteCota
 
             product.bonsVentDeCetteCota.add(newSale)
 

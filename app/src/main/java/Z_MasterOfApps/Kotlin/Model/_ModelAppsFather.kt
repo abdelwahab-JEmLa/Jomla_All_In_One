@@ -140,6 +140,7 @@ open class _ModelAppsFather(
                 var quantityAchete: Int by mutableIntStateOf(0)
 
                 companion object {
+
                     fun List<ClientBonVentModel>.derivedStateDeBColoursGoutsCommende(): SnapshotStateList<ColoursGoutsCommendee> {
                         val processedColors = mutableMapOf<Long, ColoursGoutsCommendee>()
 
@@ -160,6 +161,7 @@ open class _ModelAppsFather(
                             .filter { it.quantityAchete > 0 }
                             .toMutableStateList()
                     }
+
                 }
             }
 
