@@ -2,11 +2,11 @@ package Z_MasterOfApps.Kotlin.ViewModel
 
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.produitsFireBaseRef
+import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.Companion.calculeSelfGrossistBonCommandesExtension
 import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.ParamatersAppsModel
 import Z_MasterOfApps.Z_AppsFather.Kotlin._3.Init.CreeNewStart
 import Z_MasterOfApps.Z_AppsFather.Kotlin._3.Init.LoadFromFirebaseHandler
 import Z_MasterOfApps.Z_AppsFather.Kotlin._3.Init.LoadFromFirebaseHandler.parseProduct
-import Z_MasterOfApps.Z_AppsFather.Kotlin._3.Init.loadCalculateurOktapuluse
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -25,13 +25,11 @@ class ViewModelInitApp : ViewModel() {
     var _paramatersAppsViewModelModel by mutableStateOf(ParamatersAppsModel())
     var _modelAppsFather by mutableStateOf(_ModelAppsFather())
 
-
     val modelAppsFather: _ModelAppsFather get() = _modelAppsFather
     val produitsMainDataBase = _modelAppsFather.produitsMainDataBase
 
     var isLoading by mutableStateOf(false)
     var loadingProgress by mutableFloatStateOf(0f)
-
 
     init {
         viewModelScope.launch {
@@ -40,13 +38,12 @@ class ViewModelInitApp : ViewModel() {
                 val nombre = 0
                 if (nombre == 0) {
                     LoadFromFirebaseHandler.loadFromFirebase(this@ViewModelInitApp)
-                    loadCalculateurOktapuluse(this@ViewModelInitApp)
+                 //   loadCalculateurOktapuluse(this@ViewModelInitApp)
                 }
                 else
                 CreeNewStart(_modelAppsFather)
 
                 setupDataListeners()
-
 
                 isLoading = true
             } catch (e: Exception) {
@@ -67,13 +64,12 @@ class ViewModelInitApp : ViewModel() {
                             try {
                                 val updatedProduct = parseProduct(snapshot)
                                 if (updatedProduct != null) {
-                                    val index = _modelAppsFather.produitsMainDataBase.indexOfFirst { it.id == updatedProduct.id }
-
-                                    with(_ModelAppsFather.ProduitModel.Companion) {
-                                        updatedProduct.calculeSelfGrossistBonCommandesExtension(this@ViewModelInitApp)
+                                    val index = _modelAppsFather.produitsMainDataBase.indexOfFirst {
+                                        it.id == updatedProduct.id
                                     }
 
                                     if (index != -1) {
+                                        updatedProduct.calculeSelfGrossistBonCommandesExtension()
                                         _modelAppsFather.produitsMainDataBase[index] = updatedProduct
                                     }
                                 }

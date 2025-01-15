@@ -3,6 +3,7 @@ package Z_MasterOfApps.Kotlin.ViewModel.Actions
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.createNewProduct
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.ClientBonVentModel
+import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.Companion.calculeSelfGrossistBonCommandesExtension
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import a_RoomDB.ClientsModel
 import a_RoomDB.ColorsArticlesTabelle
@@ -24,7 +25,7 @@ object onClick {
                 ?: createNewProduct(viewModelInitApp, currentSale?.nameArticle!!)
 
             // Create or update color purchase
-            val colorPurchase = _ModelAppsFather.ProduitModel.ClientBonVentModel.ColorAchatModel(
+            val colorPurchase = ClientBonVentModel.ColorAchatModel(
                 couleurId = colorDetails.idColore,
                 nom = colorDetails.nameColore,
                 quantity_Achete = quantity,
@@ -67,6 +68,7 @@ object onClick {
 
                 product.bonsVentDeCetteCota.add(newSale)
 
+                product.calculeSelfGrossistBonCommandesExtension()
             }
 
 
