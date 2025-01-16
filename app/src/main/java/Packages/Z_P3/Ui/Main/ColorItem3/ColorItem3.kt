@@ -1,7 +1,7 @@
 package Packages.Z_P3.Ui.Main.ColorItem3
 
 import Packages.Z_P3.Ui.Objects.ImageDisplayer3
-import Z_MasterOfApps.Kotlin.ViewModel.Actions.onClickQuantityButton
+import Z_MasterOfApps.Kotlin.ViewModel.Actions.OnClickOn
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ClientsModel
@@ -57,7 +57,8 @@ fun ColorItem3(
     viewModel: HeadViewModel,
     height: Dp,
     updateColorToBeMain: (Long) -> Unit,
-    viewModelInitApp: ViewModelInitApp, currentClient: ClientsModel?,
+    viewModelInitApp: ViewModelInitApp,
+    currentClient: ClientsModel?,
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
 ) {
     var showDialog by remember { mutableStateOf(false) }
@@ -88,7 +89,7 @@ fun ColorItem3(
 
     LaunchedEffect(key1 = currentSale?.idArticle) {
         if (color.idColore==currentSale?.color1IdPicked) {
-            onClickQuantityButton(
+            OnClickOn.composeQuantityButton(
                 quantity = 1,
                 currentSale = currentSale,
                 currentClient = currentClient,
