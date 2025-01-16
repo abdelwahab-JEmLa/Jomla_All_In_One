@@ -57,7 +57,6 @@ open class GrossistBonCommandesExtension {
 
                     produit.bonCommendDeCetteCota = newBonCommande
 
-                    updateChildren(produit)
 
                 } catch (e: Exception) {
                     Log.e("CalculeSelf", "Calculation error for product ${produit.id}", e)

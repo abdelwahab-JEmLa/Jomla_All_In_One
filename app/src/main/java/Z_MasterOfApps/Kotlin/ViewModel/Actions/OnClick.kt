@@ -2,7 +2,6 @@ package Z_MasterOfApps.Kotlin.ViewModel.Actions
 
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.ClientBonVentModel
-import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.Companion.calculeSelfGrossistBonCommandesExtension
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.GrossistBonCommandes
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import a_RoomDB.ClientsModel
@@ -19,20 +18,18 @@ fun onClickQuantityButton(
     viewModelInitApp: ViewModelInitApp
 ) {
     try {
-        LogUtils.logQuantity("Starting quantity update - Quantity: $quantity, Color: ${colorDetails.nameColore}")
-
-        // Early return if required data is missing
+        // Validate inputs
         if (currentSale == null || currentClient == null) {
-            LogUtils.logError(LogUtils.Tags.QUANTITY_BUTTON, "Required sale or client data is null")
+            LogUtils.logError(LogUtils.Tags.QUANTITY_BUTTON, "Missing required data")
             return
         }
 
-        // Find and validate product
+        // Find product
         val productIndex = viewModelInitApp._modelAppsFather.produitsMainDataBase
             .indexOfFirst { it.id == currentSale.idArticle }
         val product = viewModelInitApp._modelAppsFather.produitsMainDataBase.getOrNull(productIndex) ?: return
 
-        // Create color purchase model
+        // Create color purchase info
         val colorPurchase = ClientBonVentModel.ColorAchatModel(
             vidPosition = System.currentTimeMillis(),
             couleurId = colorDetails.idColore,
@@ -58,7 +55,7 @@ fun onClickQuantityButton(
             }
         } else {
             // Create new sale
-            product.bonsVentDeCetteCota.add(ClientBonVentModel(
+            val newSale = ClientBonVentModel(
                 vid = System.currentTimeMillis()
             ).apply {
                 clientInformations = ClientBonVentModel.ClientInformations(
@@ -67,47 +64,53 @@ fun onClickQuantityButton(
                     couleur = currentClient.couleurSu
                 )
                 colours_Achete.add(colorPurchase)
-            })
+            }
+            product.bonsVentDeCetteCota.add(newSale)
         }
 
-        // Update state and Firebase
-        viewModelInitApp.viewModelScope.launch {
-            try {
-                // Mise à jour du bon commande
-                if (product.bonCommendDeCetteCota == null && product.bonsVentDeCetteCota.isNotEmpty()) {
-                    // Créer un nouveau bon commande
-                    product.bonCommendDeCetteCota = GrossistBonCommandes(
-                        vid = System.currentTimeMillis(),
-                        date = java.time.LocalDateTime.now().toString(),
-                        init_grossistInformations = product.historiqueBonsCommend.lastOrNull()?.grossistInformations,
-                        init_coloursEtGoutsCommendee = product.bonsVentDeCetteCota
-                            .flatMap { it.colours_Achete }
-                            .groupBy { it.couleurId }
-                            .mapNotNull { (couleurId, colorList) ->
-                                colorList.firstOrNull()?.let { firstColor ->
-                                    val totalQuantity = colorList.sumOf { it.quantity_Achete }
-                                    if (totalQuantity > 0) {
-                                        GrossistBonCommandes.ColoursGoutsCommendee(
-                                            id = couleurId,
-                                            nom = firstColor.nom,
-                                            emogi = firstColor.imogi
-                                        ).apply {
-                                            quantityAchete = totalQuantity
-                                        }
-                                    } else null
-                                }
+        // Update bon commande if needed
+        val currentDate = java.time.LocalDateTime.now().toString()
+        if (product.bonCommendDeCetteCota == null ||
+            !product.historiqueBonsCommend.any { it.date == currentDate }) {
+
+            val aggregatedColors = product.bonsVentDeCetteCota
+                .flatMap { it.colours_Achete }
+                .groupBy { it.couleurId }
+                .mapNotNull { (couleurId, colorList) ->
+                    colorList.firstOrNull()?.let { firstColor ->
+                        val totalQuantity = colorList.sumOf { it.quantity_Achete }
+                        if (totalQuantity > 0) {
+                            GrossistBonCommandes.ColoursGoutsCommendee(
+                                id = couleurId,
+                                nom = firstColor.nom,
+                                emogi = firstColor.imogi
+                            ).apply {
+                                quantityAchete = totalQuantity
                             }
-                    )
+                        } else null
+                    }
                 }
 
-                // Update local and Firebase
-                viewModelInitApp._modelAppsFather.produitsMainDataBase[productIndex] = product.calculeSelfGrossistBonCommandesExtension()
+            val newBonCommande = GrossistBonCommandes(
+                vid = System.currentTimeMillis(),
+                date = currentDate,
+                init_grossistInformations = product.historiqueBonsCommend.lastOrNull()?.grossistInformations,
+                init_coloursEtGoutsCommendee = aggregatedColors
+            )
 
-                _ModelAppsFather.updateProduit(product, viewModelInitApp)
+            // Update current bon commande
+            product.bonCommendDeCetteCota = newBonCommande
 
-            } catch (e: Exception) {
-                LogUtils.logError(LogUtils.Tags.BON_COMMANDES, "Error updating state", e)
+            // Add to history if date doesn't exist
+            if (!product.historiqueBonsCommend.any { it.date == currentDate }) {
+                product.historiqueBonsCommend.add(newBonCommande)
             }
+        }
+
+        // Update UI and Firebase
+        viewModelInitApp.viewModelScope.launch {
+            viewModelInitApp._modelAppsFather.produitsMainDataBase[productIndex] = product
+            _ModelAppsFather.updateProduit(product, viewModelInitApp)
         }
 
     } catch (e: Exception) {
