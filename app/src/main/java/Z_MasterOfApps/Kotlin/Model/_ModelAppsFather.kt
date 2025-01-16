@@ -112,7 +112,8 @@ open class _ModelAppsFather(
             data class GrossistInformations(
                 val id: Long = 1,
                 val nom: String = "Non Defini",
-                val couleur: String = "FFFFFF"
+                val couleur: String = "#FFFFFF"
+
             ) {
                 var auFilterFAB: Boolean by mutableStateOf(false)
                 var positionInGrossistsList: Int by mutableIntStateOf(0)
@@ -197,9 +198,9 @@ open class _ModelAppsFather(
 
             @IgnoreExtraProperties
             data class ClientInformations(
-                var id: Long = 0,
-                var nom: String = "",
-                val couleur: String = ""
+                var id: Long = 1,
+                var nom: String = "Non Defini",
+                val couleur: String = "#FFFFFF"
             ) {
                 var auFilterFAB: Boolean by mutableStateOf(false)
                 var positionDonClientsList: Int by mutableIntStateOf(0)

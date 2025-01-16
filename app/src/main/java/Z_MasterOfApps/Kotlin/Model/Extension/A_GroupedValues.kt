@@ -2,6 +2,7 @@ package Z_MasterOfApps.Kotlin.Model.Extension
 
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 
+
 val _ModelAppsFather.groupedProductsPatGrossist: List<Pair<_ModelAppsFather.ProduitModel.GrossistBonCommandes.GrossistInformations, List<_ModelAppsFather.ProduitModel>>>
     get() = produitsMainDataBase
         .mapNotNull { product ->

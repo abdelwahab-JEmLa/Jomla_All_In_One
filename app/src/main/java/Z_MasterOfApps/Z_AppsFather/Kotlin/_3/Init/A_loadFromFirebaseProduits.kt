@@ -1,6 +1,7 @@
 package Z_MasterOfApps.Z_AppsFather.Kotlin._3.Init
 
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
+import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.runtime.toMutableStateList
 import com.google.firebase.database.DataSnapshot
@@ -60,12 +61,12 @@ object LoadFromFirebaseHandler {
         })
     }
 
-    fun parseProduct(snapshot: DataSnapshot): _ModelAppsFather.ProduitModel? {
+    fun parseProduct(snapshot: DataSnapshot): ProduitModel? {
         val productId = snapshot.key?.toLongOrNull() ?: return null
         val productMap = snapshot.value as? Map<*, *> ?: return null
 
         return try {
-            _ModelAppsFather.ProduitModel(
+            ProduitModel(
                 id = productId,
                 itsTempProduit = (productMap["itsTempProduit"] as? Boolean) ?: false,
                 init_nom = (productMap["nom"] as? String) ?: "",
@@ -74,24 +75,42 @@ object LoadFromFirebaseHandler {
                 initialNon_Trouve = (productMap["non_Trouve"] as? Boolean) ?: false,
                 init_visible = false,
             ).apply {
-                snapshot.child("statuesBase").getValue(_ModelAppsFather.ProduitModel.StatuesBase::class.java)?.let {
+                snapshot.child("statuesBase").getValue(ProduitModel.StatuesBase::class.java)?.let {
                     statuesBase = it
                     statuesBase.imageGlidReloadTigger = 0
                 }
+                snapshot.child("bonCommendDeCetteCota").let { bonCommendSnapshot ->
+                    if (bonCommendSnapshot.exists()) {
+                        bonCommendDeCetteCota = bonCommendSnapshot.getValue(ProduitModel.GrossistBonCommandes::class.java)?.apply {
+                            grossistInformations = snapshot.child("bonCommendDeCetteCota/grossistInformations")
+                                .getValue(ProduitModel.GrossistBonCommandes.GrossistInformations::class.java)
 
-                parseList<_ModelAppsFather.ProduitModel.ColourEtGout_Model>("coloursEtGoutsList", snapshot) {
+                            // Parse mutableBasesStates
+                            bonCommendSnapshot.child("mutableBasesStates").getValue(ProduitModel.GrossistBonCommandes.MutableBasesStates::class.java)?.let {
+                                mutableBasesStates = it
+                            }
+
+                            parseList<ProduitModel.GrossistBonCommandes.ColoursGoutsCommendee>(
+                                "coloursEtGoutsCommendeeList",
+                                bonCommendSnapshot
+                            ) { coloursEtGoutsCommendeeList = it }
+                        }
+                    }
+                }
+
+                parseList<ProduitModel.ColourEtGout_Model>("coloursEtGoutsList", snapshot) {
                     coloursEtGoutsList = it
                 }
 
-                parseList<_ModelAppsFather.ProduitModel.ClientBonVentModel>("bonsVentDeCetteCotaList", snapshot) {
+                parseList<ProduitModel.ClientBonVentModel>("bonsVentDeCetteCotaList", snapshot) {
                     bonsVentDeCetteCotaList = it
                 }
 
-                parseList<_ModelAppsFather.ProduitModel.ClientBonVentModel>("historiqueBonsVentsList", snapshot) {
+                parseList<ProduitModel.ClientBonVentModel>("historiqueBonsVentsList", snapshot) {
                     historiqueBonsVentsList = it
                 }
 
-                parseList<_ModelAppsFather.ProduitModel.GrossistBonCommandes>("historiqueBonsCommendList", snapshot) {
+                parseList<ProduitModel.GrossistBonCommandes>("historiqueBonsCommendList", snapshot) {
                     historiqueBonsCommendList = it
                 }
             }
