@@ -65,7 +65,7 @@ fun ColorItem3(
     var isSelected by remember { mutableStateOf(false) }
 
     // Enhanced quantity tracking that considers the color's position
-    val currentQuantity = remember(color?.idColore, currentSale) {
+    val currentQuantity = remember(color.idColore, currentSale) {
         currentSale?.let { sale ->
             when (color.idColore) {
                 sale.color1IdPicked -> sale.color1SoldQuantity
@@ -78,11 +78,11 @@ fun ColorItem3(
     }
 
     // Track whether this color is currently selected as main
-    val isMainColor = remember(color?.idColore, currentSale) {
-        color?.idColore == currentSale?.color1IdPicked
+    val isMainColor = remember(color.idColore, currentSale) {
+        color.idColore == currentSale?.color1IdPicked
     }
 
-    val cardElevation by animateFloatAsState(
+    val cardElevation by animateFloatAsState (
         targetValue = if (isSelected || isMainColor) 8f else 2f,
         label = "cardElevation"
     )
