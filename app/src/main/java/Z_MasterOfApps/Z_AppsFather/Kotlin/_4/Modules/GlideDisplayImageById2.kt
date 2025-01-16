@@ -27,7 +27,6 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.signature.ObjectKey
-import com.example.clientjetpack.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -35,12 +34,14 @@ import java.io.File
 
 private const val MIN_RELOAD_INTERVAL = 500L
 private const val IMAGE_QUALITY = 3
+private const val DEFAULT_IMAGE_ID = 10L
+private const val DEFAULT_IMAGE = "10_1.jpg"  // Replace with your actual default image name
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun GlideDisplayImageById2(
     itemMainId: Long,
-    imageGlidReloadTigger: Int ,
+    imageGlidReloadTigger: Int,
     modifier: Modifier = Modifier,
     size: Dp? = null,
     onLoadComplete: () -> Unit = {}
@@ -51,19 +52,21 @@ fun GlideDisplayImageById2(
     var previousTrigger by remember { mutableIntStateOf(0) }
     var lastReloadTimestamp by remember { mutableLongStateOf(0L) }
     var isLoading by remember { mutableStateOf(true) }
+
     // Monitor product changes and trigger reloads
     LaunchedEffect(itemMainId) {
         while (true) {
-                val currentTime = System.currentTimeMillis()
-                val currentTrigger = imageGlidReloadTigger
+            val currentTime = System.currentTimeMillis()
+            val currentTrigger = imageGlidReloadTigger
 
-                if (currentTime - lastReloadTimestamp > MIN_RELOAD_INTERVAL &&
-                    currentTrigger != previousTrigger) {
-                    lastReloadTimestamp = currentTime
-                    previousTrigger = currentTrigger
-                    forceReload++
-                    isLoading = true
-                    reloadSuccess = true
+            if (currentTime - lastReloadTimestamp > MIN_RELOAD_INTERVAL &&
+                currentTrigger != previousTrigger
+            ) {
+                lastReloadTimestamp = currentTime
+                previousTrigger = currentTrigger
+                forceReload++
+                isLoading = true
+                reloadSuccess = true
             }
             delay(MIN_RELOAD_INTERVAL)
         }
@@ -73,17 +76,20 @@ fun GlideDisplayImageById2(
     LaunchedEffect(itemMainId, forceReload) {
         withContext(Dispatchers.IO) {
             val imagePath = "$imagesProduitsLocalExternalStorageBasePath/${itemMainId}_1"
-            imageFile = listOf("jpg", "jpeg", "png", "webp")
-                .map { File("$imagePath.$it") }
-                .firstOrNull { it.exists() && it.length() > 0 }
+            imageFile = if (itemMainId == DEFAULT_IMAGE_ID) {
+                File("$imagesProduitsLocalExternalStorageBasePath/$DEFAULT_IMAGE")
+            } else {
+                listOf("jpg", "jpeg", "png", "webp")
+                    .map { File("$imagePath.$it") }
+                    .firstOrNull { it.exists() && it.length() > 0 }
+            }
         }
     }
 
     // Display image
     Box(modifier = modifier.then(size?.let { Modifier.size(it) } ?: Modifier.fillMaxSize())) {
-        val icLauncherBackground = R.drawable.ic_launcher_background
         GlideImage(
-            model = imageFile ?: icLauncherBackground,
+            model = imageFile ?: File("$imagesProduitsLocalExternalStorageBasePath/$DEFAULT_IMAGE"),
             contentDescription = "Product $itemMainId",
             contentScale = ContentScale.Crop,
             modifier = Modifier
