@@ -1,4 +1,4 @@
-package Z_MasterOfApps.Kotlin.ViewModel.Actions.F3_DisplayProductInfosToSeller
+package Z_MasterOfApps.Kotlin.ViewModel.Actions.Package_3
 
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.ClientBonVentModel

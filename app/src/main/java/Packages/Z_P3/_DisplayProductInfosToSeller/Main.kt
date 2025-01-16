@@ -5,7 +5,7 @@ import Packages.Z_P3.Ui.Main.Details
 import Packages.Z_P3.Ui.Objects.ActionsButtonRow
 import Packages.Z_P3.Ui.Objects.ProductNameSection3
 import Packages.Z_P3.Ui.Objects.confirmExitDialog
-import Z_MasterOfApps.Kotlin.ViewModel.Actions.F3_DisplayProductInfosToSeller._F3_DisplayeProductInfosToSeller
+import Z_MasterOfApps.Kotlin.ViewModel.Actions.Package_3._DisplayeProductInfosToSeller
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ClientsModel
@@ -138,7 +138,6 @@ fun MainUi(
                     }
                 }
 
-                // Updated action buttons section with fixed cancel logic
                 Surface(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
@@ -155,11 +154,14 @@ fun MainUi(
                         onCancel = {
                             viewModel.deleteSoldArticle(currentSale.vid)
                             onDismiss()
-                            _F3_DisplayeProductInfosToSeller(viewModelInitApp).onClickOnMain(
+
+                            _DisplayeProductInfosToSeller(viewModelInitApp)
+                                .onClickOnMain(
                                 viewModelInitApp,
                                 currentSale,
                                 currentClient
                             )
+
                         }
                     )
                 }

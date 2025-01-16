@@ -82,4 +82,9 @@ class ViewModelInitApp : ViewModel() {
                 })
         }
     }
+
+    open class _DisplayeProductInfosToSeller
+
+
 }
+

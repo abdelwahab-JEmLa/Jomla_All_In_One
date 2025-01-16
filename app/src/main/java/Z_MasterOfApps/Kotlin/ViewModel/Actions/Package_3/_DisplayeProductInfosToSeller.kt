@@ -1,12 +1,11 @@
-package Z_MasterOfApps.Kotlin.ViewModel.Actions.F3_DisplayProductInfosToSeller
+package Z_MasterOfApps.Kotlin.ViewModel.Actions.Package_3
 
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import a_RoomDB.ClientsModel
 import a_RoomDB.ColorsArticlesTabelle
 import a_RoomDB.SoldArticlesTabelle
 
-class _F3_DisplayeProductInfosToSeller(val viewModelInitApp: ViewModelInitApp) {
-
+class _DisplayeProductInfosToSeller(val viewModelInitApp: ViewModelInitApp) {
     fun onClickOnMain(
         viewModelInitApp: ViewModelInitApp,
         currentSale: SoldArticlesTabelle,

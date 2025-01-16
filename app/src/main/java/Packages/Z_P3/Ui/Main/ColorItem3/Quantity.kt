@@ -1,6 +1,6 @@
 package Packages.Z_P3.Ui.Main.ColorItem3
 
-import Z_MasterOfApps.Kotlin.ViewModel.Actions.F3_DisplayProductInfosToSeller._F3_DisplayeProductInfosToSeller
+import Z_MasterOfApps.Kotlin.ViewModel.Actions.Package_3._DisplayeProductInfosToSeller
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import a_RoomDB.ClientsModel
 import a_RoomDB.ColorsArticlesTabelle
@@ -31,7 +31,7 @@ fun QuantityButton(
     Button(
         onClick = {
             onClick()
-            _F3_DisplayeProductInfosToSeller(viewModelInitApp)
+            _DisplayeProductInfosToSeller(viewModelInitApp)
                 .onClickComposeQuantityButton(
                 quantity,
                 currentSale,

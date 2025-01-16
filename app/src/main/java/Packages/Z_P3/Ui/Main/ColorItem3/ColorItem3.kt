@@ -1,7 +1,7 @@
 package Packages.Z_P3.Ui.Main.ColorItem3
 
 import Packages.Z_P3.Ui.Objects.ImageDisplayer3
-import Z_MasterOfApps.Kotlin.ViewModel.Actions.OnClickOn
+import Z_MasterOfApps.Kotlin.ViewModel.Actions.Package_3._DisplayeProductInfosToSeller
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ClientsModel
@@ -89,12 +89,13 @@ fun ColorItem3(
 
     LaunchedEffect(key1 = currentSale?.idArticle) {
         if (color.idColore==currentSale?.color1IdPicked) {
-            OnClickOn(viewModelInitApp).composeQuantityButton(
-                quantity = 1,
-                currentSale = currentSale,
-                currentClient = currentClient,
-                colorDetails = color,
-            )
+            _DisplayeProductInfosToSeller(viewModelInitApp)
+                .onClickComposeQuantityButton(
+                    1,
+                    currentSale,
+                    currentClient,
+                    color,
+                )
         }
     }
 
