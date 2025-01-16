@@ -108,12 +108,14 @@ open class _ModelAppsFather(
             var cPositionCheyCeGrossit: Boolean by mutableStateOf(false)
             var positionProduitDonGrossistChoisiPourAcheterCeProduit: Int by mutableStateOf(0)
 
+
             var mutableBasesStates: MutableBasesStates? by mutableStateOf(MutableBasesStates())
             @IgnoreExtraProperties
             class MutableBasesStates {
                 var cPositionCheyCeGrossit: Boolean by mutableStateOf(false)
                 var positionProduitDonGrossistChoisiPourAcheterCeProduit: Int by mutableStateOf(0)
             }
+
 
             var grossistInformations: GrossistInformations? by mutableStateOf(
                 init_grossistInformations
@@ -128,15 +130,10 @@ open class _ModelAppsFather(
                 var positionInGrossistsList: Int by mutableIntStateOf(0)
             }
 
+
             @get:Exclude
             var coloursEtGoutsCommendee: SnapshotStateList<ColoursGoutsCommendee> =
                 init_coloursEtGoutsCommendee.toMutableStateList()
-            var coloursEtGoutsCommendeeList: List<ColoursGoutsCommendee>
-                get() = coloursEtGoutsCommendee.toList()
-                set(value) {
-                    coloursEtGoutsCommendee.clear()
-                    coloursEtGoutsCommendee.addAll(value)
-                }
             @IgnoreExtraProperties
             class ColoursGoutsCommendee(
                 val id: Long = 1,
@@ -169,18 +166,6 @@ open class _ModelAppsFather(
             init_colours_achete: List<ColorAchatModel> = emptyList(),
         ) {
             var clientInformations: ClientInformations? by mutableStateOf(init_clientInformations)
-
-            @get:Exclude
-            var colours_Achete: SnapshotStateList<ColorAchatModel> =
-                init_colours_achete.toMutableStateList()
-
-            var coloursAcheteList: List<ColorAchatModel>
-                get() = colours_Achete.toList()
-                set(value) {
-                    colours_Achete.clear()
-                    colours_Achete.addAll(value)
-                }
-
             @IgnoreExtraProperties
             data class ClientInformations(
                 var id: Long = 0,
@@ -203,6 +188,11 @@ open class _ModelAppsFather(
                 }
             }
 
+
+            @get:Exclude
+            var colours_Achete: SnapshotStateList<ColorAchatModel> =
+                init_colours_achete.toMutableStateList()
+
             @IgnoreExtraProperties
             class ColorAchatModel(
                 var vidPosition: Long = 0,
@@ -214,7 +204,6 @@ open class _ModelAppsFather(
         }
 
         companion object : ProduitModelCompanion()
-
         constructor() : this(0)
     }
 
