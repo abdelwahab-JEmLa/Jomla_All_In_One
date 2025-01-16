@@ -1,5 +1,6 @@
-package Z_MasterOfApps.Kotlin.Model
+package Z_MasterOfApps.Kotlin.Model.Extension
 
+import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.util.Log
 import androidx.lifecycle.viewModelScope

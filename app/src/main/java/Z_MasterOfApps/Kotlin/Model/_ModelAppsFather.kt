@@ -1,5 +1,8 @@
 package Z_MasterOfApps.Kotlin.Model
 
+import Z_MasterOfApps.Kotlin.Model.Extension.GrossistBonCommandesExtension
+import Z_MasterOfApps.Kotlin.Model.Extension.ProduitModelCompanion
+import Z_MasterOfApps.Kotlin.Model.Extension.ProduitModelExtension
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf

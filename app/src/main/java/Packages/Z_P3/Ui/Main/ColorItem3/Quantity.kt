@@ -1,6 +1,6 @@
 package Packages.Z_P3.Ui.Main.ColorItem3
 
-import Z_MasterOfApps.Kotlin.ViewModel.Actions.onClickQuantityButton
+import Z_MasterOfApps.Kotlin.ViewModel.Actions.OnClickOn
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import a_RoomDB.ClientsModel
 import a_RoomDB.ColorsArticlesTabelle
@@ -31,7 +31,7 @@ fun QuantityButton(
     Button(
         onClick = {
             onClick()
-            onClickQuantityButton(
+            OnClickOn.composeQuantityButton(
                 quantity = quantity,
                 currentSale = currentSale,
                 currentClient = currentClient,
