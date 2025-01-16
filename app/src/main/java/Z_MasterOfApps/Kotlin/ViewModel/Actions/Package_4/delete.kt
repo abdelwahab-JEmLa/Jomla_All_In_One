@@ -5,7 +5,7 @@ import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ClientsModel
 
-fun deleter(
+fun deleteColore(
     viewModelInitApp: ViewModelInitApp,
     colorIndex: Int,
     article: ArticlesBasesStatsTable,

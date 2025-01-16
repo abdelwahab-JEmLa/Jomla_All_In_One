@@ -11,6 +11,6 @@ class _SoldCartScreen(val viewModelInitApp: ViewModelInitApp) {
         article: ArticlesBasesStatsTable,
         clientBuyerNow: ClientsModel
     ) {
-        deleter(viewModelInitApp,colorIndex, article, clientBuyerNow)
+        deleteColore(viewModelInitApp,colorIndex, article, clientBuyerNow)
     }
 }
