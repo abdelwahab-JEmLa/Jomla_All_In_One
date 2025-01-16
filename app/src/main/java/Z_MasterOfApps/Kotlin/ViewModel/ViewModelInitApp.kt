@@ -2,7 +2,6 @@ package Z_MasterOfApps.Kotlin.ViewModel
 
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.produitsFireBaseRef
-import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.Companion.calculeSelfGrossistBonCommandesExtension
 import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.ParamatersAppsModel
 import Z_MasterOfApps.Z_AppsFather.Kotlin._3.Init.CreeNewStart
 import Z_MasterOfApps.Z_AppsFather.Kotlin._3.Init.LoadFromFirebaseHandler
@@ -69,8 +68,7 @@ class ViewModelInitApp : ViewModel() {
                                     }
 
                                     if (index != -1) {
-                                        updatedProduct.calculeSelfGrossistBonCommandesExtension()
-                                        _modelAppsFather.produitsMainDataBase[index] = updatedProduct
+                                   //     _modelAppsFather.produitsMainDataBase[index] = updatedProduct.calculeSelfGrossistBonCommandesExtension()
                                     }
                                 }
                             } catch (e: Exception) {

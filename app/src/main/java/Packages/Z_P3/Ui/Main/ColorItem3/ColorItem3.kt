@@ -1,8 +1,7 @@
 package Packages.Z_P3.Ui.Main.ColorItem3
 
 import Packages.Z_P3.Ui.Objects.ImageDisplayer3
-import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
-import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.createNewProduct
+import Z_MasterOfApps.Kotlin.ViewModel.Actions.onClickQuantityButton
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ClientsModel
@@ -89,59 +88,13 @@ fun ColorItem3(
 
     LaunchedEffect(key1 = currentSale?.idArticle) {
         if (color.idColore==currentSale?.color1IdPicked) {
-            val product = viewModelInitApp._modelAppsFather.produitsMainDataBase
-                .find { it.id == currentSale?.idArticle }
-                ?: createNewProduct(viewModelInitApp, currentSale?.nameArticle!!)
-
-            // Create or update color purchase
-            val colorPurchase = _ModelAppsFather.ProduitModel.ClientBonVentModel.ColorAchatModel(
-                couleurId = color.idColore,
-                nom = color.nameColore,
-                quantity_Achete = 1,
-                imogi = color.iconColore
+            onClickQuantityButton(
+                quantity = 1,
+                currentSale = currentSale,
+                currentClient = currentClient,
+                colorDetails = color,
+                viewModelInitApp = viewModelInitApp
             )
-
-            // Get or create sale
-            val existingSaleIndex = product.bonsVentDeCetteCota
-                .indexOfFirst { it.clientInformations?.id == currentClient?.idClientsSu }
-
-            if (existingSaleIndex != -1) {
-                // Update existing sale
-                val existingSale = product.bonsVentDeCetteCota[existingSaleIndex]
-                val colorIndex = existingSale.colours_Achete
-                    .indexOfFirst { it.couleurId == color.idColore }
-
-                if (colorIndex != -1) {
-                    existingSale.colours_Achete[colorIndex] = colorPurchase
-                } else {
-                    existingSale.colours_Achete.add(colorPurchase)
-
-                }
-            } else {
-                // Create new sale
-                val newSale = _ModelAppsFather.ProduitModel.ClientBonVentModel(
-                    vid = currentSale?.vid ?: System.currentTimeMillis()
-                ).apply {
-                    clientInformations = currentClient?.let {
-                        _ModelAppsFather.ProduitModel.ClientBonVentModel.ClientInformations(
-                            id = it.idClientsSu,
-                            nom = it.nomClientsSu,
-                            couleur = it.couleurSu
-                        ).apply {
-                            positionDonClientsList = 0
-                            auFilterFAB = false
-                        }
-                    }
-                    colours_Achete.add(colorPurchase)
-                }
-                product.bonCommendDeCetteCota
-
-                product.bonsVentDeCetteCota.add(newSale)
-
-            }
-
-            _ModelAppsFather.updateProduit(product, viewModelInitApp)
-         //   product.updateBonCommande()
         }
     }
 

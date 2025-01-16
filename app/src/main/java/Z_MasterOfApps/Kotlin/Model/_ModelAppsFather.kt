@@ -106,24 +106,19 @@ open class _ModelAppsFather(
             var currentCreditBalance: Double = 0.0,
             init_coloursEtGoutsCommendee: List<ColoursGoutsCommendee> = emptyList(),
         ) {
-            var grossistInformations: GrossistInformations? by mutableStateOf(
-                init_grossistInformations
-            )
-            var mutableBasesStates: MutableBasesStates? by mutableStateOf(MutableBasesStates())
             var cPositionCheyCeGrossit: Boolean by mutableStateOf(false)
             var positionProduitDonGrossistChoisiPourAcheterCeProduit: Int by mutableStateOf(0)
 
-            @get:Exclude
-            var coloursEtGoutsCommendee: SnapshotStateList<ColoursGoutsCommendee> =
-                init_coloursEtGoutsCommendee.toMutableStateList()
+            var mutableBasesStates: MutableBasesStates? by mutableStateOf(MutableBasesStates())
+            @IgnoreExtraProperties
+            class MutableBasesStates {
+                var cPositionCheyCeGrossit: Boolean by mutableStateOf(false)
+                var positionProduitDonGrossistChoisiPourAcheterCeProduit: Int by mutableStateOf(0)
+            }
 
-            var coloursEtGoutsCommendeeList: List<ColoursGoutsCommendee>
-                get() = coloursEtGoutsCommendee.toList()
-                set(value) {
-                    coloursEtGoutsCommendee.clear()
-                    coloursEtGoutsCommendee.addAll(value)
-                }
-
+            var grossistInformations: GrossistInformations? by mutableStateOf(
+                init_grossistInformations
+            )
             @IgnoreExtraProperties
             data class GrossistInformations(
                 val id: Long = 1,
@@ -134,16 +129,10 @@ open class _ModelAppsFather(
                 var positionInGrossistsList: Int by mutableIntStateOf(0)
             }
 
-            @IgnoreExtraProperties
-            class MutableBasesStates {
-                var cPositionCheyCeGrossit: Boolean by mutableStateOf(false)
-                var positionProduitDonGrossistChoisiPourAcheterCeProduit: Int by mutableStateOf(0)
-            }
-            // Add no-argument constructor for Firebase
-            constructor() : this(0)
-
-            // Make sure all properties have public getters/setters
-            var coloursEtGoutsCommendeeData: List<ColoursGoutsCommendee>
+            @get:Exclude
+            var coloursEtGoutsCommendee: SnapshotStateList<ColoursGoutsCommendee> =
+                init_coloursEtGoutsCommendee.toMutableStateList()
+            var coloursEtGoutsCommendeeList: List<ColoursGoutsCommendee>
                 get() = coloursEtGoutsCommendee.toList()
                 set(value) {
                     coloursEtGoutsCommendee.clear()
@@ -225,119 +214,65 @@ open class _ModelAppsFather(
             )
         }
 
-// In _ModelAppsFather.kt - Update the calculeSelfGrossistBonCommandesExtension function
-
         companion object {
-            fun _ModelAppsFather.ProduitModel.calculeSelfGrossistBonCommandesExtension() {
+            fun ProduitModel.calculeSelfGrossistBonCommandesExtension(): ProduitModel {
                 Log.d("BonCommandes", "Starting calculation for product ${this.id}")
 
+                // Early return if no active sales
                 if (bonsVentDeCetteCota.isEmpty()) {
-                    Log.d("BonCommandes", "No active sales, clearing bon commande")
                     bonCommendDeCetteCota = null
-                    return
+                    return this
                 }
 
-                // Log current state
-                Log.d("BonCommandes", "Current active sales count: ${bonsVentDeCetteCota.size}")
-                Log.d("BonCommandes", "Current bon commande: ${bonCommendDeCetteCota?.vid}")
+                // Get grossist info from current or history
+                val grossistInfo = bonCommendDeCetteCota?.grossistInformations
+                    ?: historiqueBonsCommend.lastOrNull()?.grossistInformations
 
-                // Create new bon commande or update existing one
+                // Aggregate colors and quantities
+                val aggregatedColors = bonsVentDeCetteCota
+                    .flatMap { it.colours_Achete }
+                    .groupBy { it.couleurId }
+                    .mapNotNull { (couleurId, colors) ->
+                        colors.firstOrNull()?.let { color ->
+                            val totalQuantity = colors.sumOf { it.quantity_Achete }
+                            if (totalQuantity > 0) {
+                                GrossistBonCommandes.ColoursGoutsCommendee(
+                                    id = couleurId,
+                                    nom = color.nom,
+                                    emogi = color.imogi
+                                ).apply { quantityAchete = totalQuantity }
+                            } else null
+                        }
+                    }
+
+                // Create new bon commande
                 val newBonCommande = GrossistBonCommandes(
                     vid = System.currentTimeMillis(),
                     date = java.time.LocalDateTime.now().toString(),
-                    init_grossistInformations = bonCommendDeCetteCota?.grossistInformations ?: run {
-                        Log.d("BonCommandes", "No existing grossist info, checking history")
-                        historiqueBonsCommend.lastOrNull()?.grossistInformations.also {
-                            Log.d("BonCommandes", "Found historical grossist: ${it?.nom}")
-                        }
-                    },
-                    init_coloursEtGoutsCommendee = emptyList()
+                    init_grossistInformations = grossistInfo,
+                    init_coloursEtGoutsCommendee = aggregatedColors
                 ).apply {
-                    // Log aggregation process
-                    Log.d("BonCommandes", "Starting color aggregation")
-
-                    val aggregatedColors = bonsVentDeCetteCota
-                        .flatMap { it.colours_Achete }
-                        .groupBy { it.couleurId }
-                        .mapNotNull { (couleurId, colorList) ->
-                            colorList.firstOrNull()?.let { firstColor ->
-                                val totalQuantity = colorList.sumOf { it.quantity_Achete }
-                                Log.d("BonCommandes", "Color ${firstColor.nom}: total quantity = $totalQuantity")
-
-                                if (totalQuantity > 0) {
-                                    GrossistBonCommandes.ColoursGoutsCommendee(
-                                        id = couleurId,
-                                        nom = firstColor.nom,
-                                        emogi = firstColor.imogi
-                                    ).apply {
-                                        quantityAchete = totalQuantity
-                                    }
-                                } else null
-                            }
-                        }
-
-                    Log.d("BonCommandes", "Aggregated ${aggregatedColors.size} colors")
-
-                    // Update colors in the new bon commande
-                    coloursEtGoutsCommendee.clear()
-                    coloursEtGoutsCommendee.addAll(aggregatedColors)
-
-                    // Preserve existing mutable states if available
                     mutableBasesStates = bonCommendDeCetteCota?.mutableBasesStates
                         ?: GrossistBonCommandes.MutableBasesStates()
                 }
 
-                // Compare and update if needed
-                val shouldUpdate = bonCommendDeCetteCota == null ||
-                        !compareBonCommandes(bonCommendDeCetteCota!!, newBonCommande)
+                // Update only if there are changes
+                val hasChanges = bonCommendDeCetteCota?.let { old ->
+                    old.coloursEtGoutsCommendee.sortedBy { it.id } !=
+                            newBonCommande.coloursEtGoutsCommendee.sortedBy { it.id }
+                } ?: true
 
-                Log.d("BonCommandes", "Update needed: $shouldUpdate")
-
-                if (shouldUpdate) {
-                    Log.d("BonCommandes", "Updating bon commande")
-                    // Update current bon commande
+                if (hasChanges) {
                     bonCommendDeCetteCota = newBonCommande
-
-                    // Add to history if it's a new state
                     if (!historiqueBonsCommend.any { it.vid == newBonCommande.vid }) {
-                        Log.d("BonCommandes", "Adding new state to history")
                         historiqueBonsCommend.add(newBonCommande)
                     }
                 }
 
-                Log.d("BonCommandes", "Calculation completed")
-            }
-
-            // Updated comparison function with logging
-            private fun compareBonCommandes(
-                old: GrossistBonCommandes,
-                new: GrossistBonCommandes
-            ): Boolean {
-                Log.d("BonCommandes", "Comparing bon commandes")
-
-                val oldColors = old.coloursEtGoutsCommendee.sortedBy { it.id }
-                val newColors = new.coloursEtGoutsCommendee.sortedBy { it.id }
-
-                if (oldColors.size != newColors.size) {
-                    Log.d("BonCommandes", "Different color counts: old=${oldColors.size}, new=${newColors.size}")
-                    return false
-                }
-
-                return oldColors.zip(newColors).all { (oldColor, newColor) ->
-                    val matches = oldColor.id == newColor.id &&
-                            oldColor.nom == newColor.nom &&
-                            oldColor.quantityAchete == newColor.quantityAchete
-
-                    if (!matches) {
-                        Log.d("BonCommandes", "Mismatch found - Color: ${oldColor.nom}")
-                        Log.d("BonCommandes", "Old: id=${oldColor.id}, quantity=${oldColor.quantityAchete}")
-                        Log.d("BonCommandes", "New: id=${newColor.id}, quantity=${newColor.quantityAchete}")
-                    }
-
-                    matches
-                }
+                return this
             }
         }
+        constructor() : this(0)
     }
 
     companion object : ProduitModelExtension()
