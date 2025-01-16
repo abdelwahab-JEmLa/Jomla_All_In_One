@@ -89,12 +89,11 @@ fun ColorItem3(
 
     LaunchedEffect(key1 = currentSale?.idArticle) {
         if (color.idColore==currentSale?.color1IdPicked) {
-            OnClickOn.composeQuantityButton(
+            OnClickOn(viewModelInitApp).composeQuantityButton(
                 quantity = 1,
                 currentSale = currentSale,
                 currentClient = currentClient,
                 colorDetails = color,
-                viewModelInitApp = viewModelInitApp
             )
         }
     }

@@ -31,12 +31,11 @@ fun QuantityButton(
     Button(
         onClick = {
             onClick()
-            OnClickOn.composeQuantityButton(
+            OnClickOn(viewModelInitApp).composeQuantityButton(
                 quantity = quantity,
                 currentSale = currentSale,
                 currentClient = currentClient,
                 colorDetails = colorDetails,
-                viewModelInitApp = viewModelInitApp
             )
         },
         modifier = Modifier
