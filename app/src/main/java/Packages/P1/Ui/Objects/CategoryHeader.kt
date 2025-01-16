@@ -1,5 +1,5 @@
 package Packages.P1.Ui.Objects
-import a_RoomDB.CategoriesTabelle
+import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.App.CategoriesTabelle
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row

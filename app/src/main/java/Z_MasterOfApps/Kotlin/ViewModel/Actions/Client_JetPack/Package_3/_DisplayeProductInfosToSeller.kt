@@ -1,9 +1,9 @@
-package Z_MasterOfApps.Kotlin.ViewModel.Actions.Package_3
+package Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Package_3
 
+import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.ClientsModel
+import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.ColorsArticlesTabelle
+import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.SoldArticlesTabelle
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import a_RoomDB.ClientsModel
-import a_RoomDB.ColorsArticlesTabelle
-import a_RoomDB.SoldArticlesTabelle
 
 class _DisplayeProductInfosToSeller(val viewModelInitApp: ViewModelInitApp) {
     fun onClickOnMain(

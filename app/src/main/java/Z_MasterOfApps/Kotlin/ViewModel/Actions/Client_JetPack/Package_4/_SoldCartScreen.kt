@@ -1,8 +1,8 @@
-package Z_MasterOfApps.Kotlin.ViewModel.Actions.Package_4
+package Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Package_4
 
+import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.ArticlesBasesStatsTable
+import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.ClientsModel
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import a_RoomDB.ArticlesBasesStatsTable
-import a_RoomDB.ClientsModel
 
 class _SoldCartScreen(val viewModelInitApp: ViewModelInitApp) {
     fun onClickOnMain(

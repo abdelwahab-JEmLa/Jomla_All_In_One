@@ -1,10 +1,10 @@
 package com.example.clientjetpack.Modules
 
-import a_RoomDB.ArticlesBasesStatsTable
-import a_RoomDB.CategoriesTabelle
-import a_RoomDB.ClientsModel
-import a_RoomDB.ColorsArticlesTabelle
-import a_RoomDB.SoldArticlesTabelle
+import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.ArticlesBasesStatsTable
+import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.App.CategoriesTabelle
+import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.ClientsModel
+import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.ColorsArticlesTabelle
+import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.SoldArticlesTabelle
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert

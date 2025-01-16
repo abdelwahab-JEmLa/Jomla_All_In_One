@@ -2,8 +2,8 @@ package P7_EStorePresentationToClient.Main
 
 import P7_EStorePresentationToClient.Ui.ColorsCards7
 import P7_EStorePresentationToClient.Ui.ProductNameSection7
-import a_RoomDB.ArticlesBasesStatsTable
-import a_RoomDB.ColorsArticlesTabelle
+import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.ArticlesBasesStatsTable
+import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.ColorsArticlesTabelle
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

@@ -1,6 +1,6 @@
 package Packages.Z_P3.Ui.Main
 
-import a_RoomDB.ArticlesBasesStatsTable
+import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.ArticlesBasesStatsTable
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically

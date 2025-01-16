@@ -1,6 +1,6 @@
 package P6_AiGroupeForSupplier
 
-import a_RoomDB.SoldArticlesTabelle
+import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.SoldArticlesTabelle
 import android.graphics.Bitmap
 import android.util.Log
 import androidx.lifecycle.ViewModel

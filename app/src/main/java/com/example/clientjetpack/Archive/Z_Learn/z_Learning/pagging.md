@@ -22,8 +22,8 @@ package b_StartupAppDisplayerOfNewArticles
 // Pour les animations et transitions
 
 // Pour les mesures de performances
-import a_RoomDB.ArticlesBasesStatsTable
-import a_RoomDB.ColorsArticlesTabelle
+import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.ArticlesBasesStatsTable
+import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.ColorsArticlesTabelle
 import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.compose.animation.AnimatedVisibility

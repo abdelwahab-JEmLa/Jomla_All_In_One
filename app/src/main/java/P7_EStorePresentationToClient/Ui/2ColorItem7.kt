@@ -1,8 +1,8 @@
 package P7_EStorePresentationToClient.Ui
 
 import P7_EStorePresentationToClient.Modules.ImageDisplayer7
-import a_RoomDB.ArticlesBasesStatsTable
-import a_RoomDB.ColorsArticlesTabelle
+import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.ArticlesBasesStatsTable
+import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.ColorsArticlesTabelle
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable

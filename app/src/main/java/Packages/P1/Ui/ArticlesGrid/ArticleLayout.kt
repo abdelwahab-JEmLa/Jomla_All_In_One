@@ -1,7 +1,7 @@
 package Packages.P1.Ui.ArticlesGrid
 
 import Packages.P1.Ui.ArticlesGrid.ArticleItem.ArticleImageWithOverlay
-import a_RoomDB.ArticlesBasesStatsTable
+import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.ArticlesBasesStatsTable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

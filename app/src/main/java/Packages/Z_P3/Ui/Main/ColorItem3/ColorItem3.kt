@@ -1,12 +1,12 @@
 package Packages.Z_P3.Ui.Main.ColorItem3
 
 import Packages.Z_P3.Ui.Objects.ImageDisplayer3
-import Z_MasterOfApps.Kotlin.ViewModel.Actions.Package_3._DisplayeProductInfosToSeller
+import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Package_3._DisplayeProductInfosToSeller
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import a_RoomDB.ArticlesBasesStatsTable
-import a_RoomDB.ClientsModel
-import a_RoomDB.ColorsArticlesTabelle
-import a_RoomDB.SoldArticlesTabelle
+import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.ArticlesBasesStatsTable
+import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.ClientsModel
+import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.ColorsArticlesTabelle
+import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.SoldArticlesTabelle
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

@@ -1,8 +1,8 @@
 package Packages.Z_P3._DisplayProductInfosToSeller
 
-import a_RoomDB.ArticlesBasesStatsTable
-import a_RoomDB.ColorsArticlesTabelle
-import a_RoomDB.SoldArticlesTabelle
+import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.ArticlesBasesStatsTable
+import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.ColorsArticlesTabelle
+import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.SoldArticlesTabelle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
