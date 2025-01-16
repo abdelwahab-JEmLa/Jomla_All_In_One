@@ -1,4 +1,4 @@
-package Z_MasterOfApps.Kotlin.Model.Extension.Res
+package Z_MasterOfApps.Kotlin.Model.Extension
 
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 
