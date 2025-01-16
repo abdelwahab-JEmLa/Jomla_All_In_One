@@ -3,7 +3,6 @@ package Z_MasterOfApps.Kotlin.ViewModel.Actions
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.ClientBonVentModel
-import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.Companion.calculeSelfGrossistBonCommandesExtension
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.GrossistBonCommandes
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import a_RoomDB.ClientsModel
@@ -19,8 +18,7 @@ fun onClickQuantityButton(
     colorDetails: ColorsArticlesTabelle,
     viewModelInitApp: ViewModelInitApp
 ) {
-    try { //-->
-    //TODO(1): pk au premier inseration bonCommend est null au 2eme ca marche 
+    try {
         LogUtils.logQuantity("Starting quantity update - Quantity: $quantity, Color: ${colorDetails.nameColore}")
 
         if (currentSale == null || currentClient == null) {
@@ -128,18 +126,26 @@ private fun updateProductState(
     productIndex: Int,
     viewModelInitApp: ViewModelInitApp
 ) {
-    // Update UI first
+    // Update UI
     viewModelInitApp._modelAppsFather.produitsMainDataBase[productIndex] = product
-
-    // Calculate bon commande immediately using the extension function
-    product.calculeSelfGrossistBonCommandesExtension()
 
     // Update Firebase in background
     viewModelInitApp.viewModelScope.launch {
         try {
             LogUtils.logBonCommandes("Starting Firebase update for product ${product.id}")
 
-            // Update Firebase with the already calculated state
+            // Calculate new bon commande
+            val newBonCommande = calculateBonCommande(product)
+
+            // Update product's bon commande
+            product.bonCommendDeCetteCota = newBonCommande
+
+            // Add to history if new
+            if (newBonCommande != null && !product.historiqueBonsCommend.any { it.vid == newBonCommande.vid }) {
+                product.historiqueBonsCommend.add(newBonCommande)
+            }
+
+            // Update Firebase
             _ModelAppsFather.updateProduit(product, viewModelInitApp)
             LogUtils.logBonCommandes("Firebase update completed")
 
@@ -183,4 +189,47 @@ private fun aggregateColorQuantities(product: ProduitModel): List<GrossistBonCom
         }
 }
 
+fun onClickDeleteSale(
+    currentSale: SoldArticlesTabelle?,
+    currentClient: ClientsModel?,
+    viewModelInitApp: ViewModelInitApp
+) {
+    try {
+        LogUtils.logDelete("Starting delete sale operation")
 
+        if (currentSale == null || currentClient == null) {
+            LogUtils.logError(LogUtils.Tags.DELETE_SALE, "Required sale or client data is null")
+            return
+        }
+
+        // Find product
+        val productIndex = viewModelInitApp._modelAppsFather.produitsMainDataBase
+            .indexOfFirst { it.id == currentSale.idArticle }
+
+        if (productIndex == -1) {
+            LogUtils.logError(LogUtils.Tags.DELETE_SALE, "Product not found")
+            return
+        }
+
+        val product = viewModelInitApp._modelAppsFather.produitsMainDataBase[productIndex]
+
+        // Remove client's sale
+        val updatedSales = product.bonsVentDeCetteCota.filter {
+            it.clientInformations?.id != currentClient.idClientsSu
+        }
+
+        // Update product
+        product.bonsVentDeCetteCota.clear()
+        product.bonsVentDeCetteCota.addAll(updatedSales)
+
+        // Update UI and Firebase
+        updateProductState(
+            product = product,
+            productIndex = productIndex,
+            viewModelInitApp = viewModelInitApp
+        )
+
+    } catch (e: Exception) {
+        LogUtils.logError(LogUtils.Tags.DELETE_SALE, "Error deleting sale", e)
+    }
+}
