@@ -3,7 +3,7 @@ package Z_MasterOfApps.Kotlin.ViewModel.Actions.F3_DisplayProductInfosToSeller
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.ClientBonVentModel
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.GrossistBonCommandes
-import Z_MasterOfApps.Kotlin.ViewModel.Actions.LogUtils
+import Z_MasterOfApps.Z_AppsFather.Kotlin._4.Modules.LogUtils
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import a_RoomDB.ClientsModel
 import a_RoomDB.ColorsArticlesTabelle
