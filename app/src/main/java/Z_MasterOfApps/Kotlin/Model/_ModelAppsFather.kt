@@ -36,7 +36,18 @@ open class _ModelAppsFather(
         var non_Trouve: Boolean by mutableStateOf(initialNon_Trouve)
         var isVisible: Boolean by mutableStateOf(init_visible)
 
+
         var statuesBase: StatuesBase by mutableStateOf(StatuesBase())
+        @IgnoreExtraProperties
+        class StatuesBase(
+            var ilAUneCouleurAvecImage: Boolean = false,
+        ) {
+            var naAucunImage: Boolean by mutableStateOf(false)
+            var sonImageBesoinActualisation: Boolean by mutableStateOf(false)
+            var imageGlidReloadTigger: Int by mutableStateOf(0)
+            var prePourCameraCapture: Boolean by mutableStateOf(false)
+        }
+
 
         @get:Exclude
         var coloursEtGouts: SnapshotStateList<ColourEtGout_Model> =
@@ -48,39 +59,6 @@ open class _ModelAppsFather(
                 coloursEtGouts.clear()
                 coloursEtGouts.addAll(value)
             }
-
-        @get:Exclude
-        var historiqueBonsVents: SnapshotStateList<ClientBonVentModel> =
-            init_historiqueBonsVents.toMutableStateList()
-
-        var historiqueBonsVentsList: List<ClientBonVentModel>
-            get() = historiqueBonsVents.toList()
-            set(value) {
-                historiqueBonsVents.clear()
-                historiqueBonsVents.addAll(value)
-            }
-
-        @get:Exclude
-        var historiqueBonsCommend: SnapshotStateList<GrossistBonCommandes> =
-            init_historiqueBonsCommend.toMutableStateList()
-
-        var historiqueBonsCommendList: List<GrossistBonCommandes>
-            get() = historiqueBonsCommend.toList()
-            set(value) {
-                historiqueBonsCommend.clear()
-                historiqueBonsCommend.addAll(value)
-            }
-
-        @IgnoreExtraProperties
-        class StatuesBase(
-            var ilAUneCouleurAvecImage: Boolean = false,
-        ) {
-            var naAucunImage: Boolean by mutableStateOf(false)
-            var sonImageBesoinActualisation: Boolean by mutableStateOf(false)
-            var imageGlidReloadTigger: Int by mutableStateOf(0)
-            var prePourCameraCapture: Boolean by mutableStateOf(false)
-        }
-
         @IgnoreExtraProperties
         class ColourEtGout_Model(
             val id: Long = 1,
@@ -90,11 +68,20 @@ open class _ModelAppsFather(
             var position_Du_Couleur_Au_Produit: Long = 0,
         )
 
+
         // Nouvelle implémentation avec derived state pour bonCommendDeCetteCota
         var bonCommendDeCetteCota by mutableStateOf<GrossistBonCommandes?>(
             init_bonCommendDeCetteCota
         )
-
+        @get:Exclude
+        var historiqueBonsCommend: SnapshotStateList<GrossistBonCommandes> =
+            init_historiqueBonsCommend.toMutableStateList()
+        var historiqueBonsCommendList: List<GrossistBonCommandes>
+            get() = historiqueBonsCommend.toList()
+            set(value) {
+                historiqueBonsCommend.clear()
+                historiqueBonsCommend.addAll(value)
+            }
         @IgnoreExtraProperties
         class GrossistBonCommandes(
             var vid: Long = 0,
@@ -107,7 +94,6 @@ open class _ModelAppsFather(
         ) {
             var cPositionCheyCeGrossit: Boolean by mutableStateOf(false)
             var positionProduitDonGrossistChoisiPourAcheterCeProduit: Int by mutableStateOf(0)
-
 
             var mutableBasesStates: MutableBasesStates? by mutableStateOf(MutableBasesStates())
             @IgnoreExtraProperties
@@ -150,6 +136,8 @@ open class _ModelAppsFather(
             companion object : GrossistBonCommandesExtension()
         }
 
+
+
         @get:Exclude
         var bonsVentDeCetteCota: SnapshotStateList<ClientBonVentModel> =
             initBonsVentDeCetteCota.toMutableStateList()
@@ -161,6 +149,16 @@ open class _ModelAppsFather(
                 bonsVentDeCetteCota.clear()
                 bonsVentDeCetteCota.addAll(value)
 
+            }
+        @get:Exclude
+        var historiqueBonsVents: SnapshotStateList<ClientBonVentModel> =
+            init_historiqueBonsVents.toMutableStateList()
+
+        var historiqueBonsVentsList: List<ClientBonVentModel>
+            get() = historiqueBonsVents.toList()
+            set(value) {
+                historiqueBonsVents.clear()
+                historiqueBonsVents.addAll(value)
             }
 
         @IgnoreExtraProperties
