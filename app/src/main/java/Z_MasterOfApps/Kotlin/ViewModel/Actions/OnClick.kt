@@ -3,6 +3,7 @@ package Z_MasterOfApps.Kotlin.ViewModel.Actions
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.ClientBonVentModel
+import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.Companion.calculeSelfGrossistBonCommandesExtension
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.GrossistBonCommandes
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import a_RoomDB.ClientsModel
@@ -126,34 +127,52 @@ private fun updateProductState(
     productIndex: Int,
     viewModelInitApp: ViewModelInitApp
 ) {
-    // Update UI
-    viewModelInitApp._modelAppsFather.produitsMainDataBase[productIndex] = product
-
-    // Update Firebase in background
     viewModelInitApp.viewModelScope.launch {
         try {
-            LogUtils.logBonCommandes("Starting Firebase update for product ${product.id}")
+            LogUtils.logBonCommandes("Starting state update for product ${product.id}")
 
-            // Calculate new bon commande
-            val newBonCommande = calculateBonCommande(product)
+            // Force immediate bon commande calculation
+            product.calculeSelfGrossistBonCommandesExtension()
 
-            // Update product's bon commande
-            product.bonCommendDeCetteCota = newBonCommande
-
-            // Add to history if new
-            if (newBonCommande != null && !product.historiqueBonsCommend.any { it.vid == newBonCommande.vid }) {
-                product.historiqueBonsCommend.add(newBonCommande)
+            // Double check that bon commande was created if needed
+            if (product.bonCommendDeCetteCota == null && product.bonsVentDeCetteCota.isNotEmpty()) {
+                LogUtils.logBonCommandes("Forcing bon commande creation")
+                // Create a new bon commande with existing grossist if available
+                product.bonCommendDeCetteCota = GrossistBonCommandes(
+                    vid = System.currentTimeMillis(),
+                    date = java.time.LocalDateTime.now().toString(),
+                    init_grossistInformations = product.historiqueBonsCommend.lastOrNull()?.grossistInformations,
+                    init_coloursEtGoutsCommendee = product.bonsVentDeCetteCota
+                        .flatMap { it.colours_Achete }
+                        .groupBy { it.couleurId }
+                        .mapNotNull { (couleurId, colorList) ->
+                            colorList.firstOrNull()?.let { firstColor ->
+                                val totalQuantity = colorList.sumOf { it.quantity_Achete }
+                                if (totalQuantity > 0) {
+                                    GrossistBonCommandes.ColoursGoutsCommendee(
+                                        id = couleurId,
+                                        nom = firstColor.nom,
+                                        emogi = firstColor.imogi
+                                    ).apply {
+                                        quantityAchete = totalQuantity
+                                    }
+                                } else null
+                            }
+                        }
+                )
             }
 
-            // Update Firebase
+            // Update local state first
+            viewModelInitApp._modelAppsFather.produitsMainDataBase[productIndex] = product
+
+            // Then update Firebase
             _ModelAppsFather.updateProduit(product, viewModelInitApp)
-            LogUtils.logBonCommandes("Firebase update completed")
+            LogUtils.logBonCommandes("State update completed. Bon commande: ${product.bonCommendDeCetteCota?.vid}")
 
         } catch (e: Exception) {
-            LogUtils.logError(LogUtils.Tags.BON_COMMANDES, "Error updating Firebase", e)
+            LogUtils.logError(LogUtils.Tags.BON_COMMANDES, "Error updating state", e)
         }
-    }
-}
+    }                       }
 
 private fun calculateBonCommande(product: ProduitModel): GrossistBonCommandes? {
     if (product.bonsVentDeCetteCota.isEmpty()) {
