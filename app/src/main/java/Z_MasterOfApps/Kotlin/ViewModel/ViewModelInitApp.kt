@@ -66,9 +66,8 @@ class ViewModelInitApp : ViewModel() {
                                     val index = _modelAppsFather.produitsMainDataBase.indexOfFirst {
                                         it.id == updatedProduct.id
                                     }
-
                                     if (index != -1) {
-                                   //     _modelAppsFather.produitsMainDataBase[index] = updatedProduct.calculeSelfGrossistBonCommandesExtension()
+                                        _modelAppsFather.produitsMainDataBase[index] =updatedProduct
                                     }
                                 }
                             } catch (e: Exception) {

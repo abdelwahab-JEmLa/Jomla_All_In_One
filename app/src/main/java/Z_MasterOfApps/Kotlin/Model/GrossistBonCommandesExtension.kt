@@ -57,7 +57,7 @@ open class GrossistBonCommandesExtension {
 
                     produit.bonCommendDeCetteCota = newBonCommande
 
-                    updateChildren(newBonCommande, produit)
+                    updateChildren(produit)
 
                 } catch (e: Exception) {
                     Log.e("CalculeSelf", "Calculation error for product ${produit.id}", e)
@@ -67,22 +67,21 @@ open class GrossistBonCommandesExtension {
             }
     }
     fun updateChildren(
-        newBonCommande: _ModelAppsFather.ProduitModel.GrossistBonCommandes,
         produit: _ModelAppsFather.ProduitModel
     ) {
         // Create a map for Firebase update
         val updates = mapOf(
             "bonCommendDeCetteCota" to mapOf(
-                "vid" to newBonCommande.vid,
-                "grossistInformations" to newBonCommande.grossistInformations,
-                "coloursEtGoutsCommendeeList" to newBonCommande.coloursEtGoutsCommendee,
-                "date" to newBonCommande.date,
-                "date_String_Divise" to newBonCommande.date_String_Divise,
-                "time_String_Divise" to newBonCommande.time_String_Divise,
-                "currentCreditBalance" to newBonCommande.currentCreditBalance,
-                "cpositionCheyCeGrossit" to newBonCommande.cPositionCheyCeGrossit,
+                "vid" to produit.bonCommendDeCetteCota?.vid,
+                "grossistInformations" to produit.bonCommendDeCetteCota?.grossistInformations,
+                "coloursEtGoutsCommendeeList" to produit.bonCommendDeCetteCota?.coloursEtGoutsCommendee,
+                "date" to produit.bonCommendDeCetteCota?.date,
+                "date_String_Divise" to produit.bonCommendDeCetteCota?.date_String_Divise,
+                "time_String_Divise" to produit.bonCommendDeCetteCota?.time_String_Divise,
+                "currentCreditBalance" to produit.bonCommendDeCetteCota?.currentCreditBalance,
+                "cpositionCheyCeGrossit" to produit.bonCommendDeCetteCota?.cPositionCheyCeGrossit,
                 "positionProduitDonGrossistChoisiPourAcheterCeProduit" to
-                        newBonCommande.positionProduitDonGrossistChoisiPourAcheterCeProduit
+                        produit.bonCommendDeCetteCota?.positionProduitDonGrossistChoisiPourAcheterCeProduit
             )
         )
 

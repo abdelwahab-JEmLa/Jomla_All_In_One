@@ -1,10 +1,11 @@
-package Z_MasterOfApps.Kotlin.Model
+package Z_MasterOfApps.Kotlin.Model.Extension
 
+import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
+import Z_MasterOfApps.Kotlin.Model._ModelAppsFather .ProduitModel
 import java.time.LocalDateTime
 
 open class ProduitModelCompanion {
-    fun _ModelAppsFather.ProduitModel.calculeSelfGrossistBonCommandesExtension(): _ModelAppsFather.ProduitModel {
-
+    fun ProduitModel.calculeSelfGrossistBonCommandesExtension(): ProduitModel {
         // Early return if no active sales
         if (bonsVentDeCetteCota.isEmpty()) {
             bonCommendDeCetteCota = null
