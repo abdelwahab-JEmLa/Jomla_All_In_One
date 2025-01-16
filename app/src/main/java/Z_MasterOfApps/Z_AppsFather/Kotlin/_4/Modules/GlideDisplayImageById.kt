@@ -27,8 +27,6 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.signature.ObjectKey
-import com.example.Z_AppsFather.Kotlin._1.Model.Parent.ArticleInfosModel
-import com.example.clientjetpack.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -36,11 +34,14 @@ import java.io.File
 
 private const val MIN_RELOAD_INTERVAL = 500L
 private const val IMAGE_QUALITY = 3
+private const val DEFAULT_IMAGE_ID = 10L
+private const val DEFAULT_IMAGE = "10_1.jpg"  // Replace with your actual default image name
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun GlideDisplayImageById(
-    itemMain: ArticleInfosModel,
+    itemMainId: Long,
+    imageGlidReloadTigger: Int,
     modifier: Modifier = Modifier,
     size: Dp? = null,
     onLoadComplete: () -> Unit = {}
@@ -53,46 +54,43 @@ fun GlideDisplayImageById(
     var isLoading by remember { mutableStateOf(true) }
 
     // Monitor product changes and trigger reloads
-    LaunchedEffect(itemMain.id) {
+    LaunchedEffect(itemMainId) {
         while (true) {
-            itemMain.let { product ->
-                val currentTime = System.currentTimeMillis()
-                val currentTrigger = product.imageGlidReloadTigger
+            val currentTime = System.currentTimeMillis()
+            val currentTrigger = imageGlidReloadTigger
 
-                if (currentTime - lastReloadTimestamp > MIN_RELOAD_INTERVAL &&
-                    currentTrigger != previousTrigger) {
-                    lastReloadTimestamp = currentTime
-                    previousTrigger = currentTrigger
-                    forceReload++
-                    isLoading = true
-                    reloadSuccess = true
-
-                    if (product.sonImageBesoinActualisation) {
-                        delay(1000)
-                        product.besoinToBeUpdated = true
-                        product.imageGlidReloadTigger++
-                    }
-                }
+            if (currentTime - lastReloadTimestamp > MIN_RELOAD_INTERVAL &&
+                currentTrigger != previousTrigger
+            ) {
+                lastReloadTimestamp = currentTime
+                previousTrigger = currentTrigger
+                forceReload++
+                isLoading = true
+                reloadSuccess = true
             }
             delay(MIN_RELOAD_INTERVAL)
         }
     }
 
     // Load image file
-    LaunchedEffect(itemMain.id, forceReload) {
+    LaunchedEffect(itemMainId, forceReload) {
         withContext(Dispatchers.IO) {
-            val imagePath = "$imagesProduitsLocalExternalStorageBasePath/${itemMain.id}_1"
-            imageFile = listOf("jpg", "jpeg", "png", "webp")
-                .map { File("$imagePath.$it") }
-                .firstOrNull { it.exists() && it.length() > 0 }
+            val imagePath = "$imagesProduitsLocalExternalStorageBasePath/${itemMainId}_1"
+            imageFile = if (itemMainId == DEFAULT_IMAGE_ID) {
+                File("$imagesProduitsLocalExternalStorageBasePath/$DEFAULT_IMAGE")
+            } else {
+                listOf("jpg", "jpeg", "png", "webp")
+                    .map { File("$imagePath.$it") }
+                    .firstOrNull { it.exists() && it.length() > 0 }
+            }
         }
     }
 
     // Display image
     Box(modifier = modifier.then(size?.let { Modifier.size(it) } ?: Modifier.fillMaxSize())) {
         GlideImage(
-            model = imageFile ?: R.drawable.ic_launcher_background,
-            contentDescription = "Product $itemMain.id",
+            model = imageFile ?: File("$imagesProduitsLocalExternalStorageBasePath/$DEFAULT_IMAGE"),
+            contentDescription = "Product $itemMainId",
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxSize()
@@ -102,7 +100,7 @@ fun GlideDisplayImageById(
                 .downsample(com.bumptech.glide.load.resource.bitmap.DownsampleStrategy.AT_MOST)
                 .encodeQuality(IMAGE_QUALITY)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .signature(ObjectKey("${itemMain.id}_${forceReload}"))
+                .signature(ObjectKey("${itemMainId}_${forceReload}"))
                 .listener(object : RequestListener<Drawable> {
                     override fun onLoadFailed(
                         e: GlideException?,
