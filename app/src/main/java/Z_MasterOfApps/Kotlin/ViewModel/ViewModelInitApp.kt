@@ -67,7 +67,7 @@ class ViewModelInitApp : ViewModel() {
                                         it.id == updatedProduct.id
                                     }
                                     if (index != -1) {
-                                    //    _modelAppsFather.produitsMainDataBase[index] =updatedProduct
+                                       _modelAppsFather.produitsMainDataBase[index] =updatedProduct
                                     }
                                 }
                             } catch (e: Exception) {
