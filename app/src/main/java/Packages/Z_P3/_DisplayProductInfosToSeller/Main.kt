@@ -5,8 +5,7 @@ import Packages.Z_P3.Ui.Main.Details
 import Packages.Z_P3.Ui.Objects.ActionsButtonRow
 import Packages.Z_P3.Ui.Objects.ProductNameSection3
 import Packages.Z_P3.Ui.Objects.confirmExitDialog
-import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
-import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.produitsFireBaseRef
+import Z_MasterOfApps.Kotlin.ViewModel.Actions.F3_DisplayProductInfosToSeller._F3_DisplayeProductInfosToSeller
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import a_RoomDB.ArticlesBasesStatsTable
 import a_RoomDB.ClientsModel
@@ -64,8 +63,12 @@ fun P3DisplayeProductInfosToSeller(
             reloadTrigger = reloadTrigger,
             isDetailsVisible = isDetailsVisible,
             onDismiss = onDismiss,
-            uiState = uiState, lockExpandedPrices = lockExpandedPrices, onToggleLockExpandedPricex = onToggleLockExpandedPricex,
-            viewModelInitApp = viewModelInitApp, currentClient = currentClient,colorsArticlesTabelleModele = viewModel._uiState.value.colorsArticlesTabelleModel
+            uiState = uiState,
+            lockExpandedPrices = lockExpandedPrices,
+            onToggleLockExpandedPricex = onToggleLockExpandedPricex,
+            viewModelInitApp = viewModelInitApp,
+            currentClient = currentClient,
+            colorsArticlesTabelleModele = viewModel._uiState.value.colorsArticlesTabelleModel
         )
 
     }
@@ -93,7 +96,10 @@ fun MainUi(
 
     Dialog(
         onDismissRequest = { showConfirmDialog = true },
-        properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = true)
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false,
+            decorFitsSystemWindows = true
+        )
     ) {
         Surface(
             modifier = modifier
@@ -149,29 +155,11 @@ fun MainUi(
                         onCancel = {
                             viewModel.deleteSoldArticle(currentSale.vid)
                             onDismiss()
-                            viewModelInitApp._modelAppsFather.produitsMainDataBase
-                                .removeIf { it.id == currentSale.idArticle && it.itsTempProduit}
-                                .also {
-                                    produitsFireBaseRef
-                                    .child(currentSale.idArticle.toString())
-                                    .removeValue()
-                                }
-                            // Find the product and update it
-                            viewModelInitApp._modelAppsFather.produitsMainDataBase
-                                .find { it.id == currentSale.idArticle }?.let { product ->
-
-                                    product.bonsVentDeCetteCota
-                                        .removeIf { bonsVent ->
-                                            bonsVent.clientInformations?.id == currentClient?.idClientsSu
-                                        }.also {
-                                            produitsFireBaseRef
-                                                .child(currentSale.idArticle.toString())
-                                                .child("bonsVentDeCetteCota")
-                                                .removeValue()
-                                        }
-
-                                    _ModelAppsFather.updateProduit(product, viewModelInitApp)
-                                }
+                            _F3_DisplayeProductInfosToSeller(viewModelInitApp).onClickOnMain(
+                                viewModelInitApp,
+                                currentSale,
+                                currentClient
+                            )
                         }
                     )
                 }
@@ -179,3 +167,6 @@ fun MainUi(
         }
     }
 }
+
+
+
