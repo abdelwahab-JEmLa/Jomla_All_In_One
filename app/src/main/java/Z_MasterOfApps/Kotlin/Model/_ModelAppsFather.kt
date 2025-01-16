@@ -16,7 +16,6 @@ open class _ModelAppsFather(
     @get:Exclude
     var produitsMainDataBase: SnapshotStateList<ProduitModel> =
         initial_Produits_Main_DataBase.toMutableStateList()
-
     @IgnoreExtraProperties
     class ProduitModel(
         var id: Long = 0,
@@ -94,7 +93,6 @@ open class _ModelAppsFather(
         var bonCommendDeCetteCota by mutableStateOf<GrossistBonCommandes?>(
             init_bonCommendDeCetteCota
         )
-
         @IgnoreExtraProperties
         class GrossistBonCommandes(
             var vid: Long = 0,
