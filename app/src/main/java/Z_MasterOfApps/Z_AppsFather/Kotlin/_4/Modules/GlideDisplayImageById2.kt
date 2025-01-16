@@ -81,8 +81,9 @@ fun GlideDisplayImageById2(
 
     // Display image
     Box(modifier = modifier.then(size?.let { Modifier.size(it) } ?: Modifier.fillMaxSize())) {
+        val icLauncherBackground = R.drawable.ic_launcher_background
         GlideImage(
-            model = imageFile ?: R.drawable.ic_launcher_background,
+            model = imageFile ?: icLauncherBackground,
             contentDescription = "Product $itemMainId",
             contentScale = ContentScale.Crop,
             modifier = Modifier

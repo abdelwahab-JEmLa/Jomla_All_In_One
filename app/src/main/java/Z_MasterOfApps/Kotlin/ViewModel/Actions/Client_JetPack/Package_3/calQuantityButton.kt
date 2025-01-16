@@ -19,20 +19,20 @@ fun calQuantityButton(
     viewModelInitApp: ViewModelInitApp
 ) {
     try {
-        // Validate inputs
+        // Previous validation code remains the same...
         if (currentSale == null || currentClient == null) {
             LogUtils.logError(LogUtils.Tags.QUANTITY_BUTTON, "Missing required data")
             return
         }
 
-        // Find product
+        // Find product code remains the same...
         val productIndex = viewModelInitApp._modelAppsFather.produitsMainDataBase
             .indexOfFirst { it.id == currentSale.idArticle }
         val product =
             viewModelInitApp._modelAppsFather.produitsMainDataBase.getOrNull(productIndex)
                 ?: return
 
-        // Create color purchase info
+        // Create color purchase code remains the same...
         val colorPurchase = ClientBonVentModel.ColorAchatModel(
             vidPosition = System.currentTimeMillis(),
             couleurId = colorDetails.idColore,
@@ -41,12 +41,11 @@ fun calQuantityButton(
             imogi = colorDetails.iconColore
         )
 
-        // Find or create client sale
+        // Existing sale handling code remains the same...
         val existingSaleIndex = product.bonsVentDeCetteCota
             .indexOfFirst { it.clientInformations?.id == currentClient.idClientsSu }
 
         if (existingSaleIndex != -1) {
-            // Update existing sale
             val existingSale = product.bonsVentDeCetteCota[existingSaleIndex]
             val colorIndex = existingSale.colours_Achete
                 .indexOfFirst { it.couleurId == colorDetails.idColore }
@@ -57,7 +56,6 @@ fun calQuantityButton(
                 existingSale.colours_Achete.add(colorPurchase)
             }
         } else {
-            // Create new sale
             val newSale = ClientBonVentModel(
                 vid = System.currentTimeMillis()
             ).apply {
@@ -71,11 +69,13 @@ fun calQuantityButton(
             product.bonsVentDeCetteCota.add(newSale)
         }
 
-        // Update bon commande if needed
         val currentDate = java.time.LocalDateTime.now().toString()
         if (product.bonCommendDeCetteCota == null ||
             !product.historiqueBonsCommend.any { it.date == currentDate }
         ) {
+            // Get grossist information with fallback to default
+            val lastGrossistInfo = product.historiqueBonsCommend.lastOrNull()?.grossistInformations
+                ?: GrossistBonCommandes.GrossistInformations() // Uses default values defined in the class
 
             val aggregatedColors = product.bonsVentDeCetteCota
                 .flatMap { it.colours_Achete }
@@ -98,7 +98,7 @@ fun calQuantityButton(
             val newBonCommande = GrossistBonCommandes(
                 vid = System.currentTimeMillis(),
                 date = currentDate,
-                init_grossistInformations = product.historiqueBonsCommend.lastOrNull()?.grossistInformations,
+                init_grossistInformations = lastGrossistInfo,
                 init_coloursEtGoutsCommendee = aggregatedColors
             )
 
@@ -111,7 +111,6 @@ fun calQuantityButton(
             }
         }
 
-        // Update UI and Firebase
         viewModelInitApp.viewModelScope.launch {
             viewModelInitApp._modelAppsFather.produitsMainDataBase[productIndex] = product
             _ModelAppsFather.updateProduit(product, viewModelInitApp)

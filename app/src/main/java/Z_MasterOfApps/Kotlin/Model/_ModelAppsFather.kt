@@ -116,6 +116,18 @@ open class _ModelAppsFather(
             ) {
                 var auFilterFAB: Boolean by mutableStateOf(false)
                 var positionInGrossistsList: Int by mutableIntStateOf(0)
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) return true
+                    if (other !is GrossistInformations) return false
+                    return id == other.id &&
+                            nom == other.nom &&
+                            couleur == other.couleur
+                }
+
+                override fun hashCode(): Int {
+                    return Objects.hash(id, nom, couleur)
+                }
             }
 
             @get:Exclude
