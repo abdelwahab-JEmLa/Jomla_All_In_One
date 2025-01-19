@@ -1,11 +1,11 @@
 package P0_MainScreen.Ui.Main.AppNavHost
 
 import P0_MainScreen.Ui.Objects.LoadingOverlay
-import Ui.Package_4.SoldCartScreen.SoldCartScreen
+import Views.Package_4.SoldCartScreen.SoldCartScreen
 import P5_DialogeClientsEditer.ClientSelectionDialog
 import P6_AiGroupeForSupplier.GenerativeAiScreen
-import Ui.P1._ArticlesStartFacade.FragmentStartupScreen
-import Ui.Z_P3._DisplayProductInfosToSeller.P3DisplayeProductInfosToSeller
+import Views.P1._ArticlesStartFacade.FragmentStartupScreen
+import Views.Z_P3._DisplayProductInfosToSeller.P3DisplayeProductInfosToSeller
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Actions._2.Client_JetPack.Models.ArticlesBasesStatsTable
 import androidx.compose.foundation.layout.Box
