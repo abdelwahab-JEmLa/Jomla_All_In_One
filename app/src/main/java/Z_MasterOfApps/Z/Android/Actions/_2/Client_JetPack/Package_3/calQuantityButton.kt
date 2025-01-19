@@ -80,48 +80,45 @@ fun calQuantityButton(
 
         // Format current date as yyyy-MM-dd
         val currentDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+        // Get grossist information with fallback to default
+        val lastGrossistInfo = product.historiqueBonsCommend.lastOrNull()?.grossistInformations
+            ?: GrossistBonCommandes.GrossistInformations()
 
-        if (product.bonCommendDeCetteCota == null ||
-            !product.historiqueBonsCommend.any { it.mutableBasesStates?.dateInString == currentDate }
-        ) {
-            // Get grossist information with fallback to default
-            val lastGrossistInfo = product.historiqueBonsCommend.lastOrNull()?.grossistInformations
-                ?: GrossistBonCommandes.GrossistInformations()
-
-            val aggregatedColors = product.bonsVentDeCetteCota
-                .flatMap { it.colours_Achete }
-                .groupBy { it.couleurId }
-                .mapNotNull { (couleurId, colorList) ->
-                    colorList.firstOrNull()?.let { firstColor ->
-                        val totalQuantity = colorList.sumOf { it.quantity_Achete }
-                        if (totalQuantity > 0) {
-                            GrossistBonCommandes.ColoursGoutsCommendee(
-                                id = couleurId,
-                                nom = firstColor.nom,
-                                emogi = firstColor.imogi
-                            ).apply {
-                                quantityAchete = totalQuantity
-                            }
-                        } else null
-                    }
+        val aggregatedColors = product.bonsVentDeCetteCota
+            .flatMap { it.colours_Achete }
+            .groupBy { it.couleurId }
+            .mapNotNull { (couleurId, colorList) ->
+                colorList.firstOrNull()?.let { firstColor ->
+                    val totalQuantity = colorList.sumOf { it.quantity_Achete }
+                    if (totalQuantity > 0) {
+                        GrossistBonCommandes.ColoursGoutsCommendee(
+                            id = couleurId,
+                            nom = firstColor.nom,
+                            emogi = firstColor.imogi
+                        ).apply {
+                            quantityAchete = totalQuantity
+                        }
+                    } else null
                 }
-
-            val newBonCommande = GrossistBonCommandes(
-                vid = System.currentTimeMillis(),
-                init_grossistInformations = lastGrossistInfo,
-                init_coloursEtGoutsCommendee = aggregatedColors
-            ).apply {
-                mutableBasesStates?.dateInString = currentDate
             }
 
-            // Update current bon commande
-            product.bonCommendDeCetteCota = newBonCommande
+        val newBonCommande = GrossistBonCommandes(
+            vid = System.currentTimeMillis(),
+            init_grossistInformations = lastGrossistInfo,
+            init_coloursEtGoutsCommendee = aggregatedColors
+        ).apply {
+            mutableBasesStates?.dateInString = currentDate
+        }
 
-            // Add to history if date doesn't exist
-            if (!product.historiqueBonsCommend.any { it.mutableBasesStates
-                    ?.dateInString == currentDate }) {
-                product.historiqueBonsCommend.add(newBonCommande)
-            }
+        // Update current bon commande
+        product.bonCommendDeCetteCota = newBonCommande
+
+        // Add to history if date doesn't exist
+        if (!product.historiqueBonsCommend.any {
+                it.mutableBasesStates
+                    ?.dateInString == currentDate
+            }) {
+            product.historiqueBonsCommend.add(newBonCommande)
         }
 
         viewModelInitApp.viewModelScope.launch {
@@ -133,6 +130,7 @@ fun calQuantityButton(
         LogUtils.logError(LogUtils.Tags.QUANTITY_BUTTON, "Error updating sale", e)
     }
 }
+
 fun createNewProduct(
     viewModelInitApp: ViewModelInitApp,
     nameArticle: String? = null
