@@ -28,7 +28,7 @@ fun calQuantityButton(
 
         // Find product or create new one if it doesn't exist
         var productIndex = viewModelInitApp._modelAppsFather.produitsMainDataBase
-            .indexOfFirst { it.id == currentSale.idArticle }
+            .indexOfFirst { it.nom == currentSale.nameArticle }
 
         val product = if (productIndex != -1) {
             viewModelInitApp._modelAppsFather.produitsMainDataBase[productIndex]

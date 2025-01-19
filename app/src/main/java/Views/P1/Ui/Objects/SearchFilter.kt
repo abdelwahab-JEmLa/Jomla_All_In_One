@@ -63,6 +63,7 @@ fun SearchFilterPB(
             trailingIcon = {
                 IconButton(
                     onClick = {
+
                         scope.launch {
                             viewModel.addNewEmptyArticle(filterText)?.let { newArticle ->
                                 onAddNotInBaseArticle(newArticle, 0)
@@ -72,6 +73,7 @@ fun SearchFilterPB(
                             WifiUpdateClientDisplayerStats.SearchWindowsDisplaye.prefix,
                             filterText
                         )
+
                     }
                 ) {
                     Icon(Icons.Default.Add, contentDescription = "Search")
