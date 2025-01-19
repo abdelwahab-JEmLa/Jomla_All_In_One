@@ -1,12 +1,12 @@
 package Views.Z_P3.Ui.Main.ColorItem3
 
 import Views.Z_P3.Ui.Objects.ImageDisplayer3
-import Z_MasterOfApps.Z.Android.Actions._2.Client_JetPack.Package_3._DisplayeProductInfosToSeller
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Actions._2.Client_JetPack.Models.ArticlesBasesStatsTable
 import Z_MasterOfApps.Z.Android.Actions._2.Client_JetPack.Models.ClientsModel
 import Z_MasterOfApps.Z.Android.Actions._2.Client_JetPack.Models.ColorsArticlesTabelle
 import Z_MasterOfApps.Z.Android.Actions._2.Client_JetPack.Models.SoldArticlesTabelle
+import Z_MasterOfApps.Z.Android.Actions._2.Client_JetPack.Package_3._DisplayeProductInfosToSeller
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -64,7 +64,7 @@ fun ColorItem3(
     var showDialog by remember { mutableStateOf(false) }
     var isSelected by remember { mutableStateOf(false) }
 
-    // Enhanced quantity tracking that considers the color's position
+    // Enhanced quantity tracking that considers all color positions
     val currentQuantity = remember(color.idColore, currentSale) {
         currentSale?.let { sale ->
             when (color.idColore) {
@@ -77,18 +77,29 @@ fun ColorItem3(
         } ?: 0
     }
 
+    // Check if this color has any quantity across all positions
+    val hasQuantity = remember(currentSale) {
+        currentSale?.let { sale ->
+            (sale.color1IdPicked == color.idColore && sale.color1SoldQuantity > 0) ||
+                    (sale.color2IdPicked == color.idColore && sale.color2SoldQuantity > 0) ||
+                    (sale.color3IdPicked == color.idColore && sale.color3SoldQuantity > 0) ||
+                    (sale.color4IdPicked == color.idColore && sale.color4SoldQuantity > 0)
+        } ?: false
+    }
+
     // Track whether this color is currently selected as main
     val isMainColor = remember(color.idColore, currentSale) {
         color.idColore == currentSale?.color1IdPicked
     }
 
-    val cardElevation by animateFloatAsState (
+    val cardElevation by animateFloatAsState(
         targetValue = if (isSelected || isMainColor) 8f else 2f,
         label = "cardElevation"
     )
 
     LaunchedEffect(key1 = currentSale?.idArticle) {
-        if (color.idColore==currentSale?.color1IdPicked) {
+        // Updated condition to check for any color position with quantity
+        if (hasQuantity) {
             _DisplayeProductInfosToSeller(viewModelInitApp)
                 .onClickComposeQuantityButton(
                     1,
@@ -102,7 +113,7 @@ fun ColorItem3(
     Box(
         modifier = modifier.height(height)
     ) {
-        // Enhanced quantity badge with improved positioning and visibility logic
+        // Show quantity badge if there's any quantity for this color
         if (currentQuantity > 0) {
             QuantityBadge(
                 quantity = currentQuantity,
@@ -122,7 +133,6 @@ fun ColorItem3(
                     showDialog = true
                     color?.let {
                         updateColorToBeMain(it.idColore)
-                        // Update client display immediately
                         viewModel.sendOrderToClientDisplayer(
                             WifiUpdateClientDisplayerStats.ClientWindowsSelectedColorId.prefix,
                             it.idColore
@@ -148,7 +158,6 @@ fun ColorItem3(
                     .padding(2.dp),
                 verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
-                // Product Image with proper aspect ratio
                 Box(
                     modifier = Modifier
                         .weight(1f)
@@ -164,7 +173,6 @@ fun ColorItem3(
                     )
                 }
 
-                // Color Information with improved layout
                 color?.let { colorData ->
                     ColorInfoSection(
                         colorData = colorData,
@@ -176,47 +184,37 @@ fun ColorItem3(
                 }
             }
         }
-    }
 
-    // Enhanced dialog with improved quantity validation
-    if (showDialog && color != null) {
-        ColorSelectionDialog(
-            currentSale = currentSale,
-            viewModelInitApp = viewModelInitApp,
-            onDismiss = {
-                showDialog = false
-                isSelected = false
-            },
-            currentQuantity = currentQuantity,
-            colorName = color.nameColore,
-            onQuantitySelected = { newQuantity ->
-                // Validate quantity before updating
-                viewModel.updateColorSelection(color.idColore, newQuantity)
-
-
-                // Update scroll position for sub-colors
-                viewModel.sendOrderToClientDisplayer(
-                    WifiUpdateClientDisplayerStats.ClientWindowsLazyRowSupColorsScrolle.prefix,
-                    index
-                )
-
-                // Update selected color
-                viewModel.sendOrderToClientDisplayer(
-                    WifiUpdateClientDisplayerStats.ClientWindowsSelectedColorId.prefix,
-                    color.idColore
-                )
-
-                // Save the transaction
-                viewModel.saveSaleTransactionToSoldAriclesList()
-
-                showDialog = false
-                isSelected = false
-            },
-            currentClient = currentClient,
-            indexColoreAcheter = index,
-            colorsArticlesTabelleModele = colorsArticlesTabelleModele,
-            color = color
-        )
+        if (showDialog && color != null) {
+            ColorSelectionDialog(
+                currentSale = currentSale,
+                viewModelInitApp = viewModelInitApp,
+                onDismiss = {
+                    showDialog = false
+                    isSelected = false
+                },
+                currentQuantity = currentQuantity,
+                colorName = color.nameColore,
+                onQuantitySelected = { newQuantity ->
+                    viewModel.updateColorSelection(color.idColore, newQuantity)
+                    viewModel.sendOrderToClientDisplayer(
+                        WifiUpdateClientDisplayerStats.ClientWindowsLazyRowSupColorsScrolle.prefix,
+                        index
+                    )
+                    viewModel.sendOrderToClientDisplayer(
+                        WifiUpdateClientDisplayerStats.ClientWindowsSelectedColorId.prefix,
+                        color.idColore
+                    )
+                    viewModel.saveSaleTransactionToSoldAriclesList()
+                    showDialog = false
+                    isSelected = false
+                },
+                currentClient = currentClient,
+                indexColoreAcheter = index,
+                colorsArticlesTabelleModele = colorsArticlesTabelleModele,
+                color = color
+            )
+        }
     }
 }
 
