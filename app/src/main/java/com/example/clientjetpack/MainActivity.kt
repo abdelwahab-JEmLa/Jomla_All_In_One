@@ -3,6 +3,7 @@ package com.example.clientjetpack
 import P0_MainScreen.Main.MainScreen
 import P6_AiGroupeForSupplier.GenerativeAiViewModel
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
+import Z_MasterOfApps.Z_AppsFather.Kotlin._3.Init.A_LoadFireBase.FirebaseOfflineHandler
 import android.app.Application
 import android.content.Context
 import android.os.Build
@@ -11,6 +12,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
+import androidx.compose.ui.input.key.Key.Companion.F
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.clientjetpack.Modules.AppDatabase
@@ -28,8 +30,9 @@ class MyApplication : Application() {
     }
 
     private fun initializeFirebase() {
-        FirebaseApp.initializeApp(this)
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true)
+        FirebaseApp.initializeApp(this)?.let { app ->
+            FirebaseOfflineHandler.initializeFirebase(app)
+        }
     }
 
     override fun onCreate() {
@@ -69,7 +72,6 @@ class MainActivity : ComponentActivity() {
     private val permissionHandler by lazy { PermissionHandler(this) }
     private val viewModelFactory by lazy { ViewModelFactory(applicationContext, database) }
     private val headViewModel: HeadViewModel by viewModels { viewModelFactory }
-    private val viewModelInitApp: ViewModelInitApp by viewModels { viewModelFactory }
     private val generativeAiViewModel: GenerativeAiViewModel by viewModels { viewModelFactory }
 
     private val appViewModels by lazy {

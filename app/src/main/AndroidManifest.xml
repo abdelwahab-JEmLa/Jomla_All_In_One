@@ -37,7 +37,7 @@
 
 
     <application
-        android:name="Z_MasterOfApps.Z_AppsFather.Kotlin._0.Main.ContimentDeveloping.Code.MyApplication"
+        android:name=".MyApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
