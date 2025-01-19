@@ -35,7 +35,7 @@ fun MainScreenDEV(
     val navController = rememberNavController()
     val items = NavigationItems.items
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
-
+          //
     // État pour gérer si les permissions sont accordées
     var permissionsGranted by remember { mutableStateOf(false) }
 
