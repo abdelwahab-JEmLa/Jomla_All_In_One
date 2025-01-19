@@ -1,16 +1,22 @@
 package Z_MasterOfApps.Kotlin.Model
 
 import Z_MasterOfApps.Kotlin.Model.Extension.GrossistBonCommandesExtension
-import Z_MasterOfApps.Kotlin.Model.Extension.ProduitModelCompanion
-import Z_MasterOfApps.Kotlin.Model.Extension.ProduitModelExtension
+import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
+import androidx.lifecycle.viewModelScope
+import com.google.firebase.Firebase
 import com.google.firebase.database.Exclude
 import com.google.firebase.database.IgnoreExtraProperties
+import com.google.firebase.database.database
+import com.google.firebase.storage.storage
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import java.util.Objects
 
 open class _ModelAppsFather(
@@ -225,10 +231,78 @@ open class _ModelAppsFather(
             )
         }
 
-        companion object : ProduitModelCompanion()
-
         constructor() : this(0)
     }
 
-    companion object : ProduitModelExtension()
+    companion object {
+        val produitsFireBaseRef = Firebase.database
+            .getReference("0_UiState_3_Host_Package_3_Prototype11Dec")
+            .child("produits")
+        val imagesProduitsFireBaseStorageRef = Firebase.storage.reference
+            .child("Images Articles Data Base")
+            .child("produits")
+        val imagesProduitsLocalExternalStorageBasePath =
+            "/storage/emulated/0/" +
+                    "Abdelwahab_jeMla.com" +
+                    "/IMGs" +
+                    "/BaseDonne"
+
+        fun update_AllProduits(
+            updatedProducts: List<_ModelAppsFather.ProduitModel>, // Change parameter type to List
+            viewModelProduits: ViewModelInitApp
+        ) {
+            viewModelProduits.viewModelScope.launch {
+                try {
+                    // Update local state
+                    viewModelProduits._modelAppsFather.produitsMainDataBase.clear()
+                    viewModelProduits._modelAppsFather.produitsMainDataBase.addAll(updatedProducts)
+
+                    // Then update Firebase in chunks to prevent overwhelming the connection
+                    UpdateFireBase(updatedProducts)
+                } catch (e: Exception) {
+                    Log.e("Firebase", "Error updating products", e)
+                    throw e
+                }
+            }
+        }
+
+        suspend fun UpdateFireBase(updatedProducts: List<_ModelAppsFather.ProduitModel>) {
+            updatedProducts.chunked(5).forEach { chunk ->
+                chunk.forEach { product ->
+                    try {
+                        produitsFireBaseRef.child(product.id.toString()).setValue(product)
+                            .await()
+                        Log.d("Firebase", "Successfully updated product ${product.id}")
+                    } catch (e: Exception) {
+                        Log.e("Firebase", "Failed to update product ${product.id}", e)
+                    }
+                }
+            }
+        }
+
+        fun updateProduit(
+            product: _ModelAppsFather.ProduitModel,
+            viewModelProduits: ViewModelInitApp
+        ) {
+            viewModelProduits.viewModelScope.launch {
+                try {
+                    // Update _produitsAvecBonsGrossist
+                    val index =
+                        viewModelProduits._modelAppsFather.produitsMainDataBase.indexOfFirst { it.id == product.id }
+                    if (index != -1) {
+                        // Direct update of the SnapshotStateList
+                        viewModelProduits._modelAppsFather.produitsMainDataBase[index] = product
+                    }
+
+                    // Update Firebase
+                    produitsFireBaseRef.child(product.id.toString()).setValue(product).await()
+
+                    Log.d("ViewModelInitApp", "Successfully updated product ${product.id}")
+                } catch (e: Exception) {
+                    Log.e("ViewModelInitApp", "Failed to update product ${product.id}", e)
+                }
+            }
+        }
+    }
+
 }

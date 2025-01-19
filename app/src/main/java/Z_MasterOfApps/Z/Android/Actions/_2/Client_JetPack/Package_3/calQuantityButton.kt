@@ -3,10 +3,10 @@ package Z_MasterOfApps.Z.Android.Actions._2.Client_JetPack.Package_3
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.ClientBonVentModel
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.GrossistBonCommandes
+import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Actions._2.Client_JetPack.Models.ClientsModel
 import Z_MasterOfApps.Z.Android.Actions._2.Client_JetPack.Models.ColorsArticlesTabelle
 import Z_MasterOfApps.Z.Android.Actions._2.Client_JetPack.Models.SoldArticlesTabelle
-import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z_AppsFather.Kotlin._4.Modules.LogUtils.LogUtils
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
@@ -26,11 +26,22 @@ fun calQuantityButton(
             return
         }
 
-        val productIndex = viewModelInitApp._modelAppsFather.produitsMainDataBase
+        // Find product or create new one if it doesn't exist
+        var productIndex = viewModelInitApp._modelAppsFather.produitsMainDataBase
             .indexOfFirst { it.id == currentSale.idArticle }
-        val product =
-            viewModelInitApp._modelAppsFather.produitsMainDataBase.getOrNull(productIndex)
-                ?: return
+
+        val product = if (productIndex != -1) {
+            viewModelInitApp._modelAppsFather.produitsMainDataBase[productIndex]
+        } else {
+            // Create new product with the sale's article name
+            createNewProduct(
+                viewModelInitApp = viewModelInitApp,
+                nameArticle = currentSale.nameArticle
+            ).also {
+                // Update productIndex for later use
+                productIndex = viewModelInitApp._modelAppsFather.produitsMainDataBase.size - 1
+            }
+        }
 
         val colorPurchase = ClientBonVentModel.ColorAchatModel(
             vidPosition = System.currentTimeMillis(),
@@ -75,7 +86,7 @@ fun calQuantityButton(
         ) {
             // Get grossist information with fallback to default
             val lastGrossistInfo = product.historiqueBonsCommend.lastOrNull()?.grossistInformations
-                ?: GrossistBonCommandes.GrossistInformations() // Uses default values defined in the class
+                ?: GrossistBonCommandes.GrossistInformations()
 
             val aggregatedColors = product.bonsVentDeCetteCota
                 .flatMap { it.colours_Achete }
@@ -120,5 +131,26 @@ fun calQuantityButton(
 
     } catch (e: Exception) {
         LogUtils.logError(LogUtils.Tags.QUANTITY_BUTTON, "Error updating sale", e)
+    }
+}
+fun createNewProduct(
+    viewModelInitApp: ViewModelInitApp,
+    nameArticle: String? = null
+): _ModelAppsFather.ProduitModel {
+    val maxId = viewModelInitApp._modelAppsFather.produitsMainDataBase
+        .maxOfOrNull { it.id } ?: 0
+
+    return _ModelAppsFather.ProduitModel(
+        id = maxId + 1,
+        itsTempProduit = true,
+    ).apply {
+        nom = nameArticle ?: "New Product ${maxId + 1}"
+        coloursEtGouts.add(
+            _ModelAppsFather.ProduitModel.ColourEtGout_Model(
+                sonImageNeExistPas = true
+            )
+        )
+    }.also {
+        viewModelInitApp._modelAppsFather.produitsMainDataBase.add(it)
     }
 }
