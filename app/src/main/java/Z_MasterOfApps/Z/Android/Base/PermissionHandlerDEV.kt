@@ -1,4 +1,4 @@
-package Z_MasterOfApps.Z_AppsFather.Kotlin._0.Main.ContimentDeveloping.Code
+package Z_MasterOfApps.Z.Android.Base
 
 import android.Manifest
 import android.app.AlertDialog

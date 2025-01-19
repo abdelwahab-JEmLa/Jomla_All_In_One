@@ -1,4 +1,4 @@
-package com.example.Packages.App._1_GerantAfficheurGrossistCommend.App._1NavHost.Fragment_Id4
+package Z_MasterOfApps.Z.Android.Dev.Views._1NavHost.Fragment_IdDEV
 
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
@@ -21,7 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.Packages.App._1_GerantAfficheurGrossistCommend.App._1NavHost.Fragment_Id4.Modules.Dialogs.MoveProductsDialog_F5
+import Z_MasterOfApps.Z.Android.Dev.Views._1NavHost.Fragment_IdDEV.Modules.Dialogs.MoveProductsDialog_F5
 
 @Composable
 fun MainList_F5(

@@ -1,4 +1,4 @@
-package Z_MasterOfApps.Z_AppsFather.Kotlin._0.Main.ContimentDeveloping.Code
+package Z_MasterOfApps.Z.Android.Base
 
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.os.Build
@@ -44,7 +44,8 @@ fun MainScreenDEV(
 
     // Effet pour vérifier les permissions au démarrage
     LaunchedEffect(Unit) {
-        permissionHandler.checkAndRequestPermissions(object : PermissionHandlerDEV.PermissionCallback {
+        permissionHandler.checkAndRequestPermissions(object :
+            PermissionHandlerDEV.PermissionCallback {
             override fun onPermissionsGranted() {
                 permissionsGranted = true
             }

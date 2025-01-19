@@ -2,18 +2,25 @@ package Z_MasterOfApps.Z_AppsFather.Kotlin._3.Init
 
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.UpdateFireBase
+import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z_AppsFather.Kotlin._3.Init.Z.Parent.GetAncienDataBasesMain
 import android.util.Log
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 
-suspend fun CreeNewStart(
+ fun CreeDepuitAncienDataBases(
     _appsHeadModel: _ModelAppsFather,
-) {
+    viewModelInitApp: ViewModelInitApp,
+
+    ) {
+    viewModelInitApp.viewModelScope.launch {
     try {
         val ancienData = GetAncienDataBasesMain()
 
-        // Process products
-        ancienData.produitsDatabase.forEachIndexed { index, ancien ->
-
+        // Process products and filter out IDs above 2000
+        ancienData.produitsDatabase.forEach { ancien ->
+            // Skip products with ID > 2000
+            if (ancien.idArticle <= 2000) {
                 val depuitAncienDataBase = _ModelAppsFather.ProduitModel(
                     id = ancien.idArticle,
                     init_nom = ancien.nomArticleFinale,
@@ -43,21 +50,22 @@ suspend fun CreeNewStart(
 
                 // Add product to main database
                 _appsHeadModel.produitsMainDataBase.add(depuitAncienDataBase)
+            }
         }
-
 
         _ModelAppsFather.produitsFireBaseRef.removeValue().addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                Log.d("CreeNewStart", "Successfully cleared Firebase database")
+                Log.d("CreeDepuitAncienDataBases", "Successfully cleared Firebase database")
             } else {
-                Log.e("CreeNewStart", "Failed to clear Firebase database", task.exception)
+                Log.e("CreeDepuitAncienDataBases", "Failed to clear Firebase database", task.exception)
             }
         }
 
         UpdateFireBase(_appsHeadModel.produitsMainDataBase)
 
     } catch (e: Exception) {
-        Log.e("CreeNewStart", "Error in CreeNewStart", e)
+        Log.e("CreeDepuitAncienDataBases", "Error in CreeDepuitAncienDataBases", e)
         throw e
+    }
     }
 }

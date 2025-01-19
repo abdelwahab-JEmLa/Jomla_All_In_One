@@ -1,10 +1,10 @@
-package com.example.Packages.App._1_GerantAfficheurGrossistCommend.App._1NavHost.Fragment_Id4.Modules
+package Z_MasterOfApps.Z.Android.Dev.Views._1NavHost.Fragment_IdDEV.Modules
 
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.imagesProduitsFireBaseStorageRef
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.imagesProduitsLocalExternalStorageBasePath
-import Z_MasterOfApps.Z.Android.Actions._1.C_Serveur._1NavHost.Fragment_Id4.Actions._ServeurGrossistCommendFragment
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
+import Z_MasterOfApps.Z.Android.Actions._1.C_Serveur._1NavHost.Fragment_Id4.OnClickOn
 import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.ParamatersAppsModel
 import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.ParamatersAppsModel.DeviceMode
 import android.Manifest
@@ -32,8 +32,10 @@ import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -244,7 +246,13 @@ fun GlobalEditesGFABs_F5(
             }
         }
     }
+    var clearDataClickCount by remember { mutableIntStateOf(0) }
 
+    LaunchedEffect(showOptions) {
+        if (!showOptions) {
+            clearDataClickCount = 0
+        }
+    }
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -281,12 +289,19 @@ fun GlobalEditesGFABs_F5(
                     horizontalAlignment = Alignment.End,
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    // FAB Suppression
+                
                     FloatingActionButton(
                         onClick = {
-                            _ServeurGrossistCommendFragment(viewModelInitApp)
-                                .onClickOnGlobalFABsButton_1()
-                        },
+                            if (clearDataClickCount == 0) {
+                                clearDataClickCount++
+                            } else {
+                                OnClickOn(viewModelInitApp)
+                                    .onClickOnGlobalFABsButton_1()                               
+                                clearDataClickCount = 0
+                            }
+                        } ,   //-->
+                        //TODO(1): regle pour que ca affiche le label comme don MainScreenFilterFAB_F5 et ajout un FAb au click affiche et cache les labes de tout les buttons 
+                       // label = if (clearDataClickCount == 0) "clearSoldArticlesData" else "Confirm Clear",
                         modifier = Modifier.size(48.dp),
                         containerColor = Color(0xFF4CAF50)
                     ) {

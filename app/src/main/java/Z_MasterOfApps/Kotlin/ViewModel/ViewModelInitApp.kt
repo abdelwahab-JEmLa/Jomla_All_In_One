@@ -3,7 +3,7 @@ package Z_MasterOfApps.Kotlin.ViewModel
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.ParamatersAppsModel
 import Z_MasterOfApps.Z_AppsFather.Kotlin._3.Init.A_LoadFireBase.LoadFromFirebaseProduits
-import Z_MasterOfApps.Z_AppsFather.Kotlin._3.Init.CreeNewStart
+import Z_MasterOfApps.Z_AppsFather.Kotlin._3.Init.CreeDepuitAncienDataBases
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -15,7 +15,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
 @SuppressLint("SuspiciousIndentation")
-class ViewModelInitApp() : ViewModel() {
+class ViewModelInitApp : ViewModel() {
     var _paramatersAppsViewModelModel by mutableStateOf(ParamatersAppsModel())
     var _modelAppsFather by mutableStateOf(_ModelAppsFather())
 
@@ -34,7 +34,9 @@ class ViewModelInitApp() : ViewModel() {
                 if (nombre == 0) {
                     LoadFromFirebaseProduits.loadFromFirebase(this@ViewModelInitApp)
                 } else {
-                    CreeNewStart(_modelAppsFather)
+                    CreeDepuitAncienDataBases(
+                        _modelAppsFather,
+                        this@ViewModelInitApp)
                 }
 
                 isLoading = false

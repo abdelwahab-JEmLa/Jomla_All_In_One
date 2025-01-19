@@ -1,4 +1,4 @@
-package com.example.Packages.App._1_GerantAfficheurGrossistCommend.App._1NavHost.Fragment_Id4.Modules.Dialogs
+package Z_MasterOfApps.Z.Android.Dev.Views._1NavHost.Fragment_IdDEV.Modules.Dialogs
 
 import Z_MasterOfApps.Kotlin.Model.Extension.grossistsDisponible
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather

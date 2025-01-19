@@ -1,4 +1,4 @@
-package Z_MasterOfApps.Z_AppsFather.Kotlin._0.Main.ContimentDeveloping.Code
+package Z_MasterOfApps.Z.Android.Base
 
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Box
@@ -13,7 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.Packages.App._1_GerantAfficheurGrossistCommend.App._1NavHost.Fragment_Id4.A_DeplaceProduitsVerGrossist_F5
+import Z_MasterOfApps.Z.Android.Dev.Views._1NavHost.Fragment_IdDEV.A_DeplaceProduitsVerGrossist_F5
 
 @Composable
 fun AppNavHostDEV(
