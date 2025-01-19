@@ -1,11 +1,11 @@
 package Packages.Package_4.SoldCartScreen
 
-import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Package_4._SoldCartScreen
+import Z_MasterOfApps.Z.Android.App._2.Client_JetPack.Package_4._SoldCartScreen
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.ArticlesBasesStatsTable
-import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.ClientsModel
-import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.ColorsArticlesTabelle
-import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.SoldArticlesTabelle
+import Z_MasterOfApps.Z.Android.App._2.Client_JetPack.Models.ArticlesBasesStatsTable
+import Z_MasterOfApps.Z.Android.App._2.Client_JetPack.Models.ClientsModel
+import Z_MasterOfApps.Z.Android.App._2.Client_JetPack.Models.ColorsArticlesTabelle
+import Z_MasterOfApps.Z.Android.App._2.Client_JetPack.Models.SoldArticlesTabelle
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut

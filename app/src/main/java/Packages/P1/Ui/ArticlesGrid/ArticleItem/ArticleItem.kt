@@ -5,8 +5,8 @@ import Packages.P1.Ui.ArticlesGrid.ImageDisplayer1
 import Packages.P1.Ui.ArticlesGrid.checkImageExists
 import Packages.P1.Ui.ArticlesGrid.countColors
 import Packages.P1.Ui.ArticlesGrid.getColorIdForIndex
-import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.ArticlesBasesStatsTable
-import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.ClientsModel
+import Z_MasterOfApps.Z.Android.App._2.Client_JetPack.Models.ArticlesBasesStatsTable
+import Z_MasterOfApps.Z.Android.App._2.Client_JetPack.Models.ClientsModel
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize

@@ -1,11 +1,11 @@
-package Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Package_3
+package Z_MasterOfApps.Z.Android.App._2.Client_JetPack.Package_3
 
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.ClientBonVentModel
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.GrossistBonCommandes
-import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.ClientsModel
-import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.ColorsArticlesTabelle
-import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.SoldArticlesTabelle
+import Z_MasterOfApps.Z.Android.App._2.Client_JetPack.Models.ClientsModel
+import Z_MasterOfApps.Z.Android.App._2.Client_JetPack.Models.ColorsArticlesTabelle
+import Z_MasterOfApps.Z.Android.App._2.Client_JetPack.Models.SoldArticlesTabelle
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z_AppsFather.Kotlin._4.Modules.LogUtils.LogUtils
 import androidx.lifecycle.viewModelScope

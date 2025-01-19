@@ -1,8 +1,8 @@
-package Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Package_4
+package Z_MasterOfApps.Z.Android.App._2.Client_JetPack.Package_4
 
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.updateProduit
-import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.ArticlesBasesStatsTable
-import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.ClientsModel
+import Z_MasterOfApps.Z.Android.App._2.Client_JetPack.Models.ArticlesBasesStatsTable
+import Z_MasterOfApps.Z.Android.App._2.Client_JetPack.Models.ClientsModel
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 
 fun deleteColore(

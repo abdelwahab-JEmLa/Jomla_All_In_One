@@ -5,12 +5,12 @@ import Packages.Z_P3.Ui.Main.Details
 import Packages.Z_P3.Ui.Objects.ActionsButtonRow
 import Packages.Z_P3.Ui.Objects.ProductNameSection3
 import Packages.Z_P3.Ui.Objects.confirmExitDialog
-import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Package_3._DisplayeProductInfosToSeller
+import Z_MasterOfApps.Z.Android.App._2.Client_JetPack.Package_3._DisplayeProductInfosToSeller
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.ArticlesBasesStatsTable
-import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.ClientsModel
-import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.ColorsArticlesTabelle
-import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.SoldArticlesTabelle
+import Z_MasterOfApps.Z.Android.App._2.Client_JetPack.Models.ArticlesBasesStatsTable
+import Z_MasterOfApps.Z.Android.App._2.Client_JetPack.Models.ClientsModel
+import Z_MasterOfApps.Z.Android.App._2.Client_JetPack.Models.ColorsArticlesTabelle
+import Z_MasterOfApps.Z.Android.App._2.Client_JetPack.Models.SoldArticlesTabelle
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize

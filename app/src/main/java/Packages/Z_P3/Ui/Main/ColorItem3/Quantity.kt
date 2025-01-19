@@ -1,10 +1,10 @@
 package Packages.Z_P3.Ui.Main.ColorItem3
 
-import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Package_3._DisplayeProductInfosToSeller
+import Z_MasterOfApps.Z.Android.App._2.Client_JetPack.Package_3._DisplayeProductInfosToSeller
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.ClientsModel
-import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.ColorsArticlesTabelle
-import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.SoldArticlesTabelle
+import Z_MasterOfApps.Z.Android.App._2.Client_JetPack.Models.ClientsModel
+import Z_MasterOfApps.Z.Android.App._2.Client_JetPack.Models.ColorsArticlesTabelle
+import Z_MasterOfApps.Z.Android.App._2.Client_JetPack.Models.SoldArticlesTabelle
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape

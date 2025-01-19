@@ -1,4 +1,4 @@
-package Z_MasterOfApps.Kotlin.ViewModel.Actions._2_C_Serveur.Package_1
+package Z_MasterOfApps.Z.Android.App._1.C_Serveur._1NavHost.Fragment_Id4.Actions
 
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 
@@ -7,9 +7,7 @@ class _ServeurGrossistCommendFragment(val viewModelInitApp: ViewModelInitApp) {
     }
 
     fun onClickOnGlobalFABsButton_1() {
-        Z_MasterOfApps.Z.Android.App._1.C_Serveur._1NavHost.Fragment_Id4.Actions.clearAchates(
-            viewModelInitApp
-        )
+        clearAchates(viewModelInitApp)
     }
 }
 

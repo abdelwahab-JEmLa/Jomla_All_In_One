@@ -1,10 +1,10 @@
-package Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Package_3
+package Z_MasterOfApps.Z.Android.App._2.Client_JetPack.Package_3
 
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.produitsFireBaseRef
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.ClientsModel
-import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.SoldArticlesTabelle
+import Z_MasterOfApps.Z.Android.App._2.Client_JetPack.Models.ClientsModel
+import Z_MasterOfApps.Z.Android.App._2.Client_JetPack.Models.SoldArticlesTabelle
 
 fun deleteProduitCommende(
     viewModelInitApp: ViewModelInitApp,

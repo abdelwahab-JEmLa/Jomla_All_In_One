@@ -1,4 +1,4 @@
-package Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models
+package Z_MasterOfApps.Z.Android.App._2.Client_JetPack.Models
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
