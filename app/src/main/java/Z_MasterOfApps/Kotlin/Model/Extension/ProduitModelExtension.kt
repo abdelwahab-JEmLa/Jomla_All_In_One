@@ -84,9 +84,6 @@ open class ProduitModelExtension {
     ) {
         viewModelProduits.viewModelScope.launch {
             try {
-                // Update Firebase
-                produitsFireBaseRef.child(product.id.toString()).setValue(product).await()
-
                 // Update _produitsAvecBonsGrossist
                 val index =
                     viewModelProduits._modelAppsFather.produitsMainDataBase.indexOfFirst { it.id == product.id }
@@ -94,6 +91,9 @@ open class ProduitModelExtension {
                     // Direct update of the SnapshotStateList
                     viewModelProduits._modelAppsFather.produitsMainDataBase[index] = product
                 }
+
+                // Update Firebase
+                produitsFireBaseRef.child(product.id.toString()).setValue(product).await()
 
                 Log.d("ViewModelInitApp", "Successfully updated product ${product.id}")
             } catch (e: Exception) {

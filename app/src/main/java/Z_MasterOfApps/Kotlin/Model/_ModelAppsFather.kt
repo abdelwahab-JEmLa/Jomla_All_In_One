@@ -48,7 +48,9 @@ open class _ModelAppsFather(
             var naAucunImage: Boolean by mutableStateOf(false)
             var sonImageBesoinActualisation: Boolean by mutableStateOf(false)
             var imageGlidReloadTigger: Int by mutableStateOf(0)
+
             var prePourCameraCapture: Boolean by mutableStateOf(false)
+            var seTrouveAuDernieDuCamionCarCCarton: Boolean by mutableStateOf(false)
         }
 
 
@@ -89,20 +91,15 @@ open class _ModelAppsFather(
         class GrossistBonCommandes(
             var vid: Long = 0,
             init_grossistInformations: GrossistInformations? = null,
-            var date: String = "",
-            var date_String_Divise: String = "",
-            var time_String_Divise: String = "",
-            var currentCreditBalance: Double = 0.0,
             init_coloursEtGoutsCommendee: List<ColoursGoutsCommendee> = emptyList(),
         ) {
-            var cPositionCheyCeGrossit: Boolean by mutableStateOf(false)
-            var positionProduitDonGrossistChoisiPourAcheterCeProduit: Int by mutableStateOf(0)
-
             var mutableBasesStates: MutableBasesStates? by mutableStateOf(MutableBasesStates())
             @IgnoreExtraProperties
             class MutableBasesStates {
                 var cPositionCheyCeGrossit: Boolean by mutableStateOf(false)
                 var positionProduitDonGrossistChoisiPourAcheterCeProduit: Int by mutableStateOf(0)
+                var dateInString by mutableStateOf("2025-01-01")
+                var currentCreditBalance by mutableStateOf(0.0)
             }
 
             var grossistInformations: GrossistInformations? by mutableStateOf(

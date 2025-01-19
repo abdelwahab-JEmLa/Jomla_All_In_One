@@ -1,7 +1,6 @@
 package Z_MasterOfApps.Kotlin.Model.Extension
 
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
-import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.produitsFireBaseRef
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.util.Log
 
@@ -66,36 +65,5 @@ open class GrossistBonCommandesExtension {
                 }
             }
     }
-    fun updateChildren(
-        produit: _ModelAppsFather.ProduitModel
-    ) {
-        // Create a map for Firebase update
-        val updates = mapOf(
-            "bonCommendDeCetteCota" to mapOf(
-                "vid" to produit.bonCommendDeCetteCota?.vid,
-                "grossistInformations" to produit.bonCommendDeCetteCota?.grossistInformations,
-                "coloursEtGoutsCommendeeList" to produit.bonCommendDeCetteCota?.coloursEtGoutsCommendee,
-                "date" to produit.bonCommendDeCetteCota?.date,
-                "date_String_Divise" to produit.bonCommendDeCetteCota?.date_String_Divise,
-                "time_String_Divise" to produit.bonCommendDeCetteCota?.time_String_Divise,
-                "currentCreditBalance" to produit.bonCommendDeCetteCota?.currentCreditBalance,
-                "cpositionCheyCeGrossit" to produit.bonCommendDeCetteCota?.cPositionCheyCeGrossit,
-                "positionProduitDonGrossistChoisiPourAcheterCeProduit" to
-                        produit.bonCommendDeCetteCota?.positionProduitDonGrossistChoisiPourAcheterCeProduit
-            )
-        )
 
-        // Update Firebase with explicit structure
-        produitsFireBaseRef.child(produit.id.toString())
-            .updateChildren(updates)
-            .addOnSuccessListener {
-                Log.d(
-                    "CalculeSelf",
-                    "Successfully updated Firebase for product ${produit.id}"
-                )
-            }
-            .addOnFailureListener { exception ->
-                Log.e("CalculeSelf", "Firebase update failed", exception)
-            }
-    }
 }

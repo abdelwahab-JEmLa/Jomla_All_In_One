@@ -7,9 +7,11 @@ import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.ClientsMode
 import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.ColorsArticlesTabelle
 import Z_MasterOfApps.Kotlin.ViewModel.Actions.Client_JetPack.Models.SoldArticlesTabelle
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_MasterOfApps.Z_AppsFather.Kotlin._4.Modules.LogUtils
+import Z_MasterOfApps.Z_AppsFather.Kotlin._4.Modules.LogUtils.LogUtils
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 fun calQuantityButton(
     quantity: Int,
@@ -19,20 +21,17 @@ fun calQuantityButton(
     viewModelInitApp: ViewModelInitApp
 ) {
     try {
-        // Previous validation code remains the same...
         if (currentSale == null || currentClient == null) {
             LogUtils.logError(LogUtils.Tags.QUANTITY_BUTTON, "Missing required data")
             return
         }
 
-        // Find product code remains the same...
         val productIndex = viewModelInitApp._modelAppsFather.produitsMainDataBase
             .indexOfFirst { it.id == currentSale.idArticle }
         val product =
             viewModelInitApp._modelAppsFather.produitsMainDataBase.getOrNull(productIndex)
                 ?: return
 
-        // Create color purchase code remains the same...
         val colorPurchase = ClientBonVentModel.ColorAchatModel(
             vidPosition = System.currentTimeMillis(),
             couleurId = colorDetails.idColore,
@@ -41,7 +40,6 @@ fun calQuantityButton(
             imogi = colorDetails.iconColore
         )
 
-        // Existing sale handling code remains the same...
         val existingSaleIndex = product.bonsVentDeCetteCota
             .indexOfFirst { it.clientInformations?.id == currentClient.idClientsSu }
 
@@ -69,9 +67,11 @@ fun calQuantityButton(
             product.bonsVentDeCetteCota.add(newSale)
         }
 
-        val currentDate = java.time.LocalDateTime.now().toString()
+        // Format current date as yyyy-MM-dd
+        val currentDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+
         if (product.bonCommendDeCetteCota == null ||
-            !product.historiqueBonsCommend.any { it.date == currentDate }
+            !product.historiqueBonsCommend.any { it.mutableBasesStates?.dateInString == currentDate }
         ) {
             // Get grossist information with fallback to default
             val lastGrossistInfo = product.historiqueBonsCommend.lastOrNull()?.grossistInformations
@@ -97,16 +97,18 @@ fun calQuantityButton(
 
             val newBonCommande = GrossistBonCommandes(
                 vid = System.currentTimeMillis(),
-                date = currentDate,
                 init_grossistInformations = lastGrossistInfo,
                 init_coloursEtGoutsCommendee = aggregatedColors
-            )
+            ).apply {
+                mutableBasesStates?.dateInString = currentDate
+            }
 
             // Update current bon commande
             product.bonCommendDeCetteCota = newBonCommande
 
             // Add to history if date doesn't exist
-            if (!product.historiqueBonsCommend.any { it.date == currentDate }) {
+            if (!product.historiqueBonsCommend.any { it.mutableBasesStates
+                    ?.dateInString == currentDate }) {
                 product.historiqueBonsCommend.add(newBonCommande)
             }
         }

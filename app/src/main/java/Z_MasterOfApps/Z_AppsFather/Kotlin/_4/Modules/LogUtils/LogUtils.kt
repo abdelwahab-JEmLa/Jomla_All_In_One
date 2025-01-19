@@ -1,5 +1,5 @@
 // LogUtils.kt
-package Z_MasterOfApps.Z_AppsFather.Kotlin._4.Modules
+package Z_MasterOfApps.Z_AppsFather.Kotlin._4.Modules.LogUtils
 
 object LogUtils {
     private const val APP_TAG = "MasterOfApps"

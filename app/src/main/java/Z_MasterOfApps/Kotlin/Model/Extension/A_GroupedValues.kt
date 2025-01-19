@@ -2,6 +2,16 @@ package Z_MasterOfApps.Kotlin.Model.Extension
 
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 
+val _ModelAppsFather.grossistsDisponible: List<_ModelAppsFather.ProduitModel.GrossistBonCommandes.GrossistInformations>
+    get() = produitsMainDataBase
+        .flatMap { product ->
+            // Get grossist info from current bon commande
+            listOfNotNull(product.bonCommendDeCetteCota?.grossistInformations) +
+                    // Get grossist info from historical bon commandes
+                    product.historiqueBonsCommend.mapNotNull { it.grossistInformations }
+        }
+        .distinctBy { it.id } // Remove duplicates based on grossist ID
+        .sortedBy { it.positionInGrossistsList }
 
 val _ModelAppsFather.groupedProductsPatGrossist: List<Pair<_ModelAppsFather.ProduitModel.GrossistBonCommandes.GrossistInformations, List<_ModelAppsFather.ProduitModel>>>
     get() = produitsMainDataBase
