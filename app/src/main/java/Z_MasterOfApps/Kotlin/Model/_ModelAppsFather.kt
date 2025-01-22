@@ -179,26 +179,35 @@ open class _ModelAppsFather(
                 historiqueBonsVents.clear()
                 historiqueBonsVents.addAll(value)
             }
-
         @IgnoreExtraProperties
         class ClientBonVentModel(
             vid: Long = 0,
             init_clientInformations: ClientInformations? = null,
             init_colours_achete: List<ColorAchatModel> = emptyList(),
         ) {
-            var clientInformations: ClientInformations? by mutableStateOf(init_clientInformations)
+            // Basic information
+            var bonStatueDeBase by mutableStateOf(BonStatueDeBase())
 
-            @get:Exclude
-            var colours_Achete: SnapshotStateList<ColorAchatModel> =
-                init_colours_achete.toMutableStateList()
-
-            var coloursAcheteList: List<ColorAchatModel>
-                get() = colours_Achete.toList()
-                set(value) {
-                    colours_Achete.clear()
-                    colours_Achete.addAll(value)
+            // Status management
+            @IgnoreExtraProperties
+            class BonStatueDeBase {
+                enum class StatueDeCetteVent {
+                    CLIENT_ABSENT,      // غائب الشاري
+                    AVEC_MARCHANDISE,   // عندو سلعة
+                    FERME,             // مغلق
+                    EN_ATTENTE,        // En attente
+                    VISITE_COMPLETE    // Visite complète
                 }
 
+                var currentStatue: StatueDeCetteVent by mutableStateOf(StatueDeCetteVent.EN_ATTENTE)
+                var lastUpdateTimestamp: Long by mutableStateOf(System.currentTimeMillis())
+
+                fun updateStatue(newStatue: StatueDeCetteVent) {
+                    currentStatue = newStatue
+                    lastUpdateTimestamp = System.currentTimeMillis()
+                }
+            }
+            var clientInformations: ClientInformations? by mutableStateOf(init_clientInformations)
             @IgnoreExtraProperties
             data class ClientInformations(
                 var id: Long = 1,
@@ -242,6 +251,16 @@ open class _ModelAppsFather(
 
             }
 
+            @get:Exclude
+            var colours_Achete: SnapshotStateList<ColorAchatModel> =
+                init_colours_achete.toMutableStateList()
+
+            var coloursAcheteList: List<ColorAchatModel>
+                get() = colours_Achete.toList()
+                set(value) {
+                    colours_Achete.clear()
+                    colours_Achete.addAll(value)
+                }
             @IgnoreExtraProperties
             class ColorAchatModel(
                 var vidPosition: Long = 0,

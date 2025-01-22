@@ -1,7 +1,7 @@
 package Z_MasterOfApps.Kotlin.ViewModel
 
+import Views._2LocationGpsClients.App.MainApp.ViewModelExtensionMapsHandler
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
-import com.example.Packages.Views._2LocationGpsClients.App.MainApp.ViewModelExtensionMapsHandler
 import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.ParamatersAppsModel
 import Z_MasterOfApps.Z_AppsFather.Kotlin._3.Init.A_LoadFireBase.LoadFromFirebaseProduits
 import Z_MasterOfApps.Z_AppsFather.Kotlin._3.Init.CreeDepuitAncienDataBases

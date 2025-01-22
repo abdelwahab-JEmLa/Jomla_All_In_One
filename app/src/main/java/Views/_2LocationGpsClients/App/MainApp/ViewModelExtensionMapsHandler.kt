@@ -1,22 +1,114 @@
-package com.example.Packages.Views._2LocationGpsClients.App.MainApp
+package Views._2LocationGpsClients.App.MainApp
 
 import Z_MasterOfApps.Kotlin.Model.Extension.clientsDisponible
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.produitsFireBaseRef
+import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.ClientBonVentModel.BonStatueDeBase.StatueDeCetteVent
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.util.Log
 import com.example.clientjetpack.R
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow
+import java.util.Date
 
 class ViewModelExtensionMapsHandler(
     val viewModel: ViewModelInitApp,
     val produitsMainDataBase: MutableList<_ModelAppsFather.ProduitModel>,
     val modelAppsFather: _ModelAppsFather
 ) {
+    suspend fun handleMarkerClick(
+        selectedMarker: Marker?,
+        statueVente: StatueDeCetteVent,
+        produitsMainDataBase: MutableList<_ModelAppsFather.ProduitModel>
+    ) {
+        if (selectedMarker == null) {
+            Log.d("MarkerHandler", "No marker selected")
+            return
+        }
+
+        withContext(Dispatchers.IO) {
+            try {
+                // Find or create product with ID 0
+                val product = produitsMainDataBase.find { it.id == 0L }
+                    ?: _ModelAppsFather.ProduitModel(id = 0L).also {
+                        produitsMainDataBase.add(it)
+                    }
+
+                // Find the bon vent with the selected marker
+                val bonVent = product.historiqueBonsVents.find { bonVent ->
+                    val marker = bonVent.clientInformations?.gpsLocation?.locationGpsMark
+                    marker == selectedMarker
+                }
+
+                if (bonVent != null) {
+                    // Update the status
+                    bonVent.bonStatueDeBase = _ModelAppsFather.ProduitModel.ClientBonVentModel.BonStatueDeBase().apply {
+                        currentStatue = statueVente
+                    }
+
+                    // Update marker appearance based on new status
+                    updateMarkerAppearance(selectedMarker, statueVente)
+
+                    // Add timestamp to marker snippet
+                    val currentDate = Date()
+                    selectedMarker.snippet = """
+                        Status: ${statueVente.name}
+                        Updated: $currentDate
+                    """.trimIndent()
+
+                    // Update marker info window if it's showing
+                    if (selectedMarker.isInfoWindowShown) {
+                        selectedMarker.showInfoWindow()
+                    }
+
+                    // Update Firebase
+                    _ModelAppsFather.updateProduit(product, viewModel)
+
+                    Log.d("MarkerHandler", "Successfully updated marker status to ${statueVente.name}")
+                } else {
+                    Log.w("MarkerHandler", "No matching bon vent found for selected marker")
+                }
+
+            } catch (e: Exception) {
+                Log.e("MarkerHandler", "Error handling marker click", e)
+                throw e
+            }
+        }
+    }
+
+    private fun updateMarkerAppearance(marker: Marker, status: StatueDeCetteVent) {
+        val color = when (status) {
+            StatueDeCetteVent.CLIENT_ABSENT -> "#FF0000"      // Red
+            StatueDeCetteVent.AVEC_MARCHANDISE -> "#00FF00"   // Green
+            StatueDeCetteVent.FERME -> "#808080"              // Gray
+            StatueDeCetteVent.EN_ATTENTE -> "#FFA500"         // Orange
+            StatueDeCetteVent.VISITE_COMPLETE -> "#0000FF"    // Blue
+        }
+
+        // Update marker color
+        marker.setTextIcon(status.name)  // Set status text on marker
+
+        // Update the gps location color in the data model
+        val gpsLocation = findGpsLocationForMarker(marker)
+        gpsLocation?.couleur = color
+    }
+
+    private fun findGpsLocationForMarker(marker: Marker): _ModelAppsFather.ProduitModel.ClientBonVentModel.ClientInformations.GpsLocation? {
+        produitsMainDataBase.forEach { product ->
+            product.historiqueBonsVents.forEach { bonVent ->
+                if (bonVent.clientInformations?.gpsLocation?.locationGpsMark == marker) {
+                    return bonVent.clientInformations?.gpsLocation
+                }
+            }
+        }
+        return null
+    }
+
     suspend fun clearAllData(mapView: MapView?) {
         try {
             // 1. Clear UI elements first
