@@ -65,10 +65,8 @@ fun MarkerStatusDialog(
                         coroutineScope.launch {
                             viewModel.mapsHandler.handleDialialogeClientMarkClick(
                                 selectedMarker,
-                                StatueDeCetteVent.ON_MODE_COMMEND_ACTUELLEMENT,
-                                viewModel.produitsMainDataBase
+                                StatueDeCetteVent.ON_MODE_COMMEND_ACTUELLEMENT
                             )
-                            // Update Firebase reference
                             onDismiss()
                         }
                     }
@@ -80,8 +78,7 @@ fun MarkerStatusDialog(
                         coroutineScope.launch {
                             viewModel.mapsHandler.handleDialialogeClientMarkClick(
                                 selectedMarker,
-                                StatueDeCetteVent.CLIENT_ABSENT,
-                                viewModel.produitsMainDataBase
+                                StatueDeCetteVent.CLIENT_ABSENT
                             )
                             onDismiss()
                         }
@@ -97,8 +94,7 @@ fun MarkerStatusDialog(
                         coroutineScope.launch {
                             viewModel.mapsHandler.handleDialialogeClientMarkClick(
                                 selectedMarker,
-                                StatueDeCetteVent.AVEC_MARCHANDISE,
-                                viewModel.produitsMainDataBase
+                                StatueDeCetteVent.AVEC_MARCHANDISE
                             )
                             onDismiss()
                         }
@@ -114,8 +110,7 @@ fun MarkerStatusDialog(
                         coroutineScope.launch {
                             viewModel.mapsHandler.handleDialialogeClientMarkClick(
                                 selectedMarker,
-                                StatueDeCetteVent.FERME,
-                                viewModel.produitsMainDataBase
+                                StatueDeCetteVent.FERME
                             )
                             onDismiss()
                         }

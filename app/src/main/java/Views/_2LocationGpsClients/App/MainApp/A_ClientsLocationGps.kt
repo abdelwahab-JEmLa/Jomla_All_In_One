@@ -1,6 +1,7 @@
 package Views._2LocationGpsClients.App.MainApp
 
 import Views._2LocationGpsClients.App.MainApp.B.Dialogs.MarkerStatusDialog
+import Views._2LocationGpsClients.App.MainApp.ViewModel.Extension.Utils.findBonVentForMarker
 import Z_MasterOfApps.Kotlin.Model.Extension.clientsDisponible
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.content.Context
@@ -36,6 +37,7 @@ import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.Marker
+import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow
 
 @Composable
 fun A_ClientsLocationGps(
@@ -111,6 +113,7 @@ fun A_ClientsLocationGps(
         }
     }
 
+    // In A_ClientsLocationGps.kt
     LaunchedEffect(viewModel._modelAppsFather.clientsDisponible) {
         markers.clear()
         mapView.overlays.clear()
@@ -133,17 +136,57 @@ fun A_ClientsLocationGps(
                 // Mettre à jour la couleur dans les données du client
                 client.gpsLocation.couleur = markerColor
 
-                existingMarker.position = GeoPoint(
-                    client.gpsLocation.latitude,
-                    client.gpsLocation.longitude
-                )
-                existingMarker.id = client.id.toString()
-                existingMarker.title = client.nom
-                existingMarker.snippet = if (client.statueDeBase.cUnClientTemporaire)
-                    "Client temporaire" else "Client permanent"
+                existingMarker.apply {
+                    position = GeoPoint(
+                        client.gpsLocation.latitude,
+                        client.gpsLocation.longitude
+                    )
+                    id = client.id.toString()
+                    title = client.nom
+                    snippet = if (client.statueDeBase.cUnClientTemporaire)
+                        "Client temporaire" else "Client permanent"
+                    setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                    infoWindow = MarkerInfoWindow(R.layout.marker_info_window, mapView)
+
+                    // Ajout du click listener
+                    setOnMarkerClickListener { marker, _ ->
+                        selectedMarker = marker
+                        showMarkerDialog = true
+                        if (showMarkerDetails) marker.showInfoWindow()
+                        true
+                    }
+                }
 
                 markers.add(existingMarker)
                 mapView.overlays.add(existingMarker)
+            } ?: run {
+                // Création d'un nouveau marqueur si aucun n'existe
+                Marker(mapView).apply {
+                    position = GeoPoint(
+                        client.gpsLocation.latitude,
+                        client.gpsLocation.longitude
+                    )
+                    title = client.nom
+                    snippet = if (client.statueDeBase.cUnClientTemporaire)
+                        "Client temporaire" else "Client permanent"
+                    setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                    infoWindow = MarkerInfoWindow(R.layout.marker_info_window, mapView)
+
+                    // Même click listener pour les nouveaux marqueurs
+                    setOnMarkerClickListener { marker, _ ->
+                        selectedMarker = marker
+                        showMarkerDialog = true
+                        if (showMarkerDetails) marker.showInfoWindow()
+                        true
+                    }
+
+                    // Appliquer la couleur par défaut pour les nouveaux marqueurs
+                    icon = createCustomMarkerDrawable(context, Color(android.graphics.Color.parseColor(client.gpsLocation.couleur)).toArgb())
+
+                    client.gpsLocation.locationGpsMark = this
+                    markers.add(this)
+                    mapView.overlays.add(this)
+                }
             }
         }
 

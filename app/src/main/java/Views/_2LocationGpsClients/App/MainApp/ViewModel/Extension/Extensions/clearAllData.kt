@@ -1,5 +1,6 @@
-package Views._2LocationGpsClients.App.MainApp.ViewModel.Extension
+package Views._2LocationGpsClients.App.MainApp.ViewModel.Extension.Extensions
 
+import Views._2LocationGpsClients.App.MainApp.ViewModel.Extension.ViewModelExtensionMapsHandler
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.produitsFireBaseRef
 import android.util.Log
 import kotlinx.coroutines.launch

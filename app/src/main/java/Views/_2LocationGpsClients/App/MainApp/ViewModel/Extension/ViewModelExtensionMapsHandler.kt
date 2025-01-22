@@ -1,5 +1,6 @@
 package Views._2LocationGpsClients.App.MainApp.ViewModel.Extension
 
+import Views._2LocationGpsClients.App.MainApp.ViewModel.Extension.Utils.findBonVentForMarker
 import Z_MasterOfApps.Kotlin.Model.Extension.clientsDisponible
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel
@@ -35,7 +36,6 @@ class ViewModelExtensionMapsHandler(
     suspend fun handleDialialogeClientMarkClick(
         selectedMarker: Marker?,
         statueVente: StatueDeCetteVent,
-        produitsMainDataBase: MutableList<ProduitModel>
     ) {
         if (selectedMarker == null) {
             Log.d("MarkerHandler", "No marker selected")
@@ -63,9 +63,10 @@ class ViewModelExtensionMapsHandler(
                             currentStatue = statueVente
                         }
 
-                    // Update marker appearance based on new status
-                    updateMarkerAppearance(selectedMarker, statueVente)
-
+                    selectedMarker.updateInfoWindowStyle(
+                        context = selectedMarker.infoWindow.view.context,
+                        isSelected = statueVente == StatueDeCetteVent.ON_MODE_COMMEND_ACTUELLEMENT
+                    )
                     // Add timestamp to marker snippet
                     val currentDate = Date()
                     selectedMarker.snippet = """
@@ -96,44 +97,6 @@ class ViewModelExtensionMapsHandler(
         }
     }
 
-    private fun updateMarkerAppearance(marker: Marker, status: StatueDeCetteVent) {
-        val color = when (status) {
-            StatueDeCetteVent.CLIENT_ABSENT -> "#FF0000"      // Red
-            StatueDeCetteVent.AVEC_MARCHANDISE -> "#00FF00"   // Green
-            StatueDeCetteVent.FERME -> "#808080"              // Gray
-            StatueDeCetteVent.ON_MODE_COMMEND_ACTUELLEMENT -> "#FFA500" // Orange for command mode
-        }
-
-        // Update marker color
-        marker.setTextIcon(status.name)  // Set status text on marker
-
-        // Update the gps location color in the data model
-        val gpsLocation = findGpsLocationForMarker(marker)
-        gpsLocation?.couleur = color
-
-        // Update marker info window style
-        marker.updateInfoWindowStyle(
-            context = marker.infoWindow.view.context,
-            isSelected = status == StatueDeCetteVent.ON_MODE_COMMEND_ACTUELLEMENT
-        )
-
-        // Update marker info window if it's showing
-        if (marker.isInfoWindowShown) {
-            marker.showInfoWindow()
-        }
-    }
-    fun findBonVentForMarker(marker: Marker): ClientBonVentModel? {
-        produitsMainDataBase.forEach { product ->
-            product.historiqueBonsVents.forEach { bonVent ->
-                if (bonVent.clientInformations?.gpsLocation?.locationGpsMark?.id == marker.id) {
-                    return bonVent
-                }
-            }
-        }
-        return null
-    }
-
-
     private fun Marker.updateInfoWindowStyle(context: Context, isSelected: Boolean) {
         val infoWindow = this.infoWindow as MarkerInfoWindow
         val container = infoWindow.view.findViewById<LinearLayout>(R.id.info_window_container)
@@ -160,17 +123,6 @@ class ViewModelExtensionMapsHandler(
             showInfoWindow()
         }
     }
-    private fun findGpsLocationForMarker(marker: Marker): _ModelAppsFather.ProduitModel.ClientBonVentModel.ClientInformations.GpsLocation? {
-        produitsMainDataBase.forEach { product ->
-            product.historiqueBonsVents.forEach { bonVent ->
-                if (bonVent.clientInformations?.gpsLocation?.locationGpsMark == marker) {
-                    return bonVent.clientInformations?.gpsLocation
-                }
-            }
-        }
-        return null
-    }
-
 
     fun onClickAddMarkerButton(
         mapView: MapView,
