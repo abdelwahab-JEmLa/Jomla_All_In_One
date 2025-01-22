@@ -31,13 +31,14 @@ import com.example.clientjetpack.ViewModel.WifiUpdateClientDisplayerStats
 @Composable
 fun AppNavHost(
     appViewModels: AppViewModels,
+    viewModelInitApp: ViewModelInitApp,
     navController: NavHostController,
     onToggleNavBar: () -> Unit,
     modifier: Modifier = Modifier,
     isFabVisible: Boolean,
     onClickDonne: () -> Unit,
     onClickToDisplayeConexionWifi: () -> Unit,
-    onToggleLockHost: () -> Unit, viewModelInitApp: ViewModelInitApp
+    onToggleLockHost: () -> Unit
 ) {
     val uiState by appViewModels.headViewModel.uiState.collectAsState()
 

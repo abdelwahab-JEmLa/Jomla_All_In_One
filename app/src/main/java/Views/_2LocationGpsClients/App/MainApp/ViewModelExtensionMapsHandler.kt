@@ -30,6 +30,9 @@ class ViewModelExtensionMapsHandler(
             Log.d("MarkerHandler", "No marker selected")
             return
         }
+        //-->
+        //TODO(1): fait au click au infobull de chaneg la couleur de backgond au roge
+        // et im
 
         withContext(Dispatchers.IO) {
             try {

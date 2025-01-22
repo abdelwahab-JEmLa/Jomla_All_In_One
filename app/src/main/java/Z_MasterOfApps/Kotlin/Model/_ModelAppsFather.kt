@@ -208,6 +208,7 @@ open class _ModelAppsFather(
                 var nom: String = "Non Defini",
                 val couleur: String = "#FFFFFF"
             ) {
+                var caRefDonAncienDataBase by mutableStateOf("G_Clients")
                 var auFilterFAB: Boolean by mutableStateOf(false)
                 var positionDonClientsList: Int by mutableIntStateOf(0)
 

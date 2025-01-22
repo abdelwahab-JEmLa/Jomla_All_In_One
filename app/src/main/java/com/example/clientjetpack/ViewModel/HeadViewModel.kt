@@ -1,10 +1,10 @@
 package com.example.clientjetpack.ViewModel
 
 import Z_MasterOfApps.Z.Android.Actions._2.Client_JetPack.Models.ArticlesBasesStatsTable
-import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.App.CategoriesTabelle
 import Z_MasterOfApps.Z.Android.Actions._2.Client_JetPack.Models.ClientsModel
 import Z_MasterOfApps.Z.Android.Actions._2.Client_JetPack.Models.ColorsArticlesTabelle
 import Z_MasterOfApps.Z.Android.Actions._2.Client_JetPack.Models.SoldArticlesTabelle
+import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.App.CategoriesTabelle
 import android.content.Context
 import android.os.Build
 import android.util.Log
@@ -925,9 +925,6 @@ open class HeadViewModel(
                 setLoading(true)
                 updateLoadingProgress(10f)
 
-
-
-
                 devicesTypeManagerInitialize(17f)
 
                 updateLoadingProgress(20f)
@@ -1011,6 +1008,7 @@ open class HeadViewModel(
             }
         })
     }
+
     private suspend fun clientsInitialize(fl: Float) {
         val clientsSnapshot = refClientsTabelle.get().await()
         val clients = clientsSnapshot.children.mapNotNull { snapshot ->
@@ -1019,6 +1017,7 @@ open class HeadViewModel(
         database.clientsModelDao().insertAll(clients)
         updateLoadingProgress(fl)
     }
+
     private suspend fun colorInitialize(fl: Float) {
         // Import colors
         val colorsSnapshot = refColorsArticles.get().await()
@@ -1065,7 +1064,6 @@ open class HeadViewModel(
             createNewArrivaleCategoryIfNeeded(categories)
 
             _uiState.update { it.copy(
-
                 articlesBasesStatTables = articles,
                 categories = categories,
                 colorsArticlesTabelleModel = colors,
