@@ -19,8 +19,6 @@ class ParamatersAppsModel {
     class TelephoneClientParamaters {
         var selectedGrossistForServeur by mutableStateOf<Long?>(0)
         var selectedGrossistForClientF2 by mutableStateOf<Long?>(0)
-
-
     }
     enum class DeviceMode {
         SERVER,
