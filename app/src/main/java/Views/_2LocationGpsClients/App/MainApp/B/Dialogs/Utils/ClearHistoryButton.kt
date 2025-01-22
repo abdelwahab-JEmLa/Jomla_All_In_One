@@ -1,4 +1,4 @@
-package com.example.Packages.Views._2LocationGpsClients.App.MainApp.B.Dialogs.Utils
+package Views._2LocationGpsClients.App.MainApp.B.Dialogs.Utils
 
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.material.icons.Icons
