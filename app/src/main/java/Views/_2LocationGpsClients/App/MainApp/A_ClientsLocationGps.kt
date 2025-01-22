@@ -1,10 +1,8 @@
-package com.example.Packages.Views._2LocationGpsClients.App.MainApp
+package Views._2LocationGpsClients.App.MainApp
 
 import Z_MasterOfApps.Kotlin.Model.Extension.clientsDisponible
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,7 +28,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.Packages.Views._2LocationGpsClients.App.MainApp.B.Dialogs.MapControls
 import com.example.Packages.Views._2LocationGpsClients.App.MainApp.Utils.DEFAULT_LATITUDE
 import com.example.Packages.Views._2LocationGpsClients.App.MainApp.Utils.DEFAULT_LONGITUDE
-import com.example.Packages.Views._2LocationGpsClients.App.MainApp.Utils.NavigationDialog
 import com.example.Packages.Views._2LocationGpsClients.App.MainApp.Utils.getCurrentLocation
 import com.example.clientjetpack.R
 import org.osmdroid.config.Configuration
@@ -205,21 +202,6 @@ fun A_ClientsLocationGps(
             )
         }
 
-        if (showNavigationDialog && selectedMarker != null) {
-            NavigationDialog(
-                onDismiss = { showNavigationDialog = false },
-                onConfirm = { marker ->
-                    val uri = Uri.parse(
-                        "google.navigation:q=${marker.position.latitude},${marker.position.longitude}&mode=d"
-                    )
-                    val mapIntent = Intent(Intent.ACTION_VIEW, uri).apply {
-                        setPackage("com.google.android.apps.maps")
-                    }
-                    context.startActivity(mapIntent)
-                },
-                marker = selectedMarker!!
-            )
-        }
     }
 }
 

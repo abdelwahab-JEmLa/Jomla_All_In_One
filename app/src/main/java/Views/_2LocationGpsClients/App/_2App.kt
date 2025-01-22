@@ -13,7 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.example.Packages.Views._2LocationGpsClients.App.MainApp.A_ClientsLocationGps
+import Views._2LocationGpsClients.App.MainApp.A_ClientsLocationGps
 
 // _2App.kt
 fun NavGraphBuilder._2App(viewModelInitApp: ViewModelInitApp) {
