@@ -20,7 +20,7 @@ fun AddMarkerButton(
 ) {
     ControlButton(
         onClick = {
-            viewModelInitApp.onClickAddMarkerButton(
+            viewModelInitApp.mapsHandler.onClickAddMarkerButton(
                 mapView,
                 onMarkerSelected,
                 showMarkerDetails,

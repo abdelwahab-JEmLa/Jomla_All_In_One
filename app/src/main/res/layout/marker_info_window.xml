@@ -4,7 +4,8 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:padding="8dp"
-    android:background="@android:color/white">
+    android:background="@android:color/white"
+    android:id="@+id/info_window_container">
 
     <ImageView
         android:id="@+id/bubble_image"

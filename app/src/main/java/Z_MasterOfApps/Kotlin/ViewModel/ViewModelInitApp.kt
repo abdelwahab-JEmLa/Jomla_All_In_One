@@ -1,6 +1,7 @@
 package Z_MasterOfApps.Kotlin.ViewModel
 
-import Views._2LocationGpsClients.App.MainApp.ViewModelExtensionMapsHandler
+import Views._2LocationGpsClients.App.MainApp.ViewModel.Extension.ViewModelExtensionMapsHandler
+import Z_MasterOfApps.Kotlin.Model.Extension.clientsDisponible
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.ParamatersAppsModel
 import Z_MasterOfApps.Z_AppsFather.Kotlin._3.Init.A_LoadFireBase.LoadFromFirebaseProduits
@@ -27,6 +28,7 @@ class ViewModelInitApp : ViewModel() {
 
     val modelAppsFather: _ModelAppsFather get() = _modelAppsFather
     val produitsMainDataBase = _modelAppsFather.produitsMainDataBase
+    val clientsDisponible = _modelAppsFather.clientsDisponible
 
     var isLoading by mutableStateOf(false)
     var loadingProgress by mutableFloatStateOf(0f)
@@ -34,6 +36,7 @@ class ViewModelInitApp : ViewModel() {
     val mapsHandler = ViewModelExtensionMapsHandler(
         viewModel=this@ViewModelInitApp,
         produitsMainDataBase = produitsMainDataBase,
+        clientsDisponible=clientsDisponible,
         modelAppsFather = _modelAppsFather,
     )
 

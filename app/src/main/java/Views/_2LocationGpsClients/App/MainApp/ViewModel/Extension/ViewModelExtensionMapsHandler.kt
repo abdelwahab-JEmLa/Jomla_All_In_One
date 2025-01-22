@@ -1,12 +1,17 @@
-package Views._2LocationGpsClients.App.MainApp
+package Views._2LocationGpsClients.App.MainApp.ViewModel.Extension
 
 import Z_MasterOfApps.Kotlin.Model.Extension.clientsDisponible
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
+import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel
+import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.ClientBonVentModel
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.produitsFireBaseRef
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.ClientBonVentModel.BonStatueDeBase.StatueDeCetteVent
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
+import Z_MasterOfApps.Z.Android.Actions._2.Client_JetPack.Models.ClientsModel
 import android.util.Log
 import com.example.clientjetpack.R
+import com.google.firebase.Firebase
+import com.google.firebase.database.database
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
@@ -17,22 +22,20 @@ import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow
 import java.util.Date
 
 class ViewModelExtensionMapsHandler(
+    val produitsMainDataBase: MutableList<ProduitModel>,
+    val clientsDisponible: List<ClientBonVentModel.ClientInformations>,
     val viewModel: ViewModelInitApp,
-    val produitsMainDataBase: MutableList<_ModelAppsFather.ProduitModel>,
     val modelAppsFather: _ModelAppsFather
 ) {
     suspend fun handleMarkerClick(
         selectedMarker: Marker?,
         statueVente: StatueDeCetteVent,
-        produitsMainDataBase: MutableList<_ModelAppsFather.ProduitModel>
+        produitsMainDataBase: MutableList<ProduitModel>
     ) {
         if (selectedMarker == null) {
             Log.d("MarkerHandler", "No marker selected")
             return
         }
-        //-->
-        //TODO(1): fait au click au infobull de chaneg la couleur de backgond au roge
-        // et im
 
         withContext(Dispatchers.IO) {
             try {
@@ -50,9 +53,10 @@ class ViewModelExtensionMapsHandler(
 
                 if (bonVent != null) {
                     // Update the status
-                    bonVent.bonStatueDeBase = _ModelAppsFather.ProduitModel.ClientBonVentModel.BonStatueDeBase().apply {
-                        currentStatue = statueVente
-                    }
+                    bonVent.bonStatueDeBase =
+                        _ModelAppsFather.ProduitModel.ClientBonVentModel.BonStatueDeBase().apply {
+                            currentStatue = statueVente
+                        }
 
                     // Update marker appearance based on new status
                     updateMarkerAppearance(selectedMarker, statueVente)
@@ -72,7 +76,10 @@ class ViewModelExtensionMapsHandler(
                     // Update Firebase
                     _ModelAppsFather.updateProduit(product, viewModel)
 
-                    Log.d("MarkerHandler", "Successfully updated marker status to ${statueVente.name}")
+                    Log.d(
+                        "MarkerHandler",
+                        "Successfully updated marker status to ${statueVente.name}"
+                    )
                 } else {
                     Log.w("MarkerHandler", "No matching bon vent found for selected marker")
                 }
@@ -197,6 +204,7 @@ class ViewModelExtensionMapsHandler(
             throw e
         }
     }
+
     fun onClickAddMarkerButton(
         mapView: MapView,
         onMarkerSelected: (Marker) -> Unit,
@@ -222,7 +230,7 @@ class ViewModelExtensionMapsHandler(
                     couleur = "#2196F3"
 
                     locationGpsMark = Marker(mapView).apply {
-                        id= newID.toString()
+                        id = newID.toString()
                         position = GeoPoint(latitude, longitude)
                         this.title = title
                         this.snippet = snippet
@@ -256,6 +264,20 @@ class ViewModelExtensionMapsHandler(
         }
         mapView.invalidate()
 
+        updateAncienClientDataBase(newClient)
+
         _ModelAppsFather.updateProduit(product, viewModel)
     }
+
+}
+
+fun updateAncienClientDataBase(newClient: _ModelAppsFather.ProduitModel.ClientBonVentModel.ClientInformations) {
+    Firebase.database
+        .getReference(newClient.statueDeBase.caRefDonAncienDataBase)
+        .child(newClient.id.toString()).setValue(
+            ClientsModel(
+                idClientsSu = newClient.id,
+                nomClientsSu = newClient.nom
+            )
+        )
 }
