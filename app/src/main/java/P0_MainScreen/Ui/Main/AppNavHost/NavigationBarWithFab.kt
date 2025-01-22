@@ -1,5 +1,6 @@
 package P0_MainScreen.Ui.Main.AppNavHost
 
+import Views._2LocationGpsClients.App.ScreensApp2
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -11,7 +12,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CreditScore
 import androidx.compose.material.icons.filled.EditRoad
-import androidx.compose.material.icons.filled.ProductionQuantityLimits
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -109,6 +110,7 @@ object NavigationItems {
     fun getItems() = listOf(
         Screen.EditDatabaseWithCreateNewArticles,
         Screen.SoldCart,
+        ScreensApp2.Fragment1Screen,
         Screen.BakingScreen,
         Screen.ToggleFab
     )
@@ -120,6 +122,7 @@ sealed class Screen(
     val title: String,
     val color: Color
 ) {
+
     data object EditDatabaseWithCreateNewArticles : Screen(
         route = "main_fragment_edit_database_with_create_new_articles",
         icon = Icons.Default.EditRoad,
@@ -147,14 +150,12 @@ sealed class Screen(
         title = "Toggle FAB",
         color = Color(0xFF2196F3)
     )
-    data object ClientProductDisplay : Screen(
-        route = "client_product_display/{productId}",
-        icon = Icons.Default.ProductionQuantityLimits,
-        title = "Product Display",
-        color = Color(0xFF2196F3)
-    ) {
-        fun createRoute(productId: Long) = "client_product_display/$productId"
-    }
+    data object Fragment1ScreenDataObject : Screen(
+        route = "Fragment1",
+        icon = Icons.Default.Person,
+        title = "A_ClientsLocationGps",
+        color = Color(0xFFFF5722)
+    )
 
 }
 

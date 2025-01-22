@@ -1,4 +1,4 @@
-package Z_MasterOfApps.Z.Android.Actions._1.C_Serveur._1NavHost.Fragment_Id4
+package Z_MasterOfApps.Z.Android.ViewModel.Extensions._1.C_Serveur._1NavHost.Fragment_Id4
 
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z_AppsFather.Kotlin._3.Init.CreeDepuitAncienDataBases

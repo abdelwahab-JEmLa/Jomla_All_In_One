@@ -1,11 +1,12 @@
 package P0_MainScreen.Ui.Main.AppNavHost
 
 import P0_MainScreen.Ui.Objects.LoadingOverlay
-import Views.Package_4.SoldCartScreen.SoldCartScreen
 import P5_DialogeClientsEditer.ClientSelectionDialog
 import P6_AiGroupeForSupplier.GenerativeAiScreen
 import Views.P1._ArticlesStartFacade.FragmentStartupScreen
+import Views.Package_4.SoldCartScreen.SoldCartScreen
 import Views.Z_P3._DisplayProductInfosToSeller.P3DisplayeProductInfosToSeller
+import Views._2LocationGpsClients.App._2App
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Actions._2.Client_JetPack.Models.ArticlesBasesStatsTable
 import androidx.compose.foundation.layout.Box
@@ -105,8 +106,6 @@ fun AppNavHost(
                     }
                 }
             }
-
-
             composable(Screen.SoldCart.route) {
                 // Increment navigation count when entering SoldCart
                 LaunchedEffect(Unit) {
@@ -131,6 +130,16 @@ fun AppNavHost(
                     )
                 }
             }
+
+            composable(Screen.BakingScreen.route) {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    GenerativeAiScreen(
+                        generativeAiViewModel = appViewModels.generativeAiViewModel,
+                    )
+                }
+            }
+
+            _2App(viewModelInitApp)
         }
 
         // Overlay dialogs and windows

@@ -4,7 +4,6 @@ import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.imagesProduitsFireBaseStorageRef
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.imagesProduitsLocalExternalStorageBasePath
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_MasterOfApps.Z.Android.Actions._1.C_Serveur._1NavHost.Fragment_Id4.OnClickOn
 import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.ParamatersAppsModel
 import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.ParamatersAppsModel.DeviceMode
 import android.Manifest
@@ -295,13 +294,10 @@ fun GlobalEditesGFABs_F5(
                             if (clearDataClickCount == 0) {
                                 clearDataClickCount++
                             } else {
-                                OnClickOn(viewModelInitApp)
-                                    .onClickOnGlobalFABsButton_1()                               
+
                                 clearDataClickCount = 0
                             }
-                        } ,   //-->
-                        //TODO(1): regle pour que ca affiche le label comme don MainScreenFilterFAB_F5 et ajout un FAb au click affiche et cache les labes de tout les buttons 
-                       // label = if (clearDataClickCount == 0) "clearSoldArticlesData" else "Confirm Clear",
+                        } ,
                         modifier = Modifier.size(48.dp),
                         containerColor = Color(0xFF4CAF50)
                     ) {

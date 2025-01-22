@@ -17,6 +17,7 @@ import com.google.firebase.database.database
 import com.google.firebase.storage.storage
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import org.osmdroid.views.overlay.Marker
 import java.util.Objects
 
 open class _ModelAppsFather(
@@ -116,7 +117,6 @@ open class _ModelAppsFather(
                 val id: Long = 1,
                 val nom: String = "Non Defini",
                 val couleur: String = "#FFFFFF"
-
             ) {
                 var auFilterFAB: Boolean by mutableStateOf(false)
                 var positionInGrossistsList: Int by mutableIntStateOf(0)
@@ -208,6 +208,26 @@ open class _ModelAppsFather(
                 var auFilterFAB: Boolean by mutableStateOf(false)
                 var positionDonClientsList: Int by mutableIntStateOf(0)
 
+                var statueDeBase by mutableStateOf(StatueDeBase())
+                @IgnoreExtraProperties
+                class StatueDeBase {
+                    var cUnClientTemporaire: Boolean by mutableStateOf(true)
+                }
+
+                var gpsLocation by mutableStateOf(GpsLocation())
+                @IgnoreExtraProperties
+                class GpsLocation {
+                    @get:Exclude
+                    var locationGpsMark: Marker? by mutableStateOf(null)
+                    var couleur by mutableStateOf("#FFFFFF")
+
+                    // Ajout des propriétés pour stocker les données du marker
+                    var latitude by mutableStateOf(0.0)
+                    var longitude by mutableStateOf(0.0)
+                    var title by mutableStateOf("")
+                    var snippet by mutableStateOf("")
+                }
+
                 override fun equals(other: Any?): Boolean {
                     if (this === other) return true
                     if (other !is ClientInformations) return false
@@ -219,6 +239,7 @@ open class _ModelAppsFather(
                 override fun hashCode(): Int {
                     return Objects.hash(id, nom, couleur)
                 }
+
             }
 
             @IgnoreExtraProperties

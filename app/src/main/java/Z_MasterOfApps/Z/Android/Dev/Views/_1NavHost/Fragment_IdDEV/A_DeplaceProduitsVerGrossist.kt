@@ -1,6 +1,7 @@
 package Z_MasterOfApps.Z.Android.Dev.Views._1NavHost.Fragment_IdDEV
 
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
+import Z_MasterOfApps.Z.Android.Dev.Views._1NavHost.Fragment_IdDEV.Modules.GlobalEditesGFABs_F5
 import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,10 +13,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
-import Z_MasterOfApps.Z.Android.Dev.Views._1NavHost.Fragment_IdDEV.Modules.GlobalEditesGFABs_F5
 
 private const val TAG = "A_GerantDefinirePosition_F1"
-
 
 @Composable
 internal fun A_DeplaceProduitsVerGrossist_F5(

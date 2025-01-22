@@ -116,6 +116,10 @@ dependencies {
     implementation (libs.glide.transformations)
     implementation (libs.play.services.nearby)
 
+    // OSMDroid dependencies
+    implementation(libs.osmdroid.android)
+    implementation(libs.osmdroid.wms)
+    implementation(libs.osmdroid.mapsforge)
 
 }
 

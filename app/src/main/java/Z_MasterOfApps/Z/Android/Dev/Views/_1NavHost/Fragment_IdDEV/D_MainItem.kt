@@ -1,7 +1,7 @@
 package Z_MasterOfApps.Z.Android.Dev.Views._1NavHost.Fragment_IdDEV
 
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
-import Z_MasterOfApps.Z_AppsFather.Kotlin._4.Modules.GlideDisplayImageById2
+import Z_MasterOfApps.Z_AppsFather.Kotlin._4.Modules.GlideDisplayImageBykeyId
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -32,7 +32,7 @@ fun MainItem_F5(
             .height(80.dp)
             .background(
                 color = if (position != null)
-                    MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)                      else
+                    MaterialTheme.colorScheme.primary.copy(alpha = 0.1f) else
                     MaterialTheme.colorScheme.surface,
                 shape = RoundedCornerShape(4.dp)
             )
@@ -42,9 +42,9 @@ fun MainItem_F5(
         contentAlignment = Alignment.Center
     ) {
 
-        GlideDisplayImageById2(
-            mainItem.id,
+        GlideDisplayImageBykeyId(
             imageGlidReloadTigger = 0,
+            mainItem = mainItem,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(100.dp),

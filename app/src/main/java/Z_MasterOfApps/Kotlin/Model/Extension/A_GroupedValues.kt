@@ -2,6 +2,20 @@ package Z_MasterOfApps.Kotlin.Model.Extension
 
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 
+val _ModelAppsFather.clientsDisponible: List<_ModelAppsFather.ProduitModel.ClientBonVentModel.ClientInformations>
+    get() = produitsMainDataBase
+        .flatMap { product ->
+            // Get all current client information
+            val currentClients = product.bonsVentDeCetteCota.mapNotNull { it.clientInformations }
+
+            // Get all historical client information
+            val historicalClients = product.historiqueBonsVents.mapNotNull { it.clientInformations }
+
+            // Combine both lists
+            currentClients + historicalClients
+        }
+        .distinctBy { it.id } // Remove duplicates based on client ID
+        .sortedBy { it.positionDonClientsList }
 val _ModelAppsFather.grossistsDisponible: List<_ModelAppsFather.ProduitModel.GrossistBonCommandes.GrossistInformations>
     get() = produitsMainDataBase
         .flatMap { product ->
