@@ -1,5 +1,6 @@
 package Views._2LocationGpsClients.App.MainApp
 
+import Views._2LocationGpsClients.App.MainApp.B.Dialogs.MarkerStatusDialog
 import Z_MasterOfApps.Kotlin.Model.Extension.clientsDisponible
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.content.Context
@@ -202,9 +203,13 @@ fun A_ClientsLocationGps(
                 }
             )
         }
-       //-->
-       //TODO(1):  comment aprle le dialoge 
-       //MarkerStatusDialog
+        if (showMarkerDialog && selectedMarker != null) {
+            MarkerStatusDialog(
+                viewModel = viewModel,
+                selectedMarker = selectedMarker,
+                onDismiss = { showMarkerDialog = false }
+            )
+        }
     }
 }
 
