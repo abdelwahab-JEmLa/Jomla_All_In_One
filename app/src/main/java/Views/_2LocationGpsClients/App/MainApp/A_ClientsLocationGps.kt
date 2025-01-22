@@ -47,7 +47,7 @@ fun A_ClientsLocationGps(
     val mapView = remember { viewModel.initializeMapView(context) }
     val markers = remember { mutableStateListOf<Marker>() }
     var selectedMarker by remember { mutableStateOf<Marker?>(null) }
-    var showNavigationDialog by remember { mutableStateOf(false) }
+    var showMarkerDialog by remember { mutableStateOf(false) }
     var showMarkerDetails by remember { mutableStateOf(true) }
 
     // Initialize map position with current location
@@ -151,7 +151,7 @@ fun A_ClientsLocationGps(
 
                     setOnMarkerClickListener { marker, _ ->
                         selectedMarker = marker
-                        showNavigationDialog = true
+                        showMarkerDialog = true
                         if (showMarkerDetails) marker.showInfoWindow()
                         true
                     }
@@ -198,11 +198,13 @@ fun A_ClientsLocationGps(
                 },
                 onMarkerSelected = {
                     selectedMarker = it
-                    showNavigationDialog = true
+                    showMarkerDialog = true
                 }
             )
         }
-
+       //-->
+       //TODO(1):  comment aprle le dialoge 
+       //MarkerStatusDialog
     }
 }
 
