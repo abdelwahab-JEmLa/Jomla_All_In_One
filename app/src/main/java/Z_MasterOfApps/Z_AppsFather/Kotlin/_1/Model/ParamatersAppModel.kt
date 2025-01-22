@@ -12,7 +12,7 @@ class ParamatersAppsModel {
 
     var visibilityClientEditePositionDialog by mutableStateOf(false)
 
-    var fabsVisibility by mutableStateOf(false)
+    var fabsVisibility by mutableStateOf(true)
 
     var phoneClientSelectedAcheteur by mutableStateOf<Long?>(1)
 
