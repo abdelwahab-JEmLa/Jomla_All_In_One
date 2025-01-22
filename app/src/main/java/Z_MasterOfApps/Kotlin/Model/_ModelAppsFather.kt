@@ -191,6 +191,8 @@ open class _ModelAppsFather(
             @IgnoreExtraProperties
             class BonStatueDeBase {
                 enum class StatueDeCetteVent {
+                    ON_MODE_COMMEND_ACTUELLEMENT, //-->
+                    //TODO(1): ajoute les couleurs     //
                     CLIENT_ABSENT,      // غائب الشاري
                     AVEC_MARCHANDISE,   // عندو سلعة
                     FERME,             // مغلق

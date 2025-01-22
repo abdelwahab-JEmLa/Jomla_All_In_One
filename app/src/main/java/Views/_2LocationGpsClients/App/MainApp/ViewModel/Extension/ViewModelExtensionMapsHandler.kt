@@ -4,7 +4,6 @@ import Z_MasterOfApps.Kotlin.Model.Extension.clientsDisponible
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.ClientBonVentModel
-import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.produitsFireBaseRef
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.ClientBonVentModel.BonStatueDeBase.StatueDeCetteVent
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Actions._2.Client_JetPack.Models.ClientsModel
@@ -12,8 +11,8 @@ import android.util.Log
 import com.example.clientjetpack.R
 import com.google.firebase.Firebase
 import com.google.firebase.database.database
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
@@ -22,12 +21,20 @@ import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow
 import java.util.Date
 
 class ViewModelExtensionMapsHandler(
+    val viewModelScope: CoroutineScope,
     val produitsMainDataBase: MutableList<ProduitModel>,
     val clientsDisponible: List<ClientBonVentModel.ClientInformations>,
     val viewModel: ViewModelInitApp,
     val modelAppsFather: _ModelAppsFather
 ) {
-    suspend fun handleMarkerClick(
+    fun updateA(): Unit {
+        Firebase.database
+            .getReference("A_AppSettingsSaverModel")
+            .child("1")
+            .setValue(marker.id)
+    }
+    // Extension function to update marker info window style
+    suspend fun handleDialialogeClientMarkClick(
         selectedMarker: Marker?,
         statueVente: StatueDeCetteVent,
         produitsMainDataBase: MutableList<ProduitModel>
@@ -96,6 +103,7 @@ class ViewModelExtensionMapsHandler(
             StatueDeCetteVent.CLIENT_ABSENT -> "#FF0000"      // Red
             StatueDeCetteVent.AVEC_MARCHANDISE -> "#00FF00"   // Green
             StatueDeCetteVent.FERME -> "#808080"              // Gray
+            StatueDeCetteVent.ON_MODE_COMMEND_ACTUELLEMENT -> "#FF0000"
         }
 
         // Update marker color
@@ -117,93 +125,6 @@ class ViewModelExtensionMapsHandler(
         return null
     }
 
-    suspend fun clearAllData(mapView: MapView?) {
-        try {
-            // 1. Clear UI elements first
-            mapView?.let { map ->
-                map.overlays.clear()
-                map.invalidate()
-            }
-
-            // 2. Clear local markers and data
-            produitsMainDataBase.forEach { produit ->
-                produit.bonsVentDeCetteCota.forEach { bonVent ->
-                    bonVent.clientInformations?.gpsLocation?.locationGpsMark?.let { marker ->
-                        marker.closeInfoWindow()
-                        marker.remove(mapView)
-                    }
-                    bonVent.clientInformations?.gpsLocation?.locationGpsMark = null
-                }
-            }
-
-            // 3. Remove data from Firebase with correct path structure
-            produitsMainDataBase.forEach { produit ->
-                produit.historiqueBonsVents.forEachIndexed { index, _ ->
-                    try {
-                        // Delete all GPS related data for each client
-                        val gpsRef = produitsFireBaseRef
-                            .child(produit.id.toString())
-                            .child("historiqueBonsVents")
-                            .child(index.toString())
-                            .child("clientInformations")
-                            .child("gpsLocation")
-
-                        // Delete specific fields within gpsLocation
-                        gpsRef.child("latitude").removeValue().await()
-                        gpsRef.child("longitude").removeValue().await()
-                        gpsRef.child("title").removeValue().await()
-                        gpsRef.child("snippet").removeValue().await()
-                        gpsRef.child("couleur").removeValue().await()
-
-                        Log.d(
-                            "FirebaseCleanup",
-                            "Cleared GPS data for product ${produit.id}, bon vent index $index"
-                        )
-                    } catch (e: Exception) {
-                        Log.e(
-                            "FirebaseCleanup",
-                            "Failed to clear GPS data for product ${produit.id}, bon vent index $index",
-                            e
-                        )
-                    }
-                }
-            }
-
-            // Special handling for product with ID 0
-            val productZeroRef = produitsFireBaseRef.child("0")
-            try {
-                productZeroRef
-                    .child("historiqueBonsVents")
-                    .get()
-                    .await()
-                    .children
-                    .forEach { snapshot ->
-                        val clientRef = snapshot.ref
-                            .child("clientInformations")
-                            .child("gpsLocation")
-
-                        // Delete specific fields within gpsLocation
-                        clientRef.child("latitude").removeValue().await()
-                        clientRef.child("longitude").removeValue().await()
-                        clientRef.child("title").removeValue().await()
-                        clientRef.child("snippet").removeValue().await()
-                        clientRef.child("couleur").removeValue().await()
-                    }
-
-                Log.d("FirebaseCleanup", "Successfully cleared product 0 GPS data")
-            } catch (e: Exception) {
-                Log.e("FirebaseCleanup", "Failed to clear product 0 GPS data", e)
-            }
-
-            Log.d(
-                "FirebaseCleanup",
-                "Successfully cleared all data from UI, local storage, and Firebase"
-            )
-        } catch (e: Exception) {
-            Log.e("FirebaseCleanup", "Failed to clear data", e)
-            throw e
-        }
-    }
 
     fun onClickAddMarkerButton(
         mapView: MapView,

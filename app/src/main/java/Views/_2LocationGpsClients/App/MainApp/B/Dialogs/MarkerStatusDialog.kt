@@ -57,13 +57,15 @@ fun MarkerStatusDialog(
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
-
+                 //-->
+                 //TODO(1): ajoute ON_MODE_COMMEND_ACTUELLEMENT auclick il change la couleur du
+                 //client marck avec Marker.updateInfoWindowStyle et updateA()
                 StatusButton(
                     text = "Client Absent",
                     icon = Icons.Default.Person,
                     onClick = {
                         coroutineScope.launch {
-                            viewModel.mapsHandler.handleMarkerClick(
+                            viewModel.mapsHandler.handleDialialogeClientMarkClick(
                                 selectedMarker,
                                 StatueDeCetteVent.CLIENT_ABSENT,
                                 viewModel.produitsMainDataBase
@@ -80,7 +82,7 @@ fun MarkerStatusDialog(
                     icon = Icons.Default.ShoppingCart,
                     onClick = {
                         coroutineScope.launch {
-                            viewModel.mapsHandler.handleMarkerClick(
+                            viewModel.mapsHandler.handleDialialogeClientMarkClick(
                                 selectedMarker,
                                 StatueDeCetteVent.AVEC_MARCHANDISE,
                                 viewModel.produitsMainDataBase
@@ -97,7 +99,7 @@ fun MarkerStatusDialog(
                     icon = Icons.Default.Lock,
                     onClick = {
                         coroutineScope.launch {
-                            viewModel.mapsHandler.handleMarkerClick(
+                            viewModel.mapsHandler.handleDialialogeClientMarkClick(
                                 selectedMarker,
                                 StatueDeCetteVent.FERME,
                                 viewModel.produitsMainDataBase

@@ -4,7 +4,6 @@ import Views._2LocationGpsClients.App.MainApp.B.Dialogs.MarkerStatusDialog
 import Z_MasterOfApps.Kotlin.Model.Extension.clientsDisponible
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.content.Context
-import android.util.Log
 import android.widget.LinearLayout
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -19,7 +18,6 @@ import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,10 +33,6 @@ import com.example.Packages.Views._2LocationGpsClients.App.MainApp.Utils.DEFAULT
 import com.example.Packages.Views._2LocationGpsClients.App.MainApp.Utils.DEFAULT_LONGITUDE
 import com.example.Packages.Views._2LocationGpsClients.App.MainApp.Utils.getCurrentLocation
 import com.example.clientjetpack.R
-import com.google.firebase.Firebase
-import com.google.firebase.database.database
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
@@ -51,7 +45,6 @@ fun A_ClientsLocationGps(
     viewModel: ViewModelInitApp = viewModel(),
 ) {
     val context = LocalContext.current
-    val scope = rememberCoroutineScope()
     val currentZoom by remember { mutableDoubleStateOf(18.2) }
     val mapView = remember { viewModel.initializeMapView(context) }
     val markers = remember { mutableStateListOf<Marker>() }
@@ -86,8 +79,7 @@ fun A_ClientsLocationGps(
             controller.animateTo(GeoPoint(initialPosition.latitude, initialPosition.longitude))
         }
     }
-
-    // Initial map configuration
+    // Configuration initiale de la carte
     DisposableEffect(context) {
         Configuration.getInstance()
             .load(context, context.getSharedPreferences("osmdroid", Context.MODE_PRIVATE))
@@ -98,8 +90,6 @@ fun A_ClientsLocationGps(
             mapView.overlays.clear()
         }
     }
-
-    // Extension function to update marker info window style
     fun Marker.updateInfoWindowStyle(context: Context, isSelected: Boolean) {
         val infoWindow = this.infoWindow as MarkerInfoWindow
         val container = infoWindow.view.findViewById<LinearLayout>(R.id.info_window_container)
@@ -119,22 +109,25 @@ fun A_ClientsLocationGps(
         }
     }
 
-    // Function to create custom marker drawable
+    // Fonction d'extension pour créer un marqueur personnalisé
     fun createCustomMarkerDrawable(context: Context, color: Int): android.graphics.drawable.Drawable {
+        // Créer un LayerDrawable pour combiner le cercle et l'icône
         val layers = arrayOf(
+            // Cercle noir en arrière-plan
             android.graphics.drawable.GradientDrawable().apply {
                 shape = android.graphics.drawable.GradientDrawable.OVAL
                 setColor(android.graphics.Color.WHITE)
-                setSize(40, 40)
+                setSize(40, 40) // Taille du cercle en pixels
             },
+            // Icône du marqueur
             ContextCompat.getDrawable(context, R.drawable.ic_location_on)?.mutate()?.apply {
-                setBounds(8, 8, 32, 32)
+                setBounds(8, 8, 32, 32) // Position et taille de l'icône à l'intérieur du cercle
             }
         )
 
         return android.graphics.drawable.LayerDrawable(layers).apply {
-            setLayerInset(0, 0, 0, 0, 0)
-            setLayerInset(1, 4, 4, 4, 4)
+            setLayerInset(0, 0, 0, 0, 0) // Pas d'inset pour le cercle
+            setLayerInset(1, 4, 4, 4, 4) // Insets pour centrer l'icône
         }
     }
 
@@ -144,63 +137,43 @@ fun A_ClientsLocationGps(
 
         viewModel._modelAppsFather.clientsDisponible.forEach { client ->
             client.gpsLocation.locationGpsMark?.let { existingMarker ->
-                // Update existing marker
+                // Mise à jour du marqueur existant
                 existingMarker.position = GeoPoint(
                     client.gpsLocation.latitude,
                     client.gpsLocation.longitude
                 )
-                existingMarker.id = client.id.toString()
+                existingMarker.id=client.id.toString()
                 existingMarker.title = client.nom
                 existingMarker.snippet = if (client.statueDeBase.cUnClientTemporaire)
                     "Client temporaire" else "Client permanent"
 
+                // Mise à jour de l'icône avec le cercle en arrière-plan
                 val markerColor = Color(android.graphics.Color.parseColor(client.gpsLocation.couleur)).toArgb()
                 existingMarker.icon = createCustomMarkerDrawable(context, markerColor)
 
                 markers.add(existingMarker)
                 mapView.overlays.add(existingMarker)
             } ?: run {
-                // Create new marker
+                // Création d'un nouveau marqueur
                 Marker(mapView).apply {
                     position = GeoPoint(
                         client.gpsLocation.latitude,
                         client.gpsLocation.longitude
                     )
-                    id = client.id.toString()
                     title = client.nom
                     snippet = if (client.statueDeBase.cUnClientTemporaire)
                         "Client temporaire" else "Client permanent"
                     setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                     infoWindow = MarkerInfoWindow(R.layout.marker_info_window, mapView)
 
+                    // Application du nouveau style avec cercle en arrière-plan
                     val markerColor = Color(android.graphics.Color.parseColor(client.gpsLocation.couleur)).toArgb()
                     icon = createCustomMarkerDrawable(context, markerColor)
 
                     setOnMarkerClickListener { marker, _ ->
                         selectedMarker = marker
                         showMarkerDialog = true
-                        if (showMarkerDetails) {
-                            // Update all markers to white background first
-                            markers.forEach { it.updateInfoWindowStyle(context, false) }
-                            // Set clicked marker to red background
-                            marker.updateInfoWindowStyle(context, true)
-                            marker.showInfoWindow()
-
-                            // Update Firebase with the selected marker ID
-                            scope.launch {
-                                try {
-                                    Firebase.database
-                                        .getReference("A_AppSettingsSaverModel")
-                                        .child("1")
-                                        .setValue(marker.id)
-                                        .await()
-
-                                    Log.d("MarkerUpdate", "Successfully updated selected marker ID: ${marker.id}")
-                                } catch (e: Exception) {
-                                    Log.e("MarkerUpdate", "Failed to update selected marker ID", e)
-                                }
-                            }
-                        }
+                        if (showMarkerDetails) marker.showInfoWindow()
                         true
                     }
                     client.gpsLocation.locationGpsMark = this
@@ -250,7 +223,6 @@ fun A_ClientsLocationGps(
                 }
             )
         }
-
         if (showMarkerDialog && selectedMarker != null) {
             MarkerStatusDialog(
                 viewModel = viewModel,
@@ -266,3 +238,4 @@ private data class MapPosition(
     val longitude: Double,
     val isInitialized: Boolean
 )
+
