@@ -42,7 +42,7 @@ class ViewModelExtensionMapsHandler(
                 // Find the bon vent with the selected marker
                 val bonVent = product.historiqueBonsVents.find { bonVent ->
                     val marker = bonVent.clientInformations?.gpsLocation?.locationGpsMark
-                    marker == selectedMarker
+                    marker?.title == selectedMarker.title
                 }
 
                 if (bonVent != null) {
