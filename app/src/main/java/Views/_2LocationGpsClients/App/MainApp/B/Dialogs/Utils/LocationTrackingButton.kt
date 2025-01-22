@@ -22,7 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import com.example.Packages.Views._2LocationGpsClients.App.MainApp.B.Dialogs.ControlButton
-import com.example.c_serveur.R
+import com.example.clientjetpack.R
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker

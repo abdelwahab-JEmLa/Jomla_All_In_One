@@ -5,7 +5,7 @@ import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.produitsFireBaseRef
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.util.Log
-import com.example.c_serveur.R
+import com.example.clientjetpack.R
 import kotlinx.coroutines.tasks.await
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
