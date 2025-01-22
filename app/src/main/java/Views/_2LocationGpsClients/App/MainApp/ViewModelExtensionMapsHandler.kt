@@ -42,7 +42,7 @@ class ViewModelExtensionMapsHandler(
                 // Find the bon vent with the selected marker
                 val bonVent = product.historiqueBonsVents.find { bonVent ->
                     val marker = bonVent.clientInformations?.gpsLocation?.locationGpsMark
-                    marker?.title == selectedMarker.title
+                    marker?.id == selectedMarker.id
                 }
 
                 if (bonVent != null) {
@@ -86,8 +86,6 @@ class ViewModelExtensionMapsHandler(
             StatueDeCetteVent.CLIENT_ABSENT -> "#FF0000"      // Red
             StatueDeCetteVent.AVEC_MARCHANDISE -> "#00FF00"   // Green
             StatueDeCetteVent.FERME -> "#808080"              // Gray
-            StatueDeCetteVent.EN_ATTENTE -> "#FFA500"         // Orange
-            StatueDeCetteVent.VISITE_COMPLETE -> "#0000FF"    // Blue
         }
 
         // Update marker color
@@ -221,6 +219,7 @@ class ViewModelExtensionMapsHandler(
                     couleur = "#2196F3"
 
                     locationGpsMark = Marker(mapView).apply {
+                        id= newID.toString()
                         position = GeoPoint(latitude, longitude)
                         this.title = title
                         this.snippet = snippet

@@ -194,11 +194,9 @@ open class _ModelAppsFather(
                     CLIENT_ABSENT,      // غائب الشاري
                     AVEC_MARCHANDISE,   // عندو سلعة
                     FERME,             // مغلق
-                    EN_ATTENTE,        // En attente
-                    VISITE_COMPLETE    // Visite complète
                 }
 
-                var currentStatue: StatueDeCetteVent by mutableStateOf(StatueDeCetteVent.EN_ATTENTE)
+                var currentStatue: StatueDeCetteVent? by  mutableStateOf(null)
                 var lastUpdateTimestamp: Long by mutableStateOf(System.currentTimeMillis())
             }
 

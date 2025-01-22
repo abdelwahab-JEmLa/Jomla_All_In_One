@@ -123,6 +123,7 @@ fun A_ClientsLocationGps(
                     client.gpsLocation.latitude,
                     client.gpsLocation.longitude
                 )
+                existingMarker.id=client.id.toString()
                 existingMarker.title = client.nom
                 existingMarker.snippet = if (client.statueDeBase.cUnClientTemporaire)
                     "Client temporaire" else "Client permanent"
