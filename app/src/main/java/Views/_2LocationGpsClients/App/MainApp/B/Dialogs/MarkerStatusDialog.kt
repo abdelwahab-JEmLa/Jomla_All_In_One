@@ -57,9 +57,22 @@ fun MarkerStatusDialog(
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
-                 //-->
-                 //TODO(1): ajoute ON_MODE_COMMEND_ACTUELLEMENT auclick il change la couleur du
-                 //client marck avec Marker.updateInfoWindowStyle et updateA()
+                // New Command Mode Button
+                StatusButton(
+                    text = "Mode Commande",
+                    icon = Icons.Default.ShoppingCart,
+                    onClick = {
+                        coroutineScope.launch {
+                            viewModel.mapsHandler.handleDialialogeClientMarkClick(
+                                selectedMarker,
+                                StatueDeCetteVent.ON_MODE_COMMEND_ACTUELLEMENT,
+                                viewModel.produitsMainDataBase
+                            )
+                            // Update Firebase reference
+                            onDismiss()
+                        }
+                    }
+                )
                 StatusButton(
                     text = "Client Absent",
                     icon = Icons.Default.Person,

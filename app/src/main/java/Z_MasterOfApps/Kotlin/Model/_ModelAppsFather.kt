@@ -190,18 +190,16 @@ open class _ModelAppsFather(
             // Status management
             @IgnoreExtraProperties
             class BonStatueDeBase {
-                enum class StatueDeCetteVent {
-                    ON_MODE_COMMEND_ACTUELLEMENT, //-->
-                    //TODO(1): ajoute les couleurs     //
-                    CLIENT_ABSENT,      // غائب الشاري
-                    AVEC_MARCHANDISE,   // عندو سلعة
-                    FERME,             // مغلق
+                enum class StatueDeCetteVent(val color: Int, val nomArabe: String) {
+                    ON_MODE_COMMEND_ACTUELLEMENT(android.R.color.holo_green_light, "نشط / متصل"),
+                    CLIENT_ABSENT(android.R.color.holo_red_light, "غائب الشاري"),
+                    AVEC_MARCHANDISE(android.R.color.holo_blue_light, "عندو سلعة"),
+                    FERME(android.R.color.darker_gray, "مغلق")
                 }
 
-                var currentStatue: StatueDeCetteVent? by  mutableStateOf(null)
+                var currentStatue: StatueDeCetteVent? by mutableStateOf(null)
                 var lastUpdateTimestamp: Long by mutableStateOf(System.currentTimeMillis())
             }
-
 
             var clientInformations: ClientInformations? by mutableStateOf(init_clientInformations)
             @IgnoreExtraProperties

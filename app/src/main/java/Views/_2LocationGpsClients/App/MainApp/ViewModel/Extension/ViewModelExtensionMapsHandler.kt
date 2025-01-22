@@ -7,7 +7,10 @@ import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.ClientBonVentMo
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.ClientBonVentModel.BonStatueDeBase.StatueDeCetteVent
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Actions._2.Client_JetPack.Models.ClientsModel
+import android.content.Context
 import android.util.Log
+import android.widget.LinearLayout
+import androidx.core.content.ContextCompat
 import com.example.clientjetpack.R
 import com.google.firebase.Firebase
 import com.google.firebase.database.database
@@ -27,12 +30,7 @@ class ViewModelExtensionMapsHandler(
     val viewModel: ViewModelInitApp,
     val modelAppsFather: _ModelAppsFather
 ) {
-    fun updateA(): Unit {
-        Firebase.database
-            .getReference("A_AppSettingsSaverModel")
-            .child("1")
-            .setValue(marker.id)
-    }
+
     // Extension function to update marker info window style
     suspend fun handleDialialogeClientMarkClick(
         selectedMarker: Marker?,
@@ -103,7 +101,7 @@ class ViewModelExtensionMapsHandler(
             StatueDeCetteVent.CLIENT_ABSENT -> "#FF0000"      // Red
             StatueDeCetteVent.AVEC_MARCHANDISE -> "#00FF00"   // Green
             StatueDeCetteVent.FERME -> "#808080"              // Gray
-            StatueDeCetteVent.ON_MODE_COMMEND_ACTUELLEMENT -> "#FF0000"
+            StatueDeCetteVent.ON_MODE_COMMEND_ACTUELLEMENT -> "#FFA500" // Orange for command mode
         }
 
         // Update marker color
@@ -112,8 +110,56 @@ class ViewModelExtensionMapsHandler(
         // Update the gps location color in the data model
         val gpsLocation = findGpsLocationForMarker(marker)
         gpsLocation?.couleur = color
+
+        // Update marker info window style
+        marker.updateInfoWindowStyle(
+            context = marker.infoWindow.view.context,
+            isSelected = status == StatueDeCetteVent.ON_MODE_COMMEND_ACTUELLEMENT
+        )
+
+        // Update marker info window if it's showing
+        if (marker.isInfoWindowShown) {
+            marker.showInfoWindow()
+        }
+    }
+    fun findBonVentForMarker(marker: Marker): ClientBonVentModel? {
+        produitsMainDataBase.forEach { product ->
+            product.historiqueBonsVents.forEach { bonVent ->
+                if (bonVent.clientInformations?.gpsLocation?.locationGpsMark?.id == marker.id) {
+                    return bonVent
+                }
+            }
+        }
+        return null
     }
 
+
+    private fun Marker.updateInfoWindowStyle(context: Context, isSelected: Boolean) {
+        val infoWindow = this.infoWindow as MarkerInfoWindow
+        val container = infoWindow.view.findViewById<LinearLayout>(R.id.info_window_container)
+
+        // Find the product and bon vent associated with this marker
+        val bonVent = findBonVentForMarker(this)
+
+        // Utiliser directement la propriété color de StatueDeCetteVent
+        val backgroundColor = bonVent?.bonStatueDeBase?.currentStatue?.let { statue ->
+            ContextCompat.getColor(context, statue.color)
+        } ?: ContextCompat.getColor(context, android.R.color.white) // Couleur par défaut
+
+        container.setBackgroundColor(backgroundColor)
+
+        if (isSelected) {
+            Firebase.database
+                .getReference("A_AppSettingsSaverModel")
+                .child("1")
+                .setValue(this.id)
+        }
+
+        if (isInfoWindowShown) {
+            closeInfoWindow()
+            showInfoWindow()
+        }
+    }
     private fun findGpsLocationForMarker(marker: Marker): _ModelAppsFather.ProduitModel.ClientBonVentModel.ClientInformations.GpsLocation? {
         produitsMainDataBase.forEach { product ->
             product.historiqueBonsVents.forEach { bonVent ->
