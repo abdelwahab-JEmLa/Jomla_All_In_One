@@ -187,7 +187,6 @@ open class _ModelAppsFather(
         ) {
             // Basic information
             var bonStatueDeBase by mutableStateOf(BonStatueDeBase())
-
             // Status management
             @IgnoreExtraProperties
             class BonStatueDeBase {
@@ -201,12 +200,9 @@ open class _ModelAppsFather(
 
                 var currentStatue: StatueDeCetteVent by mutableStateOf(StatueDeCetteVent.EN_ATTENTE)
                 var lastUpdateTimestamp: Long by mutableStateOf(System.currentTimeMillis())
-
-                fun updateStatue(newStatue: StatueDeCetteVent) {
-                    currentStatue = newStatue
-                    lastUpdateTimestamp = System.currentTimeMillis()
-                }
             }
+
+
             var clientInformations: ClientInformations? by mutableStateOf(init_clientInformations)
             @IgnoreExtraProperties
             data class ClientInformations(

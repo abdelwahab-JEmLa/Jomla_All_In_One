@@ -170,13 +170,38 @@ fun NearbyMarkersDialog(
             confirmButton = {
                 TextButton(
                     onClick = {
-                        extracted(
-                            selectedMarker,
-                            editedName,
-                            viewModelInitApp,
-                            mapView,
-                            showEditDialog
-                        )
+                        selectedMarker?.let { marker ->
+                            // Update marker title
+                            marker.title = editedName
+
+                            // Find and update the corresponding client in the database
+                            val client = viewModelInitApp._modelAppsFather.clientsDisponible
+                                .find { it.gpsLocation.locationGpsMark == marker }
+
+                            client?.let { foundClient ->
+                                // Update client name
+                                foundClient.nom = editedName
+
+                                // Find and update the product containing this client
+                                val product =
+                                    viewModelInitApp.produitsMainDataBase.find { produit ->
+                                        produit.bonsVentDeCetteCota.any { bonVent ->
+                                            bonVent.clientInformations?.id == foundClient.id
+                                        }
+                                    }
+
+                                product?.let { foundProduct ->
+                                    // Update the product in the database
+                                    _ModelAppsFather.updateProduit(
+                                        foundProduct,
+                                        viewModelInitApp
+                                    )
+                                }
+                            }
+
+                            mapView.invalidate()
+                        }
+                        showEditDialog = false
                     }
                 ) {
                     Text("OK")
@@ -191,47 +216,4 @@ fun NearbyMarkersDialog(
             }
         )
     }
-}
-
-@Composable
-private fun extracted(
-    selectedMarker: Marker?,
-    editedName: String,
-    viewModelInitApp: ViewModelInitApp,
-    mapView: MapView,
-    showEditDialog: Boolean
-) {
-    var showEditDialog1 = showEditDialog
-    selectedMarker?.let { marker ->
-        // Update marker title
-        marker.title = editedName
-
-        // Find and update the corresponding client in the database
-        val client = viewModelInitApp._modelAppsFather.clientsDisponible
-            .find { it.gpsLocation.locationGpsMark == marker }
-
-        client?.let { foundClient ->
-            // Update client name
-            foundClient.nom = editedName
-
-            // Find and update the product containing this client
-            val product =
-                viewModelInitApp.produitsMainDataBase.find { produit ->
-                    produit.bonsVentDeCetteCota.any { bonVent ->
-                        bonVent.clientInformations?.id == foundClient.id
-                    }
-                }
-
-            product?.let { foundProduct ->
-                // Update the product in the database
-                _ModelAppsFather.updateProduit(
-                    foundProduct,
-                    viewModelInitApp
-                )
-            }
-        }
-
-        mapView.invalidate()
-    }
-    showEditDialog1 = false
 }
