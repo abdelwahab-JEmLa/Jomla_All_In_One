@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,7 +43,7 @@ fun A_ClientsLocationGps(
     viewModel: ViewModelInitApp = viewModel(),
 ) {
     val context = LocalContext.current
-    val currentZoom by remember { mutableStateOf(18.2) }
+    val currentZoom by remember { mutableDoubleStateOf(18.2) }
     val mapView = remember { viewModel.initializeMapView(context) }
     val markers = remember { mutableStateListOf<Marker>() }
     var selectedMarker by remember { mutableStateOf<Marker?>(null) }
