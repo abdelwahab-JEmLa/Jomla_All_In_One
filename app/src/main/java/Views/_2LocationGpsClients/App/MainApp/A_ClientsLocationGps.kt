@@ -3,10 +3,8 @@ package Views._2LocationGpsClients.App.MainApp
 import Views._2LocationGpsClients.App.MainApp.B.Dialogs.MarkerStatusDialog
 import Views._2LocationGpsClients.App.MainApp.ViewModel.Extension.Utils.findBonVentForMarker
 import Z_MasterOfApps.Kotlin.Model.Extension.clientsDisponible
-import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.content.Context
-import android.widget.LinearLayout
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -92,24 +90,6 @@ fun A_ClientsLocationGps(
             mapView.overlays.clear()
         }
     }
-    fun Marker.updateInfoWindowStyle(context: Context, isSelected: Boolean) {
-        val infoWindow = this.infoWindow as MarkerInfoWindow
-        val container = infoWindow.view.findViewById<LinearLayout>(R.id.info_window_container)
-
-        container.setBackgroundColor(
-            if (isSelected) {
-                ContextCompat.getColor(context, android.R.color.holo_red_light)
-            } else {
-                ContextCompat.getColor(context, android.R.color.white)
-            }
-        )
-
-        // Force info window refresh
-        if (isInfoWindowShown) {
-            closeInfoWindow()
-            showInfoWindow()
-        }
-    }
 
     // Function to create custom marker drawable
     fun createCustomMarkerDrawable(context: Context, color: Int): android.graphics.drawable.Drawable {
@@ -129,7 +109,6 @@ fun A_ClientsLocationGps(
             setLayerInset(1, 4, 4, 4, 4)
         }
     }
-
 
     // In A_ClientsLocationGps.kt
     LaunchedEffect(viewModel._modelAppsFather.clientsDisponible) {
@@ -166,8 +145,6 @@ fun A_ClientsLocationGps(
                     setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                     infoWindow = MarkerInfoWindow(R.layout.marker_info_window, mapView)
 
-                    // Set clicked marker to red background
-
                     setOnMarkerClickListener { marker, _ ->
                         selectedMarker = marker
                         showMarkerDialog = true
@@ -175,9 +152,6 @@ fun A_ClientsLocationGps(
                         true
                     }
                 }
-                existingMarker
-                    .updateInfoWindowStyle(context,bonVent?.bonStatueDeBase
-                        ?.currentStatue == _ModelAppsFather.ProduitModel.ClientBonVentModel.BonStatueDeBase.StatueDeCetteVent.CLIENT_ABSENT)
 
                 markers.add(existingMarker)
                 mapView.overlays.add(existingMarker)
@@ -204,11 +178,6 @@ fun A_ClientsLocationGps(
 
                     // Appliquer la couleur par défaut pour les nouveaux marqueurs
                     icon = createCustomMarkerDrawable(context, Color(android.graphics.Color.parseColor(client.gpsLocation.couleur)).toArgb())
-                    val bonVent = viewModel.mapsHandler.findBonVentForMarker(this)
-
-                    this
-                        .updateInfoWindowStyle(context,bonVent?.bonStatueDeBase
-                            ?.currentStatue == _ModelAppsFather.ProduitModel.ClientBonVentModel.BonStatueDeBase.StatueDeCetteVent.CLIENT_ABSENT)
 
                     client.gpsLocation.locationGpsMark = this
                     markers.add(this)
@@ -217,7 +186,9 @@ fun A_ClientsLocationGps(
             }
         }
 
-        markers.forEach { it.updateInfoWindowStyle(context, false) }
+        markers.forEach { marker ->
+            viewModel.mapsHandler.safeUpdateInfoWindows(marker,context)
+        }
 
         if (showMarkerDetails) {
             markers.forEach { it.showInfoWindow() }

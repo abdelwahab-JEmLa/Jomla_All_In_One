@@ -98,6 +98,28 @@ class ViewModelExtensionMapsHandler(
 
 
     // Extension function to safely update marker info window
+    fun safeUpdateInfoWindows(marker:Marker,context: Context) {
+        try {
+            val infoWindow = marker.infoWindow as? MarkerInfoWindow ?: return
+            val container = infoWindow.view.findViewById<LinearLayout>(R.id.info_window_container) ?: return
+
+            val bonVent = findBonVentForMarker(marker)
+            val backgroundColor = bonVent?.bonStatueDeBase?.currentStatue?.let { statue ->
+                ContextCompat.getColor(context, statue.color)
+            } ?: ContextCompat.getColor(context, android.R.color.white)
+
+            container.setBackgroundColor(backgroundColor)
+
+            if (marker.isInfoWindowShown) {
+                marker.closeInfoWindow()
+                marker.showInfoWindow()
+            }
+        } catch (e: Exception) {
+            Log.e("Marker", "Error updating info window", e)
+        }
+    }
+
+    // Extension function to safely update marker info window
     fun Marker.safeUpdateInfoWindow(context: Context) {
         try {
             val infoWindow = this.infoWindow as? MarkerInfoWindow ?: return
