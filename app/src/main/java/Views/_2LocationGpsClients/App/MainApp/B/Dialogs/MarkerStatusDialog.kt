@@ -1,5 +1,6 @@
 package Views._2LocationGpsClients.App.MainApp.B.Dialogs
 
+import Views._2LocationGpsClients.App.MainApp.ViewModel.Extension.Utils.updateA_AppSettingsSaverModel
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.ClientBonVentModel.BonStatueDeBase.StatueDeCetteVent
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Arrangement
@@ -67,6 +68,7 @@ fun MarkerStatusDialog(
                                 selectedMarker,
                                 StatueDeCetteVent.ON_MODE_COMMEND_ACTUELLEMENT
                             )
+                            selectedMarker.updateA_AppSettingsSaverModel()
                             onDismiss()
                         }
                     }

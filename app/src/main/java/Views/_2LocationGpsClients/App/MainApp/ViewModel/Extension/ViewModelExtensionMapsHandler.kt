@@ -63,9 +63,8 @@ class ViewModelExtensionMapsHandler(
                             currentStatue = statueVente
                         }
 
-                    selectedMarker.updateInfoWindowStyle(
-                        context = selectedMarker.infoWindow.view.context,
-                        isSelected = statueVente == StatueDeCetteVent.ON_MODE_COMMEND_ACTUELLEMENT
+                    selectedMarker.safeUpdateInfoWindow(
+                        context = selectedMarker.infoWindow.view.context
                     )
                     // Add timestamp to marker snippet
                     val currentDate = Date()
@@ -97,32 +96,29 @@ class ViewModelExtensionMapsHandler(
         }
     }
 
-    private fun Marker.updateInfoWindowStyle(context: Context, isSelected: Boolean) {
-        val infoWindow = this.infoWindow as MarkerInfoWindow
-        val container = infoWindow.view.findViewById<LinearLayout>(R.id.info_window_container)
 
-        // Find the product and bon vent associated with this marker
-        val bonVent = findBonVentForMarker(this)
+    // Extension function to safely update marker info window
+    fun Marker.safeUpdateInfoWindow(context: Context) {
+        try {
+            val infoWindow = this.infoWindow as? MarkerInfoWindow ?: return
+            val container = infoWindow.view.findViewById<LinearLayout>(R.id.info_window_container) ?: return
 
-        // Utiliser directement la propriété color de StatueDeCetteVent
-        val backgroundColor = bonVent?.bonStatueDeBase?.currentStatue?.let { statue ->
-            ContextCompat.getColor(context, statue.color)
-        } ?: ContextCompat.getColor(context, android.R.color.white) // Couleur par défaut
+            val bonVent = findBonVentForMarker(this)
+            val backgroundColor = bonVent?.bonStatueDeBase?.currentStatue?.let { statue ->
+                ContextCompat.getColor(context, statue.color)
+            } ?: ContextCompat.getColor(context, android.R.color.white)
 
-        container.setBackgroundColor(backgroundColor)
+            container.setBackgroundColor(backgroundColor)
 
-        if (isSelected) {
-            Firebase.database
-                .getReference("A_AppSettingsSaverModel")
-                .child("1")
-                .setValue(this.id)
-        }
-
-        if (isInfoWindowShown) {
-            closeInfoWindow()
-            showInfoWindow()
+            if (isInfoWindowShown) {
+                closeInfoWindow()
+                showInfoWindow()
+            }
+        } catch (e: Exception) {
+            Log.e("Marker", "Error updating info window", e)
         }
     }
+
 
     fun onClickAddMarkerButton(
         mapView: MapView,
