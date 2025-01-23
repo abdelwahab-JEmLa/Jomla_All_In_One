@@ -1,20 +1,15 @@
 package Views._2LocationGpsClients.App.MainApp.ViewModel.Extension
 
-import Views._2LocationGpsClients.App.MainApp.ViewModel.Extension.Utils.findBonVentForMarker
+import Views._2LocationGpsClients.App.MainApp.ViewModel.Extension.Utils.safeUpdateInfoWindows
+import Views._2LocationGpsClients.App.MainApp.ViewModel.Extension.Utils.updateAncienClientDataBase
 import Z_MasterOfApps.Kotlin.Model.Extension.clientsDisponible
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.ClientBonVentModel
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.ClientBonVentModel.BonStatueDeBase.StatueDeCetteVent
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_MasterOfApps.Z.Android.Actions._2.Client_JetPack.Models.ClientsModel
-import android.content.Context
 import android.util.Log
-import android.widget.LinearLayout
-import androidx.core.content.ContextCompat
 import com.example.clientjetpack.R
-import com.google.firebase.Firebase
-import com.google.firebase.database.database
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -59,12 +54,13 @@ class ViewModelExtensionMapsHandler(
                 if (bonVent != null) {
                     // Update the status
                     bonVent.bonStatueDeBase =
-                        _ModelAppsFather.ProduitModel.ClientBonVentModel.BonStatueDeBase().apply {
+                        ClientBonVentModel.BonStatueDeBase().apply {
                             currentStatue = statueVente
                         }
 
-                    selectedMarker.safeUpdateInfoWindow(
-                        context = selectedMarker.infoWindow.view.context
+                    safeUpdateInfoWindows(
+                        context = selectedMarker.infoWindow.view.context,
+                        marker = selectedMarker
                     )
                     // Add timestamp to marker snippet
                     val currentDate = Date()
@@ -95,52 +91,6 @@ class ViewModelExtensionMapsHandler(
             }
         }
     }
-
-
-    // Extension function to safely update marker info window
-    fun safeUpdateInfoWindows(marker:Marker,context: Context) {
-        try {
-            val infoWindow = marker.infoWindow as? MarkerInfoWindow ?: return
-            val container = infoWindow.view.findViewById<LinearLayout>(R.id.info_window_container) ?: return
-
-            val bonVent = findBonVentForMarker(marker)
-            val backgroundColor = bonVent?.bonStatueDeBase?.currentStatue?.let { statue ->
-                ContextCompat.getColor(context, statue.color)
-            } ?: ContextCompat.getColor(context, android.R.color.white)
-
-            container.setBackgroundColor(backgroundColor)
-
-            if (marker.isInfoWindowShown) {
-                marker.closeInfoWindow()
-                marker.showInfoWindow()
-            }
-        } catch (e: Exception) {
-            Log.e("Marker", "Error updating info window", e)
-        }
-    }
-
-    // Extension function to safely update marker info window
-    fun Marker.safeUpdateInfoWindow(context: Context) {
-        try {
-            val infoWindow = this.infoWindow as? MarkerInfoWindow ?: return
-            val container = infoWindow.view.findViewById<LinearLayout>(R.id.info_window_container) ?: return
-
-            val bonVent = findBonVentForMarker(this)
-            val backgroundColor = bonVent?.bonStatueDeBase?.currentStatue?.let { statue ->
-                ContextCompat.getColor(context, statue.color)
-            } ?: ContextCompat.getColor(context, android.R.color.white)
-
-            container.setBackgroundColor(backgroundColor)
-
-            if (isInfoWindowShown) {
-                closeInfoWindow()
-                showInfoWindow()
-            }
-        } catch (e: Exception) {
-            Log.e("Marker", "Error updating info window", e)
-        }
-    }
-
 
     fun onClickAddMarkerButton(
         mapView: MapView,
@@ -182,13 +132,13 @@ class ViewModelExtensionMapsHandler(
                 }
             }
 
-        val newBonVent = _ModelAppsFather.ProduitModel.ClientBonVentModel(
+        val newBonVent = ClientBonVentModel(
             vid = System.currentTimeMillis(),
             init_clientInformations = newClient
         )
 
         val product = produitsMainDataBase.find { it.id == 0L }
-            ?: _ModelAppsFather.ProduitModel(id = 0L).also {
+            ?: ProduitModel(id = 0L).also {
                 produitsMainDataBase.add(it)
             }
 
@@ -208,13 +158,4 @@ class ViewModelExtensionMapsHandler(
 
 }
 
-fun updateAncienClientDataBase(newClient: _ModelAppsFather.ProduitModel.ClientBonVentModel.ClientInformations) {
-    Firebase.database
-        .getReference(newClient.statueDeBase.caRefDonAncienDataBase)
-        .child(newClient.id.toString()).setValue(
-            ClientsModel(
-                idClientsSu = newClient.id,
-                nomClientsSu = newClient.nom
-            )
-        )
-}
+

@@ -2,6 +2,7 @@ package Views._2LocationGpsClients.App.MainApp
 
 import Views._2LocationGpsClients.App.MainApp.B.Dialogs.MarkerStatusDialog
 import Views._2LocationGpsClients.App.MainApp.ViewModel.Extension.Utils.findBonVentForMarker
+import Views._2LocationGpsClients.App.MainApp.ViewModel.Extension.Utils.safeUpdateInfoWindows
 import Z_MasterOfApps.Kotlin.Model.Extension.clientsDisponible
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.content.Context
