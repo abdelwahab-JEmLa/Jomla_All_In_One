@@ -1,7 +1,6 @@
 package Z_MasterOfApps.Kotlin.ViewModel
 
 import Views._2LocationGpsClients.App.MainApp.ViewModel.Extension.ViewModelExtensionMapsHandler
-import Views._2LocationGpsClients.App.MainApp.ViewModel.Extension.Extensions.clearAllData
 import Z_MasterOfApps.Kotlin.Model.Extension.clientsDisponible
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.ParamatersAppsModel
@@ -18,7 +17,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import org.osmdroid.views.MapView
-import org.osmdroid.views.overlay.Marker
 
 @SuppressLint("SuspiciousIndentation")
 class ViewModelInitApp : ViewModel() {
@@ -41,26 +39,6 @@ class ViewModelInitApp : ViewModel() {
         clientsDisponible=clientsDisponible,
         modelAppsFather = _modelAppsFather,
     )
-
-    // Delegate method for adding markers
-    fun onClickAddMarkerButton(
-        mapView: MapView,
-        onMarkerSelected: (Marker) -> Unit,
-        showMarkerDetails: Boolean,
-        markers: MutableList<Marker>
-    ) {
-        mapsHandler.onClickAddMarkerButton(
-            mapView = mapView,
-        )
-    }
-
-    fun clearAllData(context: Context) {
-        viewModelScope.launch {
-            mapsHandler.clearAllData(mapViewVM)
-            mapViewVM = initializeMapView(context)
-        }
-    }
-
 
     fun initializeMapView(context: Context): MapView {
         return MapView(context).also {

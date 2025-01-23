@@ -1,11 +1,11 @@
 package Views._2LocationGpsClients.App.MainApp
 
+import Views._2LocationGpsClients.App.MainApp.B.Dialogs.MapControls
 import Views._2LocationGpsClients.App.MainApp.B.Dialogs.MarkerStatusDialog
-import Views._2LocationGpsClients.App.MainApp.ViewModel.Extension.Utils.findBonVentForMarker
-import Views._2LocationGpsClients.App.MainApp.ViewModel.Extension.Utils.safeUpdateInfoWindows
 import Z_MasterOfApps.Kotlin.Model.Extension.clientsDisponible
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.content.Context
+import android.widget.LinearLayout
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,7 +29,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
-import Views._2LocationGpsClients.App.MainApp.B.Dialogs.MapControls
 import com.example.Packages.Views._2LocationGpsClients.App.MainApp.Utils.DEFAULT_LATITUDE
 import com.example.Packages.Views._2LocationGpsClients.App.MainApp.Utils.DEFAULT_LONGITUDE
 import com.example.Packages.Views._2LocationGpsClients.App.MainApp.Utils.getCurrentLocation
@@ -49,6 +48,8 @@ fun A_ClientsLocationGps(
     val currentZoom by remember { mutableDoubleStateOf(18.2) }
     val mapView = remember { viewModel.initializeMapView(context) }
     val markers = remember { mutableStateListOf<Marker>() }
+    val clientsDispo by remember { mutableStateOf(viewModel._modelAppsFather.clientsDisponible) }
+
     var selectedMarker by remember { mutableStateOf<Marker?>(null) }
     var showMarkerDialog by remember { mutableStateOf(false) }
     var showMarkerDetails by remember { mutableStateOf(true) }
@@ -118,23 +119,16 @@ fun A_ClientsLocationGps(
 
         viewModel._modelAppsFather.clientsDisponible.forEach { client ->
             client.gpsLocation.locationGpsMark?.let { existingMarker ->
-                // Trouver le bon vent associé pour obtenir le statut
-                val bonVent = viewModel.mapsHandler.findBonVentForMarker(existingMarker)
-
-                // Obtenir la couleur à partir du statut
-                val markerColor = bonVent?.bonStatueDeBase?.currentStatue?.let { statue ->
-                    val colorInt = ContextCompat.getColor(context, statue.color)
-                    String.format("#%06X", (colorInt and 0xFFFFFF))
-                } ?: client.gpsLocation.couleur // Utiliser la couleur du client par défaut
-
-                // Mettre à jour l'apparence du marqueur
-                val color = Color(android.graphics.Color.parseColor(markerColor)).toArgb()
-                existingMarker.icon = createCustomMarkerDrawable(context, color)
-
-                // Mettre à jour la couleur dans les données du client
-                client.gpsLocation.couleur = markerColor
 
                 existingMarker.apply {
+                    val actuelleEtat = client.gpsLocation.actuelleEtat
+                    val markerColor = actuelleEtat.let { statue ->
+                        val colorInt = statue?.color?.let { ContextCompat.getColor(context, it) }
+                        String.format("#%06X", (colorInt?.and(0xFFFFFF)))
+                    }
+                    val color = Color(android.graphics.Color.parseColor(markerColor)).toArgb()
+                    icon = createCustomMarkerDrawable(context, color)
+
                     position = GeoPoint(
                         client.gpsLocation.latitude,
                         client.gpsLocation.longitude
@@ -145,6 +139,12 @@ fun A_ClientsLocationGps(
                         "Client temporaire" else "Client permanent"
                     setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                     infoWindow = MarkerInfoWindow(R.layout.marker_info_window, mapView)
+
+                    val container = infoWindow.view.findViewById<LinearLayout>(R.id.info_window_container) ?: return@LaunchedEffect
+                    val backgroundColor = actuelleEtat.let { statue ->
+                        statue?.let { ContextCompat.getColor(context, it.color) }
+                    } ?: ContextCompat.getColor(context, android.R.color.white)
+                    container.setBackgroundColor(backgroundColor)
 
                     setOnMarkerClickListener { marker, _ ->
                         selectedMarker = marker
@@ -178,17 +178,14 @@ fun A_ClientsLocationGps(
                     }
 
                     // Appliquer la couleur par défaut pour les nouveaux marqueurs
-                    icon = createCustomMarkerDrawable(context, Color(android.graphics.Color.parseColor(client.gpsLocation.couleur)).toArgb())
+                    icon = createCustomMarkerDrawable(context,
+                        Color(android.graphics.Color.parseColor(client.couleur)).toArgb())
 
                     client.gpsLocation.locationGpsMark = this
                     markers.add(this)
                     mapView.overlays.add(this)
                 }
             }
-        }
-
-        markers.forEach { marker ->
-            viewModel.mapsHandler.safeUpdateInfoWindows(marker,context)
         }
 
         if (showMarkerDetails) {

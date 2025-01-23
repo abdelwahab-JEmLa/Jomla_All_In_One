@@ -190,14 +190,6 @@ open class _ModelAppsFather(
             // Status management
             @IgnoreExtraProperties
             class BonStatueDeBase {
-                enum class StatueDeCetteVent(val color: Int, val nomArabe: String) {
-                    ON_MODE_COMMEND_ACTUELLEMENT(android.R.color.holo_green_light, "نشط / متصل"),
-                    CLIENT_ABSENT(android.R.color.holo_red_light, "غائب الشاري"),
-                    AVEC_MARCHANDISE(android.R.color.holo_blue_light, "عندو سلعة"),
-                    FERME(android.R.color.darker_gray, "مغلق")
-                }
-
-                var currentStatue: StatueDeCetteVent? by mutableStateOf(null)
                 var lastUpdateTimestamp: Long by mutableStateOf(System.currentTimeMillis())
             }
 
@@ -222,14 +214,21 @@ open class _ModelAppsFather(
                 @IgnoreExtraProperties
                 class GpsLocation {
                     @get:Exclude
-                    var locationGpsMark: Marker? by mutableStateOf(null)
-                    var couleur by mutableStateOf("#FFFFFF")
-
-                    // Ajout des propriétés pour stocker les données du marker
                     var latitude by mutableStateOf(0.0)
                     var longitude by mutableStateOf(0.0)
                     var title by mutableStateOf("")
                     var snippet by mutableStateOf("")
+
+                    var actuelleEtat: DernierEtatAAffiche? by mutableStateOf(null)
+                    enum class DernierEtatAAffiche(val color: Int, val nomArabe: String) {
+                        Cible(android.R.color.holo_red_light, "Cible"),
+                        ON_MODE_COMMEND_ACTUELLEMENT(android.R.color.holo_green_light, "نشط / متصل"),
+                        CLIENT_ABSENT(android.R.color.darker_gray, "غائب الشاري"),
+                        AVEC_MARCHANDISE(android.R.color.holo_blue_light, "عندو سلعة"),
+                        FERME(android.R.color.darker_gray, "مغلق")
+                    }
+
+                    var locationGpsMark: Marker? by mutableStateOf(null)
                 }
 
                 override fun equals(other: Any?): Boolean {

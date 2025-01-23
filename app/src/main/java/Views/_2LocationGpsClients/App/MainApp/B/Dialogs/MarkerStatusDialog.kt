@@ -1,7 +1,7 @@
 package Views._2LocationGpsClients.App.MainApp.B.Dialogs
 
 import Views._2LocationGpsClients.App.MainApp.ViewModel.Extension.Utils.updateA_AppSettingsSaverModel
-import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.ClientBonVentModel.BonStatueDeBase.StatueDeCetteVent
+import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.ClientBonVentModel.ClientInformations.GpsLocation.DernierEtatAAffiche
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -66,7 +66,7 @@ fun MarkerStatusDialog(
                         coroutineScope.launch {
                             viewModel.mapsHandler.handleDialialogeClientMarkClick(
                                 selectedMarker,
-                                StatueDeCetteVent.ON_MODE_COMMEND_ACTUELLEMENT
+                                DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT
                             )
                             selectedMarker.updateA_AppSettingsSaverModel()
                             onDismiss()
@@ -80,7 +80,7 @@ fun MarkerStatusDialog(
                         coroutineScope.launch {
                             viewModel.mapsHandler.handleDialialogeClientMarkClick(
                                 selectedMarker,
-                                StatueDeCetteVent.CLIENT_ABSENT
+                                DernierEtatAAffiche.CLIENT_ABSENT
                             )
                             onDismiss()
                         }
@@ -96,7 +96,7 @@ fun MarkerStatusDialog(
                         coroutineScope.launch {
                             viewModel.mapsHandler.handleDialialogeClientMarkClick(
                                 selectedMarker,
-                                StatueDeCetteVent.AVEC_MARCHANDISE
+                                DernierEtatAAffiche.AVEC_MARCHANDISE
                             )
                             onDismiss()
                         }
@@ -112,7 +112,7 @@ fun MarkerStatusDialog(
                         coroutineScope.launch {
                             viewModel.mapsHandler.handleDialialogeClientMarkClick(
                                 selectedMarker,
-                                StatueDeCetteVent.FERME
+                                DernierEtatAAffiche.FERME
                             )
                             onDismiss()
                         }

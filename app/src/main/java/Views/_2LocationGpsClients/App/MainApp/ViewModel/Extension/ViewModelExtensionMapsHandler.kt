@@ -7,6 +7,7 @@ import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.ClientBonVentModel
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.ClientBonVentModel.BonStatueDeBase.StatueDeCetteVent
+import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.ClientBonVentModel.ClientInformations.GpsLocation.DernierEtatAAffiche
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
@@ -27,7 +28,7 @@ class ViewModelExtensionMapsHandler(
     // Extension function to update marker info window style
     suspend fun handleDialialogeClientMarkClick(
         selectedMarker: Marker?,
-        statueVente: StatueDeCetteVent,
+        statueVente: DernierEtatAAffiche,
     ) {
         if (selectedMarker == null) {
             Log.d("MarkerHandler", "No marker selected")
@@ -36,6 +37,7 @@ class ViewModelExtensionMapsHandler(
 
         withContext(Dispatchers.IO) {
             try {
+
                 // Find or create product with ID 0
                 val product = produitsMainDataBase.find { it.id == 0L }
                     ?: ProduitModel(id = 0L).also {
