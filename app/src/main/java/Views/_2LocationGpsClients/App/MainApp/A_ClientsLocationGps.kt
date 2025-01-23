@@ -119,14 +119,6 @@ fun A_ClientsLocationGps(
         viewModel._modelAppsFather.clientsDisponible.forEach { client ->
             client.gpsLocation.locationGpsMark?.let { existingMarker ->
                 existingMarker.apply {
-                    val actuelleEtat = client.gpsLocation.actuelleEtat
-                    val markerColor = actuelleEtat.let { statue ->
-                        val colorInt = statue?.color?.let { ContextCompat.getColor(context, it) }
-                        String.format("#%06X", (colorInt?.and(0xFFFFFF)))
-                    }
-                    val color = Color(android.graphics.Color.parseColor(markerColor)).toArgb()
-                    icon = createCustomMarkerDrawable(context, color)
-
                     position = GeoPoint(
                         client.gpsLocation.latitude,
                         client.gpsLocation.longitude
@@ -135,7 +127,16 @@ fun A_ClientsLocationGps(
                     title = client.nom
                     snippet = if (client.statueDeBase.cUnClientTemporaire)
                         "Client temporaire" else "Client permanent"
+
                     setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                    val actuelleEtat = client.gpsLocation.actuelleEtat
+                    val markerColor = actuelleEtat.let { statue ->
+                        val colorInt = statue?.color?.let { ContextCompat.getColor(context, it) }
+                        String.format("#%06X", (colorInt?.and(0xFFFFFF)))
+                    }
+                    val color = Color(android.graphics.Color.parseColor(markerColor)).toArgb()
+                    icon = createCustomMarkerDrawable(context, color)
+
                     infoWindow = MarkerInfoWindow(R.layout.marker_info_window, mapView)
 
                     val container = infoWindow.view.findViewById<LinearLayout>(R.id.info_window_container) ?: return@LaunchedEffect
@@ -157,6 +158,8 @@ fun A_ClientsLocationGps(
             } ?: run {
                 // Création d'un nouveau marqueur si aucun n'existe
                 Marker(mapView).apply {
+                    val actuelleEtat = client.gpsLocation.actuelleEtat
+
                     position = GeoPoint(
                         client.gpsLocation.latitude,
                         client.gpsLocation.longitude
@@ -178,6 +181,12 @@ fun A_ClientsLocationGps(
                     // Appliquer la couleur par défaut pour les nouveaux marqueurs
                     icon = createCustomMarkerDrawable(context,
                         Color(android.graphics.Color.parseColor(client.couleur)).toArgb())
+
+                    val container = infoWindow.view.findViewById<LinearLayout>(R.id.info_window_container) ?: return@LaunchedEffect
+                    val backgroundColor = actuelleEtat.let { statue ->
+                        statue?.let { ContextCompat.getColor(context, it.color) }
+                    } ?: ContextCompat.getColor(context, android.R.color.white)
+                    container.setBackgroundColor(backgroundColor)
 
                     client.gpsLocation.locationGpsMark = this
                     markers.add(this)

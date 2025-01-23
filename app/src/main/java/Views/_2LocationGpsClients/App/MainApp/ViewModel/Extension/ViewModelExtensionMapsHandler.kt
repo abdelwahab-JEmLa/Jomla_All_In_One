@@ -15,11 +15,11 @@ import org.osmdroid.views.overlay.Marker
 class ViewModelExtensionMapsHandler(
     val viewModelScope: CoroutineScope,
     val produitsMainDataBase: MutableList<ProduitModel>,
-    val clientsDisponible: List<ClientBonVentModel.ClientInformations>,
+    val clientsDisponible: List<ClientInformations>,
     val viewModel: ViewModelInitApp,
     val modelAppsFather: _ModelAppsFather
 ) {
-    fun ClientInformations.updateProduitsClientInfoParThis(
+    private fun ClientInformations.updateProduitsClientInfoParThis(
     ) {
         produitsMainDataBase.forEach { produit ->
             produit.historiqueBonsVents.forEach {
