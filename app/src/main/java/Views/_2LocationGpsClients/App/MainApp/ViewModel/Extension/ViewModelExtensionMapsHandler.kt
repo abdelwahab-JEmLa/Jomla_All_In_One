@@ -9,14 +9,11 @@ import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.ClientBonVentMo
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.ClientBonVentModel.BonStatueDeBase.StatueDeCetteVent
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.util.Log
-import com.example.clientjetpack.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
-import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow
 import java.util.Date
 
 class ViewModelExtensionMapsHandler(
@@ -41,7 +38,7 @@ class ViewModelExtensionMapsHandler(
             try {
                 // Find or create product with ID 0
                 val product = produitsMainDataBase.find { it.id == 0L }
-                    ?: _ModelAppsFather.ProduitModel(id = 0L).also {
+                    ?: ProduitModel(id = 0L).also {
                         produitsMainDataBase.add(it)
                     }
 
@@ -94,9 +91,6 @@ class ViewModelExtensionMapsHandler(
 
     fun onClickAddMarkerButton(
         mapView: MapView,
-        onMarkerSelected: (Marker) -> Unit,
-        showMarkerDetails: Boolean,
-        markers: MutableList<Marker>
     ) {
         val center = mapView.mapCenter
         val newID = modelAppsFather.clientsDisponible
@@ -104,7 +98,7 @@ class ViewModelExtensionMapsHandler(
         val newnom = "Nouveau client #$newID"
 
         val newClient =
-            _ModelAppsFather.ProduitModel.ClientBonVentModel.ClientInformations(
+            ClientBonVentModel.ClientInformations(
                 id = newID,
                 nom = newnom
             ).apply {
@@ -116,19 +110,6 @@ class ViewModelExtensionMapsHandler(
                     snippet = "Client temporaire"
                     couleur = "#2196F3"
 
-                    locationGpsMark = Marker(mapView).apply {
-                        id = newID.toString()
-                        position = GeoPoint(latitude, longitude)
-                        this.title = title
-                        this.snippet = snippet
-                        setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                        infoWindow = MarkerInfoWindow(R.layout.marker_info_window, mapView)
-                        setOnMarkerClickListener { marker, _ ->
-                            onMarkerSelected(marker)
-                            if (showMarkerDetails) marker.showInfoWindow()
-                            true
-                        }
-                    }
                 }
             }
 
@@ -144,18 +125,10 @@ class ViewModelExtensionMapsHandler(
 
         product.historiqueBonsVents.add(newBonVent)
 
-        newClient.gpsLocation.locationGpsMark?.let { marker ->
-            markers.add(marker)
-            mapView.overlays.add(marker)
-            if (showMarkerDetails) marker.showInfoWindow()
-        }
-        mapView.invalidate()
-
         updateAncienClientDataBase(newClient)
 
         _ModelAppsFather.updateProduit(product, viewModel)
     }
-
 }
 
 

@@ -21,10 +21,7 @@ fun AddMarkerButton(
     ControlButton(
         onClick = {
             viewModelInitApp.mapsHandler.onClickAddMarkerButton(
-                mapView,
-                onMarkerSelected,
-                showMarkerDetails,
-                markers
+                mapView
             )
         },
         icon = Icons.Default.Add,

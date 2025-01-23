@@ -51,9 +51,6 @@ class ViewModelInitApp : ViewModel() {
     ) {
         mapsHandler.onClickAddMarkerButton(
             mapView = mapView,
-            onMarkerSelected = onMarkerSelected,
-            showMarkerDetails = showMarkerDetails,
-            markers = markers,
         )
     }
 
