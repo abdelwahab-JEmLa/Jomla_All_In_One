@@ -64,7 +64,7 @@ fun MarkerStatusDialog(
                     icon = Icons.Default.ShoppingCart,
                     onClick = {
                         coroutineScope.launch {
-                            viewModel.mapsHandler.handleDialialogeClientMarkClick(
+                            viewModel.mapsHandler.updateStatueClient(
                                 selectedMarker,
                                 DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT
                             )
@@ -78,7 +78,7 @@ fun MarkerStatusDialog(
                     icon = Icons.Default.Person,
                     onClick = {
                         coroutineScope.launch {
-                            viewModel.mapsHandler.handleDialialogeClientMarkClick(
+                            viewModel.mapsHandler.updateStatueClient(
                                 selectedMarker,
                                 DernierEtatAAffiche.CLIENT_ABSENT
                             )
@@ -94,7 +94,7 @@ fun MarkerStatusDialog(
                     icon = Icons.Default.ShoppingCart,
                     onClick = {
                         coroutineScope.launch {
-                            viewModel.mapsHandler.handleDialialogeClientMarkClick(
+                            viewModel.mapsHandler.updateStatueClient(
                                 selectedMarker,
                                 DernierEtatAAffiche.AVEC_MARCHANDISE
                             )
@@ -110,7 +110,7 @@ fun MarkerStatusDialog(
                     icon = Icons.Default.Lock,
                     onClick = {
                         coroutineScope.launch {
-                            viewModel.mapsHandler.handleDialialogeClientMarkClick(
+                            viewModel.mapsHandler.updateStatueClient(
                                 selectedMarker,
                                 DernierEtatAAffiche.FERME
                             )

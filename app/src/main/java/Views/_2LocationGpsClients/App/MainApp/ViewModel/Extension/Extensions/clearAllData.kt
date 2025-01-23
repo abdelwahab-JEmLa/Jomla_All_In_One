@@ -5,29 +5,10 @@ import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.produitsFireBaseRe
 import android.util.Log
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import org.osmdroid.views.MapView
 
-fun ViewModelExtensionMapsHandler.clearAllData(mapView: MapView?) {
+fun ViewModelExtensionMapsHandler.clearAllData() {
     viewModelScope.launch {
         try {
-            // 1. Clear UI elements first
-            mapView?.let { map ->
-                map.overlays.clear()
-                map.invalidate()
-            }
-
-            // 2. Clear local markers and data
-            produitsMainDataBase.forEach { produit ->
-                produit.bonsVentDeCetteCota.forEach { bonVent ->
-                    bonVent.clientInformations?.gpsLocation?.locationGpsMark?.let { marker ->
-                        marker.closeInfoWindow()
-                        marker.remove(mapView)
-                    }
-                    bonVent.clientInformations?.gpsLocation?.locationGpsMark = null
-                }
-            }
-
-            // 3. Remove data from Firebase with correct path structure
             produitsMainDataBase.forEach { produit ->
                 produit.historiqueBonsVents.forEachIndexed { index, _ ->
                     try {

@@ -48,7 +48,6 @@ fun A_ClientsLocationGps(
     val currentZoom by remember { mutableDoubleStateOf(18.2) }
     val mapView = remember { viewModel.initializeMapView(context) }
     val markers = remember { mutableStateListOf<Marker>() }
-    val clientsDispo by remember { mutableStateOf(viewModel._modelAppsFather.clientsDisponible) }
 
     var selectedMarker by remember { mutableStateOf<Marker?>(null) }
     var showMarkerDialog by remember { mutableStateOf(false) }
@@ -119,7 +118,6 @@ fun A_ClientsLocationGps(
 
         viewModel._modelAppsFather.clientsDisponible.forEach { client ->
             client.gpsLocation.locationGpsMark?.let { existingMarker ->
-
                 existingMarker.apply {
                     val actuelleEtat = client.gpsLocation.actuelleEtat
                     val markerColor = actuelleEtat.let { statue ->
@@ -194,6 +192,7 @@ fun A_ClientsLocationGps(
 
         mapView.invalidate()
     }
+
     Box(modifier = modifier.fillMaxSize()) {
         AndroidView(
             modifier = Modifier.fillMaxSize(),

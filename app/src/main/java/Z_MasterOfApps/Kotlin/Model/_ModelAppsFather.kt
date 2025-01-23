@@ -198,7 +198,7 @@ open class _ModelAppsFather(
             data class ClientInformations(
                 var id: Long = 1,
                 var nom: String = "Non Defini",
-                val couleur: String = "#FFFFFF"
+                var couleur: String = "#FFFFFF"
             ) {
                 var auFilterFAB: Boolean by mutableStateOf(false)
                 var positionDonClientsList: Int by mutableIntStateOf(0)
