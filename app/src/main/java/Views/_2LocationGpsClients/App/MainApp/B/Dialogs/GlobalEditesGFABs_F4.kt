@@ -1,4 +1,4 @@
-package com.example.Packages.Views._2LocationGpsClients.App.MainApp.B.Dialogs
+package Views._2LocationGpsClients.App.MainApp.B.Dialogs
 
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.Manifest

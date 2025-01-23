@@ -4,7 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import com.example.Packages.Views._2LocationGpsClients.App.MainApp.B.Dialogs.ControlButton
+import Views._2LocationGpsClients.App.MainApp.B.Dialogs.ControlButton
 
 @Composable
  fun ShowLocationsInfoBubble(

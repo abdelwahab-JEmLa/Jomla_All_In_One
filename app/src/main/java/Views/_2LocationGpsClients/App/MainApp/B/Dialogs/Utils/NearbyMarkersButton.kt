@@ -10,7 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
-import com.example.Packages.Views._2LocationGpsClients.App.MainApp.B.Dialogs.ControlButton
+import Views._2LocationGpsClients.App.MainApp.B.Dialogs.ControlButton
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 

@@ -5,7 +5,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import com.example.Packages.Views._2LocationGpsClients.App.MainApp.B.Dialogs.ControlButton
+import Views._2LocationGpsClients.App.MainApp.B.Dialogs.ControlButton
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 
