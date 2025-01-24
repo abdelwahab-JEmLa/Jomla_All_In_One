@@ -1,43 +1,39 @@
 package Z_MasterOfApps.Kotlin.Model
 
-import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.produitsFireBaseRef
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Firebase
 import com.google.firebase.database.IgnoreExtraProperties
 import com.google.firebase.database.database
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import java.util.Objects
 
-class ClientsDataBase(
+@IgnoreExtraProperties
+data class ClientsDataBase(
     var id: Long = 1,
-    var nom: String = "Non Defini"
+    var nom: String = "Non Defini",
+    var statueDeBase: StatueDeBase = StatueDeBase(),
+    var gpsLocation: GpsLocation = GpsLocation()
 ) {
-    var statueDeBase by mutableStateOf(StatueDeBase())
     @IgnoreExtraProperties
-    class StatueDeBase {
-        var couleur: String = "#FFFFFF"
-        var caRefDonAncienDataBase by mutableStateOf("G_Clients")
-        var cUnClientTemporaire: Boolean by mutableStateOf(true)
-        var auFilterFAB: Boolean by mutableStateOf(false)
-        var positionDonClientsList: Int by mutableIntStateOf(0)
-    }
+    data class StatueDeBase(
+        var couleur: String = "#FFFFFF",
+        var caRefDonAncienDataBase: String = "G_Clients",
+        var cUnClientTemporaire: Boolean = true,
+        var auFilterFAB: Boolean = false,
+        var positionDonClientsList: Int = 0
+    )
 
-    var gpsLocation by mutableStateOf(GpsLocation())
     @IgnoreExtraProperties
-    class GpsLocation {
-        var latitude by mutableStateOf(0.0)
-        var longitude by mutableStateOf(0.0)
-        var title by mutableStateOf("")
-        var snippet by mutableStateOf("")
-
-        var actuelleEtat: DernierEtatAAffiche? by mutableStateOf(null)
+    data class GpsLocation(
+        var latitude: Double = 0.0,
+        var longitude: Double = 0.0,
+        var title: String = "",
+        var snippet: String = "",
+        var actuelleEtat: DernierEtatAAffiche? = null
+    ) {
+        @IgnoreExtraProperties
         enum class DernierEtatAAffiche(val color: Int, val nomArabe: String) {
             Cible(android.R.color.holo_red_light, "Cible"),
             ON_MODE_COMMEND_ACTUELLEMENT(android.R.color.holo_green_light, "نشط / متصل"),
@@ -47,42 +43,53 @@ class ClientsDataBase(
         }
     }
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is ClientsDataBase) return false
-        return id == other.id &&
-                nom == other.nom
-    }
-
-    override fun hashCode(): Int {
-        return Objects.hash(id, nom)
-    }
-
     companion object {
         val refClientsDataBase = Firebase.database
             .getReference("0_UiState_3_Host_Package_3_Prototype11Dec")
             .child("ClientsDataBase")
 
         fun updateClientsDataBase(
-            client :ClientsDataBase,
-            viewModelProduits: ViewModelInitApp
+            client: ClientsDataBase,
+            viewModel: ViewModelInitApp
         ) {
-            viewModelProduits.viewModelScope.launch {
+            viewModel.viewModelScope.launch {
                 try {
-                    // Update _produitsAvecBonsGrossist
-                    val index =
-                        viewModelProduits._modelAppsFather.clientDataBaseSnapList.indexOfFirst { it.id == client.id }
+                    // Update local state
+                    val clientsList: SnapshotStateList<ClientsDataBase> =
+                        viewModel._modelAppsFather.clientDataBaseSnapList
+
+                    val index = clientsList.indexOfFirst { it.id == client.id }
                     if (index != -1) {
-                        // Direct update of the SnapshotStateList
-                        viewModelProduits._modelAppsFather.clientDataBaseSnapList[index] = client
+                        clientsList[index] = client
                     }
 
-                    refClientsDataBase.child(client.id.toString()).setValue(client).await()
+                    // Update Firebase
+                    refClientsDataBase.child(client.id.toString())
+                        .setValue(client)
+                        .await()
 
                 } catch (e: Exception) {
+                    e.printStackTrace()
                 }
             }
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is ClientsDataBase) return false
+
+        return id == other.id &&
+                nom == other.nom &&
+                statueDeBase == other.statueDeBase &&
+                gpsLocation == other.gpsLocation
+    }
+
+    override fun hashCode(): Int {
+        var result = id.hashCode()
+        result = 31 * result + nom.hashCode()
+        result = 31 * result + statueDeBase.hashCode()
+        result = 31 * result + gpsLocation.hashCode()
+        return result
     }
 }

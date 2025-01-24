@@ -50,17 +50,25 @@ class ViewModelExtensionMapsHandler(
             .child(newClient.id.toString())
             .setValue(newClient)
     }
+
+    // ViewModelExtensionMapsHandler.kt
     fun updateStatueClient(
         selectedMarker: Marker?,
         statueVente: ClientsDataBase.GpsLocation.DernierEtatAAffiche
     ) {
         clientDataBaseSnapList.toMutableList().forEach { client ->
             if (client.id == selectedMarker?.id?.toLong()) {
-                client.gpsLocation.actuelleEtat = statueVente
-                updateClientsDataBase(client,viewModel)
+                // Now works because gpsLocation is part of the data class
+                val updatedClient = client.copy(
+                    gpsLocation = client.gpsLocation.copy(
+                        actuelleEtat = statueVente
+                    )
+                )
+                updateClientsDataBase(updatedClient, viewModel)
             }
         }
     }
+
       /*
     /*
     fun alimentclientDBDepuitCalcule (): Unit {

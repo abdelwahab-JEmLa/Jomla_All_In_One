@@ -88,8 +88,13 @@ fun A_ClientsLocationGps(
         }
     }
 
-    val clientDataBaseSnapList = viewModel.clientDataBaseSnapList   //-->
-    LaunchedEffect(clientDataBaseSnapList.size) {
+    val clientDataBaseSnapList = viewModel.clientDataBaseSnapList
+
+    LaunchedEffect(clientDataBaseSnapList.toList()) {
+        // Clear existing client markers
+        val markersToRemove = mapView.overlays.filterIsInstance<Marker>()
+            .filter { marker -> clientDataBaseSnapList.any { it.id.toString() == marker.id } }
+        mapView.overlays.removeAll(markersToRemove)
 
         clientDataBaseSnapList.forEach { client ->
             val marker = Marker(mapView).apply {
@@ -104,16 +109,13 @@ fun A_ClientsLocationGps(
                 setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                 infoWindow = MarkerInfoWindow(R.layout.marker_info_window, mapView)
 
-
-                val container =
-                    infoWindow.view.findViewById<LinearLayout>(R.id.info_window_container)
-                        ?: return@LaunchedEffect
-                val backgroundColor = client.gpsLocation.actuelleEtat.let { statue ->
-                    statue?.let { ContextCompat.getColor(context, it.color) }
+                val container = infoWindow.view.findViewById<LinearLayout>(R.id.info_window_container)
+                    ?: return@forEach // Skip if container not found
+                val backgroundColor = client.gpsLocation.actuelleEtat?.let { statue ->
+                    ContextCompat.getColor(context, statue.color)
                 } ?: ContextCompat.getColor(context, android.R.color.white)
                 container.setBackgroundColor(backgroundColor)
 
-                // Set click listener
                 setOnMarkerClickListener { clickedMarker, _ ->
                     selectedMarker = clickedMarker
                     showMarkerDialog = true
@@ -124,8 +126,8 @@ fun A_ClientsLocationGps(
             mapView.overlays.add(marker)
             marker.showInfoWindow()
         }
+        mapView.invalidate() // Refresh the map to show changes
     }
-
     Box(modifier = modifier.fillMaxSize()) {
         AndroidView(
             modifier = Modifier.fillMaxSize(),
