@@ -2,7 +2,6 @@ package Z_MasterOfApps.Z_AppsFather.Kotlin._3.Init.A_LoadFireBase
 
 import Z_MasterOfApps.Kotlin.Model.ClientsDataBase
 import Z_MasterOfApps.Kotlin.Model.ClientsDataBase.Companion.refClientsDataBase
-import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.produitsFireBaseRef
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
@@ -21,24 +20,23 @@ object LoadFromFirebaseProduits {
         try {
             initViewModel.loadingProgress = 0.1f
 
-            // Charger les données avec la nouvelle méthode simplifiée
+            // Correctly pass parameters to loadData
             val snapshot = FirebaseOfflineHandler.loadData(
-                produitsFireBaseRef ,
-                refClientsDataBase=refClientsDataBase
+                ref = produitsFireBaseRef,
+                viewModel = initViewModel,
+                refClientsDataBase = refClientsDataBase
             )
 
-            snapshot.let { (prod,clientSnap)->
-                // Traiter les données
+            snapshot.let { (prod, clientSnap) ->
+                // Process data
                 val products = prod?.let { parseSnapshot(it) }
                 val clientDataBase = clientSnap?.let { parseClientSnapshot(it) }
-                if (products != null) {
-                    if (clientDataBase != null) {
-                        updateViewModel(initViewModel, products,clientDataBase)
-                    }
+                if (products != null && clientDataBase != null) {
+                    updateViewModel(initViewModel, products, clientDataBase)
                 }
                 initViewModel.loadingProgress = 0.5f
 
-                // Configurer la synchronisation en temps réel
+                // Setup real-time sync
                 setupRealtimeSync(initViewModel)
             }
 
@@ -71,10 +69,9 @@ object LoadFromFirebaseProduits {
                 snapshot.child("statueDeBase").getValue(ClientsDataBase.StatueDeBase::class.java)?.let {
                     statueDeBase = it
                 }
-                snapshot.child("statueDeBase").getValue(ClientsDataBase.GpsLocation::class.java)?.let {
+                snapshot.child("gpsLocation").getValue(ClientsDataBase.GpsLocation::class.java)?.let {
                     gpsLocation = it
                 }
-
             }
         } catch (e: Exception) {
             null
@@ -160,51 +157,44 @@ object LoadFromFirebaseProduits {
     }
 
     private fun setupRealtimeSync(initViewModel: ViewModelInitApp) {
-        realtimeListener?.let {
-            produitsFireBaseRef.removeEventListener(it)
-        }
-        realtimeClientListener?.let {
-            refClientsDataBase.removeEventListener(it)
-        }
+        realtimeListener?.let { produitsFireBaseRef.removeEventListener(it) }
+        realtimeClientListener?.let { refClientsDataBase.removeEventListener(it) }
 
         realtimeListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 try {
                     val products = parseSnapshot(snapshot)
                     val clients = parseClientSnapshot(snapshot)
-                    updateViewModel(initViewModel, products,clients)
+                    updateViewModel(initViewModel, products, clients)
                 } catch (e: Exception) {
                     Log.e(TAG, "Real-time sync data processing failed", e)
                 }
             }
 
-
             override fun onCancelled(error: DatabaseError) {
                 Log.e(TAG, "Real-time sync failed: ${error.message}")
             }
-        }.also {
-            produitsFireBaseRef.addValueEventListener(it)
-            realtimeClientListener.addValueEventListener(it)
+        }.also { listener ->
+            produitsFireBaseRef.addValueEventListener(listener)
         }
 
         realtimeClientListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 try {
-                    val products = parseSnapshot(snapshot)
-                    updateViewModel(initViewModel, products)
+                    val clients = parseClientSnapshot(snapshot)
+                    initViewModel._modelAppsFather.clientDataBaseSnapList.clear()
+                    initViewModel._modelAppsFather.clientDataBaseSnapList.addAll(clients)
                 } catch (e: Exception) {
-                    Log.e(TAG, "Real-time sync data processing failed", e)
+                    Log.e(TAG, "Real-time client sync failed", e)
                 }
             }
 
-
             override fun onCancelled(error: DatabaseError) {
-                Log.e(TAG, "Real-time sync failed: ${error.message}")
+                Log.e(TAG, "Client real-time sync failed: ${error.message}")
             }
-        }.also {
-            produitsFireBaseRef.addValueEventListener(it)
+        }.also { listener ->
+            refClientsDataBase.addValueEventListener(listener)
         }
-
     }
 
     private fun updateViewModel(
