@@ -1,28 +1,50 @@
 package Views._2LocationGpsClients.App.MainApp.ViewModel.Extension
 
-import Views._2LocationGpsClients.App.MainApp.ViewModel.Extension.Utils.updateAncienClientDataBase
 import Z_MasterOfApps.Kotlin.Model.ClientsDataBase
-import Z_MasterOfApps.Kotlin.Model.Extension.clientsDisponible
-import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
-import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.updateProduit
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel
-import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.ClientBonVentModel
-import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.ClientBonVentModel.ClientInformations
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import kotlinx.coroutines.CoroutineScope
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
-import org.osmdroid.views.overlay.Marker
 
 class ViewModelExtensionMapsHandler(
     val viewModelScope: CoroutineScope,
     val produitsMainDataBase: MutableList<ProduitModel>,
+    val clientDataBaseSnapList: SnapshotStateList<ClientsDataBase>,
     val viewModel: ViewModelInitApp,
-    val modelAppsFather: _ModelAppsFather,
 ) {
-    val clientsMarkers= viewModel.clientsMarkers
+    fun onClickAddMarkerButton(
+        mapView: MapView,
+    ) {
+        val center = mapView.mapCenter
+        val newID = clientDataBaseSnapList
+            .maxOf { it.id } + 1
+        val newnom = "Nouveau client #$newID"
 
+        val newClient =
+            ClientsDataBase(
+                id = newID,
+                nom = newnom
+            ).apply {
+                statueDeBase.cUnClientTemporaire = true
+                gpsLocation.apply {
+                    latitude = center.latitude
+                    longitude = center.longitude
+                    title = newnom
+                    snippet = "Client temporaire"
+                    geoPoint= center as GeoPoint?
+                }
+            }
+
+        viewModel._modelAppsFather.clientDataBaseSnapList.add(newClient)
+
+        ClientsDataBase.refClientsDataBase
+            .child(newClient.id.toString())
+            .setValue(newClient)
+
+    }
+      /*
     /*
     fun alimentclientDBDepuitCalcule (): Unit {
         viewModel.clientsDisponible.forEach {
@@ -61,6 +83,7 @@ class ViewModelExtensionMapsHandler(
                 }
             }
         }
+        }
 
     fun updateStatueClient(
         selectedMarker: Marker?,
@@ -73,47 +96,8 @@ class ViewModelExtensionMapsHandler(
             }
         }
     }
+       */
 
-    fun onClickAddMarkerButton(
-        mapView: MapView,
-    ) {
-        val center = mapView.mapCenter
-        val newID = modelAppsFather.clientsDisponible
-            .maxOf { it.id } + 1
-        val newnom = "Nouveau client #$newID"
-
-        val newClient =
-            ClientInformations(
-                id = newID,
-                nom = newnom
-            ).apply {
-                statueDeBase.cUnClientTemporaire = true
-                gpsLocation.apply {
-                    latitude = center.latitude
-                    longitude = center.longitude
-                    title = newnom
-                    snippet = "Client temporaire"
-                    couleur = "#2196F3"
-                    geoPoint= center as GeoPoint?
-                }
-            }
-
-        val newBonVent = ClientBonVentModel(
-            vid = System.currentTimeMillis(),
-            init_clientInformations = newClient
-        )
-
-        val product = produitsMainDataBase.find { it.id == 0L }
-            ?: ProduitModel(id = 0L).also {
-                produitsMainDataBase.add(it)
-            }
-
-        product.historiqueBonsVents.add(newBonVent)
-
-        updateAncienClientDataBase(newClient)
-
-        updateProduit(product, viewModel)
-    }
 }
 
 

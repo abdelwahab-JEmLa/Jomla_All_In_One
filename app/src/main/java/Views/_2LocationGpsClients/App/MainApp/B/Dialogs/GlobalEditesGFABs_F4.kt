@@ -38,8 +38,6 @@ import com.example.Packages.Views._2LocationGpsClients.App.MainApp.B.Dialogs.Uti
 import com.example.Packages.Views._2LocationGpsClients.App.MainApp.B.Dialogs.Utils.LabelsButton
 import com.example.Packages.Views._2LocationGpsClients.App.MainApp.B.Dialogs.Utils.LocationTrackingButton
 import com.example.Packages.Views._2LocationGpsClients.App.MainApp.B.Dialogs.Utils.MenuButton
-import com.example.Packages.Views._2LocationGpsClients.App.MainApp.B.Dialogs.Utils.NearbyMarkersButton
-import com.example.Packages.Views._2LocationGpsClients.App.MainApp.B.Dialogs.Utils.ShowLocationsInfoBubble
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import kotlin.math.roundToInt
@@ -48,9 +46,7 @@ import kotlin.math.roundToInt
 fun MapControls(
     mapView: MapView,
     viewModelInitApp: ViewModelInitApp,
-    markers: MutableList<Marker>,
     showMarkerDetails: Boolean,
-    onShowMarkerDetailsChange: (Boolean) -> Unit,
     onMarkerSelected: (Marker) -> Unit
 ) {
     val context = LocalContext.current
@@ -102,22 +98,11 @@ fun MapControls(
                         showLabels = showLabels,
                         viewModelInitApp = viewModelInitApp
                     )
-                    NearbyMarkersButton(
-                        showLabels = showLabels,
-                        viewModelInitApp = viewModelInitApp,
-                        markers = markers,
-                        currentLocation = currentLocation,
-                        proximiteMeter = proximiteMeter,
-                        mapView = mapView
-                    )
 
                     AddMarkerButton(
                         showLabels = showLabels,
                         mapView = mapView,
                         viewModelInitApp = viewModelInitApp,
-                        markers = markers,
-                        showMarkerDetails = showMarkerDetails,
-                        onMarkerSelected = onMarkerSelected
                     )
 
                     LocationTrackingButton(
@@ -125,12 +110,20 @@ fun MapControls(
                         mapView = mapView,
                         proximiteMeter = proximiteMeter
                     )
-
+                       /*
+                       NearbyMarkersButton(
+                        showLabels = showLabels,
+                        viewModelInitApp = viewModelInitApp,
+                        markers = markers,
+                        currentLocation = currentLocation,
+                        proximiteMeter = proximiteMeter,
+                        mapView = mapView
+                    )
                     ShowLocationsInfoBubble(
                         showLabels = showLabels,
                         showMarkerDetails = showMarkerDetails,
                         onShowMarkerDetailsChange = onShowMarkerDetailsChange
-                    )
+                    )   */
                 }
 
                 // Always visible controls

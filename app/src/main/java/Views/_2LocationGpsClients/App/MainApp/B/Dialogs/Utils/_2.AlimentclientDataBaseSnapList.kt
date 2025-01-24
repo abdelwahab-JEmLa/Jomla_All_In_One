@@ -23,7 +23,7 @@ fun AlimentclientDataBaseSnapList(
             if (clearDataClickCount == 0) {
                 clearDataClickCount++
             } else {
-                viewModelInitApp.mapsHandler.alimentclientDBDepuitCalcule()
+           //     viewModelInitApp.mapsHandler.alimentclientDBDepuitCalcule()
                 clearDataClickCount = 0
             }
         },

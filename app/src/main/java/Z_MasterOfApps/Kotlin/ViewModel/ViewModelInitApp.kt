@@ -10,15 +10,12 @@ import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import org.osmdroid.views.MapView
-import org.osmdroid.views.overlay.Marker
 
 @SuppressLint("SuspiciousIndentation")
 class ViewModelInitApp : ViewModel() {
@@ -29,29 +26,17 @@ class ViewModelInitApp : ViewModel() {
    
     val modelAppsFather: _ModelAppsFather get() = _modelAppsFather
     val produitsMainDataBase = _modelAppsFather.produitsMainDataBase
+
     val clientDataBaseSnapList = _modelAppsFather.clientDataBaseSnapList
-
-    var clientsMarkers: SnapshotStateList<Marker> = mutableStateListOf()
-
-    // Updated updateMarkers function
-    fun updateMarkers() {
-        clientsMarkers.clear() // Clear existing markers
-        clientDataBaseSnapList.forEach { client ->
-            client.gpsLocation.locationGpsMark?.let { marker ->
-                clientsMarkers.add(marker)
-            }
-        }
-    }
 
     var isLoading by mutableStateOf(false)
     var loadingProgress by mutableFloatStateOf(0f)
 
     val mapsHandler = ViewModelExtensionMapsHandler(
         viewModelScope =this@ViewModelInitApp.viewModelScope,
-        viewModel=this@ViewModelInitApp,
         produitsMainDataBase = produitsMainDataBase,
         clientDataBaseSnapList=clientDataBaseSnapList,
-        modelAppsFather = _modelAppsFather,
+        viewModel=this@ViewModelInitApp,
     )
 
     fun initializeMapView(context: Context): MapView {
@@ -73,7 +58,6 @@ class ViewModelInitApp : ViewModel() {
                         this@ViewModelInitApp
                     )
                 }
-                updateMarkers()
 
                 isLoading = false
             } catch (e: Exception) {

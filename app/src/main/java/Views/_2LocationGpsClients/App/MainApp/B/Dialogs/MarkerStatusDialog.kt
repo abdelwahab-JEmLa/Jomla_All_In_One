@@ -1,36 +1,6 @@
 package Views._2LocationGpsClients.App.MainApp.B.Dialogs
 
-import Views._2LocationGpsClients.App.MainApp.ViewModel.Extension.Utils.updateA_AppSettingsSaverModel
-import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.ClientBonVentModel.ClientInformations.GpsLocation.DernierEtatAAffiche
-import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import kotlinx.coroutines.launch
-import org.osmdroid.views.overlay.Marker
-
+/*
 @Composable
 fun MarkerStatusDialog(
     viewModel: ViewModelInitApp,
@@ -156,3 +126,4 @@ private fun StatusButton(
         }
     }
 }
+           */

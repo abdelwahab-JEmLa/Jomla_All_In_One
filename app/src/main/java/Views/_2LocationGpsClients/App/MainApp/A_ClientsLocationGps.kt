@@ -1,8 +1,6 @@
 package Views._2LocationGpsClients.App.MainApp
 
 import Views._2LocationGpsClients.App.MainApp.B.Dialogs.MapControls
-import Views._2LocationGpsClients.App.MainApp.B.Dialogs.MarkerStatusDialog
-import Z_MasterOfApps.Kotlin.Model.Extension.clientsDisponible
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.content.Context
 import android.widget.LinearLayout
@@ -45,12 +43,6 @@ fun A_ClientsLocationGps(
     val context = LocalContext.current
     val currentZoom by remember { mutableDoubleStateOf(18.2) }
     val mapView = remember { viewModel.initializeMapView(context) }
-
-    val clientlocationGpsMark =
-        viewModel.clientDataBaseSnapList.map {
-            it.gpsLocation.locationGpsMark
-        }
-
     var selectedMarker by remember { mutableStateOf<Marker?>(null) }
     var showMarkerDialog by remember { mutableStateOf(false) }
     var showMarkerDetails by remember { mutableStateOf(true) }
@@ -113,11 +105,12 @@ fun A_ClientsLocationGps(
         }
     }
 
+    val clientDataBaseSnapList = viewModel.clientDataBaseSnapList
     // In A_ClientsLocationGps.kt
-    LaunchedEffect(clientlocationGpsMark) {
+    LaunchedEffect(clientDataBaseSnapList) {
         mapView.overlays.clear()
 
-        viewModel._modelAppsFather.clientsDisponible.forEach { client ->
+        clientDataBaseSnapList.forEach { client ->
             // Null check for geoPoint before processing
             client.gpsLocation.geoPoint?.let {
                 client.gpsLocation.locationGpsMark?.let { existingMarker ->
@@ -185,7 +178,8 @@ fun A_ClientsLocationGps(
         }
 
         if (showMarkerDetails) {
-            clientlocationGpsMark.forEach { it?.showInfoWindow() }
+            clientDataBaseSnapList.forEach { it.gpsLocation
+                .locationGpsMark?.showInfoWindow() }
         }
 
         mapView.invalidate()
@@ -208,16 +202,7 @@ fun A_ClientsLocationGps(
             MapControls(
                 viewModelInitApp = viewModel,
                 mapView = mapView,
-                markers = clientlocationGpsMark,
                 showMarkerDetails = showMarkerDetails,
-                onShowMarkerDetailsChange = {
-                    showMarkerDetails = it
-                    clientlocationGpsMark.forEach { marker ->
-                        if (showMarkerDetails) marker.showInfoWindow()
-                        else marker.closeInfoWindow()
-                    }
-                    mapView.invalidate()
-                },
                 onMarkerSelected = {
                     selectedMarker = it
                     showMarkerDialog = true
@@ -225,11 +210,11 @@ fun A_ClientsLocationGps(
             )
         }
         if (showMarkerDialog && selectedMarker != null) {
-            MarkerStatusDialog(
+           /* MarkerStatusDialog(
                 viewModel = viewModel,
                 selectedMarker = selectedMarker,
                 onDismiss = { showMarkerDialog = false }
-            )
+            )   */
         }
     }
 }
