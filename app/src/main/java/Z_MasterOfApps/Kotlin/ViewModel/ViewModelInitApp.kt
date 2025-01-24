@@ -27,6 +27,8 @@ class ViewModelInitApp : ViewModel() {
 
     val modelAppsFather: _ModelAppsFather get() = _modelAppsFather
     val produitsMainDataBase = _modelAppsFather.produitsMainDataBase
+    val clientDataBaseSnapList = _modelAppsFather.clientDataBaseSnapList
+
     val clientsDisponible = _modelAppsFather.clientsDisponible
 
     var isLoading by mutableStateOf(false)
@@ -36,7 +38,7 @@ class ViewModelInitApp : ViewModel() {
         viewModelScope =this@ViewModelInitApp.viewModelScope,
         viewModel=this@ViewModelInitApp,
         produitsMainDataBase = produitsMainDataBase,
-        clientsDisponible=clientsDisponible,
+        clientDataBaseSnapList=clientDataBaseSnapList,
         modelAppsFather = _modelAppsFather,
     )
 

@@ -1,5 +1,7 @@
 package Views._2LocationGpsClients.App.MainApp.B.Dialogs
 
+import Views._2LocationGpsClients.App.MainApp.B.Dialogs.Utils.AlimentclientDataBaseSnapList
+import Views._2LocationGpsClients.App.MainApp.B.Dialogs.Utils.ClearHistoryButton
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.Manifest
 import android.content.Context
@@ -33,7 +35,6 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.example.Packages.Views._2LocationGpsClients.App.MainApp.B.Dialogs.Utils.AddMarkerButton
-import Views._2LocationGpsClients.App.MainApp.B.Dialogs.Utils.ClearHistoryButton
 import com.example.Packages.Views._2LocationGpsClients.App.MainApp.B.Dialogs.Utils.LabelsButton
 import com.example.Packages.Views._2LocationGpsClients.App.MainApp.B.Dialogs.Utils.LocationTrackingButton
 import com.example.Packages.Views._2LocationGpsClients.App.MainApp.B.Dialogs.Utils.MenuButton
@@ -93,6 +94,10 @@ fun MapControls(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 if (showMenu) {
+                    AlimentclientDataBaseSnapList(
+                        showLabels = showLabels,
+                        viewModelInitApp = viewModelInitApp
+                    )
                     ClearHistoryButton(
                         showLabels = showLabels,
                         viewModelInitApp = viewModelInitApp

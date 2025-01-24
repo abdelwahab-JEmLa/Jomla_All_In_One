@@ -38,12 +38,13 @@ object FirebaseOfflineHandler {
 
     suspend fun loadData(
         ref: DatabaseReference,
-        viewModel: ViewModelInitApp? = null
-    ): DataSnapshot? {
+        viewModel: ViewModelInitApp? = null,
+        refClientsDataBase: DatabaseReference
+    ): Pair<DataSnapshot?, DataSnapshot?> {
         try {
             if (!isInitialized) {
                 Log.e("Firebase", "Firebase not initialized. Call initializeFirebase first.")
-                return null
+                return Pair(null, null)
             }
 
             ref.keepSynced(true)
@@ -66,24 +67,26 @@ object FirebaseOfflineHandler {
                     Log.i("Firebase", "Mode offline")
                     FirebaseDatabase.getInstance().goOffline()
                     val data = ref.get().await()
+                    val data2 = refClientsDataBase.get().await()
                     FirebaseDatabase.getInstance().goOnline()
-                    data
+                    Pair(data, data2)
                 }
                 true -> {
                     Log.i("Firebase", "Mode online")
                     val data = ref.get().await()
+                    val data2 = refClientsDataBase.get().await()
 
                     // Setup real-time listeners for all products
                     if (viewModel != null) {
                         setupProductListeners(viewModel)
                     }
 
-                    data
+                    Pair(data, data2)
                 }
             }
         } catch (e: Exception) {
             Log.e("Firebase", "Erreur chargement", e)
-            return null
+            return Pair(null, null)
         }
     }
 

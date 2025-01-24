@@ -17,6 +17,7 @@ import com.google.firebase.database.database
 import com.google.firebase.storage.storage
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.Marker
 import java.util.Objects
 
@@ -26,6 +27,10 @@ open class _ModelAppsFather(
     @get:Exclude
     var produitsMainDataBase: SnapshotStateList<ProduitModel> =
         initial_Produits_Main_DataBase.toMutableStateList()
+
+    @get:Exclude
+    var clientDataBaseSnapList: SnapshotStateList<ClientsDataBase> =
+        emptyList<ClientsDataBase>().toMutableStateList()
 
     @IgnoreExtraProperties
     class ProduitModel(
@@ -214,6 +219,7 @@ open class _ModelAppsFather(
                 @IgnoreExtraProperties
                 class GpsLocation {
                     @get:Exclude
+                    var geoPoint: GeoPoint? by mutableStateOf(null)
                     var latitude by mutableStateOf(0.0)
                     var longitude by mutableStateOf(0.0)
                     var title by mutableStateOf("")
