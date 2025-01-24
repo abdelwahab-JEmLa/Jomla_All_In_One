@@ -16,7 +16,6 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -46,7 +45,11 @@ fun A_ClientsLocationGps(
     val context = LocalContext.current
     val currentZoom by remember { mutableDoubleStateOf(18.2) }
     val mapView = remember { viewModel.initializeMapView(context) }
-    val markers = remember { mutableStateListOf<Marker>() }
+
+    val clientlocationGpsMark =
+        viewModel.clientDataBaseSnapList.map {
+            it.gpsLocation.locationGpsMark
+        }
 
     var selectedMarker by remember { mutableStateOf<Marker?>(null) }
     var showMarkerDialog by remember { mutableStateOf(false) }
@@ -111,13 +114,12 @@ fun A_ClientsLocationGps(
     }
 
     // In A_ClientsLocationGps.kt
-    LaunchedEffect(viewModel._modelAppsFather.clientsDisponible) {
-        markers.clear()
+    LaunchedEffect(clientlocationGpsMark) {
         mapView.overlays.clear()
 
         viewModel._modelAppsFather.clientsDisponible.forEach { client ->
             // Null check for geoPoint before processing
-            client.gpsLocation.geoPoint?.let { geoPoint ->
+            client.gpsLocation.geoPoint?.let {
                 client.gpsLocation.locationGpsMark?.let { existingMarker ->
                     existingMarker.apply {
                         id = client.id.toString()
@@ -149,7 +151,6 @@ fun A_ClientsLocationGps(
                         }
                         client.gpsLocation.locationGpsMark = this
                     }
-                    markers.add(existingMarker)
                     mapView.overlays.add(existingMarker)
                 } ?: run {
                     // Création d'un nouveau marqueur si aucun n'existe
@@ -177,7 +178,6 @@ fun A_ClientsLocationGps(
                         icon = createCustomMarkerDrawable(context)
 
                         client.gpsLocation.locationGpsMark = this
-                        markers.add(this)
                         mapView.overlays.add(this)
                     }
                 }
@@ -185,11 +185,12 @@ fun A_ClientsLocationGps(
         }
 
         if (showMarkerDetails) {
-            markers.forEach { it.showInfoWindow() }
+            clientlocationGpsMark.forEach { it?.showInfoWindow() }
         }
 
         mapView.invalidate()
     }
+
     Box(modifier = modifier.fillMaxSize()) {
         AndroidView(
             modifier = Modifier.fillMaxSize(),
@@ -207,11 +208,11 @@ fun A_ClientsLocationGps(
             MapControls(
                 viewModelInitApp = viewModel,
                 mapView = mapView,
-                markers = markers,
+                markers = clientlocationGpsMark,
                 showMarkerDetails = showMarkerDetails,
                 onShowMarkerDetailsChange = {
                     showMarkerDetails = it
-                    markers.forEach { marker ->
+                    clientlocationGpsMark.forEach { marker ->
                         if (showMarkerDetails) marker.showInfoWindow()
                         else marker.closeInfoWindow()
                     }

@@ -18,10 +18,11 @@ import org.osmdroid.views.overlay.Marker
 class ViewModelExtensionMapsHandler(
     val viewModelScope: CoroutineScope,
     val produitsMainDataBase: MutableList<ProduitModel>,
-    var clientDataBaseSnapList: SnapshotStateList<ClientsDataBase>,
     val viewModel: ViewModelInitApp,
     val modelAppsFather: _ModelAppsFather,
 ) {
+    val clientsMarkers= viewModel.clientsMarkers
+
     /*
     fun alimentclientDBDepuitCalcule (): Unit {
         viewModel.clientsDisponible.forEach {

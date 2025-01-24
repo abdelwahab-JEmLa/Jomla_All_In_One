@@ -1,7 +1,6 @@
 package Z_MasterOfApps.Kotlin.ViewModel
 
 import Views._2LocationGpsClients.App.MainApp.ViewModel.Extension.ViewModelExtensionMapsHandler
-import Z_MasterOfApps.Kotlin.Model.Extension.clientsDisponible
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.ParamatersAppsModel
 import Z_MasterOfApps.Z_AppsFather.Kotlin._3.Init.A_LoadFireBase.LoadFromFirebaseProduits
@@ -11,12 +10,15 @@ import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.Marker
 
 @SuppressLint("SuspiciousIndentation")
 class ViewModelInitApp : ViewModel() {
@@ -24,12 +26,22 @@ class ViewModelInitApp : ViewModel() {
     var _modelAppsFather by mutableStateOf(_ModelAppsFather())
     var mapViewVM by mutableStateOf<MapView?>(null)
         private set
-
+   
     val modelAppsFather: _ModelAppsFather get() = _modelAppsFather
     val produitsMainDataBase = _modelAppsFather.produitsMainDataBase
     val clientDataBaseSnapList = _modelAppsFather.clientDataBaseSnapList
 
-    val clientsDisponible = _modelAppsFather.clientsDisponible
+    var clientsMarkers: SnapshotStateList<Marker> = mutableStateListOf()
+
+    // Updated updateMarkers function
+    fun updateMarkers() {
+        clientsMarkers.clear() // Clear existing markers
+        clientDataBaseSnapList.forEach { client ->
+            client.gpsLocation.locationGpsMark?.let { marker ->
+                clientsMarkers.add(marker)
+            }
+        }
+    }
 
     var isLoading by mutableStateOf(false)
     var loadingProgress by mutableFloatStateOf(0f)
@@ -61,6 +73,7 @@ class ViewModelInitApp : ViewModel() {
                         this@ViewModelInitApp
                     )
                 }
+                updateMarkers()
 
                 isLoading = false
             } catch (e: Exception) {
