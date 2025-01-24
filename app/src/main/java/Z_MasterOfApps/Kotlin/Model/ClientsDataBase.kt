@@ -8,7 +8,6 @@ import com.google.firebase.Firebase
 import com.google.firebase.database.Exclude
 import com.google.firebase.database.IgnoreExtraProperties
 import com.google.firebase.database.database
-import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.Marker
 import java.util.Objects
 
@@ -30,7 +29,6 @@ class ClientsDataBase(
     @IgnoreExtraProperties
     class GpsLocation {
         @get:Exclude
-        var geoPoint: GeoPoint? by mutableStateOf(null)
         var latitude by mutableStateOf(0.0)
         var longitude by mutableStateOf(0.0)
         var title by mutableStateOf("")

@@ -5,7 +5,6 @@ import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import kotlinx.coroutines.CoroutineScope
-import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 
 class ViewModelExtensionMapsHandler(
@@ -37,7 +36,6 @@ class ViewModelExtensionMapsHandler(
                     longitude = center.longitude
                     title = newnom
                     snippet = "Client temporaire"
-                    geoPoint = center as GeoPoint?
                 }
             }
 
