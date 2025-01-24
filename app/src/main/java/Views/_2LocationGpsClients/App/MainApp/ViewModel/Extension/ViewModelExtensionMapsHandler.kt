@@ -14,13 +14,16 @@ class ViewModelExtensionMapsHandler(
     val clientDataBaseSnapList: SnapshotStateList<ClientsDataBase>,
     val viewModel: ViewModelInitApp,
 ) {
-    //
     fun onClickAddMarkerButton(
         mapView: MapView,
     ) {
         val center = mapView.mapCenter
-        val newID = clientDataBaseSnapList
-            .maxOf { it.id } + 1
+        // Handle empty list case for newID
+        val newID = if (clientDataBaseSnapList.isEmpty()) {
+            1L // Start with 1 if the list is empty
+        } else {
+            clientDataBaseSnapList.maxOf { it.id } + 1
+        }
         val newnom = "Nouveau client #$newID"
 
         val newClient =
@@ -34,7 +37,7 @@ class ViewModelExtensionMapsHandler(
                     longitude = center.longitude
                     title = newnom
                     snippet = "Client temporaire"
-                    geoPoint= center as GeoPoint?
+                    geoPoint = center as GeoPoint?
                 }
             }
 
@@ -43,7 +46,6 @@ class ViewModelExtensionMapsHandler(
         ClientsDataBase.refClientsDataBase
             .child(newClient.id.toString())
             .setValue(newClient)
-
     }
       /*
     /*
