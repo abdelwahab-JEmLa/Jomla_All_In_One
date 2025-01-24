@@ -1,12 +1,18 @@
 package Z_MasterOfApps.Kotlin.Model
 
+import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.produitsFireBaseRef
+import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.viewModelScope
 import com.google.firebase.Firebase
 import com.google.firebase.database.IgnoreExtraProperties
 import com.google.firebase.database.database
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import java.util.Objects
 
 class ClientsDataBase(
@@ -56,5 +62,27 @@ class ClientsDataBase(
         val refClientsDataBase = Firebase.database
             .getReference("0_UiState_3_Host_Package_3_Prototype11Dec")
             .child("ClientsDataBase")
+
+        fun updateClientsDataBase(
+            client :ClientsDataBase,
+            viewModelProduits: ViewModelInitApp
+        ) {
+            viewModelProduits.viewModelScope.launch {
+                try {
+                    // Update _produitsAvecBonsGrossist
+                    val index =
+                        viewModelProduits._modelAppsFather.clientDataBaseSnapList.indexOfFirst { it.id == client.id }
+                    if (index != -1) {
+                        // Direct update of the SnapshotStateList
+                        viewModelProduits._modelAppsFather.clientDataBaseSnapList[index] = client
+                    }
+
+                    refClientsDataBase.child(client.id.toString()).setValue(client).await()
+
+                } catch (e: Exception) {
+                }
+            }
+        }
+    }
     }
 }

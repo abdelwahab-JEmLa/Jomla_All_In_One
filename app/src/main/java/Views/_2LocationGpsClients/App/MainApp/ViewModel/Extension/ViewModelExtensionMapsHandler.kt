@@ -1,12 +1,14 @@
 package Views._2LocationGpsClients.App.MainApp.ViewModel.Extension
 
 import Z_MasterOfApps.Kotlin.Model.ClientsDataBase
+import Z_MasterOfApps.Kotlin.Model.ClientsDataBase.Companion.updateClientsDataBase
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.util.Log
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import kotlinx.coroutines.CoroutineScope
 import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.Marker
 
 class ViewModelExtensionMapsHandler(
     val viewModelScope: CoroutineScope,
@@ -48,6 +50,17 @@ class ViewModelExtensionMapsHandler(
             .child(newClient.id.toString())
             .setValue(newClient)
     }
+    fun updateStatueClient(
+        selectedMarker: Marker?,
+        statueVente: ClientsDataBase.GpsLocation.DernierEtatAAffiche
+    ) {
+        clientDataBaseSnapList.toMutableList().forEach { client ->
+            if (client.id == selectedMarker?.id?.toLong()) {
+                client.gpsLocation.actuelleEtat = statueVente
+                updateClientsDataBase(client,viewModel)
+            }
+        }
+    }
       /*
     /*
     fun alimentclientDBDepuitCalcule (): Unit {
@@ -88,19 +101,10 @@ class ViewModelExtensionMapsHandler(
             }
         }
         }
+        */
 
-    fun updateStatueClient(
-        selectedMarker: Marker?,
-        statueVente: ClientInformations.GpsLocation.DernierEtatAAffiche
-    ) {
-        clientsDisponible.toMutableList().forEach { client ->
-            if (client.gpsLocation.locationGpsMark?.id == selectedMarker?.id) {
-                client.gpsLocation.actuelleEtat = statueVente
-                client.updateProduitsClientInfoParThis()
-            }
-        }
-    }
-       */
+
+
 
 }
 

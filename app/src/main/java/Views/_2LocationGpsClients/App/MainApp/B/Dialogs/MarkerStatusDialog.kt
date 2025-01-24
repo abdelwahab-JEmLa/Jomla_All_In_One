@@ -1,6 +1,36 @@
 package Views._2LocationGpsClients.App.MainApp.B.Dialogs
 
-/*
+import Views._2LocationGpsClients.App.MainApp.ViewModel.Extension.Utils.updateA_AppSettingsSaverModel
+import Z_MasterOfApps.Kotlin.Model.ClientsDataBase
+import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import kotlinx.coroutines.launch
+import org.osmdroid.views.overlay.Marker
+
 @Composable
 fun MarkerStatusDialog(
     viewModel: ViewModelInitApp,
@@ -36,7 +66,7 @@ fun MarkerStatusDialog(
                         coroutineScope.launch {
                             viewModel.mapsHandler.updateStatueClient(
                                 selectedMarker,
-                                DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT
+                                ClientsDataBase.GpsLocation.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT
                             )
                             selectedMarker.updateA_AppSettingsSaverModel()
                             onDismiss()
@@ -50,7 +80,7 @@ fun MarkerStatusDialog(
                         coroutineScope.launch {
                             viewModel.mapsHandler.updateStatueClient(
                                 selectedMarker,
-                                DernierEtatAAffiche.CLIENT_ABSENT
+                                ClientsDataBase.GpsLocation.DernierEtatAAffiche.CLIENT_ABSENT
                             )
                             onDismiss()
                         }
@@ -66,7 +96,7 @@ fun MarkerStatusDialog(
                         coroutineScope.launch {
                             viewModel.mapsHandler.updateStatueClient(
                                 selectedMarker,
-                                DernierEtatAAffiche.AVEC_MARCHANDISE
+                                ClientsDataBase.GpsLocation.DernierEtatAAffiche.AVEC_MARCHANDISE
                             )
                             onDismiss()
                         }
@@ -82,7 +112,7 @@ fun MarkerStatusDialog(
                         coroutineScope.launch {
                             viewModel.mapsHandler.updateStatueClient(
                                 selectedMarker,
-                                DernierEtatAAffiche.FERME
+                                ClientsDataBase.GpsLocation.DernierEtatAAffiche.FERME
                             )
                             onDismiss()
                         }
@@ -126,4 +156,3 @@ private fun StatusButton(
         }
     }
 }
-           */

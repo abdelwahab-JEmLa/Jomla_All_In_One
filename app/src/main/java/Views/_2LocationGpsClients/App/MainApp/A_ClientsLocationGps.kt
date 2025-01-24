@@ -1,9 +1,10 @@
 package Views._2LocationGpsClients.App.MainApp
 
 import Views._2LocationGpsClients.App.MainApp.B.Dialogs.MapControls
+import Views._2LocationGpsClients.App.MainApp.B.Dialogs.MarkerStatusDialog
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.content.Context
-import android.util.Log
+import android.widget.LinearLayout
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.Packages.Views._2LocationGpsClients.App.MainApp.Utils.DEFAULT_LATITUDE
 import com.example.Packages.Views._2LocationGpsClients.App.MainApp.Utils.DEFAULT_LONGITUDE
@@ -90,7 +92,6 @@ fun A_ClientsLocationGps(
     LaunchedEffect(clientDataBaseSnapList.size) {
 
         clientDataBaseSnapList.forEach { client ->
-            Log.d("ClientDebug", "Client ${client.id} - Lat: ${client.gpsLocation.latitude}, Lon: ${client.gpsLocation.longitude}")
             val marker = Marker(mapView).apply {
                 id = client.id.toString()
                 position = GeoPoint(
@@ -103,6 +104,15 @@ fun A_ClientsLocationGps(
                 setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                 infoWindow = MarkerInfoWindow(R.layout.marker_info_window, mapView)
 
+
+                val container =
+                    infoWindow.view.findViewById<LinearLayout>(R.id.info_window_container)
+                        ?: return@LaunchedEffect
+                val backgroundColor = client.gpsLocation.actuelleEtat.let { statue ->
+                    statue?.let { ContextCompat.getColor(context, it.color) }
+                } ?: ContextCompat.getColor(context, android.R.color.white)
+                container.setBackgroundColor(backgroundColor)
+
                 // Set click listener
                 setOnMarkerClickListener { clickedMarker, _ ->
                     selectedMarker = clickedMarker
@@ -114,7 +124,6 @@ fun A_ClientsLocationGps(
             mapView.overlays.add(marker)
             marker.showInfoWindow()
         }
-
     }
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -142,11 +151,11 @@ fun A_ClientsLocationGps(
             )
         }
         if (showMarkerDialog && selectedMarker != null) {
-            /* MarkerStatusDialog(
+            MarkerStatusDialog(
                  viewModel = viewModel,
                  selectedMarker = selectedMarker,
                  onDismiss = { showMarkerDialog = false }
-             )   */
+             )
         }
     }
 }
