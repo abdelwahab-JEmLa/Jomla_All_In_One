@@ -3,7 +3,6 @@ package Views._2LocationGpsClients.App.MainApp
 import Views._2LocationGpsClients.App.MainApp.B.Dialogs.MapControls
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.content.Context
-import android.widget.LinearLayout
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,6 +31,7 @@ import com.example.clientjetpack.R
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow
 
@@ -42,7 +42,7 @@ fun A_ClientsLocationGps(
 ) {
     val context = LocalContext.current
     val currentZoom by remember { mutableDoubleStateOf(18.2) }
-    val mapView = remember { viewModel.initializeMapView(context) }
+    var mapView =remember { MapView(context) }
     var selectedMarker by remember { mutableStateOf<Marker?>(null) }
     var showMarkerDialog by remember { mutableStateOf(false) }
     var showMarkerDetails by remember { mutableStateOf(true) }
@@ -105,86 +105,37 @@ fun A_ClientsLocationGps(
         }
     }
 
-    val clientDataBaseSnapList = viewModel.clientDataBaseSnapList
-    // In A_ClientsLocationGps.kt
-    LaunchedEffect(clientDataBaseSnapList.size) { // Track size changes
-
-        mapView.overlays.clear()
+    val clientDataBaseSnapList = viewModel.clientDataBaseSnapList   //-->
+    LaunchedEffect(clientDataBaseSnapList.size) {
+        mapView.overlays.clear() // Clear existing overlays
 
         clientDataBaseSnapList.forEach { client ->
-            client.gpsLocation.locationGpsMark?.let { existingMarker ->
-                existingMarker.apply {
-                    id = client.id.toString()
-                    position = GeoPoint(
-                        client.gpsLocation.latitude,
-                        client.gpsLocation.longitude
-                    )
-                    title = client.nom
-                    snippet = if (client.statueDeBase.cUnClientTemporaire)
-                        "Client temporaire" else "Client permanent"
+            // Create a new marker for each client
+            val marker = Marker(mapView).apply {
+                id = client.id.toString()
+                position = GeoPoint(
+                    client.gpsLocation.latitude,
+                    client.gpsLocation.longitude
+                )
+                title = client.nom
+                snippet = if (client.statueDeBase.cUnClientTemporaire)
+                    "Client temporaire" else "Client permanent"
+                setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                icon = createCustomMarkerDrawable(context)
+                infoWindow = MarkerInfoWindow(R.layout.marker_info_window, mapView)
 
-                    setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                    val actuelleEtat = client.gpsLocation.actuelleEtat
-
-                    icon = createCustomMarkerDrawable(context)
-                    infoWindow = MarkerInfoWindow(R.layout.marker_info_window, mapView)
-
-                    val container =
-                        infoWindow.view.findViewById<LinearLayout>(R.id.info_window_container)
-                            ?: return@LaunchedEffect
-                    val backgroundColor = actuelleEtat.let { statue ->
-                        statue?.let { ContextCompat.getColor(context, it.color) }
-                    } ?: ContextCompat.getColor(context, android.R.color.white)
-                    container.setBackgroundColor(backgroundColor)
-
-                    setOnMarkerClickListener { marker, _ ->
-                        selectedMarker = marker
-                        showMarkerDialog = true
-                        if (showMarkerDetails) marker.showInfoWindow()
-                        true
-                    }
-                    client.gpsLocation.locationGpsMark = this
-                }
-                mapView.overlays.add(existingMarker)
-            } ?: run {
-                // Création d'un nouveau marqueur si aucun n'existe
-                Marker(mapView).apply {
-
-                    id = client.id.toString()
-                    position = GeoPoint(
-                        client.gpsLocation.latitude,
-                        client.gpsLocation.longitude
-                    )
-                    title = client.nom
-                    snippet = if (client.statueDeBase.cUnClientTemporaire)
-                        "Client temporaire" else "Client permanent"
-                    setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                    infoWindow = MarkerInfoWindow(R.layout.marker_info_window, mapView)
-
-                    // Même click listener pour les nouveaux marqueurs
-                    setOnMarkerClickListener { marker, _ ->
-                        selectedMarker = marker
-                        showMarkerDialog = true
-                        if (showMarkerDetails) marker.showInfoWindow()
-                        true
-                    }
-
-                    icon = createCustomMarkerDrawable(context)
-
-                    client.gpsLocation.locationGpsMark = this
-                    mapView.overlays.add(this)
+                // Set click listener
+                setOnMarkerClickListener { clickedMarker, _ ->
+                    selectedMarker = clickedMarker
+                    showMarkerDialog = true
+                    if (showMarkerDetails) clickedMarker.showInfoWindow()
+                    true
                 }
             }
+            mapView.overlays.add(marker) // Add the new marker to the map
         }
 
-        if (showMarkerDetails) {
-            clientDataBaseSnapList.forEach {
-                it.gpsLocation
-                    .locationGpsMark?.showInfoWindow()
-            }
-        }
 
-        mapView.invalidate()
     }
 
     Box(modifier = modifier.fillMaxSize()) {
