@@ -5,10 +5,8 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.google.firebase.Firebase
-import com.google.firebase.database.Exclude
 import com.google.firebase.database.IgnoreExtraProperties
 import com.google.firebase.database.database
-import org.osmdroid.views.overlay.Marker
 import java.util.Objects
 
 class ClientsDataBase(
@@ -28,14 +26,12 @@ class ClientsDataBase(
     var gpsLocation by mutableStateOf(GpsLocation())
     @IgnoreExtraProperties
     class GpsLocation {
-        @get:Exclude
         var latitude by mutableStateOf(0.0)
         var longitude by mutableStateOf(0.0)
         var title by mutableStateOf("")
         var snippet by mutableStateOf("")
 
         var actuelleEtat: DernierEtatAAffiche? by mutableStateOf(null)
-
         enum class DernierEtatAAffiche(val color: Int, val nomArabe: String) {
             Cible(android.R.color.holo_red_light, "Cible"),
             ON_MODE_COMMEND_ACTUELLEMENT(android.R.color.holo_green_light, "نشط / متصل"),
@@ -43,8 +39,6 @@ class ClientsDataBase(
             AVEC_MARCHANDISE(android.R.color.holo_blue_light, "عندو سلعة"),
             FERME(android.R.color.darker_gray, "مغلق")
         }
-
-        var locationGpsMark: Marker? by mutableStateOf(null)
     }
 
     override fun equals(other: Any?): Boolean {

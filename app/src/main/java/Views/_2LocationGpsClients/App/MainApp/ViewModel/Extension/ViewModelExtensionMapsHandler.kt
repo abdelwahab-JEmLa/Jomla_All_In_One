@@ -3,6 +3,7 @@ package Views._2LocationGpsClients.App.MainApp.ViewModel.Extension
 import Z_MasterOfApps.Kotlin.Model.ClientsDataBase
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
+import android.util.Log
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import kotlinx.coroutines.CoroutineScope
 import org.osmdroid.views.MapView
@@ -17,7 +18,9 @@ class ViewModelExtensionMapsHandler(
         mapView: MapView,
     ) {
         val center = mapView.mapCenter
-        // Handle empty list case for newID
+        Log.d("MapDebug", "Map Center - Lat: ${center.latitude}, Lon: ${center.longitude}")
+        require(center.latitude != 0.0) { "Invalid latitude value" }
+
         val newID = if (clientDataBaseSnapList.isEmpty()) {
             1L // Start with 1 if the list is empty
         } else {

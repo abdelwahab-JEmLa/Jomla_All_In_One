@@ -3,6 +3,7 @@ package Views._2LocationGpsClients.App.MainApp
 import Views._2LocationGpsClients.App.MainApp.B.Dialogs.MapControls
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,7 +23,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.Packages.Views._2LocationGpsClients.App.MainApp.Utils.DEFAULT_LATITUDE
 import com.example.Packages.Views._2LocationGpsClients.App.MainApp.Utils.DEFAULT_LONGITUDE
@@ -45,7 +45,7 @@ fun A_ClientsLocationGps(
     var mapView =remember { MapView(context) }
     var selectedMarker by remember { mutableStateOf<Marker?>(null) }
     var showMarkerDialog by remember { mutableStateOf(false) }
-    var showMarkerDetails by remember { mutableStateOf(true) }
+    val showMarkerDetails by remember { mutableStateOf(true) }
 
     // Initialize map position with current location
     LaunchedEffect(Unit) {
@@ -86,42 +86,21 @@ fun A_ClientsLocationGps(
         }
     }
 
-    // Function to create custom marker drawable
-    fun createCustomMarkerDrawable(context: Context): android.graphics.drawable.Drawable {
-        val layers = arrayOf(
-            android.graphics.drawable.GradientDrawable().apply {
-                shape = android.graphics.drawable.GradientDrawable.OVAL
-                setColor(android.graphics.Color.WHITE)
-                setSize(40, 40)
-            },
-            ContextCompat.getDrawable(context, R.drawable.ic_location_on)?.mutate()?.apply {
-                setBounds(8, 8, 32, 32)
-            }
-        )
-
-        return android.graphics.drawable.LayerDrawable(layers).apply {
-            setLayerInset(0, 0, 0, 0, 0)
-            setLayerInset(1, 4, 4, 4, 4)
-        }
-    }
-
     val clientDataBaseSnapList = viewModel.clientDataBaseSnapList   //-->
     LaunchedEffect(clientDataBaseSnapList.size) {
-        mapView.overlays.clear() // Clear existing overlays
 
         clientDataBaseSnapList.forEach { client ->
-            // Create a new marker for each client
+            Log.d("ClientDebug", "Client ${client.id} - Lat: ${client.gpsLocation.latitude}, Lon: ${client.gpsLocation.longitude}")
             val marker = Marker(mapView).apply {
                 id = client.id.toString()
                 position = GeoPoint(
-                    client.gpsLocation.latitude,
+                    client.gpsLocation.latitude.takeIf { it != 0.0 } ?: DEFAULT_LATITUDE,
                     client.gpsLocation.longitude
                 )
                 title = client.nom
                 snippet = if (client.statueDeBase.cUnClientTemporaire)
                     "Client temporaire" else "Client permanent"
                 setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                icon = createCustomMarkerDrawable(context)
                 infoWindow = MarkerInfoWindow(R.layout.marker_info_window, mapView)
 
                 // Set click listener
@@ -132,9 +111,9 @@ fun A_ClientsLocationGps(
                     true
                 }
             }
-            mapView.overlays.add(marker) // Add the new marker to the map
+            mapView.overlays.add(marker)
+            marker.showInfoWindow()
         }
-
 
     }
 
