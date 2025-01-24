@@ -18,7 +18,6 @@ class ViewModelExtensionMapsHandler(
     fun onClickAddMarkerButton(
         mapView: MapView,
     ) {
-        //dfsfd
         val center = mapView.mapCenter
         val newID = clientDataBaseSnapList
             .maxOf { it.id } + 1
