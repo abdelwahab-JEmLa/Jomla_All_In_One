@@ -14,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
@@ -24,10 +25,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.core.content.ContextCompat
 import kotlinx.coroutines.launch
 import org.osmdroid.views.overlay.Marker
 
@@ -37,6 +41,7 @@ fun MarkerStatusDialog(
     selectedMarker: Marker?,
     onDismiss: () -> Unit
 ) {
+    val context = LocalContext.current // Correction 1: Ajouter le contexte
     val coroutineScope = rememberCoroutineScope()
 
     if (selectedMarker == null) return
@@ -58,10 +63,12 @@ fun MarkerStatusDialog(
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
-                // New Command Mode Button
+
+                // Bouton Mode Commande
                 StatusButton(
                     text = "Mode Commande",
                     icon = Icons.Default.ShoppingCart,
+                    color = Color(ContextCompat.getColor(context, ClientsDataBase.GpsLocation.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT.color)),
                     onClick = {
                         coroutineScope.launch {
                             viewModel.mapsHandler.updateStatueClient(
@@ -73,9 +80,12 @@ fun MarkerStatusDialog(
                         }
                     }
                 )
+
+                // Bouton Client Absent
                 StatusButton(
                     text = "Client Absent",
                     icon = Icons.Default.Person,
+                    color = Color(ContextCompat.getColor(context, ClientsDataBase.GpsLocation.DernierEtatAAffiche.CLIENT_ABSENT.color)),
                     onClick = {
                         coroutineScope.launch {
                             viewModel.mapsHandler.updateStatueClient(
@@ -89,9 +99,11 @@ fun MarkerStatusDialog(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
+                // Bouton Marchandise
                 StatusButton(
                     text = "Avec Marchandise",
                     icon = Icons.Default.ShoppingCart,
+                    color = Color(ContextCompat.getColor(context, ClientsDataBase.GpsLocation.DernierEtatAAffiche.AVEC_MARCHANDISE.color)),
                     onClick = {
                         coroutineScope.launch {
                             viewModel.mapsHandler.updateStatueClient(
@@ -105,9 +117,11 @@ fun MarkerStatusDialog(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
+                // Bouton Fermé
                 StatusButton(
                     text = "Fermé",
                     icon = Icons.Default.Lock,
+                    color = Color(ContextCompat.getColor(context, ClientsDataBase.GpsLocation.DernierEtatAAffiche.FERME.color)),
                     onClick = {
                         coroutineScope.launch {
                             viewModel.mapsHandler.updateStatueClient(
@@ -136,11 +150,16 @@ fun MarkerStatusDialog(
 private fun StatusButton(
     text: String,
     icon: ImageVector,
+    color: Color,
     onClick: () -> Unit
 ) {
     FilledTonalButton(
         onClick = onClick,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        colors = ButtonDefaults.filledTonalButtonColors(
+            containerColor = color.copy(alpha = 0.2f), // Correction 2: Utiliser containerColor
+            contentColor = color
+        )
     ) {
         Row(
             horizontalArrangement = Arrangement.Start,
