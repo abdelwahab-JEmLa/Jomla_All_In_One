@@ -151,11 +151,10 @@ sealed class Screen(
         color = Color(0xFF2196F3)
     )
     data object Fragment1ScreenDataObject : Screen(
-        route = "Fragment1",
+        route = "Fragment1", // ✓ Défini ici
         icon = Icons.Default.Person,
         title = "A_ClientsLocationGps",
         color = Color(0xFFFF5722)
     )
-
 }
 

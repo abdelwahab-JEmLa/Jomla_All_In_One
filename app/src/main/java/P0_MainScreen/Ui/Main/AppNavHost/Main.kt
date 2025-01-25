@@ -1,17 +1,14 @@
 package P0_MainScreen.Ui.Main.AppNavHost
 
-import P0_MainScreen.Ui.Objects.LoadingOverlay
-import P5_DialogeClientsEditer.ClientSelectionDialog
 import P6_AiGroupeForSupplier.GenerativeAiScreen
 import Views.P1._ArticlesStartFacade.FragmentStartupScreen
 import Views.Package_4.SoldCartScreen.SoldCartScreen
-import Views.Z_P3._DisplayProductInfosToSeller.P3DisplayeProductInfosToSeller
+import Views._2LocationGpsClients.App.ScreensApp2
 import Views._2LocationGpsClients.App._2App
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Actions._2.Client_JetPack.Models.ArticlesBasesStatsTable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -21,7 +18,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -60,9 +56,11 @@ fun AppNavHost(
     Box(modifier = modifier.fillMaxSize()) {
         NavHost(
             navController = navController,
-            startDestination = Screen.EditDatabaseWithCreateNewArticles.route,
+            startDestination = if (currentClientId == 0L) ScreensApp2.Fragment1Screen.route
+            else Screen.EditDatabaseWithCreateNewArticles.route,
             modifier = Modifier.fillMaxSize()
         ) {
+            // Écran principal conditionnel
             composable(Screen.EditDatabaseWithCreateNewArticles.route) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     FragmentStartupScreen(
@@ -95,105 +93,47 @@ fun AppNavHost(
                         onClickDonne = onClickDonne,
                         onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi,
                         scrollTiger = scrollTiger, onToggleLockHost = onToggleLockHost,
-                        onToggleLockExpandedPricex = { lockExpandedPrices =!lockExpandedPrices },
+                        onToggleLockExpandedPricex = { lockExpandedPrices = !lockExpandedPrices },
                         currentClient = currentClient,
                     )
 
-                    if (uiState.isLoading) {
-                        LoadingOverlay(
-                            progress = uiState.loadingProgress / 100f,
-                            modifier = Modifier.matchParentSize()
-                        )
+                    // Écran _2App forcé
+                    composable(ScreensApp2.Fragment1Screen.route) {
+                        _2App(viewModelInitApp, currentClientId)
+                    }
+
+                    // Autres écrans désactivés quand clientId = 0
+                    if (currentClientId != 0L) {
+                        composable(Screen.SoldCart.route) {
+                            // Increment navigation count when entering SoldCart
+                            LaunchedEffect(Unit) {
+                                scrollTiger++
+                            }
+
+                            Box(modifier = Modifier.fillMaxSize()) {
+                                SoldCartScreen(
+                                    viewModel = appViewModels.headViewModel,
+                                    clientBuyerNow = currentClient,
+                                    uiState = uiState,
+                                    onConfirmOrder = {
+                                        appViewModels.headViewModel.updateLongAppSetting(
+                                            "clientBuyerNowId",
+                                            0
+                                        )
+                                    }, viewModelInitApp = viewModelInitApp
+                                )
+                            }
+                        }
+                        composable(Screen.BakingScreen.route) {
+                            Box(modifier = Modifier.fillMaxSize()) {
+                                GenerativeAiScreen(
+                                    generativeAiViewModel = appViewModels.generativeAiViewModel,
+                                )
+                            }
+                        }
                     }
                 }
             }
-            composable(Screen.SoldCart.route) {
-                // Increment navigation count when entering SoldCart
-                LaunchedEffect(Unit) {
-                    scrollTiger++
-                }
-
-                Box(modifier = Modifier.fillMaxSize()) {
-                    SoldCartScreen(
-                        viewModel = appViewModels.headViewModel,
-                        clientBuyerNow = currentClient,
-                        uiState = uiState,
-                        onConfirmOrder = {
-                            appViewModels.headViewModel.updateLongAppSetting("clientBuyerNowId", 0)
-                        }, viewModelInitApp = viewModelInitApp
-                    )
-                }
-            }
-            composable(Screen.BakingScreen.route) {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    GenerativeAiScreen(
-                        generativeAiViewModel = appViewModels.generativeAiViewModel,
-                    )
-                }
-            }
-
-            composable(Screen.BakingScreen.route) {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    GenerativeAiScreen(
-                        generativeAiViewModel = appViewModels.generativeAiViewModel,
-                    )
-                }
-            }
-
-            appViewModels.headViewModel._uiState.value
-                .appSettingsSaverModel.find { it.name=="clientBuyerNowId" }
-                ?.valueLong?.let {
-                    _2App(
-                        viewModelInitApp,
-                        it
-                    )
-                }
-        }
-
-        // Overlay dialogs and windows
-        if (showClientSelectionWithoutCondition ||(showClientSelection && currentClientId == 0L)) {
-            ClientSelectionDialog(
-                soldArticle = uiState.soldArticlesModel,
-                viewModel = appViewModels.headViewModel,
-                clients = uiState.clientsModel,
-                onClientSelected = { client ->
-                    appViewModels.headViewModel.updateLongAppSetting("clientBuyerNowId",client.idClientsSu)
-                    if (!showClientSelectionWithoutCondition) {
-                        appViewModels.headViewModel.openWindowsNewSaleWithUpdateCurrent(
-                            relatedArticleBaseStats!!.idArticle.toLong(),
-                            client.idClientsSu,
-                            pendingIndexColor
-                        )
-                        opnerSaleWindows = true
-                    }
-                    showClientSelection = false
-                    showClientSelectionWithoutCondition= false
-                },
-                onDismiss = {
-                    showClientSelection = false
-                    showClientSelectionWithoutCondition= false
-
-                }
-            )
-        }
-
-        if (opnerSaleWindows) {
-            P3DisplayeProductInfosToSeller(
-                modifier = Modifier.padding(horizontal = 3.dp),
-                uiState = uiState,
-                viewModel = appViewModels.headViewModel,
-                onDismiss = {
-                    appViewModels.headViewModel.clearCurrentSale()
-                    opnerSaleWindows=false
-                    appViewModels.headViewModel.sendOrderToClientDisplayer(
-                        WifiUpdateClientDisplayerStats.DISMISS_PRODUCT_INFO.prefix
-                    )
-                },
-                reloadTrigger = reloadTrigger, lockExpandedPrices = lockExpandedPrices,
-                onToggleLockExpandedPricex = { lockExpandedPrices =!lockExpandedPrices },
-                viewModelInitApp = viewModelInitApp,
-                currentClient=currentClient,
-            )
         }
     }
 }

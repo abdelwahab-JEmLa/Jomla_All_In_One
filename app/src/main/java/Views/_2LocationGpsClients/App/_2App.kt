@@ -15,7 +15,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 
-// _2App.kt
+// Dans _2App.kt
+object ScreensApp2 {
+    val Fragment1Screen = Screen.Fragment1ScreenDataObject // Accède déjà à la route via le Screen
+}
 fun NavGraphBuilder._2App(viewModelInitApp: ViewModelInitApp, clientEnCourDeVent: Long = 0) {
     composable(ScreensApp2.Fragment1Screen.route) {
         A_ClientsLocationGps(
@@ -48,8 +51,5 @@ private fun PreviewApp2_F1() {
     )
 }
 
-object ScreensApp2 {
-    val Fragment1Screen = Screen.Fragment1ScreenDataObject
-}
 
 
