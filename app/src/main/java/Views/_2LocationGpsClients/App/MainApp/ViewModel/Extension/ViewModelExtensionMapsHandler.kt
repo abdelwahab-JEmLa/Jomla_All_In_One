@@ -4,7 +4,6 @@ import Z_MasterOfApps.Kotlin.Model.ClientsDataBase
 import Z_MasterOfApps.Kotlin.Model.ClientsDataBase.Companion.updateClientsDataBase
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import android.util.Log
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import kotlinx.coroutines.CoroutineScope
 import org.osmdroid.views.MapView
@@ -20,7 +19,6 @@ class ViewModelExtensionMapsHandler(
         mapView: MapView,
     ) {
         val center = mapView.mapCenter
-        Log.d("MapDebug", "Map Center - Lat: ${center.latitude}, Lon: ${center.longitude}")
         require(center.latitude != 0.0) { "Invalid latitude value" }
 
         val newID = if (clientDataBaseSnapList.isEmpty()) {
@@ -55,9 +53,7 @@ class ViewModelExtensionMapsHandler(
     fun updateStatueClient(
         selectedMarker: Marker?,
         statueVente: ClientsDataBase.GpsLocation.DernierEtatAAffiche
-    ) {      //-->
-    //TODO(1): fait que si statueVente == ON_MODE_COMMEND_ACTUELLEMENT de fait que 
-    //l autre client avec ON_MODE_COMMEND_ACTUELLEMENT soit 
+    ) {
         clientDataBaseSnapList.toMutableList().forEach { client ->
             if (client.id == selectedMarker?.id?.toLong()) {
                 // Now works because gpsLocation is part of the data class

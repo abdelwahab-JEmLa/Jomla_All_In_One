@@ -922,6 +922,7 @@ open class HeadViewModel(
     fun importFromFirebase() {
         viewModelScope.launch {
             try {
+
                 setLoading(true)
                 updateLoadingProgress(10f)
 

@@ -2,6 +2,7 @@ package Views._2LocationGpsClients.App.MainApp
 
 import Views._2LocationGpsClients.App.MainApp.B.Dialogs.MapControls
 import Views._2LocationGpsClients.App.MainApp.B.Dialogs.MarkerStatusDialog
+import Z_MasterOfApps.Kotlin.Model.ClientsDataBase
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.content.Context
 import android.widget.LinearLayout
@@ -41,10 +42,12 @@ import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow
 fun A_ClientsLocationGps(
     modifier: Modifier = Modifier,
     viewModel: ViewModelInitApp = viewModel(),
-) {
+    clientEnCourDeVent: Long = 1,
+
+    ) {
     val context = LocalContext.current
     val currentZoom by remember { mutableDoubleStateOf(18.2) }
-    var mapView =remember { MapView(context) }
+    val mapView =remember { MapView(context) }
     var selectedMarker by remember { mutableStateOf<Marker?>(null) }
     var showMarkerDialog by remember { mutableStateOf(false) }
     val showMarkerDetails by remember { mutableStateOf(true) }
@@ -97,6 +100,11 @@ fun A_ClientsLocationGps(
         mapView.overlays.removeAll(markersToRemove)
 
         clientDataBaseSnapList.forEach { client ->
+            val actuelleEtat =
+                if (client.id==clientEnCourDeVent)
+                    ClientsDataBase.GpsLocation.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT else
+                client.gpsLocation.actuelleEtat
+
             val marker = Marker(mapView).apply {
                 id = client.id.toString()
                 position = GeoPoint(
@@ -111,7 +119,7 @@ fun A_ClientsLocationGps(
 
                 val container = infoWindow.view.findViewById<LinearLayout>(R.id.info_window_container)
                     ?: return@forEach // Skip if container not found
-                val backgroundColor = client.gpsLocation.actuelleEtat?.let { statue ->
+                val backgroundColor = actuelleEtat?.let { statue ->
                     ContextCompat.getColor(context, statue.color)
                 } ?: ContextCompat.getColor(context, android.R.color.white)
                 container.setBackgroundColor(backgroundColor)

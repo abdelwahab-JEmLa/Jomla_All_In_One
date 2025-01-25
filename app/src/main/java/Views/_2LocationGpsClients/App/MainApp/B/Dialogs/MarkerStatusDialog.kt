@@ -1,6 +1,6 @@
 package Views._2LocationGpsClients.App.MainApp.B.Dialogs
 
-import Views._2LocationGpsClients.App.MainApp.ViewModel.Extension.Utils.updateA_AppSettingsSaverModel
+import Views._2LocationGpsClients.App.MainApp.ViewModel.Extension.Utils.updateLongAppSetting
 import Z_MasterOfApps.Kotlin.Model.ClientsDataBase
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Arrangement
@@ -75,7 +75,7 @@ fun MarkerStatusDialog(
                                 selectedMarker,
                                 ClientsDataBase.GpsLocation.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT
                             )
-                            selectedMarker.updateA_AppSettingsSaverModel()
+                            viewModel.mapsHandler.updateLongAppSetting(selectedMarker.id.toLong())
                             onDismiss()
                         }
                     }

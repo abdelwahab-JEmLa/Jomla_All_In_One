@@ -140,7 +140,8 @@ fun AppNavHost(
                 }
             }
 
-            _2App(viewModelInitApp)
+            _2App(viewModelInitApp,appViewModels.headViewModel._uiState.value
+                .appSettingsSaverModel.first().valueLong)
         }
 
         // Overlay dialogs and windows

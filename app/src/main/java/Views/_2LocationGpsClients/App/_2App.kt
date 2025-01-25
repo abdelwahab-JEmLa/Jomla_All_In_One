@@ -1,6 +1,7 @@
 package Views._2LocationGpsClients.App
 
 import P0_MainScreen.Ui.Main.AppNavHost.Screen
+import Views._2LocationGpsClients.App.MainApp.A_ClientsLocationGps
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,13 +14,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import Views._2LocationGpsClients.App.MainApp.A_ClientsLocationGps
 
 // _2App.kt
-fun NavGraphBuilder._2App(viewModelInitApp: ViewModelInitApp) {
+fun NavGraphBuilder._2App(viewModelInitApp: ViewModelInitApp, clientEnCourDeVent: Long = 1) {
     composable(ScreensApp2.Fragment1Screen.route) {
         A_ClientsLocationGps(
-            viewModel = viewModelInitApp
+            viewModel = viewModelInitApp ,
+            clientEnCourDeVent =  clientEnCourDeVent
         )
     }
 }
@@ -41,8 +42,10 @@ private fun PreviewApp2_F1() {
         return
     }
     // Preview version without real ViewModel
-    A_ClientsLocationGps(modifier = Modifier.fillMaxSize()
-    ,viewModelInitApp)
+    A_ClientsLocationGps(
+        modifier = Modifier.fillMaxSize()
+    , viewModelInitApp
+    )
 }
 
 object ScreensApp2 {
