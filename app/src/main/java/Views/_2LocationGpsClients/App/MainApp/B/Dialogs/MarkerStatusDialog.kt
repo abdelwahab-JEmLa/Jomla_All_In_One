@@ -41,7 +41,7 @@ fun MarkerStatusDialog(
     selectedMarker: Marker?,
     onDismiss: () -> Unit
 ) {
-    val context = LocalContext.current // Correction 1: Ajouter le contexte
+    val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
     if (selectedMarker == null) return

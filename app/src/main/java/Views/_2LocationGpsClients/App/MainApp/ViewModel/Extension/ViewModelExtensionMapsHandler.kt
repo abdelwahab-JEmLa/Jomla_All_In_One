@@ -55,7 +55,9 @@ class ViewModelExtensionMapsHandler(
     fun updateStatueClient(
         selectedMarker: Marker?,
         statueVente: ClientsDataBase.GpsLocation.DernierEtatAAffiche
-    ) {
+    ) {      //-->
+    //TODO(1): fait que si statueVente == ON_MODE_COMMEND_ACTUELLEMENT de fait que 
+    //l autre client avec ON_MODE_COMMEND_ACTUELLEMENT soit 
         clientDataBaseSnapList.toMutableList().forEach { client ->
             if (client.id == selectedMarker?.id?.toLong()) {
                 // Now works because gpsLocation is part of the data class
@@ -68,52 +70,6 @@ class ViewModelExtensionMapsHandler(
             }
         }
     }
-
-      /*
-    /*
-    fun alimentclientDBDepuitCalcule (): Unit {
-        viewModel.clientsDisponible.forEach {
-            viewModel._modelAppsFather.clientDataBaseSnapList.add(
-                ClientsDataBase(
-                    id = it.id ,
-                    nom= it.nom
-                ) .apply {
-                    statueDeBase=it.statueDeBase
-                }
-            )
-        }
-
-
-    }      */
-
-    private fun ClientInformations.updateProduitsClientInfoParThis(
-    ) {
-        produitsMainDataBase.find { it.id==0L }?.apply {
-            historiqueBonsVents.forEach {
-                if (it.clientInformations == this) {
-                    it.clientInformations = this
-
-                    updateProduit(this, viewModel)
-                }
-            }
-
-
-            produitsMainDataBase.forEach { produit ->
-                produit.historiqueBonsVents.forEach {
-                    if (it.clientInformations == this) {
-                        it.clientInformations = this
-
-                        updateProduit(produit, viewModel)
-                    }
-                }
-            }
-        }
-        }
-        */
-
-
-
-
 }
 
 

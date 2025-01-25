@@ -39,15 +39,12 @@ import com.example.Packages.Views._2LocationGpsClients.App.MainApp.B.Dialogs.Uti
 import com.example.Packages.Views._2LocationGpsClients.App.MainApp.B.Dialogs.Utils.LocationTrackingButton
 import com.example.Packages.Views._2LocationGpsClients.App.MainApp.B.Dialogs.Utils.MenuButton
 import org.osmdroid.views.MapView
-import org.osmdroid.views.overlay.Marker
 import kotlin.math.roundToInt
 
 @Composable
 fun MapControls(
     mapView: MapView,
     viewModelInitApp: ViewModelInitApp,
-    showMarkerDetails: Boolean,
-    onMarkerSelected: (Marker) -> Unit
 ) {
     val context = LocalContext.current
     var showMenu by remember { mutableStateOf(false) }
@@ -110,23 +107,8 @@ fun MapControls(
                         mapView = mapView,
                         proximiteMeter = proximiteMeter
                     )
-                       /*
-                       NearbyMarkersButton(
-                        showLabels = showLabels,
-                        viewModelInitApp = viewModelInitApp,
-                        markers = markers,
-                        currentLocation = currentLocation,
-                        proximiteMeter = proximiteMeter,
-                        mapView = mapView
-                    )
-                    ShowLocationsInfoBubble(
-                        showLabels = showLabels,
-                        showMarkerDetails = showMarkerDetails,
-                        onShowMarkerDetailsChange = onShowMarkerDetailsChange
-                    )   */
                 }
 
-                // Always visible controls
                 LabelsButton(
                     showLabels = showLabels,
                     onShowLabelsChange = { showLabels = it }

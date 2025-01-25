@@ -143,13 +143,8 @@ fun A_ClientsLocationGps(
 
         if (viewModel._paramatersAppsViewModelModel.fabsVisibility) {
             MapControls(
-                viewModelInitApp = viewModel,
                 mapView = mapView,
-                showMarkerDetails = showMarkerDetails,
-                onMarkerSelected = {
-                    selectedMarker = it
-                    showMarkerDialog = true
-                }
+                viewModelInitApp = viewModel
             )
         }
         if (showMarkerDialog && selectedMarker != null) {
