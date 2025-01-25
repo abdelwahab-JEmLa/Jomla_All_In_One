@@ -140,8 +140,14 @@ fun AppNavHost(
                 }
             }
 
-            _2App(viewModelInitApp,appViewModels.headViewModel._uiState.value
-                .appSettingsSaverModel.first().valueLong)
+            appViewModels.headViewModel._uiState.value
+                .appSettingsSaverModel.find { it.name=="clientBuyerNowId" }
+                ?.valueLong?.let {
+                    _2App(
+                        viewModelInitApp,
+                        it
+                    )
+                }
         }
 
         // Overlay dialogs and windows
