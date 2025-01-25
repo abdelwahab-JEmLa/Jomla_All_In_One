@@ -67,8 +67,8 @@ fun MainScreen(
         showProductDisplay = productDisplayController.clientWindowsDisplayedProductId != null
         if (productDisplayController.clientWindowsDisplayedProductId == null) {
             // Only navigate back if we're not already on the startup screen
-            if (currentRoute != Screen.EditDatabaseWithCreateNewArticles.route) {
-                navController.navigate(Screen.EditDatabaseWithCreateNewArticles.route) {
+            if (currentRoute != Screen.A_ClientsLocationGps.route) {
+                navController.navigate(Screen.A_ClientsLocationGps.route) {
                     popUpTo(navController.graph.startDestinationId) {
                         inclusive = true
                     }
@@ -186,7 +186,7 @@ fun MainScreen(
                     CircularProgressIndicator(
                         progress = { uiState.loadingProgress / 100f },
                         modifier = Modifier.size(48.dp),
-                        trackColor = ProgressIndicatorDefaults.circularTrackColor,
+                        trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
                         color = MaterialTheme.colorScheme.primary
                     )
                 }

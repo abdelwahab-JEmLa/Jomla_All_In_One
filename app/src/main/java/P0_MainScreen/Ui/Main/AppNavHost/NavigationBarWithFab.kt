@@ -1,6 +1,5 @@
 package P0_MainScreen.Ui.Main.AppNavHost
 
-import Views._2LocationGpsClients.App.ScreensApp2
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -12,7 +11,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CreditScore
 import androidx.compose.material.icons.filled.EditRoad
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.MapsHomeWork
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -108,9 +107,9 @@ fun NavigationBarWithFab(
 // Add this to your project if it's missing
 object NavigationItems {
     fun getItems() = listOf(
+        Screen.A_ClientsLocationGps,
         Screen.EditDatabaseWithCreateNewArticles,
         Screen.SoldCart,
-        ScreensApp2.Fragment1Screen,
         Screen.BakingScreen,
         Screen.ToggleFab
     )
@@ -150,9 +149,10 @@ sealed class Screen(
         title = "Toggle FAB",
         color = Color(0xFF2196F3)
     )
-    data object Fragment1ScreenDataObject : Screen(
-        route = "Fragment1",
-        icon = Icons.Default.Person,
+
+    data object A_ClientsLocationGps : Screen(
+        route = "A_ClientsLocationGps",
+        icon = Icons.Default.MapsHomeWork,
         title = "A_ClientsLocationGps",
         color = Color(0xFFFF5722)
     )

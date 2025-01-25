@@ -6,7 +6,7 @@ import P6_AiGroupeForSupplier.GenerativeAiScreen
 import Views.P1._ArticlesStartFacade.FragmentStartupScreen
 import Views.Package_4.SoldCartScreen.SoldCartScreen
 import Views.Z_P3._DisplayProductInfosToSeller.P3DisplayeProductInfosToSeller
-import Views._2LocationGpsClients.App._2App
+import Views._2LocationGpsClients.App.MainApp.A_ClientsLocationGps
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Actions._2.Client_JetPack.Models.ArticlesBasesStatsTable
 import androidx.compose.foundation.layout.Box
@@ -17,6 +17,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -56,11 +57,14 @@ fun AppNavHost(
     val reloadTrigger by rememberSaveable { mutableIntStateOf(0) }
     var scrollTiger by rememberSaveable { mutableIntStateOf(0) }
     var lockExpandedPrices by rememberSaveable { mutableStateOf(false) }
+    val clientEnCourDeVent by rememberSaveable { mutableLongStateOf(appViewModels.headViewModel._uiState.value
+        .appSettingsSaverModel.find { it.name=="clientBuyerNowId" }
+        ?.valueLong?:0) }
 
     Box(modifier = modifier.fillMaxSize()) {
         NavHost(
             navController = navController,
-            startDestination = Screen.EditDatabaseWithCreateNewArticles.route,
+            startDestination = Screen.A_ClientsLocationGps.route,
             modifier = Modifier.fillMaxSize()
         ) {
             composable(Screen.EditDatabaseWithCreateNewArticles.route) {
@@ -95,7 +99,7 @@ fun AppNavHost(
                         onClickDonne = onClickDonne,
                         onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi,
                         scrollTiger = scrollTiger, onToggleLockHost = onToggleLockHost,
-                        onToggleLockExpandedPricex = { lockExpandedPrices =!lockExpandedPrices },
+                        onToggleLockExpandedPricex = { lockExpandedPrices = !lockExpandedPrices },
                         currentClient = currentClient,
                     )
 
@@ -139,26 +143,27 @@ fun AppNavHost(
                     )
                 }
             }
-                    //-->
-                    //TODO(1): fait que si
-            appViewModels.headViewModel._uiState.value
-                .appSettingsSaverModel.find { it.name=="clientBuyerNowId" }
-                ?.valueLong?.let {
-                    _2App(
-                        viewModelInitApp,
-                        it
-                    )
-                }
+
+            composable(Screen.A_ClientsLocationGps.route) {
+                A_ClientsLocationGps(
+                    viewModel = viewModelInitApp,
+                    clientEnCourDeVent = clientEnCourDeVent
+                )
+            }
+
         }
 
         // Overlay dialogs and windows
-        if (showClientSelectionWithoutCondition ||(showClientSelection && currentClientId == 0L)) {
+        if (showClientSelectionWithoutCondition || (showClientSelection && currentClientId == 0L)) {
             ClientSelectionDialog(
                 soldArticle = uiState.soldArticlesModel,
                 viewModel = appViewModels.headViewModel,
                 clients = uiState.clientsModel,
                 onClientSelected = { client ->
-                    appViewModels.headViewModel.updateLongAppSetting("clientBuyerNowId",client.idClientsSu)
+                    appViewModels.headViewModel.updateLongAppSetting(
+                        "clientBuyerNowId",
+                        client.idClientsSu
+                    )
                     if (!showClientSelectionWithoutCondition) {
                         appViewModels.headViewModel.openWindowsNewSaleWithUpdateCurrent(
                             relatedArticleBaseStats!!.idArticle.toLong(),
@@ -168,11 +173,11 @@ fun AppNavHost(
                         opnerSaleWindows = true
                     }
                     showClientSelection = false
-                    showClientSelectionWithoutCondition= false
+                    showClientSelectionWithoutCondition = false
                 },
                 onDismiss = {
                     showClientSelection = false
-                    showClientSelectionWithoutCondition= false
+                    showClientSelectionWithoutCondition = false
 
                 }
             )
@@ -185,15 +190,15 @@ fun AppNavHost(
                 viewModel = appViewModels.headViewModel,
                 onDismiss = {
                     appViewModels.headViewModel.clearCurrentSale()
-                    opnerSaleWindows=false
+                    opnerSaleWindows = false
                     appViewModels.headViewModel.sendOrderToClientDisplayer(
                         WifiUpdateClientDisplayerStats.DISMISS_PRODUCT_INFO.prefix
                     )
                 },
                 reloadTrigger = reloadTrigger, lockExpandedPrices = lockExpandedPrices,
-                onToggleLockExpandedPricex = { lockExpandedPrices =!lockExpandedPrices },
+                onToggleLockExpandedPricex = { lockExpandedPrices = !lockExpandedPrices },
                 viewModelInitApp = viewModelInitApp,
-                currentClient=currentClient,
+                currentClient = currentClient,
             )
         }
     }
