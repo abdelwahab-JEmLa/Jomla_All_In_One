@@ -142,14 +142,8 @@ fun AppNavHost(
                         clientBuyerNow = currentClient,
                         uiState = uiState,
                         onConfirmOrder = {
-                            appViewModels.headViewModel.updateLongAppSetting("clientBuyerNowId", 0)
-                            navController.navigate(Screen.A_ClientsLocationGps.route) {
-                                // Pop the current fragment off the back stack
-                                popUpTo(Screen.SoldCart.route) {
-                                    inclusive = true
-                                }
-                                launchSingleTop = true
-                            }
+                            appViewModels.headViewModel
+                                .updateLongAppSetting("clientBuyerNowId", 0)
                         }, viewModelInitApp = viewModelInitApp
                     )
                 }
