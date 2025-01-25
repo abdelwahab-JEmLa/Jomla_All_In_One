@@ -3,6 +3,7 @@ package P0_MainScreen.Ui.Objects
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -24,7 +26,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.clientjetpack.AppViewModels
@@ -40,7 +41,6 @@ fun ConnexionCard(
 ) {
     var isCollapsed by remember { mutableStateOf(false) }
     var messageText by remember { mutableStateOf("") }
-    val context = LocalContext.current
     val isHostEnabled = Build.MODEL.lowercase().contains("note")
 
     Card(
@@ -49,8 +49,7 @@ fun ConnexionCard(
             .then(
                 if (isCollapsed) {
                     Modifier
-                        .height(15.dp)     //-->
-                        //TODO(1): fait que si ca d affiiche un lineieri progress bar qui rest se rempli et et rvien au zero
+                        .height(40.dp)
                         .padding(0.dp)
                 } else {
                     Modifier
@@ -58,7 +57,7 @@ fun ConnexionCard(
                         .padding(16.dp)
                 }
             )
-            .animateContentSize()   
+            .animateContentSize(animationSpec = tween(durationMillis = 300))
     ) {
         if (!isCollapsed) {
             Column(
@@ -111,6 +110,13 @@ fun ConnexionCard(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                LinearProgressIndicator(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(4.dp),
+                    color = MaterialTheme.colorScheme.primary,
+                    trackColor = MaterialTheme.colorScheme.surfaceVariant
+                )
                 Text(
                     text = "Connexion",
                     style = MaterialTheme.typography.bodySmall,

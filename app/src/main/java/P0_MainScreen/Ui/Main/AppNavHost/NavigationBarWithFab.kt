@@ -110,7 +110,6 @@ object NavigationItems {
         Screen.A_ClientsLocationGps,
         Screen.EditDatabaseWithCreateNewArticles,
         Screen.SoldCart,
-        Screen.BakingScreen,
         Screen.ToggleFab
     )
 }
