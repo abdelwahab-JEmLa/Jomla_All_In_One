@@ -73,8 +73,15 @@ fun AppNavHost(
             composable(Screen.A_ClientsLocationGps.route) {
                 A_ClientsLocationGps(
                     viewModel = viewModelInitApp,
-                    clientEnCourDeVent = clientEnCourDeVent, onUpdateLongAppSetting = {
-                        navController.navigate(Screen.EditDatabaseWithCreateNewArticles.route)
+                    clientEnCourDeVent = clientEnCourDeVent,
+                    onUpdateLongAppSetting = {
+                        navController.navigate(Screen.EditDatabaseWithCreateNewArticles.route) {
+                            // Pop the current fragment off the back stack
+                            popUpTo(Screen.A_ClientsLocationGps.route) {
+                                inclusive = true
+                            }
+                            launchSingleTop = true
+                        }
                     }
                 )
             }
@@ -136,6 +143,13 @@ fun AppNavHost(
                         uiState = uiState,
                         onConfirmOrder = {
                             appViewModels.headViewModel.updateLongAppSetting("clientBuyerNowId", 0)
+                            navController.navigate(Screen.A_ClientsLocationGps.route) {
+                                // Pop the current fragment off the back stack
+                                popUpTo(Screen.SoldCart.route) {
+                                    inclusive = true
+                                }
+                                launchSingleTop = true
+                            }
                         }, viewModelInitApp = viewModelInitApp
                     )
                 }

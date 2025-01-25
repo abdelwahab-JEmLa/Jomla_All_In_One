@@ -135,12 +135,6 @@ sealed class Screen(
         color = Color(0xFF4CAF50)
     )
 
-    data object BakingScreen : Screen(
-        route = "baking_Screen",
-        icon = Icons.Default.CreditScore,
-        title = "baking Screen",
-        color = Color(0xFFE91E63)
-    )
 
     data object ToggleFab : Screen(
         route = "toggle_fab",
