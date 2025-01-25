@@ -71,10 +71,6 @@ fun MarkerStatusDialog(
                     color = Color(ContextCompat.getColor(context, ClientsDataBase.GpsLocation.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT.color)),
                     onClick = {
                         coroutineScope.launch {
-                            viewModel.mapsHandler.updateStatueClient(
-                                selectedMarker,
-                                ClientsDataBase.GpsLocation.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT
-                            )
                             viewModel.mapsHandler.updateLongAppSetting(selectedMarker.id.toLong())
                             onDismiss()
                         }

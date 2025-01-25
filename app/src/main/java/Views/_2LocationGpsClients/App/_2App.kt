@@ -16,7 +16,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 
 // _2App.kt
-fun NavGraphBuilder._2App(viewModelInitApp: ViewModelInitApp, clientEnCourDeVent: Long = 1) {
+fun NavGraphBuilder._2App(viewModelInitApp: ViewModelInitApp, clientEnCourDeVent: Long = 0) {
     composable(ScreensApp2.Fragment1Screen.route) {
         A_ClientsLocationGps(
             viewModel = viewModelInitApp ,

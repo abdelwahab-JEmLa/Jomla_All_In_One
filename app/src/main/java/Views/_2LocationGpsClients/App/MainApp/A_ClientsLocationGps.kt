@@ -42,7 +42,7 @@ import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow
 fun A_ClientsLocationGps(
     modifier: Modifier = Modifier,
     viewModel: ViewModelInitApp = viewModel(),
-    clientEnCourDeVent: Long = 1,
+    clientEnCourDeVent: Long=0,
 
     ) {
     val context = LocalContext.current
@@ -93,7 +93,7 @@ fun A_ClientsLocationGps(
 
     val clientDataBaseSnapList = viewModel.clientDataBaseSnapList
 
-    LaunchedEffect(clientDataBaseSnapList.toList()) {
+    LaunchedEffect(clientDataBaseSnapList.toList(), clientEnCourDeVent) {
         // Clear existing client markers
         val markersToRemove = mapView.overlays.filterIsInstance<Marker>()
             .filter { marker -> clientDataBaseSnapList.any { it.id.toString() == marker.id } }
