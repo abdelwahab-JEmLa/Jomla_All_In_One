@@ -5,7 +5,7 @@ import P5_DialogeClientsEditer.ClientSelectionDialog
 import Views.P1._ArticlesStartFacade.FragmentStartupScreen
 import Views.Package_4.SoldCartScreen.SoldCartScreen
 import Views.Z_P3._DisplayProductInfosToSeller.P3DisplayeProductInfosToSeller
-import Views._2LocationGpsClients.App.MainApp.A_ClientsLocationGps
+import Views._2LocationGpsClients.App.app2
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Actions._2.Client_JetPack.Models.ArticlesBasesStatsTable
 import androidx.compose.foundation.layout.Box
@@ -70,21 +70,7 @@ fun AppNavHost(
             modifier = Modifier.fillMaxSize()
         ) {
 
-            composable(Screen.A_ClientsLocationGps.route) {
-                A_ClientsLocationGps(
-                    viewModel = viewModelInitApp,
-                    clientEnCourDeVent = clientEnCourDeVent,
-                    onUpdateLongAppSetting = {
-                        navController.navigate(Screen.EditDatabaseWithCreateNewArticles.route) {
-                            // Pop the current fragment off the back stack
-                            popUpTo(Screen.A_ClientsLocationGps.route) {
-                                inclusive = true
-                            }
-                            launchSingleTop = true
-                        }
-                    }
-                )
-            }
+            app2(viewModelInitApp, clientEnCourDeVent, navController)
 
             composable(Screen.EditDatabaseWithCreateNewArticles.route) {
                 Box(modifier = Modifier.fillMaxSize()) {
@@ -201,3 +187,5 @@ fun AppNavHost(
         }
     }
 }
+
+
