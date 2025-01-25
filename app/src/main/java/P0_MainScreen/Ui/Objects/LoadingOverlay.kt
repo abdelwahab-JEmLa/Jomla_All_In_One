@@ -28,7 +28,6 @@ fun LoadingOverlay(
     progress: Float,
     modifier: Modifier = Modifier
 ) {
-    // État pour l'animation de clignotement
     val infiniteTransition = rememberInfiniteTransition(label = "loading")
     val alpha by infiniteTransition.animateFloat(
         initialValue = 0.2f,
@@ -58,7 +57,7 @@ fun LoadingOverlay(
     ) {
         // Votre image qui tourne et clignote
         Image(
-            painter = painterResource(id = R.drawable.baked_goods_1), // Mettez votre image ici
+            painter = painterResource(id = R.drawable.baked_goods_1),
             contentDescription = "Loading",
             modifier = Modifier
                 .size(64.dp)

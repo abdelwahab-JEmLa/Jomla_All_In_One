@@ -56,10 +56,12 @@ fun AppNavHost(
     val reloadTrigger by rememberSaveable { mutableIntStateOf(0) }
     var scrollTiger by rememberSaveable { mutableIntStateOf(0) }
     var lockExpandedPrices by rememberSaveable { mutableStateOf(false) }
-    val clientEnCourDeVent by rememberSaveable { mutableLongStateOf(
-        appViewModels.headViewModel._uiState.value
-        .appSettingsSaverModel.find { it.name=="clientBuyerNowId" }
-        ?.valueLong?:0) }
+    val clientEnCourDeVent by rememberSaveable {
+        mutableLongStateOf(
+            appViewModels.headViewModel._uiState.value
+                .appSettingsSaverModel.find { it.name == "clientBuyerNowId" }
+                ?.valueLong ?: 0)
+    }
 
     Box(modifier = modifier.fillMaxSize()) {
         NavHost(
@@ -71,7 +73,9 @@ fun AppNavHost(
             composable(Screen.A_ClientsLocationGps.route) {
                 A_ClientsLocationGps(
                     viewModel = viewModelInitApp,
-                    clientEnCourDeVent = clientEnCourDeVent
+                    clientEnCourDeVent = clientEnCourDeVent, onUpdateLongAppSetting = {
+                        navController.navigate(Screen.EditDatabaseWithCreateNewArticles.route)
+                    }
                 )
             }
 

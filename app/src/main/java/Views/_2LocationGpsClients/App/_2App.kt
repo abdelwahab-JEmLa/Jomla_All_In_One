@@ -32,7 +32,7 @@ private fun PreviewApp2_F1() {
     // Preview version without real ViewModel
     A_ClientsLocationGps(
         modifier = Modifier.fillMaxSize()
-    , viewModelInitApp
+    , viewModelInitApp, onUpdateLongAppSetting = {}
     )
 }
 

@@ -39,7 +39,7 @@ fun ConnexionCard(
     onClickToStartAsClient: () -> Unit,
     lockHost: Boolean
 ) {
-    var isCollapsed by remember { mutableStateOf(false) }
+    var isCollapsed by remember { mutableStateOf(true) }
     var messageText by remember { mutableStateOf("") }
     val isHostEnabled = Build.MODEL.lowercase().contains("note")
 

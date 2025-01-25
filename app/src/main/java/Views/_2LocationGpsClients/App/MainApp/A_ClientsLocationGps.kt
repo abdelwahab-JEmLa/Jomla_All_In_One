@@ -42,7 +42,7 @@ import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow
 fun A_ClientsLocationGps(
     modifier: Modifier = Modifier,
     viewModel: ViewModelInitApp = viewModel(),
-    clientEnCourDeVent: Long=0,
+    clientEnCourDeVent: Long=0, onUpdateLongAppSetting: () -> Unit = {},
 
     ) {
     val context = LocalContext.current
@@ -159,8 +159,9 @@ fun A_ClientsLocationGps(
             MarkerStatusDialog(
                  viewModel = viewModel,
                  selectedMarker = selectedMarker,
-                 onDismiss = { showMarkerDialog = false }
-             )
+                 onDismiss = { showMarkerDialog = false },
+                onUpdateLongAppSetting = onUpdateLongAppSetting
+            )
         }
     }
 }

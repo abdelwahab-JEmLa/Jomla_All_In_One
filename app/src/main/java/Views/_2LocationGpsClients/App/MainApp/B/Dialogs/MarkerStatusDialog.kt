@@ -39,7 +39,7 @@ import org.osmdroid.views.overlay.Marker
 fun MarkerStatusDialog(
     viewModel: ViewModelInitApp,
     selectedMarker: Marker?,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit, onUpdateLongAppSetting: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -72,6 +72,7 @@ fun MarkerStatusDialog(
                     onClick = {
                         coroutineScope.launch {
                             viewModel.mapsHandler.updateLongAppSetting(selectedMarker.id.toLong())
+                            onUpdateLongAppSetting()
                             onDismiss()
                         }
                     }

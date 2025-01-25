@@ -10,23 +10,22 @@ import java.util.Date
 
 fun ViewModelExtensionMapsHandler.updateLongAppSetting(
     value: Long,
-    name: String="clientBuyerNowId"
+    name: String = "clientBuyerNowId",
 ) {
-        viewModelScope.launch {
-            try {
-                val appSettingsSaverModel = AppSettingsSaverModel(
-                    id = 1,
-                    name = name,
-                    valueLong = value,
-                    date = Date()
-                )
+    viewModelScope.launch {
+        try {
+            val appSettingsSaverModel = AppSettingsSaverModel(
+                id = 1,
+                name = name,
+                valueLong = value,
+                date = Date()
+            )
 
-                Firebase.database.getReference("A_AppSettingsSaverModel")
-                    .child( appSettingsSaverModel.id.toString())
-                    .setValue(appSettingsSaverModel)
-                    .await()
-
-            } catch (e: Exception) {
-            }
+            Firebase.database.getReference("A_AppSettingsSaverModel")
+                .child(appSettingsSaverModel.id.toString())
+                .setValue(appSettingsSaverModel)
+                .await()
+        } catch (e: Exception) {
         }
     }
+}
