@@ -3,9 +3,6 @@ package Views._2LocationGpsClients.App.MainApp.B.Dialogs
 import Views._2LocationGpsClients.App.MainApp.B.Dialogs.Utils.AlimentclientDataBaseSnapList
 import Views._2LocationGpsClients.App.MainApp.B.Dialogs.Utils.ClearHistoryButton
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import android.Manifest
-import android.content.Context
-import android.location.LocationManager
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -33,7 +30,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
 import com.example.Packages.Views._2LocationGpsClients.App.MainApp.B.Dialogs.Utils.AddMarkerButton
 import com.example.Packages.Views._2LocationGpsClients.App.MainApp.B.Dialogs.Utils.LabelsButton
 import com.example.Packages.Views._2LocationGpsClients.App.MainApp.B.Dialogs.Utils.LocationTrackingButton
@@ -54,17 +50,6 @@ fun MapControls(
     // États pour le drag
     var offsetX by remember { mutableFloatStateOf(0f) }
     var offsetY by remember { mutableFloatStateOf(0f) }
-
-    val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-    val currentLocation = if (ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ) == android.content.pm.PackageManager.PERMISSION_GRANTED
-    ) {
-        locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-            ?: locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
-    } else null
-
 
     Box(
         modifier = Modifier.fillMaxSize(),
