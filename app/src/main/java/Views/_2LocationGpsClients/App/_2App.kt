@@ -38,6 +38,10 @@ fun NavGraphBuilder.app2(
     }
 }
 
+object ScreensApp2 {
+    val A_ClientsLocationGps = Screen.A_ClientsLocationGps
+}
+
 @Preview
 @Composable
 private fun PreviewApp2_F1() {
@@ -61,8 +65,5 @@ private fun PreviewApp2_F1() {
     )
 }
 
-object ScreensApp2 {
-    val A_ClientsLocationGps = Screen.A_ClientsLocationGps
-}
 
 
