@@ -27,7 +27,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.example.Packages.Views._2LocationGpsClients.App.MainApp.B.Dialogs.Utils.AddMarkerButton
@@ -42,7 +41,6 @@ fun MapControls(
     mapView: MapView,
     viewModelInitApp: ViewModelInitApp,
 ) {
-    val context = LocalContext.current
     var showMenu by remember { mutableStateOf(false) }
     var showLabels by remember { mutableStateOf(false) }
     val proximiteMeter = 50.0
