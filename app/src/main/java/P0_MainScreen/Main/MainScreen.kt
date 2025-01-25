@@ -78,8 +78,6 @@ fun MainScreen(
         }
     }
 
-
-
     Surface(
         modifier = modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -88,8 +86,10 @@ fun MainScreen(
             Column(modifier = Modifier.fillMaxSize()) {
                 // WiFi Connection Card
                 AnimatedVisibility(
-                    visible = isDisplayedConnexionWifiVisible ||
-                            !productDisplayController.isConnected && !lockHost
+                    visible = isDisplayedConnexionWifiVisible
+                            ||
+                            !productDisplayController.isConnected
+                            && !lockHost
                 ) {
                     ConnexionCard(
                         productDisplayController = productDisplayController,

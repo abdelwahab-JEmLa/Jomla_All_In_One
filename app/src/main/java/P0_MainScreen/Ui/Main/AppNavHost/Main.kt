@@ -2,7 +2,6 @@ package P0_MainScreen.Ui.Main.AppNavHost
 
 import P0_MainScreen.Ui.Objects.LoadingOverlay
 import P5_DialogeClientsEditer.ClientSelectionDialog
-import P6_AiGroupeForSupplier.GenerativeAiScreen
 import Views.P1._ArticlesStartFacade.FragmentStartupScreen
 import Views.Package_4.SoldCartScreen.SoldCartScreen
 import Views.Z_P3._DisplayProductInfosToSeller.P3DisplayeProductInfosToSeller
@@ -57,7 +56,8 @@ fun AppNavHost(
     val reloadTrigger by rememberSaveable { mutableIntStateOf(0) }
     var scrollTiger by rememberSaveable { mutableIntStateOf(0) }
     var lockExpandedPrices by rememberSaveable { mutableStateOf(false) }
-    val clientEnCourDeVent by rememberSaveable { mutableLongStateOf(appViewModels.headViewModel._uiState.value
+    val clientEnCourDeVent by rememberSaveable { mutableLongStateOf(
+        appViewModels.headViewModel._uiState.value
         .appSettingsSaverModel.find { it.name=="clientBuyerNowId" }
         ?.valueLong?:0) }
 
@@ -67,6 +67,14 @@ fun AppNavHost(
             startDestination = Screen.A_ClientsLocationGps.route,
             modifier = Modifier.fillMaxSize()
         ) {
+
+            composable(Screen.A_ClientsLocationGps.route) {
+                A_ClientsLocationGps(
+                    viewModel = viewModelInitApp,
+                    clientEnCourDeVent = clientEnCourDeVent
+                )
+            }
+
             composable(Screen.EditDatabaseWithCreateNewArticles.route) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     FragmentStartupScreen(
@@ -127,28 +135,6 @@ fun AppNavHost(
                         }, viewModelInitApp = viewModelInitApp
                     )
                 }
-            }
-            composable(Screen.BakingScreen.route) {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    GenerativeAiScreen(
-                        generativeAiViewModel = appViewModels.generativeAiViewModel,
-                    )
-                }
-            }
-
-            composable(Screen.BakingScreen.route) {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    GenerativeAiScreen(
-                        generativeAiViewModel = appViewModels.generativeAiViewModel,
-                    )
-                }
-            }
-
-            composable(Screen.A_ClientsLocationGps.route) {
-                A_ClientsLocationGps(
-                    viewModel = viewModelInitApp,
-                    clientEnCourDeVent = clientEnCourDeVent
-                )
             }
 
         }
