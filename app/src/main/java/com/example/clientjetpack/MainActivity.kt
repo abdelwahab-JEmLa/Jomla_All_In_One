@@ -2,7 +2,6 @@ package com.example.clientjetpack
 
 import P0_MainScreen.Main.MainScreen
 import P6_AiGroupeForSupplier.GenerativeAiViewModel
-import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z_AppsFather.Kotlin._3.Init.A_LoadFireBase.FirebaseOfflineHandler
 import android.app.Application
 import android.content.Context
@@ -12,14 +11,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
-import androidx.compose.ui.input.key.Key.Companion.F
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.clientjetpack.Modules.AppDatabase
 import com.example.clientjetpack.Modules.PermissionHandler
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import com.google.firebase.FirebaseApp
-import com.google.firebase.database.FirebaseDatabase
 
 class MyApplication : Application() {
     lateinit var database: AppDatabase
@@ -89,7 +86,9 @@ class MainActivity : ComponentActivity() {
             @RequiresApi(Build.VERSION_CODES.Q)
             override fun onPermissionsGranted() {
                 setContent {
-                    MainScreen(appViewModels, )
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        MainScreen(appViewModels, )
+                    }
                 }
             }
 

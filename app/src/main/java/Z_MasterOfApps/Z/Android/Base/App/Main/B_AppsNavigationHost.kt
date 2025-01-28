@@ -8,7 +8,7 @@ import Z_MasterOfApps.Z.Android.Packages._1.GerantAfficheurGrossistCommend.App.N
 import Z_MasterOfApps.Z.Android.Packages._1.GerantAfficheurGrossistCommend.App.NH_3.id2_TravaillieurListProduitAchercheChezLeGrossist.A_Id2_TravaillieurListProduitAchercheChezLeGrossist
 import Z_MasterOfApps.Z.Android.Packages._1.GerantAfficheurGrossistCommend.App.NH_4.id3_AfficheurDesProduitsPourLeColecteur.A_id3_AfficheurDesProduitsPourLeColecteur
 import Z_MasterOfApps.Z.Android.Packages._1.GerantAfficheurGrossistCommend.App.NH_5.ID5_VerificationProduitAcGrossist.A_ID5_VerificationProduitAcGrossist
-import Z_MasterOfApps.Z.Android.Packages._2._2LocationGpsClients.App.NH_1.id1_ClientsLocationGps.A_id1_ClientsLocationGps
+import Z_MasterOfApps.Z.Android.Base.App.Packages._2._2LocationGpsClients.App.NH_1.id1_ClientsLocationGps.A_id1_ClientsLocationGps
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
