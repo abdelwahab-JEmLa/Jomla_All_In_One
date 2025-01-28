@@ -1,12 +1,12 @@
 package Z_MasterOfApps.Kotlin.ViewModel
 
-import Views._2LocationGpsClients.App.MainApp.ViewModel.Extension.ViewModelExtensionMapsHandler
+import Z_MasterOfApps.Z.Android.Packages._1.GerantAfficheurGrossistCommend.App.NH_2.id1_GerantDefinirePosition.ViewModel.Extension.ViewModelExtension_App1_F1
+import Z_MasterOfApps.Z.Android.Packages._1.GerantAfficheurGrossistCommend.App.NH_3.id2_TravaillieurListProduitAchercheChezLeGrossist.ViewModel.Extension.ViewModelExtension_App1_F2
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.ParamatersAppsModel
 import Z_MasterOfApps.Z_AppsFather.Kotlin._3.Init.A_LoadFireBase.LoadFromFirebaseProduits
 import Z_MasterOfApps.Z_AppsFather.Kotlin._3.Init.CreeDepuitAncienDataBases
 import android.annotation.SuppressLint
-import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -32,18 +32,16 @@ class ViewModelInitApp : ViewModel() {
     var isLoading by mutableStateOf(false)
     var loadingProgress by mutableFloatStateOf(0f)
 
-    val mapsHandler = ViewModelExtensionMapsHandler(
-        viewModelScope =this@ViewModelInitApp.viewModelScope,
-        produitsMainDataBase = produitsMainDataBase,
-        clientDataBaseSnapList=clientDataBaseSnapList,
+    val extension_App1_F1 = ViewModelExtension_App1_F1(
         viewModel=this@ViewModelInitApp,
+        produitsMainDataBase = produitsMainDataBase,
+        viewModelScope =this@ViewModelInitApp.viewModelScope,
     )
-
-    fun initializeMapView(context: Context): MapView {
-        return MapView(context).also {
-            mapViewVM = it
-        }
-    }
+    val extension_App1_F2 = ViewModelExtension_App1_F2(
+        viewModel=this@ViewModelInitApp,
+        produitsMainDataBase = produitsMainDataBase,
+        viewModelScope =this@ViewModelInitApp.viewModelScope,
+    )
 
     init {
         viewModelScope.launch {

@@ -32,13 +32,15 @@ object LogUtils {
     }
 
     fun logProductState(product: Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel) {
-        logProduct("""
+        logProduct(
+            """
             Product State:
             - ID: ${product.id}
             - Name: ${product.nom}
             - Active Sales: ${product.bonsVentDeCetteCota.size}
             - Has BonCommande: ${product.bonCommendDeCetteCota != null}
             - Colors Count: ${product.coloursEtGouts.size}
-        """.trimIndent())
+        """.trimIndent()
+        )
     }
 }

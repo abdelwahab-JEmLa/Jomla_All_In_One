@@ -1,13 +1,17 @@
 // ParamatersAppsModel.kt
 package Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model
 
+import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.toMutableStateList
 import com.google.firebase.Firebase
 import com.google.firebase.database.database
 
 class ParamatersAppsModel {
+    var cLeTelephoneDuGerant by mutableStateOf<Boolean?>(null)
+
     var telephoneClientParamaters by mutableStateOf(TelephoneClientParamaters())
 
     var visibilityClientEditePositionDialog by mutableStateOf(false)
@@ -24,6 +28,10 @@ class ParamatersAppsModel {
         SERVER,
         DISPLAY
     }
+
+    var produitsAChoisireLeurClient: MutableList<ProduitModel> =
+        emptyList<ProduitModel>().toMutableStateList()
+
     companion object {
         private const val SELF_CHEMIN_BASE =
             "0_UiState_3_Host_Package_3_Prototype11Dec/ParamatersAppsModel"

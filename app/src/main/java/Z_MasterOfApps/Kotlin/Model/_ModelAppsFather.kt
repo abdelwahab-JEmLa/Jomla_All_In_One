@@ -288,7 +288,7 @@ open class _ModelAppsFather(
                     "/BaseDonne"
 
         fun update_AllProduits(
-            updatedProducts: List<_ModelAppsFather.ProduitModel>, // Change parameter type to List
+            updatedProducts: List<ProduitModel>,
             viewModelProduits: ViewModelInitApp
         ) {
             viewModelProduits.viewModelScope.launch {
@@ -321,16 +321,14 @@ open class _ModelAppsFather(
         }
 
         fun updateProduit(
-            product: _ModelAppsFather.ProduitModel,
+            product: ProduitModel,
             viewModelProduits: ViewModelInitApp
         ) {
             viewModelProduits.viewModelScope.launch {
                 try {
-                    // Update _produitsAvecBonsGrossist
                     val index =
                         viewModelProduits._modelAppsFather.produitsMainDataBase.indexOfFirst { it.id == product.id }
                     if (index != -1) {
-                        // Direct update of the SnapshotStateList
                         viewModelProduits._modelAppsFather.produitsMainDataBase[index] = product
                     }
 
