@@ -7,7 +7,7 @@ import Z_MasterOfApps.Z.Android.Base.App.Packages._2._2LocationGpsClients.App.NH
 import Z_MasterOfApps.Z.Android.Base.App.Packages._2._2LocationGpsClients.App.NH_1.id1_ClientsLocationGps.B.Dialogs.Utils.DEFAULT_LATITUDE
 import Z_MasterOfApps.Z.Android.Base.App.Packages._2._2LocationGpsClients.App.NH_1.id1_ClientsLocationGps.B.Dialogs.Utils.DEFAULT_LONGITUDE
 import Z_MasterOfApps.Z.Android.Base.App.Packages._2._2LocationGpsClients.App.NH_1.id1_ClientsLocationGps.B.Dialogs.Utils.getCurrentLocation
-import Z_MasterOfApps.Z.Android.Base.App.Packages._2LocationGpsClients.NH_1.id1_ClientsLocationGps.ViewModel.Extension.ViewModelExtension_App2_F1
+import Z_MasterOfApps.Z.Android.Base.App.Packages._2._2LocationGpsClients.App.NH_1.id1_ClientsLocationGps.ViewModel.Extension.ViewModelExtension_App2_F1
 import android.content.Context
 import android.widget.LinearLayout
 import androidx.compose.foundation.background
@@ -175,7 +175,8 @@ fun A_id1_ClientsLocationGps(
             MapControls(
                 extensionVM = extensionVM,
                 mapView = mapView,
-                viewModelInitApp = viewModel
+                viewModelInitApp = viewModel,
+                xmlResources=xmlResources
             )
         }
         if (showMarkerDialog && selectedMarker != null) {

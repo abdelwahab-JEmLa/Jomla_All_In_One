@@ -43,6 +43,7 @@ fun MainScreen(
     appViewModels: AppViewModels,
     modifier: Modifier = Modifier,
     viewModelInitApp: ViewModelInitApp = viewModel(),
+    xmlResources: List<Pair<String, Int>>,
 ) {
     val headViewModel = appViewModels.headViewModel
     val uiState by headViewModel.uiState.collectAsState()
@@ -114,7 +115,9 @@ fun MainScreen(
                         onClickDonne = { isFabVisible = false },
                         onClickToDisplayeConexionWifi = {
                             isDisplayedConnexionWifiVisible = !isDisplayedConnexionWifiVisible
-                        }, onToggleLockHost = {lockHost=!lockHost}
+                        },
+                        onToggleLockHost = {lockHost=!lockHost}  ,
+                        xmlResources=xmlResources
                     )
 
                     // Disable interactions when not host phone

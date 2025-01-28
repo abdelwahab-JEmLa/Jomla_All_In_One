@@ -5,9 +5,8 @@ import P5_DialogeClientsEditer.ClientSelectionDialog
 import Views.P1._ArticlesStartFacade.FragmentStartupScreen
 import Views.Package_4.SoldCartScreen.SoldCartScreen
 import Views.Z_P3._DisplayProductInfosToSeller.P3DisplayeProductInfosToSeller
-import Views._2LocationGpsClients.App.app2
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_MasterOfApps.Z.Android.Actions._2.Client_JetPack.Models.ArticlesBasesStatsTable
+import Z_MasterOfApps.Z.Android.Packages._3.C_Serveur.App.Client_JetPack.Models.ArticlesBasesStatsTable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -38,7 +37,8 @@ fun AppNavHost(
     isFabVisible: Boolean,
     onClickDonne: () -> Unit,
     onClickToDisplayeConexionWifi: () -> Unit,
-    onToggleLockHost: () -> Unit
+    onToggleLockHost: () -> Unit,
+    xmlResources: List<Pair<String, Int>>
 ) {
     val uiState by appViewModels.headViewModel.uiState.collectAsState()
 
@@ -70,7 +70,9 @@ fun AppNavHost(
             modifier = Modifier.fillMaxSize()
         ) {
 
-            app2(viewModelInitApp, clientEnCourDeVent, navController)
+            app2(viewModelInitApp, clientEnCourDeVent, navController
+                ,
+                xmlResources=xmlResources)
 
             composable(Screen.EditDatabaseWithCreateNewArticles.route) {
                 Box(modifier = Modifier.fillMaxSize()) {
@@ -78,8 +80,8 @@ fun AppNavHost(
                         viewModel = appViewModels.headViewModel,
                         onToggleNavBar = onToggleNavBar,
                         reloadTrigger = reloadTrigger,
-                        onClickToOpenWindos = { articleDataBase, indexColor ->
-                            relatedArticleBaseStats = articleDataBase
+                        onClickToOpenWindos = { articleDataBaseOn, indexColor ->
+                            relatedArticleBaseStats = articleDataBaseOn
                             pendingIndexColor = indexColor
 
                             if (currentClientId == 0L) {

@@ -1,6 +1,5 @@
 package P0_MainScreen.Ui.Main.AppNavHost
 
-import Views._2LocationGpsClients.App.ScreensApp2
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box

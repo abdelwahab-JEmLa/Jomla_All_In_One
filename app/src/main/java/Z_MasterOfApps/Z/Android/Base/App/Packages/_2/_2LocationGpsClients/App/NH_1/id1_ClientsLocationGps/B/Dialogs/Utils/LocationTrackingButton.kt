@@ -22,7 +22,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
-import com.example.c_serveur.R
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
@@ -32,10 +31,11 @@ import org.osmdroid.views.overlay.Polygon
 fun LocationTrackingButton(
     showLabels: Boolean,
     mapView: MapView,
-    proximiteMeter: Double
+    proximiteMeter: Double,
+    xmlResources: List<Pair<String, Int>>?
 ) {
     var isTracking by remember { mutableStateOf(false) }
-    val locationTracker = rememberLocationTracker(mapView, proximiteMeter)
+    val locationTracker = rememberLocationTracker(mapView, proximiteMeter,xmlResources)
 
     ControlButton(
         onClick = {
@@ -57,7 +57,8 @@ fun LocationTrackingButton(
 class LocationTracker(
     private val context: Context,
     private val mapView: MapView,
-    private val radius: Double
+    private val radius: Double,
+    private val xmlResources: List<Pair<String, Int>>?
 ) : SensorEventListener, LocationListener {
 
     private val mainHandler = Handler(Looper.getMainLooper())
@@ -152,7 +153,9 @@ class LocationTracker(
         if (!isTracking) {
             // Créer le marker de direction avec l'icône personnalisée
             directionMarker = Marker(mapView).apply {
-                icon = ContextCompat.getDrawable(context, R.drawable.location_arrow)
+                icon = ContextCompat.getDrawable(context,xmlResources
+                    ?.find { it.first == "R.drawable.location_arrow" }?.second
+                    ?: throw IllegalStateException("marker_info_window layout not found"))
                 setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
                 icon?.setTint(android.graphics.Color.BLUE) // Rendre l'icône plus visible
             }
@@ -232,9 +235,13 @@ class LocationTracker(
 }
 
 @Composable
-fun rememberLocationTracker(mapView: MapView, proxim: Double): LocationTracker {
+fun rememberLocationTracker(
+    mapView: MapView,
+    proxim: Double,
+    xmlResources: List<Pair<String, Int>>?
+): LocationTracker {
     val context = LocalContext.current
-    val locationTracker = remember { LocationTracker(context, mapView, proxim) }
+    val locationTracker = remember { LocationTracker(context, mapView, proxim,xmlResources) }
 
     DisposableEffect(locationTracker) {
         onDispose {

@@ -7,7 +7,7 @@ import Z_MasterOfApps.Z.Android.Base.App.Packages._2._2LocationGpsClients.App.NH
 import Z_MasterOfApps.Z.Android.Base.App.Packages._2._2LocationGpsClients.App.NH_1.id1_ClientsLocationGps.B.Dialogs.Utils.LabelsButton
 import Z_MasterOfApps.Z.Android.Base.App.Packages._2._2LocationGpsClients.App.NH_1.id1_ClientsLocationGps.B.Dialogs.Utils.LocationTrackingButton
 import Z_MasterOfApps.Z.Android.Base.App.Packages._2._2LocationGpsClients.App.NH_1.id1_ClientsLocationGps.B.Dialogs.Utils.MenuButton
-import Z_MasterOfApps.Z.Android.Base.App.Packages._2LocationGpsClients.NH_1.id1_ClientsLocationGps.ViewModel.Extension.ViewModelExtension_App2_F1
+import Z_MasterOfApps.Z.Android.Base.App.Packages._2._2LocationGpsClients.App.NH_1.id1_ClientsLocationGps.ViewModel.Extension.ViewModelExtension_App2_F1
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -42,6 +42,7 @@ fun MapControls(
     extensionVM: ViewModelExtension_App2_F1,
     mapView: MapView,
     viewModelInitApp: ViewModelInitApp,
+    xmlResources: List<Pair<String, Int>>?,
 ) {
     var showMenu by remember { mutableStateOf(false) }
     var showLabels by remember { mutableStateOf(false) }
@@ -92,7 +93,8 @@ fun MapControls(
                     LocationTrackingButton(
                         showLabels = showLabels,
                         mapView = mapView,
-                        proximiteMeter = proximiteMeter
+                        proximiteMeter = proximiteMeter ,
+                        xmlResources=xmlResources
                     )
                 }
 

@@ -1,8 +1,7 @@
-package Views._2LocationGpsClients.App
+package P0_MainScreen.Ui.Main.AppNavHost
 
-import P0_MainScreen.Ui.Main.AppNavHost.Screen
-import Views._2LocationGpsClients.App.MainApp.A_ClientsLocationGps
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
+import Z_MasterOfApps.Z.Android.Base.App.Packages._2._2LocationGpsClients.App.NH_1.id1_ClientsLocationGps.A_id1_ClientsLocationGps
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
@@ -19,10 +18,11 @@ import androidx.navigation.compose.composable
 fun NavGraphBuilder.app2(
     viewModelInitApp: ViewModelInitApp,
     clientEnCourDeVent: Long,
-    navController: NavHostController
+    navController: NavHostController,
+    xmlResources: List<Pair<String, Int>>
 ) {
     composable(Screen.A_ClientsLocationGps.route) {
-        A_ClientsLocationGps(
+        A_id1_ClientsLocationGps(
             viewModel = viewModelInitApp,
             clientEnCourDeVent = clientEnCourDeVent,
             onUpdateLongAppSetting = {
@@ -33,7 +33,8 @@ fun NavGraphBuilder.app2(
                     }
                     launchSingleTop = true
                 }
-            }
+            } ,
+            xmlResources=xmlResources
         )
     }
 }
@@ -58,11 +59,11 @@ private fun PreviewApp2_F1() {
         }
         return
     }
-    // Preview version without real ViewModel
+ /*   // Preview version without real ViewModel
     A_ClientsLocationGps(
         modifier = Modifier.fillMaxSize()
     , viewModelInitApp, onUpdateLongAppSetting = {}
-    )
+    )    */
 }
 
 
