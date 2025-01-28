@@ -4,8 +4,8 @@ import P0_MainScreen.Ui.Objects.LoadingOverlay
 import Views.P1.Ui.ArticlesGrid.ArticleGridWithScrollbar
 import Views.P1.Ui.Objects.SearchFilterPB
 import Views.P1._ArticlesStartFacade.FloatingActionButtonGroup.FloatingActionButtonGroup
-import Z_MasterOfApps.Z.Android.Actions._2.Client_JetPack.Models.ArticlesBasesStatsTable
-import Z_MasterOfApps.Z.Android.Actions._2.Client_JetPack.Models.ClientsModel
+import Z_MasterOfApps.Z.Android.Packages._3.C_Serveur.App.Client_JetPack.Models.ArticlesBasesStatsTable
+import Z_MasterOfApps.Z.Android.Packages._3.C_Serveur.App.Client_JetPack.Models.ClientsModel
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn

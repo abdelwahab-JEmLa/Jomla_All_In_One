@@ -145,15 +145,15 @@ fun AppNavHost(
                 soldArticle = uiState.soldArticlesModel,
                 viewModel = appViewModels.headViewModel,
                 clients = uiState.clientsModel,
-                onClientSelected = { client ->
+                onClientSelected = { AppSetting ->
                     appViewModels.headViewModel.updateLongAppSetting(
                         "clientBuyerNowId",
-                        client.idClientsSu
+                        AppSetting.idClientsSu
                     )
                     if (!showClientSelectionWithoutCondition) {
                         appViewModels.headViewModel.openWindowsNewSaleWithUpdateCurrent(
                             relatedArticleBaseStats!!.idArticle.toLong(),
-                            client.idClientsSu,
+                            AppSetting.idClientsSu,
                             pendingIndexColor
                         )
                         opnerSaleWindows = true
