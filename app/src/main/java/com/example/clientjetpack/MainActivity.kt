@@ -2,7 +2,7 @@ package com.example.clientjetpack
 
 import P0_MainScreen.Main.MainScreen
 import P6_AiGroupeForSupplier.GenerativeAiViewModel
-import Z_MasterOfApps.Z_AppsFather.Kotlin._3.Init.A_LoadFireBase.FirebaseOfflineHandler
+import Z_MasterOfApps.Kotlin.ViewModel.Init.Init.FirebaseOfflineHandler
 import android.app.Application
 import android.content.Context
 import android.os.Build

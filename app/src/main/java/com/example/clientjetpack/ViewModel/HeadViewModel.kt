@@ -1040,7 +1040,14 @@ open class HeadViewModel(
         updateLoadingProgress(fl)
     }
 
-
+    // Add this function to your HeadViewModel class
+    fun updateClients(clients: List<ClientsModel>) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                clientsModel = clients
+            )
+        }
+    }
     private suspend fun loadDataOfUiStateFromRoom() {
         try {
             setLoading(true)

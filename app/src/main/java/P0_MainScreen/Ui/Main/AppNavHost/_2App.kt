@@ -25,15 +25,19 @@ fun NavGraphBuilder.app2(
             viewModel = viewModelInitApp,
             clientEnCourDeVent = clientEnCourDeVent,
             onUpdateLongAppSetting = {
-                navController.navigate(Screen.EditDatabaseWithCreateNewArticles.route) {
-                    // Pop the current fragment off the back stack
-                    popUpTo(Screen.A_ClientsLocationGps.route) {
-                        inclusive = true
-                    }
-                    launchSingleTop = true
-                }
+                allerAuFragment(navController)
             } ,
         )
+    }
+}
+
+private fun allerAuFragment(navController: NavHostController) {
+    navController.navigate(Screen.EditDatabaseWithCreateNewArticles.route) {
+        // Pop the current fragment off the back stack
+        popUpTo(Screen.A_ClientsLocationGps.route) {
+            inclusive = true
+        }
+        launchSingleTop = true
     }
 }
 

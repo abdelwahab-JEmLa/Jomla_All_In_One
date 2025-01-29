@@ -1,18 +1,12 @@
-package Z_MasterOfApps.Z_AppsFather.Kotlin._3.Init.A_LoadFireBase
+package Z_MasterOfApps.Kotlin.ViewModel.Init.Init
 
-import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.util.Log
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.GenericTypeIndicator
-import com.google.firebase.database.ValueEventListener
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withTimeoutOrNull
 
@@ -88,7 +82,7 @@ object FirebaseOfflineHandler {
         return try {
             val data = ref.get().await()
             val data2 = refClientsDataBase.get().await()
-            viewModel?.let { setupRealtimeListeners(it) }
+            viewModel?.let { viewModel.setupRealtimeListeners(it) }
             Pair(data, data2)
         } catch (e: Exception) {
             Log.e("Firebase", "Online operation failed", e)
@@ -112,26 +106,7 @@ object FirebaseOfflineHandler {
         }
     }
 
-    private fun setupRealtimeListeners(viewModel: ViewModelInitApp) {
-        val scope = CoroutineScope(Dispatchers.IO)
 
-        _ModelAppsFather.produitsFireBaseRef.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                scope.launch {
-                    val products = snapshot.children.mapNotNull { LoadFromFirebaseProduits.parseProduct(it) }
-                    viewModel.modelAppsFather.produitsMainDataBase.apply {
-                        clear()
-                        addAll(products)
-                    }
-                    Log.d("Firebase", "Real-time products updated: ${products.size} items")
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Log.e("Firebase", "Products listener cancelled: ${error.message}")
-            }
-        })
-    }
     // À l'intérieur de l'objet FirebaseOfflineHandler
     inline fun <reified T> parseChild(
         path: String,

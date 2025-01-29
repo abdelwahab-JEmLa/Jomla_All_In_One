@@ -1,4 +1,4 @@
-package Z_MasterOfApps.Z_AppsFather.Kotlin._3.Init.A_LoadFireBase
+package Z_MasterOfApps.Kotlin.ViewModel.Init.Init
 
 import Z_MasterOfApps.Kotlin.Model.ClientsDataBase
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather

@@ -1,11 +1,12 @@
 package Z_MasterOfApps.Kotlin.ViewModel
 
+import Z_MasterOfApps.Kotlin.Model.ClientsDataBase
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
+import Z_MasterOfApps.Kotlin.ViewModel.Init.Init.LoadFromFirebaseProduits
 import Z_MasterOfApps.Z.Android.Base.App.Main.C_EcranDeDepart.Startup.ViewModel.Startup_Extension
 import Z_MasterOfApps.Z.Android.Packages._1.GerantAfficheurGrossistCommend.App.NH_2.id1_GerantDefinirePosition.ViewModel.Extension.ViewModelExtension_App1_F1
 import Z_MasterOfApps.Z.Android.Packages._1.GerantAfficheurGrossistCommend.App.NH_3.id2_TravaillieurListProduitAchercheChezLeGrossist.ViewModel.Extension.ViewModelExtension_App1_F2
 import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.ParamatersAppsModel
-import Z_MasterOfApps.Z_AppsFather.Kotlin._3.Init.A_LoadFireBase.LoadFromFirebaseProduits
 import Z_MasterOfApps.Z_AppsFather.Kotlin._3.Init.CreeDepuitAncienDataBases
 import android.annotation.SuppressLint
 import android.util.Log
@@ -15,6 +16,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @SuppressLint("SuspiciousIndentation")
@@ -63,5 +69,49 @@ class ViewModelInitApp : ViewModel() {
                 isLoading = false
             }
         }
+    }
+
+    fun setupRealtimeListeners(viewModel: ViewModelInitApp) {
+        val scope = CoroutineScope(Dispatchers.IO)
+
+        // Products listener
+        _ModelAppsFather.produitsFireBaseRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                scope.launch {
+                    val products = snapshot.children.mapNotNull {
+                        LoadFromFirebaseProduits.parseProduct(it)
+                    }
+                    viewModel.modelAppsFather.produitsMainDataBase.apply {
+                        clear()
+                        addAll(products)
+                    }
+                    Log.d("Firebase", "Real-time products updated: ${products.size} items")
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("Firebase", "Products listener cancelled: ${error.message}")
+            }
+        })
+
+        // Clients listener
+        ClientsDataBase.refClientsDataBase.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                scope.launch {
+                    val clients = snapshot.children.mapNotNull {
+                        LoadFromFirebaseProduits.parseClient(it)
+                    }
+                    viewModel.modelAppsFather.clientDataBaseSnapList.apply {
+                        clear()
+                        addAll(clients)
+                    }
+                    Log.d("Firebase", "Real-time clients updated: ${clients.size} items")
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("Firebase", "Clients listener cancelled: ${error.message}")
+            }
+        })
     }
 }

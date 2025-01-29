@@ -7,6 +7,8 @@ import Views.Package_4.SoldCartScreen.SoldCartScreen
 import Views.Z_P3._DisplayProductInfosToSeller.P3DisplayeProductInfosToSeller
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
+import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ClientsModel
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -27,6 +29,7 @@ import androidx.navigation.compose.composable
 import com.example.clientjetpack.AppViewModels
 import com.example.clientjetpack.ViewModel.WifiUpdateClientDisplayerStats
 
+
 @Composable
 fun AppNavHost(
     appViewModels: AppViewModels,
@@ -36,10 +39,35 @@ fun AppNavHost(
     isFabVisible: Boolean,
     onClickDonne: () -> Unit,
     onClickToDisplayeConexionWifi: () -> Unit,
-    onToggleLockHost: () -> Unit, viewModelInitApp: ViewModelInitApp,
+    onToggleLockHost: () -> Unit,
+    viewModelInitApp: ViewModelInitApp,
 ) {
     val uiState by appViewModels.headViewModel.uiState.collectAsState()
 
+    // Collect client data from Firebase
+    LaunchedEffect(viewModelInitApp.clientDataBaseSnapList) {
+        try {
+            // Map ClientsDataBase to ClientsModel
+            val mappedClients = viewModelInitApp.clientDataBaseSnapList.map { clientDb ->
+                ClientsModel(
+                    vidSu = 0,
+                    idClientsSu = clientDb.id,
+                    nomClientsSu = clientDb.nom,
+                    bonDuClientsSu = "",
+                    couleurSu = clientDb.statueDeBase.couleur,
+                    currentCreditBalance = 0.0,
+                    numberTelephoney = ""
+                )
+            }
+
+            // Update the UI state with mapped clients
+            appViewModels.headViewModel.updateClients(mappedClients)
+        } catch (e: Exception) {
+            Log.e("AppNavHost", "Failed to map clients", e)
+        }
+    }
+
+    
     // Get current client from settings
     val currentClientId = uiState.appSettingsSaverModel
         .find { it.name == "clientBuyerNowId" }?.valueLong ?: 0
