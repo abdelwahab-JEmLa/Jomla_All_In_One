@@ -1,23 +1,23 @@
-package Z_MasterOfApps.Z.Android.Base.App.Main.C_EcranDeDepart.Startup.B.Dialogs
+package Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.B.Dialogs.Utils
 
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_MasterOfApps.Z.Android.Base.App.Main.C_EcranDeDepart.Startup.ViewModel.Startup_Extension
 import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.B.Dialogs.ControlButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import com.example.clientjetpack.ViewModel.HeadViewModel
 
 @Composable
-fun B_2_ClearAchatsEtCommendsEtSauvgardHistoriques(
+fun ClearHistoryButton(
     viewModelInitApp: ViewModelInitApp,
     showLabels: Boolean,
-    extensionVM: Startup_Extension
+    onClear: () -> Unit,
+    headViewModel: HeadViewModel
 ) {
     var clearDataClickCount by remember { mutableIntStateOf(0) }
 
@@ -26,14 +26,15 @@ fun B_2_ClearAchatsEtCommendsEtSauvgardHistoriques(
             if (clearDataClickCount == 0) {
                 clearDataClickCount++
             } else {
-                extensionVM.clearAchats()
+                viewModelInitApp.extentionStartup.clearAchats()
+                viewModelInitApp.extentionStartup.clearHeadViewModel(headViewModel)
                 clearDataClickCount = 0
             }
         },
-        icon = if (clearDataClickCount == 0) Icons.Default.Delete else Icons.Default.Done,
+        icon = Icons.Default.Delete,
         contentDescription = "Clear history",
         showLabels = showLabels,
         labelText = if (clearDataClickCount == 0) "Clear History" else "Click again to confirm",
-        containerColor = if (clearDataClickCount == 0) Color(0xFF4CAF50) else Color(0xFFF44336)
+        containerColor = if (clearDataClickCount == 0) Color(0xFFE91E63) else Color(0xFFF44336)
     )
 }

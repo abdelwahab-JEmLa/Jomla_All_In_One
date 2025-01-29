@@ -1,15 +1,18 @@
-package Z_MasterOfApps.Z.Android.Base.App.Main.C_EcranDeDepart.Startup.B.Dialogs
+package Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.B.Dialogs
 
-import Z_MasterOfApps.Z.Android.Base.App.Main.C_EcranDeDepart.Startup.ViewModel.Startup_Extension
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
+import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.B.Dialogs.Utils.AddMarkerButton
+import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.B.Dialogs.Utils.AlimentclientDataBaseSnapList
+import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.B.Dialogs.Utils.ClearHistoryButton
 import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.B.Dialogs.Utils.LabelsButton
+import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.B.Dialogs.Utils.LocationTrackingButton
 import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.B.Dialogs.Utils.MenuButton
+import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.ViewModel.Extension.ViewModelExtension_App2_F1
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
@@ -31,17 +34,22 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import com.example.clientjetpack.ViewModel.HeadViewModel
+import org.osmdroid.views.MapView
 import kotlin.math.roundToInt
 
 @Composable
-fun A_OptionsControlsButtons(
+fun MapControls(
+    extensionVM: ViewModelExtension_App2_F1,
+    mapView: MapView,
     viewModelInitApp: ViewModelInitApp,
-    paddingValues: PaddingValues,
-    extensionVM: Startup_Extension,
+    xmlResources: List<Pair<String, Int>>?, onClear: () -> Unit, headViewModel: HeadViewModel,
 ) {
     var showMenu by remember { mutableStateOf(false) }
-    var showLabels by remember { mutableStateOf(true) }
+    var showLabels by remember { mutableStateOf(false) }
+    val proximiteMeter = 50.0
 
+    // États pour le drag
     var offsetX by remember { mutableFloatStateOf(0f) }
     var offsetY by remember { mutableFloatStateOf(0f) }
 
@@ -66,14 +74,29 @@ fun A_OptionsControlsButtons(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 if (showMenu) {
-                    B_1_SwitchGerantOuAfficheurPhone(
+                    AlimentclientDataBaseSnapList(
                         showLabels = showLabels,
                         viewModelInitApp = viewModelInitApp
                     )
-                    B_2_ClearAchatsEtCommendsEtSauvgardHistoriques(
-                        extensionVM=extensionVM,
+                    ClearHistoryButton(
+                        viewModelInitApp = viewModelInitApp,
                         showLabels = showLabels,
-                        viewModelInitApp = viewModelInitApp
+                        onClear,
+                        headViewModel
+                    )
+
+                    AddMarkerButton(
+                        extensionVM = extensionVM,
+                        showLabels = showLabels,
+                        mapView = mapView,
+                        viewModelInitApp = viewModelInitApp,
+                    )
+
+                    LocationTrackingButton(
+                        showLabels = showLabels,
+                        mapView = mapView,
+                        proximiteMeter = proximiteMeter ,
+                        xmlResources=xmlResources
                     )
                 }
 
