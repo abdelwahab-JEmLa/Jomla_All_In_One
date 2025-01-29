@@ -49,6 +49,7 @@ fun MainScreen(
     val uiState by headViewModel.uiState.collectAsState()
     val productDisplayController = uiState.productDisplayController
 
+
     // Handle fullscreen mode
     HandleFullscreenMode(productDisplayController)
 
@@ -116,6 +117,8 @@ fun MainScreen(
                             isDisplayedConnexionWifiVisible = !isDisplayedConnexionWifiVisible
                         },
                         onToggleLockHost = {lockHost=!lockHost}, viewModelInitApp = viewModelInitApp,
+                        onClear = {},
+                        headViewModel = headViewModel,
                     )
 
                     // Disable interactions when not host phone

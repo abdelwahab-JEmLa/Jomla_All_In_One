@@ -25,6 +25,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.clientjetpack.AppViewModels
+import com.example.clientjetpack.ViewModel.HeadViewModel
 import com.example.clientjetpack.ViewModel.WifiUpdateClientDisplayerStats
 
 @Composable
@@ -37,7 +38,7 @@ fun AppNavHost(
     onClickDonne: () -> Unit,
     onClickToDisplayeConexionWifi: () -> Unit,
     onToggleLockHost: () -> Unit,
-    viewModelInitApp: ViewModelInitApp,
+    viewModelInitApp: ViewModelInitApp, onClear: () -> Unit, headViewModel: HeadViewModel,
 ) {
     val uiState by appViewModels.headViewModel.uiState.collectAsState()
 
@@ -69,7 +70,7 @@ fun AppNavHost(
             modifier = Modifier.fillMaxSize()
         ) {
 
-            app2(viewModelInitApp, clientEnCourDeVent, navController
+            app2(viewModelInitApp, clientEnCourDeVent, navController, onClear, headViewModel
             )
 
             composable(Screen.EditDatabaseWithCreateNewArticles.route) {

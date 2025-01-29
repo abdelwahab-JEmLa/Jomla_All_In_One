@@ -14,11 +14,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
+import com.example.clientjetpack.ViewModel.HeadViewModel
 
 fun NavGraphBuilder.app2(
     viewModelInitApp: ViewModelInitApp,
     clientEnCourDeVent: Long,
-    navController: NavHostController,
+    navController: NavHostController, onClear: () -> Unit, headViewModel: HeadViewModel,
 ) {
     composable(Screen.A_ClientsLocationGps.route) {
         A_id1_ClientsLocationGps(
@@ -26,7 +27,8 @@ fun NavGraphBuilder.app2(
             clientEnCourDeVent = clientEnCourDeVent,
             onUpdateLongAppSetting = {
                 allerAuFragment(navController)
-            } ,
+            },
+            onClear = onClear, headViewModel = headViewModel,
         )
     }
 }
@@ -61,11 +63,11 @@ private fun PreviewApp2_F1() {
         }
         return
     }
-    // Preview version without real ViewModel
+   /* // Preview version without real ViewModel
     A_id1_ClientsLocationGps(
         modifier = Modifier.fillMaxSize()
-    , viewModelInitApp, onUpdateLongAppSetting = {}
-    )
+    , viewModelInitApp, onUpdateLongAppSetting = {}, onClear = {}, headViewModel = _
+    ) */
 }
 
 

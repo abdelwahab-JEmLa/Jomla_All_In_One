@@ -63,7 +63,7 @@ enum class WifiUpdateClientDisplayerStats(val prefix: String) {
 
 open class HeadViewModel(
     context: Context,
-    private val database: AppDatabase,
+     val database: AppDatabase,
 ) : ViewModel() {
     private val tag = "HeadViewModel"
     private val firestore = Firebase.firestore

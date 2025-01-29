@@ -74,7 +74,7 @@ fun AppNavigationHost(
                             composable(Screens.NavHost_2.route) {
                                 A_id1_GerantDefinirePosition(viewModelInitApp = viewModelInitApp)
                             }
-                            composable(Screens.NavHost_3.route) {
+                             composable(Screens.NavHost_3.route) {
                                 A_Id2_TravaillieurListProduitAchercheChezLeGrossist(viewModelInitApp)
                             }
                             composable(Screens.NavHost_4.route) {
@@ -84,7 +84,9 @@ fun AppNavigationHost(
                                 A_id3_AfficheurDesProduitsPourLeColecteur(viewModelInitApp = viewModelInitApp)
                             }
                             composable(Screens.NavHostA2_1.route) {
-                                A_id1_ClientsLocationGps(viewModel = viewModelInitApp)
+                                A_id1_ClientsLocationGps(viewModel = viewModelInitApp, onClear = {},
+                                    headViewModel = null
+                                )
                             }
                         }
                     }

@@ -34,6 +34,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.clientjetpack.ViewModel.HeadViewModel
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
@@ -47,6 +48,8 @@ fun A_id1_ClientsLocationGps(
     viewModel: ViewModelInitApp = viewModel(),
     clientEnCourDeVent: Long = 0,
     onUpdateLongAppSetting: () -> Unit = {},
+    onClear: () -> Unit,
+    headViewModel: HeadViewModel,
 ) {
     val extensionVM = ViewModelExtension_App2_F1(
         viewModel.viewModelScope,
@@ -177,7 +180,7 @@ fun A_id1_ClientsLocationGps(
                 extensionVM = extensionVM,
                 mapView = mapView,
                 viewModelInitApp = viewModel,
-                xmlResources=xmlResources
+                xmlResources=xmlResources, onClear = onClear, headViewModel = headViewModel
             )
         }
         if (showMarkerDialog && selectedMarker != null) {

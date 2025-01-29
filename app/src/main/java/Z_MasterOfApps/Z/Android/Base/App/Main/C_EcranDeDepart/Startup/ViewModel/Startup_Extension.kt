@@ -3,9 +3,12 @@ package Z_MasterOfApps.Z.Android.Base.App.Main.C_EcranDeDepart.Startup.ViewModel
 
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.updateProduit
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import android.util.Log
+import androidx.lifecycle.viewModelScope
+import com.example.clientjetpack.ViewModel.HeadViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.database.database
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class Startup_Extension(
     val viewModelInitApp: ViewModelInitApp,
@@ -24,17 +27,30 @@ class Startup_Extension(
             produit.bonCommendDeCetteCota = null
             produit.bonsVentDeCetteCota.clear()
 
-            // Update the product in the database
-            try {
-                val database = Firebase.database
-                database
-                    .getReference("K_GroupeurBonCommendToSupplierRef").removeValue()
-                database
-                    .getReference("O_SoldArticlesTabelle").removeValue()
-                updateProduit(produit, viewModelInitApp)
-            } catch (e: Exception) {
-                Log.e("ClearHistory", "Failed to update product ${produit.id}", e)
+            // Clear Firebase references
+            val database = Firebase.database
+            database.getReference("K_GroupeurBonCommendToSupplierRef").removeValue()
+            database.getReference("O_SoldArticlesTabelle").removeValue()
+            updateProduit(produit, viewModelInitApp)
+
+        }
+    }
+
+    fun clearHeadViewModel(headViewModel: HeadViewModel) {
+        headViewModel.viewModelScope.launch {
+
+        headViewModel._uiState.update { currentState ->
+                currentState.copy(soldArticlesModel = emptyList())
             }
+
+            // Clear the database in a coroutine
+            headViewModel.database.soldArticlesModelDao().deleteAll()
+
+            // Clear Firebase references
+            val database = Firebase.database
+            database.getReference("K_GroupeurBonCommendToSupplierRef").removeValue()
+            database.getReference("O_SoldArticlesTabelle").removeValue()
+
         }
     }
 

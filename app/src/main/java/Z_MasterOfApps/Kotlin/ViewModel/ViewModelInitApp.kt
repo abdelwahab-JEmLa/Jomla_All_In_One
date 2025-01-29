@@ -4,8 +4,6 @@ import Z_MasterOfApps.Kotlin.Model.ClientsDataBase
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 import Z_MasterOfApps.Kotlin.ViewModel.Init.Init.LoadFromFirebaseProduits
 import Z_MasterOfApps.Z.Android.Base.App.Main.C_EcranDeDepart.Startup.ViewModel.Startup_Extension
-import Z_MasterOfApps.Z.Android.Packages._1.GerantAfficheurGrossistCommend.App.NH_2.id1_GerantDefinirePosition.ViewModel.Extension.ViewModelExtension_App1_F1
-import Z_MasterOfApps.Z.Android.Packages._1.GerantAfficheurGrossistCommend.App.NH_3.id2_TravaillieurListProduitAchercheChezLeGrossist.ViewModel.Extension.ViewModelExtension_App1_F2
 import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.ParamatersAppsModel
 import Z_MasterOfApps.Z_AppsFather.Kotlin._3.Init.CreeDepuitAncienDataBases
 import android.annotation.SuppressLint
@@ -38,7 +36,7 @@ class ViewModelInitApp : ViewModel() {
 
     val extentionStartup = Startup_Extension(this@ViewModelInitApp)
 
-    val extension_App1_F1 = ViewModelExtension_App1_F1(
+  /*  val extension_App1_F1 = ViewModelExtension_App1_F1(
         viewModel = this@ViewModelInitApp,
         produitsMainDataBase = produitsMainDataBase,
         viewModelScope = this@ViewModelInitApp.viewModelScope,
@@ -47,7 +45,7 @@ class ViewModelInitApp : ViewModel() {
         viewModel = this@ViewModelInitApp,
         produitsMainDataBase = produitsMainDataBase,
         viewModelScope = this@ViewModelInitApp.viewModelScope,
-    )
+    )               */
 
     init {
         viewModelScope.launch {
@@ -74,7 +72,6 @@ class ViewModelInitApp : ViewModel() {
     // In ViewModelInitApp.kt, modify setupRealtimeListeners
     fun setupRealtimeListeners(viewModel: ViewModelInitApp) {
         val scope = CoroutineScope(Dispatchers.IO)
-
 
         // Products listener
         _ModelAppsFather.produitsFireBaseRef.addValueEventListener(object : ValueEventListener {
