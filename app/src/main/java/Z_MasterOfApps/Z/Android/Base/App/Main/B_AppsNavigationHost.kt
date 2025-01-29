@@ -1,7 +1,7 @@
 package Z_MasterOfApps.Z.Android.Base.App.Main
 
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_MasterOfApps.Z.Android.Base.App.Main.C_EcranDeDepart.Startup.A_PremierScreenApp
+import Z_MasterOfApps.Z.Android.Base.App.Main.C_EcranDeDepart.Startup.A_StartupScreen
 import Z_MasterOfApps.Z.Android.Base.App.Main.Utils.NavigationBarWithFab
 import Z_MasterOfApps.Z.Android.Base.App.Packages._1.GerantAfficheurGrossistCommend.App.NH_1.id4_DeplaceProduitsVerGrossist.A_id4_DeplaceProduitsVerGrossist
 import Z_MasterOfApps.Z.Android.Base.App.Packages._2._2LocationGpsClients.App.NH_1.id1_ClientsLocationGps.A_id1_ClientsLocationGps
@@ -66,7 +66,7 @@ fun AppNavigationHost(
                             modifier = Modifier.fillMaxSize()
                         ) {
                             composable(Screens.Startup.route) {
-                                A_PremierScreenApp(viewModelInitApp = viewModelInitApp)
+                                A_StartupScreen(viewModelInitApp = viewModelInitApp)
                             }
                             composable(Screens.NavHost_1.route) {
                                 A_id4_DeplaceProduitsVerGrossist(viewModelInitApp = viewModelInitApp)

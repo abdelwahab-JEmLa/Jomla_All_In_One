@@ -1,6 +1,9 @@
 package Z_MasterOfApps.Z.Android.Base.App.Main.C_EcranDeDepart.Startup.B.Dialogs
 
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
+import Z_MasterOfApps.Z.Android.Base.App.Main.ViewModel.Extension.ViewModelExtension_Startup
+import Z_MasterOfApps.Z.Android.Base.App.Packages._2._2LocationGpsClients.App.NH_1.id1_ClientsLocationGps.B.Dialogs.Utils.LabelsButton
+import Z_MasterOfApps.Z.Android.Base.App.Packages._2._2LocationGpsClients.App.NH_1.id1_ClientsLocationGps.B.Dialogs.Utils.MenuButton
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -28,14 +31,13 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import Z_MasterOfApps.Z.Android.Base.App.Packages._2._2LocationGpsClients.App.NH_1.id1_ClientsLocationGps.B.Dialogs.Utils.LabelsButton
-import Z_MasterOfApps.Z.Android.Base.App.Packages._2._2LocationGpsClients.App.NH_1.id1_ClientsLocationGps.B.Dialogs.Utils.MenuButton
 import kotlin.math.roundToInt
 
 @Composable
 fun A_OptionsControlsButtons(
     viewModelInitApp: ViewModelInitApp,
     paddingValues: PaddingValues,
+    extensionVM: ViewModelExtension_Startup,
 ) {
     var showMenu by remember { mutableStateOf(false) }
     var showLabels by remember { mutableStateOf(true) }
@@ -69,6 +71,7 @@ fun A_OptionsControlsButtons(
                         viewModelInitApp = viewModelInitApp
                     )
                     B_2_ClearAchatsEtCommendsEtSauvgardHistoriques(
+                        extensionVM=extensionVM,
                         showLabels = showLabels,
                         viewModelInitApp = viewModelInitApp
                     )

@@ -4,6 +4,7 @@ import P0_MainScreen.Ui.Objects.LoadingOverlay
 import Views.P1.Ui.ArticlesGrid.ArticleGridWithScrollbar
 import Views.P1.Ui.Objects.SearchFilterPB
 import Views.P1._ArticlesStartFacade.FloatingActionButtonGroup.FloatingActionButtonGroup
+import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.Packages._3.C_Serveur.App.WorkingOn.Client_JetPack.Models.ArticlesBasesStatsTable
 import Z_MasterOfApps.Z.Android.Base.App.Packages._3.C_Serveur.App.WorkingOn.Client_JetPack.Models.ClientsModel
 import android.util.Log
@@ -51,7 +52,8 @@ fun FragmentStartupScreen(
     isFabVisible: Boolean,
     onClickDonne: () -> Unit,
     onClickToDisplayeConexionWifi: () -> Unit, scrollTiger: Int, onToggleLockHost: () -> Unit,
-    onToggleLockExpandedPricex: () -> Unit, currentClient: ClientsModel?
+    onToggleLockExpandedPricex: () -> Unit, currentClient: ClientsModel?,
+    viewModelInitApp: ViewModelInitApp
 ) {
     var gridColumns by remember { mutableStateOf(2) }
     var showFilter by remember { mutableStateOf(false) }
@@ -79,6 +81,7 @@ fun FragmentStartupScreen(
         onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi,
         scrollTiger, onToggleLockHost = onToggleLockHost,
         onToggleLockExpandedPricex = onToggleLockExpandedPricex, currentClient = currentClient,
+        viewModelInitApp = viewModelInitApp,
     )
 
 }
@@ -101,7 +104,7 @@ fun MainUi(
     onClickDonne: () -> Unit,
     onClickToDisplayeConexionWifi: () -> Unit,
     scrollTiger: Int, onToggleLockHost: () -> Unit, onToggleLockExpandedPricex: () -> Unit,
-    currentClient: ClientsModel?,
+    currentClient: ClientsModel?, viewModelInitApp: ViewModelInitApp,
 ) {
     val scope = rememberCoroutineScope()
     val tag = if (uiState.productDisplayController.isHostPhone) "📱 ServerScreen" else "📱 ClientScreen"
@@ -220,7 +223,7 @@ fun MainUi(
             onChangeGridColumns = onChangeGridColumns,
             onClickToOpenClientsListW = onClickToOpenClientsW,
             onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi, onToggleLockHost = onToggleLockHost,
-            onToggleLockExpandedPricex = onToggleLockExpandedPricex
+            onToggleLockExpandedPricex = onToggleLockExpandedPricex, viewModelInitApp = viewModelInitApp
         )
 
         if (uiState.isLoading) {
@@ -243,7 +246,7 @@ private fun AnimatedFabGroup(
     onChangeGridColumns: (Int) -> Unit,
     onClickToOpenClientsListW: () -> Unit,
     onClickToDisplayeConexionWifi: () -> Unit, onToggleLockHost: () -> Unit,
-    onToggleLockExpandedPricex: () -> Unit,
+    onToggleLockExpandedPricex: () -> Unit, viewModelInitApp: ViewModelInitApp,
 ) {
     Box(                               
         modifier = Modifier
@@ -264,7 +267,8 @@ private fun AnimatedFabGroup(
                 onClickToOpenClientsListW = onClickToOpenClientsListW,
                 onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi,
                 onToggleLockHost,
-                onToggleLockExpandedPricex
+                onToggleLockExpandedPricex,
+                viewModelInitApp
             )
         }
     }

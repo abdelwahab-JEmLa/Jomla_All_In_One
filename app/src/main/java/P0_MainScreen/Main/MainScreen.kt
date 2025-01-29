@@ -107,7 +107,6 @@ fun MainScreen(
                 Box(modifier = Modifier.weight(1f)) {
                     AppNavHost(
                         appViewModels = appViewModels,
-                        viewModelInitApp = viewModelInitApp,
                         navController = navController,
                         onToggleNavBar = { isNavBarVisible = !isNavBarVisible },
                         modifier = Modifier.fillMaxSize(),
@@ -116,7 +115,7 @@ fun MainScreen(
                         onClickToDisplayeConexionWifi = {
                             isDisplayedConnexionWifiVisible = !isDisplayedConnexionWifiVisible
                         },
-                        onToggleLockHost = {lockHost=!lockHost}  ,
+                        onToggleLockHost = {lockHost=!lockHost}, viewModelInitApp = viewModelInitApp,
                     )
 
                     // Disable interactions when not host phone

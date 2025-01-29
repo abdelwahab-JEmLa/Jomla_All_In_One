@@ -1,5 +1,7 @@
 package Views.P1._ArticlesStartFacade.FloatingActionButtonGroup
 
+import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
+import Z_MasterOfApps.Z.Android.Base.App.Main.ViewModel.Extension.ViewModelExtension_Startup
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
@@ -65,6 +67,7 @@ fun FloatingActionButtonGroup(
     onClickToDisplayeConexionWifi: () -> Unit,
     onToggleLockHost: () -> Unit,
     onToggleLockExpandedPricex: () -> Unit,
+    viewModelInitApp: ViewModelInitApp,
     ) {
     var currentGridColumns by remember { mutableIntStateOf(2) }
     var showLabels by remember { mutableStateOf(true) }
@@ -169,6 +172,7 @@ fun FloatingActionButtonGroup(
                                 if (clearDataClickCount == 0) {
                                     clearDataClickCount++
                                 } else {
+                                    ViewModelExtension_Startup(viewModelInitApp)
                                     viewModel.clearSupAICommend()
                                     clearDataClickCount = 0
                                 }
