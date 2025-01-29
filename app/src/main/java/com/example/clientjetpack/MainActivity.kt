@@ -86,7 +86,9 @@ class MainActivity : ComponentActivity() {
             @RequiresApi(Build.VERSION_CODES.Q)
             override fun onPermissionsGranted() {
                 setContent {
-                    MainScreen(appViewModels, )
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        MainScreen(appViewModels, )
+                    }
                 }
             }
 
