@@ -28,7 +28,28 @@ fun B_2_ClearAchatsEtCommendsEtSauvgardHistoriques(
             if (clearDataClickCount == 0) {
                 clearDataClickCount++
             } else {
-                clear(viewModelInitApp)
+                viewModelInitApp._modelAppsFather.produitsMainDataBase.forEach { produit ->
+                    // Safely add current data to history
+                    produit.bonCommendDeCetteCota?.let { currentBonCommend ->
+                        produit.historiqueBonsCommend.add(currentBonCommend)
+                    }
+                    if (produit.bonsVentDeCetteCotaList.isNotEmpty()) {
+                        produit.historiqueBonsVents.addAll(produit.bonsVentDeCetteCotaList)
+                    }
+
+                    // Clear current data
+                    produit.bonCommendDeCetteCota = null
+                    produit.bonsVentDeCetteCota.clear()
+
+                    // Update the product in the database
+                    try {
+                        Firebase.database
+                            .getReference("K_GroupeurBonCommendToSupplierRef").removeValue()
+                        updateProduit(produit, viewModelInitApp)
+                    } catch (e: Exception) {
+                        Log.e("ClearHistory", "Failed to update product ${produit.id}", e)
+                    }
+                }
                 clearDataClickCount = 0
             }
         },
@@ -38,30 +59,4 @@ fun B_2_ClearAchatsEtCommendsEtSauvgardHistoriques(
         labelText = if (clearDataClickCount == 0) "Clear History" else "Click again to confirm",
         containerColor = if (clearDataClickCount == 0) Color(0xFF4CAF50) else Color(0xFFF44336)
     )
-}
-
-fun clear(viewModelInitApp: ViewModelInitApp) {
-    viewModelInitApp._modelAppsFather.produitsMainDataBase.forEach { produit ->
-        // Safely add current data to history
-        produit.bonCommendDeCetteCota?.let { currentBonCommend ->
-            produit.historiqueBonsCommend.add(currentBonCommend)
-        }
-        if (produit.bonsVentDeCetteCotaList.isNotEmpty()) {
-            produit.historiqueBonsVents.addAll(produit.bonsVentDeCetteCotaList)
-        }
-
-        // Clear current data
-        produit.bonCommendDeCetteCota = null
-        produit.bonsVentDeCetteCota.clear()
-
-        // Update the product in the database
-        try {
-            updateProduit(produit, viewModelInitApp)
-            Firebase.database
-                .getReference("K_GroupeurBonCommendToSupplierRef").removeValue()
-
-        } catch (e: Exception) {
-            Log.e("ClearHistory", "Failed to update product ${produit.id}", e)
-        }
-    }
 }
