@@ -49,7 +49,7 @@ fun A_id1_ClientsLocationGps(
     clientEnCourDeVent: Long = 0,
     onUpdateLongAppSetting: () -> Unit = {},
     onClear: () -> Unit,
-    headViewModel: HeadViewModel,
+    headViewModel: HeadViewModel=viewModel(),
 ) {
     val extensionVM = ViewModelExtension_App2_F1(
         viewModel.viewModelScope,

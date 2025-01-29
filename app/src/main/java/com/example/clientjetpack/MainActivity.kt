@@ -86,7 +86,7 @@ class MainActivity : ComponentActivity() {
             @RequiresApi(Build.VERSION_CODES.Q)
             override fun onPermissionsGranted() {
                 setContent {
-                    MainScreen(appViewModels, _, )
+                    MainScreen(appViewModels, )
                 }
             }
 

@@ -5,7 +5,7 @@ import Z_MasterOfApps.Z.Android.Base.App.Main.C_EcranDeDepart.Startup.A_StartupS
 import Z_MasterOfApps.Z.Android.Base.App.Main.Utils.NavigationBarWithFab
 import Z_MasterOfApps.Z.Android.Base.App.Packages._1.GerantAfficheurGrossistCommend.App.NH_1.id4_DeplaceProduitsVerGrossist.A_id4_DeplaceProduitsVerGrossist
 import Z_MasterOfApps.Z.Android.Base.App.Packages._2._2LocationGpsClients.App.NH_1.id1_ClientsLocationGps.A_id1_ClientsLocationGps
-import Z_MasterOfApps.Z.Android.Packages._1.GerantAfficheurGrossistCommend.App.NH_2.id1_GerantDefinirePosition.A_id1_GerantDefinirePosition
+import Z_MasterOfApps.Z.Android.Base.App.Packages._1.GerantAfficheurGrossistCommend.App.NH_2.id1_GerantDefinirePosition.A_id1_GerantDefinirePosition
 import Z_MasterOfApps.Z.Android.Base.App.Packages._1.GerantAfficheurGrossistCommend.App.NH_3.id2_TravaillieurListProduitAchercheChezLeGrossist.A_Id2_TravaillieurListProduitAchercheChezLeGrossist
 import Z_MasterOfApps.Z.Android.Packages._1.GerantAfficheurGrossistCommend.App.NH_4.id3_AfficheurDesProduitsPourLeColecteur.A_id3_AfficheurDesProduitsPourLeColecteur
 import Z_MasterOfApps.Z.Android.Packages._1.GerantAfficheurGrossistCommend.App.NH_5.ID5_VerificationProduitAcGrossist.A_ID5_VerificationProduitAcGrossist
@@ -84,9 +84,7 @@ fun AppNavigationHost(
                                 A_id3_AfficheurDesProduitsPourLeColecteur(viewModelInitApp = viewModelInitApp)
                             }
                             composable(Screens.NavHostA2_1.route) {
-                                A_id1_ClientsLocationGps(viewModel = viewModelInitApp, onClear = {},
-                                    headViewModel = null
-                                )
+                                A_id1_ClientsLocationGps(viewModel = viewModelInitApp,onClear = {},)
                             }
                         }
                     }
