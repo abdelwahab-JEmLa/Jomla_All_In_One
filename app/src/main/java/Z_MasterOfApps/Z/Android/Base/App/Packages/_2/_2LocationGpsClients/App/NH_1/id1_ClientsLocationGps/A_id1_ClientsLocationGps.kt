@@ -8,6 +8,8 @@ import Z_MasterOfApps.Z.Android.Base.App.Packages._2._2LocationGpsClients.App.NH
 import Z_MasterOfApps.Z.Android.Base.App.Packages._2._2LocationGpsClients.App.NH_1.id1_ClientsLocationGps.B.Dialogs.Utils.DEFAULT_LONGITUDE
 import Z_MasterOfApps.Z.Android.Base.App.Packages._2._2LocationGpsClients.App.NH_1.id1_ClientsLocationGps.B.Dialogs.Utils.getCurrentLocation
 import Z_MasterOfApps.Z.Android.Base.App.Packages._2._2LocationGpsClients.App.NH_1.id1_ClientsLocationGps.ViewModel.Extension.ViewModelExtension_App2_F1
+import Z_MasterOfApps.Z.Android.Res.XmlsFilesHandler
+import Z_MasterOfApps.Z.Android.Res.XmlsFilesHandler.Companion.xmlResources
 import android.content.Context
 import android.widget.LinearLayout
 import androidx.compose.foundation.background
@@ -32,8 +34,6 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.clientjetpack.Res.XmlsFilesHandler
-import com.example.clientjetpack.Res.XmlsFilesHandler.Companion.xmlResources
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint

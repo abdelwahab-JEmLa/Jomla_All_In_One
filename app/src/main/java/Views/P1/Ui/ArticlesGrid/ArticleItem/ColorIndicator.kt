@@ -1,6 +1,6 @@
 package Views.P1.Ui.ArticlesGrid.ArticleItem
 import Views.P1.Ui.ArticlesGrid.AutoResizedText
-import Z_MasterOfApps.Z.Android.Actions._2.Client_JetPack.Models.ColorsArticlesTabelle
+import Z_MasterOfApps.Z.Android.Base.App.Packages._3.C_Serveur.App.WorkingOn.Client_JetPack.Models.ColorsArticlesTabelle
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box

@@ -1,7 +1,7 @@
 package P5_DialogeClientsEditer
 
-import Z_MasterOfApps.Z.Android.Actions._2.Client_JetPack.Models.ClientsModel
-import Z_MasterOfApps.Z.Android.Actions._2.Client_JetPack.Models.SoldArticlesTabelle
+import Z_MasterOfApps.Z.Android.Base.App.Packages._3.C_Serveur.App.WorkingOn.Client_JetPack.Models.ClientsModel
+import Z_MasterOfApps.Z.Android.Base.App.Packages._3.C_Serveur.App.WorkingOn.Client_JetPack.Models.SoldArticlesTabelle
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

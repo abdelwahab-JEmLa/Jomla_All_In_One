@@ -1,4 +1,4 @@
-package com.example.clientjetpack.Res
+package Z_MasterOfApps.Z.Android.Res
 
 import com.example.clientjetpack.R
 
