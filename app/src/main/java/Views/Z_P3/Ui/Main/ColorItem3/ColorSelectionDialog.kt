@@ -1,9 +1,9 @@
 package Views.Z_P3.Ui.Main.ColorItem3
 
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_MasterOfApps.Z.Android.Base.App.Packages._3.C_Serveur.App.WorkingOn.Client_JetPack.Models.ClientsModel
-import Z_MasterOfApps.Z.Android.Base.App.Packages._3.C_Serveur.App.WorkingOn.Client_JetPack.Models.ColorsArticlesTabelle
-import Z_MasterOfApps.Z.Android.Base.App.Packages._3.C_Serveur.App.WorkingOn.Client_JetPack.Models.SoldArticlesTabelle
+import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ClientsModel
+import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle
+import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.SoldArticlesTabelle
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

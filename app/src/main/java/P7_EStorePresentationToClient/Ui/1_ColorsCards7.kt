@@ -1,7 +1,7 @@
 package P7_EStorePresentationToClient.Ui
 
-import Z_MasterOfApps.Z.Android.Base.App.Packages._3.C_Serveur.App.WorkingOn.Client_JetPack.Models.ArticlesBasesStatsTable
-import Z_MasterOfApps.Z.Android.Base.App.Packages._3.C_Serveur.App.WorkingOn.Client_JetPack.Models.ColorsArticlesTabelle
+import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
+import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

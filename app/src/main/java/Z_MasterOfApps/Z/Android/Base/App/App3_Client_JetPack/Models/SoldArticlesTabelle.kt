@@ -1,4 +1,4 @@
-package Z_MasterOfApps.Z.Android.Base.App.Packages._3.C_Serveur.App.WorkingOn.Client_JetPack.Models
+package Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

@@ -5,8 +5,8 @@ import Views.P1.Ui.ArticlesGrid.Res.Scrollbar
 import Views.P1.Ui.Objects.CategoryHeader
 import Views.P1.Ui.Objects.ScrolleAdBanner
 import Views.P1._ArticlesStartFacade.ArticlePagingSource
-import Z_MasterOfApps.Z.Android.Base.App.Packages._3.C_Serveur.App.WorkingOn.Client_JetPack.Models.ArticlesBasesStatsTable
-import Z_MasterOfApps.Z.Android.Base.App.Packages._3.C_Serveur.App.WorkingOn.Client_JetPack.Models.ClientsModel
+import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
+import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ClientsModel
 import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.App.CategoriesTabelle
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement

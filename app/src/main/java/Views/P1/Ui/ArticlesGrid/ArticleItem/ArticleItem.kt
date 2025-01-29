@@ -5,8 +5,8 @@ import Views.P1.Ui.ArticlesGrid.ImageDisplayer1
 import Views.P1.Ui.ArticlesGrid.checkImageExists
 import Views.P1.Ui.ArticlesGrid.countColors
 import Views.P1.Ui.ArticlesGrid.getColorIdForIndex
-import Z_MasterOfApps.Z.Android.Base.App.Packages._3.C_Serveur.App.WorkingOn.Client_JetPack.Models.ArticlesBasesStatsTable
-import Z_MasterOfApps.Z.Android.Base.App.Packages._3.C_Serveur.App.WorkingOn.Client_JetPack.Models.ClientsModel
+import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
+import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ClientsModel
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
