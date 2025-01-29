@@ -2,6 +2,7 @@ package Z_MasterOfApps.Z.Android.Base.App.Main.C_EcranDeDepart.Startup.B.Dialogs
 
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.updateProduit
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
+import Z_MasterOfApps.Z.Android.Base.App.Packages._2._2LocationGpsClients.App.NH_1.id1_ClientsLocationGps.B.Dialogs.ControlButton
 import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -12,7 +13,8 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
-import Z_MasterOfApps.Z.Android.Base.App.Packages._2._2LocationGpsClients.App.NH_1.id1_ClientsLocationGps.B.Dialogs.ControlButton
+import com.google.firebase.Firebase
+import com.google.firebase.database.database
 
 @Composable
 fun B_2_ClearAchatsEtCommendsEtSauvgardHistoriques(
@@ -26,26 +28,7 @@ fun B_2_ClearAchatsEtCommendsEtSauvgardHistoriques(
             if (clearDataClickCount == 0) {
                 clearDataClickCount++
             } else {
-                viewModelInitApp._modelAppsFather.produitsMainDataBase.forEach { produit ->
-                    // Safely add current data to history
-                    produit.bonCommendDeCetteCota?.let { currentBonCommend ->
-                        produit.historiqueBonsCommend.add(currentBonCommend)
-                    }
-                    if (produit.bonsVentDeCetteCotaList.isNotEmpty()) {
-                        produit.historiqueBonsVents.addAll(produit.bonsVentDeCetteCotaList)
-                    }
-
-                    // Clear current data
-                    produit.bonCommendDeCetteCota = null
-                    produit.bonsVentDeCetteCota.clear()
-
-                    // Update the product in the database
-                    try {
-                        updateProduit(produit, viewModelInitApp)
-                    } catch (e: Exception) {
-                        Log.e("ClearHistory", "Failed to update product ${produit.id}", e)
-                    }
-                }
+                clear(viewModelInitApp)
                 clearDataClickCount = 0
             }
         },
@@ -55,4 +38,30 @@ fun B_2_ClearAchatsEtCommendsEtSauvgardHistoriques(
         labelText = if (clearDataClickCount == 0) "Clear History" else "Click again to confirm",
         containerColor = if (clearDataClickCount == 0) Color(0xFF4CAF50) else Color(0xFFF44336)
     )
+}
+
+fun clear(viewModelInitApp: ViewModelInitApp) {
+    viewModelInitApp._modelAppsFather.produitsMainDataBase.forEach { produit ->
+        // Safely add current data to history
+        produit.bonCommendDeCetteCota?.let { currentBonCommend ->
+            produit.historiqueBonsCommend.add(currentBonCommend)
+        }
+        if (produit.bonsVentDeCetteCotaList.isNotEmpty()) {
+            produit.historiqueBonsVents.addAll(produit.bonsVentDeCetteCotaList)
+        }
+
+        // Clear current data
+        produit.bonCommendDeCetteCota = null
+        produit.bonsVentDeCetteCota.clear()
+
+        // Update the product in the database
+        try {
+            updateProduit(produit, viewModelInitApp)
+            Firebase.database
+                .getReference("K_GroupeurBonCommendToSupplierRef").removeValue()
+
+        } catch (e: Exception) {
+            Log.e("ClearHistory", "Failed to update product ${produit.id}", e)
+        }
+    }
 }
