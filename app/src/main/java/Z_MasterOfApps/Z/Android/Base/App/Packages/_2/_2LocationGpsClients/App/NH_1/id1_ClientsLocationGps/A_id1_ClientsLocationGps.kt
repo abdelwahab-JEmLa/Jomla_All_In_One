@@ -32,6 +32,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.clientjetpack.Res.XmlsFilesHandler
+import com.example.clientjetpack.Res.XmlsFilesHandler.Companion.xmlResources
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
@@ -45,7 +47,6 @@ fun A_id1_ClientsLocationGps(
     viewModel: ViewModelInitApp = viewModel(),
     clientEnCourDeVent: Long = 0,
     onUpdateLongAppSetting: () -> Unit = {},
-    xmlResources: List<Pair<String, Int>>? = null,
 ) {
     val extensionVM = ViewModelExtension_App2_F1(
         viewModel.viewModelScope,
@@ -126,14 +127,14 @@ fun A_id1_ClientsLocationGps(
                 setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
 
                 // Using companion object to access xmlResources
-                val markerInfoWindowLayout = xmlResources
-                    ?.find { it.first == "marker_info_window" }?.second
+                val markerInfoWindowLayout = XmlsFilesHandler.xmlResources
+                    .find { it.first == "marker_info_window" }?.second
                     ?: throw IllegalStateException("marker_info_window layout not found")
 
                 infoWindow = MarkerInfoWindow(markerInfoWindowLayout, mapView)
 
                 // Using companion object to access xmlResources
-                val containerResourceId = xmlResources
+                val containerResourceId = XmlsFilesHandler.xmlResources
                     .find { it.first == "info_window_container" }?.second
                     ?: throw IllegalStateException("info_window_container ID not found")
 

@@ -15,7 +15,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.clientjetpack.Modules.AppDatabase
 import com.example.clientjetpack.Modules.PermissionHandler
-import com.example.clientjetpack.Res.XmlsFilesHandler
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import com.google.firebase.FirebaseApp
 
@@ -87,11 +86,7 @@ class MainActivity : ComponentActivity() {
             @RequiresApi(Build.VERSION_CODES.Q)
             override fun onPermissionsGranted() {
                 setContent {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        MainScreen(appViewModels,
-                            xmlResources= XmlsFilesHandler.xmlResources
-                        )
-                    }
+                    MainScreen(appViewModels, )
                 }
             }
 

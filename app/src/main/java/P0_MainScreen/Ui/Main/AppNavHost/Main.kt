@@ -38,7 +38,6 @@ fun AppNavHost(
     onClickDonne: () -> Unit,
     onClickToDisplayeConexionWifi: () -> Unit,
     onToggleLockHost: () -> Unit,
-    xmlResources: List<Pair<String, Int>>
 ) {
     val uiState by appViewModels.headViewModel.uiState.collectAsState()
 
@@ -71,8 +70,7 @@ fun AppNavHost(
         ) {
 
             app2(viewModelInitApp, clientEnCourDeVent, navController
-                ,
-                xmlResources=xmlResources)
+            )
 
             composable(Screen.EditDatabaseWithCreateNewArticles.route) {
                 Box(modifier = Modifier.fillMaxSize()) {

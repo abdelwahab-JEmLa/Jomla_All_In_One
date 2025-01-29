@@ -154,8 +154,8 @@ class LocationTracker(
             // Créer le marker de direction avec l'icône personnalisée
             directionMarker = Marker(mapView).apply {
                 icon = ContextCompat.getDrawable(context,xmlResources
-                    ?.find { it.first == "R.drawable.location_arrow" }?.second
-                    ?: throw IllegalStateException("marker_info_window layout not found"))
+                    ?.find { it.first == "location_arrow" }?.second
+                    ?: throw IllegalStateException(" layout not found"))
                 setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
                 icon?.setTint(android.graphics.Color.BLUE) // Rendre l'icône plus visible
             }

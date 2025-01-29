@@ -19,7 +19,6 @@ fun NavGraphBuilder.app2(
     viewModelInitApp: ViewModelInitApp,
     clientEnCourDeVent: Long,
     navController: NavHostController,
-    xmlResources: List<Pair<String, Int>>
 ) {
     composable(Screen.A_ClientsLocationGps.route) {
         A_id1_ClientsLocationGps(
@@ -34,7 +33,6 @@ fun NavGraphBuilder.app2(
                     launchSingleTop = true
                 }
             } ,
-            xmlResources=xmlResources
         )
     }
 }
@@ -59,11 +57,11 @@ private fun PreviewApp2_F1() {
         }
         return
     }
- /*   // Preview version without real ViewModel
-    A_ClientsLocationGps(
+    // Preview version without real ViewModel
+    A_id1_ClientsLocationGps(
         modifier = Modifier.fillMaxSize()
     , viewModelInitApp, onUpdateLongAppSetting = {}
-    )    */
+    )
 }
 
 
