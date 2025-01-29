@@ -1,10 +1,10 @@
-package Z_MasterOfApps.Z.Android.Packages._3.C_Serveur.App.Client_JetPack.Package_3
+package Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Package_3
 
+import Z_MasterOfApps.Kotlin.Model.ClientsDataBase
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.ClientBonVentModel
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.GrossistBonCommandes
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ClientsModel
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.SoldArticlesTabelle
 import Z_MasterOfApps.Z_AppsFather.Kotlin._4.Modules.LogUtils.LogUtils
@@ -16,7 +16,7 @@ import java.time.format.DateTimeFormatter
 fun calQuantityButton(
     quantity: Int,
     currentSale: SoldArticlesTabelle?,
-    currentClient: ClientsModel?,
+    currentClient: ClientsDataBase?,
     colorDetails: ColorsArticlesTabelle,
     viewModelInitApp: ViewModelInitApp
 ) {
@@ -52,7 +52,7 @@ fun calQuantityButton(
         )
 
         val existingSaleIndex = product.bonsVentDeCetteCota
-            .indexOfFirst { it.clientInformations?.id == currentClient.idClientsSu }
+            .indexOfFirst { it.clientInformations?.id == currentClient.id }
 
         if (existingSaleIndex != -1) {
             val existingSale = product.bonsVentDeCetteCota[existingSaleIndex]
@@ -69,9 +69,9 @@ fun calQuantityButton(
                 vid = System.currentTimeMillis()
             ).apply {
                 clientInformations = ClientBonVentModel.ClientInformations(
-                    id = currentClient.idClientsSu,
-                    nom = currentClient.nomClientsSu,
-                    couleur = currentClient.couleurSu
+                    id = currentClient.id,
+                    nom = currentClient.nom,
+                    couleur = currentClient.statueDeBase.couleur
                 )
                 colours_Achete.add(colorPurchase)
             }

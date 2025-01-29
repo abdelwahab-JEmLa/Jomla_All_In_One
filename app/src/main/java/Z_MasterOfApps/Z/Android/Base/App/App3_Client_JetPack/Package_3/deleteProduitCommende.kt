@@ -3,13 +3,13 @@ package Z_MasterOfApps.Z.Android.Packages._3.C_Serveur.App.Client_JetPack.Packag
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.produitsFireBaseRef
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ClientsModel
+import Z_MasterOfApps.Kotlin.Model.ClientsDataBase
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.SoldArticlesTabelle
 
 fun deleteProduitCommende(
     viewModelInitApp: ViewModelInitApp,
     currentSale: SoldArticlesTabelle,
-    currentClient: ClientsModel?
+    currentClient: ClientsDataBase?
 ) {
     viewModelInitApp._modelAppsFather.produitsMainDataBase
         .removeIf { it.id == currentSale.idArticle && it.itsTempProduit }
@@ -24,7 +24,7 @@ fun deleteProduitCommende(
 
             product.bonsVentDeCetteCota
                 .removeIf { bonsVent ->
-                    bonsVent.clientInformations?.id == currentClient?.idClientsSu
+                    bonsVent.clientInformations?.id == currentClient?.id
                 }.also {
                     produitsFireBaseRef
                         .child(currentSale.idArticle.toString())

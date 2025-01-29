@@ -1,6 +1,6 @@
 package P5_DialogeClientsEditer
 
-import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ClientsModel
+import Z_MasterOfApps.Kotlin.Model.ClientsDataBase
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.SoldArticlesTabelle
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
@@ -50,8 +50,8 @@ private const val TAG = "ClientSelectionDialog"
 
 @Composable
 fun ClientSelectionDialog(
-    clients: List<ClientsModel>,
-    onClientSelected: (ClientsModel) -> Unit,
+    clients: List<ClientsDataBase>,
+    onClientSelected: (ClientsDataBase) -> Unit,
     onDismiss: () -> Unit,
     soldArticle: List<SoldArticlesTabelle?>,
     viewModel: HeadViewModel
@@ -63,7 +63,7 @@ fun ClientSelectionDialog(
     LaunchedEffect(clients, soldArticle) {
         Log.d(TAG, "Initial Data: ${clients.size} clients, ${soldArticle.size} sold articles")
         clients.forEach { client ->
-            Log.v(TAG, "Client ID: ${client.idClientsSu}, Name: ${client.nomClientsSu}")
+            Log.v(TAG, "Client ID: ${client.id}, Name: ${client.nom}")
         }
     }
 
@@ -133,8 +133,8 @@ fun ClientSelectionDialog(
 
                     val filteredClients = if (searchQuery.length >= 2) {
                         clients.filter { client ->
-                            client.nomClientsSu.contains(searchQuery, ignoreCase = true).also { matches ->
-                                Log.v(TAG, "Filter: ${client.nomClientsSu} matches search: $matches")
+                            client.nom.contains(searchQuery, ignoreCase = true).also { matches ->
+                                Log.v(TAG, "Filter: ${client.nom} matches search: $matches")
                             }
                         }
                     } else {
@@ -142,8 +142,8 @@ fun ClientSelectionDialog(
                     }
 
                     filteredClients.groupBy { client ->
-                        soldArticle.any { it?.clientSoldToItId == client.idClientsSu }.also { hasOrders ->
-                            Log.v(TAG, "Client ${client.idClientsSu} has orders: $hasOrders")
+                        soldArticle.any { it?.clientSoldToItId == client.id }.also { hasOrders ->
+                            Log.v(TAG, "Client ${client.id} has orders: $hasOrders")
                         }
                     }
                 }
@@ -164,15 +164,15 @@ fun ClientSelectionDialog(
                         items(
                             items = groupedClients[true] ?: emptyList(),
                             key = { client ->
-                                "active_${client.idClientsSu}_${UUID.randomUUID()}".also { key ->
-                                    Log.v(TAG, "Generated key for active client ${client.idClientsSu}: $key")
+                                "active_${client.id}_${UUID.randomUUID()}".also { key ->
+                                    Log.v(TAG, "Generated key for active client ${client.id}: $key")
                                 }
                             }
                         ) { client ->
                             ClientItem(
                                 client = client,
                                 onClick = {
-                                    Log.i(TAG, "Active client selected: ${client.idClientsSu}")
+                                    Log.i(TAG, "Active client selected: ${client.id}")
                                     onClientSelected(client)
                                     onDismiss()
                                 }
@@ -201,15 +201,15 @@ fun ClientSelectionDialog(
                         items(
                             items = groupedClients[false] ?: emptyList(),
                             key = { client ->
-                                "inactive_${client.idClientsSu}_${UUID.randomUUID()}".also { key ->
-                                    Log.v(TAG, "Generated key for inactive client ${client.idClientsSu}: $key")
+                                "inactive_${client.id}_${UUID.randomUUID()}".also { key ->
+                                    Log.v(TAG, "Generated key for inactive client ${client.id}: $key")
                                 }
                             }
                         ) { client ->
                             ClientItem(
                                 client = client,
                                 onClick = {
-                                    Log.i(TAG, "Inactive client selected: ${client.idClientsSu}")
+                                    Log.i(TAG, "Inactive client selected: ${client.id}")
                                     onClientSelected(client)
                                     onDismiss()
                                 }
@@ -287,11 +287,11 @@ private fun ListHeader(text: String) {
 
 @Composable
 private fun ClientItem(
-    client: ClientsModel,
+    client: ClientsDataBase,
     onClick: () -> Unit
 ) {
-    LaunchedEffect(client.idClientsSu) {
-        Log.v(TAG, "Rendering ClientItem for ID: ${client.idClientsSu}")
+    LaunchedEffect(client.id) {
+        Log.v(TAG, "Rendering ClientItem for ID: ${client.id}")
     }
 
     Surface(
@@ -312,24 +312,12 @@ private fun ClientItem(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
-                    text = client.nomClientsSu,
+                    text = client.nom,
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                if (client.numberTelephoney.isNotBlank()) {
-                    Text(
-                        text = client.numberTelephoney,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
-                    )
-                }
-                if (client.currentCreditBalance > 0) {
-                    Text(
-                        text = "Credit: ${client.currentCreditBalance}",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.error
-                    )
-                }
+
+
             }
             Icon(
                 Icons.Default.ChevronRight,

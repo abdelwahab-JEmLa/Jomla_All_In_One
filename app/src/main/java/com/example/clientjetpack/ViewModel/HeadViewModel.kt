@@ -1,7 +1,7 @@
 package com.example.clientjetpack.ViewModel
 
+import Z_MasterOfApps.Kotlin.Model.ClientsDataBase
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
-import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ClientsModel
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.SoldArticlesTabelle
 import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.App.CategoriesTabelle
@@ -412,30 +412,7 @@ open class HeadViewModel(
         }
     }
     fun addNewClient(name: String) {
-        viewModelScope.launch {
-            try {
-                val maxId = _uiState.value.clientsModel.maxOfOrNull { it.idClientsSu } ?: 0
-                val newClient = ClientsModel(
-                    idClientsSu = maxId + 1,
-                    nomClientsSu = name
-                )
 
-                // Add to local state
-                _uiState.update { current ->
-                    current.copy(clientsModel = current.clientsModel + newClient)
-                }
-
-                // Add to Firebase
-                refClientsTabelle.child(newClient.idClientsSu.toString()).setValue(newClient)
-
-                // Add to Room database
-                database.clientsModelDao().insert(newClient)
-
-
-            } catch (e: Exception) {
-                _uiState.update { it.copy(error = "Failed to add client: ${e.message}") }
-            }
-        }
     }
     // Add a callback for navigation
     private var _onNavigateToSellerProduct = { _: Long -> }
@@ -846,7 +823,6 @@ open class HeadViewModel(
                     "categories" to _uiState.value.categories,
                     "colorsArticlesTabelleModel" to _uiState.value.colorsArticlesTabelleModel,
                     "soldArticlesModel" to _uiState.value.soldArticlesModel,
-                    "clientsModel" to _uiState.value.clientsModel,
                     "suppliers" to _uiState.value.suppliers,
                     "backupTimestamp" to timestamp,
                     "backupDate" to SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date(timestamp))
@@ -1013,9 +989,8 @@ open class HeadViewModel(
     private suspend fun clientsInitialize(fl: Float) {
         val clientsSnapshot = refClientsTabelle.get().await()
         val clients = clientsSnapshot.children.mapNotNull { snapshot ->
-            snapshot.getValue(ClientsModel::class.java)
+            snapshot.getValue(ClientsDataBase::class.java)
         }
-        database.clientsModelDao().insertAll(clients)
         updateLoadingProgress(fl)
     }
 
@@ -1040,14 +1015,7 @@ open class HeadViewModel(
         updateLoadingProgress(fl)
     }
 
-    // Add this function to your HeadViewModel class
-    fun updateClients(clients: List<ClientsModel>) {
-        _uiState.update { currentState ->
-            currentState.copy(
-                clientsModel = clients
-            )
-        }
-    }
+
     private suspend fun loadDataOfUiStateFromRoom() {
         try {
             setLoading(true)
@@ -1064,7 +1032,6 @@ open class HeadViewModel(
             val categories = database.categoriesModelDao().getAll()
             val colors = database.colorsArticlesDao().getAllOrdred()
             val soldArticles = database.soldArticlesModelDao().getAll()
-            val clients = database.clientsModelDao().getAll()
             val devicesTypeManager = database.devicesTypeManagerDao().getAll()
 
             val diviseurDeDisplayProductForEachClient = database.diviseurDeDisplayProductForEachClientDao().getAll()
@@ -1076,7 +1043,6 @@ open class HeadViewModel(
                 categories = categories,
                 colorsArticlesTabelleModel = colors,
                 soldArticlesModel = soldArticles,
-                clientsModel = clients,
                 devicesTypeManager= devicesTypeManager,
 
                 diviseurDeDisplayProductForEachClient= diviseurDeDisplayProductForEachClient,

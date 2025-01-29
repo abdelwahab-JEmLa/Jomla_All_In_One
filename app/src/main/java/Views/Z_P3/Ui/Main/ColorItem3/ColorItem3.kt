@@ -3,7 +3,7 @@ package Views.Z_P3.Ui.Main.ColorItem3
 import Views.Z_P3.Ui.Objects.ImageDisplayer3
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
-import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ClientsModel
+import Z_MasterOfApps.Kotlin.Model.ClientsDataBase
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.SoldArticlesTabelle
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Package_3._DisplayeProductInfosToSeller
@@ -58,7 +58,7 @@ fun ColorItem3(
     height: Dp,
     updateColorToBeMain: (Long) -> Unit,
     viewModelInitApp: ViewModelInitApp,
-    currentClient: ClientsModel?,
+    currentClient: ClientsDataBase?,
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
 ) {
     var showDialog by remember { mutableStateOf(false) }

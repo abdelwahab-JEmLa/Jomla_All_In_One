@@ -1,8 +1,8 @@
 package Views.Package_4.SoldCartScreen
 
+import Z_MasterOfApps.Kotlin.Model.ClientsDataBase
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
-import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ClientsModel
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.SoldArticlesTabelle
 import Z_MasterOfApps.Z.Android.Packages._3.C_Serveur.App.Client_JetPack.Package_4._SoldCartScreen
@@ -70,7 +70,7 @@ import java.io.File
 fun SoldCartScreen(
     viewModel: HeadViewModel,
     modifier: Modifier = Modifier,
-    clientBuyerNow: ClientsModel? = null,
+    clientBuyerNow: ClientsDataBase? = null,
     uiState: UiState,
     onConfirmOrder: () -> Unit, viewModelInitApp: ViewModelInitApp
 ) {
@@ -89,7 +89,7 @@ fun SoldCartScreen(
                     ) > 0
 
             clientBuyerNow?.let { client ->
-                soldArticle.clientSoldToItId == client.idClientsSu && hasQuantity
+                soldArticle.clientSoldToItId == client.id && hasQuantity
             } ?: false
         }
 
@@ -181,7 +181,7 @@ fun SoldArticlesTabelle.getTotalQuantity(): Int {
 
 @Composable
 fun CartSummaryCard(
-    client: ClientsModel?,
+    client: ClientsDataBase?,
     itemCount: Int,
     totalPrice: Double,
     onConfirmOrder: () -> Unit
@@ -197,7 +197,7 @@ fun CartSummaryCard(
             // Client Info
             client?.let {
                 Text(
-                    text = "العميل: ${it.nomClientsSu}",
+                    text = "العميل: ${it.nom}",
                     style = MaterialTheme.typography.titleMedium
                 )
             }
@@ -303,7 +303,7 @@ fun CartItem(
     colors: List<ColorsArticlesTabelle>,
     viewModel: HeadViewModel,
     onOpenArticleStats: (ArticlesBasesStatsTable, Int) -> Unit,
-    uiState: UiState, viewModelInitApp: ViewModelInitApp, clientBuyerNow: ClientsModel
+    uiState: UiState, viewModelInitApp: ViewModelInitApp, clientBuyerNow: ClientsDataBase
 ) {
     ElevatedCard(
         elevation = CardDefaults.elevatedCardElevation(
@@ -443,7 +443,7 @@ private fun ColorItemWithQuantity(
     colors: List<ColorsArticlesTabelle>,
     modifier: Modifier = Modifier,
     viewModelInitApp: ViewModelInitApp,
-    clientBuyerNow: ClientsModel
+    clientBuyerNow: ClientsDataBase
 ) {
     ElevatedCard(
         modifier = modifier

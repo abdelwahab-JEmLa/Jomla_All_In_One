@@ -1,10 +1,9 @@
 package com.example.clientjetpack.Modules
 
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
-import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.App.CategoriesTabelle
-import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ClientsModel
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.SoldArticlesTabelle
+import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.App.CategoriesTabelle
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -131,19 +130,6 @@ interface SoldArticlesTabelleDao{
         block()
     }
 }
-
-@Dao
-interface ClientsModelDao{
-    @Query("SELECT * FROM ClientsModel ORDER BY vidSu")
-    suspend fun getAll(): MutableList<ClientsModel>
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(clientsModel: ClientsModel)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(clientsModel: List<ClientsModel>)
-}
-
 
 @Dao
 interface AppSettingsSaverModelDao{

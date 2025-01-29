@@ -8,7 +8,7 @@ import Views.Z_P3.Ui.Objects.confirmExitDialog
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Package_3._DisplayeProductInfosToSeller
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
-import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ClientsModel
+import Z_MasterOfApps.Kotlin.Model.ClientsDataBase
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.SoldArticlesTabelle
 import androidx.compose.foundation.layout.Box
@@ -43,7 +43,7 @@ fun P3DisplayeProductInfosToSeller(
     reloadTrigger: Int,
     modifier: Modifier = Modifier, lockExpandedPrices: Boolean,
     onToggleLockExpandedPricex: () -> Unit, viewModelInitApp: ViewModelInitApp,
-    currentClient: ClientsModel?,
+    currentClient: ClientsDataBase?,
 ) {
     val currentSale by viewModel.currentSaleInWindows.collectAsState()
     val articlesBaseStats = currentSale?.let { sale ->
@@ -88,7 +88,7 @@ fun MainUi(
     lockExpandedPrices: Boolean,
     onToggleLockExpandedPricex: () -> Unit,
     viewModelInitApp: ViewModelInitApp,
-    currentClient: ClientsModel?,
+    currentClient: ClientsDataBase?,
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>
 ) {
     var showConfirmDialog by remember { mutableStateOf(false) }

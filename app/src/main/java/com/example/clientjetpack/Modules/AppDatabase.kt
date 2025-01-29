@@ -1,10 +1,9 @@
 package com.example.clientjetpack.Modules
 
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
-import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.App.CategoriesTabelle
-import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ClientsModel
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.SoldArticlesTabelle
+import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.App.CategoriesTabelle
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
@@ -22,7 +21,6 @@ import java.util.Date
         CategoriesTabelle::class,
         ColorsArticlesTabelle::class,
         SoldArticlesTabelle::class,
-        ClientsModel::class,
         AppSettingsSaverModel::class ,
         DevicesTypeManager::class ,
 
@@ -40,7 +38,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun categoriesModelDao(): CategoriesModelDao
     abstract fun colorsArticlesDao(): ColorsArticlesDao
     abstract fun soldArticlesModelDao(): SoldArticlesTabelleDao
-    abstract fun clientsModelDao(): ClientsModelDao
     abstract fun appSettingsSaverModelDao(): AppSettingsSaverModelDao
     abstract fun devicesTypeManagerDao(): DevicesTypeManagerDao
     abstract fun diviseurDeDisplayProductForEachClientDao(): DiviseurDeDisplayProductForEachClientDao

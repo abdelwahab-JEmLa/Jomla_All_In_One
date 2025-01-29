@@ -3,7 +3,7 @@ package Views.Z_P3.Ui.Main
 import Views.Z_P3.Ui.Main.ColorItem3.ColorItem3
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
-import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ClientsModel
+import Z_MasterOfApps.Kotlin.Model.ClientsDataBase
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.SoldArticlesTabelle
 import androidx.compose.foundation.layout.Arrangement
@@ -40,7 +40,7 @@ fun ColorSelectionSection(
     stats: ArticlesBasesStatsTable,
     colorsArticlesTabelleModel: List<ColorsArticlesTabelle>,
     viewModel: HeadViewModel,
-    reloadTrigger: Int, viewModelInitApp: ViewModelInitApp, currentClient: ClientsModel?,
+    reloadTrigger: Int, viewModelInitApp: ViewModelInitApp, currentClient: ClientsDataBase?,
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
 ) {
     var mainColorId by remember { mutableStateOf(stats.idcolor1) }

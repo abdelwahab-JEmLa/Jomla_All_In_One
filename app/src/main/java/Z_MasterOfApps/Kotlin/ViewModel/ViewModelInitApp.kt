@@ -71,8 +71,10 @@ class ViewModelInitApp : ViewModel() {
         }
     }
 
+    // In ViewModelInitApp.kt, modify setupRealtimeListeners
     fun setupRealtimeListeners(viewModel: ViewModelInitApp) {
         val scope = CoroutineScope(Dispatchers.IO)
+
 
         // Products listener
         _ModelAppsFather.produitsFireBaseRef.addValueEventListener(object : ValueEventListener {
@@ -95,17 +97,27 @@ class ViewModelInitApp : ViewModel() {
         })
 
         // Clients listener
+        // Modified Clients listener
         ClientsDataBase.refClientsDataBase.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 scope.launch {
-                    val clients = snapshot.children.mapNotNull {
-                        LoadFromFirebaseProduits.parseClient(it)
+                    try {
+                        val clients = snapshot.children.mapNotNull { childSnapshot ->
+                            // Add explicit key handling
+                            val client = LoadFromFirebaseProduits.parseClient(childSnapshot)
+                            client?.let {
+                                it.copy(id = childSnapshot.key?.toLongOrNull() ?: it.id)
+                            }
+                        }
+
+                        viewModel.modelAppsFather.clientDataBaseSnapList.apply {
+                            clear()
+                            addAll(clients)
+                        }
+                        Log.d("Firebase", "Real-time clients updated: ${clients.size} items")
+                    } catch (e: Exception) {
+                        Log.e("Firebase", "Failed to parse clients", e)
                     }
-                    viewModel.modelAppsFather.clientDataBaseSnapList.apply {
-                        clear()
-                        addAll(clients)
-                    }
-                    Log.d("Firebase", "Real-time clients updated: ${clients.size} items")
                 }
             }
 
