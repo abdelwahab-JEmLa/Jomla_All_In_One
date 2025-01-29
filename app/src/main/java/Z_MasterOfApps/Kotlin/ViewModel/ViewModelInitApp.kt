@@ -36,17 +36,17 @@ class ViewModelInitApp : ViewModel() {
     var isLoading by mutableStateOf(false)
     var loadingProgress by mutableFloatStateOf(0f)
 
-    val extentionStartup = Startup_Extension( this@ViewModelInitApp,)
+    val extentionStartup = Startup_Extension(this@ViewModelInitApp)
 
     val extension_App1_F1 = ViewModelExtension_App1_F1(
-        viewModel=this@ViewModelInitApp,
+        viewModel = this@ViewModelInitApp,
         produitsMainDataBase = produitsMainDataBase,
-        viewModelScope =this@ViewModelInitApp.viewModelScope,
+        viewModelScope = this@ViewModelInitApp.viewModelScope,
     )
     val extension_App1_F2 = ViewModelExtension_App1_F2(
-        viewModel=this@ViewModelInitApp,
+        viewModel = this@ViewModelInitApp,
         produitsMainDataBase = produitsMainDataBase,
-        viewModelScope =this@ViewModelInitApp.viewModelScope,
+        viewModelScope = this@ViewModelInitApp.viewModelScope,
     )
 
     init {
