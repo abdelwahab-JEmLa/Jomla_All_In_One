@@ -1,9 +1,11 @@
-package Z_MasterOfApps.Z.Android.Packages._3.C_Serveur.App.Client_JetPack.Package_3
+package Z_MasterOfApps.Z.Android.Actions._2.Client_JetPack.Package_3
 
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_MasterOfApps.Z.Android.Packages._3.C_Serveur.App.Client_JetPack.Models.ClientsModel
-import Z_MasterOfApps.Z.Android.Packages._3.C_Serveur.App.Client_JetPack.Models.ColorsArticlesTabelle
-import Z_MasterOfApps.Z.Android.Packages._3.C_Serveur.App.Client_JetPack.Models.SoldArticlesTabelle
+import Z_MasterOfApps.Z.Android.Actions._2.Client_JetPack.Models.ClientsModel
+import Z_MasterOfApps.Z.Android.Actions._2.Client_JetPack.Models.ColorsArticlesTabelle
+import Z_MasterOfApps.Z.Android.Actions._2.Client_JetPack.Models.SoldArticlesTabelle
+import Z_MasterOfApps.Z.Android.Packages._3.C_Serveur.App.Client_JetPack.Package_3.calQuantityButton
+import Z_MasterOfApps.Z.Android.Packages._3.C_Serveur.App.Client_JetPack.Package_3.deleteProduitCommende
 
 class _DisplayeProductInfosToSeller(val viewModelInitApp: ViewModelInitApp) {
     fun onClickOnMain(

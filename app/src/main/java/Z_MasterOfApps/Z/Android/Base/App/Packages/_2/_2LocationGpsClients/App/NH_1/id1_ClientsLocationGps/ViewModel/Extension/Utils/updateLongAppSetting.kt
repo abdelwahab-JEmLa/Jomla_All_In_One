@@ -25,7 +25,7 @@ fun ViewModelExtension_App2_F1.updateLongAppSetting(
                 .child(appSettingsSaverModel.id.toString())
                 .setValue(appSettingsSaverModel)
                 .await()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
         }
     }
 }
