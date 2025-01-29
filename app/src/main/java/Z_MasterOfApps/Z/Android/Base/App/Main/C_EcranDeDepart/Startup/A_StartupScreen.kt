@@ -2,7 +2,7 @@ package Z_MasterOfApps.Z.Android.Base.App.Main.C_EcranDeDepart.Startup
 
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.Main.C_EcranDeDepart.Startup.B.Dialogs.A_OptionsControlsButtons
-import Z_MasterOfApps.Z.Android.Base.App.Main.ViewModel.Extension.ViewModelExtension_Startup
+import Z_MasterOfApps.Z.Android.Base.App.Main.C_EcranDeDepart.Startup.ViewModel.Startup_Extension
 import Z_MasterOfApps.Z_AppsFather.Kotlin._4.Modules.GlideDisplayImageBykeyId
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,7 +19,7 @@ internal fun A_StartupScreen(
     modifier: Modifier = Modifier,
     viewModelInitApp: ViewModelInitApp = viewModel(),
 ) {
-    val extensionVM = ViewModelExtension_Startup( viewModelInitApp,)
+    val extensionVM = Startup_Extension( viewModelInitApp,)
     Box(modifier = modifier.fillMaxSize()) {
         Scaffold(
             modifier = Modifier.fillMaxSize()

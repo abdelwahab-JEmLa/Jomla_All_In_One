@@ -78,9 +78,8 @@ fun MapControls(
                         viewModelInitApp = viewModelInitApp
                     )
                     ClearHistoryButton(
-                        extensionVM = extensionVM,
-                        showLabels = showLabels,
-                        viewModelInitApp = viewModelInitApp
+                        viewModelInitApp = viewModelInitApp,
+                        showLabels = showLabels
                     )
 
                     AddMarkerButton(

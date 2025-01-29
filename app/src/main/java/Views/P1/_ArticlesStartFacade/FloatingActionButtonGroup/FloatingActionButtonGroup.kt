@@ -1,7 +1,6 @@
 package Views.P1._ArticlesStartFacade.FloatingActionButtonGroup
 
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_MasterOfApps.Z.Android.Base.App.Main.ViewModel.Extension.ViewModelExtension_Startup
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
@@ -172,8 +171,7 @@ fun FloatingActionButtonGroup(
                                 if (clearDataClickCount == 0) {
                                     clearDataClickCount++
                                 } else {
-                                    ViewModelExtension_Startup(viewModelInitApp)
-                                    viewModel.clearSupAICommend()
+                                    viewModelInitApp.extentionStartup.clearAchats()
                                     clearDataClickCount = 0
                                 }
                             }

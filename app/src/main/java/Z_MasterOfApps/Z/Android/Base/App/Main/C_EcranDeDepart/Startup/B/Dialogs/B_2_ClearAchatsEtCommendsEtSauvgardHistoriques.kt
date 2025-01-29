@@ -1,7 +1,7 @@
 package Z_MasterOfApps.Z.Android.Base.App.Main.C_EcranDeDepart.Startup.B.Dialogs
 
+import Z_MasterOfApps.Z.Android.Base.App.Main.C_EcranDeDepart.Startup.ViewModel.Startup_Extension
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_MasterOfApps.Z.Android.Base.App.Main.ViewModel.Extension.ViewModelExtension_Startup
 import Z_MasterOfApps.Z.Android.Base.App.Packages._2._2LocationGpsClients.App.NH_1.id1_ClientsLocationGps.B.Dialogs.ControlButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -17,7 +17,7 @@ import androidx.compose.ui.graphics.Color
 fun B_2_ClearAchatsEtCommendsEtSauvgardHistoriques(
     viewModelInitApp: ViewModelInitApp,
     showLabels: Boolean,
-    extensionVM: ViewModelExtension_Startup
+    extensionVM: Startup_Extension
 ) {
     var clearDataClickCount by remember { mutableIntStateOf(0) }
 

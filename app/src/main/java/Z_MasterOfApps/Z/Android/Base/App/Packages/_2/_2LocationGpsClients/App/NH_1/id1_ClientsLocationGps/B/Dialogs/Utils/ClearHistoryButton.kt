@@ -2,7 +2,6 @@ package Z_MasterOfApps.Z.Android.Base.App.Packages._2._2LocationGpsClients.App.N
 
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.Packages._2._2LocationGpsClients.App.NH_1.id1_ClientsLocationGps.B.Dialogs.ControlButton
-import Z_MasterOfApps.Z.Android.Base.App.Packages._2._2LocationGpsClients.App.NH_1.id1_ClientsLocationGps.ViewModel.Extension.ViewModelExtension_App2_F1
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
@@ -15,9 +14,8 @@ import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun ClearHistoryButton(
-    extensionVM: ViewModelExtension_App2_F1,
-    showLabels: Boolean,
-    viewModelInitApp: ViewModelInitApp
+    viewModelInitApp: ViewModelInitApp,
+    showLabels: Boolean
 ) {
     var clearDataClickCount by remember { mutableIntStateOf(0) }
     val context = LocalContext.current
@@ -27,6 +25,7 @@ fun ClearHistoryButton(
             if (clearDataClickCount == 0) {
                 clearDataClickCount++
             } else {
+                viewModelInitApp.extentionStartup.clearAchats()
                 clearDataClickCount = 0
             }
         },

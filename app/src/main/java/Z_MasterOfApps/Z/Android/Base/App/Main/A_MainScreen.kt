@@ -1,7 +1,6 @@
 package Z_MasterOfApps.Z.Android.Base.App.Main
 
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_MasterOfApps.Z.Android.Base.App.Main.ViewModel.Extension.ViewModelExtension_Startup
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
