@@ -1,5 +1,5 @@
 // ViewModelExtension_App1_F5.kt
-package Z_MasterOfApps.Z.Android.Base.App.Main.C_EcranDeDepart.Startup.ViewModel
+package Z_MasterOfApps.Z.Android.Main.C_EcranDeDepart.Startup.ViewModel
 
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.updateProduit
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp

@@ -1,4 +1,4 @@
-package Z_MasterOfApps.Z.Android.Base.App.Main.Utils
+package Z_MasterOfApps.Z.Android.Main.Utils
 
 import android.Manifest
 import android.app.AlertDialog

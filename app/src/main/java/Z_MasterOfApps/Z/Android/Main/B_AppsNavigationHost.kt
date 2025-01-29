@@ -1,8 +1,8 @@
-package Z_MasterOfApps.Z.Android.Base.App.Main
+package Z_MasterOfApps.Z.Android.Main
 
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_MasterOfApps.Z.Android.Base.App.Main.C_EcranDeDepart.Startup.A_StartupScreen
-import Z_MasterOfApps.Z.Android.Base.App.Main.Utils.NavigationBarWithFab
+import Z_MasterOfApps.Z.Android.Main.C_EcranDeDepart.Startup.A_StartupScreen
+import Z_MasterOfApps.Z.Android.Main.Utils.NavigationBarWithFab
 import Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_1.id4_DeplaceProduitsVerGrossist.A_id4_DeplaceProduitsVerGrossist
 import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.A_id1_ClientsLocationGps
 import Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_2.id1_GerantDefinirePosition.A_id1_GerantDefinirePosition

@@ -1,4 +1,4 @@
-package Z_MasterOfApps.Z.Android.Base.App.Main
+package Z_MasterOfApps.Z.Android.Main
 
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.os.Build
