@@ -24,7 +24,7 @@ fun MainScreen(
             modifier = modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            AppNavigationHost(viewModelInitApp, modifier, xmlResources)
+            AppNavigationHost(viewModelInitApp, modifier, )
         }
     }
 }

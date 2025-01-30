@@ -1,12 +1,12 @@
 package Z_MasterOfApps.Z.Android.Main
 
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_MasterOfApps.Z.Android.Main.C_EcranDeDepart.Startup.A_StartupScreen
-import Z_MasterOfApps.Z.Android.Main.Utils.NavigationBarWithFab
 import Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_1.id4_DeplaceProduitsVerGrossist.A_id4_DeplaceProduitsVerGrossist
-import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.A_id1_ClientsLocationGps
 import Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_2.id1_GerantDefinirePosition.A_id1_GerantDefinirePosition
 import Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_3.id2_TravaillieurListProduitAchercheChezLeGrossist.A_Id2_TravaillieurListProduitAchercheChezLeGrossist
+import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.A_id1_ClientsLocationGps
+import Z_MasterOfApps.Z.Android.Main.C_EcranDeDepart.Startup.A_StartupScreen
+import Z_MasterOfApps.Z.Android.Main.Utils.NavigationBarWithFab
 import Z_MasterOfApps.Z.Android.Packages._1.GerantAfficheurGrossistCommend.App.NH_4.id3_AfficheurDesProduitsPourLeColecteur.A_id3_AfficheurDesProduitsPourLeColecteur
 import Z_MasterOfApps.Z.Android.Packages._1.GerantAfficheurGrossistCommend.App.NH_5.ID5_VerificationProduitAcGrossist.A_ID5_VerificationProduitAcGrossist
 import android.annotation.SuppressLint
@@ -42,7 +42,6 @@ import androidx.navigation.compose.rememberNavController
 fun AppNavigationHost(
     viewModelInitApp: ViewModelInitApp,
     modifier: Modifier,
-    xmlResources: List<Pair<String, Int>>,
 ) {
     val navController = rememberNavController()
     val items = NavigationItems.items
@@ -84,7 +83,7 @@ fun AppNavigationHost(
                                 A_id3_AfficheurDesProduitsPourLeColecteur(viewModelInitApp = viewModelInitApp)
                             }
                             composable(Screens.NavHostA2_1.route) {
-                                A_id1_ClientsLocationGps(viewModel = viewModelInitApp,onClear = {},)
+                                A_id1_ClientsLocationGps(viewModel = viewModelInitApp)
                             }
                         }
                     }

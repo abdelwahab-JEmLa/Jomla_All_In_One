@@ -10,14 +10,12 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
-import com.example.clientjetpack.ViewModel.HeadViewModel
 
 @Composable
 fun ClearHistoryButton(
     viewModelInitApp: ViewModelInitApp,
     showLabels: Boolean,
     onClear: () -> Unit,
-    headViewModel: HeadViewModel
 ) {
     var clearDataClickCount by remember { mutableIntStateOf(0) }
 
@@ -27,7 +25,7 @@ fun ClearHistoryButton(
                 clearDataClickCount++
             } else {
                 viewModelInitApp.extentionStartup.clearAchats()
-                viewModelInitApp.extentionStartup.clearHeadViewModel(headViewModel)
+                onClear()
                 clearDataClickCount = 0
             }
         },

@@ -8,6 +8,7 @@ import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_Client
 import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.B.Dialogs.Utils.LocationTrackingButton
 import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.B.Dialogs.Utils.MenuButton
 import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.ViewModel.Extension.ViewModelExtension_App2_F1
+import Z_MasterOfApps.Z.Android.Res.XmlsFilesHandler.Companion.xmlResources
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -34,7 +35,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import com.example.clientjetpack.ViewModel.HeadViewModel
 import org.osmdroid.views.MapView
 import kotlin.math.roundToInt
 
@@ -43,7 +43,7 @@ fun MapControls(
     extensionVM: ViewModelExtension_App2_F1,
     mapView: MapView,
     viewModelInitApp: ViewModelInitApp,
-    xmlResources: List<Pair<String, Int>>?, onClear: () -> Unit, headViewModel: HeadViewModel,
+    onClear: () -> Unit,
 ) {
     var showMenu by remember { mutableStateOf(false) }
     var showLabels by remember { mutableStateOf(false) }
@@ -82,7 +82,6 @@ fun MapControls(
                         viewModelInitApp = viewModelInitApp,
                         showLabels = showLabels,
                         onClear,
-                        headViewModel
                     )
 
                     AddMarkerButton(

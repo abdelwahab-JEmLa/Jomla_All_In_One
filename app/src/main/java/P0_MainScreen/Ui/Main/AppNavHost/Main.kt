@@ -21,12 +21,17 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.clientjetpack.AppViewModels
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import com.example.clientjetpack.ViewModel.WifiUpdateClientDisplayerStats
+import com.google.firebase.Firebase
+import com.google.firebase.database.database
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 @Composable
 fun AppNavHost(
@@ -38,7 +43,9 @@ fun AppNavHost(
     onClickDonne: () -> Unit,
     onClickToDisplayeConexionWifi: () -> Unit,
     onToggleLockHost: () -> Unit,
-    viewModelInitApp: ViewModelInitApp, onClear: () -> Unit, headViewModel: HeadViewModel,
+    viewModelInitApp: ViewModelInitApp,
+    onClear: () -> Unit,
+    headViewModel: HeadViewModel,
 ) {
     val uiState by appViewModels.headViewModel.uiState.collectAsState()
 
@@ -70,7 +77,26 @@ fun AppNavHost(
             modifier = Modifier.fillMaxSize()
         ) {
 
-            app2(viewModelInitApp, clientEnCourDeVent, navController, onClear, headViewModel
+            app2(
+                viewModelInitApp, clientEnCourDeVent,
+                navController,
+                {
+                    headViewModel.viewModelScope.launch {
+
+                        headViewModel._uiState.update { currentState ->
+                            currentState.copy(soldArticlesModel = emptyList())
+                        }
+
+                        // Clear the database in a coroutine
+                        headViewModel.database.soldArticlesModelDao().deleteAll()
+
+                        // Clear Firebase references
+                        val database = Firebase.database
+                        database.getReference("K_GroupeurBonCommendToSupplierRef").removeValue()
+                        database.getReference("O_SoldArticlesTabelle").removeValue()
+
+                    }
+                },
             )
 
             composable(Screen.EditDatabaseWithCreateNewArticles.route) {

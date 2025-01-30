@@ -36,22 +36,6 @@ class Startup_Extension(
         }
     }
 
-    fun clearHeadViewModel(headViewModel: HeadViewModel) {
-        headViewModel.viewModelScope.launch {
 
-        headViewModel._uiState.update { currentState ->
-                currentState.copy(soldArticlesModel = emptyList())
-            }
-
-            // Clear the database in a coroutine
-            headViewModel.database.soldArticlesModelDao().deleteAll()
-
-            // Clear Firebase references
-            val database = Firebase.database
-            database.getReference("K_GroupeurBonCommendToSupplierRef").removeValue()
-            database.getReference("O_SoldArticlesTabelle").removeValue()
-
-        }
-    }
 
 }
