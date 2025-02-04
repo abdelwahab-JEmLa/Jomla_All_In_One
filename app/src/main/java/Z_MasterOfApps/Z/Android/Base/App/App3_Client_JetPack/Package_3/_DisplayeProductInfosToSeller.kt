@@ -21,7 +21,7 @@ class _DisplayeProductInfosToSeller(val viewModelInitApp: ViewModelInitApp) {
         currentClient: B_ClientsDataBase?,
         colorDetails: ColorsArticlesTabelle
     ) {
-        calQuantityButton(
+        updateNewModelDeLachat(
             quantity,
             currentSale,
             currentClient,

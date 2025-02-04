@@ -159,12 +159,7 @@ open class HeadViewModel(
                 WifiUpdateClientDisplayerStats.SearchWindowsDisplaye ->  updateDisplayController {
                     copy( searchWindowsDisplaye =  content) } 
                         WifiUpdateClientDisplayerStats.NewArregmentColorsJsonStruct ->  updateDisplayController {
-                copy( newArregmentColorsJsonStruct =  content) } //-->
-                //Hi Claud,what i went from u to do is to
-                //Find All TODOs and Fix Them 
-
-                //TODO:
-                // le send va update ca 
+                copy( newArregmentColorsJsonStruct =  content) }
             }
         } ?: Log.d(tag, "📩 Unhandled message received: $payload")
     }

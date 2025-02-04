@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-fun calQuantityButton(
+fun updateNewModelDeLachat(
     quantity: Int,
     currentSale: SoldArticlesTabelle?,
     currentClient: B_ClientsDataBase?,
@@ -79,7 +79,7 @@ fun calQuantityButton(
         val currentDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
         // Get grossist information with fallback to default
         val lastIdGrossitChoisi = product.historiqueBonsCommend.lastOrNull()?.idGrossistChoisi
-            ?: 0
+            ?: 1
 
         val aggregatedColors = product.bonsVentDeCetteCota
             .flatMap { it.colours_Achete }
