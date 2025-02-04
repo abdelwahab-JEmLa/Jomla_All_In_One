@@ -1,9 +1,9 @@
 package Z_MasterOfApps.Z.Android.Main.C_EcranDeDepart.Startup.B.Dialogs
 
-import Z_MasterOfApps.Z.Android.Main.C_EcranDeDepart.Startup.ViewModel.Startup_Extension
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.B.Dialogs.Utils.LabelsButton
 import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.B.Dialogs.Utils.MenuButton
+import Z_MasterOfApps.Z.Android.Main.C_EcranDeDepart.Startup.ViewModel.Startup_Extension
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -66,6 +66,9 @@ fun A_OptionsControlsButtons(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 if (showMenu) {
+
+                    B_3_ImplimentClientsParProduits(viewModelInitApp ,showLabels)
+
                     B_1_SwitchGerantOuAfficheurPhone(
                         showLabels = showLabels,
                         viewModelInitApp = viewModelInitApp
@@ -75,6 +78,7 @@ fun A_OptionsControlsButtons(
                         showLabels = showLabels,
                         viewModelInitApp = viewModelInitApp
                     )
+
                 }
 
                 LabelsButton(

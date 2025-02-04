@@ -1,7 +1,7 @@
 package Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.ViewModel.Extension
 
-import Z_MasterOfApps.Kotlin.Model.ClientsDataBase
-import Z_MasterOfApps.Kotlin.Model.ClientsDataBase.Companion.updateClientsDataBase
+import Z_MasterOfApps.Kotlin.Model.B_ClientsDataBase
+import Z_MasterOfApps.Kotlin.Model.B_ClientsDataBase.Companion.updateClientsDataBase
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -12,7 +12,7 @@ import org.osmdroid.views.overlay.Marker
 class ViewModelExtension_App2_F1(
     val viewModelScope: CoroutineScope,
     val produitsMainDataBase: MutableList<ProduitModel>,
-    val clientDataBaseSnapList: SnapshotStateList<ClientsDataBase>,
+    private val clientDataBaseSnapList: SnapshotStateList<B_ClientsDataBase>,
     val viewModel: ViewModelInitApp,
 ) {
     fun onClickAddMarkerButton(
@@ -29,7 +29,7 @@ class ViewModelExtension_App2_F1(
         val newnom = "Nouveau client #$newID"
 
         val newClient =
-            ClientsDataBase(
+            B_ClientsDataBase(
                 id = newID,
                 nom = newnom
             ).apply {
@@ -42,9 +42,9 @@ class ViewModelExtension_App2_F1(
                 }
             }
 
-        viewModel._modelAppsFather.clientDataBaseSnapList.add(newClient)
+        viewModel._modelAppsFather.clientDataBase.add(newClient)
 
-        ClientsDataBase.refClientsDataBase
+        B_ClientsDataBase.refClientsDataBase
             .child(newClient.id.toString())
             .setValue(newClient)
     }
@@ -52,7 +52,7 @@ class ViewModelExtension_App2_F1(
     // ViewModelExtensionMapsHandler.kt
     fun updateStatueClient(
         selectedMarker: Marker?,
-        statueVente: ClientsDataBase.GpsLocation.DernierEtatAAffiche
+        statueVente: B_ClientsDataBase.GpsLocation.DernierEtatAAffiche
     ) {
         clientDataBaseSnapList.toMutableList().forEach { client ->
             if (client.id == selectedMarker?.id?.toLong()) {
@@ -62,7 +62,7 @@ class ViewModelExtension_App2_F1(
                         actuelleEtat = statueVente
                     )
                 )
-                updateClientsDataBase(updatedClient, viewModel)
+                updatedClient.updateClientsDataBase( viewModel)
             }
         }
     }

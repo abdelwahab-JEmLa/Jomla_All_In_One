@@ -1,6 +1,6 @@
 package Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.B.Dialogs
 
-import Z_MasterOfApps.Kotlin.Model.ClientsDataBase
+import Z_MasterOfApps.Kotlin.Model.B_ClientsDataBase
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.ViewModel.Extension.Utils.updateLongAppSetting
 import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.ViewModel.Extension.ViewModelExtension_App2_F1
@@ -72,7 +72,7 @@ fun MarkerStatusDialog(
                     color = Color(
                         ContextCompat.getColor(
                             context,
-                            ClientsDataBase.GpsLocation.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT.color
+                            B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT.color
                         )
                     ),
                     onClick = {
@@ -91,14 +91,14 @@ fun MarkerStatusDialog(
                     color = Color(
                         ContextCompat.getColor(
                             context,
-                            ClientsDataBase.GpsLocation.DernierEtatAAffiche.CLIENT_ABSENT.color
+                            B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CLIENT_ABSENT.color
                         )
                     ),
                     onClick = {
                         coroutineScope.launch {
                             extensionVM.updateStatueClient(
                                 selectedMarker,
-                                ClientsDataBase.GpsLocation.DernierEtatAAffiche.CLIENT_ABSENT
+                                B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CLIENT_ABSENT
                             )
                             onDismiss()
                         }
@@ -114,14 +114,14 @@ fun MarkerStatusDialog(
                     color = Color(
                         ContextCompat.getColor(
                             context,
-                            ClientsDataBase.GpsLocation.DernierEtatAAffiche.AVEC_MARCHANDISE.color
+                            B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.AVEC_MARCHANDISE.color
                         )
                     ),
                     onClick = {
                         coroutineScope.launch {
                             extensionVM.updateStatueClient(
                                 selectedMarker,
-                                ClientsDataBase.GpsLocation.DernierEtatAAffiche.AVEC_MARCHANDISE
+                                B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.AVEC_MARCHANDISE
                             )
                             onDismiss()
                         }
@@ -137,14 +137,14 @@ fun MarkerStatusDialog(
                     color = Color(
                         ContextCompat.getColor(
                             context,
-                            ClientsDataBase.GpsLocation.DernierEtatAAffiche.FERME.color
+                            B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.FERME.color
                         )
                     ),
                     onClick = {
                         coroutineScope.launch {
                             extensionVM.updateStatueClient(
                                 selectedMarker,
-                                ClientsDataBase.GpsLocation.DernierEtatAAffiche.FERME
+                                B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.FERME
                             )
                             onDismiss()
                         }

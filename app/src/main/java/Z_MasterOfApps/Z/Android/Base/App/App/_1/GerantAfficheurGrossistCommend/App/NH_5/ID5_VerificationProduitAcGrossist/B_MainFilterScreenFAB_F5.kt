@@ -1,8 +1,8 @@
-package Z_MasterOfApps.Z.Android.Packages._1.GerantAfficheurGrossistCommend.App.NH_5.ID5_VerificationProduitAcGrossist
+package Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_5.ID5_VerificationProduitAcGrossist
 
-import Z_MasterOfApps.Kotlin.Model.Extension.groupedProductsPatGrossist
+import Z_MasterOfApps.Kotlin.Model.Extension.groupedProductsParGrossist
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_MasterOfApps.Z.Android.Packages._1.GerantAfficheurGrossistCommend.App.NH_5.ID5_VerificationProduitAcGrossist.ViewModel.Extension.ViewModelExtension_App1_F5
+import Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_5.ID5_VerificationProduitAcGrossist.ViewModel.Extension.ViewModelExtension_App1_F5
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -72,7 +72,7 @@ fun B_MainScreenFilterFAB_F5(
 
             AnimatedVisibility(visible = showButtons) {
                 Column(horizontalAlignment = Alignment.End) {
-                    viewModelProduits._modelAppsFather.groupedProductsPatGrossist
+                    viewModelProduits._modelAppsFather.groupedProductsParGrossist
                         .forEachIndexed { index, (grossist, produits) ->
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
@@ -96,10 +96,11 @@ fun B_MainScreenFilterFAB_F5(
                                     },
                                     modifier = Modifier.size(48.dp),
                                     containerColor = try {
+                                        val couleur = grossist.statueDeBase.couleur
                                         Color(
                                             android.graphics.Color.parseColor(
-                                                if (grossist.couleur.startsWith("#")) grossist.couleur
-                                                else "#${grossist.couleur}"
+                                                if (couleur.startsWith("#")) couleur
+                                                else "#${couleur}"
                                             )
                                         )
                                     } catch (e: Exception) {

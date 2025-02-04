@@ -1,6 +1,6 @@
 package P5_DialogeClientsEditer
 
-import Z_MasterOfApps.Kotlin.Model.ClientsDataBase
+import Z_MasterOfApps.Kotlin.Model.B_ClientsDataBase
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.SoldArticlesTabelle
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
@@ -50,8 +50,8 @@ private const val TAG = "ClientSelectionDialog"
 
 @Composable
 fun ClientSelectionDialog(
-    clients: List<ClientsDataBase>,
-    onClientSelected: (ClientsDataBase) -> Unit,
+    clients: List<B_ClientsDataBase>,
+    onClientSelected: (B_ClientsDataBase) -> Unit,
     onDismiss: () -> Unit,
     soldArticle: List<SoldArticlesTabelle?>,
     viewModel: HeadViewModel
@@ -287,7 +287,7 @@ private fun ListHeader(text: String) {
 
 @Composable
 private fun ClientItem(
-    client: ClientsDataBase,
+    client: B_ClientsDataBase,
     onClick: () -> Unit
 ) {
     LaunchedEffect(client.id) {

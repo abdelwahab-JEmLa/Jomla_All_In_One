@@ -1,6 +1,4 @@
 package Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.B.Dialogs.Utils
-
-import Z_MasterOfApps.Kotlin.Model.Extension.clientsDisponible
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.B.Dialogs.ControlButton
@@ -178,18 +176,19 @@ fun NearbyMarkersDialog(
                             marker.title = editedName
 
                             // Find and update the corresponding client in the database
-                            val client = viewModelInitApp._modelAppsFather.clientsDisponible
-                                .find { it.gpsLocation.locationGpsMark == marker }
+                            val client = viewModelInitApp._modelAppsFather.clientDataBase
+                                .find { it.gpsLocation.latitude == marker.position.latitude
+                                        &&  it.gpsLocation.longitude == marker.position.longitude
+                                }
 
                             client?.let { foundClient ->
                                 // Update client name
                                 foundClient.nom = editedName
 
-                                // Find and update the product containing this client
                                 val product =
                                     viewModelInitApp.produitsMainDataBase.find { produit ->
                                         produit.bonsVentDeCetteCota.any { bonVent ->
-                                            bonVent.clientInformations?.id == foundClient.id
+                                            bonVent.clientIdChoisi == foundClient.id
                                         }
                                     }
 

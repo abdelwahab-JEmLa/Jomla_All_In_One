@@ -1,8 +1,7 @@
-package Z_MasterOfApps.Z.Android.Packages._1.GerantAfficheurGrossistCommend.App.NH_5.ID5_VerificationProduitAcGrossist
+package Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_5.ID5_VerificationProduitAcGrossist
 
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_MasterOfApps.Z.Android.Packages._1.GerantAfficheurGrossistCommend.App.NH_2.id1_GerantDefinirePosition.Modules.ClientEditePositionDialog
-import Z_MasterOfApps.Z.Android.Packages._1.GerantAfficheurGrossistCommend.App.NH_5.ID5_VerificationProduitAcGrossist.ViewModel.Extension.ViewModelExtension_App1_F5
+import Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_5.ID5_VerificationProduitAcGrossist.ViewModel.Extension.ViewModelExtension_App1_F5
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
@@ -10,15 +9,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 
-private const val TAG = "A_id1_GerantDefinirePosition"
-
 @Composable
 internal fun A_ID5_VerificationProduitAcGrossist(
-    viewModelInitApp: ViewModelInitApp = viewModel(),
     modifier: Modifier = Modifier,
+    viewModel: ViewModelInitApp = viewModel(),
 ) {
+
     val extensionVM =
-        ViewModelExtension_App1_F5(viewModelInitApp, viewModelInitApp.produitsMainDataBase)
+        ViewModelExtension_App1_F5(
+                viewModel,
+                viewModel.produitsMainDataBase
+            )
 
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold(
@@ -29,22 +30,18 @@ internal fun A_ID5_VerificationProduitAcGrossist(
                 if (extensionVM.produitsVerifie.size > 0) {
                     C_MainList_F5(
                         extensionVM = extensionVM,
-                        viewModel = viewModelInitApp,
+                        viewModel = viewModel,
                         paddingValues = paddingValues
                     )
                 }
 
-                if (viewModelInitApp._paramatersAppsViewModelModel.fabsVisibility) {
+                if (viewModel._paramatersAppsViewModelModel.fabsVisibility) {
                     B_MainScreenFilterFAB_F5(
                         extensionVM = extensionVM,
-                        viewModelProduits = viewModelInitApp,
+                        viewModelProduits = viewModel,
                     )
                 }
             }
-
-            ClientEditePositionDialog(
-                viewModelProduits = viewModelInitApp,
-            )
         }
     }
 }

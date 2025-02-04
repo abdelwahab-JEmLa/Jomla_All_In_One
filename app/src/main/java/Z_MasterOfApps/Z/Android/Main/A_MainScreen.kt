@@ -16,7 +16,6 @@ fun MainScreen(
     modifier: Modifier,
     permissionsGranted: Boolean,
     viewModelInitApp: ViewModelInitApp = viewModel(),
-    xmlResources: List<Pair<String, Int>>,
 ) {
 
     if (permissionsGranted) {

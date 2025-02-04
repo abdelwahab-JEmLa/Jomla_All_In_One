@@ -88,7 +88,6 @@ fun MapControls(
                         extensionVM = extensionVM,
                         showLabels = showLabels,
                         mapView = mapView,
-                        viewModelInitApp = viewModelInitApp,
                     )
 
                     LocationTrackingButton(

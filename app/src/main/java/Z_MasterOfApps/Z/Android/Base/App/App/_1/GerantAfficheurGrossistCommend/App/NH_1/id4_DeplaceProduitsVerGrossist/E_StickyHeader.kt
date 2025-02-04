@@ -1,6 +1,6 @@
 package Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_1.id4_DeplaceProduitsVerGrossist
 
-import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
+import Z_MasterOfApps.Kotlin.Model.C_GrossistsDataBase
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun GrossistHeader(
-    grossist: _ModelAppsFather.ProduitModel.GrossistBonCommandes.GrossistInformations?,
+    grossist: C_GrossistsDataBase,
     selectedProductsCount: Int,
     onMoveClick: () -> Unit
 ) {

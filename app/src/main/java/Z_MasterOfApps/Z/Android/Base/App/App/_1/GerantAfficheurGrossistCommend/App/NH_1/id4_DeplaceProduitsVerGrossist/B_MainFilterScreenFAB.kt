@@ -1,8 +1,6 @@
 package Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_1.id4_DeplaceProduitsVerGrossist
 
-import Z_MasterOfApps.Kotlin.Model.Extension.grossistsDisponible
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.updateProduit
-import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.update_AllProduits
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -40,7 +38,7 @@ import kotlin.math.roundToInt
 @Composable
 fun MainScreenFilterFAB_F4(
     modifier: Modifier = Modifier,
-    viewModelInitApp: ViewModelInitApp,
+    viewModel: ViewModelInitApp,
 ) {
     var offsetX by remember { mutableFloatStateOf(0f) }
     var offsetY by remember { mutableFloatStateOf(0f) }
@@ -74,8 +72,7 @@ fun MainScreenFilterFAB_F4(
 
             AnimatedVisibility(visible = showButtons) {
                 Column(horizontalAlignment = Alignment.End) {
-                    // Afficher tous les grossists disponibles
-                    viewModelInitApp._modelAppsFather.grossistsDisponible.forEachIndexed { index, grossist ->
+                    viewModel._modelAppsFather.grossistsDataBase.forEachIndexed { index, grossist ->
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -83,24 +80,8 @@ fun MainScreenFilterFAB_F4(
                             if (index > 0) {
                                 FloatingActionButton(
                                     onClick = {
-                                        viewModelInitApp.viewModelScope.launch {
-                                            val previousGrossist = viewModelInitApp._modelAppsFather.grossistsDisponible[index - 1]
-                                            grossist.positionInGrossistsList--
-                                            previousGrossist.positionInGrossistsList++
-
-                                            update_AllProduits(
-                                                viewModelInitApp.produitsMainDataBase.map { product ->
-                                                    product.apply {
-                                                        bonCommendDeCetteCota?.grossistInformations?.let { currentGrossist ->
-                                                            when (currentGrossist.id) {
-                                                                grossist.id -> currentGrossist.positionInGrossistsList--
-                                                                previousGrossist.id -> currentGrossist.positionInGrossistsList++
-                                                            }
-                                                        }
-                                                    }
-                                                },
-                                                viewModelInitApp
-                                            )
+                                        viewModel.viewModelScope.launch {
+                                            viewModel.frag1_A1_ExtVM.upButton(index)
                                         }
                                     },
                                     modifier = Modifier.size(36.dp)
@@ -109,13 +90,11 @@ fun MainScreenFilterFAB_F4(
                                 }
                             }
 
-                            // Afficher le nom du grossist
                             Text(
                                 grossist.nom,
                                 modifier = Modifier
                                     .background(
-                                        if (viewModelInitApp._paramatersAppsViewModelModel
-                                                .telephoneClientParamaters.selectedGrossistForServeur == grossist.id
+                                        if (viewModel.frag1_A1_ExtVM.idAuFilter == grossist.id
                                         ) Color(0xFF2196F3) else Color.Transparent
                                     )
                                     .padding(4.dp)
@@ -123,20 +102,19 @@ fun MainScreenFilterFAB_F4(
 
                             FloatingActionButton(
                                 onClick = {
-                                    viewModelInitApp.viewModelScope.launch {
-                                        // Trouver le premier produit "Non Defini"
-                                        val nonDefiniProduct = viewModelInitApp.produitsMainDataBase
+                                    viewModel.viewModelScope.launch {
+                                        val nonDefiniProduct = viewModel.produitsMainDataBase
                                             .firstOrNull { product ->
-                                                product.bonCommendDeCetteCota?.grossistInformations?.nom == "Non Defini"
+                                                product.bonCommendDeCetteCota
+                                                    ?.idGrossistChoisi== 1L
                                             }
 
-                                        // Si un produit "Non Defini" est trouvé, le déplacer vers le grossist sélectionné
                                         nonDefiniProduct?.let { product ->
                                             product.bonCommendDeCetteCota?.let { bonCommande ->
-                                                bonCommande.grossistInformations = grossist
+                                                bonCommande.idGrossistChoisi = grossist.id
                                                 updateProduit(
                                                     product = product,
-                                                    viewModelProduits = viewModelInitApp
+                                                    viewModelProduits = viewModel
                                                 )
                                             }
                                         }
@@ -145,16 +123,17 @@ fun MainScreenFilterFAB_F4(
                                 modifier = Modifier.size(48.dp),
                                 containerColor = try {
                                     Color(android.graphics.Color.parseColor(
-                                        if (grossist.couleur.startsWith("#")) grossist.couleur
-                                        else "#${grossist.couleur}"
+                                        if (grossist.statueDeBase.couleur.startsWith("#"))
+                                            grossist.statueDeBase.couleur
+                                        else "#${grossist.statueDeBase.couleur}"
                                     ))
                                 } catch (e: Exception) {
                                     Color(0xFFFF0000)
                                 }
                             ) {
-                                // Compter les produits pour ce grossist
-                                val productCount = viewModelInitApp.produitsMainDataBase.count { product ->
-                                    product.bonCommendDeCetteCota?.grossistInformations?.id == grossist.id
+                                val productCount = viewModel.produitsMainDataBase.count { product ->
+                                    product.bonCommendDeCetteCota
+                                        ?.idGrossistChoisi == grossist.id
                                 }
                                 Text(productCount.toString())
                             }

@@ -1,10 +1,9 @@
-package Z_MasterOfApps.Z.Android.Packages._1.GerantAfficheurGrossistCommend.App.NH_3.id2_TravaillieurListProduitAchercheChezLeGrossist
+package Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_3.id2_TravaillieurListProduitAchercheChezLeGrossist
 
-
-import Z_MasterOfApps.Z.Android.Packages._1.GerantAfficheurGrossistCommend.App.NH_3.id2_TravaillieurListProduitAchercheChezLeGrossist.D_MainItem.ExpandedMainItem_F2
-import Z_MasterOfApps.Z.Android.Packages._1.GerantAfficheurGrossistCommend.App.NH_3.id2_TravaillieurListProduitAchercheChezLeGrossist.D_MainItem.MainItem_F2
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
+import Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_3.id2_TravaillieurListProduitAchercheChezLeGrossist.D_MainItem.ExpandedMainItem_F2
+import Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_3.id2_TravaillieurListProduitAchercheChezLeGrossist.D_MainItem.MainItem_F2
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.expandVertically
@@ -38,7 +37,7 @@ fun MainList_F2(
         viewModelInitApp._paramatersAppsViewModelModel.produitsAChoisireLeurClient
 
     val afficheProduitsPourRegleConflites =
-        viewModelInitApp.extension_App1_F2.afficheProduitsPourRegleConflites
+        viewModelInitApp.frag2_A1_ExtVM.afficheProduitsPourRegleConflites
 
     val visibleProducts = if (afficheProduitsPourRegleConflites)
         produitsAChoisireLeurClient else initVisibleProducts
@@ -70,7 +69,8 @@ fun MainList_F2(
                     mainItem = product,
                     modifier = Modifier.fillMaxWidth(),
                     onCLickOnMain = {
-                        expandedItemId = if (expandedItemId == product.id) null else product.id
+                        expandedItemId = if (expandedItemId == product.id)
+                            null else product.id
                     }
                 )
 

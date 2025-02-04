@@ -1,9 +1,6 @@
 package Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_2.id1_GerantDefinirePosition
 
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_MasterOfApps.Z.Android.Packages._1.GerantAfficheurGrossistCommend.App.NH_2.id1_GerantDefinirePosition.B_ListMainFragment
-import Z_MasterOfApps.Z.Android.Packages._1.GerantAfficheurGrossistCommend.App.NH_2.id1_GerantDefinirePosition.MainScreenFilterFAB
-import Z_MasterOfApps.Z.Android.Packages._1.GerantAfficheurGrossistCommend.App.NH_2.id1_GerantDefinirePosition.Modules.ClientEditePositionDialog
 import Z_MasterOfApps.Z.Android.Packages._1.GerantAfficheurGrossistCommend.App.NH_2.id1_GerantDefinirePosition.Modules.GlobalEditesGFABs_F1
 import android.util.Log
 import androidx.compose.foundation.layout.Box
@@ -22,17 +19,17 @@ private const val TAG = "A_id1_GerantDefinirePosition"
 @Composable
 internal fun A_id1_GerantDefinirePosition(
     modifier: Modifier = Modifier,
-    viewModelInitApp: ViewModelInitApp = viewModel(),
+    viewModel: ViewModelInitApp = viewModel(),
 ) {
-    LaunchedEffect(viewModelInitApp.isLoading, viewModelInitApp.loadingProgress) {
-        logLoadingState(viewModelInitApp.isLoading, viewModelInitApp.loadingProgress)
+    LaunchedEffect(viewModel.isLoading, viewModel.loadingProgress) {
+        logLoadingState(viewModel.isLoading, viewModel.loadingProgress)
     }
 
-    if (viewModelInitApp.isLoading) {
+    if (viewModel.isLoading) {
         Box(modifier = Modifier.fillMaxSize()) {
             CircularProgressIndicator(
                 progress = {
-                    viewModelInitApp.loadingProgress
+                    viewModel.loadingProgress
                 },
                 modifier = Modifier.align(Alignment.Center),
                 trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
@@ -41,15 +38,11 @@ internal fun A_id1_GerantDefinirePosition(
         return
     }
 
-    val databaseSize = viewModelInitApp._modelAppsFather.produitsMainDataBase.size
+    val databaseSize = viewModel._modelAppsFather.produitsMainDataBase.size
 
-    val visibleProducts = viewModelInitApp._modelAppsFather.produitsMainDataBase.filter { product ->
+    val visibleProducts = viewModel._modelAppsFather.produitsMainDataBase.filter { product ->
         product.bonCommendDeCetteCota
-            ?.grossistInformations?.id ==
-                viewModelInitApp
-                    ._paramatersAppsViewModelModel
-                    .telephoneClientParamaters
-                    .selectedGrossistForServeur
+            ?.idGrossistChoisi == viewModel.frag1_A1_ExtVM.idAuFilter
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -60,26 +53,23 @@ internal fun A_id1_GerantDefinirePosition(
                 if (databaseSize > 0) {
                     B_ListMainFragment(
                         visibleProducts = visibleProducts,
-                        viewModel = viewModelInitApp,
+                        viewModel = viewModel,
                         paddingValues = paddingValues
                     )
                 }
 
-                if (viewModelInitApp._paramatersAppsViewModelModel.fabsVisibility) {
+                if (viewModel._paramatersAppsViewModelModel.fabsVisibility) {
                     GlobalEditesGFABs_F1(
-                        appsHeadModel = viewModelInitApp._modelAppsFather,
-                        viewModelInitApp = viewModelInitApp,
+                        appsHeadModel = viewModel._modelAppsFather,
+                        viewModelInitApp = viewModel,
                     )
 
                     MainScreenFilterFAB(
-                        viewModelProduits = viewModelInitApp,
+                        viewModel = viewModel,
                     )
                 }
             }
 
-            ClientEditePositionDialog(
-                viewModelProduits = viewModelInitApp,
-            )
         }
     }
 }

@@ -1,4 +1,4 @@
-package Z_MasterOfApps.Z.Android.Packages._1.GerantAfficheurGrossistCommend.App.NH_4.id3_AfficheurDesProduitsPourLeColecteur
+package Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_4.id3_AfficheurDesProduitsPourLeColecteur
 
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.util.Log
@@ -46,20 +46,13 @@ fun A_id3_AfficheurDesProduitsPourLeColecteur(
 
     val databaseSize = viewModelInitApp._modelAppsFather.produitsMainDataBase.size
 
-    val visibleProducts = viewModelInitApp._modelAppsFather.produitsMainDataBase
-        .filter { product ->
-            product.bonsVentDeCetteCota.any { bonVent ->
-                bonVent.clientInformations?.id == viewModelInitApp._paramatersAppsViewModelModel.phoneClientSelectedAcheteur
-            }
-        }
     Scaffold(
         modifier = Modifier.fillMaxSize()
     ) { paddingValues ->
         Box(modifier = Modifier.fillMaxSize()) {
             if (databaseSize > 0) {
                 MainList_F3(
-                    visibleProducts = visibleProducts,
-                    viewModelProduits = viewModelInitApp,
+                    viewModelInitApp = viewModelInitApp,
                     paddingValues = paddingValues
                 )
             }
@@ -71,7 +64,7 @@ fun A_id3_AfficheurDesProduitsPourLeColecteur(
 
 
             MainScreenFilterFAB_F3(
-                viewModelProduits = viewModelInitApp,
+                viewModelInitApp = viewModelInitApp,
             )
         }
     }

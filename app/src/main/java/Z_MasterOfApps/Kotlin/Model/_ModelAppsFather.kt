@@ -1,6 +1,6 @@
 package Z_MasterOfApps.Kotlin.Model
 
-import Z_MasterOfApps.Kotlin.Model.Extension.GrossistBonCommandesExtension
+import Z_MasterOfApps.Kotlin.Model.B_ClientsDataBase.StatueDeBase
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -17,9 +17,6 @@ import com.google.firebase.database.database
 import com.google.firebase.storage.storage
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import org.osmdroid.util.GeoPoint
-import org.osmdroid.views.overlay.Marker
-import java.util.Objects
 
 open class _ModelAppsFather(
     initial_Produits_Main_DataBase: List<ProduitModel> = emptyList()
@@ -29,8 +26,12 @@ open class _ModelAppsFather(
         initial_Produits_Main_DataBase.toMutableStateList()
 
     @get:Exclude
-    var clientDataBaseSnapList: SnapshotStateList<ClientsDataBase> =
-        emptyList<ClientsDataBase>().toMutableStateList()
+    var clientDataBase: SnapshotStateList<B_ClientsDataBase> =
+        emptyList<B_ClientsDataBase>().toMutableStateList()
+
+    @get:Exclude
+    var grossistsDataBase: SnapshotStateList<C_GrossistsDataBase> =
+        emptyList<C_GrossistsDataBase>().toMutableStateList()
 
     @IgnoreExtraProperties
     class ProduitModel(
@@ -102,7 +103,7 @@ open class _ModelAppsFather(
         @IgnoreExtraProperties
         class GrossistBonCommandes(
             var vid: Long = 0,
-            init_grossistInformations: GrossistInformations? = null,
+            var idGrossistChoisi: Long = 0,
             init_coloursEtGoutsCommendee: List<ColoursGoutsCommendee> = emptyList(),
         ) {
             var mutableBasesStates: MutableBasesStates? by mutableStateOf(MutableBasesStates())
@@ -112,31 +113,6 @@ open class _ModelAppsFather(
                 var positionProduitDonGrossistChoisiPourAcheterCeProduit: Int by mutableStateOf(0)
                 var dateInString by mutableStateOf("2025-01-01")
                 var currentCreditBalance by mutableStateOf(0.0)
-            }
-
-            var grossistInformations: GrossistInformations? by mutableStateOf(
-                init_grossistInformations
-            )
-            @IgnoreExtraProperties
-            data class GrossistInformations(
-                val id: Long = 1,
-                val nom: String = "Non Defini",
-                val couleur: String = "#FFFFFF"
-            ) {
-                var auFilterFAB: Boolean by mutableStateOf(false)
-                var positionInGrossistsList: Int by mutableIntStateOf(0)
-
-                override fun equals(other: Any?): Boolean {
-                    if (this === other) return true
-                    if (other !is GrossistInformations) return false
-                    return id == other.id &&
-                            nom == other.nom &&
-                            couleur == other.couleur
-                }
-
-                override fun hashCode(): Int {
-                    return Objects.hash(id, nom, couleur)
-                }
             }
 
             @get:Exclude
@@ -156,11 +132,7 @@ open class _ModelAppsFather(
             ) {
                 var quantityAchete: Int by mutableIntStateOf(0)
             }
-
-            companion object : GrossistBonCommandesExtension()
         }
-
-
 
         @get:Exclude
         var bonsVentDeCetteCota: SnapshotStateList<ClientBonVentModel> =
@@ -187,68 +159,20 @@ open class _ModelAppsFather(
         @IgnoreExtraProperties
         class ClientBonVentModel(
             vid: Long = 0,
-            init_clientInformations: ClientInformations? = null,
+            var clientIdChoisi: Long = 0,
+            var produitStatueDeBaseDeChezCeClient: StatueDeBase = StatueDeBase(),
             init_colours_achete: List<ColorAchatModel> = emptyList(),
         ) {
             // Basic information
             var bonStatueDeBase by mutableStateOf(BonStatueDeBase())
+            @IgnoreExtraProperties
+            data class StatueDeBase(
+                var positionDonClientsList: Int = 0,
+            )
             // Status management
             @IgnoreExtraProperties
             class BonStatueDeBase {
                 var lastUpdateTimestamp: Long by mutableStateOf(System.currentTimeMillis())
-            }
-
-            var clientInformations: ClientInformations? by mutableStateOf(init_clientInformations)
-            @IgnoreExtraProperties
-            data class ClientInformations(
-                var id: Long = 1,
-                var nom: String = "Non Defini",
-                var couleur: String = "#FFFFFF"
-            ) {
-                var auFilterFAB: Boolean by mutableStateOf(false)
-                var positionDonClientsList: Int by mutableIntStateOf(0)
-
-                var statueDeBase by mutableStateOf(StatueDeBase())
-                @IgnoreExtraProperties
-                class StatueDeBase {
-                    var caRefDonAncienDataBase by mutableStateOf("G_Clients")
-                    var cUnClientTemporaire: Boolean by mutableStateOf(true)
-                }
-
-                var gpsLocation by mutableStateOf(GpsLocation())
-                @IgnoreExtraProperties
-                class GpsLocation {
-                    @get:Exclude
-                    var geoPoint: GeoPoint? by mutableStateOf(null)
-                    var latitude by mutableStateOf(0.0)
-                    var longitude by mutableStateOf(0.0)
-                    var title by mutableStateOf("")
-                    var snippet by mutableStateOf("")
-
-                    var actuelleEtat: DernierEtatAAffiche? by mutableStateOf(null)
-                    enum class DernierEtatAAffiche(val color: Int, val nomArabe: String) {
-                        Cible(android.R.color.holo_red_light, "Cible"),
-                        ON_MODE_COMMEND_ACTUELLEMENT(android.R.color.holo_green_light, "نشط / متصل"),
-                        CLIENT_ABSENT(android.R.color.darker_gray, "غائب الشاري"),
-                        AVEC_MARCHANDISE(android.R.color.holo_blue_light, "عندو سلعة"),
-                        FERME(android.R.color.darker_gray, "مغلق")
-                    }
-
-                    var locationGpsMark: Marker? by mutableStateOf(null)
-                }
-
-                override fun equals(other: Any?): Boolean {
-                    if (this === other) return true
-                    if (other !is ClientInformations) return false
-                    return id == other.id &&
-                            nom == other.nom &&
-                            couleur == other.couleur
-                }
-
-                override fun hashCode(): Int {
-                    return Objects.hash(id, nom, couleur)
-                }
-
             }
 
             @get:Exclude
@@ -275,6 +199,9 @@ open class _ModelAppsFather(
     }
 
     companion object {
+        val ref_HeadOfModels = Firebase.database
+            .getReference("0_UiState_3_Host_Package_3_Prototype11Dec")
+
         val produitsFireBaseRef = Firebase.database
             .getReference("0_UiState_3_Host_Package_3_Prototype11Dec")
             .child("produits")
@@ -306,7 +233,7 @@ open class _ModelAppsFather(
             }
         }
 
-        suspend fun UpdateFireBase(updatedProducts: List<_ModelAppsFather.ProduitModel>) {
+        suspend fun UpdateFireBase(updatedProducts: List<ProduitModel>) {
             updatedProducts.chunked(5).forEach { chunk ->
                 chunk.forEach { product ->
                     try {

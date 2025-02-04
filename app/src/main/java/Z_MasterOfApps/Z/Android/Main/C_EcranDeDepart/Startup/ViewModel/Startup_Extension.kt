@@ -3,16 +3,15 @@ package Z_MasterOfApps.Z.Android.Main.C_EcranDeDepart.Startup.ViewModel
 
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.updateProduit
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import androidx.lifecycle.viewModelScope
-import com.example.clientjetpack.ViewModel.HeadViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.database.database
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 class Startup_Extension(
     val viewModelInitApp: ViewModelInitApp,
 ) {
+    val clientDataBaseSnapList = viewModelInitApp.clientDataBaseSnapList
+    val produitsMainDataBase = viewModelInitApp.produitsMainDataBase
+
     fun clearAchats() {
         viewModelInitApp._modelAppsFather.produitsMainDataBase.forEach { produit ->
             // Safely add current data to history
@@ -32,10 +31,10 @@ class Startup_Extension(
             database.getReference("K_GroupeurBonCommendToSupplierRef").removeValue()
             database.getReference("O_SoldArticlesTabelle").removeValue()
             updateProduit(produit, viewModelInitApp)
-
         }
     }
 
+    fun implimentClientsParProduits() {
 
-
+    }
 }

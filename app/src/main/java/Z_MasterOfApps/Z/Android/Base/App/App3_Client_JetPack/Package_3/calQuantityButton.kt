@@ -1,6 +1,6 @@
 package Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Package_3
 
-import Z_MasterOfApps.Kotlin.Model.ClientsDataBase
+import Z_MasterOfApps.Kotlin.Model.B_ClientsDataBase
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.ClientBonVentModel
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel.GrossistBonCommandes
@@ -16,7 +16,7 @@ import java.time.format.DateTimeFormatter
 fun calQuantityButton(
     quantity: Int,
     currentSale: SoldArticlesTabelle?,
-    currentClient: ClientsDataBase?,
+    currentClient: B_ClientsDataBase?,
     colorDetails: ColorsArticlesTabelle,
     viewModelInitApp: ViewModelInitApp
 ) {
@@ -52,7 +52,7 @@ fun calQuantityButton(
         )
 
         val existingSaleIndex = product.bonsVentDeCetteCota
-            .indexOfFirst { it.clientInformations?.id == currentClient.id }
+            .indexOfFirst { it.clientIdChoisi == currentClient.id }
 
         if (existingSaleIndex != -1) {
             val existingSale = product.bonsVentDeCetteCota[existingSaleIndex]
@@ -66,13 +66,10 @@ fun calQuantityButton(
             }
         } else {
             val newSale = ClientBonVentModel(
-                vid = System.currentTimeMillis()
+                vid = System.currentTimeMillis(),
+                clientIdChoisi = currentClient.id
             ).apply {
-                clientInformations = ClientBonVentModel.ClientInformations(
-                    id = currentClient.id,
-                    nom = currentClient.nom,
-                    couleur = currentClient.statueDeBase.couleur
-                )
+
                 colours_Achete.add(colorPurchase)
             }
             product.bonsVentDeCetteCota.add(newSale)
@@ -81,8 +78,8 @@ fun calQuantityButton(
         // Format current date as yyyy-MM-dd
         val currentDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
         // Get grossist information with fallback to default
-        val lastGrossistInfo = product.historiqueBonsCommend.lastOrNull()?.grossistInformations
-            ?: GrossistBonCommandes.GrossistInformations()
+        val lastIdGrossitChoisi = product.historiqueBonsCommend.lastOrNull()?.idGrossistChoisi
+            ?: 0
 
         val aggregatedColors = product.bonsVentDeCetteCota
             .flatMap { it.colours_Achete }
@@ -104,7 +101,7 @@ fun calQuantityButton(
 
         val newBonCommande = GrossistBonCommandes(
             vid = System.currentTimeMillis(),
-            init_grossistInformations = lastGrossistInfo,
+            idGrossistChoisi = lastIdGrossitChoisi,
             init_coloursEtGoutsCommendee = aggregatedColors
         ).apply {
             mutableBasesStates?.dateInString = currentDate
