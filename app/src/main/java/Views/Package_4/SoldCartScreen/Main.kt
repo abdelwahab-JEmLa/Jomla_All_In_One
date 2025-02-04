@@ -1,6 +1,6 @@
 package Views.Package_4.SoldCartScreen
 
-import Z_MasterOfApps.Kotlin.Model.ClientsDataBase
+import Z_MasterOfApps.Kotlin.Model.B_ClientsDataBase
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle
@@ -70,7 +70,7 @@ import java.io.File
 fun SoldCartScreen(
     viewModel: HeadViewModel,
     modifier: Modifier = Modifier,
-    clientBuyerNow: ClientsDataBase? = null,
+    clientBuyerNow: B_ClientsDataBase? = null,
     uiState: UiState,
     onConfirmOrder: () -> Unit, viewModelInitApp: ViewModelInitApp
 ) {
@@ -181,7 +181,7 @@ fun SoldArticlesTabelle.getTotalQuantity(): Int {
 
 @Composable
 fun CartSummaryCard(
-    client: ClientsDataBase?,
+    client: B_ClientsDataBase?,
     itemCount: Int,
     totalPrice: Double,
     onConfirmOrder: () -> Unit
@@ -303,7 +303,7 @@ fun CartItem(
     colors: List<ColorsArticlesTabelle>,
     viewModel: HeadViewModel,
     onOpenArticleStats: (ArticlesBasesStatsTable, Int) -> Unit,
-    uiState: UiState, viewModelInitApp: ViewModelInitApp, clientBuyerNow: ClientsDataBase
+    uiState: UiState, viewModelInitApp: ViewModelInitApp, clientBuyerNow: B_ClientsDataBase
 ) {
     ElevatedCard(
         elevation = CardDefaults.elevatedCardElevation(
@@ -443,7 +443,7 @@ private fun ColorItemWithQuantity(
     colors: List<ColorsArticlesTabelle>,
     modifier: Modifier = Modifier,
     viewModelInitApp: ViewModelInitApp,
-    clientBuyerNow: ClientsDataBase
+    clientBuyerNow: B_ClientsDataBase
 ) {
     ElevatedCard(
         modifier = modifier

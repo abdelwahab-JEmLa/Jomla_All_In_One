@@ -1,7 +1,7 @@
 package Views.Z_P3.Ui.Main.ColorItem3
 
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_MasterOfApps.Kotlin.Model.ClientsDataBase
+import Z_MasterOfApps.Kotlin.Model.B_ClientsDataBase
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.SoldArticlesTabelle
 import androidx.compose.foundation.layout.Arrangement
@@ -36,7 +36,7 @@ fun ColorSelectionDialog(
     onQuantitySelected: (Int) -> Unit,
     currentSale: SoldArticlesTabelle?,
     viewModelInitApp: ViewModelInitApp,
-    currentClient: ClientsDataBase?,
+    currentClient: B_ClientsDataBase?,
     indexColoreAcheter: Int,
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
     color: ColorsArticlesTabelle
@@ -100,7 +100,7 @@ private fun QuantityGrid(
     onQuantitySelected: (Int) -> Unit,
     currentSale: SoldArticlesTabelle?,
     viewModelInitApp: ViewModelInitApp,
-    currentClient: ClientsDataBase?,
+    currentClient: B_ClientsDataBase?,
     indexColoreAcheter: Int,
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
     color: ColorsArticlesTabelle

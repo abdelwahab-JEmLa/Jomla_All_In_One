@@ -2,7 +2,7 @@ package Views.Z_P3.Ui.Main.ColorItem3
 
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Package_3._DisplayeProductInfosToSeller
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_MasterOfApps.Kotlin.Model.ClientsDataBase
+import Z_MasterOfApps.Kotlin.Model.B_ClientsDataBase
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.SoldArticlesTabelle
 import androidx.compose.foundation.layout.aspectRatio
@@ -25,7 +25,7 @@ fun QuantityButton(
     onClick: () -> Unit,
     currentSale: SoldArticlesTabelle?,
     viewModelInitApp: ViewModelInitApp,
-    currentClient: ClientsDataBase?,
+    currentClient: B_ClientsDataBase?,
     colorDetails: ColorsArticlesTabelle
 ) {
     Button(

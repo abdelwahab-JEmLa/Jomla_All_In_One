@@ -6,7 +6,7 @@ import Views.P1.Ui.Objects.SearchFilterPB
 import Views.P1._ArticlesStartFacade.FloatingActionButtonGroup.FloatingActionButtonGroup
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
-import Z_MasterOfApps.Kotlin.Model.ClientsDataBase
+import Z_MasterOfApps.Kotlin.Model.B_ClientsDataBase
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -52,7 +52,7 @@ fun FragmentStartupScreen(
     isFabVisible: Boolean,
     onClickDonne: () -> Unit,
     onClickToDisplayeConexionWifi: () -> Unit, scrollTiger: Int, onToggleLockHost: () -> Unit,
-    onToggleLockExpandedPricex: () -> Unit, currentClient: ClientsDataBase?,
+    onToggleLockExpandedPricex: () -> Unit, currentClient: B_ClientsDataBase?,
     viewModelInitApp: ViewModelInitApp
 ) {
     var gridColumns by remember { mutableStateOf(2) }
@@ -104,7 +104,7 @@ fun MainUi(
     onClickDonne: () -> Unit,
     onClickToDisplayeConexionWifi: () -> Unit,
     scrollTiger: Int, onToggleLockHost: () -> Unit, onToggleLockExpandedPricex: () -> Unit,
-    currentClient: ClientsDataBase?, viewModelInitApp: ViewModelInitApp,
+    currentClient: B_ClientsDataBase?, viewModelInitApp: ViewModelInitApp,
 ) {
     val scope = rememberCoroutineScope()
     val tag = if (uiState.productDisplayController.isHostPhone) "📱 ServerScreen" else "📱 ClientScreen"
@@ -389,7 +389,7 @@ private fun Int.toScrollUpdate(): ScrollUpdate {
 class ArticlePagingSource(
     private val articles: List<ArticlesBasesStatsTable>,
     private val filterText: String,
-    private val currentClient: ClientsDataBase?,
+    private val currentClient: B_ClientsDataBase?,
     private val uiState: UiState,
 ) : PagingSource<Int, ArticlesBasesStatsTable>() {
     private val pageSize = 10
