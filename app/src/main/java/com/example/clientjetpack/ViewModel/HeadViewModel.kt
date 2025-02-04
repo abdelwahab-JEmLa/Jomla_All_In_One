@@ -1,6 +1,6 @@
 package com.example.clientjetpack.ViewModel
 
-import Z_MasterOfApps.Kotlin.Model.ClientsDataBase
+import Z_MasterOfApps.Kotlin.Model.B_ClientsDataBase
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.SoldArticlesTabelle
@@ -989,7 +989,7 @@ open class HeadViewModel(
     private suspend fun clientsInitialize(fl: Float) {
         val clientsSnapshot = refClientsTabelle.get().await()
         val clients = clientsSnapshot.children.mapNotNull { snapshot ->
-            snapshot.getValue(ClientsDataBase::class.java)
+            snapshot.getValue(B_ClientsDataBase::class.java)
         }
         updateLoadingProgress(fl)
     }
