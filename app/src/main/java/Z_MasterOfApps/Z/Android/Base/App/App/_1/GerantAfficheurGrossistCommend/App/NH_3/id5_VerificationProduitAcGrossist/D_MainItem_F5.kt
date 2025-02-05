@@ -1,4 +1,4 @@
-package Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_2.id1_GerantDefinirePosition
+package Z_MasterOfApps.Z.Android.Packages._1.GerantAfficheurGrossistCommend.App.NH_5.ID5_VerificationProduitAcGrossist
 
 import Z_MasterOfApps.Kotlin.Model.A_ProduitModel
 import Z_MasterOfApps.Z_AppsFather.Kotlin._4.Modules.GlideDisplayImageBykeyId
@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun C_ItemMainFragment(
+fun D_MainItem_F5(
     mainItem: A_ProduitModel,  // Moved to be first optional parameter
     modifier: Modifier = Modifier,
     onCLickOnMain: () -> Unit = {},
@@ -45,7 +45,7 @@ fun C_ItemMainFragment(
 
         GlideDisplayImageBykeyId(
             imageGlidReloadTigger = 0,
-            mainItem=mainItem,
+            mainItem = mainItem,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(100.dp),

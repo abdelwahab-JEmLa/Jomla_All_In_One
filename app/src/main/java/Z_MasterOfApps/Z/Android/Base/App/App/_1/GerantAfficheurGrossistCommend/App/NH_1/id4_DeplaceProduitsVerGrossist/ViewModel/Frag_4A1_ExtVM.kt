@@ -6,10 +6,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 
 class Frag_4A1_ExtVM(
-    val viewModel: ViewModelInitApp,
+    val headOfViewModel: ViewModelInitApp,
 ) {
     var deplaceProduitsAuGrosssist by mutableStateOf<Long?>(0)
-
 }
 
 

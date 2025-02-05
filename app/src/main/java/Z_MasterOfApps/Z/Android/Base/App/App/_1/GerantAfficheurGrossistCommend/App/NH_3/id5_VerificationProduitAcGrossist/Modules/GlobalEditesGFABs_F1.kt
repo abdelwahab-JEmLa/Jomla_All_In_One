@@ -1,11 +1,10 @@
-package Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_1.id4_DeplaceProduitsVerGrossist.Modules
+package Z.WorkingOn._2NavHost.Fragment_2InNavHost_Id1.Modules
 
 import Z_MasterOfApps.Kotlin.Model.A_ProduitModel
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.imagesProduitsFireBaseStorageRef
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.imagesProduitsLocalExternalStorageBasePath
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.ParamatersAppsModel
 import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.ParamatersAppsModel.DeviceMode
 import android.Manifest
 import android.content.pm.PackageManager
@@ -32,10 +31,8 @@ import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -59,7 +56,7 @@ import java.io.IOException
 import kotlin.math.roundToInt
 
 @Composable
-fun GlobalEditesGFABs_F4(
+fun GlobalEditesGFABs_F1(
     appsHeadModel: _ModelAppsFather,
     modifier: Modifier = Modifier,
     viewModelInitApp: ViewModelInitApp,
@@ -67,19 +64,15 @@ fun GlobalEditesGFABs_F4(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var showOptions by remember { mutableStateOf(false) }
-    var deviceMode by remember { mutableStateOf(ParamatersAppsModel.DeviceMode.SERVER) }
+    var deviceMode by remember { mutableStateOf(DeviceMode.SERVER) }
     var tempImageUri by remember { mutableStateOf<Uri?>(null) }
     var pendingProduct by remember { mutableStateOf<A_ProduitModel?>(null) }
-    var isProcessing by remember { mutableStateOf(false) }
 
     // États pour le déplacement par glisser-déposer
     var offsetX by remember { mutableFloatStateOf(0f) }
     var offsetY by remember { mutableFloatStateOf(0f) }
 
     suspend fun handleImageCapture(uri: Uri) {
-        if (isProcessing) return
-        isProcessing = true
-
         try {
             if (uri.toString().isEmpty()) {
                 throw IllegalArgumentException("Invalid URI")
@@ -105,14 +98,10 @@ fun GlobalEditesGFABs_F4(
                             }
                         }
 
-                        // Upload vers Firebase Storage avec gestion de la progression
+                        // Upload vers Firebase Storage
                         val uploadTask = imagesProduitsFireBaseStorageRef
                             .child(fileName)
                             .putBytes(imageBytes)
-                            .addOnProgressListener { taskSnapshot ->
-                                val progress = (100.0 * taskSnapshot.bytesTransferred) / taskSnapshot.totalByteCount
-                                Log.d("Upload", "Progress: $progress%")
-                            }
                             .await()
 
                         if (uploadTask.metadata != null) {
@@ -135,7 +124,11 @@ fun GlobalEditesGFABs_F4(
                                 .await()
 
                             withContext(Dispatchers.Main) {
-                                Toast.makeText(context, "Image téléchargée avec succès", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context,
+                                    "Image téléchargée avec succès",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         } else {
                             throw IOException("La vérification du téléchargement a échoué")
@@ -145,23 +138,31 @@ fun GlobalEditesGFABs_F4(
                             localFile.delete()
                         }
                         withContext(Dispatchers.Main) {
-                            Toast.makeText(context, "Échec du téléchargement de l'image: ${e.message}", Toast.LENGTH_LONG).show()
+                            Toast.makeText(
+                                context,
+                                "Échec du téléchargement de l'image: ${e.message}",
+                                Toast.LENGTH_LONG
+                            ).show()
                         }
                         throw e
                     }
-                } ?: throw IllegalStateException("Impossible d'ouvrir le flux d'entrée pour l'URI de l'image")
+                }
+                    ?: throw IllegalStateException("Impossible d'ouvrir le flux d'entrée pour l'URI de l'image")
 
             } ?: throw IllegalStateException("Aucun produit en attente trouvé")
 
         } catch (e: Exception) {
             Log.e("ImageUpload", "Échec du traitement de la capture d'image", e)
             withContext(Dispatchers.Main) {
-                Toast.makeText(context, "Erreur lors du traitement de l'image: ${e.message}", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    context,
+                    "Erreur lors du traitement de l'image: ${e.message}",
+                    Toast.LENGTH_LONG
+                ).show()
             }
         } finally {
             pendingProduct = null
             tempImageUri = null
-            isProcessing = false
         }
     }
 
@@ -177,7 +178,8 @@ fun GlobalEditesGFABs_F4(
         } else {
             scope.launch {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Échec de la capture d'image", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Échec de la capture d'image", Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
         }
@@ -220,7 +222,6 @@ fun GlobalEditesGFABs_F4(
         }
     }
 
-
     fun checkAndRequestPermissions() {
         val permissions = arrayOf(
             Manifest.permission.CAMERA,
@@ -246,13 +247,7 @@ fun GlobalEditesGFABs_F4(
             }
         }
     }
-    var clearDataClickCount by remember { mutableIntStateOf(0) }
 
-    LaunchedEffect(showOptions) {
-        if (!showOptions) {
-            clearDataClickCount = 0
-        }
-    }
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -289,16 +284,11 @@ fun GlobalEditesGFABs_F4(
                     horizontalAlignment = Alignment.End,
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-
+                    // FAB Suppression
                     FloatingActionButton(
                         onClick = {
-                            if (clearDataClickCount == 0) {
-                                clearDataClickCount++
-                            } else {
-
-                                clearDataClickCount = 0
-                            }
-                        } ,
+                            //TODO
+                        },
                         modifier = Modifier.size(48.dp),
                         containerColor = Color(0xFF4CAF50)
                     ) {

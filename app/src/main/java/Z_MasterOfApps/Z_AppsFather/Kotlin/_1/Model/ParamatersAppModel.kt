@@ -1,7 +1,7 @@
 // ParamatersAppsModel.kt
 package Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model
 
-import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel
+import Z_MasterOfApps.Kotlin.Model.A_ProduitModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -29,8 +29,8 @@ class ParamatersAppsModel {
         DISPLAY
     }
 
-    var produitsAChoisireLeurClient: MutableList<ProduitModel> =
-        emptyList<ProduitModel>().toMutableStateList()
+    var produitsAChoisireLeurClient: MutableList<A_ProduitModel> =
+        emptyList<A_ProduitModel>().toMutableStateList()
 
     companion object {
         private const val SELF_CHEMIN_BASE =

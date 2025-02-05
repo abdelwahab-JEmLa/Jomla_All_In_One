@@ -58,16 +58,21 @@ data class B_ClientsDataBase(
                     // Create a snapshot of the current state
                     val currentState = this@updateClientsDataBase.copy()
 
-                    // Update local state
+                    // Update local state using clear and addAll
                     val clientsList = viewModel._modelAppsFather.clientDataBase
-                    val index = clientsList.indexOfFirst { it.id == currentState.id }
+                    val updatedList = clientsList.toMutableList()
+                    val index = updatedList.indexOfFirst { it.id == currentState.id }
 
                     if (index != -1) {
-                        clientsList[index] = currentState
+                        updatedList[index] = currentState
                     } else {
                         // If client doesn't exist, add them
-                        clientsList.add(currentState)
+                        updatedList.add(currentState)
                     }
+
+                    // Replace entire list
+                    clientsList.clear()
+                    clientsList.addAll(updatedList)
 
                     // Update Firebase with error handling
                     try {
@@ -76,17 +81,16 @@ data class B_ClientsDataBase(
                             .await()
                     } catch (e: Exception) {
                         // Revert local state if Firebase update fails
-                        if (index != -1) {
-                            clientsList[index] = this@updateClientsDataBase
-                        } else {
-                            clientsList.removeAt(clientsList.lastIndex)
-                        }
+                        clientsList.clear()
+                        clientsList.addAll(
+                            if (index != -1) updatedList.toMutableList().apply { this[index] = this@updateClientsDataBase }
+                            else updatedList.dropLast(1)
+                        )
                         throw e
                     }
 
                 } catch (e: Exception) {
                     Log.e("B_ClientsDataBase", "Failed to update client", e)
-
                 }
             }
         }

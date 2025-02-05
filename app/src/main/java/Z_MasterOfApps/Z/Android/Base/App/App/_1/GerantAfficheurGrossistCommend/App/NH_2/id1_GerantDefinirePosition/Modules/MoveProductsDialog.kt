@@ -1,6 +1,6 @@
 package Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_2.id1_GerantDefinirePosition.Modules
 
-import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
+import Z_MasterOfApps.Kotlin.Model.A_ProduitModel
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.updateProduit
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Arrangement
@@ -18,7 +18,7 @@ import androidx.compose.ui.window.Dialog
 
 @Composable
 fun MoveProductsDialog(
-    selectedProducts: List<_ModelAppsFather.ProduitModel>,
+    selectedProducts: List<A_ProduitModel>,
     viewModelProduits: ViewModelInitApp,
     onDismiss: () -> Unit,
     onProductsMoved: () -> Unit

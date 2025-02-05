@@ -1,4 +1,4 @@
-package Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_2.id1_GerantDefinirePosition.ViewModel.Extension
+package Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_4.id2_TravaillieurListProduitAchercheChezLeGrossist.ViewModel.Extension
 
 import Z_MasterOfApps.Kotlin.Model.C_GrossistsDataBase.Companion.updateGrossistDataBase
 import Z_MasterOfApps.Kotlin.Model.A_ProduitModel
@@ -6,17 +6,17 @@ import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.CoroutineScope
 
-class Frag2_A1_ExtVM(
-    val viewModel: ViewModelInitApp,
+class ExteVMFragmentId_2(
+    val viewModelInitApp: ViewModelInitApp,
     val produitsMainDataBase: MutableList<A_ProduitModel>,
+    val viewModelScope: CoroutineScope,
 ) {
-    val produitsAChoisireLeurClient = viewModel
-        ._paramatersAppsViewModelModel.produitsAChoisireLeurClient
+    private val grossistsDataBase = viewModelInitApp._modelAppsFather.grossistsDataBase
 
-    private val grossistsDataBase = viewModel._modelAppsFather.grossistsDataBase
-
-    var idAuFilter by mutableStateOf<Long?>(0)
+    var afficheProduitsPourRegleConflites by mutableStateOf(false)
+    var auFilter by mutableStateOf<Long?>(0)
 
     fun upButton(index: Int) {
         // Ensure index is valid and there's a previous element
@@ -40,8 +40,8 @@ class Frag2_A1_ExtVM(
         grossistsDataBase[index - 1] = currentElement
 
         // Update both clients in the database
-        currentElement.updateGrossistDataBase(viewModel)
-        prev.updateGrossistDataBase(viewModel)
+        currentElement.updateGrossistDataBase(viewModelInitApp)
+        prev.updateGrossistDataBase(viewModelInitApp)
     }
 }
 

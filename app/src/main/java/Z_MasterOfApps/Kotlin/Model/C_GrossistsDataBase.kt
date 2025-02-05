@@ -42,16 +42,21 @@ data class C_GrossistsDataBase(
                     // Create a snapshot of the current state
                     val currentState = this@updateGrossistDataBase.copy()
 
-                    // Update local state
-                    val clientsList = viewModel._modelAppsFather.grossistsDataBase
-                    val index = clientsList.indexOfFirst { it.id == currentState.id }
+                    // Update local state using clear and addAll
+                    val grossistsList = viewModel._modelAppsFather.grossistsDataBase
+                    val updatedList = grossistsList.toMutableList()
+                    val index = updatedList.indexOfFirst { it.id == currentState.id }
 
                     if (index != -1) {
-                        clientsList[index] = currentState
+                        updatedList[index] = currentState
                     } else {
-                        // If client doesn't exist, add them
-                        clientsList.add(currentState)
+                        // If grossist doesn't exist, add them
+                        updatedList.add(currentState)
                     }
+
+                    // Replace entire list
+                    grossistsList.clear()
+                    grossistsList.addAll(updatedList)
 
                     // Update Firebase with error handling
                     try {
@@ -60,17 +65,16 @@ data class C_GrossistsDataBase(
                             .await()
                     } catch (e: Exception) {
                         // Revert local state if Firebase update fails
-                        if (index != -1) {
-                            clientsList[index] = this@updateGrossistDataBase
-                        } else {
-                            clientsList.removeAt(clientsList.lastIndex)
-                        }
+                        grossistsList.clear()
+                        grossistsList.addAll(
+                            if (index != -1) updatedList.toMutableList().apply { this[index] = this@updateGrossistDataBase }
+                            else updatedList.dropLast(1)
+                        )
                         throw e
                     }
 
                 } catch (e: Exception) {
-                    Log.e("", "Failed to update client", e)
-
+                    Log.e("C_GrossistsDataBase", "Failed to update grossist", e)
                 }
             }
         }

@@ -1,6 +1,8 @@
 // LogUtils.kt
 package Z_MasterOfApps.Z_AppsFather.Kotlin._4.Modules.LogUtils
 
+import Z_MasterOfApps.Kotlin.Model.A_ProduitModel
+
 object LogUtils {
     private const val APP_TAG = "MasterOfApps"
 
@@ -31,7 +33,7 @@ object LogUtils {
         android.util.Log.e("$APP_TAG/$tag", message, error)
     }
 
-    fun logProductState(product: Z_MasterOfApps.Kotlin.Model._ModelAppsFather.ProduitModel) {
+    fun logProductState(product: A_ProduitModel) {
         logProduct(
             """
             Product State:

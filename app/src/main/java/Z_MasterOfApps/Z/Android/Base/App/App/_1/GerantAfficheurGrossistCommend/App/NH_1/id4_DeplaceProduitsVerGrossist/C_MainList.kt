@@ -1,14 +1,12 @@
 package Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_1.id4_DeplaceProduitsVerGrossist
 
-import Z_MasterOfApps.Kotlin.Model.Extension.groupedProductsParGrossist
-import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
+import Z_MasterOfApps.Kotlin.Model.A_ProduitModel
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_1.id4_DeplaceProduitsVerGrossist.Modules.Dialogs.MoveProductsDialog
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
@@ -28,24 +26,11 @@ import androidx.compose.ui.unit.dp
 fun MainList_F4(
     viewModel: ViewModelInitApp,
     paddingValues: PaddingValues,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-    val frag4a1Extvm = viewModel.frag_4A1_ExtVM
-
-    var selectedProducts by remember { mutableStateOf<List<_ModelAppsFather.ProduitModel>>(emptyList()) }
+    var selectedProducts by remember { mutableStateOf<List<A_ProduitModel>>(emptyList()) }
+    var deplaceProduitsAuGrosssist by remember { mutableStateOf<Long?>(null) }
     var showMoveDialog by remember { mutableStateOf(false) }
-    var deplaceProduitsAuGrosssist = frag4a1Extvm.deplaceProduitsAuGrosssist
-
-    val groupedProducts = viewModel._modelAppsFather.groupedProductsParGrossist
-
-    if (showMoveDialog && deplaceProduitsAuGrosssist != null) {
-        MoveProductsDialog(
-            selectedProducts = selectedProducts,
-            viewModelProduits = viewModel,
-            onDismiss = { showMoveDialog = false },
-            onProductsMoved = { selectedProducts = emptyList() }
-        )
-    }
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(3),
@@ -57,8 +42,10 @@ fun MainList_F4(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        groupedProducts.forEach { (grossist, products) ->
-            item(span = { GridItemSpan(3) }) {
+        viewModel._modelAppsFather.groupedProductsParGrossist.forEach { (grossist, products) ->    //->
+            item(
+                span = { GridItemSpan(3) }
+            ) {
                 GrossistHeader(
                     grossist = grossist,
                     selectedProductsCount = selectedProducts.size,
@@ -74,12 +61,19 @@ fun MainList_F4(
                     it.bonCommendDeCetteCota?.mutableBasesStates
                         ?.positionProduitDonGrossistChoisiPourAcheterCeProduit
                         ?: Int.MAX_VALUE
-                }
+                },
+                key = { it.id }
             ) { product ->
                 Box(
                     modifier = Modifier
-                        .animateItem()
+                        .animateItem(fadeInSpec = null, fadeOutSpec = null)
                         .padding(4.dp)
+                        .background(
+                            color = if (selectedProducts.contains(product))
+                                Color.Yellow.copy(alpha = 0.3f)
+                            else Color.Transparent,
+                            shape = RoundedCornerShape(4.dp)
+                        )
                 ) {
                     MainItem_F4(
                         mainItem = product,
@@ -93,18 +87,21 @@ fun MainList_F4(
                         position = selectedProducts.indexOf(product).let {
                             if (it >= 0) it + 1 else null
                         },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(
-                                color = if (selectedProducts.contains(product))
-                                    Color.Yellow.copy(alpha = 0.3f)
-                                else Color.Transparent,
-                                shape = RoundedCornerShape(4.dp)
-                            )
-                            .animateItem(),
+                        modifier = Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null)
                     )
                 }
             }
         }
+    }
+
+    if (showMoveDialog && deplaceProduitsAuGrosssist != null) {
+        MoveProductsDialog(
+            selectedProducts = selectedProducts,
+            viewModel = viewModel,
+            onDismiss = { showMoveDialog = false },
+            onProductsMoved = {
+                selectedProducts = emptyList()
+            }
+        )
     }
 }
