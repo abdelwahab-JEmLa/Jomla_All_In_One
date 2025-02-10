@@ -1,6 +1,7 @@
 package Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.B.Dialogs.Utils
 
 import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.ViewModel.Extension.ViewModelExtension_App2_F1
+import Z_MasterOfApps.Z.Android.Res.XmlsFilesHandler.Companion.fixXmlResources
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
@@ -32,7 +33,7 @@ fun AddMarkerButton(
     var isPlaying by remember { mutableStateOf(false) }
 
     val composition by rememberLottieComposition(
-        LottieCompositionSpec.RawRes(com.example.clientjetpack.R.raw.reacticonanimatedjsonurl)
+        LottieCompositionSpec.RawRes(fixXmlResources("reacticonanimatedjsonurl"))
     )
 
     val progress by animateLottieCompositionAsState(
