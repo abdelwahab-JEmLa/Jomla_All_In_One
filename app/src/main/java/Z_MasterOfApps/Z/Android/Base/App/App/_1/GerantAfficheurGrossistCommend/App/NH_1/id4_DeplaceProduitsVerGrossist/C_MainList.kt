@@ -42,56 +42,59 @@ fun MainList_F4(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        viewModel._modelAppsFather.groupedProductsParGrossist.forEach { (grossist, products) ->    //->
-            item(
-                span = { GridItemSpan(3) }
-            ) {
-                GrossistHeader(
-                    grossist = grossist,
-                    selectedProductsCount = selectedProducts.size,
-                    onMoveClick = {
-                        deplaceProduitsAuGrosssist = grossist.id
-                        showMoveDialog = true
-                    }
-                )
-            }
-
-            items(
-                items = products.sortedBy {
-                    it.bonCommendDeCetteCota?.mutableBasesStates
-                        ?.positionProduitDonGrossistChoisiPourAcheterCeProduit
-                        ?: Int.MAX_VALUE
-                },
-                key = { it.id }
-            ) { product ->
-                Box(
-                    modifier = Modifier
-                        .animateItem(fadeInSpec = null, fadeOutSpec = null)
-                        .padding(4.dp)
-                        .background(
-                            color = if (selectedProducts.contains(product))
-                                Color.Yellow.copy(alpha = 0.3f)
-                            else Color.Transparent,
-                            shape = RoundedCornerShape(4.dp)
-                        )
+        // Filter out grossists with no products before displaying
+        viewModel._modelAppsFather.groupedProductsParGrossist
+            .filter { (_, products) -> products.isNotEmpty() }
+            .forEach { (grossist, products) ->
+                item(
+                    span = { GridItemSpan(3) }
                 ) {
-                    MainItem_F4(
-                        mainItem = product,
-                        onCLickOnMain = {
-                            selectedProducts = if (selectedProducts.contains(product)) {
-                                selectedProducts - product
-                            } else {
-                                selectedProducts + product
-                            }
-                        },
-                        position = selectedProducts.indexOf(product).let {
-                            if (it >= 0) it + 1 else null
-                        },
-                        modifier = Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null)
+                    GrossistHeader(
+                        grossist = grossist,
+                        selectedProductsCount = selectedProducts.size,
+                        onMoveClick = {
+                            deplaceProduitsAuGrosssist = grossist.id
+                            showMoveDialog = true
+                        }
                     )
                 }
+
+                items(
+                    items = products.sortedBy {
+                        it.bonCommendDeCetteCota?.mutableBasesStates
+                            ?.positionProduitDonGrossistChoisiPourAcheterCeProduit
+                            ?: Int.MAX_VALUE
+                    },
+                    key = { it.id }
+                ) { product ->
+                    Box(
+                        modifier = Modifier
+                            .animateItem(fadeInSpec = null, fadeOutSpec = null)
+                            .padding(4.dp)
+                            .background(
+                                color = if (selectedProducts.contains(product))
+                                    Color.Yellow.copy(alpha = 0.3f)
+                                else Color.Transparent,
+                                shape = RoundedCornerShape(4.dp)
+                            )
+                    ) {
+                        MainItem_F4(
+                            mainItem = product,
+                            onCLickOnMain = {
+                                selectedProducts = if (selectedProducts.contains(product)) {
+                                    selectedProducts - product
+                                } else {
+                                    selectedProducts + product
+                                }
+                            },
+                            position = selectedProducts.indexOf(product).let {
+                                if (it >= 0) it + 1 else null
+                            },
+                            modifier = Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null)
+                        )
+                    }
+                }
             }
-        }
     }
 
     if (showMoveDialog && deplaceProduitsAuGrosssist != null) {

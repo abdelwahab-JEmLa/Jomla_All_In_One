@@ -1,8 +1,8 @@
 package Z_MasterOfApps.Z.Android.Main
 
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_1.id4_DeplaceProduitsVerGrossist.A_id4_DeplaceProduitsVerGrossist
 import Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_2.id1_GerantDefinirePosition.A_id1_GerantDefinirePosition
+import Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_1.id4_DeplaceProduitsVerGrossist.A_id4_DeplaceProduitsVerGrossist
 import Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_3.id5_VerificationProduitAcGrossist.A_ID5_VerificationProduitAcGrossist
 import Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_4.id2_TravaillieurListProduitAchercheChezLeGrossist.A_Id2_TravaillieurListProduitAchercheChezLeGrossist
 import Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_5.id3_AfficheurDesProduitsPourLeColecteur.A_id3_AfficheurDesProduitsPourLeColecteur
@@ -48,7 +48,7 @@ fun AppNavigationHost(
     val isManagerPhone = viewModelInitApp._paramatersAppsViewModelModel.cLeTelephoneDuGerant ?: false
     val items = remember(isManagerPhone) { NavigationItems.getItems(isManagerPhone) }
 
-    val startDestination = InfosDatas_FramgmentId4.route
+    val startDestination = StartupIcon_Start.route
     val currentRoute = navController.currentBackStackEntryAsState()
         .value?.destination?.route
 
@@ -79,7 +79,7 @@ fun AppNavigationHost(
                                 A_ID5_VerificationProduitAcGrossist(viewModel = viewModelInitApp)
                             }
                             composable(InfosDatas_FramgmentId2.route) {
-                                A_Id2_TravaillieurListProduitAchercheChezLeGrossist(viewModelInitApp = viewModelInitApp)
+                                A_Id2_TravaillieurListProduitAchercheChezLeGrossist(viewModel = viewModelInitApp)
                             }
                             composable(InfosDatas_FramgmentId3.route) {
                                 A_id3_AfficheurDesProduitsPourLeColecteur(viewModelInitApp = viewModelInitApp)
@@ -113,12 +113,15 @@ fun AppNavigationHost(
                 viewModelInitApp = viewModelInitApp,
                 currentRoute = currentRoute,
                 onNavigate = { route ->
-                    navController.navigate(route) {
-                        popUpTo(navController.graph.startDestinationId) {
-                            saveState = true
+                    // Disable navigation when loading
+                    if (!viewModelInitApp.isLoading) {
+                        navController.navigate(route) {
+                            popUpTo(navController.graph.startDestinationId) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
                         }
-                        launchSingleTop = true
-                        restoreState = true
                     }
                 },
                 modifier = Modifier.padding(bottom = 8.dp)

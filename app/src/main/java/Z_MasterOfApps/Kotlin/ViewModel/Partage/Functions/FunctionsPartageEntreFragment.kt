@@ -1,14 +1,35 @@
 package Z_MasterOfApps.Kotlin.ViewModel.Partage.Functions
 
-import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.updateProduit
 import Z_MasterOfApps.Kotlin.Model.A_ProduitModel
+import Z_MasterOfApps.Kotlin.Model.C_GrossistsDataBase.Companion.updateGrossistDataBase
+import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.updateProduit
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import com.google.firebase.Firebase
 import com.google.firebase.database.database
 
 class FunctionsPartageEntreFragment(
-    val viewModelInitApp: ViewModelInitApp,
+    val viewModel: ViewModelInitApp,
 ) {
+    private val grossistsDataBase = viewModel._modelAppsFather.grossistsDataBase
+
+    fun upButton(index: Int) {
+        if (index <= 0 || index >= grossistsDataBase.size) return
+
+        // Swap elements and update their indices
+        grossistsDataBase[index].let { current ->
+            grossistsDataBase[index - 1].let { prev ->
+                // Update indices
+                current.statueDeBase.itIndexInParentList = index - 1
+                prev.statueDeBase.itIndexInParentList = index
+
+                // Swap positions and update database
+                grossistsDataBase[index] = prev
+                grossistsDataBase[index - 1] = current
+                current.updateGrossistDataBase(viewModel)
+                prev.updateGrossistDataBase(viewModel)
+            }
+        }
+    }
     fun changeColours_AcheteQuantity_Achete(
         selectedBonVent: A_ProduitModel.ClientBonVentModel?,
         produit: A_ProduitModel,
@@ -23,7 +44,7 @@ class FunctionsPartageEntreFragment(
                         ?.quantity_Achete = newQuantity
                 }
         }
-        updateProduit(updatedProduit, viewModelInitApp)
+        updateProduit(updatedProduit, viewModel)
 
         // Update SoldArticlesTabelle
         selectedBonVent?.let { bonVent ->
@@ -81,3 +102,4 @@ class FunctionsPartageEntreFragment(
         }
     }
 }
+

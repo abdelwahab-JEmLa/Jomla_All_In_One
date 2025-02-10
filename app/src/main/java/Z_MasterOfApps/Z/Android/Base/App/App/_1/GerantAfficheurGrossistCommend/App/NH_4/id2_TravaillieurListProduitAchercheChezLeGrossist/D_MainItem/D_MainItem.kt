@@ -34,10 +34,11 @@ fun MainItem_F2(
     onCLickOnMain: () -> Unit = {},
     position: Int? = null,
 ) {
+    val height = 190.dp
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(80.dp)
+            .height(height)
             .background(
                 color = if (position != null)
                     MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
@@ -52,11 +53,11 @@ fun MainItem_F2(
             mainItem = mainItem,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(100.dp),
-            size = 100.dp
+                .height(height),
+            size = 140.dp,
+            qualityImage = 80
         )
 
-        // Product ID
         Text(
             text = "ID: ${mainItem.id}",
             modifier = Modifier
@@ -77,7 +78,6 @@ fun MainItem_F2(
             ?.coloursEtGoutsCommendee
             ?.toList() ?: emptyList()
 
-        // Calculate total quantity from all bon vents and their colors
         val totalQuantity = colorAchatModelList
             .sumOf { it.quantityAchete }
 
@@ -97,22 +97,52 @@ fun MainItem_F2(
                 ) {
                     Text(
                         text = mainItem.nom,
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = Color.White,
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                        ),
+                        color = Color.Black,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier
+                            .weight(1f)
+                            .background(
+                                color = Color.White.copy(alpha = 0.8f),
+                                shape = RoundedCornerShape(4.dp)
+                            )
+                            .padding(4.dp)
                     )
-                    Text(
-                        text = "Total: $totalQuantity",
-                        color = Color.White,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Text(
+                            text = totalQuantity.toString(),
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                            ),
+                            color = Color.Black,
+                            modifier = Modifier
+                                .background(
+                                    color = Color.White.copy(alpha = 0.8f),
+                                    shape = RoundedCornerShape(4.dp)
+                                )
+                                .padding(4.dp)
+                        )
+                        Text(
+                            text = "ك.الكلية",
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                            ),
+                            color = Color.Black
+                        )
+                    }
                 }
 
                 Box(
                     modifier = Modifier
                         .width(200.dp)
+                        .padding(7.dp)
                 ) {
                     val colorItems = colorAchatModelList
                         .filter { it.quantityAchete > 0 }
@@ -129,11 +159,27 @@ fun MainItem_F2(
                                     colorFlavor.emogi.isNotEmpty() -> colorFlavor.emogi
                                     else -> colorFlavor.nom.take(2)
                                 }
-                                Text(
-                                    text = "$displayText>(${colorFlavor.quantityAchete})",
-                                    fontSize = 24.sp,
-                                    color = Color.Black
-                                )
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(2.dp)
+                                ) {
+                                    Text(
+                                        text = "$displayText>",
+                                        fontSize = 24.sp,
+                                        color = Color.Black
+                                    )
+                                    Text(
+                                        text = "(${colorFlavor.quantityAchete})",
+                                        fontSize = 24.sp,
+                                        color = Color.Black,
+                                        modifier = Modifier
+                                            .background(
+                                                color = Color.White.copy(alpha = 0.8f),
+                                                shape = RoundedCornerShape(4.dp)
+                                            )
+                                            .padding(horizontal = 4.dp)
+                                    )
+                                }
                             }
                         }
                     }

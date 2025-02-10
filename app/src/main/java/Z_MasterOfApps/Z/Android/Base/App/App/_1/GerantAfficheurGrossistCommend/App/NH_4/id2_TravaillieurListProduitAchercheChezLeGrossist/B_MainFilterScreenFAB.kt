@@ -104,7 +104,9 @@ fun MainScreenFilterFAB_F2(
                     }
 
                     viewModel._modelAppsFather
-                        .groupedProductsParGrossist.forEachIndexed { index, (grossist, produits) ->
+                        .groupedProductsParGrossist
+                        .filter { (_, products) -> products.isNotEmpty() }
+                        .forEachIndexed { index, (grossist, produits) ->
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -113,7 +115,7 @@ fun MainScreenFilterFAB_F2(
                                 FloatingActionButton(
                                     onClick = {
                                         viewModel.viewModelScope.launch {
-                                            viewModel.frag1_A1_ExtVM.upButton(index)
+                                            viewModel.functionsPartageEntreFragment.upButton(index)
                                         }
                                     },
                                     modifier = Modifier.size(36.dp),

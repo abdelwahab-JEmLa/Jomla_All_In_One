@@ -8,43 +8,39 @@ import com.google.firebase.database.IgnoreExtraProperties
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
-@IgnoreExtraProperties
-data class C_GrossistsDataBase(
+data class D_CouleursEtGoutesProduitsInfos(
     var id: Long = 1,
-    var nom: String = "Non Defini",
-    var statueDeBase: StatueDeBase = StatueDeBase(),
+    var infosDeBase: InfosDeBase = InfosDeBase(),
+    var statuesMutable: StatuesMutable = StatuesMutable(),
 ) {
     @IgnoreExtraProperties
-    data class StatueDeBase(
-        var couleur: String = "#FFFFFF",
-        var itIndexInParentList: Int = 0,
-        var caRefDonAncienDataBase: String = "",
-        var cUnClientTemporaire: Boolean = true,
-        var auFilterFAB: Boolean = false,
-        var actuelleEtat: DernierEtateAAffiche? = null
-    )  {
-        @IgnoreExtraProperties
-        enum class DernierEtateAAffiche(val color: Int, val nomEtateArabe: String)
-    }
+    data class InfosDeBase(
+        var nom: String = "Non Defini",
+        var imogi: String = "🎨",
+    )
 
-    // B_ClientsDataBase.kt - Updated companion object
+    @IgnoreExtraProperties
+    data class StatuesMutable(
+        var classmentDonsParentList: Long = 0,
+        var sonImageNeExistPas: Boolean = false,
+        var caRefDonAncienDataBase: String = "H_ColorsArticles",
+    )
+
     companion object {
-        val sonAncienRef = firebaseDatabase.getReference("F_Suppliers")
-
-        val refClientsDataBase = firebaseDatabase
+         val caReference = firebaseDatabase
             .getReference("0_UiState_3_Host_Package_3_Prototype11Dec")
-            .child("C_GrossistsDataBase")
+            .child("D_CouleursEtGoutesProduitsInfos")
 
-        fun C_GrossistsDataBase.updateGrossistDataBase(
+        fun D_CouleursEtGoutesProduitsInfos.update(
             viewModel: ViewModelInitApp
         ) {
             viewModel.viewModelScope.launch {
                 try {
                     // Create a snapshot of the current state
-                    val currentState = this@updateGrossistDataBase.copy()
+                    val currentState = this@update.copy()
 
                     // Update local state using clear and addAll
-                    val grossistsList = viewModel._modelAppsFather.grossistsDataBase
+                    val grossistsList = viewModel._modelAppsFather.couleursProduitsInfos
                     val updatedList = grossistsList.toMutableList()
                     val index = updatedList.indexOfFirst { it.id == currentState.id }
 
@@ -61,21 +57,21 @@ data class C_GrossistsDataBase(
 
                     // Update Firebase with error handling
                     try {
-                        refClientsDataBase.child(currentState.id.toString())
+                        caReference.child(currentState.id.toString())
                             .setValue(currentState)
                             .await()
                     } catch (e: Exception) {
                         // Revert local state if Firebase update fails
                         grossistsList.clear()
                         grossistsList.addAll(
-                            if (index != -1) updatedList.toMutableList().apply { this[index] = this@updateGrossistDataBase }
+                            if (index != -1) updatedList.toMutableList().apply { this[index] = this@update }
                             else updatedList.dropLast(1)
                         )
                         throw e
                     }
 
                 } catch (e: Exception) {
-                    Log.e("C_GrossistsDataBase", "Failed to update grossist", e)
+                    Log.e("D_CouleursEtGoutesProduitsInfos", "Failed to update ", e)
                 }
             }
         }

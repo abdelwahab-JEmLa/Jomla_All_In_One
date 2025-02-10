@@ -1,7 +1,7 @@
 package Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_2.id1_GerantDefinirePosition
 
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_MasterOfApps.Z.Android.Packages._1.GerantAfficheurGrossistCommend.App.NH_2.id1_GerantDefinirePosition.Modules.GlobalEditesGFABs_F1
+import Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_2.id1_GerantDefinirePosition.Dialog.A_OptionsControlsButtons_F1
 import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -59,9 +59,9 @@ internal fun A_id1_GerantDefinirePosition(
                 }
 
                 if (viewModel._paramatersAppsViewModelModel.fabsVisibility) {
-                    GlobalEditesGFABs_F1(
+                    A_OptionsControlsButtons_F1(
                         appsHeadModel = viewModel._modelAppsFather,
-                        viewModelInitApp = viewModel,
+                        viewModel = viewModel,
                     )
 
                     MainScreenFilterFAB(

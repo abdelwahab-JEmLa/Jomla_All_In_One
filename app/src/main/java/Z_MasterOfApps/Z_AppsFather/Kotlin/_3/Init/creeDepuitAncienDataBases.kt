@@ -40,6 +40,7 @@ fun creeDepuitAncienDataBases(
                     }
 
                     var colorsAdded = 0
+                    // In creeDepuitAncienDataBases.kt, modify the relevant section:
                     listOf(
                         ancien.idcolor1 to 1L,
                         ancien.idcolor2 to 2L,
@@ -55,6 +56,8 @@ fun creeDepuitAncienDataBases(
                                     sonImageNeExistPas = depuitAncienDataBase.itsTempProduit && position == 1L,
                                 )
                             )
+                            // Use the new addColorId function
+                            depuitAncienDataBase.statuesBase.addColorId(colorId)
                             colorsAdded++
                         }
                     }

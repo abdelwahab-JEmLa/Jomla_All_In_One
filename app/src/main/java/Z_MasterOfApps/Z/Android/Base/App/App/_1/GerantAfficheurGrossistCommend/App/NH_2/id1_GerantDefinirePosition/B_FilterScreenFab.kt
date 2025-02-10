@@ -72,7 +72,10 @@ fun MainScreenFilterFAB(
             AnimatedVisibility(visible = showButtons) {
                 Column(horizontalAlignment = Alignment.End) {
                     viewModel._modelAppsFather.groupedProductsParGrossist
-                        .forEachIndexed { index, (grossist, produits) ->
+                        .filter { (_, products) -> products.isNotEmpty() }
+                        .mapIndexed { index, entry -> index to entry }
+                        .forEach { (index, entry) ->
+                            val (grossist, produits) = entry
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -81,7 +84,7 @@ fun MainScreenFilterFAB(
                                     FloatingActionButton(
                                         onClick = {
                                             viewModel.viewModelScope.launch {
-                                                viewModel.frag1_A1_ExtVM.upButton(index)
+                                                viewModel.functionsPartageEntreFragment.upButton(index)
                                             }
                                         },
                                         modifier = Modifier.size(36.dp)

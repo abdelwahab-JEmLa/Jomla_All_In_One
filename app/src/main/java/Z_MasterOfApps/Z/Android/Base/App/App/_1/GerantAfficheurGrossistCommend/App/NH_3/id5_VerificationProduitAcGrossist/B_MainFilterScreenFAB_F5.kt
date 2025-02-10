@@ -72,6 +72,7 @@ fun B_MainScreenFilterFAB_F5(
             AnimatedVisibility(visible = showButtons) {
                 Column(horizontalAlignment = Alignment.End) {
                     viewModelProduits._modelAppsFather.groupedProductsParGrossist
+                        .filter { (_, products) -> products.isNotEmpty() }
                         .forEachIndexed { index, (grossist, produits) ->
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,

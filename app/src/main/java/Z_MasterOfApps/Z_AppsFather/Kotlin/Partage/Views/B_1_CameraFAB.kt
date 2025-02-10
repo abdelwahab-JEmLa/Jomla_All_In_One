@@ -1,12 +1,10 @@
-package Z_MasterOfApps.Z.Android.Packages._1.GerantAfficheurGrossistCommend.App.NH_2.id1_GerantDefinirePosition.Modules
+package Z_MasterOfApps.Z_AppsFather.Kotlin.Partage.Views
 
 import Z_MasterOfApps.Kotlin.Model.A_ProduitModel
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.imagesProduitsFireBaseStorageRef
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.imagesProduitsLocalExternalStorageBasePath
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.ParamatersAppsModel
-import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.ParamatersAppsModel.DeviceMode
 import android.Manifest
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -14,36 +12,21 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddAPhoto
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.ExpandLess
-import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material.icons.filled.KeyboardDoubleArrowUp
-import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -54,24 +37,17 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import kotlin.math.roundToInt
 
 @Composable
-fun GlobalEditesGFABs_F1(
-    appsHeadModel: _ModelAppsFather,
-    modifier: Modifier = Modifier,
-    viewModelInitApp: ViewModelInitApp,
+fun B_1_CameraFAB(
+    viewModel: ViewModelInitApp,
+    size: Dp = 48.dp,
+    containerColor: Color = Color(0xFF4CAF50)
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    var showOptions by remember { mutableStateOf(false) }
-    var deviceMode by remember { mutableStateOf(ParamatersAppsModel.DeviceMode.SERVER) }
     var tempImageUri by remember { mutableStateOf<Uri?>(null) }
     var pendingProduct by remember { mutableStateOf<A_ProduitModel?>(null) }
-
-    // États pour le déplacement par glisser-déposer
-    var offsetX by remember { mutableFloatStateOf(0f) }
-    var offsetY by remember { mutableFloatStateOf(0f) }
 
     suspend fun handleImageCapture(uri: Uri) {
         try {
@@ -92,14 +68,12 @@ fun GlobalEditesGFABs_F1(
                     val imageBytes = inputStream.readBytes()
 
                     try {
-                        // Sauvegarde en stockage local
                         withContext(Dispatchers.IO) {
                             FileOutputStream(localFile).use { output ->
                                 output.write(imageBytes)
                             }
                         }
 
-                        // Upload vers Firebase Storage
                         val uploadTask = imagesProduitsFireBaseStorageRef
                             .child(fileName)
                             .putBytes(imageBytes)
@@ -115,6 +89,7 @@ fun GlobalEditesGFABs_F1(
                                     prePourCameraCapture = false
                                     naAucunImage = false
                                     imageGlidReloadTigger += 1
+                                    coloursEtGouts.first().sonImageNeExistPas = false
                                 }
                                 besoinToBeUpdated = true
                             }
@@ -139,10 +114,8 @@ fun GlobalEditesGFABs_F1(
                         }
                         throw e
                     }
-                } ?: throw IllegalStateException("Impossible d'ouvrir le flux d'entrée pour l'URI de l'image")
-
-            } ?: throw IllegalStateException("Aucun produit en attente trouvé")
-
+                }
+            }
         } catch (e: Exception) {
             Log.e("ImageUpload", "Échec du traitement de la capture d'image", e)
             withContext(Dispatchers.Main) {
@@ -223,7 +196,7 @@ fun GlobalEditesGFABs_F1(
         if (!hasPermissions) {
             permissionLauncher.launch(permissions)
         } else {
-            val productForCapture = appsHeadModel.produitsMainDataBase
+            val productForCapture = viewModel._modelAppsFather.produitsMainDataBase
                 .firstOrNull { it.statuesBase.prePourCameraCapture }
 
             if (productForCapture != null) {
@@ -235,103 +208,14 @@ fun GlobalEditesGFABs_F1(
         }
     }
 
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+    FloatingActionButton(
+        onClick = { checkAndRequestPermissions() },
+        modifier = Modifier.size(size),
+        containerColor = containerColor
     ) {
-        Column(
-            modifier = Modifier
-                .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
-                .pointerInput(Unit) {
-                    detectDragGestures { change, dragAmount ->
-                        change.consume()
-                        offsetX += dragAmount.x
-                        offsetY += dragAmount.y
-                    }
-                },
-            horizontalAlignment = Alignment.End,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            // FAB Principal
-            FloatingActionButton(
-                onClick = { showOptions = !showOptions },
-                modifier = Modifier.size(48.dp),
-                containerColor = Color(0xFF3F51B5)
-            ) {
-                Icon(
-                    imageVector = if (showOptions) Icons.Default.ExpandLess
-                    else Icons.Default.ExpandMore,
-                    contentDescription = if (showOptions) "Masquer les options" else "Afficher les options"
-                )
-            }
-
-            // Menu d'options
-            AnimatedVisibility(visible = showOptions) {
-                Column(
-                    horizontalAlignment = Alignment.End,
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    // FAB Suppression
-                    FloatingActionButton(
-                        onClick = {
-                             //TODO
-                        },
-                        modifier = Modifier.size(48.dp),
-                        containerColor = Color(0xFF4CAF50)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = "Supprimer"
-                        )
-                    }
-
-                    // FAB Caméra
-                    FloatingActionButton(
-                        onClick = { checkAndRequestPermissions() },
-                        modifier = Modifier.size(48.dp),
-                        containerColor = Color(0xFF4CAF50)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.AddAPhoto,
-                            contentDescription = "Prendre une photo"
-                        )
-                    }
-
-                    // FAB Édition de position
-                    FloatingActionButton(
-                        onClick = {
-                            viewModelInitApp
-                                ._paramatersAppsViewModelModel
-                                .visibilityClientEditePositionDialog = true
-                        },
-                        modifier = Modifier.size(48.dp),
-                        containerColor = Color(0xFFFF5722)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.KeyboardDoubleArrowUp,
-                            contentDescription = "Éditer la position"
-                        )
-                    }
-
-                    // FAB Basculement de mode
-                    FloatingActionButton(
-                        onClick = {
-                            deviceMode = when (deviceMode) {
-                                DeviceMode.SERVER -> DeviceMode.DISPLAY
-                                DeviceMode.DISPLAY -> DeviceMode.SERVER
-                            }
-                        },
-                        modifier = Modifier.size(48.dp),
-                        containerColor = Color(0xFFFF5722)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Upload,
-                            contentDescription = if (deviceMode == DeviceMode.SERVER)
-                                "Passer en mode Affichage" else "Passer en mode Serveur"
-                        )
-                    }
-                }
-            }
-        }
+        Icon(
+            imageVector = Icons.Default.AddAPhoto,
+            contentDescription = "Prendre une photo"
+        )
     }
 }

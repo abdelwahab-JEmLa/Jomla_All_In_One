@@ -75,6 +75,7 @@ fun MainScreenFilterFAB_F3(
                     modifier = Modifier.padding(top = 8.dp)
                 ) {
                     viewModel._modelAppsFather.groupedProductsParClients
+                        .filter { (_, products) -> products.isNotEmpty() }
                         .forEachIndexed { index, (client, products) ->
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,

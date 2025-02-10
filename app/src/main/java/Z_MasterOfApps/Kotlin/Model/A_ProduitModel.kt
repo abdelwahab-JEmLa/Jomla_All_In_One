@@ -1,5 +1,6 @@
 package Z_MasterOfApps.Kotlin.Model
 
+import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -32,15 +33,37 @@ class A_ProduitModel(
     var statuesBase: StatuesBase by mutableStateOf(StatuesBase())
     @IgnoreExtraProperties
     class StatuesBase(
+        coloursEtGoutsIds: List<Long> = emptyList(), // Changed parameter name to avoid shadowing
         var ilAUneCouleurAvecImage: Boolean = false,
         var characterProduit: CharacterProduit = CharacterProduit(),
-        ) {
+        var infosCoutes: InfosCoutes = InfosCoutes(),
+    ) {
+        // Convert to mutable state list
+        private val _coloursEtGoutsIds = coloursEtGoutsIds.toMutableStateList()
+        var coloursEtGoutsIds: List<Long>
+            get() = _coloursEtGoutsIds
+            set(value) {
+                _coloursEtGoutsIds.clear()
+                _coloursEtGoutsIds.addAll(value)
+            }
+
+        // Function to add a new color ID
+        fun addColorId(colorId: Long) {
+            _coloursEtGoutsIds.add(colorId)
+        }
+
         var naAucunImage: Boolean by mutableStateOf(false)
         var sonImageBesoinActualisation: Boolean by mutableStateOf(false)
         var imageGlidReloadTigger: Int by mutableStateOf(0)
 
         var prePourCameraCapture: Boolean by mutableStateOf(false)
         var seTrouveAuDernieDuCamionCarCCarton: Boolean by mutableStateOf(false)
+
+        @IgnoreExtraProperties
+        data class InfosCoutes(
+            var monPrixAchat: Double = 0.0,
+            var monPrixVent: Double = 0.0,
+        )
 
         @IgnoreExtraProperties
         data class CharacterProduit(
@@ -174,6 +197,12 @@ class A_ProduitModel(
             var quantity_Achete: Int = 0,
             var imogi: String = ""
         )
+    }
+    companion object{
+        fun A_ProduitModel.ExtraiGrossistInfos(
+            viewModel: ViewModelInitApp
+        ) = viewModel._modelAppsFather.grossistsDataBase.find { it.id == this.bonCommendDeCetteCota?.idGrossistChoisi }
+
     }
 
     constructor() : this(0)

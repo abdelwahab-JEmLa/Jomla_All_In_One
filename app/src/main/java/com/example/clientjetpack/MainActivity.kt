@@ -2,7 +2,7 @@ package com.example.clientjetpack
 
 import P0_MainScreen.Main.MainScreen
 import P6_AiGroupeForSupplier.GenerativeAiViewModel
-import Z_MasterOfApps.Kotlin.ViewModel.Init.Init.initializeFirebase
+import Z_MasterOfApps.Kotlin.ViewModel.Init.B_Load.initializeFirebase
 import android.app.Application
 import android.content.Context
 import android.os.Build

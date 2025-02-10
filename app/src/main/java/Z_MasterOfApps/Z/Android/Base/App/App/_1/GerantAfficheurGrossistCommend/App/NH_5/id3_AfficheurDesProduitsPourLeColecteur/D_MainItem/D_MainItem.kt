@@ -36,10 +36,11 @@ fun MainItem_F3(
     onCLickOnMain: () -> Unit = {},
     position: Int? = null,
 ) {
+    val height = 190.dp  // Matched with MainItem_F2
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(80.dp)
+            .height(height)  // Updated height
             .background(
                 color = if (position != null)
                     MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
@@ -54,11 +55,11 @@ fun MainItem_F3(
             mainItem = mainItem,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(100.dp),
-            size = 100.dp
+                .height(height),  // Updated height
+            size = 140.dp,  // Matched with MainItem_F2
+            qualityImage = 80  // Added quality parameter
         )
 
-        // Product ID
         Text(
             text = "ID: ${mainItem.id}",
             modifier = Modifier
@@ -77,7 +78,6 @@ fun MainItem_F3(
 
         val colorAchatModelList = mainItem.bonsVentDeCetteCota
             .filter { bonVent ->
-                // Handle nullable Long comparison safely
                 bonVent.clientIdChoisi == viewModelProduits
                     .frag_3A1_ExtVM
                     .iDClientAuFilter
@@ -85,7 +85,6 @@ fun MainItem_F3(
             .flatMap { it.colours_Achete }
 
         val totalQuantity = colorAchatModelList
-
             .sumOf { it.quantity_Achete }
 
         Row(
@@ -104,22 +103,52 @@ fun MainItem_F3(
                 ) {
                     Text(
                         text = mainItem.nom,
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = Color.White,
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                        ),
+                        color = Color.Black,  // Updated color
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier
+                            .weight(1f)
+                            .background(
+                                color = Color.White.copy(alpha = 0.8f),
+                                shape = RoundedCornerShape(4.dp)
+                            )
+                            .padding(4.dp)
                     )
-                    Text(
-                        text = "Total: $totalQuantity",
-                        color = Color.White,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Text(
+                            text = totalQuantity.toString(),
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                            ),
+                            color = Color.Black,
+                            modifier = Modifier
+                                .background(
+                                    color = Color.White.copy(alpha = 0.8f),
+                                    shape = RoundedCornerShape(4.dp)
+                                )
+                                .padding(4.dp)
+                        )
+                        Text(
+                            text = "ك.الكلية",
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                            ),
+                            color = Color.Black
+                        )
+                    }
                 }
 
                 Box(
                     modifier = Modifier
                         .width(200.dp)
+                        .padding(7.dp)  // Added padding
                 ) {
                     val colorItems = colorAchatModelList
                         .filter { it.quantity_Achete > 0 }
@@ -136,11 +165,27 @@ fun MainItem_F3(
                                     colorFlavor.imogi.isNotEmpty() -> colorFlavor.imogi
                                     else -> colorFlavor.nom.take(2)
                                 }
-                                Text(
-                                    text = "$displayText>(${colorFlavor.quantity_Achete})",
-                                    fontSize = 24.sp,
-                                    color = Color.Black
-                                )
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(2.dp)
+                                ) {
+                                    Text(
+                                        text = "$displayText>",
+                                        fontSize = 24.sp,
+                                        color = Color.Black
+                                    )
+                                    Text(
+                                        text = "(${colorFlavor.quantity_Achete})",
+                                        fontSize = 24.sp,
+                                        color = Color.Black,
+                                        modifier = Modifier
+                                            .background(
+                                                color = Color.White.copy(alpha = 0.8f),
+                                                shape = RoundedCornerShape(4.dp)
+                                            )
+                                            .padding(horizontal = 4.dp)
+                                    )
+                                }
                             }
                         }
                     }
