@@ -39,7 +39,7 @@ import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow
-
+             //
 @Composable
 fun A_id1_ClientsLocationGps(
     modifier: Modifier = Modifier,
