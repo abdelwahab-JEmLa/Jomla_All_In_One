@@ -1,11 +1,24 @@
 package Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.B.Dialogs.Utils
 
-import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.B.Dialogs.ControlButton
 import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.ViewModel.Extension.ViewModelExtension_App2_F1
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
+import Z_MasterOfApps.Z.Android.Res.XmlsFilesHandler.Companion.fixXmlResources
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.dp
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import org.osmdroid.views.MapView
 
 @Composable
@@ -14,23 +27,35 @@ fun AddMarkerButton(
     showLabels: Boolean,
     mapView: MapView,
 ) {
-    ControlButton(
-        onClick = {
-            extensionVM
-                .onClickAddMarkerButton(
-                    mapView
-                )
-        },
-        icon = Icons.Default.Add, /*   //-->
-        //TODO(1):
-        j ai un json url   qui se trouve a  XmlsFilesHandler Art
+    var clickCount by remember { mutableStateOf(0) }
 
-                Copy
-                {"v":"5.7.5","fr":100,"ip":0,"op":300,"w":2000,"h":1200,"nm":"Comp 1","ddd":0,"metadata":{"backgroundColor":{"r":255,"g":255,"b":255}},"assets":[],"layers":[{"ddd":0,"ind":12345679,"ty":4,"nm":"Group Layer 8","sr":1,"ks":{"p":{"a":0,"k":[1476,1073.5409836065573,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":2},"s":{"a":0,"k":[204.91803278688522,204.91803278688522,100],"ix":2},"r":{"a":0,"k":0,"ix":2},"o":{"a":0,"k":100,"ix":2}},"ao":0,"shapes":[{"ty":"gr","it":[{"ty":"gr","it":
-                    comme utilise la Lib Compottie    */
-        contentDescription = "Add marker",
-        showLabels = showLabels,
-        labelText = "Add",
-        containerColor = Color(0xFF2196F3)
+    val composition by rememberLottieComposition(
+        LottieCompositionSpec.RawRes(fixXmlResources("reacticonanimatedjsonurl"))
     )
+
+    DisposableEffect(Unit) {
+        onDispose {
+            clickCount = 0
+        }
+    }
+
+    IconButton(
+        onClick = {
+            clickCount++
+            extensionVM.onClickAddMarkerButton(mapView)
+        },
+        modifier = Modifier
+            .size(90.dp) // Increased button size
+            .semantics {
+                contentDescription = "Add marker to map"
+            }
+    ) {
+        LottieAnimation(
+            composition = composition,
+            iterations = LottieConstants.IterateForever,
+            modifier = Modifier
+                .size(90.dp), // Match parent size
+            contentScale = ContentScale.FillBounds // Force fill available space
+        )
+    }
 }

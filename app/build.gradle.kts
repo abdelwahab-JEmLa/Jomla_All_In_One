@@ -121,6 +121,9 @@ dependencies {
     implementation(libs.osmdroid.wms)
     implementation(libs.osmdroid.mapsforge)
 
+    // Lottie Compose
+    implementation ("com.airbnb.android:lottie-compose:6.1.0")
+
 }
 
 apply(plugin = "com.google.gms.google-services")
