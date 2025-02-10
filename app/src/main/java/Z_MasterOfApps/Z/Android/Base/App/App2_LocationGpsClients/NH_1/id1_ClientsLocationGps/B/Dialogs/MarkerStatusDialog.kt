@@ -61,6 +61,8 @@ fun MarkerStatusDialog(
     val coroutineScope = rememberCoroutineScope()
     var showEditDialog by remember { mutableStateOf(false) }
     var editedName by remember { mutableStateOf("") }
+    var editedPhone by remember { mutableStateOf("") }
+    var showPhoneDialog by remember { mutableStateOf(false) }
 
     if (selectedMarker == null) return
 
@@ -77,53 +79,63 @@ fun MarkerStatusDialog(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable {
-                            showEditDialog = true
-                        }
+                        .clickable { showEditDialog = true }
                         .padding(bottom = 16.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = selectedMarker.title ?: "Client",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Icon(
-                        imageVector = Icons.Default.Edit,
-                        contentDescription = "Edit name"
-                    )     
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Delete client",
-                        modifier = Modifier.clickable {
-                            coroutineScope.launch {
-                                val clientToDelete =
-                                    viewModel._modelAppsFather.clientDataBase.find {
-                                        it.id.toString() == selectedMarker.id
-                                    }
-
-                                clientToDelete?.let { client ->
-                                    // Remove from Firebase
-                                    B_ClientsDataBase.refClientsDataBase
-                                        .child(client.id.toString())
-                                        .removeValue()
-                                        .await()
-
-                                    // Remove from local state
-                                    viewModel._modelAppsFather.clientDataBase.remove(client)
-
-                                    onRemoveMark(selectedMarker)
-
-                                    // Remove marker from map
-                                    onDismiss()
-                                }
-                            }
+                    Column {
+                        Text(
+                            text = selectedMarker.title ?: "Client",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold
+                        )
+                        // Display phone number if available
+                        val client = viewModel._modelAppsFather.clientDataBase.find {
+                            it.id.toString() == selectedMarker.id
                         }
-                    )    //-->
-                    //TODO(1): ajoute un afficche du numm si numTelephone n ai pas vide au click il affiche le dialoge 
+                        if (!client?.statueDeBase?.numTelephone.isNullOrEmpty()) {
+                            Text(
+                                text = client?.statueDeBase?.numTelephone ?: "",
+                                modifier = Modifier.clickable { showPhoneDialog = true },
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                    Row {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "Edit client"
+                        )
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Delete client",
+                            modifier = Modifier
+                                .padding(start = 8.dp)
+                                .clickable {
+                                    coroutineScope.launch {
+                                        val clientToDelete = viewModel._modelAppsFather.clientDataBase.find {
+                                            it.id.toString() == selectedMarker.id
+                                        }
+
+                                        clientToDelete?.let { client ->
+                                            B_ClientsDataBase.refClientsDataBase
+                                                .child(client.id.toString())
+                                                .removeValue()
+                                                .await()
+
+                                            viewModel._modelAppsFather.clientDataBase.remove(client)
+                                            onRemoveMark(selectedMarker)
+                                            onDismiss()
+                                        }
+                                    }
+                                }
+                        )
+                    }
                 }
 
+                // Status buttons remain the same
                 StatusButton(
                     text = "Mode Commande",
                     icon = Icons.Default.ShoppingCart,
@@ -192,14 +204,24 @@ fun MarkerStatusDialog(
     if (showEditDialog) {
         AlertDialog(
             onDismissRequest = { showEditDialog = false },
-            title = { Text("Modifier le nom") },
+            title = { Text("Modifier les informations") },
             text = {
-                OutlinedTextField(
-                    value = editedName,
-                    onValueChange = { editedName = it },
-                    label = { Text("Nom du client") },
-                    modifier = Modifier.fillMaxWidth()
-                )
+                Column {
+                    OutlinedTextField(
+                        value = editedName,
+                        onValueChange = { editedName = it },
+                        label = { Text("Nom du client") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp)
+                    )
+                    OutlinedTextField(
+                        value = editedPhone,
+                        onValueChange = { editedPhone = it },
+                        label = { Text("Numéro de téléphone") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
             },
             confirmButton = {
                 TextButton(
@@ -211,12 +233,10 @@ fun MarkerStatusDialog(
                             }
 
                             client?.let { foundClient ->
-                                // Update client name
                                 foundClient.nom = editedName
-                                // Update client in database
+                                foundClient.statueDeBase.numTelephone = editedPhone
                                 foundClient.updateClientsDataBase(viewModel)
 
-                                // Find and update related products
                                 viewModel._modelAppsFather.produitsMainDataBase
                                     .filter { product ->
                                         product.bonsVentDeCetteCota.any { bonVent ->
@@ -229,8 +249,7 @@ fun MarkerStatusDialog(
                             }
                             selectedMarker.showInfoWindow()
                             showEditDialog = false
-                        }     //-->
-                        //TODO(1): ajout ouline add num telephone 
+                        }
                     }
                 ) {
                     Text("OK")
@@ -239,6 +258,27 @@ fun MarkerStatusDialog(
             dismissButton = {
                 TextButton(onClick = { showEditDialog = false }) {
                     Text("Annuler")
+                }
+            }
+        )
+    }
+
+    if (showPhoneDialog) {
+        val client = viewModel._modelAppsFather.clientDataBase.find {
+            it.id.toString() == selectedMarker.id
+        }
+        AlertDialog(
+            onDismissRequest = { showPhoneDialog = false },
+            title = { Text("Numéro de téléphone") },
+            text = {
+                Text(
+                    text = client?.statueDeBase?.numTelephone ?: "",
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = { showPhoneDialog = false }) {
+                    Text("OK")
                 }
             }
         )
