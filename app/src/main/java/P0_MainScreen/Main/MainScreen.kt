@@ -65,11 +65,12 @@ fun MainScreen(
     var showProductDisplay by remember { mutableStateOf(false) }
     var lockHost by remember { mutableStateOf(false) }
 
+// Replace the existing LaunchedEffect block with this updated version
     LaunchedEffect(productDisplayController.clientWindowsDisplayedProductId) {
         showProductDisplay = productDisplayController.clientWindowsDisplayedProductId != null
         if (productDisplayController.clientWindowsDisplayedProductId == null) {
-            // Only navigate back if we're not already on the startup screen
-            if (currentRoute != Screen.A_ClientsLocationGps.route) {
+            // Only navigate back to GPS screen if this is the host phone
+            if (productDisplayController.isHostPhone && currentRoute != Screen.A_ClientsLocationGps.route) {
                 navController.navigate(Screen.A_ClientsLocationGps.route) {
                     popUpTo(navController.graph.startDestinationId) {
                         inclusive = true

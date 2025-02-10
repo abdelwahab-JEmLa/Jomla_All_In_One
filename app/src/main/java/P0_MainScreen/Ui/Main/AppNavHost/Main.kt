@@ -6,10 +6,13 @@ import Views.P1._ArticlesStartFacade.FragmentStartupScreen
 import Views.Package_4.SoldCartScreen.SoldCartScreen
 import Views.Z_P3._DisplayProductInfosToSeller.P3DisplayeProductInfosToSeller
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
+import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.A_id1_ClientsLocationGps
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -19,9 +22,13 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -32,6 +39,63 @@ import com.google.firebase.Firebase
 import com.google.firebase.database.database
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+
+fun NavGraphBuilder.app2(
+    viewModelInitApp: ViewModelInitApp,
+    clientEnCourDeVent: Long,
+    navController: NavHostController, onClear: () -> Unit,
+) {
+    composable(Screen.A_ClientsLocationGps.route) {
+        A_id1_ClientsLocationGps(
+            viewModel = viewModelInitApp,
+            clientEnCourDeVent = clientEnCourDeVent,
+            onUpdateLongAppSetting = {
+                allerAuFragment(navController)
+            },
+            onClear = onClear,
+        )
+    }
+}
+
+private fun allerAuFragment(navController: NavHostController) {
+    navController.navigate(Screen.EditDatabaseWithCreateNewArticles.route) {
+        // Pop the current fragment off the back stack
+        popUpTo(Screen.A_ClientsLocationGps.route) {
+            inclusive = true
+        }
+        launchSingleTop = true
+    }
+}
+
+object ScreensApp2 {
+    val A_ClientsLocationGps = Screen.A_ClientsLocationGps
+}
+
+@Preview
+@Composable
+private fun PreviewApp2_F1() {
+    val viewModelInitApp: ViewModelInitApp  = viewModel()
+    if (viewModelInitApp.isLoading) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            CircularProgressIndicator(
+                progress = {
+                    viewModelInitApp.loadingProgress
+                },
+                modifier = Modifier.align(Alignment.Center),
+                trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
+            )
+        }
+        return
+    }
+    /* // Preview version without real ViewModel
+     A_id1_ClientsLocationGps(
+         modifier = Modifier.fillMaxSize()
+     , viewModelInitApp, onUpdateLongAppSetting = {}, onClear = {}, headViewModel = _
+     ) */
+}
+
+
+
 
 @Composable
 fun AppNavHost(
@@ -195,7 +259,7 @@ fun AppNavHost(
         }
 
         if (opnerSaleWindows) {
-            P3DisplayeProductInfosToSeller(
+            P3DisplayeProductInfosToSeller(     
                 modifier = Modifier.padding(horizontal = 3.dp),
                 uiState = uiState,
                 viewModel = appViewModels.headViewModel,
@@ -203,7 +267,8 @@ fun AppNavHost(
                     appViewModels.headViewModel.clearCurrentSale()
                     opnerSaleWindows = false
                     appViewModels.headViewModel.sendOrderToClientDisplayer(
-                        WifiUpdateClientDisplayerStats.DISMISS_PRODUCT_INFO.prefix
+                        WifiUpdateClientDisplayerStats.DISMISS_PRODUCT_INFO.prefix    //-->
+                        //TODO(1): fait que au client quand ca ce dissmiss il revien a FragmentStartupScreen au liex gps 
                     )
                 },
                 reloadTrigger = reloadTrigger, lockExpandedPrices = lockExpandedPrices,
