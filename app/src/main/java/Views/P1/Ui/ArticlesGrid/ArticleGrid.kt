@@ -117,38 +117,46 @@ fun ArticleGrid(
             - Total Categories: ${uiState.categories.size}
             - Filter: ${if (filterText.isEmpty()) "None" else filterText}
             - Articles Total: ${uiState.articlesBasesStatTables.size}
-        """.trimIndent())
+        """.trimIndent()
+        )
 
         uiState.categories.associateWith { category ->
             Log.d(
                 TAG, """
                 Processing Category:
                 - Name: ${category.nomCategorieInCategoriesTabele}
-                - Articles: ${uiState.articlesBasesStatTables.count { 
-                    if (category.nomCategorieInCategoriesTabele == "NewArrivale") 
-                        it.itsNewArrivale 
-                    else 
-                        it.nomCategorie == category.nomCategorieInCategoriesTabele && !it.itsNewArrivale 
-                }}
-            """.trimIndent())
+                - Articles: ${
+                    uiState.articlesBasesStatTables.count {
+                        if (category.nomCategorieInCategoriesTabele == "NewArrivale")
+                            it.itsNewArrivale
+                        else
+                            it.nomCategorie == category.nomCategorieInCategoriesTabele && !it.itsNewArrivale
+                    }
+                }
+            """.trimIndent()
+            )
 
             Pager(pagingConfig) {
                 ArticlePagingSource(
                     articles = when {
                         category.nomCategorieInCategoriesTabele == "NewArrivale" ->
                             uiState.articlesBasesStatTables.filter { it.itsNewArrivale }
+
                         else ->
                             uiState.articlesBasesStatTables.filter {
                                 it.nomCategorie == category.nomCategorieInCategoriesTabele && !it.itsNewArrivale
                             }
                     },
                     filterText = filterText,
-                    currentClient=currentClient,
-                    uiState=uiState
+                    currentClient = currentClient,
+                    uiState = uiState
 
 
                 ).also { source ->
-                    Log.d(TAG, "Created PagingSource for ${category.nomCategorieInCategoriesTabele}")
+                    Log.d(
+                        TAG,
+                        "Created PagingSource for ${category.nomCategorieInCategoriesTabele}"
+                    )
                 }
             }
         }
@@ -165,10 +173,12 @@ fun ArticleGrid(
 
     // Track scroll state changes
     LaunchedEffect(gridState) {
-        snapshotFlow { ScrollState(
-            index = gridState.firstVisibleItemIndex,
-            isScrolling = gridState.isScrollInProgress
-        ) }.collect { scrollState ->
+        snapshotFlow {
+            ScrollState(
+                index = gridState.firstVisibleItemIndex,
+                isScrolling = gridState.isScrollInProgress
+            )
+        }.collect { scrollState ->
             if (!scrollState.isScrolling) {
                 delay(100) // Brief delay for scroll settlement
                 lastSettledFirstVisible = scrollState.index
@@ -181,7 +191,8 @@ fun ArticleGrid(
                     - Index: ${scrollState.index}
                     - Previous Index: $lastSettledFirstVisible
                     - Category: $currentCategory
-                """.trimIndent())
+                """.trimIndent()
+                )
             } else {
                 isSettled = false
             }
@@ -217,7 +228,6 @@ fun ArticleGrid(
                 val lazyPagingItems = categoryPagingItems[category]
 
                 if (lazyPagingItems != null && lazyPagingItems.itemCount > 0) {
-
                     // Show category header if needed
                     if (category.displayedHeader) {
                         item(span = StaggeredGridItemSpan.FullLine) {
@@ -225,22 +235,13 @@ fun ArticleGrid(
                         }
                     }
 
-                    // Display articles
+                    // Display articles without keys
                     items(
                         count = lazyPagingItems.itemCount,
                         span = { index ->
                             val article = lazyPagingItems[index]
 
-                            val currentProductByCurrentClient = uiState.diviseurDeDisplayProductForEachClient.find {
-                                it.keyVid == "${currentClient?.id}->${article?.idArticle}"
-                            }
-                            val currentProductByClientStandard = uiState.diviseurDeDisplayProductForEachClient.find {
-                                it.keyVid == "100->${article?.idArticle}"
-                            }
-                            val switcher = currentProductByCurrentClient?.itsBigImage
-                                ?: currentProductByClientStandard?.itsBigImage
-
-                            if (article?.diponibilityState !="") {
+                            if (article?.diponibilityState != "") {
                                 StaggeredGridItemSpan.FullLine
                             } else {
                                 StaggeredGridItemSpan.SingleLane
@@ -249,7 +250,6 @@ fun ArticleGrid(
                     ) { index ->
                         val article = lazyPagingItems[index]
                         article?.let {
-                            // Determine if this article should be highlighted
                             val isFirstVisible = when {
                                 !isSettled -> index == lastSettledFirstVisible
                                 else -> index == gridState.firstVisibleItemIndex

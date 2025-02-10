@@ -75,7 +75,6 @@ fun MarkerStatusDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable {
-                            editedName = selectedMarker.title ?: "Client"
                             showEditDialog = true
                         }
                         .padding(bottom = 16.dp),
