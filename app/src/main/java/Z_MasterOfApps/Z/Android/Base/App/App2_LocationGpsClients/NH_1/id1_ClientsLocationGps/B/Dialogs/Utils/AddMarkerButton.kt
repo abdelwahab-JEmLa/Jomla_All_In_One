@@ -54,21 +54,21 @@ fun AddMarkerButton(
             extensionVM.onClickAddMarkerButton(mapView)
         },
         modifier = Modifier
-            .size(30.dp)
+            .size(40.dp)
             .semantics {
                 contentDescription = "Add marker to map"
             }
     ) {
         Box(
-            modifier = Modifier.size(30.dp),
+            modifier = Modifier.size(70.dp),
             contentAlignment = Alignment.Center
         ) {
             LottieAnimation(
                 composition = composition,
                 progress = { progress },
                 modifier = Modifier
-                    .size(40.dp)
-                    .offset(x = (-5).dp, y = 0.dp),  // Ajustement pour centrer l'animation
+                    .size(70.dp)
+                    .offset(x = (-2).dp, y = 0.dp),  // Ajustement pour centrer l'animation
                 contentScale = ContentScale.FillBounds
             )
         }

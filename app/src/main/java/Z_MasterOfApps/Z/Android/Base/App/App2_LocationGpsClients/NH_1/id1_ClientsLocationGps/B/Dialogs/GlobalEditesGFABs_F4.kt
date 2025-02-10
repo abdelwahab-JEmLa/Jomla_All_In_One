@@ -74,12 +74,6 @@ fun MapControls(
             ) {
                 if (showMenu) {
 
-                    ClearHistoryButton(
-                        viewModelInitApp = viewModelInitApp,
-                        showLabels = showLabels,
-                        onClear,
-                    )
-
                     AddMarkerButton(
                         extensionVM = extensionVM,
                         showLabels = showLabels,
@@ -92,7 +86,14 @@ fun MapControls(
                         proximiteMeter = proximiteMeter ,
                         xmlResources=xmlResources
                     )
+
+                    ClearHistoryButton(
+                        viewModelInitApp = viewModelInitApp,
+                        showLabels = showLabels,
+                        onClear,
+                    )
                 }
+
 
                 LabelsButton(
                     showLabels = showLabels,
