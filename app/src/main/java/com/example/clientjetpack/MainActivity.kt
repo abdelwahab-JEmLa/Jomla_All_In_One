@@ -18,8 +18,6 @@ import com.example.clientjetpack.Modules.PermissionHandler
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import com.google.firebase.FirebaseApp
 
-
-
 class MyApplication : Application() {
     lateinit var database: AppDatabase
         private set
