@@ -70,7 +70,7 @@ fun MapControls(
         ) {
             Column(
                 modifier = Modifier.align(Alignment.BottomStart),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 if (showMenu) {
 
@@ -121,11 +121,11 @@ fun ControlButton(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+        horizontalArrangement = Arrangement.spacedBy(2.dp)
     ) {
         FloatingActionButton(
             onClick = onClick,
-            modifier = modifier.size(40.dp),
+            modifier = modifier.size(30.dp),
             containerColor = containerColor
         ) {
             Icon(icon, contentDescription)
