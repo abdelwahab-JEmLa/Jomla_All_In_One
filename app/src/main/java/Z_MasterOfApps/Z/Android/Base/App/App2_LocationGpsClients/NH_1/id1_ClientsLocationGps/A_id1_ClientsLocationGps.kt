@@ -186,7 +186,13 @@ fun A_id1_ClientsLocationGps(
                 viewModel = viewModel,
                 selectedMarker = selectedMarker,
                 onDismiss = { showMarkerDialog = false },
-                onUpdateLongAppSetting = onUpdateLongAppSetting
+                onUpdateLongAppSetting = onUpdateLongAppSetting,
+                onRemoveMark = { marker ->
+                    marker?.let {
+                        mapView.overlays.remove(it)
+                        mapView.invalidate()
+                    }
+                }
             )
         }
     }

@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
@@ -44,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import org.osmdroid.views.overlay.Marker
 
 @Composable
@@ -52,7 +54,8 @@ fun MarkerStatusDialog(
     viewModel: ViewModelInitApp,
     selectedMarker: Marker?,
     onDismiss: () -> Unit,
-    onUpdateLongAppSetting: () -> Unit = {}
+    onUpdateLongAppSetting: () -> Unit = {},
+    onRemoveMark: (Marker?) -> Unit
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -89,7 +92,36 @@ fun MarkerStatusDialog(
                     Icon(
                         imageVector = Icons.Default.Edit,
                         contentDescription = "Edit name"
-                    )
+                    )     
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Delete client",
+                        modifier = Modifier.clickable {
+                            coroutineScope.launch {
+                                val clientToDelete =
+                                    viewModel._modelAppsFather.clientDataBase.find {
+                                        it.id.toString() == selectedMarker.id
+                                    }
+
+                                clientToDelete?.let { client ->
+                                    // Remove from Firebase
+                                    B_ClientsDataBase.refClientsDataBase
+                                        .child(client.id.toString())
+                                        .removeValue()
+                                        .await()
+
+                                    // Remove from local state
+                                    viewModel._modelAppsFather.clientDataBase.remove(client)
+
+                                    onRemoveMark(selectedMarker)
+
+                                    // Remove marker from map
+                                    onDismiss()
+                                }
+                            }
+                        }
+                    )    //-->
+                    //TODO(1): ajoute un afficche du numm si numTelephone n ai pas vide au click il affiche le dialoge 
                 }
 
                 StatusButton(
@@ -197,7 +229,8 @@ fun MarkerStatusDialog(
                             }
                             selectedMarker.showInfoWindow()
                             showEditDialog = false
-                        }
+                        }     //-->
+                        //TODO(1): ajout ouline add num telephone 
                     }
                 ) {
                     Text("OK")
