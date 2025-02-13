@@ -3,6 +3,7 @@ package com.example.clientjetpack
 import P0_MainScreen.Main.MainScreen
 import P6_AiGroupeForSupplier.GenerativeAiViewModel
 import Z_MasterOfApps.Kotlin.ViewModel.Init.B_Load.initializeFirebase
+import Z_MasterOfApps.Z.Android.Main.Utils.PermissionHandler
 import android.app.Application
 import android.content.Context
 import android.os.Build
@@ -11,11 +12,17 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.clientjetpack.Modules.AppDatabase
-import com.example.clientjetpack.Modules.PermissionHandler
 import com.example.clientjetpack.ViewModel.HeadViewModel
+import com.example.clientjetpack.ui.theme.ClientJetPackTheme
 import com.google.firebase.FirebaseApp
 
 class MyApplication : Application() {
@@ -64,6 +71,7 @@ class ViewModelFactory(
     }
 }
 
+
 class MainActivity : ComponentActivity() {
     private val database by lazy { (application as MyApplication).database }
     private val permissionHandler by lazy { PermissionHandler(this) }
@@ -78,22 +86,40 @@ class MainActivity : ComponentActivity() {
         )
     }
 
+    private val _mainContent = mutableStateOf<@Composable () -> Unit>({})
+    val mainContent: State<@Composable () -> Unit> = _mainContent
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        _mainContent.value = {
+            MainScreen(appViewModels)
+        }
+
+        setContent {
+            ClientJetPackTheme {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    mainContent.value()
+                    permissionHandler.PermissionDialogContent()
+                }
+            }
+        }
 
         permissionHandler.checkAndRequestPermissions(object : PermissionHandler.PermissionCallback {
-            @RequiresApi(Build.VERSION_CODES.Q)
             override fun onPermissionsGranted() {
-                setContent {
-                    MainScreen(appViewModels, )
+                _mainContent.value = {
+                    MainScreen(appViewModels)
                 }
             }
 
-            @RequiresApi(Build.VERSION_CODES.Q)
-            override fun onPermissionsDenied() {}
+            override fun onPermissionsDenied() {
+                // Gérer le cas où les permissions sont refusées
+            }
 
-            override fun onPermissionRationale(permissions: Array<String>) {}
+            override fun onPermissionRationale(permissions: Array<String>) {
+                // Gérer l'affichage de la justification des permissions
+            }
         })
     }
 }
