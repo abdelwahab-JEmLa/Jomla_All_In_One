@@ -8,7 +8,6 @@ import android.app.Application
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -27,8 +26,6 @@ import com.example.clientjetpack.ViewModel.HeadViewModel
 import com.example.clientjetpack.ui.theme.ClientJetPackTheme
 import com.google.firebase.FirebaseApp
 
-private const val TAG = "MainActivity"
-
 class MyApplication : Application() {
     lateinit var database: AppDatabase
         private set
@@ -36,9 +33,7 @@ class MyApplication : Application() {
     private fun initializeDatabase() {
         try {
             database = AppDatabase.DatabaseModule.getDatabase(this)
-            Log.d(TAG, "Database initialized successfully")
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to initialize database", e)
             throw e
         }
     }
@@ -47,13 +42,10 @@ class MyApplication : Application() {
         try {
             FirebaseApp.initializeApp(this)?.let { app ->
                 initializeFirebase(app)
-                Log.d(TAG, "Firebase initialized successfully")
             } ?: run {
-                Log.e(TAG, "Firebase initialization returned null")
                 throw IllegalStateException("Firebase initialization failed")
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to initialize Firebase", e)
             throw e
         }
     }
@@ -64,7 +56,6 @@ class MyApplication : Application() {
             initializeDatabase()
             initializeFirebase()
         } catch (e: Exception) {
-            Log.e(TAG, "Application initialization failed", e)
             // Consider showing a user-friendly error message
         }
     }
@@ -80,7 +71,6 @@ class ViewModelFactory(
     private val database: AppDatabase,
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        Log.d(TAG, "Creating ViewModel: ${modelClass.simpleName}")
         return try {
             when {
                 modelClass.isAssignableFrom(HeadViewModel::class.java) ->
@@ -90,7 +80,6 @@ class ViewModelFactory(
                 else -> throw IllegalArgumentException("Unknown ViewModel: ${modelClass.name}")
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to create ViewModel: ${modelClass.simpleName}", e)
             throw e
         }
     }
@@ -101,7 +90,6 @@ class MainActivity : ComponentActivity() {
         try {
             (application as MyApplication).database
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to initialize database", e)
             throw e
         }
     }
@@ -110,7 +98,6 @@ class MainActivity : ComponentActivity() {
         try {
             PermissionHandler(this)
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to initialize PermissionHandler", e)
             throw e
         }
     }
@@ -119,7 +106,6 @@ class MainActivity : ComponentActivity() {
         try {
             ViewModelFactory(applicationContext, database)
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to create ViewModelFactory", e)
             throw e
         }
     }
@@ -134,7 +120,6 @@ class MainActivity : ComponentActivity() {
                 generativeAiViewModel = generativeAiViewModel,
             )
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to initialize AppViewModels", e)
             throw e
         }
     }
@@ -146,14 +131,12 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG, "onCreate started")
 
         try {
             setContent {
                 ClientJetPackTheme {
                     Box(modifier = Modifier.fillMaxSize()) {
                         if (permissionsChecked) {
-                            Log.d(TAG, "Permissions checked, showing MainScreen")
                             MainScreen(appViewModels)
                         }
                     }
@@ -161,14 +144,11 @@ class MainActivity : ComponentActivity() {
             }
 
             if (!permissionHandler.arePermissionsAlreadyGranted()) {
-                Log.d(TAG, "Permissions not granted, requesting permissions")
                 checkPermissions()
             } else {
-                Log.d(TAG, "Permissions already granted")
                 permissionsChecked = true
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Fatal error in onCreate", e)
             showErrorAndRestart()
         }
     }
@@ -176,7 +156,6 @@ class MainActivity : ComponentActivity() {
     private fun showErrorAndRestart() {
         if (retryCount < maxRetries) {
             retryCount++
-            Log.w(TAG, "Attempting retry $retryCount of $maxRetries")
             Toast.makeText(
                 this,
                 "Une erreur s'est produite. Tentative de récupération...",
@@ -184,7 +163,6 @@ class MainActivity : ComponentActivity() {
             ).show()
             recreate()
         } else {
-            Log.e(TAG, "Max retries reached, showing fatal error")
             Toast.makeText(
                 this,
                 "Une erreur critique s'est produite. Veuillez redémarrer l'application.",
@@ -195,26 +173,21 @@ class MainActivity : ComponentActivity() {
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun checkPermissions() {
-        Log.d(TAG, "Checking permissions")
         permissionHandler.checkAndRequestPermissions(object : PermissionHandler.PermissionCallback {
             override fun onPermissionsGranted() {
-                Log.d(TAG, "All permissions granted")
                 permissionsChecked = true
             }
 
             override fun onPermissionsDenied() {
-                Log.w(TAG, "Some permissions were denied")
-                // Ne pas fermer l'application, mais informer l'utilisateur
                 Toast.makeText(
                     this@MainActivity,
                     "Certaines fonctionnalités seront limitées sans les permissions nécessaires",
                     Toast.LENGTH_LONG
                 ).show()
-                permissionsChecked = true  // Permettre à l'app de continuer même avec des permissions limitées
+                permissionsChecked = true
             }
 
             override fun onPermissionRationale(permissions: Array<String>) {
-                Log.i(TAG, "Showing permission rationale for: ${permissions.joinToString()}")
                 // La logique de rationale est gérée dans PermissionHandler
             }
         })
@@ -222,9 +195,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        Log.d(TAG, "onResume called")
         if (!permissionsChecked && retryCount < maxRetries) {
-            Log.d(TAG, "Rechecking permissions in onResume")
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 checkPermissions()
             }
@@ -233,11 +204,10 @@ class MainActivity : ComponentActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d(TAG, "onDestroy called")
         try {
             // Nettoyage des ressources si nécessaire
         } catch (e: Exception) {
-            Log.e(TAG, "Error during cleanup in onDestroy", e)
+            // Handle cleanup errors silently
         }
     }
 }
