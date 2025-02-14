@@ -30,33 +30,18 @@ class MyApplication : Application() {
     lateinit var database: AppDatabase
         private set
 
-    private fun initializeDatabase() {
-        try {
-            database = AppDatabase.DatabaseModule.getDatabase(this)
-        } catch (e: Exception) {
-            throw e
-        }
-    }
-
-    private fun initializeFirebase() {
-        try {
-            FirebaseApp.initializeApp(this)?.let { app ->
-                initializeFirebase(app)
-            } ?: run {
-                throw IllegalStateException("Firebase initialization failed")
-            }
-        } catch (e: Exception) {
-            throw e
-        }
-    }
-
     override fun onCreate() {
         super.onCreate()
-        try {
-            initializeDatabase()
-            initializeFirebase()
-        } catch (e: Exception) {
-            // Consider showing a user-friendly error message
+        initializeComponents()
+    }
+
+    private fun initializeComponents() {
+        runCatching {
+            AppDatabase.DatabaseModule.getDatabase(this).also { database = it }
+            FirebaseApp.initializeApp(this)?.let(::initializeFirebase)
+                ?: throw IllegalStateException("Firebase initialization failed")
+        }.onFailure {
+            // Log error and consider showing a user-friendly message
         }
     }
 }
@@ -70,69 +55,36 @@ class ViewModelFactory(
     private val context: Context,
     private val database: AppDatabase,
 ) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return try {
-            when {
-                modelClass.isAssignableFrom(HeadViewModel::class.java) ->
-                    HeadViewModel(context.applicationContext, database) as T
-                modelClass.isAssignableFrom(GenerativeAiViewModel::class.java) ->
-                    GenerativeAiViewModel() as T
-                else -> throw IllegalArgumentException("Unknown ViewModel: ${modelClass.name}")
-            }
-        } catch (e: Exception) {
-            throw e
-        }
+    override fun <T : ViewModel> create(modelClass: Class<T>): T = when {
+        modelClass.isAssignableFrom(HeadViewModel::class.java) ->
+            HeadViewModel(context.applicationContext, database) as T
+        modelClass.isAssignableFrom(GenerativeAiViewModel::class.java) ->
+            GenerativeAiViewModel() as T
+        else -> throw IllegalArgumentException("Unknown ViewModel: ${modelClass.name}")
     }
 }
 
 class MainActivity : ComponentActivity() {
-    private val database by lazy {
-        try {
-            (application as MyApplication).database
-        } catch (e: Exception) {
-            throw e
-        }
-    }
-
-    private val permissionHandler by lazy {
-        try {
-            PermissionHandler(this)
-        } catch (e: Exception) {
-            throw e
-        }
-    }
-
-    private val viewModelFactory by lazy {
-        try {
-            ViewModelFactory(applicationContext, database)
-        } catch (e: Exception) {
-            throw e
-        }
-    }
+    private val database by lazy { (application as MyApplication).database }
+    private val permissionHandler by lazy { PermissionHandler(this) }
+    private val viewModelFactory by lazy { ViewModelFactory(applicationContext, database) }
 
     private val headViewModel: HeadViewModel by viewModels { viewModelFactory }
     private val generativeAiViewModel: GenerativeAiViewModel by viewModels { viewModelFactory }
-
     private val appViewModels by lazy {
-        try {
-            AppViewModels(
-                headViewModel = headViewModel,
-                generativeAiViewModel = generativeAiViewModel,
-            )
-        } catch (e: Exception) {
-            throw e
-        }
+        AppViewModels(headViewModel, generativeAiViewModel)
     }
 
     private var permissionsChecked by mutableStateOf(false)
-    private var retryCount = 0
-    private val maxRetries = 3
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setupActivityContent()
+    }
 
-        try {
+    private fun setupActivityContent() {
+        runCatching {
             setContent {
                 ClientJetPackTheme {
                     Box(modifier = Modifier.fillMaxSize()) {
@@ -143,71 +95,47 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            if (!permissionHandler.arePermissionsAlreadyGranted()) {
-                checkPermissions()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                handlePermissions()
             } else {
                 permissionsChecked = true
             }
-        } catch (e: Exception) {
-            showErrorAndRestart()
-        }
-    }
-
-    private fun showErrorAndRestart() {
-        if (retryCount < maxRetries) {
-            retryCount++
+        }.onFailure {
             Toast.makeText(
                 this,
-                "Une erreur s'est produite. Tentative de récupération...",
-                Toast.LENGTH_LONG
-            ).show()
-            recreate()
-        } else {
-            Toast.makeText(
-                this,
-                "Une erreur critique s'est produite. Veuillez redémarrer l'application.",
+                "Une erreur s'est produite. Veuillez redémarrer l'application.",
                 Toast.LENGTH_LONG
             ).show()
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    private fun checkPermissions() {
-        permissionHandler.checkAndRequestPermissions(object : PermissionHandler.PermissionCallback {
-            override fun onPermissionsGranted() {
-                permissionsChecked = true
-            }
+    private fun handlePermissions() {
+        if (!permissionHandler.arePermissionsAlreadyGranted()) {
+            permissionHandler.checkAndRequestPermissions(object : PermissionHandler.PermissionCallback {
+                override fun onPermissionsGranted() {
+                    permissionsChecked = true
+                }
 
-            override fun onPermissionsDenied() {
-                Toast.makeText(
-                    this@MainActivity,
-                    "Certaines fonctionnalités seront limitées sans les permissions nécessaires",
-                    Toast.LENGTH_LONG
-                ).show()
-                permissionsChecked = true
-            }
+                override fun onPermissionsDenied() {
+                    showPermissionDeniedMessage()
+                    permissionsChecked = true
+                }
 
-            override fun onPermissionRationale(permissions: Array<String>) {
-                // La logique de rationale est gérée dans PermissionHandler
-            }
-        })
-    }
-
-    override fun onResume() {
-        super.onResume()
-        if (!permissionsChecked && retryCount < maxRetries) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                checkPermissions()
-            }
+                override fun onPermissionRationale(permissions: Array<String>) {
+                    // Handled in PermissionHandler
+                }
+            })
+        } else {
+            permissionsChecked = true
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        try {
-            // Nettoyage des ressources si nécessaire
-        } catch (e: Exception) {
-            // Handle cleanup errors silently
-        }
+    private fun showPermissionDeniedMessage() {
+        Toast.makeText(
+            this,
+            "Certaines fonctionnalités seront limitées sans les permissions nécessaires",
+            Toast.LENGTH_LONG
+        ).show()
     }
 }
