@@ -44,7 +44,8 @@ import kotlin.collections.set
 private const val TAG = "ArticleGridDebug"
 
 @Composable
-fun ArticleGridWithScrollbar(
+fun ArticleGridWithScrollbar(  //-->
+//TODO(1): creee un preview don une fichie separe 
     uiState: UiState,
     gridColumns: Int,
     filterText: String,
