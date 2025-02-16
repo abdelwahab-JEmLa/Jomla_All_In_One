@@ -76,31 +76,8 @@ fun ArticleGridPreviewEmpty() {
     )
 }
 
-@Preview(
-    name = "Article Grid - With Data",
-    showBackground = true,
-    backgroundColor = 0xFFFFFFFF
-)
-@Composable
-fun ArticleGridPreviewWithData(
-    @PreviewParameter(SampleArticleDataProvider::class) sampleData: SampleArticleData
-) {
-    ArticleGridWithScrollbar(
-        uiState = sampleData.uiState,
-        gridColumns = 2,
-        filterText = "",
-        showFilter = false,
-        gridState = rememberLazyStaggeredGridState(),
-        viewModel = rememberPreviewViewModel(),
-        reloadTrigger = 0,
-        onClickToOpenWindos = { _, _ -> },
-        currentClient = sampleData.client
-    )
-}
-
-// Sample data provider using actual JSON structure
-class SampleArticleDataProvider : PreviewParameterProvider<SampleArticleData> {     //-->
-//TODO(1): ajoute autres depuit json
+// Sample data provider using JSON structure
+class SampleArticleDataProvider : PreviewParameterProvider<SampleArticleData> {
     override val values = sequenceOf(
         SampleArticleData(
             uiState = UiState(
@@ -136,6 +113,38 @@ class SampleArticleDataProvider : PreviewParameterProvider<SampleArticleData> { 
                         couleur3 = "[Barbrqu]©",
                         diponibilityState = "",
                         itsNewArrivale = false
+                    ),
+                    ArticlesBasesStatsTable(
+                        idArticle = 10,
+                        nomArticleFinale = "Kool Gateau®",
+                        nomCategorie = "gateaux serir",
+                        nomArab = "كول غاتو",
+                        monPrixVent = 0.0,
+                        monPrixAchat = 490.0,
+                        monPrixVentUniter = 0.0,
+                        monPrixAchatUniter = 0.0,
+                        nmbrUnite = 24,
+                        couleur1 = "🎁 standard 🎁",
+                        couleur2 = "",
+                        couleur3 = "",
+                        diponibilityState = "",
+                        itsNewArrivale = false
+                    ),
+                    ArticlesBasesStatsTable(
+                        idArticle = 17,
+                        nomArticleFinale = "Dragon®",
+                        nomCategorie = "كوجاك 10 دج",
+                        nomArab = "دراغون",
+                        monPrixVent = 570.0,
+                        monPrixAchat = 460.0,
+                        monPrixVentUniter = 285.0,
+                        monPrixAchatUniter = 6.71,
+                        nmbrUnite = 85,
+                        couleur1 = "🎨 Multi Couleur 🎨",
+                        couleur2 = "",
+                        couleur3 = "",
+                        diponibilityState = "",
+                        itsNewArrivale = false
                     )
                 ),
                 categories = listOf(
@@ -145,6 +154,14 @@ class SampleArticleDataProvider : PreviewParameterProvider<SampleArticleData> { 
                     },
                     CategoriesTabelle().apply {
                         nomCategorieInCategoriesTabele = "زريعة"
+                        displayedHeader = true
+                    },
+                    CategoriesTabelle().apply {
+                        nomCategorieInCategoriesTabele = "gateaux serir"
+                        displayedHeader = true
+                    },
+                    CategoriesTabelle().apply {
+                        nomCategorieInCategoriesTabele = "كوجاك 10 دج"
                         displayedHeader = true
                     }
                 ),
@@ -163,7 +180,6 @@ data class SampleArticleData(
     val uiState: UiState,
     val client: B_ClientsDataBase
 )
-
 
 @Preview(
     name = "Article Grid - Loading",
@@ -193,7 +209,24 @@ fun ArticleGridPreviewLoading() {
     )
 }
 
-
-
-
-
+@Preview(
+    name = "Article Grid - With Data",
+    showBackground = true,
+    backgroundColor = 0xFFFFFFFF
+)
+@Composable
+fun ArticleGridPreviewWithData(
+    @PreviewParameter(SampleArticleDataProvider::class) sampleData: SampleArticleData
+) {
+    ArticleGridWithScrollbar(
+        uiState = sampleData.uiState,
+        gridColumns = 2,
+        filterText = "",
+        showFilter = false,
+        gridState = rememberLazyStaggeredGridState(),
+        viewModel = rememberPreviewViewModel(),
+        reloadTrigger = 0,
+        onClickToOpenWindos = { _, _ -> },
+        currentClient = sampleData.client
+    )
+}
