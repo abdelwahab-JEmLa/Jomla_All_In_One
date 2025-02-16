@@ -49,37 +49,20 @@ fun rememberPreviewViewModel(): HeadViewModel {
     }
 }
 
-@Preview(
-    name = "Article Grid - Empty",
-    showBackground = true,
-    backgroundColor = 0xFFFFFFFF
+data class SampleArticleData(
+    val uiState: UiState,
+    val client: B_ClientsDataBase?
 )
-@Composable
-fun ArticleGridPreviewEmpty() {
-    val emptyUiState = UiState(
-        articlesBasesStatTables = emptyList(),
-        categories = emptyList(),
-        productDisplayController = ProductDisplayController(),
-        isLoading = false
-    )
 
-    ArticleGridWithScrollbar(
-        uiState = emptyUiState,
-        gridColumns = 2,
-        filterText = "",
-        showFilter = false,
-        gridState = rememberLazyStaggeredGridState(),
-        viewModel = rememberPreviewViewModel(),
-        reloadTrigger = 0,
-        onClickToOpenWindos = { _, _ -> },
-        currentClient = null
-    )
-}
-
-// Sample data provider using JSON structure
+// Updated sample data provider with null safety
 class SampleArticleDataProvider : PreviewParameterProvider<SampleArticleData> {
-    override val values = sequenceOf(
-        SampleArticleData(
+    override val values = sequenceOf(createSampleData())
+
+    // Provide a default empty value to prevent null pointer exceptions
+    override val count: Int = 1
+
+    private fun createSampleData(): SampleArticleData {
+        return SampleArticleData(
             uiState = UiState(
                 articlesBasesStatTables = listOf(
                     ArticlesBasesStatsTable(
@@ -113,38 +96,6 @@ class SampleArticleDataProvider : PreviewParameterProvider<SampleArticleData> {
                         couleur3 = "[Barbrqu]©",
                         diponibilityState = "",
                         itsNewArrivale = false
-                    ),
-                    ArticlesBasesStatsTable(
-                        idArticle = 10,
-                        nomArticleFinale = "Kool Gateau®",
-                        nomCategorie = "gateaux serir",
-                        nomArab = "كول غاتو",
-                        monPrixVent = 0.0,
-                        monPrixAchat = 490.0,
-                        monPrixVentUniter = 0.0,
-                        monPrixAchatUniter = 0.0,
-                        nmbrUnite = 24,
-                        couleur1 = "🎁 standard 🎁",
-                        couleur2 = "",
-                        couleur3 = "",
-                        diponibilityState = "",
-                        itsNewArrivale = false
-                    ),
-                    ArticlesBasesStatsTable(
-                        idArticle = 17,
-                        nomArticleFinale = "Dragon®",
-                        nomCategorie = "كوجاك 10 دج",
-                        nomArab = "دراغون",
-                        monPrixVent = 570.0,
-                        monPrixAchat = 460.0,
-                        monPrixVentUniter = 285.0,
-                        monPrixAchatUniter = 6.71,
-                        nmbrUnite = 85,
-                        couleur1 = "🎨 Multi Couleur 🎨",
-                        couleur2 = "",
-                        couleur3 = "",
-                        diponibilityState = "",
-                        itsNewArrivale = false
                     )
                 ),
                 categories = listOf(
@@ -154,14 +105,6 @@ class SampleArticleDataProvider : PreviewParameterProvider<SampleArticleData> {
                     },
                     CategoriesTabelle().apply {
                         nomCategorieInCategoriesTabele = "زريعة"
-                        displayedHeader = true
-                    },
-                    CategoriesTabelle().apply {
-                        nomCategorieInCategoriesTabele = "gateaux serir"
-                        displayedHeader = true
-                    },
-                    CategoriesTabelle().apply {
-                        nomCategorieInCategoriesTabele = "كوجاك 10 دج"
                         displayedHeader = true
                     }
                 ),
@@ -173,31 +116,25 @@ class SampleArticleDataProvider : PreviewParameterProvider<SampleArticleData> {
                 nom = "Sample Client"
             )
         )
-    )
+    }
 }
 
-data class SampleArticleData(
-    val uiState: UiState,
-    val client: B_ClientsDataBase
-)
-
 @Preview(
-    name = "Article Grid - Loading",
+    name = "Article Grid - Empty",
     showBackground = true,
     backgroundColor = 0xFFFFFFFF
 )
 @Composable
-fun ArticleGridPreviewLoading() {
-    val loadingUiState = UiState(
+fun ArticleGridPreviewEmpty() {
+    val emptyUiState = UiState(
         articlesBasesStatTables = emptyList(),
         categories = emptyList(),
         productDisplayController = ProductDisplayController(),
-        isLoading = true,
-        loadingProgress = 0.5f
+        isLoading = false
     )
 
     ArticleGridWithScrollbar(
-        uiState = loadingUiState,
+        uiState = emptyUiState,
         gridColumns = 2,
         filterText = "",
         showFilter = false,
@@ -228,5 +165,33 @@ fun ArticleGridPreviewWithData(
         reloadTrigger = 0,
         onClickToOpenWindos = { _, _ -> },
         currentClient = sampleData.client
+    )
+}
+
+@Preview(
+    name = "Article Grid - Loading",
+    showBackground = true,
+    backgroundColor = 0xFFFFFFFF
+)
+@Composable
+fun ArticleGridPreviewLoading() {
+    val loadingUiState = UiState(
+        articlesBasesStatTables = emptyList(),
+        categories = emptyList(),
+        productDisplayController = ProductDisplayController(),
+        isLoading = true,
+        loadingProgress = 0.5f
+    )
+
+    ArticleGridWithScrollbar(
+        uiState = loadingUiState,
+        gridColumns = 2,
+        filterText = "",
+        showFilter = false,
+        gridState = rememberLazyStaggeredGridState(),
+        viewModel = rememberPreviewViewModel(),
+        reloadTrigger = 0,
+        onClickToOpenWindos = { _, _ -> },
+        currentClient = null
     )
 }
