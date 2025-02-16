@@ -1,6 +1,7 @@
 package Views.P1.Ui.ArticlesGrid
 
 import Views.P1.Ui.ArticlesGrid.ArticleItem.ArticleImageWithOverlay
+import Z_MasterOfApps.Kotlin.Model.E_AppsOptionsStates.ApplicationEstInstalleDonTelephone.Companion.metricsWidthPixels
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,7 +34,12 @@ sealed class ArticleLayout {
     private val imageSize: DpSize
         get() = when (this) {
             is DemiUno, DemiDual, is DemiMulti -> DpSize(width = 500.dp, height = 500.dp)
-            is SmallUno, is SmallDual, is SmallMulti -> DpSize(width = 170.dp, height = 170.dp)
+            is SmallUno, is SmallDual, is SmallMulti -> {
+
+                val size =if( metricsWidthPixels > 400) 300.dp  else 170.dp
+
+                DpSize(width = size, height = size)
+            }
         }
 
     @Composable
@@ -143,7 +149,8 @@ private fun SmallDisplayerMultiColor(
             colorIndex = 0,
             reloadTrigger = reloadTrigger,
             onClickToOpenWindow = onClickToOpenWindos,
-            uiState = uiState, imageSize = imageSize
+            uiState = uiState,
+            imageSize = imageSize
         )
 
         // Replace LazyColumn with Column since we have a small fixed number of items
@@ -159,7 +166,8 @@ private fun SmallDisplayerMultiColor(
                     .height(70.dp),
                 onClickToOpenWindow = onClickToOpenWindos,
                 uiState = uiState,
-                contentScale = ContentScale.Crop, imageSize = imageSize
+                contentScale = ContentScale.Crop,
+                imageSize = imageSize
             )
         }
 

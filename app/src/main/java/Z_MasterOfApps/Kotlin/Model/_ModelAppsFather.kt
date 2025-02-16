@@ -15,6 +15,9 @@ import kotlinx.coroutines.tasks.await
 open class _ModelAppsFather(
     initial_Produits_Main_DataBase: List<A_ProduitModel> = emptyList()
 ) {
+
+    @get:Exclude var applicationEstInstalleDonTelephone: SnapshotStateList<E_AppsOptionsStates.ApplicationEstInstalleDonTelephone> = emptyList<E_AppsOptionsStates.ApplicationEstInstalleDonTelephone>().toMutableStateList()
+
     @get:Exclude
     var produitsMainDataBase: SnapshotStateList<A_ProduitModel> =
         initial_Produits_Main_DataBase.toMutableStateList()
