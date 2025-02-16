@@ -26,17 +26,6 @@
           </targets>
         </DialogSelection>
       </SelectionState>
-      <SelectionState runConfigName="P3_DisplayeProductInfosToSellerPreview">
-        <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-11-16T07:52:10.637689800Z">
-          <Target type="DEFAULT_BOOT">
-            <handle>
-              <DeviceId pluginId="PhysicalDevice" identifier="serial=99897HYH7DZHQ4YT" />
-            </handle>
-          </Target>
-        </DropdownSelection>
-        <DialogSelection />
-      </SelectionState>
       <SelectionState runConfigName="PreviewApp2_F1">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
@@ -52,6 +41,9 @@
         <DialogSelection />
       </SelectionState>
       <SelectionState runConfigName="ArticleGridPreviewEmpty">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="ArticleGridPreviewWithData">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

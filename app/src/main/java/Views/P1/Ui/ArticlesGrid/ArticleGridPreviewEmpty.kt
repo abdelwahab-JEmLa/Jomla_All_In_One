@@ -29,7 +29,7 @@ class PreviewDatabase {
     }
 }
 
-// Preview ViewModel implementation with mock dependencies
+// Preview ViewModel implementation
 class PreviewHeadViewModel(
     context: Context,
     database: AppDatabase
@@ -77,6 +77,95 @@ fun ArticleGridPreviewEmpty() {
 }
 
 @Preview(
+    name = "Article Grid - With Data",
+    showBackground = true,
+    backgroundColor = 0xFFFFFFFF
+)
+@Composable
+fun ArticleGridPreviewWithData(
+    @PreviewParameter(SampleArticleDataProvider::class) sampleData: SampleArticleData
+) {
+    ArticleGridWithScrollbar(
+        uiState = sampleData.uiState,
+        gridColumns = 2,
+        filterText = "",
+        showFilter = false,
+        gridState = rememberLazyStaggeredGridState(),
+        viewModel = rememberPreviewViewModel(),
+        reloadTrigger = 0,
+        onClickToOpenWindos = { _, _ -> },
+        currentClient = sampleData.client
+    )
+}
+
+// Sample data provider using actual JSON structure
+class SampleArticleDataProvider : PreviewParameterProvider<SampleArticleData> {     //-->
+//TODO(1): ajoute autres depuit json
+    override val values = sequenceOf(
+        SampleArticleData(
+            uiState = UiState(
+                articlesBasesStatTables = listOf(
+                    ArticlesBasesStatsTable(
+                        idArticle = 4,
+                        nomArticleFinale = "Praline®",
+                        nomCategorie = "Chocolattes 5 Da",
+                        nomArab = "برالين",
+                        monPrixVent = 440.0,
+                        monPrixAchat = 400.0,
+                        monPrixVentUniter = 220.0,
+                        monPrixAchatUniter = 3.67,
+                        nmbrUnite = 120,
+                        couleur1 = "🍫 chocolat 🍫",
+                        couleur2 = "🍒 Ceris 🍒",
+                        couleur3 = "🥛 lait 🥛",
+                        diponibilityState = "",
+                        itsNewArrivale = false
+                    ),
+                    ArticlesBasesStatsTable(
+                        idArticle = 8,
+                        nomArticleFinale = "Chiwawa 10 دج®",
+                        nomCategorie = "زريعة",
+                        nomArab = "شيواوا 10 دج",
+                        monPrixVent = 705.0,
+                        monPrixAchat = 680.0,
+                        monPrixVentUniter = 352.5,
+                        monPrixAchatUniter = 8.81,
+                        nmbrUnite = 80,
+                        couleur1 = "🟨 صفراء 🟨",
+                        couleur2 = "🉐 بيضاء 🉐",
+                        couleur3 = "[Barbrqu]©",
+                        diponibilityState = "",
+                        itsNewArrivale = false
+                    )
+                ),
+                categories = listOf(
+                    CategoriesTabelle().apply {
+                        nomCategorieInCategoriesTabele = "Chocolattes 5 Da"
+                        displayedHeader = true
+                    },
+                    CategoriesTabelle().apply {
+                        nomCategorieInCategoriesTabele = "زريعة"
+                        displayedHeader = true
+                    }
+                ),
+                productDisplayController = ProductDisplayController(),
+                isLoading = false
+            ),
+            client = B_ClientsDataBase(
+                id = 1,
+                nom = "Sample Client"
+            )
+        )
+    )
+}
+
+data class SampleArticleData(
+    val uiState: UiState,
+    val client: B_ClientsDataBase
+)
+
+
+@Preview(
     name = "Article Grid - Loading",
     showBackground = true,
     backgroundColor = 0xFFFFFFFF
@@ -106,71 +195,5 @@ fun ArticleGridPreviewLoading() {
 
 
 
-
-@Preview(
-    name = "Article Grid - With Data",
-    showBackground = true,
-    backgroundColor = 0xFFFFFFFF
-)
-@Composable
-fun ArticleGridPreviewWithData(
-    @PreviewParameter(SampleArticleDataProvider::class) sampleData: SampleArticleData
-) {
-    ArticleGridWithScrollbar(
-        uiState = sampleData.uiState,
-        gridColumns = 2,
-        filterText = "",
-        showFilter = false,
-        gridState = rememberLazyStaggeredGridState(),
-        viewModel = rememberPreviewViewModel(),  // Fixed: Using rememberPreviewViewModel
-        reloadTrigger = 0,
-        onClickToOpenWindos = { _, _ -> },
-        currentClient = sampleData.client
-    )
-}
-
-// Sample data provider for previews
-class SampleArticleDataProvider : PreviewParameterProvider<SampleArticleData> {    //-->
-//TODO(1): change  depuit le json
-    override val values = sequenceOf(
-        SampleArticleData(
-            uiState = UiState(
-                articlesBasesStatTables = listOf(
-                    ArticlesBasesStatsTable(
-                        idArticle = 1,
-                        nomArticleFinale = "Sample Article 1",
-                        nomCategorie = "Category 1",
-                        monPrixVent = 99.99,
-                        monPrixAchat = 50.0
-                    ),
-                    ArticlesBasesStatsTable(
-                        idArticle = 2,
-                        nomArticleFinale = "Sample Article 2",
-                        nomCategorie = "Category 1",
-                        monPrixVent = 149.99,
-                        monPrixAchat = 75.0
-                    )
-                ),
-                categories = listOf(
-                    CategoriesTabelle().apply {
-                        nomCategorieInCategoriesTabele = "Category 1"
-                        displayedHeader = true
-                    }
-                ),
-                productDisplayController = ProductDisplayController(),
-                isLoading = false
-            ),
-            client = B_ClientsDataBase(
-                id = 1,
-                nom = "Sample Client"
-            )
-        )
-    )
-}
-
-data class SampleArticleData(
-    val uiState: UiState,
-    val client: B_ClientsDataBase
-)
 
 
