@@ -1,8 +1,10 @@
 package P7_EStorePresentationToClient.Ui
 
 import P7_EStorePresentationToClient.Modules.ImageDisplayer7
+import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle
+import Z_MasterOfApps.Z_AppsFather.Kotlin._4.Modules.GlideDisplayImageBykeyId
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -14,6 +16,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -32,6 +35,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -68,7 +72,9 @@ fun ColorItem7(
     color: ColorsArticlesTabelle?,
     index: Int,
     relodeTigger: Int,
-    colorArrangement: ColorArrangement? = null // Add this parameter
+    colorArrangement: ColorArrangement? = null, // Add this parameter
+    sizeScreen: Dp,
+    viewModelInitApp: ViewModelInitApp
 ) {
     val infiniteTransition = rememberInfiniteTransition(label = "")
     val iconAlpha by infiniteTransition.animateFloat(
@@ -79,21 +85,33 @@ fun ColorItem7(
             repeatMode = RepeatMode.Reverse
         ), label = ""
     )
-
+    val articleproduitsMainDataBase =
+        viewModelInitApp._modelAppsFather.produitsMainDataBase.find { it.id.toInt() == article.idArticle }
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(0.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            // Image Display (remains the same)
-            ImageDisplayer7(
-                modifier = Modifier.fillMaxSize(),
-                article = article,
-                indexColor = index,
-                reloadKey = relodeTigger
-            )
-
+            if (index==0) {
+                GlideDisplayImageBykeyId(
+                    imageGlidReloadTigger = 0,
+                    mainItem = articleproduitsMainDataBase,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(600.dp),
+                    size = 600.dp,
+                    qualityImage = 100
+                )
+            }     else {
+                ImageDisplayer7(
+                    modifier = Modifier.fillMaxSize(),
+                    article = article,
+                    indexColor = index,
+                    reloadKey = relodeTigger,
+                    sizeScreen = sizeScreen
+                )
+            }
             // Add QuantityBadge if there's a quantity to display
             colorArrangement?.let { arrangement ->
                 if (arrangement.colorSoldQuantity > 0) {

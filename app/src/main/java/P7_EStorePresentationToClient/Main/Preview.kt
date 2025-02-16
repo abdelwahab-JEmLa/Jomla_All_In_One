@@ -1,10 +1,12 @@
 package P7_EStorePresentationToClient.Main
 
+import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.clientjetpack.Models.ProductDisplayController
 
 @Preview
@@ -58,12 +60,15 @@ fun DisplayArticleInfoToClientWindowsPreview() {
         )
     )
 
+    val viewModel: ViewModelInitApp = viewModel()
+
     MaterialTheme {
         FragmentDisplayeInfoProductToClient7(
             displayController = sampleProductDisplayController,
             articleStatsDataBase = sampleArticleStats,
             colorsArticlesList = sampleColorsList,
-            reloadTrigger = 0
+            reloadTrigger = 0,
+            viewModelInitApp = viewModel
         )
     }
 }

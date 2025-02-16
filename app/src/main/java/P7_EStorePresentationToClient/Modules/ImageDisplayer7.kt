@@ -8,6 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.Dp
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import java.io.File
@@ -18,7 +19,8 @@ fun ImageDisplayer7(
     modifier: Modifier = Modifier,
     article: ArticlesBasesStatsTable,
     indexColor: Int = 0,
-    reloadKey: Any = Unit
+    reloadKey: Any = Unit,
+    sizeScreen: Dp
 ) {
     val context = LocalContext.current
 

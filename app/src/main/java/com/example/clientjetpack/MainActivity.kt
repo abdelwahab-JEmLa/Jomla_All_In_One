@@ -89,7 +89,7 @@ class MainActivity : ComponentActivity() {
                 ClientJetPackTheme {
                     Box(modifier = Modifier.fillMaxSize()) {
                         if (permissionsChecked) {
-                            MainScreen(appViewModels)
+                            MainScreen(appViewModels, )
                         }
                     }
                 }

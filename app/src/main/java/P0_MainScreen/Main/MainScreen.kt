@@ -43,7 +43,7 @@ fun MainScreen(
     appViewModels: AppViewModels,
     modifier: Modifier = Modifier,
     viewModelInitApp: ViewModelInitApp = viewModel(),
-    xmlResources: List<Pair<String, Int>>?=null,
+    xmlResources: List<Pair<String, Int>>?=null
 ) {
     val headViewModel = appViewModels.headViewModel
     val uiState by headViewModel.uiState.collectAsState()
@@ -171,7 +171,7 @@ fun MainScreen(
                         articleStatsDataBase = displayProductDataBase,
                         colorsArticlesList = uiState.colorsArticlesTabelleModel,
                         reloadTrigger = 0, // Use state if needed
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier.fillMaxSize(), viewModelInitApp = viewModelInitApp
                     )
                 }
 

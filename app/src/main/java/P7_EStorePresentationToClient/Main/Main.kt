@@ -2,6 +2,7 @@ package P7_EStorePresentationToClient.Main
 
 import P7_EStorePresentationToClient.Ui.ColorsCards7
 import P7_EStorePresentationToClient.Ui.ProductNameSection7
+import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle
 import androidx.compose.foundation.layout.Box
@@ -38,7 +39,7 @@ fun ProductDisplayDialog(
     articleStatsDataBase: ArticlesBasesStatsTable,
     colorsArticlesList: List<ColorsArticlesTabelle>,
     reloadTrigger: Int,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier, viewModelInitApp: ViewModelInitApp
 ) {
     Dialog(
         onDismissRequest = {},
@@ -99,7 +100,7 @@ fun ProductDisplayDialog(
                             .fillMaxWidth()
                             .padding(horizontal = 4.dp),
                         relodeTigger = reloadTrigger,
-                        colorsArticlesList = colorsArticlesList
+                        colorsArticlesList = colorsArticlesList, viewModelInitApp = viewModelInitApp
                     )
                 }
             }
@@ -113,7 +114,7 @@ fun FragmentDisplayeInfoProductToClient7(
     articleStatsDataBase: ArticlesBasesStatsTable,
     colorsArticlesList: List<ColorsArticlesTabelle>,
     reloadTrigger: Int,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier, viewModelInitApp: ViewModelInitApp
 ) {
     var showDialog by remember { mutableStateOf(false) }
 
@@ -127,7 +128,7 @@ fun FragmentDisplayeInfoProductToClient7(
             articleStatsDataBase = articleStatsDataBase,
             colorsArticlesList = colorsArticlesList,
             reloadTrigger = reloadTrigger,
-            modifier = modifier
+            modifier = modifier, viewModelInitApp = viewModelInitApp
         )
     }
 }

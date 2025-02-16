@@ -1,5 +1,7 @@
 package P7_EStorePresentationToClient.Ui
 
+import Z_MasterOfApps.Kotlin.Model.E_AppsOptionsStates.ApplicationEstInstalleDonTelephone.Companion.metricsWidthPixels
+import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle
 import android.util.Log
@@ -34,7 +36,7 @@ fun ColorsCards7(
     articlesBasesStatsTable: ArticlesBasesStatsTable,
     modifier: Modifier = Modifier,
     relodeTigger: Int,
-    colorsArticlesList: List<ColorsArticlesTabelle>,
+    colorsArticlesList: List<ColorsArticlesTabelle>, viewModelInitApp: ViewModelInitApp,
 ) {
     var colorsListToDisplaye by remember { mutableStateOf(emptyList<ColorsArticlesTabelle>()) }
     val colorArrangements = remember(displayController.newArregmentColorsJsonStruct) {
@@ -42,7 +44,9 @@ fun ColorsCards7(
     }
     // Add a tag for logs
     val TAG = "ColorsCards7Debug"
+    val itsTablette =metricsWidthPixels > 400
 
+    val sizeScreen =if( metricsWidthPixels > 400) 300.dp  else 170.dp
 
     // Update colors list based on newArregmentColorsJsonStruct
     LaunchedEffect(displayController.newArregmentColorsJsonStruct) {
@@ -88,7 +92,7 @@ fun ColorsCards7(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(600.dp)
+                    .height(if (itsTablette) 1300.dp else 600.dp  )
             ) {
                 LazyColumn(
                     state = listState,
@@ -103,7 +107,7 @@ fun ColorsCards7(
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(360.dp)
+                                    .height(if (itsTablette) 700.dp else 360.dp)
                             ) {
                                 ColorItem7(
                                     modifier = Modifier.fillMaxSize(),
@@ -111,7 +115,9 @@ fun ColorsCards7(
                                     color = mainColor,
                                     index = 0,
                                     relodeTigger = relodeTigger,
-                                    colorArrangement = colorArrangements.find { it.idColore == mainColor.idColore }
+                                    colorArrangement = colorArrangements.find { it.idColore == mainColor.idColore },
+                                    sizeScreen=sizeScreen,
+                                    viewModelInitApp
                                 )
                             }
                         }
@@ -131,7 +137,9 @@ fun ColorsCards7(
                                 color = color,
                                 index = colorsListToDisplaye.indexOf(color),
                                 relodeTigger = relodeTigger,
-                                colorArrangement = colorArrangements.find { it.idColore == color.idColore }
+                                colorArrangement = colorArrangements.find { it.idColore == color.idColore },
+                                sizeScreen = sizeScreen,
+                                viewModelInitApp
                             )
                         }
                     }
