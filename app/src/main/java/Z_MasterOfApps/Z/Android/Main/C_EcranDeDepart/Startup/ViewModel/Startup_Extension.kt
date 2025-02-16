@@ -24,31 +24,59 @@ class Startup_Extension(
     }
 
     fun verifyAndAddPhone(phoneName: String, screenWidth: Int) {
-        // Check if phone exists in the list
-        val phoneExists = applicationEstInstalleDonTelephone.any { it.nom == phoneName }
+        // Get reference to the phones in Firebase
+        E_AppsOptionsStates.caReference.get().addOnSuccessListener { snapshot ->
+            var phoneExists = false
+            var maxId = 0
 
-        if (!phoneExists) {
-            // Generate new ID by finding the maximum existing ID and adding 1
-            val newId = if (applicationEstInstalleDonTelephone.isEmpty()) {
-                1
-            } else {
-                applicationEstInstalleDonTelephone.maxOf { it.id } + 1
+            // Check if phone exists and find max ID
+            snapshot.children.forEach { snap ->
+                try {
+                    val phone = E_AppsOptionsStates.ApplicationEstInstalleDonTelephone().apply {
+                        id = snap.child("id").getValue(Int::class.java) ?: 0
+                        nom = snap.child("nom").getValue(String::class.java) ?: ""
+                        widthScreen = snap.child("widthScreen").getValue(Int::class.java) ?: 0
+                        itsReciverTelephone = snap.child("itsReciverTelephone").getValue(Boolean::class.java) ?: false
+                    }
+
+                    // Update max ID
+                    if (phone.id > maxId) {
+                        maxId = phone.id
+                    }
+
+                    // Check if phone exists
+                    if (phone.nom == phoneName) {
+                        phoneExists = true
+                        // Update local state
+                        applicationEstInstalleDonTelephone.add(phone)
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             }
 
-            // Create new phone instance
-            val newPhone = E_AppsOptionsStates.ApplicationEstInstalleDonTelephone().apply {
-                id = newId
-                nom = phoneName
-                widthScreen = screenWidth
+            // If phone doesn't exist, add it
+            if (!phoneExists) {
+                val newId = maxId + 1
+
+                val newPhone = E_AppsOptionsStates.ApplicationEstInstalleDonTelephone().apply {
+                    id = newId
+                    nom = phoneName
+                    widthScreen = screenWidth
+                    itsReciverTelephone = false
+                }
+
+                // Add to local state
+                applicationEstInstalleDonTelephone.add(newPhone)
+
+                // Add to Firebase
+                E_AppsOptionsStates.caReference
+                    .child(newId.toString())
+                    .setValue(newPhone)
             }
-
-            // Add to local state
-            applicationEstInstalleDonTelephone.add(newPhone)
-
-            // Add to Firebase
-            E_AppsOptionsStates.caReference
-                .child(newId.toString())
-                .setValue(newPhone)
+        }.addOnFailureListener { exception ->
+            // Handle any errors
+            exception.printStackTrace()
         }
     }
 
