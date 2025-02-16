@@ -49,20 +49,59 @@ fun rememberPreviewViewModel(): HeadViewModel {
     }
 }
 
-data class SampleArticleData(
-    val uiState: UiState,
-    val client: B_ClientsDataBase?
+@Preview(
+    name = "Article Grid - Empty",
+    showBackground = true,
+    backgroundColor = 0xFFFFFFFF
 )
+@Composable
+fun ArticleGridPreviewEmpty() {
+    val emptyUiState = UiState(
+        articlesBasesStatTables = emptyList(),
+        categories = emptyList(),
+        productDisplayController = ProductDisplayController(),
+        isLoading = false
+    )
 
-// Updated sample data provider with null safety
+    ArticleGridWithScrollbar(
+        uiState = emptyUiState,
+        gridColumns = 2,
+        filterText = "",
+        showFilter = false,
+        gridState = rememberLazyStaggeredGridState(),
+        viewModel = rememberPreviewViewModel(),
+        reloadTrigger = 0,
+        onClickToOpenWindos = { _, _ -> },
+        currentClient = null
+    )
+}
+
+@Preview(
+    name = "Article Grid - With Data",
+    showBackground = true,
+    backgroundColor = 0xFFFFFFFF
+)
+@Composable
+fun ArticleGridPreviewWithData(
+    @PreviewParameter(SampleArticleDataProvider::class) sampleData: SampleArticleData
+) {
+    ArticleGridWithScrollbar(
+        uiState = sampleData.uiState,
+        gridColumns = 2,
+        filterText = "",
+        showFilter = false,
+        gridState = rememberLazyStaggeredGridState(),
+        viewModel = rememberPreviewViewModel(),
+        reloadTrigger = 0,
+        onClickToOpenWindos = { _, _ -> },
+        currentClient = sampleData.client
+    )
+}
+
+// Sample data provider using actual JSON structure
 class SampleArticleDataProvider : PreviewParameterProvider<SampleArticleData> {
-    override val values = sequenceOf(createSampleData())
-
-    // Provide a default empty value to prevent null pointer exceptions
-    override val count: Int = 1
-
-    private fun createSampleData(): SampleArticleData {
-        return SampleArticleData(
+    override val values = sequenceOf(
+        SampleArticleData(
             uiState = UiState(
                 articlesBasesStatTables = listOf(
                     ArticlesBasesStatsTable(
@@ -116,57 +155,14 @@ class SampleArticleDataProvider : PreviewParameterProvider<SampleArticleData> {
                 nom = "Sample Client"
             )
         )
-    }
+    )
 }
 
-@Preview(
-    name = "Article Grid - Empty",
-    showBackground = true,
-    backgroundColor = 0xFFFFFFFF
+data class SampleArticleData(
+    val uiState: UiState,
+    val client: B_ClientsDataBase
 )
-@Composable
-fun ArticleGridPreviewEmpty() {
-    val emptyUiState = UiState(
-        articlesBasesStatTables = emptyList(),
-        categories = emptyList(),
-        productDisplayController = ProductDisplayController(),
-        isLoading = false
-    )
 
-    ArticleGridWithScrollbar(
-        uiState = emptyUiState,
-        gridColumns = 2,
-        filterText = "",
-        showFilter = false,
-        gridState = rememberLazyStaggeredGridState(),
-        viewModel = rememberPreviewViewModel(),
-        reloadTrigger = 0,
-        onClickToOpenWindos = { _, _ -> },
-        currentClient = null
-    )
-}
-
-@Preview(
-    name = "Article Grid - With Data",
-    showBackground = true,
-    backgroundColor = 0xFFFFFFFF
-)
-@Composable
-fun ArticleGridPreviewWithData(
-    @PreviewParameter(SampleArticleDataProvider::class) sampleData: SampleArticleData
-) {
-    ArticleGridWithScrollbar(
-        uiState = sampleData.uiState,
-        gridColumns = 2,
-        filterText = "",
-        showFilter = false,
-        gridState = rememberLazyStaggeredGridState(),
-        viewModel = rememberPreviewViewModel(),
-        reloadTrigger = 0,
-        onClickToOpenWindos = { _, _ -> },
-        currentClient = sampleData.client
-    )
-}
 
 @Preview(
     name = "Article Grid - Loading",
@@ -195,3 +191,8 @@ fun ArticleGridPreviewLoading() {
         currentClient = null
     )
 }
+
+
+
+
+
