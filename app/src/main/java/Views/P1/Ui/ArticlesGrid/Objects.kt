@@ -55,7 +55,7 @@ import java.io.File
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
- fun ImageDisplayer1(
+fun ImageDisplayer1(
     modifier: Modifier = Modifier,
     article: ArticlesBasesStatsTable,
     viewModel: HeadViewModel,
@@ -67,10 +67,22 @@ import java.io.File
     imageScale: ContentScale = ContentScale.Fit,
     cornerRadius: Dp = 4.dp,
     imageSize: DpSize,
+    finalequalityImagePourcentage: Int = 100,
 ) {
     var currentQuality by remember { mutableStateOf(5f) }
     var isLoading by remember { mutableStateOf(true) }
     var imageLoaded by remember { mutableStateOf(false) }
+
+    // Calculate the initial and target quality based on device capabilities and image size
+    val initialQuality = remember(imageSize) {
+        // Start with lower quality for faster initial load
+        (imageSize.width.value * imageSize.height.value / 10000).coerceIn(5f, 25f)
+    }
+
+    val targetQuality = remember(finalequalityImagePourcentage) {
+        // Use the finalequalityImagePourcentage parameter to determine final quality
+        finalequalityImagePourcentage.toFloat().coerceIn(30f, 100f)
+    }
 
     val blurRadius by animateFloatAsState(
         targetValue = if (isLoading) 25f else 0f,
@@ -81,10 +93,11 @@ import java.io.File
     LaunchedEffect(reloadKey) {
         isLoading = true
         imageLoaded = false
-        currentQuality = 5f
+        currentQuality = initialQuality
 
+        // Progressive loading strategy
         delay(300) // Initial loading delay
-        currentQuality = 100f
+        currentQuality = targetQuality // Transition to target quality
         imageLoaded = true
 
         delay(700) // Keep blur for 700ms after image loads
@@ -132,8 +145,8 @@ import java.io.File
             ) {
                 it.apply {
                     applyImageOptions(article, indexColor, currentQuality) { isFirstResource ->
-                        if (isFirstResource && currentQuality < 100f) {
-                            currentQuality = 100f
+                        if (isFirstResource && currentQuality < targetQuality) {
+                            currentQuality = targetQuality
                         }
                     }
                 }

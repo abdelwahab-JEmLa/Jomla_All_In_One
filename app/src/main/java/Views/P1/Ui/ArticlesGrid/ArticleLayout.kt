@@ -150,7 +150,8 @@ private fun SmallDisplayerMultiColor(
             reloadTrigger = reloadTrigger,
             onClickToOpenWindow = onClickToOpenWindos,
             uiState = uiState,
-            imageSize = imageSize
+            imageSize = imageSize ,
+            qualityImagePourcentage= 48
         )
 
         // Replace LazyColumn with Column since we have a small fixed number of items

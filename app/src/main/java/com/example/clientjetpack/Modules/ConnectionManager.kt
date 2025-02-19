@@ -49,8 +49,8 @@ class ConnectionManager(
     private var reconnectionJob: Job? = null
     private var connectionMonitorJob: Job? = null
     private var retryCount = 0
-    private val maxRetries = 5
-    private val baseRetryDelayMs = 1000L
+    private val maxRetries = 10
+    private val baseRetryDelayMs = 3000L
 
     // Garde en mémoire le dernier mode de connexion utilisé
     private var lastConnectionMode: ConnectionMode = ConnectionMode.NONE

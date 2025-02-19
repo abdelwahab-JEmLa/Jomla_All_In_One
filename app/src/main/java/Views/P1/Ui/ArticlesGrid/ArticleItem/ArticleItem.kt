@@ -102,7 +102,9 @@ fun ArticleImageWithOverlay(
     modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.Fit,
     onClickToOpenWindow: (ArticlesBasesStatsTable, Int) -> Unit,
-    imageSize: DpSize
+    imageSize: DpSize ,
+    qualityImagePourcentage: Int =100
+
 ) {
     Surface(
         modifier = modifier,
@@ -128,7 +130,8 @@ fun ArticleImageWithOverlay(
                 uiState = uiState,
                 showOverlay = !imageExists,
                 imageScale = contentScale,
-                imageSize = imageSize
+                imageSize = imageSize   ,
+                finalequalityImagePourcentage=qualityImagePourcentage,
             )
 
             if (imageExists) {
