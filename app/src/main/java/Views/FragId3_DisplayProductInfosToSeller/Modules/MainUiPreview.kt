@@ -1,4 +1,4 @@
-package Views.Z_P3._DisplayProductInfosToSeller
+package Views.FragId3_DisplayProductInfosToSeller.Modules
 
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle

@@ -4,7 +4,7 @@ import P0_MainScreen.Ui.Objects.LoadingOverlay
 import P5_DialogeClientsEditer.ClientSelectionDialog
 import Views.P1._ArticlesStartFacade.FragmentStartupScreen
 import Views.Package_4.SoldCartScreen.SoldCartScreen
-import Views.Z_P3._DisplayProductInfosToSeller.P3DisplayeProductInfosToSeller
+import Views.FragId3_DisplayProductInfosToSeller.A_FragmentMain_id3
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.A_id1_ClientsLocationGps
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
@@ -259,7 +259,7 @@ fun AppNavHost(
         }
 
         if (opnerSaleWindows) {
-            P3DisplayeProductInfosToSeller(     
+            A_FragmentMain_id3(
                 modifier = Modifier.padding(horizontal = 3.dp),
                 uiState = uiState,
                 viewModel = appViewModels.headViewModel,

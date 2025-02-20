@@ -1,4 +1,4 @@
-package P7_EStorePresentationToClient.Modules
+package Views.FragId4_EStorePresentationToClient.Modules
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box

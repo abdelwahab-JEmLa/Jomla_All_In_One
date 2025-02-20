@@ -1,4 +1,4 @@
-package Views.Z_P3.Ui.Objects
+package Views.FragId3_DisplayProductInfosToSeller.Ui.Objects
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

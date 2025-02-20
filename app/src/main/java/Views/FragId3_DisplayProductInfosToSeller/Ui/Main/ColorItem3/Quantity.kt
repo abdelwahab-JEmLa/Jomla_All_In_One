@@ -1,4 +1,4 @@
-package Views.Z_P3.Ui.Main.ColorItem3
+package Views.FragId3_DisplayProductInfosToSeller.Ui.Main.ColorItem3
 
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Package_3._DisplayeProductInfosToSeller
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp

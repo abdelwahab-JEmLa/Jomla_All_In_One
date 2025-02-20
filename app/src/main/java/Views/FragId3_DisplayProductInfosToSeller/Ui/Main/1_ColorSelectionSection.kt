@@ -1,6 +1,6 @@
-package Views.Z_P3.Ui.Main
+package Views.FragId3_DisplayProductInfosToSeller.Ui.Main
 
-import Views.Z_P3.Ui.Main.ColorItem3.CouleurAfficheur
+import Views.FragId3_DisplayProductInfosToSeller.Ui.Main.ColorItem3.CouleurAfficheur
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import Z_MasterOfApps.Kotlin.Model.B_ClientsDataBase

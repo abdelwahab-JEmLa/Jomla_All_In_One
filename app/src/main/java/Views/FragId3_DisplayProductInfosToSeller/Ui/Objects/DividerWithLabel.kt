@@ -1,4 +1,4 @@
-package Views.Z_P3.Ui.Objects
+package Views.FragId3_DisplayProductInfosToSeller.Ui.Objects
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth

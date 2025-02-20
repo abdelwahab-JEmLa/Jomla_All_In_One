@@ -1,7 +1,7 @@
-package P7_EStorePresentationToClient.Main
+package Views.FragId4_EStorePresentationToClient.Main
 
-import P7_EStorePresentationToClient.Ui.A_CouleurSectionAfficheur_F7
-import P7_EStorePresentationToClient.Ui.ProductNameSection7
+import Views.FragId4_EStorePresentationToClient.Ui.A_CouleurSectionAfficheur_F7
+import Views.FragId4_EStorePresentationToClient.Ui.ProductNameSection7
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle

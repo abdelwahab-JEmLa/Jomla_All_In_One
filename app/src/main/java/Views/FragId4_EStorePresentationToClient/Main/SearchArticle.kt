@@ -1,4 +1,4 @@
-package P7_EStorePresentationToClient.Main
+package Views.FragId4_EStorePresentationToClient.Main
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

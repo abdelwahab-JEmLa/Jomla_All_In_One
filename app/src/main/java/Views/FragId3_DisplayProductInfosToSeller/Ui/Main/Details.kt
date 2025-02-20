@@ -1,4 +1,4 @@
-package Views.Z_P3.Ui.Main
+package Views.FragId3_DisplayProductInfosToSeller.Ui.Main
 
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import android.annotation.SuppressLint

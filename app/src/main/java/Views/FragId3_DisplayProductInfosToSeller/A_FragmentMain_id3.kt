@@ -1,16 +1,16 @@
-package Views.Z_P3._DisplayProductInfosToSeller
+package Views.FragId3_DisplayProductInfosToSeller
 
-import Views.Z_P3.Ui.Main.ColorSelectionSection
-import Views.Z_P3.Ui.Main.Details
-import Views.Z_P3.Ui.Objects.ActionsButtonRow
-import Views.Z_P3.Ui.Objects.ProductNameSection3
-import Views.Z_P3.Ui.Objects.confirmExitDialog
-import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Package_3._DisplayeProductInfosToSeller
+import Views.FragId3_DisplayProductInfosToSeller.Ui.Main.ColorSelectionSection
+import Views.FragId3_DisplayProductInfosToSeller.Ui.Main.Details
+import Views.FragId3_DisplayProductInfosToSeller.Ui.Objects.ActionsButtonRow
+import Views.FragId3_DisplayProductInfosToSeller.Ui.Objects.ProductNameSection3
+import Views.FragId3_DisplayProductInfosToSeller.Ui.Objects.confirmExitDialog
+import Z_MasterOfApps.Kotlin.Model.B_ClientsDataBase
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
-import Z_MasterOfApps.Kotlin.Model.B_ClientsDataBase
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.SoldArticlesTabelle
+import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Package_3._DisplayeProductInfosToSeller
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,7 +36,7 @@ import com.example.clientjetpack.Models.UiState
 import com.example.clientjetpack.ViewModel.HeadViewModel
 
 @Composable
-fun P3DisplayeProductInfosToSeller(
+fun A_FragmentMain_id3(
     uiState: UiState,
     viewModel: HeadViewModel,
     onDismiss: () -> Unit,
@@ -157,10 +157,10 @@ fun MainUi(
 
                             _DisplayeProductInfosToSeller(viewModelInitApp)
                                 .onClickOnMain(
-                                viewModelInitApp,
-                                currentSale,
-                                currentClient
-                            )
+                                    viewModelInitApp,
+                                    currentSale,
+                                    currentClient
+                                )
 
                         }
                     )
