@@ -35,31 +35,47 @@ fun A_CouleurSectionAfficheur_F7(
     articlesBasesStatsTable: ArticlesBasesStatsTable,
     modifier: Modifier = Modifier,
     relodeTigger: Int,
-    colorsArticlesList: List<ColorsArticlesTabelle>, viewModelInitApp: ViewModelInitApp,
+    colorsArticlesList: List<ColorsArticlesTabelle>,
+    viewModelInitApp: ViewModelInitApp,
 ) {
     var colorsListToDisplaye by remember { mutableStateOf(emptyList<ColorsArticlesTabelle>()) }
     val colorArrangements = remember(displayController.newArregmentColorsJsonStruct) {
         displayController.getColorArrangement()
     }
-    // Add a tag for logs
     val TAG = "ColorsCards7Debug"
-    val itsTablette =metricsWidthPixels > 400
+    val itsTablette = metricsWidthPixels > 400
+    val sizeScreen = if(metricsWidthPixels > 400) 300.dp else 170.dp
 
-    val sizeScreen =if( metricsWidthPixels > 400) 300.dp else 170.dp
-
-    // Update colors list based on newArregmentColorsJsonStruct
     LaunchedEffect(displayController.newArregmentColorsJsonStruct) {
         colorsListToDisplaye = try {
             val arrangement = displayController.getColorArrangement()
             if (arrangement.isEmpty()) {
-                getDefaultColorsList(articlesBasesStatsTable, colorsArticlesList)
+                listOf(
+                    articlesBasesStatsTable.idcolor1,
+                    articlesBasesStatsTable.idcolor2,
+                    articlesBasesStatsTable.idcolor3,
+                    articlesBasesStatsTable.idcolor4
+                ).mapNotNull { colorId ->
+                    if (colorId != 0L) {
+                        colorsArticlesList.find { it.idColore == colorId }
+                    } else null
+                }
             } else {
                 arrangement.mapNotNull { arrangedColor ->
                     colorsArticlesList.find { it.idColore == arrangedColor.idColore }
-                }.takeIf { it.isNotEmpty() } ?: getDefaultColorsList(articlesBasesStatsTable, colorsArticlesList)
+                }
             }
         } catch (e: Exception) {
-            getDefaultColorsList(articlesBasesStatsTable, colorsArticlesList)
+            listOf(
+                articlesBasesStatsTable.idcolor1,
+                articlesBasesStatsTable.idcolor2,
+                articlesBasesStatsTable.idcolor3,
+                articlesBasesStatsTable.idcolor4
+            ).mapNotNull { colorId ->
+                if (colorId != 0L) {
+                    colorsArticlesList.find { it.idColore == colorId }
+                } else null
+            }
         }
     }
 
@@ -91,7 +107,7 @@ fun A_CouleurSectionAfficheur_F7(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(if (itsTablette) 1300.dp else 600.dp  )
+                    .height(if (itsTablette) 1300.dp else 600.dp)
             ) {
                 LazyColumn(
                     state = listState,
@@ -99,38 +115,14 @@ fun A_CouleurSectionAfficheur_F7(
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                     contentPadding = PaddingValues(0.dp)
                 ) {
-                    // Main color (first in list)
-                    item {
-                        colorsListToDisplaye.firstOrNull()?.let { mainColor ->
-                            Log.d(TAG, "Rendering main color: ${mainColor.idColore}")
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(if (itsTablette) 700.dp else 360.dp)
-                            ) {
-                                ColorItem7(
-                                    modifier = Modifier.fillMaxSize(),
-                                    article = articlesBasesStatsTable,
-                                    color = mainColor,
-                                    colorIndex = 0,
-                                    relodeTigger = relodeTigger,
-                                    colorArrangement = colorArrangements.find { it.idColore == mainColor.idColore },
-                                    sizeScreen=sizeScreen,
-                                    viewModelInitApp
-                                )
-                            }
-                        }
-                    }
-
-                    // Secondary colors
-                    items(colorsListToDisplaye.drop(1)) { color ->
-                        Log.d(TAG, "Rendering secondary color: ${color.idColore}")
+                    items(colorsListToDisplaye) { color ->
+                        Log.d(TAG, "Rendering color: ${color.idColore}")
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(70.dp)
+                                .height(if (itsTablette) 300.dp else 150.dp)
                         ) {
-                            ColorItem7(
+                            B_CouleurAfficheur_F7(
                                 modifier = Modifier.fillMaxSize(),
                                 article = articlesBasesStatsTable,
                                 color = color,
@@ -138,30 +130,12 @@ fun A_CouleurSectionAfficheur_F7(
                                 relodeTigger = relodeTigger,
                                 colorArrangement = colorArrangements.find { it.idColore == color.idColore },
                                 sizeScreen = sizeScreen,
-                                viewModelInitApp
+                                viewModelInitApp = viewModelInitApp
                             )
                         }
                     }
                 }
             }
-        }
-    }
-}
-
-private fun getDefaultColorsList(
-    articlesBasesStatsTable: ArticlesBasesStatsTable,
-    colorsArticlesList: List<ColorsArticlesTabelle>
-): List<ColorsArticlesTabelle> {
-    return listOf(
-        articlesBasesStatsTable.idcolor1,
-        articlesBasesStatsTable.idcolor2,
-        articlesBasesStatsTable.idcolor3,
-        articlesBasesStatsTable.idcolor4
-    ).mapNotNull { colorId ->
-        if (colorId != 0L) {
-            colorsArticlesList.find { it.idColore == colorId }
-        } else {
-            null
         }
     }
 }

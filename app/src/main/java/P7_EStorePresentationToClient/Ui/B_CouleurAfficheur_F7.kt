@@ -42,30 +42,9 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.example.clientjetpack.Models.ColorArrangement
 import com.example.clientjetpack.R
 
-@Composable
-private fun QuantityBadge(
-    quantity: Int,
-    modifier: Modifier = Modifier
-) {
-    Surface(
-        modifier = modifier,
-        shape = CircleShape,
-        color = MaterialTheme.colorScheme.error,
-        contentColor = MaterialTheme.colorScheme.onError
-    ) {
-        Text(
-            text = quantity.toString(),
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-            style = MaterialTheme.typography.labelMedium.copy(
-                fontWeight = FontWeight.Bold
-            )
-        )
-    }
-}
-
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun ColorItem7(
+fun B_CouleurAfficheur_F7(
     modifier: Modifier,
     article: ArticlesBasesStatsTable,
     color: ColorsArticlesTabelle?,
@@ -246,5 +225,25 @@ fun ColorItem7(
                 }
             }
         }
+    }
+}
+@Composable
+private fun QuantityBadge(
+    quantity: Int,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier,
+        shape = CircleShape,
+        color = MaterialTheme.colorScheme.error,
+        contentColor = MaterialTheme.colorScheme.onError
+    ) {
+        Text(
+            text = quantity.toString(),
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            style = MaterialTheme.typography.labelMedium.copy(
+                fontWeight = FontWeight.Bold
+            )
+        )
     }
 }
