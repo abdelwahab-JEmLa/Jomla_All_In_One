@@ -68,7 +68,6 @@ fun A_VendeurAfficheurInfosProduit_FragmentMainId3(
             currentClient = currentClient,
             colorsArticlesTabelleModele = viewModel._uiState.value.colorsArticlesTabelleModel
         )
-
     }
 }
 
@@ -115,7 +114,10 @@ fun MainUi(
                 ) {
                     articlesBaseStats?.let { stats ->
                         item {
-                            ProductNameSection3(stats)
+                            ProductNameSection3(
+                                stats,
+                                onToggleLockExpandedPricex
+                            )
                         }
 
                         item {

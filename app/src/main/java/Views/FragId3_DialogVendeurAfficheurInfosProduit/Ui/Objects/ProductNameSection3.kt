@@ -1,6 +1,7 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit.Ui.Objects
 
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,7 +23,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ProductNameSection3(article: ArticlesBasesStatsTable) {
+fun ProductNameSection3(
+    article: ArticlesBasesStatsTable,
+    onToggleLockExpandedPricex: () -> Unit,
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -53,7 +57,8 @@ fun ProductNameSection3(article: ArticlesBasesStatsTable) {
                         style = MaterialTheme.typography.headlineSmall.copy(
                             fontWeight = FontWeight.Bold
                         ),
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.weight(1f)
+                            .clickable { onToggleLockExpandedPricex() },
                         textAlign = TextAlign.Start
                     )
 
