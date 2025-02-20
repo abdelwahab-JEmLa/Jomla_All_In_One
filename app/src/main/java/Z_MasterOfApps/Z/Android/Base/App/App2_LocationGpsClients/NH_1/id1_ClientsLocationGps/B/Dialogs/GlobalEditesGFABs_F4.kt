@@ -1,6 +1,7 @@
 package Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.B.Dialogs
 
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
+import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.B.Dialogs.Utils.A_ChangeIdColor
 import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.B.Dialogs.Utils.AddMarkerButton
 import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.B.Dialogs.Utils.ClearHistoryButton
 import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.B.Dialogs.Utils.LabelsButton
@@ -74,17 +75,22 @@ fun MapControls(
             ) {
                 if (showMenu) {
 
+                    LocationTrackingButton(
+                        showLabels = showLabels,
+                        mapView = mapView,
+                        proximiteMeter = proximiteMeter,
+                        xmlResources= xmlResources
+                    )
+
                     AddMarkerButton(
                         extensionVM = extensionVM,
                         showLabels = showLabels,
                         mapView = mapView,
                     )
 
-                    LocationTrackingButton(
+                    A_ChangeIdColor(
+                        viewModelInitApp = viewModelInitApp,
                         showLabels = showLabels,
-                        mapView = mapView,
-                        proximiteMeter = proximiteMeter,
-                        xmlResources= xmlResources
                     )
 
                     ClearHistoryButton(

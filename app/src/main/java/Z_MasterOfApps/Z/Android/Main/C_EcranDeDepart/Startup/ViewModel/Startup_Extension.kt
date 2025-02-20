@@ -4,8 +4,14 @@ import Z_MasterOfApps.Kotlin.Model.E_AppsOptionsStates
 import Z_MasterOfApps.Kotlin.Model.E_AppsOptionsStates.ApplicationEstInstalleDonTelephone.Companion.metricsWidthPixels
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.updateProduit
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
+import androidx.lifecycle.viewModelScope
 import com.google.firebase.Firebase
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.database
+import kotlinx.coroutines.launch
 
 class Startup_Extension(
     val viewModelInitApp: ViewModelInitApp,
@@ -13,7 +19,8 @@ class Startup_Extension(
     val produitsMainDataBase = viewModelInitApp.produitsMainDataBase
     val applicationEstInstalleDonTelephone =
         viewModelInitApp._modelAppsFather.applicationEstInstalleDonTelephone
-
+    private val firebaseDatabase = FirebaseDatabase.getInstance()
+    private val refDBJetPackExport = firebaseDatabase.getReference("e_DBJetPackExport")
     init {
         val manufacturer = android.os.Build.MANUFACTURER
         val model = android.os.Build.MODEL
@@ -121,4 +128,33 @@ class Startup_Extension(
     fun implimentClientsParProduits() {
         // Implementation remains unchanged
     }
+
+    /**
+     * Checks each product in the database and updates the idcolor1 field to 1
+     * if it's currently set to 0
+     */
+    fun updateProductsIdColor1() {
+        viewModelInitApp. viewModelScope.launch {
+            refDBJetPackExport.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    snapshot.children.forEach { articleSnapshot ->
+                        val idArticle = articleSnapshot.key
+
+                        // Check if the idcolor1 field exists and equals 0
+                        val idcolor1Value = articleSnapshot.child("idcolor1").getValue(Long::class.java)
+                        if (idcolor1Value == 0L) {
+                            // Update idcolor1 to 1
+                            refDBJetPackExport.child(idArticle ?: "").child("idcolor1").setValue(1L)
+                        }
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    // Handle possible errors
+                    println("Database error when updating idcolor1: ${error.message}")
+                }
+            })
+        }
+    }
+
 }

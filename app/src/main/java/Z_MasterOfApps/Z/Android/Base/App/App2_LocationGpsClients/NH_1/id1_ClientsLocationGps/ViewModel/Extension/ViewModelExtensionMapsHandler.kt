@@ -1,8 +1,8 @@
 package Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.ViewModel.Extension
 
+import Z_MasterOfApps.Kotlin.Model.A_ProduitModel
 import Z_MasterOfApps.Kotlin.Model.B_ClientsDataBase
 import Z_MasterOfApps.Kotlin.Model.B_ClientsDataBase.Companion.updateClientsDataBase
-import Z_MasterOfApps.Kotlin.Model.A_ProduitModel
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import kotlinx.coroutines.CoroutineScope
@@ -15,6 +15,7 @@ class ViewModelExtension_App2_F1(
     private val clientDataBaseSnapList: SnapshotStateList<B_ClientsDataBase>,
     val viewModel: ViewModelInitApp,
 ) {
+
     fun onClickAddMarkerButton(
         mapView: MapView,
     ) {
@@ -62,10 +63,10 @@ class ViewModelExtension_App2_F1(
                         actuelleEtat = statueVente
                     )
                 )
-                updatedClient.updateClientsDataBase( viewModel)
+                updatedClient.updateClientsDataBase(viewModel)
             }
         }
     }
+
+
 }
-
-
