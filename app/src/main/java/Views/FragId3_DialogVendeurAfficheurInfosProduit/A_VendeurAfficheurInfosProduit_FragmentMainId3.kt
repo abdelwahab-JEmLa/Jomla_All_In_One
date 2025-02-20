@@ -1,6 +1,6 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit
 
-import Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_CouleursAfficheur_MainListFid3
+import Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.A_MainListFragId3
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.C_PrixInfosProduit.Details
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.Ui.Objects.ActionsButtonRow
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.Ui.Objects.ProductNameSection3
@@ -118,7 +118,7 @@ fun MainUi(
                 ) {
                     articlesBaseStats?.let { stats ->
                         ProductNameSection3(stats)
-                        B_CouleursAfficheur_MainListFid3(
+                        A_MainListFragId3(
                             currentSale = currentSale,
                             stats = stats,
                             colorsArticlesTabelleModel = colorsArticlesTabelleModel,

@@ -9,14 +9,9 @@ import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.SoldArticles
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -26,109 +21,37 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.example.clientjetpack.ViewModel.HeadViewModel
-import com.example.clientjetpack.ViewModel.WifiUpdateClientDisplayerStats
-import kotlinx.coroutines.flow.distinctUntilChanged
 
 @Composable
-fun B_CouleursAfficheur_MainListFid3(
+fun A_MainListFragId3(
     currentSale: SoldArticlesTabelle,
     stats: ArticlesBasesStatsTable,
     colorsArticlesTabelleModel: List<ColorsArticlesTabelle>,
     viewModel: HeadViewModel,
-    reloadTrigger: Int, viewModelInitApp: ViewModelInitApp, currentClient: B_ClientsDataBase?,
+    reloadTrigger: Int,
+    viewModelInitApp: ViewModelInitApp,
+    currentClient: B_ClientsDataBase?,
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
 ) {
-    var mainColorId by remember { mutableStateOf(stats.idcolor1) }
-    var colorsListToEdite by remember { mutableStateOf(emptyList<ColorsArticlesTabelle>()) }
+    var colorsListToDisplay by remember { mutableStateOf(emptyList<ColorsArticlesTabelle>()) }
 
-    // Initialize rankings on first composition
+    // Initialize colors list on first composition
     LaunchedEffect(Unit) {
         // Get all valid colors
-        val validColors = listOf(
+        colorsListToDisplay = listOf(
             stats.idcolor1,
             stats.idcolor2,
             stats.idcolor3,
             stats.idcolor4
-        ).filter { it != 0L }
-
-        // Initialize rankings for all colors if not already set
-        val initialColorsList = validColors.mapIndexedNotNull { index, colorId ->
-            colorsArticlesTabelleModel.find { it.idColore == colorId }?.apply {
-                rankingTmpToDisplaye = index + 1
-            }
+        ).mapNotNull { colorId ->
+            if (colorId != 0L) {
+                colorsArticlesTabelleModel.find { it.idColore == colorId }
+            } else null
         }
-
-        // Update colorsListToEdite with the initialized list
-        colorsListToEdite = initialColorsList
-    }
-
-    // Function to update color rankings when main color changes
-    fun updateColorRankings(newMainColorId: Long) {
-        val oldMainColor = colorsArticlesTabelleModel.find { it.idColore == mainColorId }
-        val newMainColor = colorsArticlesTabelleModel.find { it.idColore == newMainColorId }
-
-        if (oldMainColor != null && newMainColor != null) {
-            // Create a new mutable list to store updated colors
-            val updatedColorsList = colorsListToEdite.toMutableList()
-            val oldRank = newMainColor.rankingTmpToDisplaye
-            val lastRank = updatedColorsList.size
-
-            // Example of how rankings change when clicking color with rank 3:
-            // Before: [1, 2, 3, 4]
-            // After:  [3, 2, 4, 1]
-            updatedColorsList.forEach { color ->
-                when {
-                    // The clicked color becomes rank 1
-                    color.idColore == newMainColorId -> {
-                        color.rankingTmpToDisplaye = 1
-                    }
-                    // The previous main color goes to last position
-                    color.idColore == mainColorId -> {
-                        color.rankingTmpToDisplaye = lastRank
-                    }
-                    // Colors between new main and old main shift as needed
-                    color.rankingTmpToDisplaye > oldRank -> {
-                        // Colors after clicked color move up one position
-                        color.rankingTmpToDisplaye -= 1
-                    }
-                    // Other colors maintain their position
-                    else -> {
-                        // No change needed
-                    }
-                }
-            }
-
-            // Sort and update colorsListToEdite
-            colorsListToEdite = updatedColorsList.sortedBy { it.rankingTmpToDisplaye }
-        } else if (newMainColor != null) {
-            // Create a new mutable list for the case of no previous main color
-            val updatedColorsList = colorsListToEdite.toMutableList()
-            val oldRank = newMainColor.rankingTmpToDisplaye
-
-            updatedColorsList.forEach { color ->
-                when {
-                    // The clicked color becomes rank 1
-                    color.idColore == newMainColorId -> {
-                        color.rankingTmpToDisplaye = 1
-                    }
-                    // Colors after clicked color move up one position
-                    color.rankingTmpToDisplaye > oldRank -> {
-                        color.rankingTmpToDisplaye -= 1
-                    }
-                }
-            }
-
-            // Sort and update colorsListToEdite
-            colorsListToEdite = updatedColorsList.sortedBy { it.rankingTmpToDisplaye }
-        }
-
-        // Update mainColorId after rankings are updated
-        mainColorId = newMainColorId
     }
 
     Column(
@@ -141,120 +64,44 @@ fun B_CouleursAfficheur_MainListFid3(
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
         ) {
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(2.dp),
-                verticalArrangement = Arrangement.spacedBy(2.dp)
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(2.dp),
             ) {
+                // Calculate a reasonable fixed height based on your content
+                // Height = (single item height + spacing) * number of items, capped at max height
+                val estimatedHeight = minOf(
+                    (150.dp + 2.dp) * colorsListToDisplay.size,
+                    500.dp // Max height cap
+                )
 
-                // Updated main color handler with ranking update
-                val updateMainColor: (Long) -> Unit = { newMainColorId ->
-                    updateColorRankings(newMainColorId)
-                    viewModel.sendOrderToClientDisplayer(
-                        WifiUpdateClientDisplayerStats.NewArregmentColorsJsonStruct.prefix,
-                        buildString {
-                            append("""{"NewArregmentColorsJsonStruct":[""")
-
-                            colorsListToEdite.forEachIndexed { index, color ->
-                                // Find the corresponding color quantity from currentSale
-                                val colorQuantity = when (color.idColore) {
-                                    currentSale.color1IdPicked -> currentSale.color1SoldQuantity
-                                    currentSale.color2IdPicked -> currentSale.color2SoldQuantity
-                                    currentSale.color3IdPicked -> currentSale.color3SoldQuantity
-                                    currentSale.color4IdPicked -> currentSale.color4SoldQuantity
-                                    else -> 0
-                                }
-
-                                append("""
-                                        {
-                                            "idColore": ${color.idColore},
-                                            "colorSoldQuantity": $colorQuantity
-                                        }""".trimIndent())
-
-                                // Add comma if not the last element
-                                if (index < colorsListToEdite.size - 1) {
-                                    append(",")
-                                }
-                            }
-
-                            append("]}")
-                        }
-                    )
-                }
-
-                // Display main color and sub-colors as before
-                val mainColor = colorsListToEdite.firstOrNull()
-                mainColor?.let {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(270.dp)
-                            .clip(MaterialTheme.shapes.medium)
-                    ) {
-                        B_CouleurAfficheur(
-                            modifier = Modifier,
-                            currentSale = currentSale,
-                            article = stats,
-                            color = it,
-                            index = 0,
-                            reloadTrigger = reloadTrigger,
-                            viewModel = viewModel,
-                            height = 240.dp,
-                            updateColorToBeMain = updateMainColor,
-                            viewModelInitApp, currentClient = currentClient,
-                            colorsArticlesTabelleModele = colorsArticlesTabelleModele
-                        )
-                    }
-                }
-
-                if (colorsListToEdite.size > 1) {
-                    val listState = rememberLazyListState()
-
-                    LaunchedEffect(listState) {
-                        snapshotFlow { listState.firstVisibleItemIndex }
-                            .distinctUntilChanged()
-                            .collect { position ->
-                                if (position >= 0 && position < colorsListToEdite.size - 1) {
-                                    viewModel.sendOrderToClientDisplayer(
-                                        WifiUpdateClientDisplayerStats.ClientWindowsLazyRowSupColorsScrolle.prefix,
-                                        position
-                                    )
-                                }
-                            }
-                    }
-
-                    val subColors = colorsListToEdite.drop(1)
-
-                    LazyRow(
-                        state = listState,
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(2.dp),
-                        contentPadding = PaddingValues(horizontal = 2.dp)
-                    ) {
-                        items(
-                            items = subColors,
-                            key = { color -> color.idColore }
-                        ) { color ->
-                            Box(
-                                modifier = Modifier
-                                    .height(60.dp)
-                                    .width(170.dp)
-                                    .clip(MaterialTheme.shapes.medium)
-                            ) {
-                                B_CouleurAfficheur(
-                                    modifier = Modifier,
-                                    currentSale = currentSale,
-                                    article = stats,
-                                    color = color,
-                                    index = color.rankingTmpToDisplaye - 1,
-                                    reloadTrigger = reloadTrigger,
-                                    viewModel = viewModel,
-                                    height = 60.dp,
-                                    updateColorToBeMain = updateMainColor,
-                                    viewModelInitApp, currentClient = currentClient,
-                                    colorsArticlesTabelleModele = colorsArticlesTabelleModele
-                                )
-                            }
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(estimatedHeight)
+                        .padding(2.dp),
+                    verticalArrangement = Arrangement.spacedBy(2.dp)
+                ) {
+                    colorsListToDisplay.forEachIndexed { index, color ->
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(150.dp)
+                                .clip(MaterialTheme.shapes.medium)
+                        ) {
+                            B_CouleurAfficheur(
+                                modifier = Modifier,
+                                currentSale = currentSale,
+                                article = stats,
+                                color = color,
+                                index = index,
+                                reloadTrigger = reloadTrigger,
+                                viewModel = viewModel,
+                                height = 150.dp,
+                                updateColorToBeMain = { /* Empty lambda since we removed ranking logic */ },
+                                viewModelInitApp = viewModelInitApp,
+                                currentClient = currentClient,
+                                colorsArticlesTabelleModele = colorsArticlesTabelleModele
+                            )
                         }
                     }
                 }
