@@ -113,7 +113,6 @@ fun CouleurAfficheur(
     Box(
         modifier = modifier.height(height)
     ) {
-        // Show quantity badge if there's any quantity for this color
         if (currentQuantity > 0) {
             QuantityBadge(
                 quantity = currentQuantity,
@@ -131,7 +130,7 @@ fun CouleurAfficheur(
                 .clickable {
                     isSelected = true
                     showDialog = true
-                    color?.let {
+                    color.let {
                         updateColorToBeMain(it.idColore)
                         viewModel.sendOrderToClientDisplayer(
                             WifiUpdateClientDisplayerStats.ClientWindowsSelectedColorId.prefix,
@@ -173,7 +172,7 @@ fun CouleurAfficheur(
                     )
                 }
 
-                color?.let { colorData ->
+                color.let { colorData ->
                     ColorInfoSection(
                         colorData = colorData,
                         onColorClick = {
