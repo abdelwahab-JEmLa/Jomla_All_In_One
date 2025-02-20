@@ -12,12 +12,10 @@ import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticl
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.SoldArticlesTabelle
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Package_3._DisplayeProductInfosToSeller
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -50,7 +48,7 @@ fun A_VendeurAfficheurInfosProduit_FragmentMainId3(
         uiState.articlesBasesStatTables.find { it.idArticle.toLong() == sale.idArticle }
     }
 
-    var isDetailsVisible by remember { mutableStateOf(false) }
+    var isDetailsVisible by remember { mutableStateOf(true) }
     LaunchedEffect(Unit) { isDetailsVisible = true }
 
     currentSale?.let {
@@ -73,6 +71,7 @@ fun A_VendeurAfficheurInfosProduit_FragmentMainId3(
 
     }
 }
+
 
 @Composable
 fun MainUi(
@@ -109,32 +108,39 @@ fun MainUi(
             tonalElevation = 2.dp
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
-                // Scrollable content
-                Column(
+                LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
-                        .padding(bottom = 80.dp) // Add padding for the action buttons
+                        .padding(bottom = 80.dp)
                 ) {
                     articlesBaseStats?.let { stats ->
-                        ProductNameSection3(stats)
-                        A_MainListFragId3(
-                            currentSale = currentSale,
-                            stats = stats,
-                            colorsArticlesTabelleModel = colorsArticlesTabelleModel,
-                            viewModel = viewModel,
-                            reloadTrigger = reloadTrigger, viewModelInitApp = viewModelInitApp,
-                            currentClient = currentClient,
-                            colorsArticlesTabelleModele = colorsArticlesTabelleModele,
-                        )
-                        Details(
-                            isDetailsVisible,
-                            stats,
-                            uiState,
-                            viewModel,
-                            lockExpandedPrices,
-                            onToggleLockExpandedPricex
-                        )
+                        item {
+                            ProductNameSection3(stats)
+                        }
+
+                        item {
+                            A_MainListFragId3(
+                                currentSale = currentSale,
+                                stats = stats,
+                                colorsArticlesTabelleModel = colorsArticlesTabelleModel,
+                                viewModel = viewModel,
+                                reloadTrigger = reloadTrigger,
+                                viewModelInitApp = viewModelInitApp,
+                                currentClient = currentClient,
+                                colorsArticlesTabelleModele = colorsArticlesTabelleModele,
+                            )
+                        }
+
+                        item {
+                            Details(
+                                isDetailsVisible = isDetailsVisible,
+                                article = stats,
+                                uiState = uiState,
+                                viewModel = viewModel,
+                                lockExpandedPrices = lockExpandedPrices,
+                                onToggleLockExpandedPricex = onToggleLockExpandedPricex
+                            )
+                        }
                     }
                 }
 
@@ -154,14 +160,12 @@ fun MainUi(
                         onCancel = {
                             viewModel.deleteSoldArticle(currentSale.vid)
                             onDismiss()
-
                             _DisplayeProductInfosToSeller(viewModelInitApp)
                                 .onClickOnMain(
                                     viewModelInitApp,
                                     currentSale,
                                     currentClient
                                 )
-
                         }
                     )
                 }
@@ -169,6 +173,128 @@ fun MainUi(
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

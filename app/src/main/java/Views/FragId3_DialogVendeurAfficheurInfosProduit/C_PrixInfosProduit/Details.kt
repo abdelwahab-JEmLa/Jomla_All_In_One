@@ -11,7 +11,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -30,16 +29,14 @@ import com.example.clientjetpack.ViewModel.HeadViewModel
 
 @SuppressLint("DefaultLocale")
 @Composable
-fun ColumnScope.Details(
+fun Details(
     isDetailsVisible: Boolean,
     article: ArticlesBasesStatsTable,
     uiState: UiState,
     viewModel: HeadViewModel,
     lockExpandedPrices: Boolean,
     onToggleLockExpandedPricex: () -> Unit,
-
-    ) {
-
+) {
     val currentClientId = uiState.appSettingsSaverModel
         .find { it.name == "clientBuyerNowId" }?.valueLong ?: 0
 
@@ -62,13 +59,12 @@ fun ColumnScope.Details(
                     .fillMaxWidth()
                     .padding(2.dp)
             ) {
-          //      DetailHeader(isExpanded)
-
                 AnimatedVisibility(
                     visible = lockExpandedPrices,
                     enter = slideInVertically() + expandVertically(),
                     exit = shrinkVertically()
                 ) {
+                    // Replace LazyColumn with a regular Column to avoid nested scrollable components
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -180,8 +176,6 @@ private fun PriceCard(
 }
 
 
-
-
 private data class RowData(
     val label: String,
     val baseValue: Double,
@@ -210,4 +204,3 @@ private fun PriceGridRow(
         }
     }
 }
-

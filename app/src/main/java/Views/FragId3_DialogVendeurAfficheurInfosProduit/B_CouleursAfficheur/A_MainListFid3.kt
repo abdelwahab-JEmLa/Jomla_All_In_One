@@ -67,11 +67,9 @@ fun A_MainListFragId3(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(2.dp),
             ) {
-                // Calculate a reasonable fixed height based on your content
-                // Height = (single item height + spacing) * number of items, capped at max height
                 val estimatedHeight = minOf(
-                    (150.dp + 2.dp) * colorsListToDisplay.size,
-                    500.dp // Max height cap
+                    (400.dp + 2.dp) * colorsListToDisplay.size,
+                    3500.dp //
                 )
 
                 Column(
@@ -85,7 +83,7 @@ fun A_MainListFragId3(
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(150.dp)
+                                .height(350.dp)
                                 .clip(MaterialTheme.shapes.medium)
                         ) {
                             B_CouleurAfficheur(
@@ -96,7 +94,7 @@ fun A_MainListFragId3(
                                 index = index,
                                 reloadTrigger = reloadTrigger,
                                 viewModel = viewModel,
-                                height = 150.dp,
+                                height = 350.dp,
                                 updateColorToBeMain = { /* Empty lambda since we removed ranking logic */ },
                                 viewModelInitApp = viewModelInitApp,
                                 currentClient = currentClient,
