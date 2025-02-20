@@ -1,6 +1,5 @@
 package P7_EStorePresentationToClient.Ui
 
-import P7_EStorePresentationToClient.Modules.ImageDisplayer7
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle
@@ -70,7 +69,7 @@ fun ColorItem7(
     modifier: Modifier,
     article: ArticlesBasesStatsTable,
     color: ColorsArticlesTabelle?,
-    index: Int,
+    colorIndex: Int,
     relodeTigger: Int,
     colorArrangement: ColorArrangement? = null, // Add this parameter
     sizeScreen: Dp,
@@ -93,25 +92,17 @@ fun ColorItem7(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            if (index==0) {
-                GlideDisplayImageBykeyId(
-                    imageGlidReloadTigger = 0,
-                    mainItem = articleproduitsMainDataBase,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(600.dp),
-                    size = 600.dp,
-                    qualityImage = 100
-                )
-            }     else {
-                ImageDisplayer7(
-                    modifier = Modifier.fillMaxSize(),
-                    article = article,
-                    indexColor = index,
-                    reloadKey = relodeTigger,
-                    sizeScreen = sizeScreen
-                )
-            }
+            GlideDisplayImageBykeyId(
+                imageGlidReloadTigger = 0,
+                mainItem = articleproduitsMainDataBase,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(600.dp),
+                size = 600.dp,
+                qualityImage = 100,
+                colorIndex = colorIndex
+            )
+
             // Add QuantityBadge if there's a quantity to display
             colorArrangement?.let { arrangement ->
                 if (arrangement.colorSoldQuantity > 0) {
@@ -139,7 +130,7 @@ fun ColorItem7(
                             )
                         )
                 ) {
-                    if (index > 0) {
+                    if (colorIndex > 0) {
                         // Centered Row for index > 0
                         Row(
                             modifier = Modifier
@@ -179,6 +170,7 @@ fun ColorItem7(
                                                 modifier = Modifier.size(60.dp)
                                             )
                                         }
+
                                         else -> {
                                             Text(
                                                 text = colorData.iconColore,
@@ -235,6 +227,7 @@ fun ColorItem7(
                                                     modifier = Modifier.size(32.dp)
                                                 )
                                             }
+
                                             else -> {
                                                 Text(
                                                     text = colorData.iconColore,

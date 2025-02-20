@@ -43,14 +43,16 @@ fun GlideDisplayImageBykeyId(
     modifier: Modifier = Modifier,
     size: Dp? = null,
     onLoadComplete: () -> Unit = {},
-    qualityImage: Int = 3
+    qualityImage: Int = 3,
+    colorIndex: Int = 0
 ) {
     var imageFile by remember { mutableStateOf<File?>(null) }
     var forceReload by remember { mutableIntStateOf(0) }
     var isLoading by remember { mutableStateOf(true) }
     var reloadSuccess by remember { mutableStateOf(false) }
+    var imageFileName by remember { mutableStateOf("") }
 
-    val keyImageId = if (mainItem == null) "null" else "${mainItem.id}_1"
+    val keyImageId = if (mainItem == null) "null" else "${mainItem.id}_${colorIndex + 1}"
     var shouldUseDefaultImage by remember {
         mutableStateOf(keyImageId == "null" || mainItem?.coloursEtGouts?.any { it.sonImageNeExistPas } == true)
     }
@@ -63,6 +65,7 @@ fun GlideDisplayImageBykeyId(
                 val file = File("$basePath.$ext")
                 if (file.exists() && file.length() > 0) {
                     Log.d("GlideDisplay", "Found valid image file: ${file.absolutePath}")
+                    imageFileName = file.name
                     return@withContext file
                 }
             }
@@ -72,11 +75,18 @@ fun GlideDisplayImageBykeyId(
     }
 
     // Track both imageGlidReloadTigger and mainItem changes
-    LaunchedEffect(imageGlidReloadTigger, mainItem?.statuesBase?.imageGlidReloadTigger, keyImageId) {
+    LaunchedEffect(
+        imageGlidReloadTigger,
+        mainItem?.statuesBase?.imageGlidReloadTigger,
+        keyImageId
+    ) {
         val shouldReload =
             imageGlidReloadTigger > 0 || (mainItem?.statuesBase?.imageGlidReloadTigger ?: 0) > 0
         if (shouldReload) {
-            Log.d("GlideDisplay", "Reload triggered - Global: $imageGlidReloadTigger, Item: ${mainItem?.statuesBase?.imageGlidReloadTigger}")
+            Log.d(
+                "GlideDisplay",
+                "Reload triggered - Global: $imageGlidReloadTigger, Item: ${mainItem?.statuesBase?.imageGlidReloadTigger}"
+            )
 
             isLoading = true
             forceReload++
@@ -100,6 +110,7 @@ fun GlideDisplayImageBykeyId(
                 Log.d("GlideDisplay", "No valid image found, using default")
                 shouldUseDefaultImage = true
                 imageFile = File("$imagesProduitsLocalExternalStorageBasePath/logo.webp")
+                imageFileName = "logo.webp"
             }
         }
     }
@@ -113,13 +124,18 @@ fun GlideDisplayImageBykeyId(
                     val basePath = "$imagesProduitsLocalExternalStorageBasePath/$keyImageId"
                     val validFile = findValidImageFile(basePath)
                     imageFile = validFile ?: File(defaultPath)
+                    if (validFile == null) {
+                        imageFileName = "logo.webp"
+                    }
                 } else {
                     imageFile = File(defaultPath)
+                    imageFileName = "logo.webp"
                 }
                 Log.d("GlideDisplay", "Final image path: ${imageFile?.absolutePath}")
             } catch (e: Exception) {
                 Log.e("GlideDisplay", "Error loading image file", e)
                 imageFile = File("$imagesProduitsLocalExternalStorageBasePath/logo.webp")
+                imageFileName = "logo.webp"
             }
         }
     }
@@ -172,5 +188,19 @@ fun GlideDisplayImageBykeyId(
                     }
                 })
         }
+
+        /**
+        Text(
+        text = imageFileName,
+        color = Color.White,
+        fontSize = 10.sp,
+        textAlign = TextAlign.Center,
+        modifier = Modifier
+        .align(Alignment.TopCenter)
+        .padding(top = 4.dp)
+        .clip(RoundedCornerShape(4.dp))
+        .padding(horizontal = 4.dp, vertical = 2.dp)
+        .blur(0.dp)
+        )     */
     }
 }

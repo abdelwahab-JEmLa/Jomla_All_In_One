@@ -46,7 +46,7 @@ fun ColorsCards7(
     val TAG = "ColorsCards7Debug"
     val itsTablette =metricsWidthPixels > 400
 
-    val sizeScreen =if( metricsWidthPixels > 400) 300.dp  else 170.dp
+    val sizeScreen =if( metricsWidthPixels > 400) 300.dp else 170.dp
 
     // Update colors list based on newArregmentColorsJsonStruct
     LaunchedEffect(displayController.newArregmentColorsJsonStruct) {
@@ -113,7 +113,7 @@ fun ColorsCards7(
                                     modifier = Modifier.fillMaxSize(),
                                     article = articlesBasesStatsTable,
                                     color = mainColor,
-                                    index = 0,
+                                    colorIndex = 0,
                                     relodeTigger = relodeTigger,
                                     colorArrangement = colorArrangements.find { it.idColore == mainColor.idColore },
                                     sizeScreen=sizeScreen,
@@ -135,7 +135,7 @@ fun ColorsCards7(
                                 modifier = Modifier.fillMaxSize(),
                                 article = articlesBasesStatsTable,
                                 color = color,
-                                index = colorsListToDisplaye.indexOf(color),
+                                colorIndex = colorsListToDisplaye.indexOf(color),
                                 relodeTigger = relodeTigger,
                                 colorArrangement = colorArrangements.find { it.idColore == color.idColore },
                                 sizeScreen = sizeScreen,
