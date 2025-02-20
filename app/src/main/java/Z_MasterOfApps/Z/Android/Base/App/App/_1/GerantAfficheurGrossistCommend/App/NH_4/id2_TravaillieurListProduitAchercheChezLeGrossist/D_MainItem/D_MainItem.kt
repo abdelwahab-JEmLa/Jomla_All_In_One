@@ -49,11 +49,11 @@ fun MainItem_F2(
         contentAlignment = Alignment.Center
     ) {
         GlideDisplayImageBykeyId(
-            imageGlidReloadTigger = 0,
-            mainItem = mainItem,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(height),
+            imageGlidReloadTigger = 0,
+            mainItem = mainItem,
             size = 140.dp,
             qualityImage = 80
         )

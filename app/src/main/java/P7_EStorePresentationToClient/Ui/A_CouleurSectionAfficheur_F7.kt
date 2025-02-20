@@ -29,9 +29,8 @@ import com.example.clientjetpack.Models.ProductDisplayController
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-
 @Composable
-fun ColorsCards7(
+fun A_CouleurSectionAfficheur_F7(
     displayController: ProductDisplayController,
     articlesBasesStatsTable: ArticlesBasesStatsTable,
     modifier: Modifier = Modifier,
@@ -148,6 +147,7 @@ fun ColorsCards7(
         }
     }
 }
+
 private fun getDefaultColorsList(
     articlesBasesStatsTable: ArticlesBasesStatsTable,
     colorsArticlesList: List<ColorsArticlesTabelle>

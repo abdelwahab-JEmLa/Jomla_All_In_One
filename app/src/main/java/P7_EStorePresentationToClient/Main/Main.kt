@@ -1,6 +1,6 @@
 package P7_EStorePresentationToClient.Main
 
-import P7_EStorePresentationToClient.Ui.ColorsCards7
+import P7_EStorePresentationToClient.Ui.A_CouleurSectionAfficheur_F7
 import P7_EStorePresentationToClient.Ui.ProductNameSection7
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
@@ -93,7 +93,7 @@ fun ProductDisplayDialog(
                     }
 
                     // Color selection cards with proper scrolling
-                    ColorsCards7(
+                    A_CouleurSectionAfficheur_F7(
                         displayController = displayController,
                         articlesBasesStatsTable = articleStatsDataBase,
                         modifier = Modifier

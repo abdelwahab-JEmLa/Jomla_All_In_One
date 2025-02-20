@@ -1,6 +1,6 @@
 package Views.Z_P3.Ui.Main
 
-import Views.Z_P3.Ui.Main.ColorItem3.ColorItem3
+import Views.Z_P3.Ui.Main.ColorItem3.CouleurAfficheur
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import Z_MasterOfApps.Kotlin.Model.B_ClientsDataBase
@@ -191,7 +191,7 @@ fun ColorSelectionSection(
                             .height(270.dp)
                             .clip(MaterialTheme.shapes.medium)
                     ) {
-                        ColorItem3(
+                        CouleurAfficheur(
                             modifier = Modifier,
                             currentSale = currentSale,
                             article = stats,
@@ -241,7 +241,7 @@ fun ColorSelectionSection(
                                     .width(170.dp)
                                     .clip(MaterialTheme.shapes.medium)
                             ) {
-                                ColorItem3(
+                                CouleurAfficheur(
                                     modifier = Modifier,
                                     currentSale = currentSale,
                                     article = stats,

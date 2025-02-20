@@ -44,11 +44,11 @@ fun D_MainItem_F5(
     ) {
 
         GlideDisplayImageBykeyId(
-            imageGlidReloadTigger = 0,
-            mainItem = mainItem,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(100.dp),
+            imageGlidReloadTigger = 0,
+            mainItem = mainItem,
             size = 100.dp
         )
 

@@ -93,11 +93,11 @@ fun ColorItem7(
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             GlideDisplayImageBykeyId(
-                imageGlidReloadTigger = 0,
-                mainItem = articleproduitsMainDataBase,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(600.dp),
+                imageGlidReloadTigger = 0,
+                mainItem = articleproduitsMainDataBase,
                 size = 600.dp,
                 qualityImage = 100,
                 colorIndex = colorIndex

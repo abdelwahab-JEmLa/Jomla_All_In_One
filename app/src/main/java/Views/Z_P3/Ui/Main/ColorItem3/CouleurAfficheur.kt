@@ -1,9 +1,9 @@
 package Views.Z_P3.Ui.Main.ColorItem3
 
 import Views.Z_P3.Ui.Objects.ImageDisplayer3
+import Z_MasterOfApps.Kotlin.Model.B_ClientsDataBase
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
-import Z_MasterOfApps.Kotlin.Model.B_ClientsDataBase
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.SoldArticlesTabelle
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Package_3._DisplayeProductInfosToSeller
@@ -47,7 +47,7 @@ import com.example.clientjetpack.ViewModel.HeadViewModel
 import com.example.clientjetpack.ViewModel.WifiUpdateClientDisplayerStats
 
 @Composable
-fun ColorItem3(
+fun CouleurAfficheur(
     modifier: Modifier = Modifier,
     currentSale: SoldArticlesTabelle?,
     article: ArticlesBasesStatsTable,
@@ -185,7 +185,7 @@ fun ColorItem3(
             }
         }
 
-        if (showDialog && color != null) {
+        if (showDialog) {
             ColorSelectionDialog(
                 currentSale = currentSale,
                 viewModelInitApp = viewModelInitApp,
