@@ -1,9 +1,9 @@
-package Views.FragId3_DisplayProductInfosToSeller.Ui.Main
+package Views.FragId3_VendeurAfficheurInfosProduit.B_CouleursAfficheur
 
-import Views.FragId3_DisplayProductInfosToSeller.Ui.Main.ColorItem3.CouleurAfficheur
+import Views.FragId3_VendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem.B_CouleurAfficheur_Fid3
+import Z_MasterOfApps.Kotlin.Model.B_ClientsDataBase
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
-import Z_MasterOfApps.Kotlin.Model.B_ClientsDataBase
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.SoldArticlesTabelle
 import androidx.compose.foundation.layout.Arrangement
@@ -35,7 +35,7 @@ import com.example.clientjetpack.ViewModel.WifiUpdateClientDisplayerStats
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 @Composable
-fun ColorSelectionSection(
+fun B_CouleursAfficheur_MainListFid3(
     currentSale: SoldArticlesTabelle,
     stats: ArticlesBasesStatsTable,
     colorsArticlesTabelleModel: List<ColorsArticlesTabelle>,
@@ -191,7 +191,7 @@ fun ColorSelectionSection(
                             .height(270.dp)
                             .clip(MaterialTheme.shapes.medium)
                     ) {
-                        CouleurAfficheur(
+                        B_CouleurAfficheur_Fid3(
                             modifier = Modifier,
                             currentSale = currentSale,
                             article = stats,
@@ -241,7 +241,7 @@ fun ColorSelectionSection(
                                     .width(170.dp)
                                     .clip(MaterialTheme.shapes.medium)
                             ) {
-                                CouleurAfficheur(
+                                B_CouleurAfficheur_Fid3(
                                     modifier = Modifier,
                                     currentSale = currentSale,
                                     article = stats,

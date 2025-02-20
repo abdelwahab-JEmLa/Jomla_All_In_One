@@ -6,8 +6,8 @@ import P0_MainScreen.Ui.Main.AppNavHost.NavigationBarWithFab
 import P0_MainScreen.Ui.Main.AppNavHost.NavigationItems
 import P0_MainScreen.Ui.Main.AppNavHost.Screen
 import P0_MainScreen.Ui.Objects.ConnexionCard
-import Views.FragId4_EStorePresentationToClient.Main.FragmentDisplayeInfoProductToClient7
-import Views.FragId4_EStorePresentationToClient.Main.SearchArticle
+import Views.FragId4_EStorePresentationToClient.FragmentDisplayeInfoProductToClient7
+import Views.FragId4_EStorePresentationToClient.Modules.SearchArticle
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.os.Build
 import androidx.annotation.RequiresApi

@@ -1,4 +1,4 @@
-package Views.FragId4_EStorePresentationToClient.Main
+package Views.FragId4_EStorePresentationToClient
 
 import Views.FragId4_EStorePresentationToClient.Ui.A_CouleurSectionAfficheur_F7
 import Views.FragId4_EStorePresentationToClient.Ui.ProductNameSection7
@@ -34,7 +34,7 @@ import androidx.compose.ui.window.SecureFlagPolicy
 import com.example.clientjetpack.Models.ProductDisplayController
 
 @Composable
-fun ProductDisplayDialog(
+fun A_FragmentMain_id4(
     displayController: ProductDisplayController,
     articleStatsDataBase: ArticlesBasesStatsTable,
     colorsArticlesList: List<ColorsArticlesTabelle>,
@@ -123,7 +123,7 @@ fun FragmentDisplayeInfoProductToClient7(
     }
 
     if (showDialog) {
-        ProductDisplayDialog(
+        A_FragmentMain_id4(
             displayController = displayController,
             articleStatsDataBase = articleStatsDataBase,
             colorsArticlesList = colorsArticlesList,

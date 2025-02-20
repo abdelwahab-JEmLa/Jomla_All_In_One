@@ -1,5 +1,6 @@
-package Views.FragId3_DisplayProductInfosToSeller.Ui.Main.ColorItem3
+package Views.FragId3_VendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem.Dialog
 
+import Views.FragId3_VendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem.QuantityButton
 import Z_MasterOfApps.Kotlin.Model.B_ClientsDataBase
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle

@@ -1,10 +1,10 @@
-package Views.FragId3_DisplayProductInfosToSeller
+package Views.FragId3_VendeurAfficheurInfosProduit
 
-import Views.FragId3_DisplayProductInfosToSeller.Ui.Main.ColorSelectionSection
-import Views.FragId3_DisplayProductInfosToSeller.Ui.Main.Details
-import Views.FragId3_DisplayProductInfosToSeller.Ui.Objects.ActionsButtonRow
-import Views.FragId3_DisplayProductInfosToSeller.Ui.Objects.ProductNameSection3
-import Views.FragId3_DisplayProductInfosToSeller.Ui.Objects.confirmExitDialog
+import Views.FragId3_VendeurAfficheurInfosProduit.B_CouleursAfficheur.B_CouleursAfficheur_MainListFid3
+import Views.FragId3_VendeurAfficheurInfosProduit.Ui.Main.Details
+import Views.FragId3_VendeurAfficheurInfosProduit.Ui.Objects.ActionsButtonRow
+import Views.FragId3_VendeurAfficheurInfosProduit.Ui.Objects.ProductNameSection3
+import Views.FragId3_VendeurAfficheurInfosProduit.Ui.Objects.confirmExitDialog
 import Z_MasterOfApps.Kotlin.Model.B_ClientsDataBase
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
@@ -36,7 +36,7 @@ import com.example.clientjetpack.Models.UiState
 import com.example.clientjetpack.ViewModel.HeadViewModel
 
 @Composable
-fun A_FragmentMain_id3(
+fun A_VendeurAfficheurInfosProduit_FragmentMainId3(
     uiState: UiState,
     viewModel: HeadViewModel,
     onDismiss: () -> Unit,
@@ -118,7 +118,7 @@ fun MainUi(
                 ) {
                     articlesBaseStats?.let { stats ->
                         ProductNameSection3(stats)
-                        ColorSelectionSection(
+                        B_CouleursAfficheur_MainListFid3(
                             currentSale = currentSale,
                             stats = stats,
                             colorsArticlesTabelleModel = colorsArticlesTabelleModel,
