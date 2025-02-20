@@ -1,4 +1,4 @@
-package Views.FragId3_VendeurAfficheurInfosProduit.Ui.Objects
+package Views.FragId3_DialogVendeurAfficheurInfosProduit.Ui.Objects
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer

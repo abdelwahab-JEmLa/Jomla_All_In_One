@@ -1,4 +1,4 @@
-package Views.FragId3_VendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem
+package Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem
 
 import Z_MasterOfApps.Kotlin.Model.B_ClientsDataBase
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp

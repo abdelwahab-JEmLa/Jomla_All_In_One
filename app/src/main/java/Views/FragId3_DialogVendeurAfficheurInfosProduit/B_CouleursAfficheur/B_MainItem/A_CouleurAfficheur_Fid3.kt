@@ -1,7 +1,7 @@
-package Views.FragId3_VendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem
+package Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem
 
-import Views.FragId3_VendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem.Dialog.ColorSelectionDialog
-import Views.FragId3_VendeurAfficheurInfosProduit.Ui.Objects.ImageDisplayer3
+import Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem.Dialog.ColorSelectionDialog
+import Views.FragId3_DialogVendeurAfficheurInfosProduit.Ui.Objects.ImageDisplayer3
 import Z_MasterOfApps.Kotlin.Model.B_ClientsDataBase
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
@@ -48,7 +48,7 @@ import com.example.clientjetpack.ViewModel.HeadViewModel
 import com.example.clientjetpack.ViewModel.WifiUpdateClientDisplayerStats
 
 @Composable
-fun B_CouleurAfficheur_Fid3(
+fun B_CouleurAfficheur(
     modifier: Modifier = Modifier,
     currentSale: SoldArticlesTabelle?,
     article: ArticlesBasesStatsTable,
