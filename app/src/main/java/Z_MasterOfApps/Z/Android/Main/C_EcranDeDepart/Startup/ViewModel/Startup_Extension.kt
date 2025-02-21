@@ -134,7 +134,7 @@ class Startup_Extension(
      * if it's currently set to 0
      */
     fun updateProductsIdColor1() {
-        viewModelInitApp. viewModelScope.launch {
+        viewModelInitApp.viewModelScope.launch {
             refDBJetPackExport.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     snapshot.children.forEach { articleSnapshot ->
@@ -143,8 +143,13 @@ class Startup_Extension(
                         // Check if the idcolor1 field exists and equals 0
                         val idcolor1Value = articleSnapshot.child("idcolor1").getValue(Long::class.java)
                         if (idcolor1Value == 0L) {
-                            // Update idcolor1 to 1
                             refDBJetPackExport.child(idArticle ?: "").child("idcolor1").setValue(1L)
+                        }
+
+                        // Check couleur2 field and remove idcolor2 if empty or null
+                        val couleur2Value = articleSnapshot.child("couleur2").getValue(String::class.java)
+                        if (couleur2Value.isNullOrEmpty()) {
+                            refDBJetPackExport.child(idArticle ?: "").child("idcolor2").removeValue()
                         }
                     }
                 }
@@ -156,5 +161,4 @@ class Startup_Extension(
             })
         }
     }
-
 }

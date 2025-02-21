@@ -52,31 +52,17 @@ fun ColorIndicator(
                     model = R.drawable.logo,
                     contentDescription = "Logo",
                     modifier = Modifier.size(
-                        if (demiSizeImage) 70.dp else 38.dp
+                        if (demiSizeImage) 70.dp else 20.dp
                     )
                 )
             } else {
                 Text(
                     text = iconColore,
-                    fontSize =  if (demiSizeImage) 45.sp else 38.sp,
+                    fontSize =  if (demiSizeImage) 45.sp else 20.sp,
                     fontWeight = FontWeight.Bold ,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-        }
-
-        Box(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .offset(x = (14).dp, y = 18.dp)
-                .size(if (demiSizeImage) 70.dp else 50.dp)
-                .clickable { onClickToOpenWindow() }
-        ) {
-            GlideImage(
-                model =  R.drawable.hand ,
-                contentDescription = "Click indicator",
-                contentScale = ContentScale.Fit
-            )
         }
     }
 }
