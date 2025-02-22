@@ -107,7 +107,7 @@ fun A_CouleurSectionAfficheur_F7(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(if (itsTablette) 1300.dp else 600.dp)
+                    .height(if (itsTablette) (colorsListToDisplaye.size * 700).dp else (colorsListToDisplaye.size*350).dp)
             ) {
                 LazyColumn(
                     state = listState,
@@ -120,7 +120,7 @@ fun A_CouleurSectionAfficheur_F7(
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(if (itsTablette) 300.dp else 150.dp)
+                                .height(if (itsTablette) (700).dp else (350).dp)
                         ) {
                             B_CouleurAfficheur_F7(
                                 modifier = Modifier.fillMaxSize(),
