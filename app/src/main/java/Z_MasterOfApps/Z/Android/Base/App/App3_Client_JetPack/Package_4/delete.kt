@@ -20,12 +20,13 @@ fun deleteColore(
     }
     viewModelInitApp._modelAppsFather.produitsMainDataBase
         .find { it.id.toInt() == article.idArticle }?.let { product ->
-            // Find and remove the specific sale for the current client
+            // Find and remove the specific sale for the current client                         +
             product.bonsVentDeCetteCota
                 .filter { it.clientIdChoisi == clientBuyerNow.id }
                 .forEach { bonVente ->
                     bonVente.colours_Achete.removeIf { it.couleurId == colorId }
-                }
+                }   //-->
+                //TODO(1): fait ici que si la sum des achat de cette prodtui == 0 de supp bonsVentDeCetteCota et
 
             // Update the product in Firebase
             updateProduit(product, viewModelInitApp)
