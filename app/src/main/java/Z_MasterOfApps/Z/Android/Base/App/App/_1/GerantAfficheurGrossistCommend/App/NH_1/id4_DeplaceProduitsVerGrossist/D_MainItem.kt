@@ -57,7 +57,7 @@ fun MainItem_F4(
 
         // Product ID
         Text(
-            text = "$positionCC>ID: ${mainItem.id}",
+            text = "${mainItem.id}",
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .padding(4.dp)
@@ -73,7 +73,7 @@ fun MainItem_F4(
         )
 
         Text(
-            text = "mainItem.nom",
+            text = mainItem.nom,
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .padding(4.dp)
