@@ -14,10 +14,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
-import com.example.c_serveur.MainActivity
-import com.example.c_serveur.R
+
+import com.example.clientjetpack.MainActivity
+import com.example.clientjetpack.R
 
 /*
+import com.example.c_serveur.MainActivity
+import com.example.c_serveur.R
 
 import com.example.clientjetpack.MainActivity
 import com.example.clientjetpack.R
