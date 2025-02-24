@@ -2,6 +2,7 @@ package Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_Clien
 
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.B.Dialogs.A.But1_NearbyMarkersButton
+import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.B.Dialogs.A.But_2
 import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.B.Dialogs.Utils.A_ChangeIdColor
 import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.B.Dialogs.Utils.AddMarkerButton
 import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.B.Dialogs.Utils.ClearHistoryButton
@@ -51,10 +52,13 @@ fun MapControls(
     mapView: MapView,
     viewModelInitApp: ViewModelInitApp,
     onClear: () -> Unit,
-) {
+    onFilterMarkers: () -> Unit,
+    ) {
     var showMenu by remember { mutableStateOf(false) }
     var showLabels by remember { mutableStateOf(false) }
     val proximiteMeter = 50.0
+    val context = mapView.context
+    val packageName = context.packageName
 
     // Create LocationTracker
     val locationTracker = rememberLocationTracker(
@@ -110,16 +114,24 @@ fun MapControls(
                         mapView = mapView,
                     )
 
-                    A_ChangeIdColor(
-                        viewModelInitApp = viewModelInitApp,
-                        showLabels = showLabels,
-                    )
+                    if (!packageName.contains("clientje") || true) {
+                        But_2(
+                            viewModel = viewModelInitApp,
+                            showLabels = showLabels,
+                            onClick = onFilterMarkers
+                        )
 
-                    ClearHistoryButton(
-                        viewModelInitApp = viewModelInitApp,
-                        showLabels = showLabels,
-                        onClear,
-                    )
+                        A_ChangeIdColor(
+                            viewModelInitApp = viewModelInitApp,
+                            showLabels = showLabels,
+                        )
+
+                        ClearHistoryButton(
+                            viewModelInitApp = viewModelInitApp,
+                            showLabels = showLabels,
+                            onClear,
+                        )
+                    }
                 }
 
                 LabelsButton(
@@ -136,6 +148,7 @@ fun MapControls(
         }
     }
 }
+
 @Composable
 fun ControlButton(
     onClick: () -> Unit,

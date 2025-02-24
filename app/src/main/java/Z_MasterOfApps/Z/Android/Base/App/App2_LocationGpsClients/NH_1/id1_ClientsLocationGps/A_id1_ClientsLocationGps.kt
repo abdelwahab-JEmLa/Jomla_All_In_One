@@ -40,7 +40,6 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow
 
-//
 @Composable
 fun A_id1_ClientsLocationGps(
     modifier: Modifier = Modifier,
@@ -62,12 +61,12 @@ fun A_id1_ClientsLocationGps(
     var selectedMarker by remember { mutableStateOf<Marker?>(null) }
     var showMarkerDialog by remember { mutableStateOf(false) }
     val showMarkerDetails by remember { mutableStateOf(true) }
+    var showNonAbsentClientsOnly by remember { mutableStateOf(false) }
 
     // Initialize map position with current location
     LaunchedEffect(Unit) {
         val location = getCurrentLocation(context)
 
-        // Set initial position
         val initialPosition = if (location != null) {
             MapPosition(
                 latitude = location.latitude,
@@ -82,7 +81,6 @@ fun A_id1_ClientsLocationGps(
             )
         }
 
-        // Configure map settings
         mapView.apply {
             setMultiTouchControls(true)
             setTileSource(TileSourceFactory.MAPNIK)
@@ -90,7 +88,8 @@ fun A_id1_ClientsLocationGps(
             controller.animateTo(GeoPoint(initialPosition.latitude, initialPosition.longitude))
         }
     }
-    // Configuration initiale de la carte
+
+    // Initial map configuration
     DisposableEffect(context) {
         Configuration.getInstance()
             .load(context, context.getSharedPreferences("osmdroid", Context.MODE_PRIVATE))
@@ -104,13 +103,26 @@ fun A_id1_ClientsLocationGps(
 
     val clientDataBaseSnapList = viewModel.clientDataBaseSnapList
 
-    LaunchedEffect(clientDataBaseSnapList.toList(), clientEnCourDeVent) {
-        // Clear existing client markers
+    LaunchedEffect(clientDataBaseSnapList.toList(), clientEnCourDeVent, showNonAbsentClientsOnly) {
+        // Masquer toutes les info-bulles existantes
+        mapView.overlays.filterIsInstance<Marker>().forEach { it.closeInfoWindow() }
+
+        // Supprimer les marqueurs existants
         val markersToRemove = mapView.overlays.filterIsInstance<Marker>()
             .filter { marker -> clientDataBaseSnapList.any { it.id.toString() == marker.id } }
         mapView.overlays.removeAll(markersToRemove)
 
-        clientDataBaseSnapList.forEach { client ->
+        // Filtrer les clients
+        val clientsToShow = if (showNonAbsentClientsOnly) {
+            clientDataBaseSnapList.filter {
+                it.gpsLocation.actuelleEtat != B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CLIENT_ABSENT
+            }
+        } else {
+            clientDataBaseSnapList
+        }
+
+        // Créer et ajouter les nouveaux marqueurs
+        clientsToShow.forEach { client ->
             val actuelleEtat =
                 if (client.id == clientEnCourDeVent)
                     B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT
@@ -127,19 +139,16 @@ fun A_id1_ClientsLocationGps(
                     "Client temporaire" else "Client permanent"
                 setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
 
-                // Using companion object to access xmlResources
                 val markerInfoWindowLayout = xmlResources
                     .find { it.first == "marker_info_window" }?.second
                     ?: throw IllegalStateException("marker_info_window layout not found")
 
                 infoWindow = MarkerInfoWindow(markerInfoWindowLayout, mapView)
 
-                // Using companion object to access xmlResources
                 val containerResourceId = xmlResources
                     .find { it.first == "info_window_container" }?.second
                     ?: throw IllegalStateException("info_window_container ID not found")
 
-                // Set background color for the container
                 val container = infoWindow.view.findViewById<LinearLayout>(containerResourceId)
                 container?.let {
                     val backgroundColor = actuelleEtat?.let { statue ->
@@ -155,11 +164,19 @@ fun A_id1_ClientsLocationGps(
                     true
                 }
             }
+
             mapView.overlays.add(marker)
-            marker.showInfoWindow()
+
+            // Afficher l'info-bulle seulement si le marqueur est visible et showMarkerDetails est true
+            if (showMarkerDetails && (!showNonAbsentClientsOnly ||
+                        client.gpsLocation.actuelleEtat != B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CLIENT_ABSENT)) {
+                marker.showInfoWindow()
+            }
         }
+
         mapView.invalidate()
     }
+
     Box(modifier = modifier.fillMaxSize()) {
         AndroidView(
             modifier = Modifier.fillMaxSize(),
@@ -179,8 +196,14 @@ fun A_id1_ClientsLocationGps(
                 mapView = mapView,
                 viewModelInitApp = viewModel,
                 onClear = onClear,
+                onFilterMarkers = {
+                    // Fermer toutes les info-bulles avant de changer le filtre
+                    mapView.overlays.filterIsInstance<Marker>().forEach { it.closeInfoWindow() }
+                    showNonAbsentClientsOnly = !showNonAbsentClientsOnly
+                }
             )
         }
+
         if (showMarkerDialog && selectedMarker != null) {
             MarkerStatusDialog(
                 extensionVM = extensionVM,
@@ -204,4 +227,3 @@ private data class MapPosition(
     val longitude: Double,
     val isInitialized: Boolean
 )
-
