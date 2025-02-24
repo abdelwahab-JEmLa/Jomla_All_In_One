@@ -2,8 +2,9 @@ package Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.
 
 import Z_MasterOfApps.Kotlin.Model.A_ProduitModel
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
+import Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_4.id2_TravaillieurListProduitAchercheChezLeGrossist.D_MainItem.A_CouleurNomNonDefinie
+import Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_4.id2_TravaillieurListProduitAchercheChezLeGrossist.D_MainItem.D_MainItem_Fid2
 import Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_4.id2_TravaillieurListProduitAchercheChezLeGrossist.D_MainItem.ExpandedMainItem_F2
-import Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_4.id2_TravaillieurListProduitAchercheChezLeGrossist.D_MainItem.MainItem_F2
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.expandVertically
@@ -33,15 +34,18 @@ fun MainList_F2(
     paddingValues: PaddingValues,
     modifier: Modifier = Modifier
 ) {
+    // Get products from ViewModel
     val produitsAChoisireLeurClient =
         viewModelInitApp._paramatersAppsViewModelModel.produitsAChoisireLeurClient
 
     val afficheProduitsPourRegleConflites =
         viewModelInitApp.frag2_A1_ExtVM.afficheProduitsPourRegleConflites
 
+    // Determine which products to display
     val visibleProducts = if (afficheProduitsPourRegleConflites)
         produitsAChoisireLeurClient else initVisibleProducts
 
+    // Track expanded item state
     var expandedItemId by remember { mutableStateOf<Long?>(null) }
 
     LazyColumn(
@@ -64,15 +68,29 @@ fun MainList_F2(
                     .fillMaxWidth()
                     .padding(horizontal = 8.dp)
             ) {
-                // Always show the collapsed item
-                MainItem_F2(
-                    mainItem = product,
-                    modifier = Modifier.fillMaxWidth(),
-                    onCLickOnMain = {
-                        expandedItemId = if (expandedItemId == product.id)
-                            null else product.id
-                    }
-                )
+                // Check if any color has an ID less than or equal to 5
+                val hasColorWithMinus5 = product.statuesBase.coloursEtGoutsIds
+                    .any { it <= 4L }
+
+                if (hasColorWithMinus5) {
+                    A_CouleurNomNonDefinie(
+                        mainItem = product,
+                        modifier = Modifier.fillMaxWidth(),
+                        onCLickOnMain = {
+                            expandedItemId = if (expandedItemId == product.id)
+                                null else product.id
+                        }
+                    )
+                } else {
+                    D_MainItem_Fid2(
+                        mainItem = product,
+                        modifier = Modifier.fillMaxWidth(),
+                        onCLickOnMain = {
+                            expandedItemId = if (expandedItemId == product.id)
+                                null else product.id
+                        }
+                    )
+                }
 
                 // Animated expanded content
                 AnimatedVisibility(
