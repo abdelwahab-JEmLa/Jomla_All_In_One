@@ -1,15 +1,20 @@
 package Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.B.Dialogs
 
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
+import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.B.Dialogs.A.But1_NearbyMarkersButton
 import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.B.Dialogs.Utils.A_ChangeIdColor
 import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.B.Dialogs.Utils.AddMarkerButton
 import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.B.Dialogs.Utils.ClearHistoryButton
 import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.B.Dialogs.Utils.LabelsButton
 import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.B.Dialogs.Utils.LocationTrackingButton
 import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.B.Dialogs.Utils.MenuButton
+import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.B.Dialogs.Utils.rememberLocationTracker
 import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.ViewModel.Extension.ViewModelExtension_App2_F1
+import Z_MasterOfApps.Z.Android.Main.Utils.LottieJsonGetterR_Raw_Icons
 import Z_MasterOfApps.Z.Android.Main.Utils.XmlsFilesHandler.Companion.xmlResources
+import Z_MasterOfApps.Z_AppsFather.Kotlin.Partage.Views.AnimatedIconLottieJsonFile
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,6 +24,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -36,6 +42,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.Marker
 import kotlin.math.roundToInt
 
 @Composable
@@ -48,6 +55,13 @@ fun MapControls(
     var showMenu by remember { mutableStateOf(false) }
     var showLabels by remember { mutableStateOf(false) }
     val proximiteMeter = 50.0
+
+    // Create LocationTracker
+    val locationTracker = rememberLocationTracker(
+        mapView = mapView,
+        proxim = proximiteMeter,
+        xmlResources = xmlResources
+    )
 
     // États pour le drag
     var offsetX by remember { mutableFloatStateOf(0f) }
@@ -74,12 +88,20 @@ fun MapControls(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 if (showMenu) {
-
                     LocationTrackingButton(
                         showLabels = showLabels,
                         mapView = mapView,
                         proximiteMeter = proximiteMeter,
-                        xmlResources= xmlResources
+                        xmlResources = xmlResources
+                    )
+
+                    But1_NearbyMarkersButton(
+                        showLabels = showLabels,
+                        viewModelInitApp = viewModelInitApp,
+                        markers = mapView.overlays.filterIsInstance<Marker>().toMutableList(),
+                        locationTracker = locationTracker,
+                        proximiteMeter = proximiteMeter,
+                        mapView = mapView
                     )
 
                     AddMarkerButton(
@@ -100,7 +122,6 @@ fun MapControls(
                     )
                 }
 
-
                 LabelsButton(
                     showLabels = showLabels,
                     onShowLabelsChange = { showLabels = it }
@@ -115,28 +136,59 @@ fun MapControls(
         }
     }
 }
-
 @Composable
 fun ControlButton(
     onClick: () -> Unit,
-    icon: ImageVector,
+    icon: Any,
     contentDescription: String,
     showLabels: Boolean,
     labelText: String,
     containerColor: Color,
     modifier: Modifier = Modifier
 ) {
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(2.dp)
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        FloatingActionButton(
-            onClick = onClick,
-            modifier = modifier.size(30.dp),
-            containerColor = containerColor
-        ) {
-            Icon(icon, contentDescription)
+        when (icon) {
+            is ImageVector -> {
+                FloatingActionButton(
+                    onClick = {
+                        onClick()
+                    },
+                    modifier = modifier.size(40.dp),
+                    containerColor = containerColor
+                ) {
+                    Icon(icon, contentDescription)
+                }
+            }
+            is LottieJsonGetterR_Raw_Icons -> {
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clickable {
+                            onClick()
+                        }
+                        .background(
+                            color = containerColor,
+                            shape = CircleShape
+                        )
+                        .also {
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    AnimatedIconLottieJsonFile(
+                        ressourceXml = icon,
+                        onClick = onClick
+                    )
+                }
+            }
+            else -> {
+                throw IllegalArgumentException("Unsupported icon type")
+            }
         }
+
         if (showLabels) {
             Text(
                 labelText,

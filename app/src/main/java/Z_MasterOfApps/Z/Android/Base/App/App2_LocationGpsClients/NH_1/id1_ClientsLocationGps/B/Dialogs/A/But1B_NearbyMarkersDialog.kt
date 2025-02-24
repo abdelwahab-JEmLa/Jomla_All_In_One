@@ -35,7 +35,7 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 
 @Composable
-fun NearbyMarkersDialog(
+fun But1B_NearbyMarkersDialog(
     onDismiss: () -> Unit,
     markers: List<Marker>,
     currentLocation: Location?,

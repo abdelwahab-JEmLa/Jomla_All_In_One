@@ -1,9 +1,9 @@
 package Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.B.Dialogs.A
+
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.B.Dialogs.ControlButton
-import android.location.Location
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.NearMe
+import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.B.Dialogs.Utils.LocationTracker
+import Z_MasterOfApps.Z.Android.Main.Utils.LottieJsonGetterR_Raw_Icons
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -14,11 +14,11 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 
 @Composable
-fun NearbyMarkersButton(
+fun But1_NearbyMarkersButton(
     showLabels: Boolean,
     viewModelInitApp: ViewModelInitApp,
     markers: MutableList<Marker>,
-    currentLocation: Location?,
+    locationTracker: LocationTracker,
     proximiteMeter: Double,
     mapView: MapView,
 ) {
@@ -26,18 +26,19 @@ fun NearbyMarkersButton(
 
     ControlButton(
         onClick = { showNearbyMarkersDialog = true },
-        icon = Icons.Default.NearMe,
+        icon = LottieJsonGetterR_Raw_Icons.reacticonanimatedjsonurl,
         contentDescription = "Show nearby markers",
         showLabels = showLabels,
         labelText = "Nearby",
-        containerColor = Color(0xFFFF5722)
+        containerColor = Color(0xFF2196F3)
     )
+
     if (showNearbyMarkersDialog) {
-        NearbyMarkersDialog(
+        But1B_NearbyMarkersDialog(
             viewModelInitApp = viewModelInitApp,
             onDismiss = { showNearbyMarkersDialog = false },
             markers = markers,
-            currentLocation = currentLocation,
+            currentLocation = locationTracker.currentLocation,
             proxim = proximiteMeter,
             mapView = mapView
         )
