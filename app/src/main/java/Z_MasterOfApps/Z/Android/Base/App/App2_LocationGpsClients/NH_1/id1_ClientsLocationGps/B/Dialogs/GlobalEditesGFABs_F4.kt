@@ -114,7 +114,7 @@ fun MapControls(
                         mapView = mapView,
                     )
 
-                    if (!packageName.contains("clientje") || true) {
+                    if (!packageName.contains("clientje") ) {
                         But_2(
                             viewModel = viewModelInitApp,
                             showLabels = showLabels,

@@ -61,7 +61,7 @@ fun A_id1_ClientsLocationGps(
     var selectedMarker by remember { mutableStateOf<Marker?>(null) }
     var showMarkerDialog by remember { mutableStateOf(false) }
     val showMarkerDetails by remember { mutableStateOf(true) }
-    var showNonAbsentClientsOnly by remember { mutableStateOf(false) }
+    var showNonAbsentClientsOnly by remember { mutableStateOf(true) }
 
     // Initialize map position with current location
     LaunchedEffect(Unit) {
