@@ -1,7 +1,7 @@
-package Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.B.Dialogs.Utils
+package Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.B.Dialogs.A
+
 import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.B.Dialogs.ControlButton
 import android.location.Location
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,7 +15,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.NearMe
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -31,7 +30,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
@@ -177,8 +175,9 @@ fun NearbyMarkersDialog(
 
                             // Find and update the corresponding client in the database
                             val client = viewModelInitApp._modelAppsFather.clientDataBase
-                                .find { it.gpsLocation.latitude == marker.position.latitude
-                                        &&  it.gpsLocation.longitude == marker.position.longitude
+                                .find {
+                                    it.gpsLocation.latitude == marker.position.latitude
+                                            && it.gpsLocation.longitude == marker.position.longitude
                                 }
 
                             client?.let { foundClient ->
@@ -216,37 +215,6 @@ fun NearbyMarkersDialog(
                     Text("Cancel")
                 }
             }
-        )
-    }
-}
-
-@Composable
-fun NearbyMarkersButton(
-    showLabels: Boolean,
-    viewModelInitApp: ViewModelInitApp,
-    markers: MutableList<Marker>,
-    currentLocation: Location?,
-    proximiteMeter: Double,
-    mapView: MapView,
-) {
-    var showNearbyMarkersDialog by remember { mutableStateOf(false) }
-
-    ControlButton(
-        onClick = { showNearbyMarkersDialog = true },
-        icon = Icons.Default.NearMe,
-        contentDescription = "Show nearby markers",
-        showLabels = showLabels,
-        labelText = "Nearby",
-        containerColor = Color(0xFFFF5722)
-    )
-    if (showNearbyMarkersDialog) {
-        NearbyMarkersDialog(
-            viewModelInitApp = viewModelInitApp,
-            onDismiss = { showNearbyMarkersDialog = false },
-            markers = markers,
-            currentLocation = currentLocation,
-            proxim = proximiteMeter,
-            mapView = mapView
         )
     }
 }
