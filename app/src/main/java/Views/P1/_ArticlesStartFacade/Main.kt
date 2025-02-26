@@ -405,8 +405,7 @@ class ArticlePagingSource(
     }
 
     private fun filterArticles(): List<ArticlesBasesStatsTable> {
-        return if (filterText.isEmpty()) {   //-->
-        //TODO(1): ajoute un filter si currentClient . ATAYAT_MOUKASSARAT  si catalogeParentID !=3
+        return if (filterText.isEmpty()) {
             articles.filter { article ->
                 val currentProductByCurrentClient = uiState.diviseurDeDisplayProductForEachClient.find { divis1 ->
                     divis1.keyVid == "${currentClient?.id}->${article.idArticle}"
@@ -417,9 +416,21 @@ class ArticlePagingSource(
                 val denied = currentProductByCurrentClient?.deniedFromDislplayToClient
                     ?: currentProductByClientStandard?.deniedFromDislplayToClient
 
+                // Check if we need to filter by catalogeParentID for ATAYAT_MOUKASSARAT clients
+                val shouldFilterByCatalogParent = currentClient?.statueDeBase?.typeDeSonMagasine ==
+                        B_ClientsDataBase.StatueDeBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT
+
+                // Apply the additional filter if needed
+                val passedCatalogFilter = if (shouldFilterByCatalogParent) {
+                    article.catalogeParentID == 3L
+                } else {
+                    true
+                }
+
                 article.idForSearchArticles <= 0 &&
                         article.diponibilityState.isEmpty() &&
-                        !article.nomArticleFinale.contains("New")
+                        !article.nomArticleFinale.contains("New") &&
+                        passedCatalogFilter
             }
         } else {
             articles.filter { article ->
@@ -428,7 +439,6 @@ class ArticlePagingSource(
             }
         }
     }
-
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ArticlesBasesStatsTable> {
         val page = params.key ?: 0
 
