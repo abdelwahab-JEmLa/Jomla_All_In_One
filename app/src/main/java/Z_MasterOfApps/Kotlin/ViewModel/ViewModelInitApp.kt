@@ -23,7 +23,8 @@ import kotlinx.coroutines.launch
 @SuppressLint("SuspiciousIndentation")
 class ViewModelInitApp : ViewModel() {
     var _paramatersAppsViewModelModel by mutableStateOf(ParamatersAppsModel())
-    var _modelAppsFather by mutableStateOf(_ModelAppsFather())
+    var _modelAppsFather by mutableStateOf(_ModelAppsFather())    
+
 
     val modelAppsFather: _ModelAppsFather get() = _modelAppsFather
     val produitsMainDataBase = _modelAppsFather.produitsMainDataBase

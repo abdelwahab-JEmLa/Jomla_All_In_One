@@ -416,21 +416,9 @@ class ArticlePagingSource(
                 val denied = currentProductByCurrentClient?.deniedFromDislplayToClient
                     ?: currentProductByClientStandard?.deniedFromDislplayToClient
 
-                // Check if we need to filter by catalogeParentID for ATAYAT_MOUKASSARAT clients
-                val shouldFilterByCatalogParent = currentClient?.statueDeBase?.typeDeSonMagasine ==
-                        B_ClientsDataBase.StatueDeBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT
-
-                // Apply the additional filter if needed
-                val passedCatalogFilter = if (shouldFilterByCatalogParent) {
-                    article.catalogeParentID == 3L
-                } else {
-                    true
-                }
-
                 article.idForSearchArticles <= 0 &&
                         article.diponibilityState.isEmpty() &&
-                        !article.nomArticleFinale.contains("New") &&
-                        passedCatalogFilter
+                        !article.nomArticleFinale.contains("New")
             }
         } else {
             articles.filter { article ->

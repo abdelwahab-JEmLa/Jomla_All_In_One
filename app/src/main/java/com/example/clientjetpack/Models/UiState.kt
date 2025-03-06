@@ -1,5 +1,6 @@
 package com.example.clientjetpack.Models
 
+import Z_MasterOfApps.Kotlin.Model.A_ProduitModel
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.SoldArticlesTabelle
@@ -11,6 +12,7 @@ data class UiState(
     val appSettingsSaverModel: List<AppSettingsSaverModel> = emptyList(),
     val devicesTypeManager: List<DevicesTypeManager> = emptyList(),
     val articlesBasesStatTables: List<ArticlesBasesStatsTable> = emptyList(),
+    val newProduitsList: List<A_ProduitModel> = emptyList(),
     val categories: List<CategoriesTabelle> = emptyList(),
     val colorsArticlesTabelleModel: List<ColorsArticlesTabelle> = emptyList(),
     val soldArticlesModel: List<SoldArticlesTabelle?> = emptyList(),

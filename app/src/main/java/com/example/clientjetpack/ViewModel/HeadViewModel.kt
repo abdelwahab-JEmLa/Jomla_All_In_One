@@ -1,6 +1,8 @@
 package com.example.clientjetpack.ViewModel
 
 import Z_MasterOfApps.Kotlin.Model.B_ClientsDataBase
+import Z_MasterOfApps.Kotlin.Model.CategoriesRepositoryImpl
+import Z_MasterOfApps.Kotlin.Model.I_CategoriesRepository
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.SoldArticlesTabelle
@@ -43,19 +45,19 @@ import java.util.Locale
 
 enum class WifiUpdateClientDisplayerStats(val prefix: String) {
     ClientMainGridScrollPosition("ClientMainGridScrollPosition"),
-    ClientWindowsLazyRowSupColorsScrolle("ClientWindowsLazyRowSupColorsScrolle") ,
+    ClientWindowsLazyRowSupColorsScrolle("ClientWindowsLazyRowSupColorsScrolle"),
     ClientWindowsDisplayedProductId("ClientWindowsDisplayedProductId"),
     ClientWindowsSelectedColorId("clientWindowsSelectedColorId"),
-    DISMISS_PRODUCT_INFO("DismissWindowsInfosProduct") ,
-    WindowsPickerDisplayedQuantity("WindowsPickerDisplayedQuantity") ,
-    SearchWindowsDisplaye("SearchWindowsDisplaye") ,
+    DISMISS_PRODUCT_INFO("DismissWindowsInfosProduct"),
+    WindowsPickerDisplayedQuantity("WindowsPickerDisplayedQuantity"),
+    SearchWindowsDisplaye("SearchWindowsDisplaye"),
     NewArregmentColorsJsonStruct("NewArregmentColorsJsonStruct")
     ;
 
     companion object {
         fun fromPayload(payload: String): Pair<WifiUpdateClientDisplayerStats, String>? {
             return entries.firstOrNull { payload.startsWith(it.prefix) }?.let {
-                    it to payload.removePrefix(it.prefix)
+                it to payload.removePrefix(it.prefix)
             }
         }
     }
@@ -63,15 +65,20 @@ enum class WifiUpdateClientDisplayerStats(val prefix: String) {
 
 open class HeadViewModel(
     context: Context,
-     val database: AppDatabase,
+    val database: AppDatabase,
 ) : ViewModel() {
     private val tag = "HeadViewModel"
     private val firestore = Firebase.firestore
 
-    val _uiState = MutableStateFlow(UiState(
-        productDisplayController = ProductDisplayController()
-    ))
+    val _uiState = MutableStateFlow(
+        UiState(
+            productDisplayController = ProductDisplayController()
+        )
+    )
     open val uiState = _uiState.asStateFlow()
+
+    val categoriesRepository: I_CategoriesRepository = CategoriesRepositoryImpl()
+
 
     private val connectionManager = ConnectionManager(
         context = context,
@@ -99,6 +106,7 @@ open class HeadViewModel(
                 }
         }
     }
+
     private fun processHistoricalData(documents: List<DocumentSnapshot>) {
         try {
             val priceHistory = documents.mapNotNull { doc ->
@@ -142,24 +150,44 @@ open class HeadViewModel(
         WifiUpdateClientDisplayerStats.fromPayload(payload)?.let { (messageType, content) ->
             when (messageType) {
                 WifiUpdateClientDisplayerStats.ClientMainGridScrollPosition -> updateDisplayController {
-                    copy( mainGridScrollPosition= content.toInt()) }
+                    copy(mainGridScrollPosition = content.toInt())
+                }
+
                 WifiUpdateClientDisplayerStats.ClientWindowsDisplayedProductId -> updateDisplayController {
-                    copy( clientWindowsDisplayedProductId= content.toLong()) }
+                    copy(clientWindowsDisplayedProductId = content.toLong())
+                }
+
                 WifiUpdateClientDisplayerStats.DISMISS_PRODUCT_INFO -> updateDisplayController {
-                    copy( clientWindowsDisplayedProductId= null,
-                        searchWindowsDisplaye=""
-                    ) }
-                WifiUpdateClientDisplayerStats.ClientWindowsLazyRowSupColorsScrolle ->  updateDisplayController {
-                    copy( clientWindowsLazyRowSupColorsScroll= content.toInt()) }
-                WifiUpdateClientDisplayerStats.WindowsPickerDisplayedQuantity ->  updateDisplayController {
-                    copy( clientWindowsPickerDisplayedQuantity= if (content=="0")
-                     1 else { content.toInt() }) }
-                WifiUpdateClientDisplayerStats.ClientWindowsSelectedColorId ->  updateDisplayController {
-                    copy( clientWindowsSelectedColorId= content.toLong()) }
-                WifiUpdateClientDisplayerStats.SearchWindowsDisplaye ->  updateDisplayController {
-                    copy( searchWindowsDisplaye =  content) } 
-                        WifiUpdateClientDisplayerStats.NewArregmentColorsJsonStruct ->  updateDisplayController {
-                copy( newArregmentColorsJsonStruct =  content) }
+                    copy(
+                        clientWindowsDisplayedProductId = null,
+                        searchWindowsDisplaye = ""
+                    )
+                }
+
+                WifiUpdateClientDisplayerStats.ClientWindowsLazyRowSupColorsScrolle -> updateDisplayController {
+                    copy(clientWindowsLazyRowSupColorsScroll = content.toInt())
+                }
+
+                WifiUpdateClientDisplayerStats.WindowsPickerDisplayedQuantity -> updateDisplayController {
+                    copy(
+                        clientWindowsPickerDisplayedQuantity = if (content == "0")
+                            1 else {
+                            content.toInt()
+                        }
+                    )
+                }
+
+                WifiUpdateClientDisplayerStats.ClientWindowsSelectedColorId -> updateDisplayController {
+                    copy(clientWindowsSelectedColorId = content.toLong())
+                }
+
+                WifiUpdateClientDisplayerStats.SearchWindowsDisplaye -> updateDisplayController {
+                    copy(searchWindowsDisplaye = content)
+                }
+
+                WifiUpdateClientDisplayerStats.NewArregmentColorsJsonStruct -> updateDisplayController {
+                    copy(newArregmentColorsJsonStruct = content)
+                }
             }
         } ?: Log.d(tag, "📩 Unhandled message received: $payload")
     }
@@ -189,7 +217,6 @@ open class HeadViewModel(
             connectionManager.sendData("$orderName$data")
         }
     }
-
 
 
     fun addHostDevice(deviceName: String) {
@@ -269,7 +296,6 @@ open class HeadViewModel(
     }
 
 
-
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     suspend fun initializeConnection() {
         val currentDevice = Build.MODEL.lowercase()
@@ -294,16 +320,15 @@ open class HeadViewModel(
     fun disconnect() = connectionManager.disconnect()
 
 
-
-
     // Ensure the directory exists when initializing the path
-    val viewModelImagesPath = File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne/").apply {
-        if (!exists()) {
-                    mkdirs()
-                }
+    val viewModelImagesPath =
+        File("/storage/emulated/0/Abdelwahab_jeMla.com/IMGs/BaseDonne/").apply {
+            if (!exists()) {
+                mkdirs()
             }
+        }
 
-  //  ***
+    //  ***
     private val firebaseDatabase = FirebaseDatabase.getInstance()
     private val refAppSettingsSaverModel = firebaseDatabase.getReference("A_AppSettingsSaverModel")
     private val refDBJetPackExport = firebaseDatabase.getReference("e_DBJetPackExport")
@@ -312,7 +337,8 @@ open class HeadViewModel(
     private val refSoldArticlesTabelle = firebaseDatabase.getReference("O_SoldArticlesTabelle")
     private val refClientsTabelle = firebaseDatabase.getReference("G_Clients")
     private val refDevicesTypeManager = firebaseDatabase.getReference("P_DevicesTypeManager")
-    private val diviseurDeDisplayProductForEachClientRef = firebaseDatabase.getReference("3_DiviseurDeDisplayProductForEachClient")
+    private val diviseurDeDisplayProductForEachClientRef =
+        firebaseDatabase.getReference("3_DiviseurDeDisplayProductForEachClient")
 
 
     private fun updateLoadingProgress(progress: Float) {
@@ -320,10 +346,12 @@ open class HeadViewModel(
     }
 
     private fun setLoading(isLoading: Boolean) {
-        _uiState.update { it.copy(
-            isLoading = isLoading,
-            loadingProgress = if (!isLoading) 0f else it.loadingProgress
-        ) }
+        _uiState.update {
+            it.copy(
+                isLoading = isLoading,
+                loadingProgress = if (!isLoading) 0f else it.loadingProgress
+            )
+        }
     }
 
     init {
@@ -331,7 +359,6 @@ open class HeadViewModel(
             loadDataOfUiStateFromRoom()
         }
     }
-
 
 
     val _currentSaleInWindows = MutableStateFlow<SoldArticlesTabelle?>(null)
@@ -358,18 +385,21 @@ open class HeadViewModel(
             }
         }
     }
+
     fun clearSupAICommend(): Unit {
         // Clear Firebase reference
         firebaseDatabase.getReference("K_GroupeurBonCommendToSupplierRef").removeValue()
 
     }
-     @RequiresApi(Build.VERSION_CODES.O)
-     suspend fun addNewEmptyArticle(nameArticleNIB: String): ArticlesBasesStatsTable? {
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    suspend fun addNewEmptyArticle(nameArticleNIB: String): ArticlesBasesStatsTable? {
         return try {
             val currentState = _uiState.value
 
             val now = LocalDateTime.now() // Get the current date and time
-            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss") // Define your desired format
+            val formatter =
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss") // Define your desired format
             val formattedDate = now.format(formatter)
 
             // Calculate new ID (max existing ID + 1)
@@ -406,9 +436,11 @@ open class HeadViewModel(
             null
         }
     }
+
     fun addNewClient(name: String) {
 
     }
+
     // Add a callback for navigation
     private var _onNavigateToSellerProduct = { _: Long -> }
 
@@ -458,6 +490,7 @@ open class HeadViewModel(
                         color4IdPicked = 0,
                         color4SoldQuantity = 0
                     )
+
                     1 -> newSale.copy(
                         color2IdPicked = article.idcolor2,
                         color2SoldQuantity = 1,
@@ -469,6 +502,7 @@ open class HeadViewModel(
                         color4IdPicked = 0,
                         color4SoldQuantity = 0
                     )
+
                     2 -> newSale.copy(
                         color3IdPicked = article.idcolor3,
                         color3SoldQuantity = 1,
@@ -480,6 +514,7 @@ open class HeadViewModel(
                         color4IdPicked = 0,
                         color4SoldQuantity = 0
                     )
+
                     3 -> newSale.copy(
                         color4IdPicked = article.idcolor4,
                         color4SoldQuantity = 1,
@@ -491,6 +526,7 @@ open class HeadViewModel(
                         color3IdPicked = 0,
                         color3SoldQuantity = 0
                     )
+
                     else -> throw IllegalArgumentException("Invalid color index: $indexColor")
                 }
 
@@ -525,18 +561,22 @@ open class HeadViewModel(
                                 color1IdPicked = colorId,
                                 color1SoldQuantity = quantity
                             )
+
                             sale.color2IdPicked == 0L -> sale.copy(
                                 color2IdPicked = colorId,
                                 color2SoldQuantity = quantity
                             )
+
                             sale.color3IdPicked == 0L -> sale.copy(
                                 color3IdPicked = colorId,
                                 color3SoldQuantity = quantity
                             )
+
                             sale.color4IdPicked == 0L -> sale.copy(
                                 color4IdPicked = colorId,
                                 color4SoldQuantity = quantity
                             )
+
                             else -> {
                                 // If no empty slots, update first slot as fallback
                                 sale.copy(
@@ -652,8 +692,8 @@ open class HeadViewModel(
                 }
 
 
-                    // Update Room database
-                    database.soldArticlesModelDao().insert(updatedSale)
+                // Update Room database
+                database.soldArticlesModelDao().insert(updatedSale)
 
                 // Update UI state
                 _uiState.update { state ->
@@ -665,11 +705,10 @@ open class HeadViewModel(
                 }
 
                 // Update Firebase
-                    firebaseDatabase.getReference("O_SoldArticlesTabelle")
-                        .child(updatedSale.vid.toString())
-                        .setValue(updatedSale)
-                        .await()
-
+                firebaseDatabase.getReference("O_SoldArticlesTabelle")
+                    .child(updatedSale.vid.toString())
+                    .setValue(updatedSale)
+                    .await()
 
 
             } catch (e: Exception) {
@@ -677,10 +716,10 @@ open class HeadViewModel(
             }
         }
     }
-    fun clearCurrentSale() {
-        _currentSaleInWindows.value=null
-    }
 
+    fun clearCurrentSale() {
+        _currentSaleInWindows.value = null
+    }
 
 
     fun deleteSoldArticle(vid: Long) {
@@ -779,6 +818,7 @@ open class HeadViewModel(
             }
         }
     }
+
     private suspend fun createNewArrivaleCategoryIfNeeded(existingCategories: List<CategoriesTabelle>) {
         val hasNewArrivale = existingCategories.any {
             it.nomCategorieInCategoriesTabele == "NewArrivale"
@@ -800,6 +840,7 @@ open class HeadViewModel(
 
         }
     }
+
     /**EXPO INTIA*/
     fun exportToWarningDataBaseBakup() {
         viewModelScope.launch {
@@ -820,7 +861,10 @@ open class HeadViewModel(
                     "soldArticlesModel" to _uiState.value.soldArticlesModel,
                     "suppliers" to _uiState.value.suppliers,
                     "backupTimestamp" to timestamp,
-                    "backupDate" to SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date(timestamp))
+                    "backupDate" to SimpleDateFormat(
+                        "yyyy-MM-dd HH:mm:ss",
+                        Locale.getDefault()
+                    ).format(Date(timestamp))
                 )
 
                 // Update loading progress as we save each collection
@@ -933,6 +977,7 @@ open class HeadViewModel(
             }
         }
     }
+
     private suspend fun diviseurDeDisplayProductForEachClientInit(fl: Float) {
         val snapshot = diviseurDeDisplayProductForEachClientRef.get().await()
         val it = snapshot.children.mapNotNull { snapshot ->
@@ -999,6 +1044,7 @@ open class HeadViewModel(
         database.colorsArticlesDao().insertAll(colors)
         updateLoadingProgress(fl)
     }
+
     private suspend fun soldArticlesTabelleIntia(fl: Float) {
 
         val soldArticlesSnapshot = refSoldArticlesTabelle.get().await()
@@ -1024,29 +1070,58 @@ open class HeadViewModel(
             setupAppSettingsListener()
 
             val articles = database.articlesBasesStatsModelDao().getAll()
-            val categories = database.categoriesModelDao().getAll()
             val colors = database.colorsArticlesDao().getAllOrdred()
             val soldArticles = database.soldArticlesModelDao().getAll()
             val devicesTypeManager = database.devicesTypeManagerDao().getAll()
 
-            val diviseurDeDisplayProductForEachClient = database.diviseurDeDisplayProductForEachClientDao().getAll()
+            val diviseurDeDisplayProductForEachClient =
+                database.diviseurDeDisplayProductForEachClientDao().getAll()
 
-            createNewArrivaleCategoryIfNeeded(categories)
+            createNewArrivaleCategoryIfNeeded(categorieChangeposisio())
 
-            _uiState.update { it.copy(
-                articlesBasesStatTables = articles,
-                categories = categories,
-                colorsArticlesTabelleModel = colors,
-                soldArticlesModel = soldArticles,
-                devicesTypeManager= devicesTypeManager,
+            _uiState.update {
+                it.copy(
+                    articlesBasesStatTables = articles,
+                    categories = categorieChangeposisio(),
+                    colorsArticlesTabelleModel = colors,
+                    soldArticlesModel = soldArticles,
+                    devicesTypeManager = devicesTypeManager,
 
-                diviseurDeDisplayProductForEachClient= diviseurDeDisplayProductForEachClient,
+                    diviseurDeDisplayProductForEachClient = diviseurDeDisplayProductForEachClient,
 
-                ) }
+                    )
+            }
         } catch (e: Exception) {
             _uiState.update { it.copy(error = e.message) }
         } finally {
             setLoading(false)
+        }
+    }
+
+    private suspend fun categorieChangeposisio(): MutableList<CategoriesTabelle> {
+        try {
+            val categories = categoriesRepository.modelDatas
+
+            // If no existing categories, create new ones from repository
+            val newCategories = categories.map { category ->
+                CategoriesTabelle(
+                    idCategorieInCategoriesTabele = category.id,
+                    nomCategorieInCategoriesTabele = category.infosDeBase.nom,
+                    idClassementCategorieInCategoriesTabele = category.statuesMutable.indexDonsParentList.toInt(),
+                    displayedHeader = true
+                )
+            }.toMutableList()
+
+            // Insert new categories into database
+            database.categoriesModelDao().insertAll(newCategories)
+
+
+            return newCategories
+
+
+        } catch (e: Exception) {
+            _uiState.update { it.copy(error = e.message) }
+            return mutableListOf()
         }
     }
 
