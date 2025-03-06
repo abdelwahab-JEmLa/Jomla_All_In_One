@@ -41,23 +41,28 @@ fun ProductNameSection3(
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    ,
+                    .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        ,
+                        .fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    val idArticle = if (true) {
+                        article.idArticle
+                    } else {
+                        ""
+                    }
+                    val text = "${article.nomArticleFinale} $idArticle  "
                     Text(
-                        text = article.nomArticleFinale,
+                        text = text,
                         style = MaterialTheme.typography.headlineSmall.copy(
                             fontWeight = FontWeight.Bold
                         ),
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier
+                            .weight(1f)
                             .clickable { onToggleLockExpandedPricex() },
                         textAlign = TextAlign.Start
                     )
