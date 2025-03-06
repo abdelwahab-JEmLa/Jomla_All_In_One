@@ -118,21 +118,21 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                         showLabels = showLabels,
                         extensionVM=extensionVM,
                     )
+                    But_2(
+                        currentFilterMode=currentFilterMode,
+
+                        extensionVM = extensionVM,
+                        viewModel = viewModelInitApp,
+                        showLabels = showLabels,
+                        onClick = onFilterMarkers
+                    )
+
+                    A_ChangeIdColor(
+                        viewModelInitApp = viewModelInitApp,
+                        showLabels = showLabels,
+                    )
 
                     if (!packageName.contains("clientje") ) {
-                        But_2(
-                            currentFilterMode=currentFilterMode,
-
-                            extensionVM = extensionVM,
-                            viewModel = viewModelInitApp,
-                            showLabels = showLabels,
-                            onClick = onFilterMarkers
-                        )
-
-                        A_ChangeIdColor(
-                            viewModelInitApp = viewModelInitApp,
-                            showLabels = showLabels,
-                        )
 
                         ClearHistoryButton(
                             viewModelInitApp = viewModelInitApp,
