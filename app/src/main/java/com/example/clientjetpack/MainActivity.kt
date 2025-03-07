@@ -8,11 +8,11 @@ import android.app.Application
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.getValue
@@ -25,6 +25,8 @@ import com.example.clientjetpack.Modules.AppDatabase
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import com.example.clientjetpack.ui.theme.ClientJetPackTheme
 import com.google.firebase.FirebaseApp
+
+private const val TAG = "MainActivity"
 
 class MyApplication : Application() {
     lateinit var database: AppDatabase
@@ -41,7 +43,7 @@ class MyApplication : Application() {
             FirebaseApp.initializeApp(this)?.let(::initializeFirebase)
                 ?: throw IllegalStateException("Firebase initialization failed")
         }.onFailure {
-            // Log error and consider showing a user-friendly message
+            Log.e(TAG, "Error initializing components", it)
         }
     }
 }
@@ -77,9 +79,9 @@ class MainActivity : ComponentActivity() {
 
     private var permissionsChecked by mutableStateOf(false)
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d(TAG, "onCreate: API level ${Build.VERSION.SDK_INT}")
         setupActivityContent()
     }
 
@@ -89,18 +91,19 @@ class MainActivity : ComponentActivity() {
                 ClientJetPackTheme {
                     Box(modifier = Modifier.fillMaxSize()) {
                         if (permissionsChecked) {
-                            MainScreen(appViewModels, )
+                            MainScreen(appViewModels)
+                        } else {
+                            // You could show a loading or permissions screen here
+                            // For now, keeping it empty until permissions are checked
                         }
                     }
                 }
             }
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                handlePermissions()
-            } else {
-                permissionsChecked = true
-            }
+            // Handle permissions for all API levels
+            handlePermissions()
         }.onFailure {
+            Log.e(TAG, "Error in setupActivityContent", it)
             Toast.makeText(
                 this,
                 "Une erreur s'est produite. Veuillez redémarrer l'application.",
@@ -109,26 +112,33 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun handlePermissions() {
-        if (!permissionHandler.arePermissionsAlreadyGranted()) {
-            permissionHandler.checkAndRequestPermissions(object : PermissionHandler.PermissionCallback {
-                override fun onPermissionsGranted() {
-                    permissionsChecked = true
-                }
+        Log.d(TAG, "Checking permissions...")
 
-                override fun onPermissionsDenied() {
-                    showPermissionDeniedMessage()
-                    permissionsChecked = true
-                }
-
-                override fun onPermissionRationale(permissions: Array<String>) {
-                    // Handled in PermissionHandler
-                }
-            })
-        } else {
+        if (permissionHandler.arePermissionsGranted()) {
+            Log.d(TAG, "All permissions are already granted")
             permissionsChecked = true
+            return
         }
+
+        permissionHandler.checkAndRequestPermissions(object : PermissionHandler.PermissionCallback {
+            override fun onPermissionsGranted() {
+                Log.d(TAG, "All permissions granted through request")
+                permissionsChecked = true
+            }
+
+            override fun onPermissionsDenied() {
+                Log.d(TAG, "Some permissions denied")
+                showPermissionDeniedMessage()
+                // Still setting permissionsChecked to true to allow the app to run with limited functionality
+                permissionsChecked = true
+            }
+
+            override fun onPermissionRationale(permissions: Array<String>) {
+                Log.d(TAG, "Permission rationale needed for: ${permissions.joinToString()}")
+                // This is handled in PermissionHandler
+            }
+        })
     }
 
     private fun showPermissionDeniedMessage() {
