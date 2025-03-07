@@ -70,11 +70,15 @@ fun Details(
                             .fillMaxWidth()
                             .padding(top = 2.dp)
                     ) {
-                        PriceDetailsTable(
-                            article = article,
-                            allTimeMaxPrice = allTimeMaxPrice,
-                            priceHistory = priceHistory
-                        )
+                        if (article.monPrixAchat > 0) {
+                            PriceDetailsTable(
+                                article = article,
+                                allTimeMaxPrice = allTimeMaxPrice,
+                                priceHistory = priceHistory
+                            )
+                        } else {
+                             Text("نديرولك سعر شباب")
+                        }
                     }
                 }
             }
@@ -110,11 +114,31 @@ private fun PriceDetailsTable(
         )
 
         // Price rows with data - Only show non-zero values
+        val baseValue = if (article.monPrixVent > 0) {
+            article.monPrixVent
+        } else {
+            0.0
+        }
         listOf(
-            RowData("ب.الحزمة", article.monPrixVent, latestHistoryPrice, allTimeMaxPrice),
-            RowData("ب.الوحدة", article.monPrixVent / article.nmbrUnite, latestHistoryPrice / article.nmbrUnite, allTimeMaxPrice / article.nmbrUnite),
-            RowData("ر.العميل", clientSoldPackage - article.monPrixVent, clientSoldPackage - latestHistoryPrice, clientSoldPackage - allTimeMaxPrice),
-            RowData("ر.خ.الحزمة", article.monPrixVent - article.monPrixAchat, latestHistoryPrice - article.monPrixAchat, allTimeMaxPrice - article.monPrixAchat),
+            RowData("ب.الحزمة", baseValue, latestHistoryPrice, allTimeMaxPrice),
+            RowData(
+                "ب.الوحدة",
+                baseValue / article.nmbrUnite,
+                latestHistoryPrice / article.nmbrUnite,
+                allTimeMaxPrice / article.nmbrUnite
+            ),
+            RowData(
+                "ر.العميل",
+                clientSoldPackage - baseValue,
+                clientSoldPackage - latestHistoryPrice,
+                clientSoldPackage - allTimeMaxPrice
+            ),
+            RowData(
+                "ر.خ.الحزمة",
+                baseValue - article.monPrixAchat,
+                latestHistoryPrice - article.monPrixAchat,
+                allTimeMaxPrice - article.monPrixAchat
+            ),
             RowData("س.ب.عم", clientSoldPackage, clientSoldPackage, clientSoldPackage)
         ).filter { rowData ->
             // Filter out rows where all values are 0
