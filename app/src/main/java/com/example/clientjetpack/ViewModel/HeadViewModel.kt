@@ -4,7 +4,6 @@ import Z_MasterOfApps.Kotlin.Model.B_ClientsDataBase
 import Z_MasterOfApps.Kotlin.Model.CategoriesRepositoryImpl
 import Z_MasterOfApps.Kotlin.Model.I_CategoriesRepository
 import Z_MasterOfApps.Kotlin._WorkingON.WO_.ConnectionManager
-import Z_MasterOfApps.Kotlin._WorkingON.WO_.WifiUpdateClientDisplayerStats
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.SoldArticlesTabelle
@@ -44,6 +43,25 @@ import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 
+enum class WifiUpdateClientDisplayerStats(val prefix: String) {
+    ClientMainGridScrollPosition("ClientMainGridScrollPosition"),
+    ClientWindowsLazyRowSupColorsScrolle("ClientWindowsLazyRowSupColorsScrolle"),
+    ClientWindowsDisplayedProductId("ClientWindowsDisplayedProductId"),
+    ClientWindowsSelectedColorId("clientWindowsSelectedColorId"),
+    DISMISS_PRODUCT_INFO("DismissWindowsInfosProduct"),
+    WindowsPickerDisplayedQuantity("WindowsPickerDisplayedQuantity"),
+    SearchWindowsDisplaye("SearchWindowsDisplaye"),
+    NewArregmentColorsJsonStruct("NewArregmentColorsJsonStruct")
+    ;
+
+    companion object {
+        fun fromPayload(payload: String): Pair<WifiUpdateClientDisplayerStats, String>? {
+            return entries.firstOrNull { payload.startsWith(it.prefix) }?.let {
+                it to payload.removePrefix(it.prefix)
+            }
+        }
+    }
+}
 
 open class HeadViewModel(
     context: Context,
@@ -125,6 +143,181 @@ open class HeadViewModel(
         val key = Pair(productId.toLong(), clientId)
         return uiState.value.maxPriceMap[key] ?: emptyList()
     }
+
+
+    /**Conexions*/
+    private fun handlePayload(payload: String) {
+        WifiUpdateClientDisplayerStats.fromPayload(payload)?.let { (messageType, content) ->
+            when (messageType) {
+                WifiUpdateClientDisplayerStats.ClientMainGridScrollPosition -> updateDisplayController {
+                    copy(mainGridScrollPosition = content.toInt())
+                }
+
+                WifiUpdateClientDisplayerStats.ClientWindowsDisplayedProductId -> updateDisplayController {
+                    copy(clientWindowsDisplayedProductId = content.toLong())
+                }
+
+                WifiUpdateClientDisplayerStats.DISMISS_PRODUCT_INFO -> updateDisplayController {
+                    copy(
+                        clientWindowsDisplayedProductId = null,
+                        searchWindowsDisplaye = ""
+                    )
+                }
+
+                WifiUpdateClientDisplayerStats.ClientWindowsLazyRowSupColorsScrolle -> updateDisplayController {
+                    copy(clientWindowsLazyRowSupColorsScroll = content.toInt())
+                }
+
+                WifiUpdateClientDisplayerStats.WindowsPickerDisplayedQuantity -> updateDisplayController {
+                    copy(
+                        clientWindowsPickerDisplayedQuantity = if (content == "0")
+                            1 else {
+                            content.toInt()
+                        }
+                    )
+                }
+
+                WifiUpdateClientDisplayerStats.ClientWindowsSelectedColorId -> updateDisplayController {
+                    copy(clientWindowsSelectedColorId = content.toLong())
+                }
+
+                WifiUpdateClientDisplayerStats.SearchWindowsDisplaye -> updateDisplayController {
+                    copy(searchWindowsDisplaye = content)
+                }
+
+                WifiUpdateClientDisplayerStats.NewArregmentColorsJsonStruct -> updateDisplayController {
+                    copy(newArregmentColorsJsonStruct = content)
+                }
+            }
+        } ?: Log.d(tag, "📩 Unhandled message received: $payload")
+    }
+
+    private fun observeConnectionState() {
+        viewModelScope.launch {
+            connectionManager.connectionUiState.collect { connectionState ->
+
+                updateDisplayController {
+                    copy(
+                        isConnected = connectionState.isConnected,
+                        connectionStatus = connectionState.connectionStatus,
+                    )
+                }
+
+                _uiState.update { it.copy(error = connectionState.error) }
+            }
+        }
+    }
+
+    private fun updateDisplayController(update: ProductDisplayController.() -> ProductDisplayController) {
+        _uiState.update { it.copy(productDisplayController = update(it.productDisplayController)) }
+    }
+
+    fun sendOrderToClientDisplayer(orderName: String, data: Any? = null) {
+        viewModelScope.launch {
+            connectionManager.sendData("$orderName$data")
+        }
+    }
+
+
+    fun addHostDevice(deviceName: String) {
+        viewModelScope.launch {
+            val device = uiState.value.devicesTypeManager.find { it.name == deviceName }
+                ?: return@launch
+
+            val updatedDevice = device.copy(isHost = true)
+
+            // Update Room database
+            database.devicesTypeManagerDao().insert(updatedDevice)
+
+            // Update Firebase
+            refDevicesTypeManager
+                .child(updatedDevice.id.toString())
+                .setValue(updatedDevice)
+                .addOnSuccessListener {
+                    Log.d(tag, "Host device added successfully: $deviceName")
+                }
+                .addOnFailureListener { e ->
+                    Log.e(tag, "Error adding host device", e)
+                }
+
+            // Update UI state
+            _uiState.update { currentState ->
+                currentState.copy(
+                    devicesTypeManager = currentState.devicesTypeManager.map {
+                        if (it.id == updatedDevice.id) updatedDevice else it
+                    }
+                )
+            }
+        }
+    }
+
+    fun removeHostDevice(deviceName: String) {
+        viewModelScope.launch {
+            val device = uiState.value.devicesTypeManager.find { it.name == deviceName }
+                ?: return@launch
+
+            val updatedDevice = device.copy(isHost = false)
+
+            // Update Room database
+            database.devicesTypeManagerDao().insert(updatedDevice)
+
+            // Update Firebase
+            refDevicesTypeManager
+                .child(updatedDevice.id.toString())
+                .setValue(updatedDevice)
+                .addOnSuccessListener {
+                    Log.d(tag, "Host device removed successfully: $deviceName")
+                }
+                .addOnFailureListener { e ->
+                    Log.e(tag, "Error removing host device", e)
+                }
+
+            // Update UI state
+            _uiState.update { currentState ->
+                currentState.copy(
+                    devicesTypeManager = currentState.devicesTypeManager.map {
+                        if (it.id == updatedDevice.id) updatedDevice else it
+                    }
+                )
+            }
+        }
+    }
+
+    private fun getHostDevices(): List<String> {
+        return uiState.value.devicesTypeManager
+            .filter { it.isHost }
+            .map { it.name }
+    }
+
+    fun updateTypePhone(type: Boolean = false) {
+        updateDisplayController {
+            copy(isHostPhone = type)
+        }
+    }
+
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    suspend fun initializeConnection() {
+        val currentDevice = Build.MODEL.lowercase()
+        val isHostDevice = getHostDevices().any { deviceName ->
+            currentDevice.contains(deviceName)
+        }
+
+
+        if (isHostDevice) {
+            updateTypePhone(true)
+        } else {
+            updateTypePhone(false)
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    fun startAsHost() = connectionManager.startAsHost()
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    fun startAsClient() = connectionManager.startAsClient()
+
+    fun disconnect() = connectionManager.disconnect()
 
 
 
