@@ -1,5 +1,6 @@
 package Views.P1.Ui.Objects
 
+import Z_MasterOfApps.Kotlin._WorkingON.WO_.WifiUpdateClientDisplayerStats
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -68,7 +69,7 @@ fun SearchFilterPB(
                                 onAddNotInBaseArticle(newArticle, 0)
                             }
                         }
-                        viewModel.sendOrderToClientDisplayer(
+                        viewModel.connectionManager.sendOrderToClientDisplayer(
                             WifiUpdateClientDisplayerStats.SearchWindowsDisplaye.prefix,
                             filterText
                         )

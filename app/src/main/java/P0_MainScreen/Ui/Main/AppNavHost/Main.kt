@@ -2,10 +2,11 @@ package P0_MainScreen.Ui.Main.AppNavHost
 
 import P0_MainScreen.Ui.Objects.LoadingOverlay
 import P5_DialogeClientsEditer.ClientSelectionDialog
+import Views.FragId3_DialogVendeurAfficheurInfosProduit.A_VendeurAfficheurInfosProduit_FragmentMainId3
 import Views.P1._ArticlesStartFacade.FragmentStartupScreen
 import Views.Package_4.SoldCartScreen.SoldCartScreen
-import Views.FragId3_DialogVendeurAfficheurInfosProduit.A_VendeurAfficheurInfosProduit_FragmentMainId3
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
+import Z_MasterOfApps.Kotlin._WorkingON.WO_.WifiUpdateClientDisplayerStats
 import Z_MasterOfApps.Z.Android.Base.App.App2_LocationGpsClients.NH_1.id1_ClientsLocationGps.A_id1_ClientsLocationGps
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import androidx.compose.foundation.layout.Box
@@ -181,7 +182,7 @@ fun AppNavHost(
                                     pendingIndexColor
                                 )
                                 opnerSaleWindows = true
-                                appViewModels.headViewModel.sendOrderToClientDisplayer(
+                                appViewModels.headViewModel.connectionManager.sendOrderToClientDisplayer(
                                     WifiUpdateClientDisplayerStats.ClientWindowsDisplayedProductId.prefix,
                                     relatedArticleBaseStats!!.idArticle.toLong()
                                 )
@@ -265,7 +266,7 @@ fun AppNavHost(
                 onDismiss = {
                     appViewModels.headViewModel.clearCurrentSale()
                     opnerSaleWindows = false
-                    appViewModels.headViewModel.sendOrderToClientDisplayer(
+                    appViewModels.headViewModel.connectionManager.sendOrderToClientDisplayer(
                         WifiUpdateClientDisplayerStats.DISMISS_PRODUCT_INFO.prefix    //-->
                         //TODO(1): fait que au client quand ca ce dissmiss il revien a FragmentStartupScreen au liex gps 
                     )

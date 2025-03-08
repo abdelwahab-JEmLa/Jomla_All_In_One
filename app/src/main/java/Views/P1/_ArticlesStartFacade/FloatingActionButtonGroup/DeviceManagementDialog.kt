@@ -80,9 +80,9 @@ fun DeviceManagementDialog(
                             IconButton(
                                 onClick = {
                                     if (isHost) {
-                                        viewModel.removeHostDevice(device)
+                                        viewModel.connectionManager.removeHostDevice(device)
                                     } else {
-                                        viewModel.addHostDevice(device)
+                                        viewModel.connectionManager.addHostDevice(device)
                                     }
                                 }
                             ) {

@@ -64,7 +64,7 @@ open class HeadViewModel(
     val categoriesRepository: I_CategoriesRepository = CategoriesRepositoryImpl()
 
     // Initialize ConnectionManager without the callback parameter
-    private val connectionManager = ConnectionManager(
+    val connectionManager = ConnectionManager(
         viewModel = this@HeadViewModel,
         context = context
     )

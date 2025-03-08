@@ -6,6 +6,7 @@ import Views.P1.Ui.Objects.SearchFilterPB
 import Views.P1._ArticlesStartFacade.FloatingActionButtonGroup.FloatingActionButtonGroup
 import Z_MasterOfApps.Kotlin.Model.B_ClientsDataBase
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
+import Z_MasterOfApps.Kotlin._WorkingON.WO_.WifiUpdateClientDisplayerStats
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
@@ -319,7 +320,7 @@ private fun HandleScrollBroadcast(
                         lastScrollPosition = position
                         onScrollHostChange(position)
                         Log.d(TAG, "Sending scroll position to client: $position")
-                        viewModel.sendOrderToClientDisplayer(
+                        viewModel.connectionManager.sendOrderToClientDisplayer(
                             WifiUpdateClientDisplayerStats.ClientMainGridScrollPosition.prefix,
                             position
                         )
@@ -327,7 +328,7 @@ private fun HandleScrollBroadcast(
                 } else if (isScrollInProgress) {
                     isScrollInProgress = false
                     Log.d(TAG, "Final scroll position sent to client: $position")
-                    viewModel.sendOrderToClientDisplayer(
+                    viewModel.connectionManager.sendOrderToClientDisplayer(
                         WifiUpdateClientDisplayerStats.ClientMainGridScrollPosition.prefix,
                         position
                     )

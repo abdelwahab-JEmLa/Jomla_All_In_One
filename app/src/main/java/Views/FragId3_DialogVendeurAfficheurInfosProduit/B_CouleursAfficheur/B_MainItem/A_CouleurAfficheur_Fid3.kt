@@ -3,6 +3,7 @@ package Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_M
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem.Dialog.ColorSelectionDialog
 import Z_MasterOfApps.Kotlin.Model.B_ClientsDataBase
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
+import Z_MasterOfApps.Kotlin._WorkingON.WO_.WifiUpdateClientDisplayerStats
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.SoldArticlesTabelle
@@ -133,7 +134,7 @@ fun B_CouleurAfficheur(
                     showDialog = true
                     color.let {
                         updateColorToBeMain(it.idColore)
-                        viewModel.sendOrderToClientDisplayer(
+                        viewModel.connectionManager.sendOrderToClientDisplayer(
                             WifiUpdateClientDisplayerStats.ClientWindowsSelectedColorId.prefix,
                             it.idColore
                         )
@@ -203,11 +204,11 @@ fun B_CouleurAfficheur(
                 colorName = color.nameColore,
                 onQuantitySelected = { newQuantity ->
                     viewModel.updateColorSelection(color.idColore, newQuantity)
-                    viewModel.sendOrderToClientDisplayer(
+                    viewModel.connectionManager.sendOrderToClientDisplayer(
                         WifiUpdateClientDisplayerStats.ClientWindowsLazyRowSupColorsScrolle.prefix,
                         index
                     )
-                    viewModel.sendOrderToClientDisplayer(
+                    viewModel.connectionManager.sendOrderToClientDisplayer(
                         WifiUpdateClientDisplayerStats.ClientWindowsSelectedColorId.prefix,
                         color.idColore
                     )
