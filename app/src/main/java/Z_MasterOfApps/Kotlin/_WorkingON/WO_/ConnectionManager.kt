@@ -10,6 +10,8 @@ import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.clientjetpack.Models.ProductDisplayController
+import com.example.clientjetpack.ViewModel.HeadViewModel
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.AdvertisingOptions
 import com.google.android.gms.nearby.connection.ConnectionInfo
@@ -34,6 +36,7 @@ import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicBoolean
 
 class ConnectionManager(
+    private val viewModel: HeadViewModel,
     private val context: Context,
     private val onPayloadReceiveRaw: (String) -> Unit,
 ) : ViewModel() {
@@ -51,13 +54,286 @@ class ConnectionManager(
     private var retryCount = 0
     private val maxRetries = 10
     private val baseRetryDelayMs = 3000L
-
+    val tag =""
     // Garde en mémoire le dernier mode de connexion utilisé
     private var lastConnectionMode: ConnectionMode = ConnectionMode.NONE
 
     private enum class ConnectionMode {
         HOST, CLIENT, NONE
     }
+    private val _connectionUiState = MutableStateFlow(ConnectionUiState())
+    val connectionUiState: StateFlow<ConnectionUiState> = _connectionUiState.asStateFlow()
+
+    // Keep the existing handlePayload method
+    private fun handlePayload(payload: String) {
+        WifiUpdateClientDisplayerStats.fromPayload(payload)?.let { (messageType, content) ->
+            when (messageType) {
+                WifiUpdateClientDisplayerStats.ClientMainGridScrollPosition -> updateDisplayController {
+                    copy(mainGridScrollPosition = content.toInt())
+                }
+
+                WifiUpdateClientDisplayerStats.ClientWindowsDisplayedProductId -> updateDisplayController {
+                    copy(clientWindowsDisplayedProductId = content.toLong())
+                }
+
+                WifiUpdateClientDisplayerStats.DISMISS_PRODUCT_INFO -> updateDisplayController {
+                    copy(
+                        clientWindowsDisplayedProductId = null,
+                        searchWindowsDisplaye = ""
+                    )
+                }
+
+                WifiUpdateClientDisplayerStats.ClientWindowsLazyRowSupColorsScrolle -> updateDisplayController {
+                    copy(clientWindowsLazyRowSupColorsScroll = content.toInt())
+                }
+
+                WifiUpdateClientDisplayerStats.WindowsPickerDisplayedQuantity -> updateDisplayController {
+                    copy(
+                        clientWindowsPickerDisplayedQuantity = if (content == "0")
+                            1 else {
+                            content.toInt()
+                        }
+                    )
+                }
+
+                WifiUpdateClientDisplayerStats.ClientWindowsSelectedColorId -> updateDisplayController {
+                    copy(clientWindowsSelectedColorId = content.toLong())
+                }
+
+                WifiUpdateClientDisplayerStats.SearchWindowsDisplaye -> updateDisplayController {
+                    copy(searchWindowsDisplaye = content)
+                }
+
+                WifiUpdateClientDisplayerStats.NewArregmentColorsJsonStruct -> updateDisplayController {
+                    copy(newArregmentColorsJsonStruct = content)
+                }
+            }
+        } ?: Log.d(tag, "📩 Unhandled message received: $payload")
+    }
+
+    private fun observeConnectionState() {
+        viewModelScope.launch {
+            connectionUiState.collect { connectionState ->
+
+                updateDisplayController {
+                    copy(
+                        isConnected = connectionState.isConnected,
+                        connectionStatus = connectionState.connectionStatus,
+                    )
+                }
+
+                viewModel._uiState.update { it.copy(error = connectionState.error) }
+            }
+        }
+    }
+
+    private fun updateDisplayController(update: ProductDisplayController.() -> ProductDisplayController) {
+        viewModel._uiState.update { it.copy(productDisplayController = update(it.productDisplayController)) }
+    }
+
+    fun sendOrderToClientDisplayer(orderName: String, data: Any? = null) {
+        viewModelScope.launch {
+            sendData("$orderName$data")
+        }
+    }
+
+
+    fun addHostDevice(deviceName: String) {
+        viewModelScope.launch {
+            val device = viewModel. uiState.value.devicesTypeManager.find { it.name == deviceName }
+                ?: return@launch
+
+            val updatedDevice = device.copy(isHost = true)
+
+            // Update Room database
+            viewModel. database.devicesTypeManagerDao().insert(updatedDevice)
+
+            // Update Firebase
+            viewModel.refDevicesTypeManager
+                .child(updatedDevice.id.toString())
+                .setValue(updatedDevice)
+                .addOnSuccessListener {
+                    Log.d(tag, "Host device added successfully: $deviceName")
+                }
+                .addOnFailureListener { e ->
+                    Log.e(tag, "Error adding host device", e)
+                }
+
+            // Update UI state
+            viewModel._uiState.update { currentState ->
+                currentState.copy(
+                    devicesTypeManager = currentState.devicesTypeManager.map {
+                        if (it.id == updatedDevice.id) updatedDevice else it
+                    }
+                )
+            }
+        }
+    }
+
+    fun removeHostDevice(deviceName: String) {
+        viewModelScope.launch {
+            val device = viewModel.uiState.value.devicesTypeManager.find { it.name == deviceName }
+                ?: return@launch
+
+            val updatedDevice = device.copy(isHost = false)
+
+            // Update Room database
+            viewModel. database.devicesTypeManagerDao().insert(updatedDevice)
+
+            // Update Firebase
+            viewModel.refDevicesTypeManager
+                .child(updatedDevice.id.toString())
+                .setValue(updatedDevice)
+                .addOnSuccessListener {
+                    Log.d(tag, "Host device removed successfully: $deviceName")
+                }
+                .addOnFailureListener { e ->
+                    Log.e(tag, "Error removing host device", e)
+                }
+
+            // Update UI state
+            viewModel._uiState.update { currentState ->
+                currentState.copy(
+                    devicesTypeManager = currentState.devicesTypeManager.map {
+                        if (it.id == updatedDevice.id) updatedDevice else it
+                    }
+                )
+            }
+        }
+    }
+
+    private fun getHostDevices(): List<String> {
+        return viewModel.uiState.value.devicesTypeManager
+            .filter { it.isHost }
+            .map { it.name }
+    }
+
+    fun updateTypePhone(type: Boolean = false) {
+        updateDisplayController {
+            copy(isHostPhone = type)
+        }
+    }
+
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    suspend fun initializeConnection() {
+        val currentDevice = Build.MODEL.lowercase()
+        val isHostDevice = getHostDevices().any { deviceName ->
+            currentDevice.contains(deviceName)
+        }
+
+
+        if (isHostDevice) {
+            updateTypePhone(true)
+        } else {
+            updateTypePhone(false)
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    fun startAsHost() {
+        viewModelScope.launch {
+            Log.d(TAG, "🏠 Démarrage en mode hôte...")
+            if (!checkRequiredPermissions()) {
+                handleError("Permissions manquantes")
+                return@launch
+            }
+
+            lastConnectionMode = ConnectionMode.HOST
+            _connectionUiState.update { it.copy(isHostPhone = true) }
+
+            try {
+                val advertisingOptions = AdvertisingOptions.Builder()
+                    .setStrategy(strategy)
+                    .build()
+
+                Nearby.getConnectionsClient(context).startAdvertising(
+                    "Host Device",
+                    serviceId,
+                    connectionLifecycleCallback,
+                    advertisingOptions
+                ).addOnSuccessListener {
+                    Log.d(TAG, "📡 Mode hôte activé")
+                    updateConnectionStatus("En attente de connexion...")
+                }.addOnFailureListener { e ->
+                    Log.e(TAG, "💥 Échec du mode hôte", e)
+                    handleConnectionFailure("Erreur de démarrage du mode hôte: ${e.message}")
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "💥 Exception lors du démarrage du mode hôte", e)
+                handleConnectionFailure(e.message ?: "Erreur inconnue")
+            }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    fun startAsClient() {
+        viewModelScope.launch {
+            Log.d(TAG, "👥 Démarrage en mode client...")
+            if (!checkRequiredPermissions()) {
+                handleError("Permissions manquantes")
+                return@launch
+            }
+
+            lastConnectionMode = ConnectionMode.CLIENT
+            _connectionUiState.update { it.copy(isHostPhone = false) }
+
+            try {
+                val discoveryOptions = DiscoveryOptions.Builder()
+                    .setStrategy(strategy)
+                    .build()
+
+                Nearby.getConnectionsClient(context).startDiscovery(
+                    serviceId,
+                    endpointDiscoveryCallback,
+                    discoveryOptions
+                ).addOnSuccessListener {
+                    Log.d(TAG, "🔍 Recherche démarrée")
+                    updateConnectionStatus("Recherche d'appareils...")
+                }.addOnFailureListener { e ->
+                    Log.e(TAG, "💥 Échec de la recherche", e)
+                    handleConnectionFailure("Erreur de démarrage de la recherche: ${e.message}")
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "💥 Exception lors du démarrage de la recherche", e)
+                handleConnectionFailure(e.message ?: "Erreur inconnue")
+            }
+        }
+    }
+
+    fun disconnect() {
+        Log.d(TAG, "🔌 Déconnexion...")
+        connectionMonitorJob?.cancel()
+        reconnectionJob?.cancel()
+
+        try {
+            Nearby.getConnectionsClient(context).apply {
+                stopAdvertising()
+                stopDiscovery()
+                stopAllEndpoints()
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "❌ Erreur lors de la déconnexion", e)
+        }
+
+        endpointId = null
+        lastConnectionMode = ConnectionMode.NONE
+        retryCount = 0
+        isReconnecting.set(false)
+
+        _connectionUiState.update {
+            it.copy(
+                isConnected = false,
+                isHostPhone = false,
+                connectionStatus = "Déconnecté",
+                error = null
+            )
+        }
+
+        Log.d(TAG, "👋 Déconnexion terminée")
+    }
+
+
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun initiateReconnection() {
         if (isReconnecting.compareAndSet(false, true)) {
@@ -264,76 +540,8 @@ class ConnectionManager(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    fun startAsHost() {
-        viewModelScope.launch {
-            Log.d(TAG, "🏠 Démarrage en mode hôte...")
-            if (!checkRequiredPermissions()) {
-                handleError("Permissions manquantes")
-                return@launch
-            }
 
-            lastConnectionMode = ConnectionMode.HOST
-            _connectionUiState.update { it.copy(isHostPhone = true) }
 
-            try {
-                val advertisingOptions = AdvertisingOptions.Builder()
-                    .setStrategy(strategy)
-                    .build()
-
-                Nearby.getConnectionsClient(context).startAdvertising(
-                    "Host Device",
-                    serviceId,
-                    connectionLifecycleCallback,
-                    advertisingOptions
-                ).addOnSuccessListener {
-                    Log.d(TAG, "📡 Mode hôte activé")
-                    updateConnectionStatus("En attente de connexion...")
-                }.addOnFailureListener { e ->
-                    Log.e(TAG, "💥 Échec du mode hôte", e)
-                    handleConnectionFailure("Erreur de démarrage du mode hôte: ${e.message}")
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "💥 Exception lors du démarrage du mode hôte", e)
-                handleConnectionFailure(e.message ?: "Erreur inconnue")
-            }
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    fun startAsClient() {
-        viewModelScope.launch {
-            Log.d(TAG, "👥 Démarrage en mode client...")
-            if (!checkRequiredPermissions()) {
-                handleError("Permissions manquantes")
-                return@launch
-            }
-
-            lastConnectionMode = ConnectionMode.CLIENT
-            _connectionUiState.update { it.copy(isHostPhone = false) }
-
-            try {
-                val discoveryOptions = DiscoveryOptions.Builder()
-                    .setStrategy(strategy)
-                    .build()
-
-                Nearby.getConnectionsClient(context).startDiscovery(
-                    serviceId,
-                    endpointDiscoveryCallback,
-                    discoveryOptions
-                ).addOnSuccessListener {
-                    Log.d(TAG, "🔍 Recherche démarrée")
-                    updateConnectionStatus("Recherche d'appareils...")
-                }.addOnFailureListener { e ->
-                    Log.e(TAG, "💥 Échec de la recherche", e)
-                    handleConnectionFailure("Erreur de démarrage de la recherche: ${e.message}")
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "💥 Exception lors du démarrage de la recherche", e)
-                handleConnectionFailure(e.message ?: "Erreur inconnue")
-            }
-        }
-    }
 
     private val endpointDiscoveryCallback = object : EndpointDiscoveryCallback() {
         override fun onEndpointFound(endpointId: String, info: DiscoveredEndpointInfo) {
@@ -386,37 +594,7 @@ class ConnectionManager(
         }
     }
 
-    fun disconnect() {
-        Log.d(TAG, "🔌 Déconnexion...")
-        connectionMonitorJob?.cancel()
-        reconnectionJob?.cancel()
 
-        try {
-            Nearby.getConnectionsClient(context).apply {
-                stopAdvertising()
-                stopDiscovery()
-                stopAllEndpoints()
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "❌ Erreur lors de la déconnexion", e)
-        }
-
-        endpointId = null
-        lastConnectionMode = ConnectionMode.NONE
-        retryCount = 0
-        isReconnecting.set(false)
-
-        _connectionUiState.update {
-            it.copy(
-                isConnected = false,
-                isHostPhone = false,
-                connectionStatus = "Déconnecté",
-                error = null
-            )
-        }
-
-        Log.d(TAG, "👋 Déconnexion terminée")
-    }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private val requiredPermissions = when {
@@ -505,3 +683,23 @@ data class ConnectionUiState(
     val lastSuccessfulConnection: Long? = null,
     val reconnectionAttempts: Int = 0
 )
+
+enum class WifiUpdateClientDisplayerStats(val prefix: String) {
+    ClientMainGridScrollPosition("ClientMainGridScrollPosition"),
+    ClientWindowsLazyRowSupColorsScrolle("ClientWindowsLazyRowSupColorsScrolle"),
+    ClientWindowsDisplayedProductId("ClientWindowsDisplayedProductId"),
+    ClientWindowsSelectedColorId("clientWindowsSelectedColorId"),
+    DISMISS_PRODUCT_INFO("DismissWindowsInfosProduct"),
+    WindowsPickerDisplayedQuantity("WindowsPickerDisplayedQuantity"),
+    SearchWindowsDisplaye("SearchWindowsDisplaye"),
+    NewArregmentColorsJsonStruct("NewArregmentColorsJsonStruct")
+    ;
+
+    companion object {
+        fun fromPayload(payload: String): Pair<WifiUpdateClientDisplayerStats, String>? {
+            return entries.firstOrNull { payload.startsWith(it.prefix) }?.let {
+                it to payload.removePrefix(it.prefix)
+            }
+        }
+    }
+}
