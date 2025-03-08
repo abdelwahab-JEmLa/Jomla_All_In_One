@@ -381,6 +381,9 @@ class ConnectionManager(
                 return@launch
             }
 
+            // Add explicit logging
+            android.util.Log.d(TAG, "Starting as host with service ID: $serviceId and strategy: $strategy")
+
             lastConnectionMode = ConnectionMode.HOST
             _connectionUiState.update { it.copy(isHostPhone = true) }
 
@@ -395,11 +398,14 @@ class ConnectionManager(
                     connectionLifecycleCallback,
                     advertisingOptions
                 ).addOnSuccessListener {
+                    android.util.Log.d(TAG, "Successfully started advertising")
                     updateConnectionStatus("En attente de connexion...")
                 }.addOnFailureListener { e ->
+                    android.util.Log.e(TAG, "Failed to start advertising: ${e.message}", e)
                     handleConnectionFailure("Erreur de démarrage du mode hôte: ${e.message}")
                 }
             } catch (e: Exception) {
+                android.util.Log.e(TAG, "Exception during advertising: ${e.message}", e)
                 handleConnectionFailure(e.message ?: "Erreur inconnue")
             }
         }
