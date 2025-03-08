@@ -34,7 +34,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.clientjetpack.AppViewModels
 import com.example.clientjetpack.ViewModel.HeadViewModel
-import com.example.clientjetpack.ViewModel.WifiUpdateClientDisplayerStats
+import Z_MasterOfApps.Kotlin._WorkingON.WO_.WifiUpdateClientDisplayerStats
 import com.google.firebase.Firebase
 import com.google.firebase.database.database
 import kotlinx.coroutines.flow.update
