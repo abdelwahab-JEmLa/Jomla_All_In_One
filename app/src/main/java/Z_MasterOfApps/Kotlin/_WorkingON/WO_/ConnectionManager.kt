@@ -261,9 +261,16 @@ class ConnectionManager(
             return null
         }
     }
-
     private fun handlePayload(payload: String) {
         logD("Received payload: ${payload.take(50)}${if (payload.length > 50) "..." else ""}")
+
+        // Handle special control messages first
+        if (payload == "ping" || payload == "Connection established") {
+            logD("Received control message: $payload")
+            return
+        }
+
+        // Then try to parse regular messages
         WifiUpdateClientDisplayerStats.fromPayload(payload)?.let { (messageType, content) ->
             logD("Parsed message type: $messageType, content: ${content.take(20)}${if (content.length > 20) "..." else ""}")
             when (messageType) {
@@ -302,13 +309,14 @@ class ConnectionManager(
                 WifiUpdateClientDisplayerStats.SearchWindowsDisplaye -> updateDisplayController {
                     copy(searchWindowsDisplaye = content)
                 }
-
+                
                 WifiUpdateClientDisplayerStats.NewArregmentColorsJsonStruct -> updateDisplayController {
                     copy(newArregmentColorsJsonStruct = content)
                 }
             }
-        } ?: logE("Failed to parse payload: $payload")
+        } ?: logD("Unrecognized payload format: $payload")  // Changed from logE to logD to reduce error noise
     }
+
 
     fun updateDisplayController(update: ProductDisplayController.() -> ProductDisplayController) {
         viewModel._uiState.update { it.copy(productDisplayController = update(it.productDisplayController)) }
@@ -330,7 +338,10 @@ class ConnectionManager(
                     delay(2000)
                     logI("Checking connection status before reconnection attempt")
 
-                    if (!_connectionUiState.value.isConnected) {
+                    // Check if we're TRULY disconnected before attempting reconnection
+                    val isActuallyConnected = checkActualConnectionStatus()
+
+                    if (!isActuallyConnected) {
                         val backoffDelay = calculateBackoffDelay()
                         logI("Connection still lost, waiting $backoffDelay ms before retry #${retryCount + 1}")
                         delay(backoffDelay)
@@ -340,9 +351,9 @@ class ConnectionManager(
                             reconnectionAttempts = retryCount + 1
                         )}
 
-                        // First ensure we cleanup any existing connections
-                        stopNearbyServices()
-                        delay(500) // Brief delay to allow services to stop
+                        // First ensure we properly clean up any existing connections
+                        cleanupExistingConnections()
+                        delay(1000) // Longer delay to ensure services are fully stopped
 
                         when (lastConnectionMode) {
                             ConnectionMode.HOST -> {
@@ -365,7 +376,13 @@ class ConnectionManager(
                             lastSuccessfulConnection = System.currentTimeMillis()
                         )}
                     } else {
-                        logI("Reconnection unnecessary, connection restored")
+                        logI("Reconnection unnecessary, connection actually exists")
+                        // Make sure UI state reflects the actual connection status
+                        _connectionUiState.update { it.copy(
+                            isConnected = true,
+                            connectionStatus = "Connecté",
+                            error = null
+                        )}
                     }
                 } catch (e: Exception) {
                     logE("Error during reconnection attempt: ${e.message}", e)
@@ -379,6 +396,32 @@ class ConnectionManager(
             logI("Reconnection already in progress, skipping new attempt")
         }
     }
+    // 2. Add a method to check the actual connection status with the Nearby API
+    private fun checkActualConnectionStatus(): Boolean {
+        return try {
+            // Check if endpoint ID is not null AND if the Nearby API confirms we have connected endpoints
+            val hasConnectedEndpoints = endpointId != null &&
+                    Nearby.getConnectionsClient(context).let { client ->
+                        // This is a best-effort check - the Nearby API doesn't have a direct "isConnected" method
+                        // so we're using a small ping test
+                        if (endpointId != null) {
+                            try {
+                                client.sendPayload(endpointId!!, Payload.fromBytes("ping".toByteArray()))
+                                true
+                            } catch (e: Exception) {
+                                logE("Failed ping test", e)
+                                false
+                            }
+                        } else false
+                    }
+
+            logI("Connection status check: hasConnectedEndpoints=$hasConnectedEndpoints")
+            hasConnectedEndpoints
+        } catch (e: Exception) {
+            logE("Error checking connection status", e)
+            false
+        }
+    }
 
     private fun shouldAttemptReconnection(): Boolean {
         val shouldRetry = !_connectionUiState.value.isConnected &&
@@ -386,6 +429,173 @@ class ConnectionManager(
                 lastConnectionMode != ConnectionMode.NONE
         logD("Should attempt reconnection? $shouldRetry (connected=${_connectionUiState.value.isConnected}, retries=$retryCount/$maxRetries, mode=$lastConnectionMode)")
         return shouldRetry
+    }
+
+    // 3. Replace stopNearbyServices with a more thorough cleanup method
+    private fun cleanupExistingConnections() {
+        logI("Thoroughly cleaning up all existing connections")
+        try {
+            // Step 1: Stop discovery and advertising
+            if (isAdvertising) {
+                logI("Stopping advertising")
+                Nearby.getConnectionsClient(context).stopAdvertising()
+                isAdvertising = false
+            }
+
+            if (isDiscovering) {
+                logI("Stopping discovery")
+                Nearby.getConnectionsClient(context).stopDiscovery()
+                isDiscovering = false
+            }
+
+            // Step 2: Disconnect from any existing endpoints
+            endpointId?.let { endpoint ->
+                logI("Explicitly disconnecting from endpoint: $endpoint")
+                try {
+                    Nearby.getConnectionsClient(context).disconnectFromEndpoint(endpoint)
+                } catch (e: Exception) {
+                    logE("Error disconnecting from specific endpoint", e)
+                }
+            }
+
+            // Step 3: Stop all endpoints as a final cleanup
+            logI("Stopping all endpoints")
+            Nearby.getConnectionsClient(context).stopAllEndpoints()
+
+            // Reset connection state
+            endpointId = null
+
+            // Update UI state to reflect disconnection
+            _connectionUiState.update { it.copy(
+                isConnected = false,
+                connectionStatus = "Déconnecté temporairement"
+            )}
+
+            // Small delay to ensure services are properly stopped
+            Thread.sleep(200)
+        } catch (e: Exception) {
+            logE("Error during connection cleanup", e)
+        }
+    }
+    // 4. Modify the startAsClient method to handle duplicate endpoints better
+    fun startAsClient() {
+        viewModelScope.launch {
+            logI("Starting as client")
+            if (!checkRequiredPermissions()) {
+                logE("Missing required permissions for Nearby Connections")
+                val missingPermissions = getRequiredPermissions().filter { permission ->
+                    ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED
+                }
+                logE("Missing permissions: $missingPermissions")
+                handleError("Permissions manquantes")
+                return@launch
+            }
+
+            logI("All required permissions granted")
+            lastConnectionMode = ConnectionMode.CLIENT
+            _connectionUiState.update { it.copy(isHostPhone = false) }
+
+            try {
+                // First stop any existing discovery/connections
+                cleanupExistingConnections()
+
+                val discoveryOptions = DiscoveryOptions.Builder()
+                    .setStrategy(strategy)
+                    .build()
+
+                logI("Starting discovery with service ID: $serviceId and strategy: $strategy")
+                Nearby.getConnectionsClient(context).startDiscovery(
+                    serviceId,
+                    endpointDiscoveryCallback,
+                    discoveryOptions
+                ).addOnSuccessListener {
+                    isDiscovering = true
+                    logI("Successfully started discovery as client")
+                    updateConnectionStatus("Recherche d'appareils...")
+                }.addOnFailureListener { e ->
+                    isDiscovering = false
+                    logE("Failed to start discovery: ${e.message}", e)
+                    handleConnectionFailure("Erreur de démarrage de la recherche: ${e.message}")
+                }
+            } catch (e: Exception) {
+                logE("Exception during discovery: ${e.message}", e)
+                handleConnectionFailure(e.message ?: "Erreur inconnue")
+            }
+        }
+    }
+
+    private val endpointDiscoveryCallback = object : EndpointDiscoveryCallback() {
+        override fun onEndpointFound(endpointId: String, info: DiscoveredEndpointInfo) {
+            logI("Endpoint found: $endpointId, name: ${info.endpointName}, serviceId: ${info.serviceId}")
+
+            // Check if we're already connected to this endpoint or any other endpoint
+            if (this@ConnectionManager.endpointId == endpointId) {
+                logI("Already connected to this endpoint, skipping connection request")
+                return
+            }
+
+            // If we're connected to a different endpoint, disconnect from it first
+            if (this@ConnectionManager.endpointId != null) {
+                logI("Already connected to a different endpoint, disconnecting first")
+                cleanupExistingConnections()
+
+                // Use viewModelScope to launch a coroutine for the delay
+                viewModelScope.launch {
+                    delay(500) // Brief delay to allow disconnection to complete
+
+                    // Continue with connection request after delay
+                    requestConnection(endpointId)
+                }
+            } else {
+                // Directly request connection if not connected to any endpoint
+                requestConnection(endpointId)
+            }
+        }
+
+        private fun requestConnection(endpointId: String) {
+            Nearby.getConnectionsClient(context)
+                .requestConnection(
+                    "Client Device",
+                    endpointId,
+                    connectionLifecycleCallback
+                )
+                .addOnSuccessListener {
+                    logI("Successfully requested connection to endpoint: $endpointId")
+                }
+                .addOnFailureListener { e ->
+                    logE("Failed to request connection to endpoint: $endpointId", e)
+                    // Only handle as a connection failure if it's not already connected error
+                    if (e.message?.contains("STATUS_ALREADY_CONNECTED_TO_ENDPOINT") != true) {
+                        handleConnectionFailure("Erreur de connexion: ${e.message}")
+                    } else {
+                        logI("Already connected to endpoint, updating connection state")
+                        // If we're already connected, update the UI state to reflect this
+                        _connectionUiState.update { it.copy(
+                            isConnected = true,
+                            connectionStatus = "Connecté"
+                        )}
+                    }
+                }
+        }
+
+        override fun onEndpointLost(endpointId: String) {
+            logW("Endpoint lost: $endpointId")
+
+            // Only trigger reconnection if this is the endpoint we were connected to
+            if (this@ConnectionManager.endpointId == endpointId) {
+                logI("Lost connection to current endpoint, will attempt reconnection")
+                this@ConnectionManager.endpointId = null
+                _connectionUiState.update { it.copy(
+                    isConnected = false,
+                    connectionStatus = "Connexion perdue"
+                )}
+
+                // Only initiate reconnection if we're not already reconnecting
+                if (!isReconnecting.get()) {
+                    initiateReconnection()
+                }
+            }
+        }
     }
 
     private fun handleDisconnection(disconnectedEndpointId: String) {
@@ -558,121 +768,8 @@ class ConnectionManager(
         }
     }
 
-    fun startAsHost() {
-        viewModelScope.launch {
-            logI("Starting as host")
-            if (!checkRequiredPermissions()) {
-                logE("Missing required permissions for Nearby Connections")
-                val missingPermissions = getRequiredPermissions().filter { permission ->
-                    ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED
-                }
-                logE("Missing permissions: $missingPermissions")
-                handleError("Permissions manquantes")
-                return@launch
-            }
 
-            logI("All required permissions granted")
-            lastConnectionMode = ConnectionMode.HOST
-            _connectionUiState.update { it.copy(isHostPhone = true) }
 
-            try {
-                // First stop any existing advertising/discovery
-                stopNearbyServices()
-
-                val advertisingOptions = AdvertisingOptions.Builder()
-                    .setStrategy(strategy)
-                    .build()
-
-                logI("Starting advertising with service ID: $serviceId and strategy: $strategy")
-                Nearby.getConnectionsClient(context).startAdvertising(
-                    "Host Device",
-                    serviceId,
-                    connectionLifecycleCallback,
-                    advertisingOptions
-                ).addOnSuccessListener {
-                    isAdvertising = true
-                    logI("Successfully started advertising as host")
-                    updateConnectionStatus("En attente de connexion...")
-                }.addOnFailureListener { e ->
-                    isAdvertising = false
-                    logE("Failed to start advertising: ${e.message}", e)
-                    handleConnectionFailure("Erreur de démarrage du mode hôte: ${e.message}")
-                }
-            } catch (e: Exception) {
-                logE("Exception during advertising: ${e.message}", e)
-                handleConnectionFailure(e.message ?: "Erreur inconnue")
-            }
-        }
-    }
-
-    fun startAsClient() {
-        viewModelScope.launch {
-            logI("Starting as client")
-            if (!checkRequiredPermissions()) {
-                logE("Missing required permissions for Nearby Connections")
-                val missingPermissions = getRequiredPermissions().filter { permission ->
-                    ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED
-                }
-                logE("Missing permissions: $missingPermissions")
-                handleError("Permissions manquantes")
-                return@launch
-            }
-
-            logI("All required permissions granted")
-            lastConnectionMode = ConnectionMode.CLIENT
-            _connectionUiState.update { it.copy(isHostPhone = false) }
-
-            try {
-                // First stop any existing advertising/discovery
-                stopNearbyServices()
-
-                val discoveryOptions = DiscoveryOptions.Builder()
-                    .setStrategy(strategy)
-                    .build()
-
-                logI("Starting discovery with service ID: $serviceId and strategy: $strategy")
-                Nearby.getConnectionsClient(context).startDiscovery(
-                    serviceId,
-                    endpointDiscoveryCallback,
-                    discoveryOptions
-                ).addOnSuccessListener {
-                    isDiscovering = true
-                    logI("Successfully started discovery as client")
-                    updateConnectionStatus("Recherche d'appareils...")
-                }.addOnFailureListener { e ->
-                    isDiscovering = false
-                    logE("Failed to start discovery: ${e.message}", e)
-                    handleConnectionFailure("Erreur de démarrage de la recherche: ${e.message}")
-                }
-            } catch (e: Exception) {
-                logE("Exception during discovery: ${e.message}", e)
-                handleConnectionFailure(e.message ?: "Erreur inconnue")
-            }
-        }
-    }
-
-    private val endpointDiscoveryCallback = object : EndpointDiscoveryCallback() {
-        override fun onEndpointFound(endpointId: String, info: DiscoveredEndpointInfo) {
-            logI("Endpoint found: $endpointId, name: ${info.endpointName}, serviceId: ${info.serviceId}")
-            Nearby.getConnectionsClient(context)
-                .requestConnection(
-                    "Client Device",
-                    endpointId,
-                    connectionLifecycleCallback
-                )
-                .addOnSuccessListener {
-                    logI("Successfully requested connection to endpoint: $endpointId")
-                }
-                .addOnFailureListener { e ->
-                    logE("Failed to request connection to endpoint: $endpointId", e)
-                    handleConnectionFailure("Erreur de connexion: ${e.message}")
-                }
-        }
-
-        override fun onEndpointLost(endpointId: String) {
-            logW("Endpoint lost: $endpointId")
-        }
-    }
 
     fun sendData(data: Any) {
         endpointId?.let { endpoint ->
@@ -821,6 +918,54 @@ class ConnectionManager(
             Log.e(APP_TAG, "$TAG: $message", throwable)
         } else {
             Log.e(APP_TAG, "$TAG: $message")
+        }
+    }
+
+    // 7. Improve the connection initialization logic in startAsHost method
+    fun startAsHost() {
+        viewModelScope.launch {
+            logI("Starting as host")
+            if (!checkRequiredPermissions()) {
+                logE("Missing required permissions for Nearby Connections")
+                val missingPermissions = getRequiredPermissions().filter { permission ->
+                    ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED
+                }
+                logE("Missing permissions: $missingPermissions")
+                handleError("Permissions manquantes")
+                return@launch
+            }
+
+            logI("All required permissions granted")
+            lastConnectionMode = ConnectionMode.HOST
+            _connectionUiState.update { it.copy(isHostPhone = true) }
+
+            try {
+                // Clean up any existing connections before starting advertising
+                cleanupExistingConnections()
+
+                val advertisingOptions = AdvertisingOptions.Builder()
+                    .setStrategy(strategy)
+                    .build()
+
+                logI("Starting advertising with service ID: $serviceId and strategy: $strategy")
+                Nearby.getConnectionsClient(context).startAdvertising(
+                    "Host Device",  // Changed from "Host ????????????" to a clean string
+                    serviceId,
+                    connectionLifecycleCallback,
+                    advertisingOptions
+                ).addOnSuccessListener {
+                    isAdvertising = true
+                    logI("Successfully started advertising as host")
+                    updateConnectionStatus("En attente de connexion...")
+                }.addOnFailureListener { e ->
+                    isAdvertising = false
+                    logE("Failed to start advertising: ${e.message}", e)
+                    handleConnectionFailure("Erreur de démarrage du mode hôte: ${e.message}")
+                }
+            } catch (e: Exception) {
+                logE("Exception during advertising: ${e.message}", e)
+                handleConnectionFailure(e.message ?: "Erreur inconnue")
+            }
         }
     }
 
