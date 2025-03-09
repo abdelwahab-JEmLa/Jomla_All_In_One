@@ -35,10 +35,6 @@ class J_AppInstalleDonTelephone(
         var itsReciverTelephone by mutableStateOf(false)
         var indexDonsParentList by mutableLongStateOf(0)
     }
-
-    companion object {
-        val caReference = J_AppInstalleDonTelephoneRepository.caReference
-    }
 }
 
 interface J_AppInstalleDonTelephoneRepository {
