@@ -34,6 +34,7 @@ class J_AppInstalleDonTelephone(
     class EtatesMutable {
         var itsReciverTelephone by mutableStateOf(false)
         var indexDonsParentList by mutableLongStateOf(0)
+        var nearbyWifiAdressConexion by mutableStateOf("")
     }
 }
 

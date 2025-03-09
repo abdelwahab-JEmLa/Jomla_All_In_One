@@ -8,6 +8,10 @@ import Z_MasterOfApps.Kotlin.Model.H_GroupesCategoriesRepositoryImpl
 import Z_MasterOfApps.Kotlin.Model.I_CategoriesRepository
 import Z_MasterOfApps.Kotlin.Model.J_AppInstalleDonTelephoneRepository
 import Z_MasterOfApps.Kotlin.Model.J_AppInstalleDonTelephoneRepositoryImpl
+import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
+import Z_MasterOfApps.Kotlin._WorkingON.WO_.ConnectionManager
+import com.example.clientjetpack.ViewModel.HeadViewModel
+import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 // Module pour les repositories
@@ -22,11 +26,15 @@ val repositoryModule = module {
 
 // Module pour les ViewModels
 val viewModelModule = module {
+    viewModel { ViewModelInitApp() }
+    viewModel { (viewModel: HeadViewModel, context: Context) ->
+        ConnectionManager(viewModel, context, get())
+    }
 }
 
 
 // Module principal qui regroupe tous les autres modules
 val appModule = module {
     // Inclure d'autres modules dans l'ordre correct
-    includes(repositoryModule, viewModelModule)
+    includes(repositoryModule, viewModelModule, )
 }

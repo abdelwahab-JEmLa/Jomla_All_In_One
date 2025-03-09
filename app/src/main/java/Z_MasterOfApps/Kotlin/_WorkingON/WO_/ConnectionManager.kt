@@ -1,5 +1,6 @@
 package Z_MasterOfApps.Kotlin._WorkingON.WO_
 
+import Z_MasterOfApps.Kotlin.Model.J_AppInstalleDonTelephoneRepositoryImpl
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
@@ -36,9 +37,10 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 class ConnectionManager(
     private val viewModel: HeadViewModel,
-    private val context: Context
+    private val context: Context ,
+    private val j_AppInstalleDonTelephoneRepositoryImpl: J_AppInstalleDonTelephoneRepositoryImpl
 ) : ViewModel() {
-
+    
     private val _connectionUiState = MutableStateFlow(ConnectionUiState())
     val connectionUiState: StateFlow<ConnectionUiState> = _connectionUiState.asStateFlow()
 
@@ -55,9 +57,18 @@ class ConnectionManager(
     val tag = ""
 
     private var lastConnectionMode: ConnectionMode = ConnectionMode.NONE
-
+      
     private enum class ConnectionMode {
         HOST, CLIENT, NONE
+    }
+    
+    init {
+        //-->
+        //TODO(1): FAIT ICI de cherche          var nom by mutableStateOf("Non Defini") ou == ce telephone et 
+        //update nearbyWifiAdressConexion par l ardreess si !itsReciverTelephone il met l adress 
+        //de host est commence start as Host si le  itsReciverTelephone il mete l adress de telephone 
+        //et commence commence as client la conxion entre les 2 telephone installe dons si la conxion perend recommence la conxion 
+        //apre un delai le but generale c de metre une conexion 
     }
 
     private fun handlePayload(payload: String) {
