@@ -22,7 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.clientjetpack.Modules.AppDatabase
-import com.example.clientjetpack.ViewModel.HeadViewModel
 import com.example.clientjetpack.ui.theme.ClientJetPackTheme
 import com.google.firebase.FirebaseApp
 import org.koin.android.ext.koin.androidContext
@@ -49,9 +48,13 @@ class MyApplication : Application() {
                 ?: throw IllegalStateException("Firebase initialization failed")
 
             // Initialize Koin
+            // Start Koin
             startKoin {
+                // Log Koin into Android logger with default settings
                 androidLogger()
+                // Declare Android context
                 androidContext(this@MyApplication)
+                // Declare modules
                 modules(appModule)
             }
         }.onFailure {
@@ -61,7 +64,6 @@ class MyApplication : Application() {
 }
 
 data class AppViewModels(
-    val headViewModel: HeadViewModel,
     val generativeAiViewModel: GenerativeAiViewModel,
 )
 
@@ -70,8 +72,7 @@ class ViewModelFactory(
     private val database: AppDatabase,
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T = when {
-        modelClass.isAssignableFrom(HeadViewModel::class.java) ->
-            HeadViewModel(context.applicationContext, database) as T
+
 
         modelClass.isAssignableFrom(GenerativeAiViewModel::class.java) ->
             GenerativeAiViewModel() as T
@@ -85,10 +86,9 @@ class MainActivity : ComponentActivity() {
     private val permissionHandler by lazy { PermissionHandler(this) }
     private val viewModelFactory by lazy { ViewModelFactory(applicationContext, database) }
 
-    private val headViewModel: HeadViewModel by viewModels { viewModelFactory }
     private val generativeAiViewModel: GenerativeAiViewModel by viewModels { viewModelFactory }
     private val appViewModels by lazy {
-        AppViewModels(headViewModel, generativeAiViewModel)
+        AppViewModels(generativeAiViewModel)
     }
 
     private var permissionsChecked by mutableStateOf(false)
@@ -107,7 +107,7 @@ class MainActivity : ComponentActivity() {
                     KoinAndroidContext {
                         Box(modifier = Modifier.fillMaxSize()) {
                             if (permissionsChecked) {
-                                MainScreen(appViewModels)
+                                MainScreen()
                             } else {
                                 // You could show a loading or permissions screen here
                                 // For now, keeping it empty until permissions are checked

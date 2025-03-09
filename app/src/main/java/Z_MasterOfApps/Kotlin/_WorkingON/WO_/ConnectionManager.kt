@@ -1,6 +1,6 @@
 package Z_MasterOfApps.Kotlin._WorkingON.WO_
 
-import Z_MasterOfApps.Kotlin.Model.J_AppInstalleDonTelephoneRepositoryImpl
+import Z_MasterOfApps.Kotlin.Model.J_AppInstalleDonTelephoneRepository
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
@@ -38,7 +38,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 class ConnectionManager(
     private val viewModel: HeadViewModel,
     private val context: Context ,
-    private val j_AppInstalleDonTelephoneRepositoryImpl: J_AppInstalleDonTelephoneRepositoryImpl
+    private val j_AppInstalleDonTelephoneRepository: J_AppInstalleDonTelephoneRepository
 ) : ViewModel() {
     
     private val _connectionUiState = MutableStateFlow(ConnectionUiState())
@@ -61,16 +61,70 @@ class ConnectionManager(
     private enum class ConnectionMode {
         HOST, CLIENT, NONE
     }
-    
-    init {
-        //-->
-        //TODO(1): FAIT ICI de cherche          var nom by mutableStateOf("Non Defini") ou == ce telephone et 
-        //update nearbyWifiAdressConexion par l ardreess si !itsReciverTelephone il met l adress 
-        //de host est commence start as Host si le  itsReciverTelephone il mete l adress de telephone 
-        //et commence commence as client la conxion entre les 2 telephone installe dons si la conxion perend recommence la conxion 
-        //apre un delai le but generale c de metre une conexion 
-    }
 
+    init {
+        viewModelScope.launch {
+            // Get current device name
+            val currentDeviceName = "${Build.MANUFACTURER} ${Build.MODEL}"
+
+            // Find the current phone in the repository
+            val currentPhone = j_AppInstalleDonTelephoneRepository.modelDatas.find {
+                it.infosDeBase.nom == currentDeviceName
+            }
+
+            if (currentPhone != null) {
+                // Check if this is a receiver phone
+                val isReceiver = currentPhone.etatesMutable.itsReciverTelephone
+
+                // Get host devices
+                val hostDevices = getHostDevices()
+                val isHostDevice = hostDevices.any { deviceName ->
+                    currentDeviceName.lowercase().contains(deviceName.lowercase())
+                }
+
+                if (isHostDevice || !isReceiver) {
+                    // This is a host device
+                    currentPhone.etatesMutable.nearbyWifiAdressConexion = "host_${currentDeviceName.replace(" ", "_")}"
+                    j_AppInstalleDonTelephoneRepository.updatePhones()
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        startAsHost()
+                    }
+                    lastConnectionMode = ConnectionMode.HOST
+                    updateTypePhone(true)
+                } else {
+                    // This is a client device (receiver)
+                    // Find the host phone to get its address
+                    val hostPhone = j_AppInstalleDonTelephoneRepository.modelDatas.find {
+                        hostDevices.any { host -> it.infosDeBase.nom.lowercase().contains(host.lowercase()) }
+                    }
+
+                    if (hostPhone != null) {
+                        currentPhone.etatesMutable.nearbyWifiAdressConexion = hostPhone.etatesMutable.nearbyWifiAdressConexion
+                        j_AppInstalleDonTelephoneRepository.updatePhones()
+
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            startAsClient()
+                        }
+                        lastConnectionMode = ConnectionMode.CLIENT
+                        updateTypePhone(false)
+                    }
+                }
+
+                // Set up connection monitoring
+                viewModelScope.launch {
+                    while (true) {
+                        delay(10000) // Check connection every 10 seconds
+                        if (!_connectionUiState.value.isConnected &&
+                            lastConnectionMode != ConnectionMode.NONE &&
+                            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            initiateReconnection()
+                        }
+                    }
+                }
+            }
+        }
+    }
     private fun handlePayload(payload: String) {
         WifiUpdateClientDisplayerStats.fromPayload(payload)?.let { (messageType, content) ->
             when (messageType) {

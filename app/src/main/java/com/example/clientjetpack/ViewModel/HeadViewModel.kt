@@ -3,8 +3,8 @@ package com.example.clientjetpack.ViewModel
 import Z_MasterOfApps.Kotlin.Model.B_ClientsDataBase
 import Z_MasterOfApps.Kotlin.Model.CategoriesRepositoryImpl
 import Z_MasterOfApps.Kotlin.Model.I_CategoriesRepository
+import Z_MasterOfApps.Kotlin.Model.J_AppInstalleDonTelephoneRepository
 import Z_MasterOfApps.Kotlin._WorkingON.WO_.ConnectionManager
-import Z_MasterOfApps.Kotlin._WorkingON.WO_.WifiUpdateClientDisplayerStats
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.SoldArticlesTabelle
@@ -46,8 +46,9 @@ import java.util.Locale
 
 
 open class HeadViewModel(
-    context: Context,
     val database: AppDatabase,
+    context: Context,
+    private val j_AppInstalleDonTelephoneRepository: J_AppInstalleDonTelephoneRepository
 ) : ViewModel() {
     private val tag = "HeadViewModel"
     private val firestore = Firebase.firestore
@@ -58,7 +59,6 @@ open class HeadViewModel(
         )
     )
 
-
     open val uiState = _uiState.asStateFlow()
 
     val categoriesRepository: I_CategoriesRepository = CategoriesRepositoryImpl()
@@ -66,7 +66,7 @@ open class HeadViewModel(
     // Initialize ConnectionManager without the callback parameter
     val connectionManager = ConnectionManager(
         viewModel = this@HeadViewModel,
-        context = context
+        context = context ,j_AppInstalleDonTelephoneRepository
     )
 
     init {

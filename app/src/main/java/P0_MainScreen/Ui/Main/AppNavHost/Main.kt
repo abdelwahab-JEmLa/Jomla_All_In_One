@@ -33,7 +33,6 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.clientjetpack.AppViewModels
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.database.database
@@ -99,7 +98,6 @@ private fun PreviewApp2_F1() {
 
 @Composable
 fun AppNavHost(
-    appViewModels: AppViewModels,
     navController: NavHostController,
     onToggleNavBar: () -> Unit,
     modifier: Modifier = Modifier,
@@ -111,7 +109,7 @@ fun AppNavHost(
     onClear: () -> Unit,
     headViewModel: HeadViewModel,
 ) {
-    val uiState by appViewModels.headViewModel.uiState.collectAsState()
+    val uiState by headViewModel.uiState.collectAsState()
 
     // Get current client from settings
     val currentClientId = uiState.appSettingsSaverModel
@@ -129,7 +127,7 @@ fun AppNavHost(
     var lockExpandedPrices by rememberSaveable { mutableStateOf(false) }
     val clientEnCourDeVent by rememberSaveable {
         mutableLongStateOf(
-            appViewModels.headViewModel._uiState.value
+            headViewModel._uiState.value
                 .appSettingsSaverModel.find { it.name == "clientBuyerNowId" }
                 ?.valueLong ?: 0)
     }
@@ -166,7 +164,7 @@ fun AppNavHost(
             composable(Screen.EditDatabaseWithCreateNewArticles.route) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     FragmentStartupScreen(
-                        viewModel = appViewModels.headViewModel,
+                        viewModel = headViewModel,
                         onToggleNavBar = onToggleNavBar,
                         reloadTrigger = reloadTrigger,
                         onClickToOpenWindos = { articleDataBaseOn, indexColor ->
@@ -176,13 +174,13 @@ fun AppNavHost(
                             if (currentClientId == 0L) {
                                 showClientSelection = true
                             } else {
-                                appViewModels.headViewModel.openWindowsNewSaleWithUpdateCurrent(
+                                headViewModel.openWindowsNewSaleWithUpdateCurrent(
                                     relatedArticleBaseStats!!.idArticle.toLong(),
                                     currentClientId,
                                     pendingIndexColor
                                 )
                                 opnerSaleWindows = true
-                                appViewModels.headViewModel.connectionManager.sendOrderToClientDisplayer(
+                                headViewModel.connectionManager.sendOrderToClientDisplayer(
                                     WifiUpdateClientDisplayerStats.ClientWindowsDisplayedProductId.prefix,
                                     relatedArticleBaseStats!!.idArticle.toLong()
                                 )
@@ -215,11 +213,11 @@ fun AppNavHost(
 
                 Box(modifier = Modifier.fillMaxSize()) {
                     SoldCartScreen(
-                        viewModel = appViewModels.headViewModel,
+                        viewModel = headViewModel,
                         clientBuyerNow = currentClient,
                         uiState = uiState,
                         onConfirmOrder = {
-                            appViewModels.headViewModel
+                            headViewModel
                                 .updateLongAppSetting("clientBuyerNowId", 0)
                         }, viewModelInitApp = viewModelInitApp
                     )
@@ -232,15 +230,15 @@ fun AppNavHost(
         if (showClientSelectionWithoutCondition || (showClientSelection && currentClientId == 0L)) {
             ClientSelectionDialog(
                 soldArticle = uiState.soldArticlesModel,
-                viewModel = appViewModels.headViewModel,
+                viewModel = headViewModel,
                 clients = viewModelInitApp.clientDataBaseSnapList,
                 onClientSelected = { AppSetting ->
-                    appViewModels.headViewModel.updateLongAppSetting(
+                    headViewModel.updateLongAppSetting(
                         "clientBuyerNowId",
                         AppSetting.id
                     )
                     if (!showClientSelectionWithoutCondition) {
-                        appViewModels.headViewModel.openWindowsNewSaleWithUpdateCurrent(
+                        headViewModel.openWindowsNewSaleWithUpdateCurrent(
                             relatedArticleBaseStats!!.idArticle.toLong(),
                             AppSetting.id,
                             pendingIndexColor
@@ -262,11 +260,11 @@ fun AppNavHost(
             A_VendeurAfficheurInfosProduit_FragmentMainId3(
                 modifier = Modifier.padding(horizontal = 3.dp),
                 uiState = uiState,
-                viewModel = appViewModels.headViewModel,
+                viewModel = headViewModel,
                 onDismiss = {
-                    appViewModels.headViewModel.clearCurrentSale()
+                    headViewModel.clearCurrentSale()
                     opnerSaleWindows = false
-                    appViewModels.headViewModel.connectionManager.sendOrderToClientDisplayer(
+                    headViewModel.connectionManager.sendOrderToClientDisplayer(
                         WifiUpdateClientDisplayerStats.DISMISS_PRODUCT_INFO.prefix    //-->
                         //TODO(1): fait que au client quand ca ce dissmiss il revien a FragmentStartupScreen au liex gps 
                     )

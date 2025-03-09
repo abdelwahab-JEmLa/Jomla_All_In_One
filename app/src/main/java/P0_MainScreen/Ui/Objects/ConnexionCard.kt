@@ -28,16 +28,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.clientjetpack.AppViewModels
 import com.example.clientjetpack.Models.ProductDisplayController
+import com.example.clientjetpack.ViewModel.HeadViewModel
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun ConnexionCard(
     productDisplayController: ProductDisplayController,
-    appViewModels: AppViewModels,
     onClickToStartAsClient: () -> Unit,
-    lockHost: Boolean
+    lockHost: Boolean,
+    headViewModel: HeadViewModel
 ) {
     var isCollapsed by remember { mutableStateOf(true) }
     var messageText by remember { mutableStateOf("") }
@@ -73,13 +73,13 @@ fun ConnexionCard(
                     ConnectionButtons(
                         isHostEnabled = isHostEnabled,
                         onHostClick = {
-                            appViewModels.headViewModel.run {
+                            headViewModel.run {
                                 connectionManager.startAsHost()
                                 connectionManager.updateTypePhone(type = true)
                             }
                         },
                         onClientClick = {
-                            appViewModels.headViewModel.run {
+                            headViewModel.run {
                                 connectionManager.startAsClient()
                                 connectionManager.updateTypePhone()
                             }
@@ -93,11 +93,11 @@ fun ConnexionCard(
                         onMessageChange = { messageText = it },
                         onSendClick = {
                             if (messageText.isNotEmpty()) {
-                                appViewModels.headViewModel.connectionManager.sendOrderToClientDisplayer("Message", messageText)
+                                headViewModel.connectionManager.sendOrderToClientDisplayer("Message", messageText)
                                 messageText = ""
                             }
                         },
-                        onDisconnectClick = { appViewModels.headViewModel.connectionManager.disconnect() },
+                        onDisconnectClick = { headViewModel.connectionManager.disconnect() },
                         receivedMessage = productDisplayController.testMessageByWifi
                     )
                 }

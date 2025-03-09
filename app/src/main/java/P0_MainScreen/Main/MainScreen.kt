@@ -31,25 +31,28 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.clientjetpack.AppViewModels
+import com.example.clientjetpack.ViewModel.HeadViewModel
+import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun MainScreen(
-    appViewModels: AppViewModels,
     modifier: Modifier = Modifier,
     viewModelInitApp: ViewModelInitApp = viewModel(),
     xmlResources: List<Pair<String, Int>>?=null
 ) {
-    val headViewModel = appViewModels.headViewModel
+    val context = LocalContext.current
+    // Get the ViewModel with the context parameter
+    val headViewModel: HeadViewModel = koinViewModel(parameters = { parametersOf(context) })
+
     val uiState by headViewModel.uiState.collectAsState()
     val productDisplayController = uiState.productDisplayController
-
-
     // Handle fullscreen mode
     HandleFullscreenMode(productDisplayController)
 
@@ -95,20 +98,19 @@ fun MainScreen(
                             && !lockHost
                 ) {
                     ConnexionCard(
+                        headViewModel=headViewModel,
                         productDisplayController = productDisplayController,
-                        appViewModels = appViewModels,
                         onClickToStartAsClient = {
                             isNavBarVisible = false
                             isFabVisible = false
                         } ,
-                        lockHost
+                        lockHost= lockHost
                     )
                 }
 
                 // Main Content Area
                 Box(modifier = Modifier.weight(1f)) {
                     AppNavHost(
-                        appViewModels = appViewModels,
                         navController = navController,
                         onToggleNavBar = { isNavBarVisible = !isNavBarVisible },
                         modifier = Modifier.fillMaxSize(),

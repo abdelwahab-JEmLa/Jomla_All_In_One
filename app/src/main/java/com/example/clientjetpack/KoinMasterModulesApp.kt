@@ -9,7 +9,8 @@ import Z_MasterOfApps.Kotlin.Model.I_CategoriesRepository
 import Z_MasterOfApps.Kotlin.Model.J_AppInstalleDonTelephoneRepository
 import Z_MasterOfApps.Kotlin.Model.J_AppInstalleDonTelephoneRepositoryImpl
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_MasterOfApps.Kotlin._WorkingON.WO_.ConnectionManager
+import android.content.Context
+import com.example.clientjetpack.Modules.AppDatabase
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -22,19 +23,18 @@ val repositoryModule = module {
     single<I_CategoriesRepository> { CategoriesRepositoryImpl() }
     single<H_GroupesCategoriesRepository> { H_GroupesCategoriesRepositoryImpl() }
     single<J_AppInstalleDonTelephoneRepository> { J_AppInstalleDonTelephoneRepositoryImpl() }
+    // Database singleton using the nested DatabaseModule
+    single { AppDatabase.DatabaseModule.getDatabase(get()) }
 }
 
 // Module pour les ViewModels
 val viewModelModule = module {
     viewModel { ViewModelInitApp() }
-    viewModel { (viewModel: HeadViewModel, context: Context) ->
-        ConnectionManager(viewModel, context, get())
-    }
+    viewModel { (context: Context) -> HeadViewModel(get(), context, get()) }
 }
-
 
 // Module principal qui regroupe tous les autres modules
 val appModule = module {
     // Inclure d'autres modules dans l'ordre correct
-    includes(repositoryModule, viewModelModule, )
+    includes(repositoryModule, viewModelModule)
 }
