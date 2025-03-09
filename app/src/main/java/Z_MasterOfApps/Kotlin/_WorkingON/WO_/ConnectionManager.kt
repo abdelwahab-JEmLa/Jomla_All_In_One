@@ -1,7 +1,7 @@
 package Z_MasterOfApps.Kotlin._WorkingON.WO_
 
+
 import Z_MasterOfApps.Kotlin.Model.J_AppInstalleDonTelephoneRepository
-import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
@@ -20,9 +20,6 @@ import com.google.android.gms.nearby.connection.ConnectionsStatusCodes
 import com.google.android.gms.nearby.connection.DiscoveredEndpointInfo
 import com.google.android.gms.nearby.connection.DiscoveryOptions
 import com.google.android.gms.nearby.connection.EndpointDiscoveryCallback
-import com.google.android.gms.nearby.connection.Payload
-import com.google.android.gms.nearby.connection.PayloadCallback
-import com.google.android.gms.nearby.connection.PayloadTransferUpdate
 import com.google.android.gms.nearby.connection.Strategy
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -33,13 +30,13 @@ import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicBoolean
 
 class ConnectionManager(
-    private val viewModel: HeadViewModel,
-    private val context: Context,
+    val viewModel: HeadViewModel,
+    val context: Context,
     private val j_AppInstalleDonTelephoneRepository: J_AppInstalleDonTelephoneRepository
 ) : ViewModel() {
 
     private val _connectionUiState = MutableStateFlow(ConnectionUiState())
-    private var endpointId: String? = null
+    var endpointId: String? = null
     private val serviceId = "com.example.clientjetpack"
     private val strategy = Strategy.P2P_POINT_TO_POINT
 
@@ -54,6 +51,13 @@ class ConnectionManager(
     private var isAdvertising = false
     private var isDiscovering = false
 
+    // Create instances of extracted components
+    private val permissionHandler = PermissionHandler(context ,this)
+    private val payloadHandler = PayloadHandler(this)
+    private val displayController = DisplayController(this)
+    val dataSender = DataSender(this)
+    private val payloadCallback = NearbyPayloadCallback(this, payloadHandler)
+
     private enum class ConnectionMode {
         HOST, CLIENT, NONE
     }
@@ -62,9 +66,7 @@ class ConnectionManager(
         viewModelScope.launch {
             logI("Initializing ConnectionManager")
 
-            // Wait for the repository to finish loading data
-            // Replace the fixed delay with a check for progressRepo completion
-            var timeout = 60000L // 60 second timeout as a safety measure
+            val timeout = 60000L // 60 second timeout as a safety measure
             val startTime = System.currentTimeMillis()
 
             while (j_AppInstalleDonTelephoneRepository.progressRepo.value < 1.0f) {
@@ -261,72 +263,14 @@ class ConnectionManager(
             return null
         }
     }
-    private fun handlePayload(payload: String) {
-        logD("Received payload: ${payload.take(50)}${if (payload.length > 50) "..." else ""}")
 
-        // Handle special control messages first
-        if (payload == "ping" || payload == "Connection established") {
-            logD("Received control message: $payload")
-            return
-        }
-
-        // Then try to parse regular messages
-        WifiUpdateClientDisplayerStats.fromPayload(payload)?.let { (messageType, content) ->
-            logD("Parsed message type: $messageType, content: ${content.take(20)}${if (content.length > 20) "..." else ""}")
-            when (messageType) {
-                WifiUpdateClientDisplayerStats.ClientMainGridScrollPosition -> updateDisplayController {
-                    copy(mainGridScrollPosition = content.toInt())
-                }
-
-                WifiUpdateClientDisplayerStats.ClientWindowsDisplayedProductId -> updateDisplayController {
-                    copy(clientWindowsDisplayedProductId = content.toLong())
-                }
-
-                WifiUpdateClientDisplayerStats.DISMISS_PRODUCT_INFO -> updateDisplayController {
-                    copy(
-                        clientWindowsDisplayedProductId = null,
-                        searchWindowsDisplaye = ""
-                    )
-                }
-
-                WifiUpdateClientDisplayerStats.ClientWindowsLazyRowSupColorsScrolle -> updateDisplayController {
-                    copy(clientWindowsLazyRowSupColorsScroll = content.toInt())
-                }
-
-                WifiUpdateClientDisplayerStats.WindowsPickerDisplayedQuantity -> updateDisplayController {
-                    copy(
-                        clientWindowsPickerDisplayedQuantity = if (content == "0")
-                            1 else {
-                            content.toInt()
-                        }
-                    )
-                }
-
-                WifiUpdateClientDisplayerStats.ClientWindowsSelectedColorId -> updateDisplayController {
-                    copy(clientWindowsSelectedColorId = content.toLong())
-                }
-
-                WifiUpdateClientDisplayerStats.SearchWindowsDisplaye -> updateDisplayController {
-                    copy(searchWindowsDisplaye = content)
-                }
-                
-                WifiUpdateClientDisplayerStats.NewArregmentColorsJsonStruct -> updateDisplayController {
-                    copy(newArregmentColorsJsonStruct = content)
-                }
-            }
-        } ?: logD("Unrecognized payload format: $payload")  // Changed from logE to logD to reduce error noise
-    }
-
-
+    // Use the extracted components' methods instead of local implementations
     fun updateDisplayController(update: ProductDisplayController.() -> ProductDisplayController) {
-        viewModel._uiState.update { it.copy(productDisplayController = update(it.productDisplayController)) }
+        displayController.updateDisplayController(update)
     }
 
     fun sendOrderToClientDisplayer(orderName: String, data: Any? = null) {
-        logI("Sending order to client: $orderName, data: $data")
-        viewModelScope.launch {
-            sendData("$orderName$data")
-        }
+        displayController.sendOrderToClientDisplayer(orderName, data)
     }
 
     fun initiateReconnection() {
@@ -396,7 +340,7 @@ class ConnectionManager(
             logI("Reconnection already in progress, skipping new attempt")
         }
     }
-    // 2. Add a method to check the actual connection status with the Nearby API
+
     private fun checkActualConnectionStatus(): Boolean {
         return try {
             // Check if endpoint ID is not null AND if the Nearby API confirms we have connected endpoints
@@ -406,7 +350,7 @@ class ConnectionManager(
                         // so we're using a small ping test
                         if (endpointId != null) {
                             try {
-                                client.sendPayload(endpointId!!, Payload.fromBytes("ping".toByteArray()))
+                                client.sendPayload(endpointId!!, com.google.android.gms.nearby.connection.Payload.fromBytes("ping".toByteArray()))
                                 true
                             } catch (e: Exception) {
                                 logE("Failed ping test", e)
@@ -431,7 +375,6 @@ class ConnectionManager(
         return shouldRetry
     }
 
-    // 3. Replace stopNearbyServices with a more thorough cleanup method
     private fun cleanupExistingConnections() {
         logI("Thoroughly cleaning up all existing connections")
         try {
@@ -477,13 +420,14 @@ class ConnectionManager(
             logE("Error during connection cleanup", e)
         }
     }
+
     // 4. Modify the startAsClient method to handle duplicate endpoints better
     fun startAsClient() {
         viewModelScope.launch {
             logI("Starting as client")
-            if (!checkRequiredPermissions()) {
+            if (!permissionHandler.checkRequiredPermissions()) {
                 logE("Missing required permissions for Nearby Connections")
-                val missingPermissions = getRequiredPermissions().filter { permission ->
+                val missingPermissions =permissionHandler. getRequiredPermissions().filter { permission ->
                     ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED
                 }
                 logE("Missing permissions: $missingPermissions")
@@ -636,7 +580,7 @@ class ConnectionManager(
                     updateConnectionStatus("Connecté")
                     _connectionUiState.update { it.copy(isConnected = true) }
                     retryCount = 0
-                    sendData("Connection established")
+                    dataSender.sendData("Connection established")
                     logI("Connection successfully established with endpoint $endpointId")
                 }
                 ConnectionsStatusCodes.STATUS_CONNECTION_REJECTED -> {
@@ -659,43 +603,7 @@ class ConnectionManager(
             handleDisconnection(endpointId)
         }
     }
-
-    private val payloadCallback = object : PayloadCallback() {
-        override fun onPayloadReceived(endpointId: String, payload: Payload) {
-            if (payload.type == Payload.Type.BYTES) {
-                try {
-                    val rawMessage = String(payload.asBytes()!!)
-                    logD("Payload received from $endpointId: ${rawMessage.take(50)}${if (rawMessage.length > 50) "..." else ""}")
-                    handlePayload(rawMessage)
-                } catch (e: Exception) {
-                    logE("Error processing payload from $endpointId", e)
-                }
-            } else {
-                logW("Received non-bytes payload from $endpointId: ${payload.type}")
-            }
-        }
-
-        override fun onPayloadTransferUpdate(endpointId: String, update: PayloadTransferUpdate) {
-            when (update.status) {
-                PayloadTransferUpdate.Status.SUCCESS -> {
-                    logD("Payload transfer succeeded: endpointId=$endpointId, bytesTransferred=${update.bytesTransferred}")
-                }
-                PayloadTransferUpdate.Status.FAILURE -> {
-                    logE("Payload transfer failed: endpointId=$endpointId, bytesTransferred=${update.bytesTransferred}")
-                    handleTransferFailure()
-                }
-                PayloadTransferUpdate.Status.IN_PROGRESS -> {
-                    logV("Payload transfer in progress: endpointId=$endpointId, bytesTransferred=${update.bytesTransferred}")
-                }
-                PayloadTransferUpdate.Status.CANCELED -> {
-                    logW("Payload transfer canceled: endpointId=$endpointId, bytesTransferred=${update.bytesTransferred}")
-                    handleTransferFailure()
-                }
-            }
-        }
-    }
-
-    private fun handleTransferFailure() {
+    fun handleTransferFailure() {
         logE("Handling transfer failure")
         viewModelScope.launch {
             if (_connectionUiState.value.isConnected) {
@@ -709,7 +617,7 @@ class ConnectionManager(
         endpointId?.let { endpoint ->
             try {
                 logD("Sending ping to test connection with endpoint $endpoint")
-                sendData("ping")
+                dataSender.sendData("ping")
             } catch (e: Exception) {
                 logE("Failed to send ping to endpoint $endpoint", e)
                 handleConnectionFailure("Perte de connexion détectée")
@@ -767,38 +675,6 @@ class ConnectionManager(
             logE("Error stopping Nearby services", e)
         }
     }
-
-
-
-
-    fun sendData(data: Any) {
-        endpointId?.let { endpoint ->
-            try {
-                val payload = when (data) {
-                    is String -> Payload.fromBytes(data.toByteArray())
-                    else -> {
-                        logE("Unsupported data type for sending: ${data.javaClass.simpleName}")
-                        return
-                    }
-                }
-
-                logD("Sending data to endpoint $endpoint: ${(data as? String)?.take(50)}${if ((data as? String)?.length ?: 0 > 50) "..." else ""}")
-                Nearby.getConnectionsClient(context)
-                    .sendPayload(endpoint, payload)
-                    .addOnSuccessListener {
-                        logD("Successfully sent payload to endpoint $endpoint")
-                    }
-                    .addOnFailureListener { e ->
-                        logE("Failed to send payload to endpoint $endpoint", e)
-                        handleTransferFailure()
-                    }
-            } catch (e: Exception) {
-                logE("Exception while sending data to endpoint $endpoint", e)
-                handleTransferFailure()
-            }
-        } ?: logE("Cannot send data: No connected endpoint")
-    }
-
     fun disconnect() {
         logI("Disconnecting and cleaning up resources")
         connectionMonitorJob?.cancel()
@@ -829,49 +705,6 @@ class ConnectionManager(
         }
         logI("Disconnect complete, connection state reset")
     }
-
-    // Modified to get appropriate permissions based on API level
-    private fun getRequiredPermissions(): Array<String> {
-        return when {
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-                arrayOf(
-                    Manifest.permission.BLUETOOTH_SCAN,
-                    Manifest.permission.BLUETOOTH_ADVERTISE,
-                    Manifest.permission.BLUETOOTH_CONNECT,
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                )
-            }
-            else -> {
-                arrayOf(
-                    Manifest.permission.BLUETOOTH,
-                    Manifest.permission.BLUETOOTH_ADMIN,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                )
-            }
-        }
-    }
-
-
-
-    private fun checkRequiredPermissions(): Boolean {
-        val permissions = getRequiredPermissions()
-        val missingPermissions = permissions.filter { permission ->
-            ContextCompat.checkSelfPermission(
-                context,
-                permission
-            ) != PackageManager.PERMISSION_GRANTED
-        }
-
-        if (missingPermissions.isNotEmpty()) {
-            logW("Missing permissions: $missingPermissions")
-        } else {
-            logI("All required permissions granted")
-        }
-
-        return missingPermissions.isEmpty()
-    }
-
     private fun updateConnectionStatus(status: String) {
         logI("Updating connection status: $status")
         _connectionUiState.update { it.copy(
@@ -895,39 +728,13 @@ class ConnectionManager(
         connectionMonitorJob?.cancel()
         reconnectionJob?.cancel()
     }
-
-    // Improved logging functions to ensure visibility in Logcat
-    private fun logV(message: String) {
-        Log.v(APP_TAG, "$TAG: $message")
-    }
-
-    private fun logD(message: String) {
-        Log.d(APP_TAG, "$TAG: $message")
-    }
-
-    private fun logI(message: String) {
-        Log.i(APP_TAG, "$TAG: $message")
-    }
-
-    private fun logW(message: String) {
-        Log.w(APP_TAG, "$TAG: $message")
-    }
-
-    private fun logE(message: String, throwable: Throwable? = null) {
-        if (throwable != null) {
-            Log.e(APP_TAG, "$TAG: $message", throwable)
-        } else {
-            Log.e(APP_TAG, "$TAG: $message")
-        }
-    }
-
     // 7. Improve the connection initialization logic in startAsHost method
     fun startAsHost() {
         viewModelScope.launch {
             logI("Starting as host")
-            if (!checkRequiredPermissions()) {
+            if (!permissionHandler.checkRequiredPermissions()) {
                 logE("Missing required permissions for Nearby Connections")
-                val missingPermissions = getRequiredPermissions().filter { permission ->
+                val missingPermissions = permissionHandler.getRequiredPermissions().filter { permission ->
                     ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED
                 }
                 logE("Missing permissions: $missingPermissions")
@@ -987,34 +794,32 @@ class ConnectionManager(
             }
         }
     }
-}
 
+    private val APP_TAG = "MyApp"
 
-data class ConnectionUiState(
-    val connectionStatus: String = "Déconnecté",
-    val isConnected: Boolean = false,
-    val isHostPhone: Boolean = false,
-    val error: String? = null,
-    val lastSuccessfulConnection: Long? = null,
-    val reconnectionAttempts: Int = 0
-)
+    fun logV(message: String) {
+        Log.v(APP_TAG, " $message")
+    }
 
-enum class WifiUpdateClientDisplayerStats(val prefix: String) {
-    ClientMainGridScrollPosition("ClientMainGridScrollPosition"),
-    ClientWindowsLazyRowSupColorsScrolle("ClientWindowsLazyRowSupColorsScrolle"),
-    ClientWindowsDisplayedProductId("ClientWindowsDisplayedProductId"),
-    ClientWindowsSelectedColorId("clientWindowsSelectedColorId"),
-    DISMISS_PRODUCT_INFO("DismissWindowsInfosProduct"),
-    WindowsPickerDisplayedQuantity("WindowsPickerDisplayedQuantity"),
-    SearchWindowsDisplaye("SearchWindowsDisplaye"),
-    NewArregmentColorsJsonStruct("NewArregmentColorsJsonStruct")
-    ;
+    fun logD(message: String) {
+        Log.d(APP_TAG, " $message")
+    }
 
-    companion object {
-        fun fromPayload(payload: String): Pair<WifiUpdateClientDisplayerStats, String>? {
-            return entries.firstOrNull { payload.startsWith(it.prefix) }?.let {
-                it to payload.removePrefix(it.prefix)
-            }
+    fun logI(message: String) {
+        Log.i(APP_TAG, " $message")
+    }
+
+    fun logW(message: String) {
+        Log.w(APP_TAG, " $message")
+    }
+
+    fun logE(message: String, throwable: Throwable? = null) {
+        if (throwable != null) {
+            Log.e(APP_TAG, " $message", throwable)
+        } else {
+            Log.e(APP_TAG, " $message")
         }
     }
+
+
 }
