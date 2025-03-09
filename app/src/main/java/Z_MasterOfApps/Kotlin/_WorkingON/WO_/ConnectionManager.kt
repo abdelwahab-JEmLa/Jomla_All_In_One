@@ -39,6 +39,7 @@ class ConnectionManager(
     private val context: Context,
     private val j_AppInstalleDonTelephoneRepository: J_AppInstalleDonTelephoneRepository
 ) : ViewModel() {
+
     private val _connectionUiState = MutableStateFlow(ConnectionUiState())
     private var endpointId: String? = null
     private val serviceId = "com.example.clientjetpack"
@@ -59,84 +60,150 @@ class ConnectionManager(
 
     init {
         viewModelScope.launch {
-            Log.d(TAG, "Initializing ConnectionManager")
-            // Get current device name
-            val currentDeviceName = "${Build.MANUFACTURER} ${Build.MODEL}"
-            Log.d(TAG, "Current device name: $currentDeviceName")
+            logI("Initializing ConnectionManager")
 
-            // Find the current phone in the repository
-            val currentPhone = j_AppInstalleDonTelephoneRepository.modelDatas.find {
-                it.infosDeBase.nom == currentDeviceName
+            // Give repository time to load data - delay a bit to ensure Firebase data is loaded
+            delay(1000)
+
+            // Get current device name without potential extras
+            val manufacturerModel = "${Build.MANUFACTURER} ${Build.MODEL}"
+            logI("Raw device name: $manufacturerModel")
+
+            // Clean up device name (remove potential extras like "pk" suffix)
+            val currentDeviceName = manufacturerModel.trim().split(" ").take(4).joinToString(" ")
+            logI("Cleaned current device name: $currentDeviceName")
+
+            // Log available devices in repository for debugging
+            logI("Available devices in repository: ${j_AppInstalleDonTelephoneRepository.modelDatas.map { "${it.id}: ${it.infosDeBase.nom}" }}")
+
+            // More flexible device matching
+            val currentPhone = j_AppInstalleDonTelephoneRepository.modelDatas.find { phone ->
+                // Try exact match first
+                if (phone.infosDeBase.nom == currentDeviceName) return@find true
+
+                // Then try case-insensitive contains match
+                if (phone.infosDeBase.nom.contains(currentDeviceName, ignoreCase = true)) return@find true
+
+                // Then try matching just the model part if it's distinctive enough
+                val model = Build.MODEL.trim()
+                if (model.length > 3 && phone.infosDeBase.nom.contains(model, ignoreCase = true)) return@find true
+
+                false
             }
 
             if (currentPhone != null) {
-                Log.d(TAG, "Found current phone in repository: ${currentPhone.id}")
+                logI("Found current phone in repository: ${currentPhone.id} - ${currentPhone.infosDeBase.nom}")
                 // Check if this is a receiver phone
                 val isReceiver = currentPhone.etatesMutable.itsReciverTelephone
-                Log.d(TAG, "Is this a receiver phone? $isReceiver")
+                logI("Is this a receiver phone? $isReceiver")
 
                 if (!isReceiver) {
                     // This is a host device
-                    Log.d(TAG, "This is a host device, setting up host configuration")
+                    logI("This is a host device, setting up host configuration")
                     currentPhone.etatesMutable.nearbyWifiAdressIpConexion = "host_${currentDeviceName.replace(" ", "_")}"
                     j_AppInstalleDonTelephoneRepository.updatePhones()
-                    Log.d(TAG, "Set nearbyWifiAdressIpConexion to: ${currentPhone.etatesMutable.nearbyWifiAdressIpConexion}")
+                    logI("Set nearbyWifiAdressIpConexion to: ${currentPhone.etatesMutable.nearbyWifiAdressIpConexion}")
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        Log.d(TAG, "Starting as host (Android API 33+)")
+                        logI("Starting as host (Android API 33+)")
                         startAsHost()
                     } else {
-                        Log.d(TAG, "Not starting as host because device API level (${Build.VERSION.SDK_INT}) is below TIRAMISU (33)")
+                        logI("Not starting as host because device API level (${Build.VERSION.SDK_INT}) is below TIRAMISU (33)")
                     }
                     lastConnectionMode = ConnectionMode.HOST
                 } else {
-                    Log.d(TAG, "This is a client device, looking for host phone")
+                    logI("This is a client device, looking for host phone")
                     val hostPhone = j_AppInstalleDonTelephoneRepository.modelDatas.find {
                         !it.etatesMutable.itsReciverTelephone && it.etatesMutable.nearbyWifiAdressIpConexion.isNotEmpty()
                     }
 
                     if (hostPhone != null) {
-                        Log.d(TAG, "Found host phone: ${hostPhone.infosDeBase.nom} with connection: ${hostPhone.etatesMutable.nearbyWifiAdressIpConexion}")
+                        logI("Found host phone: ${hostPhone.infosDeBase.nom} with connection: ${hostPhone.etatesMutable.nearbyWifiAdressIpConexion}")
                         currentPhone.etatesMutable.nearbyWifiAdressIpConexion = hostPhone.etatesMutable.nearbyWifiAdressIpConexion
                         j_AppInstalleDonTelephoneRepository.updatePhones()
-                        Log.d(TAG, "Set client nearbyWifiAdressIpConexion to: ${currentPhone.etatesMutable.nearbyWifiAdressIpConexion}")
+                        logI("Set client nearbyWifiAdressIpConexion to: ${currentPhone.etatesMutable.nearbyWifiAdressIpConexion}")
 
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                            Log.d(TAG, "Starting as client (Android API 33+)")
+                            logI("Starting as client (Android API 33+)")
                             startAsClient()
                         } else {
-                            Log.d(TAG, "Not starting as client because device API level (${Build.VERSION.SDK_INT}) is below TIRAMISU (33)")
+                            logI("Not starting as client because device API level (${Build.VERSION.SDK_INT}) is below TIRAMISU (33)")
                         }
                         lastConnectionMode = ConnectionMode.CLIENT
                     } else {
-                        Log.e(TAG, "No host phone found in repository!")
+                        logE("No host phone found in repository!")
                     }
                 }
 
                 // Set up connection monitoring
                 viewModelScope.launch {
-                    Log.d(TAG, "Starting connection monitoring job")
+                    logI("Starting connection monitoring job")
                     while (true) {
                         delay(10000) // Check connection every 10 seconds
-                        Log.d(TAG, "Connection check: isConnected=${_connectionUiState.value.isConnected}, lastMode=$lastConnectionMode")
+                        logD("Connection check: isConnected=${_connectionUiState.value.isConnected}, lastMode=$lastConnectionMode")
                         if (!_connectionUiState.value.isConnected &&
                             lastConnectionMode != ConnectionMode.NONE &&
                             Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                            Log.d(TAG, "Connection not detected, initiating reconnection")
+                            logI("Connection not detected, initiating reconnection")
                             initiateReconnection()
                         }
                     }
                 }
             } else {
-                Log.e(TAG, "Current phone not found in repository! Device: $currentDeviceName")
+                logE("Current phone not found in repository! Device: $currentDeviceName")
+                logI("Attempting to register the device automatically")
+
+                // Auto-register this device if possible
+                val newPhone = createNewPhoneEntry(currentDeviceName)
+                if (newPhone != null) {
+                    logI("Successfully registered new device with ID: ${newPhone.id}")
+
+                    // Set up as host by default for a new device
+                    newPhone.etatesMutable.nearbyWifiAdressIpConexion = "host_${currentDeviceName.replace(" ", "_")}"
+                    j_AppInstalleDonTelephoneRepository.updatePhones()
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        logI("Starting as host (Android API 33+) for new device")
+                        startAsHost()
+                        lastConnectionMode = ConnectionMode.HOST
+                    }
+                }
             }
         }
     }
 
+    private fun createNewPhoneEntry(deviceName: String): Z_MasterOfApps.Kotlin.Model.J_AppInstalleDonTelephone? {
+        try {
+            // Find the highest ID currently in use
+            val maxId = j_AppInstalleDonTelephoneRepository.modelDatas.maxOfOrNull { it.id } ?: 0
+            val newId = maxId + 1
+
+            // Create new phone entry
+            val newPhone = Z_MasterOfApps.Kotlin.Model.J_AppInstalleDonTelephone(newId).apply {
+                infosDeBase.nom = deviceName
+                // Get screen width in dp
+                val displayMetrics = context.resources.displayMetrics
+                val widthInDp = (displayMetrics.widthPixels / displayMetrics.density).toInt()
+                infosDeBase.widthScreen = widthInDp
+                infosDeBase.itsTablette = widthInDp > 400
+                etatesMutable.itsReciverTelephone = false
+            }
+
+            // Add to repository
+            j_AppInstalleDonTelephoneRepository.modelDatas.add(newPhone)
+            j_AppInstalleDonTelephoneRepository.updatePhones()
+
+            return newPhone
+        } catch (e: Exception) {
+            logE("Failed to create new phone entry", e)
+            return null
+        }
+    }
+
     private fun handlePayload(payload: String) {
-        Log.d(TAG, "Received payload: ${payload.take(50)}${if (payload.length > 50) "..." else ""}")
+        logD("Received payload: ${payload.take(50)}${if (payload.length > 50) "..." else ""}")
         WifiUpdateClientDisplayerStats.fromPayload(payload)?.let { (messageType, content) ->
-            Log.d(TAG, "Parsed message type: $messageType, content: ${content.take(20)}${if (content.length > 20) "..." else ""}")
+            logD("Parsed message type: $messageType, content: ${content.take(20)}${if (content.length > 20) "..." else ""}")
             when (messageType) {
                 WifiUpdateClientDisplayerStats.ClientMainGridScrollPosition -> updateDisplayController {
                     copy(mainGridScrollPosition = content.toInt())
@@ -178,7 +245,7 @@ class ConnectionManager(
                     copy(newArregmentColorsJsonStruct = content)
                 }
             }
-        } ?: Log.e(TAG, "Failed to parse payload: $payload")
+        } ?: logE("Failed to parse payload: $payload")
     }
 
     fun updateDisplayController(update: ProductDisplayController.() -> ProductDisplayController) {
@@ -186,7 +253,7 @@ class ConnectionManager(
     }
 
     fun sendOrderToClientDisplayer(orderName: String, data: Any? = null) {
-        Log.d(TAG, "Sending order to client: $orderName, data: $data")
+        logI("Sending order to client: $orderName, data: $data")
         viewModelScope.launch {
             sendData("$orderName$data")
         }
@@ -194,17 +261,17 @@ class ConnectionManager(
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun initiateReconnection() {
-        Log.d(TAG, "Initiating reconnection, isReconnecting=${isReconnecting.get()}, retryCount=$retryCount/$maxRetries")
+        logI("Initiating reconnection, isReconnecting=${isReconnecting.get()}, retryCount=$retryCount/$maxRetries")
         if (isReconnecting.compareAndSet(false, true)) {
             reconnectionJob?.cancel()
             reconnectionJob = viewModelScope.launch {
                 try {
                     delay(2000)
-                    Log.d(TAG, "Checking connection status before reconnection attempt")
+                    logI("Checking connection status before reconnection attempt")
 
                     if (!_connectionUiState.value.isConnected) {
                         val backoffDelay = calculateBackoffDelay()
-                        Log.d(TAG, "Connection still lost, waiting $backoffDelay ms before retry #${retryCount + 1}")
+                        logI("Connection still lost, waiting $backoffDelay ms before retry #${retryCount + 1}")
                         delay(backoffDelay)
 
                         _connectionUiState.update { it.copy(
@@ -214,15 +281,15 @@ class ConnectionManager(
 
                         when (lastConnectionMode) {
                             ConnectionMode.HOST -> {
-                                Log.d(TAG, "Reconnecting as HOST")
+                                logI("Reconnecting as HOST")
                                 startAsHost()
                             }
                             ConnectionMode.CLIENT -> {
-                                Log.d(TAG, "Reconnecting as CLIENT")
+                                logI("Reconnecting as CLIENT")
                                 startAsClient()
                             }
                             ConnectionMode.NONE -> {
-                                Log.e(TAG, "No connection mode set, giving up")
+                                logE("No connection mode set, giving up")
                                 handleFinalDisconnection()
                             }
                         }
@@ -233,18 +300,18 @@ class ConnectionManager(
                             lastSuccessfulConnection = System.currentTimeMillis()
                         )}
                     } else {
-                        Log.d(TAG, "Reconnection unnecessary, connection restored")
+                        logI("Reconnection unnecessary, connection restored")
                     }
                 } catch (e: Exception) {
-                    Log.e(TAG, "Error during reconnection attempt: ${e.message}", e)
+                    logE("Error during reconnection attempt: ${e.message}", e)
                     handleError("Échec de la reconnexion: ${e.message}")
                 } finally {
                     isReconnecting.set(false)
-                    Log.d(TAG, "Reconnection attempt completed, isReconnecting set to false")
+                    logI("Reconnection attempt completed, isReconnecting set to false")
                 }
             }
         } else {
-            Log.d(TAG, "Reconnection already in progress, skipping new attempt")
+            logI("Reconnection already in progress, skipping new attempt")
         }
     }
 
@@ -252,13 +319,13 @@ class ConnectionManager(
         val shouldRetry = !_connectionUiState.value.isConnected &&
                 retryCount < maxRetries &&
                 lastConnectionMode != ConnectionMode.NONE
-        Log.d(TAG, "Should attempt reconnection? $shouldRetry (connected=${_connectionUiState.value.isConnected}, retries=$retryCount/$maxRetries, mode=$lastConnectionMode)")
+        logD("Should attempt reconnection? $shouldRetry (connected=${_connectionUiState.value.isConnected}, retries=$retryCount/$maxRetries, mode=$lastConnectionMode)")
         return shouldRetry
     }
 
     @SuppressLint("NewApi")
     private fun handleDisconnection(disconnectedEndpointId: String) {
-        Log.d(TAG, "Handling disconnection for endpoint: $disconnectedEndpointId, current endpoint: $endpointId")
+        logI("Handling disconnection for endpoint: $disconnectedEndpointId, current endpoint: $endpointId")
         if (endpointId == disconnectedEndpointId) {
             this.endpointId = null
             updateConnectionStatus("Déconnecté")
@@ -266,29 +333,29 @@ class ConnectionManager(
                 isConnected = false,
                 lastSuccessfulConnection = System.currentTimeMillis()
             )}
-            Log.d(TAG, "Connection state updated to disconnected")
+            logI("Connection state updated to disconnected")
 
             if (shouldAttemptReconnection()) {
-                Log.d(TAG, "Will attempt reconnection")
+                logI("Will attempt reconnection")
                 initiateReconnection()
             } else {
-                Log.d(TAG, "Will not attempt reconnection, handling final disconnection")
+                logI("Will not attempt reconnection, handling final disconnection")
                 handleFinalDisconnection()
             }
         } else {
-            Log.d(TAG, "Ignoring disconnection for different endpoint")
+            logI("Ignoring disconnection for different endpoint")
         }
     }
 
     private val connectionLifecycleCallback = object : ConnectionLifecycleCallback() {
         override fun onConnectionInitiated(endpointId: String, info: ConnectionInfo) {
-            Log.d(TAG, "Connection initiated with endpoint: $endpointId, name: ${info.endpointName}")
+            logI("Connection initiated with endpoint: $endpointId, name: ${info.endpointName}")
             Nearby.getConnectionsClient(context).acceptConnection(endpointId, payloadCallback)
             updateConnectionStatus("Connexion en cours avec ${info.endpointName}...")
         }
 
         override fun onConnectionResult(endpointId: String, result: ConnectionResolution) {
-            Log.d(TAG, "Connection result for endpoint $endpointId: ${result.status.statusCode}")
+            logI("Connection result for endpoint $endpointId: ${result.status.statusCode}")
             when (result.status.statusCode) {
                 ConnectionsStatusCodes.STATUS_OK -> {
                     this@ConnectionManager.endpointId = endpointId
@@ -297,25 +364,25 @@ class ConnectionManager(
                     retryCount = 0
                     startConnectionMonitoring()
                     sendData("Connection established")
-                    Log.d(TAG, "Connection successfully established with endpoint $endpointId")
+                    logI("Connection successfully established with endpoint $endpointId")
                 }
                 ConnectionsStatusCodes.STATUS_CONNECTION_REJECTED -> {
-                    Log.e(TAG, "Connection rejected with endpoint $endpointId")
+                    logE("Connection rejected with endpoint $endpointId")
                     handleConnectionFailure("Connexion rejetée")
                 }
                 ConnectionsStatusCodes.STATUS_ERROR -> {
-                    Log.e(TAG, "Connection error with endpoint $endpointId")
+                    logE("Connection error with endpoint $endpointId")
                     handleConnectionFailure("Erreur de connexion")
                 }
                 else -> {
-                    Log.e(TAG, "Unknown connection status code: ${result.status.statusCode}")
+                    logE("Unknown connection status code: ${result.status.statusCode}")
                     handleConnectionFailure("Erreur inconnue")
                 }
             }
         }
 
         override fun onDisconnected(endpointId: String) {
-            Log.d(TAG, "Disconnected from endpoint: $endpointId")
+            logI("Disconnected from endpoint: $endpointId")
             handleDisconnection(endpointId)
         }
     }
@@ -325,30 +392,30 @@ class ConnectionManager(
             if (payload.type == Payload.Type.BYTES) {
                 try {
                     val rawMessage = String(payload.asBytes()!!)
-                    Log.d(TAG, "Payload received from $endpointId: ${rawMessage.take(50)}${if (rawMessage.length > 50) "..." else ""}")
+                    logD("Payload received from $endpointId: ${rawMessage.take(50)}${if (rawMessage.length > 50) "..." else ""}")
                     handlePayload(rawMessage)
                 } catch (e: Exception) {
-                    Log.e(TAG, "Error processing payload from $endpointId", e)
+                    logE("Error processing payload from $endpointId", e)
                 }
             } else {
-                Log.w(TAG, "Received non-bytes payload from $endpointId: ${payload.type}")
+                logW("Received non-bytes payload from $endpointId: ${payload.type}")
             }
         }
 
         override fun onPayloadTransferUpdate(endpointId: String, update: PayloadTransferUpdate) {
             when (update.status) {
                 PayloadTransferUpdate.Status.SUCCESS -> {
-                    Log.d(TAG, "Payload transfer succeeded: endpointId=$endpointId, bytesTransferred=${update.bytesTransferred}")
+                    logD("Payload transfer succeeded: endpointId=$endpointId, bytesTransferred=${update.bytesTransferred}")
                 }
                 PayloadTransferUpdate.Status.FAILURE -> {
-                    Log.e(TAG, "Payload transfer failed: endpointId=$endpointId, bytesTransferred=${update.bytesTransferred}")
+                    logE("Payload transfer failed: endpointId=$endpointId, bytesTransferred=${update.bytesTransferred}")
                     handleTransferFailure()
                 }
                 PayloadTransferUpdate.Status.IN_PROGRESS -> {
-                    Log.v(TAG, "Payload transfer in progress: endpointId=$endpointId, bytesTransferred=${update.bytesTransferred}")
+                    logV("Payload transfer in progress: endpointId=$endpointId, bytesTransferred=${update.bytesTransferred}")
                 }
                 PayloadTransferUpdate.Status.CANCELED -> {
-                    Log.w(TAG, "Payload transfer canceled: endpointId=$endpointId, bytesTransferred=${update.bytesTransferred}")
+                    logW("Payload transfer canceled: endpointId=$endpointId, bytesTransferred=${update.bytesTransferred}")
                     handleTransferFailure()
                 }
             }
@@ -356,22 +423,22 @@ class ConnectionManager(
     }
 
     private fun handleTransferFailure() {
-        Log.e(TAG, "Handling transfer failure")
+        logE("Handling transfer failure")
         viewModelScope.launch {
             if (_connectionUiState.value.isConnected) {
-                Log.d(TAG, "Still connected despite transfer failure, checking connection health")
+                logI("Still connected despite transfer failure, checking connection health")
                 checkConnectionHealth()
             }
         }
     }
 
     private fun startConnectionMonitoring() {
-        Log.d(TAG, "Starting connection monitoring")
+        logI("Starting connection monitoring")
         connectionMonitorJob?.cancel()
         connectionMonitorJob = viewModelScope.launch {
             while (isActive) {
                 delay(5000)
-                Log.d(TAG, "Checking connection health (periodic check)")
+                logD("Checking connection health (periodic check)")
                 checkConnectionHealth()
             }
         }
@@ -380,35 +447,35 @@ class ConnectionManager(
     private fun checkConnectionHealth() {
         endpointId?.let { endpoint ->
             try {
-                Log.d(TAG, "Sending ping to test connection with endpoint $endpoint")
+                logD("Sending ping to test connection with endpoint $endpoint")
                 sendData("ping")
             } catch (e: Exception) {
-                Log.e(TAG, "Failed to send ping to endpoint $endpoint", e)
+                logE("Failed to send ping to endpoint $endpoint", e)
                 handleConnectionFailure("Perte de connexion détectée")
             }
-        } ?: Log.w(TAG, "No endpoint to check connection health")
+        } ?: logW("No endpoint to check connection health")
     }
 
     @SuppressLint("NewApi")
     private fun handleConnectionFailure(reason: String) {
-        Log.e(TAG, "Connection failure: $reason (retryCount=$retryCount, maxRetries=$maxRetries)")
+        logE("Connection failure: $reason (retryCount=$retryCount, maxRetries=$maxRetries)")
         if (!isReconnecting.get() && retryCount < maxRetries) {
-            Log.d(TAG, "Initiating reconnection after connection failure")
+            logI("Initiating reconnection after connection failure")
             initiateReconnection()
         } else if (retryCount >= maxRetries) {
-            Log.e(TAG, "Maximum retry attempts reached, handling final disconnection")
+            logE("Maximum retry attempts reached, handling final disconnection")
             handleFinalDisconnection()
         }
     }
 
     private fun calculateBackoffDelay(): Long {
         val delay = baseRetryDelayMs * (1L shl retryCount.coerceAtMost(5))
-        Log.d(TAG, "Calculated backoff delay for retry #$retryCount: $delay ms")
+        logD("Calculated backoff delay for retry #$retryCount: $delay ms")
         return delay
     }
 
     private fun handleFinalDisconnection() {
-        Log.e(TAG, "Handling final disconnection after exhausting reconnection attempts")
+        logE("Handling final disconnection after exhausting reconnection attempts")
         disconnect()
         _connectionUiState.update {
             it.copy(
@@ -422,18 +489,18 @@ class ConnectionManager(
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun startAsHost() {
         viewModelScope.launch {
-            Log.d(TAG, "Starting as host")
+            logI("Starting as host")
             if (!checkRequiredPermissions()) {
-                Log.e(TAG, "Missing required permissions for Nearby Connections")
+                logE("Missing required permissions for Nearby Connections")
                 val missingPermissions = requiredPermissions.filter { permission ->
                     ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED
                 }
-                Log.e(TAG, "Missing permissions: $missingPermissions")
+                logE("Missing permissions: $missingPermissions")
                 handleError("Permissions manquantes")
                 return@launch
             }
 
-            Log.d(TAG, "All required permissions granted")
+            logI("All required permissions granted")
             lastConnectionMode = ConnectionMode.HOST
             _connectionUiState.update { it.copy(isHostPhone = true) }
 
@@ -442,21 +509,21 @@ class ConnectionManager(
                     .setStrategy(strategy)
                     .build()
 
-                Log.d(TAG, "Starting advertising with service ID: $serviceId and strategy: $strategy")
+                logI("Starting advertising with service ID: $serviceId and strategy: $strategy")
                 Nearby.getConnectionsClient(context).startAdvertising(
                     "Host Device",
                     serviceId,
                     connectionLifecycleCallback,
                     advertisingOptions
                 ).addOnSuccessListener {
-                    Log.d(TAG, "Successfully started advertising as host")
+                    logI("Successfully started advertising as host")
                     updateConnectionStatus("En attente de connexion...")
                 }.addOnFailureListener { e ->
-                    Log.e(TAG, "Failed to start advertising: ${e.message}", e)
+                    logE("Failed to start advertising: ${e.message}", e)
                     handleConnectionFailure("Erreur de démarrage du mode hôte: ${e.message}")
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Exception during advertising: ${e.message}", e)
+                logE("Exception during advertising: ${e.message}", e)
                 handleConnectionFailure(e.message ?: "Erreur inconnue")
             }
         }
@@ -465,18 +532,18 @@ class ConnectionManager(
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun startAsClient() {
         viewModelScope.launch {
-            Log.d(TAG, "Starting as client")
+            logI("Starting as client")
             if (!checkRequiredPermissions()) {
-                Log.e(TAG, "Missing required permissions for Nearby Connections")
+                logE("Missing required permissions for Nearby Connections")
                 val missingPermissions = requiredPermissions.filter { permission ->
                     ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED
                 }
-                Log.e(TAG, "Missing permissions: $missingPermissions")
+                logE("Missing permissions: $missingPermissions")
                 handleError("Permissions manquantes")
                 return@launch
             }
 
-            Log.d(TAG, "All required permissions granted")
+            logI("All required permissions granted")
             lastConnectionMode = ConnectionMode.CLIENT
             _connectionUiState.update { it.copy(isHostPhone = false) }
 
@@ -485,20 +552,20 @@ class ConnectionManager(
                     .setStrategy(strategy)
                     .build()
 
-                Log.d(TAG, "Starting discovery with service ID: $serviceId and strategy: $strategy")
+                logI("Starting discovery with service ID: $serviceId and strategy: $strategy")
                 Nearby.getConnectionsClient(context).startDiscovery(
                     serviceId,
                     endpointDiscoveryCallback,
                     discoveryOptions
                 ).addOnSuccessListener {
-                    Log.d(TAG, "Successfully started discovery as client")
+                    logI("Successfully started discovery as client")
                     updateConnectionStatus("Recherche d'appareils...")
                 }.addOnFailureListener { e ->
-                    Log.e(TAG, "Failed to start discovery: ${e.message}", e)
+                    logE("Failed to start discovery: ${e.message}", e)
                     handleConnectionFailure("Erreur de démarrage de la recherche: ${e.message}")
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Exception during discovery: ${e.message}", e)
+                logE("Exception during discovery: ${e.message}", e)
                 handleConnectionFailure(e.message ?: "Erreur inconnue")
             }
         }
@@ -506,7 +573,7 @@ class ConnectionManager(
 
     private val endpointDiscoveryCallback = object : EndpointDiscoveryCallback() {
         override fun onEndpointFound(endpointId: String, info: DiscoveredEndpointInfo) {
-            Log.d(TAG, "Endpoint found: $endpointId, name: ${info.endpointName}, serviceId: ${info.serviceId}")
+            logI("Endpoint found: $endpointId, name: ${info.endpointName}, serviceId: ${info.serviceId}")
             Nearby.getConnectionsClient(context)
                 .requestConnection(
                     "Client Device",
@@ -514,16 +581,16 @@ class ConnectionManager(
                     connectionLifecycleCallback
                 )
                 .addOnSuccessListener {
-                    Log.d(TAG, "Successfully requested connection to endpoint: $endpointId")
+                    logI("Successfully requested connection to endpoint: $endpointId")
                 }
                 .addOnFailureListener { e ->
-                    Log.e(TAG, "Failed to request connection to endpoint: $endpointId", e)
+                    logE("Failed to request connection to endpoint: $endpointId", e)
                     handleConnectionFailure("Erreur de connexion: ${e.message}")
                 }
         }
 
         override fun onEndpointLost(endpointId: String) {
-            Log.w(TAG, "Endpoint lost: $endpointId")
+            logW("Endpoint lost: $endpointId")
         }
     }
 
@@ -533,42 +600,42 @@ class ConnectionManager(
                 val payload = when (data) {
                     is String -> Payload.fromBytes(data.toByteArray())
                     else -> {
-                        Log.e(TAG, "Unsupported data type for sending: ${data.javaClass.simpleName}")
+                        logE("Unsupported data type for sending: ${data.javaClass.simpleName}")
                         return
                     }
                 }
 
-                Log.d(TAG, "Sending data to endpoint $endpoint: ${(data as? String)?.take(50)}${if ((data as? String)?.length ?: 0 > 50) "..." else ""}")
+                logD("Sending data to endpoint $endpoint: ${(data as? String)?.take(50)}${if ((data as? String)?.length ?: 0 > 50) "..." else ""}")
                 Nearby.getConnectionsClient(context)
                     .sendPayload(endpoint, payload)
                     .addOnSuccessListener {
-                        Log.d(TAG, "Successfully sent payload to endpoint $endpoint")
+                        logD("Successfully sent payload to endpoint $endpoint")
                     }
                     .addOnFailureListener { e ->
-                        Log.e(TAG, "Failed to send payload to endpoint $endpoint", e)
+                        logE("Failed to send payload to endpoint $endpoint", e)
                         handleTransferFailure()
                     }
             } catch (e: Exception) {
-                Log.e(TAG, "Exception while sending data to endpoint $endpoint", e)
+                logE("Exception while sending data to endpoint $endpoint", e)
                 handleTransferFailure()
             }
-        } ?: Log.e(TAG, "Cannot send data: No connected endpoint")
+        } ?: logE("Cannot send data: No connected endpoint")
     }
 
     fun disconnect() {
-        Log.d(TAG, "Disconnecting and cleaning up resources")
+        logI("Disconnecting and cleaning up resources")
         connectionMonitorJob?.cancel()
         reconnectionJob?.cancel()
 
         try {
-            Log.d(TAG, "Stopping Nearby Connections services")
+            logI("Stopping Nearby Connections services")
             Nearby.getConnectionsClient(context).apply {
                 stopAdvertising()
                 stopDiscovery()
                 stopAllEndpoints()
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error during disconnect/cleanup", e)
+            logE("Error during disconnect/cleanup", e)
         }
 
         endpointId = null
@@ -584,7 +651,7 @@ class ConnectionManager(
                 error = null
             )
         }
-        Log.d(TAG, "Disconnect complete, connection state reset")
+        logI("Disconnect complete, connection state reset")
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -626,16 +693,16 @@ class ConnectionManager(
         }
 
         if (missingPermissions.isNotEmpty()) {
-            Log.w(TAG, "Missing permissions: $missingPermissions")
+            logW("Missing permissions: $missingPermissions")
         } else {
-            Log.d(TAG, "All required permissions granted")
+            logI("All required permissions granted")
         }
 
         return missingPermissions.isEmpty()
     }
 
     private fun updateConnectionStatus(status: String) {
-        Log.d(TAG, "Updating connection status: $status")
+        logI("Updating connection status: $status")
         _connectionUiState.update { it.copy(
             connectionStatus = status,
             error = null
@@ -643,7 +710,7 @@ class ConnectionManager(
     }
 
     private fun handleError(error: String) {
-        Log.e(TAG, "Error: $error")
+        logE("Error: $error")
         _connectionUiState.update { it.copy(
             error = error,
             connectionStatus = "Erreur: $error"
@@ -652,14 +719,54 @@ class ConnectionManager(
 
     override fun onCleared() {
         super.onCleared()
-        Log.d(TAG, "ViewModel cleared, cleaning up resources")
+        logI("ViewModel cleared, cleaning up resources")
         disconnect()
         connectionMonitorJob?.cancel()
         reconnectionJob?.cancel()
     }
 
+    // Improved logging functions to ensure visibility in Logcat
+    private fun logV(message: String) {
+        Log.v(APP_TAG, "$TAG: $message")
+    }
+
+    private fun logD(message: String) {
+        Log.d(APP_TAG, "$TAG: $message")
+    }
+
+    private fun logI(message: String) {
+        Log.i(APP_TAG, "$TAG: $message")
+    }
+
+    private fun logW(message: String) {
+        Log.w(APP_TAG, "$TAG: $message")
+    }
+
+    private fun logE(message: String, throwable: Throwable? = null) {
+        if (throwable != null) {
+            Log.e(APP_TAG, "$TAG: $message", throwable)
+        } else {
+            Log.e(APP_TAG, "$TAG: $message")
+        }
+    }
+
     companion object {
-        private const val TAG = "ConnectionManager"
+        // Using a consistent prefix for all logs to make filtering easier
+        const val APP_TAG = "MyApp"
+        const val TAG = "ConnectionManager"
+
+        // Static logging functions for use in other parts of the app
+        fun logD(message: String) {
+            Log.d(APP_TAG, "$TAG: $message")
+        }
+
+        fun logE(message: String, throwable: Throwable? = null) {
+            if (throwable != null) {
+                Log.e(APP_TAG, "$TAG: $message", throwable)
+            } else {
+                Log.e(APP_TAG, "$TAG: $message")
+            }
+        }
     }
 }
 
