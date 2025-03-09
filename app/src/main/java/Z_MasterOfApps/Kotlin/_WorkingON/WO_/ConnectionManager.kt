@@ -76,15 +76,9 @@ class ConnectionManager(
                 // Check if this is a receiver phone
                 val isReceiver = currentPhone.etatesMutable.itsReciverTelephone
 
-                // Get host devices
-                val hostDevices = getHostDevices()
-                val isHostDevice = hostDevices.any { deviceName ->
-                    currentDeviceName.lowercase().contains(deviceName.lowercase())
-                }
-
-                if (isHostDevice || !isReceiver) {
+                if (!isReceiver) {
                     // This is a host device
-                    currentPhone.etatesMutable.nearbyWifiAdressConexion = "host_${currentDeviceName.replace(" ", "_")}"
+                    currentPhone.etatesMutable.nearbyWifiAdressIpConexion = "host_${currentDeviceName.replace(" ", "_")}"
                     j_AppInstalleDonTelephoneRepository.updatePhones()
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -93,14 +87,12 @@ class ConnectionManager(
                     lastConnectionMode = ConnectionMode.HOST
                     updateTypePhone(true)
                 } else {
-                    // This is a client device (receiver)
-                    // Find the host phone to get its address
                     val hostPhone = j_AppInstalleDonTelephoneRepository.modelDatas.find {
-                        hostDevices.any { host -> it.infosDeBase.nom.lowercase().contains(host.lowercase()) }
+                        !it.etatesMutable.itsReciverTelephone && it.etatesMutable.nearbyWifiAdressIpConexion.isNotEmpty()
                     }
 
                     if (hostPhone != null) {
-                        currentPhone.etatesMutable.nearbyWifiAdressConexion = hostPhone.etatesMutable.nearbyWifiAdressConexion
+                        currentPhone.etatesMutable.nearbyWifiAdressIpConexion = hostPhone.etatesMutable.nearbyWifiAdressIpConexion
                         j_AppInstalleDonTelephoneRepository.updatePhones()
 
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
