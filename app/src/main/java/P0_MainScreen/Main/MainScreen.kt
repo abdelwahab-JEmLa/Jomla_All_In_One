@@ -200,8 +200,5 @@ fun MainScreen(
             }
         }
     }
-    // Initialize connection using LaunchedEffect
-    LaunchedEffect(Unit) {
-        headViewModel.connectionManager.initializeConnection()
-    }
+
 }

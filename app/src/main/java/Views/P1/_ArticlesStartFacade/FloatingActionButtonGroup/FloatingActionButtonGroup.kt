@@ -25,7 +25,6 @@ import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material.icons.filled.CoPresent
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Details
-import androidx.compose.material.icons.filled.Devices
 import androidx.compose.material.icons.filled.DoNotDisturbAlt
 import androidx.compose.material.icons.filled.EditCalendar
 import androidx.compose.material.icons.filled.GridView
@@ -74,7 +73,6 @@ fun FloatingActionButtonGroup(
     var clearDataClickCount by remember { mutableIntStateOf(0) }
     var clearDataGrouprurClickCount by remember { mutableIntStateOf(0) }
     var buttonChangeUiStat1 by remember { mutableStateOf(false) }
-    var showDeviceDialog by remember { mutableStateOf(false) }
     var toggleButton1 by remember { mutableStateOf(false) }
     var toggleButton2 by remember { mutableStateOf(false) }
 
@@ -89,12 +87,7 @@ fun FloatingActionButtonGroup(
             clearDataGrouprurClickCount = 0
         }
     }
-    if (showDeviceDialog) {
-        DeviceManagementDialog(
-            viewModel = viewModel,
-            onDismiss = { showDeviceDialog = false }
-        )
-    }
+
     Column(
         horizontalAlignment = Alignment.End,
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -147,12 +140,6 @@ fun FloatingActionButtonGroup(
                                 toggleButton1 = !toggleButton1
                                 onToggleLockHost()
                             }
-                        ),
-                        FabData(
-                            icon = Icons.Default.Devices,
-                            label = "Manage Devices",
-                            color = Color(0xFF9C27B0),
-                            onClick = { showDeviceDialog = true }
                         ),
                         FabData(
                             icon = Icons.Default.SettingsInputComponent,

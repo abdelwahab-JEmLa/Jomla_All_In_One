@@ -65,6 +65,7 @@ open class HeadViewModel(
 
     var connectionManager: ConnectionManager =
         getKoin().get<ConnectionManager> { parametersOf(this, context) }
+
     init {
         setupMaxPriceObserver()
     }

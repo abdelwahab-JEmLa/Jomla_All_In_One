@@ -75,13 +75,11 @@ fun ConnexionCard(
                         onHostClick = {
                             headViewModel.run {
                                 connectionManager.startAsHost()
-                                connectionManager.updateTypePhone(type = true)
                             }
                         },
                         onClientClick = {
                             headViewModel.run {
                                 connectionManager.startAsClient()
-                                connectionManager.updateTypePhone()
                             }
                             onClickToStartAsClient()
                         },
