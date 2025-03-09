@@ -125,6 +125,8 @@ class ConnectionManager(
             }
         }
     }
+
+
     private fun handlePayload(payload: String) {
         WifiUpdateClientDisplayerStats.fromPayload(payload)?.let { (messageType, content) ->
             when (messageType) {

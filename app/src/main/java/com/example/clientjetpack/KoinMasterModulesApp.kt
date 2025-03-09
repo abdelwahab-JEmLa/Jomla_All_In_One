@@ -9,6 +9,7 @@ import Z_MasterOfApps.Kotlin.Model.I_CategoriesRepository
 import Z_MasterOfApps.Kotlin.Model.J_AppInstalleDonTelephoneRepository
 import Z_MasterOfApps.Kotlin.Model.J_AppInstalleDonTelephoneRepositoryImpl
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
+import Z_MasterOfApps.Kotlin._WorkingON.WO_.ConnectionManager
 import android.content.Context
 import com.example.clientjetpack.Modules.AppDatabase
 import com.example.clientjetpack.ViewModel.HeadViewModel
@@ -30,11 +31,21 @@ val repositoryModule = module {
 // Module pour les ViewModels
 val viewModelModule = module {
     viewModel { ViewModelInitApp() }
-    viewModel { (context: Context) -> HeadViewModel(get(), context, get()) }
+    viewModel { (context: Context) -> HeadViewModel(get(), context) }
 }
 
-// Module principal qui regroupe tous les autres modules
+val servicesModule = module {
+    // Create a factory for ConnectionManager that takes HeadViewModel as a parameter
+    factory { (viewModel: HeadViewModel, context: Context) ->
+        ConnectionManager(
+            viewModel = viewModel,
+            context = context,
+            j_AppInstalleDonTelephoneRepository = get()
+        )
+    }
+}
+
+// Update appModule to include the servicesModule
 val appModule = module {
-    // Inclure d'autres modules dans l'ordre correct
-    includes(repositoryModule, viewModelModule)
+    includes(repositoryModule, servicesModule, viewModelModule)
 }
