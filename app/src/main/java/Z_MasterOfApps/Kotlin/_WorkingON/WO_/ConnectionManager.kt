@@ -60,12 +60,28 @@ class ConnectionManager(
 
     init {
         viewModelScope.launch {
-            // Give time for Firebase to initialize
-            delay(5000) // Reduced from 30000
             logI("Initializing ConnectionManager")
 
-            // Give repository time to load data
-            delay(1000)
+            // Wait for the repository to finish loading data
+            // Replace the fixed delay with a check for progressRepo completion
+            var timeout = 60000L // 60 second timeout as a safety measure
+            val startTime = System.currentTimeMillis()
+
+            while (j_AppInstalleDonTelephoneRepository.progressRepo.value < 1.0f) {
+                // Check if we've exceeded the timeout
+                if (System.currentTimeMillis() - startTime > timeout) {
+                    logE("Repository loading timeout after ${timeout/1000} seconds")
+                    break
+                }
+
+                logI("Waiting for repository to load, progress: ${j_AppInstalleDonTelephoneRepository.progressRepo.value}")
+                delay(500) // Check every half second
+
+                // Exit if the coroutine is cancelled
+                if (!isActive) return@launch
+            }
+
+            logI("Repository loaded, progress: ${j_AppInstalleDonTelephoneRepository.progressRepo.value}")
 
             // Get current device name without potential extras
             val manufacturerModel = "${Build.MANUFACTURER} ${Build.MODEL}"
