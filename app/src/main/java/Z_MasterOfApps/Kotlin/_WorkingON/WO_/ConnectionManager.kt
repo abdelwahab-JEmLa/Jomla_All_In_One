@@ -2,12 +2,10 @@ package Z_MasterOfApps.Kotlin._WorkingON.WO_
 
 import Z_MasterOfApps.Kotlin.Model.J_AppInstalleDonTelephoneRepository
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -49,10 +47,12 @@ class ConnectionManager(
     private var reconnectionJob: Job? = null
     private var connectionMonitorJob: Job? = null
     private var retryCount = 0
-    private val maxRetries = 10
+    private val maxRetries = 50
     private val baseRetryDelayMs = 3000L
 
     private var lastConnectionMode: ConnectionMode = ConnectionMode.NONE
+    private var isAdvertising = false
+    private var isDiscovering = false
 
     private enum class ConnectionMode {
         HOST, CLIENT, NONE
@@ -60,9 +60,11 @@ class ConnectionManager(
 
     init {
         viewModelScope.launch {
+            // Give time for Firebase to initialize
+            delay(5000) // Reduced from 30000
             logI("Initializing ConnectionManager")
 
-            // Give repository time to load data - delay a bit to ensure Firebase data is loaded
+            // Give repository time to load data
             delay(1000)
 
             // Get current device name without potential extras
@@ -73,8 +75,11 @@ class ConnectionManager(
             val currentDeviceName = manufacturerModel.trim().split(" ").take(4).joinToString(" ")
             logI("Cleaned current device name: $currentDeviceName")
 
+            // Check for and clean up duplicate entries
+            cleanupDuplicateDevices(currentDeviceName)
+
             // Log available devices in repository for debugging
-            logI("Available devices in repository: ${j_AppInstalleDonTelephoneRepository.modelDatas.map { "${it.id}: ${it.infosDeBase.nom}" }}")
+            logI("Available devices in repository after cleanup: ${j_AppInstalleDonTelephoneRepository.modelDatas.map { "${it.id}: ${it.infosDeBase.nom}" }}")
 
             // More flexible device matching
             val currentPhone = j_AppInstalleDonTelephoneRepository.modelDatas.find { phone ->
@@ -104,12 +109,9 @@ class ConnectionManager(
                     j_AppInstalleDonTelephoneRepository.updatePhones()
                     logI("Set nearbyWifiAdressIpConexion to: ${currentPhone.etatesMutable.nearbyWifiAdressIpConexion}")
 
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        logI("Starting as host (Android API 33+)")
-                        startAsHost()
-                    } else {
-                        logI("Not starting as host because device API level (${Build.VERSION.SDK_INT}) is below TIRAMISU (33)")
-                    }
+                    // Start as host
+                    logI("Starting as host")
+                    startAsHost()
                     lastConnectionMode = ConnectionMode.HOST
                 } else {
                     logI("This is a client device, looking for host phone")
@@ -123,32 +125,26 @@ class ConnectionManager(
                         j_AppInstalleDonTelephoneRepository.updatePhones()
                         logI("Set client nearbyWifiAdressIpConexion to: ${currentPhone.etatesMutable.nearbyWifiAdressIpConexion}")
 
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                            logI("Starting as client (Android API 33+)")
-                            startAsClient()
-                        } else {
-                            logI("Not starting as client because device API level (${Build.VERSION.SDK_INT}) is below TIRAMISU (33)")
-                        }
+                        // Start as client
+                        logI("Starting as client")
+                        startAsClient()
                         lastConnectionMode = ConnectionMode.CLIENT
                     } else {
                         logE("No host phone found in repository!")
+                        logI("Converting this device to a host as fallback")
+
+                        // Convert this device to a host
+                        currentPhone.etatesMutable.itsReciverTelephone = false
+                        currentPhone.etatesMutable.nearbyWifiAdressIpConexion = "host_${currentDeviceName.replace(" ", "_")}"
+                        j_AppInstalleDonTelephoneRepository.updatePhones()
+
+                        startAsHost()
+                        lastConnectionMode = ConnectionMode.HOST
                     }
                 }
 
                 // Set up connection monitoring
-                viewModelScope.launch {
-                    logI("Starting connection monitoring job")
-                    while (true) {
-                        delay(10000) // Check connection every 10 seconds
-                        logD("Connection check: isConnected=${_connectionUiState.value.isConnected}, lastMode=$lastConnectionMode")
-                        if (!_connectionUiState.value.isConnected &&
-                            lastConnectionMode != ConnectionMode.NONE &&
-                            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                            logI("Connection not detected, initiating reconnection")
-                            initiateReconnection()
-                        }
-                    }
-                }
+                startConnectionMonitoring()
             } else {
                 logE("Current phone not found in repository! Device: $currentDeviceName")
                 logI("Attempting to register the device automatically")
@@ -162,11 +158,51 @@ class ConnectionManager(
                     newPhone.etatesMutable.nearbyWifiAdressIpConexion = "host_${currentDeviceName.replace(" ", "_")}"
                     j_AppInstalleDonTelephoneRepository.updatePhones()
 
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        logI("Starting as host (Android API 33+) for new device")
-                        startAsHost()
-                        lastConnectionMode = ConnectionMode.HOST
-                    }
+                    logI("Starting as host for new device")
+                    startAsHost()
+                    lastConnectionMode = ConnectionMode.HOST
+
+                    // Start monitoring
+                    startConnectionMonitoring()
+                }
+            }
+        }
+    }
+
+    private fun cleanupDuplicateDevices(deviceName: String) {
+        // Find all entries matching this device
+        val matchingDevices = j_AppInstalleDonTelephoneRepository.modelDatas.filter { phone ->
+            phone.infosDeBase.nom == deviceName ||
+                    phone.infosDeBase.nom.contains(deviceName, ignoreCase = true) ||
+                    deviceName.contains(phone.infosDeBase.nom, ignoreCase = true)
+        }
+
+        if (matchingDevices.size > 1) {
+            logI("Found ${matchingDevices.size} potential duplicate entries for '$deviceName'")
+
+            // Keep the first one and remove others
+            val deviceToKeep = matchingDevices.first()
+            matchingDevices.drop(1).forEach { duplicate ->
+                logI("Removing duplicate device: ID ${duplicate.id} - ${duplicate.infosDeBase.nom}")
+                j_AppInstalleDonTelephoneRepository.modelDatas.remove(duplicate)
+            }
+
+            // Update repository
+            j_AppInstalleDonTelephoneRepository.updatePhones()
+            logI("Repository cleaned, kept device ID: ${deviceToKeep.id}")
+        }
+    }
+
+    private fun startConnectionMonitoring() {
+        logI("Starting connection monitoring job")
+        connectionMonitorJob?.cancel()
+        connectionMonitorJob = viewModelScope.launch {
+            while (isActive) {
+                delay(10000) // Check connection every 10 seconds
+                logD("Connection check: isConnected=${_connectionUiState.value.isConnected}, lastMode=$lastConnectionMode")
+                if (!_connectionUiState.value.isConnected && lastConnectionMode != ConnectionMode.NONE) {
+                    logI("Connection not detected, initiating reconnection")
+                    initiateReconnection()
                 }
             }
         }
@@ -185,8 +221,18 @@ class ConnectionManager(
                 val displayMetrics = context.resources.displayMetrics
                 val widthInDp = (displayMetrics.widthPixels / displayMetrics.density).toInt()
                 infosDeBase.widthScreen = widthInDp
-                infosDeBase.itsTablette = widthInDp > 400
-                etatesMutable.itsReciverTelephone = false
+
+                // If it's a tablet or has "TAB" in the name, make it a receiver
+                val isTablet = widthInDp > 400 || deviceName.contains("TAB", ignoreCase = true)
+                infosDeBase.itsTablette = isTablet
+                etatesMutable.itsReciverTelephone = isTablet
+
+                // If it's a receiver, set nearbyWifiAdressIpConexion to empty to start as client
+                if (isTablet) {
+                    etatesMutable.nearbyWifiAdressIpConexion = ""
+                } else {
+                    etatesMutable.nearbyWifiAdressIpConexion = "host_${deviceName.replace(" ", "_")}"
+                }
             }
 
             // Add to repository
@@ -259,7 +305,6 @@ class ConnectionManager(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun initiateReconnection() {
         logI("Initiating reconnection, isReconnecting=${isReconnecting.get()}, retryCount=$retryCount/$maxRetries")
         if (isReconnecting.compareAndSet(false, true)) {
@@ -278,6 +323,10 @@ class ConnectionManager(
                             connectionStatus = "Tentative de reconnexion #${retryCount + 1}",
                             reconnectionAttempts = retryCount + 1
                         )}
+
+                        // First ensure we cleanup any existing connections
+                        stopNearbyServices()
+                        delay(500) // Brief delay to allow services to stop
 
                         when (lastConnectionMode) {
                             ConnectionMode.HOST -> {
@@ -323,7 +372,6 @@ class ConnectionManager(
         return shouldRetry
     }
 
-    @SuppressLint("NewApi")
     private fun handleDisconnection(disconnectedEndpointId: String) {
         logI("Handling disconnection for endpoint: $disconnectedEndpointId, current endpoint: $endpointId")
         if (endpointId == disconnectedEndpointId) {
@@ -362,7 +410,6 @@ class ConnectionManager(
                     updateConnectionStatus("Connecté")
                     _connectionUiState.update { it.copy(isConnected = true) }
                     retryCount = 0
-                    startConnectionMonitoring()
                     sendData("Connection established")
                     logI("Connection successfully established with endpoint $endpointId")
                 }
@@ -432,18 +479,6 @@ class ConnectionManager(
         }
     }
 
-    private fun startConnectionMonitoring() {
-        logI("Starting connection monitoring")
-        connectionMonitorJob?.cancel()
-        connectionMonitorJob = viewModelScope.launch {
-            while (isActive) {
-                delay(5000)
-                logD("Checking connection health (periodic check)")
-                checkConnectionHealth()
-            }
-        }
-    }
-
     private fun checkConnectionHealth() {
         endpointId?.let { endpoint ->
             try {
@@ -456,7 +491,6 @@ class ConnectionManager(
         } ?: logW("No endpoint to check connection health")
     }
 
-    @SuppressLint("NewApi")
     private fun handleConnectionFailure(reason: String) {
         logE("Connection failure: $reason (retryCount=$retryCount, maxRetries=$maxRetries)")
         if (!isReconnecting.get() && retryCount < maxRetries) {
@@ -486,13 +520,34 @@ class ConnectionManager(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private fun stopNearbyServices() {
+        logI("Stopping all Nearby Connections services")
+        try {
+            if (isAdvertising) {
+                logI("Stopping advertising")
+                Nearby.getConnectionsClient(context).stopAdvertising()
+                isAdvertising = false
+            }
+
+            if (isDiscovering) {
+                logI("Stopping discovery")
+                Nearby.getConnectionsClient(context).stopDiscovery()
+                isDiscovering = false
+            }
+
+            // Small delay to ensure services are properly stopped
+            Thread.sleep(100)
+        } catch (e: Exception) {
+            logE("Error stopping Nearby services", e)
+        }
+    }
+
     fun startAsHost() {
         viewModelScope.launch {
             logI("Starting as host")
             if (!checkRequiredPermissions()) {
                 logE("Missing required permissions for Nearby Connections")
-                val missingPermissions = requiredPermissions.filter { permission ->
+                val missingPermissions = getRequiredPermissions().filter { permission ->
                     ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED
                 }
                 logE("Missing permissions: $missingPermissions")
@@ -505,6 +560,9 @@ class ConnectionManager(
             _connectionUiState.update { it.copy(isHostPhone = true) }
 
             try {
+                // First stop any existing advertising/discovery
+                stopNearbyServices()
+
                 val advertisingOptions = AdvertisingOptions.Builder()
                     .setStrategy(strategy)
                     .build()
@@ -516,9 +574,11 @@ class ConnectionManager(
                     connectionLifecycleCallback,
                     advertisingOptions
                 ).addOnSuccessListener {
+                    isAdvertising = true
                     logI("Successfully started advertising as host")
                     updateConnectionStatus("En attente de connexion...")
                 }.addOnFailureListener { e ->
+                    isAdvertising = false
                     logE("Failed to start advertising: ${e.message}", e)
                     handleConnectionFailure("Erreur de démarrage du mode hôte: ${e.message}")
                 }
@@ -529,13 +589,12 @@ class ConnectionManager(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun startAsClient() {
         viewModelScope.launch {
             logI("Starting as client")
             if (!checkRequiredPermissions()) {
                 logE("Missing required permissions for Nearby Connections")
-                val missingPermissions = requiredPermissions.filter { permission ->
+                val missingPermissions = getRequiredPermissions().filter { permission ->
                     ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED
                 }
                 logE("Missing permissions: $missingPermissions")
@@ -548,6 +607,9 @@ class ConnectionManager(
             _connectionUiState.update { it.copy(isHostPhone = false) }
 
             try {
+                // First stop any existing advertising/discovery
+                stopNearbyServices()
+
                 val discoveryOptions = DiscoveryOptions.Builder()
                     .setStrategy(strategy)
                     .build()
@@ -558,9 +620,11 @@ class ConnectionManager(
                     endpointDiscoveryCallback,
                     discoveryOptions
                 ).addOnSuccessListener {
+                    isDiscovering = true
                     logI("Successfully started discovery as client")
                     updateConnectionStatus("Recherche d'appareils...")
                 }.addOnFailureListener { e ->
+                    isDiscovering = false
                     logE("Failed to start discovery: ${e.message}", e)
                     handleConnectionFailure("Erreur de démarrage de la recherche: ${e.message}")
                 }
@@ -628,12 +692,9 @@ class ConnectionManager(
         reconnectionJob?.cancel()
 
         try {
-            logI("Stopping Nearby Connections services")
-            Nearby.getConnectionsClient(context).apply {
-                stopAdvertising()
-                stopDiscovery()
-                stopAllEndpoints()
-            }
+            stopNearbyServices()
+            Nearby.getConnectionsClient(context).stopAllEndpoints()
+            logI("All endpoints stopped")
         } catch (e: Exception) {
             logE("Error during disconnect/cleanup", e)
         }
@@ -642,6 +703,8 @@ class ConnectionManager(
         lastConnectionMode = ConnectionMode.NONE
         retryCount = 0
         isReconnecting.set(false)
+        isAdvertising = false
+        isDiscovering = false
 
         _connectionUiState.update {
             it.copy(
@@ -654,38 +717,33 @@ class ConnectionManager(
         logI("Disconnect complete, connection state reset")
     }
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    private val requiredPermissions = when {
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            arrayOf(
-                Manifest.permission.BLUETOOTH_SCAN,
-                Manifest.permission.BLUETOOTH_ADVERTISE,
-                Manifest.permission.BLUETOOTH_CONNECT,
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.NEARBY_WIFI_DEVICES
-            )
-        }
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> {
-            arrayOf(
-                Manifest.permission.BLUETOOTH,
-                Manifest.permission.BLUETOOTH_ADMIN,
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            )
-        }
-        else -> {
-            arrayOf(
-                Manifest.permission.BLUETOOTH,
-                Manifest.permission.BLUETOOTH_ADMIN,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            )
+    // Modified to get appropriate permissions based on API level
+    private fun getRequiredPermissions(): Array<String> {
+        return when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+                arrayOf(
+                    Manifest.permission.BLUETOOTH_SCAN,
+                    Manifest.permission.BLUETOOTH_ADVERTISE,
+                    Manifest.permission.BLUETOOTH_CONNECT,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+            }
+            else -> {
+                arrayOf(
+                    Manifest.permission.BLUETOOTH,
+                    Manifest.permission.BLUETOOTH_ADMIN,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+            }
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+
+
     private fun checkRequiredPermissions(): Boolean {
-        val missingPermissions = requiredPermissions.filter { permission ->
+        val permissions = getRequiredPermissions()
+        val missingPermissions = permissions.filter { permission ->
             ContextCompat.checkSelfPermission(
                 context,
                 permission
@@ -769,6 +827,7 @@ class ConnectionManager(
         }
     }
 }
+
 
 data class ConnectionUiState(
     val connectionStatus: String = "Déconnecté",
