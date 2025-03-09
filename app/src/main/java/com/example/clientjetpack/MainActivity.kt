@@ -25,6 +25,11 @@ import com.example.clientjetpack.Modules.AppDatabase
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import com.example.clientjetpack.ui.theme.ClientJetPackTheme
 import com.google.firebase.FirebaseApp
+import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
+import org.koin.androidx.compose.KoinAndroidContext
+import org.koin.core.annotation.KoinExperimentalAPI
+import org.koin.core.context.startKoin
 
 private const val TAG = "MainActivity"
 
@@ -42,6 +47,13 @@ class MyApplication : Application() {
             AppDatabase.DatabaseModule.getDatabase(this).also { database = it }
             FirebaseApp.initializeApp(this)?.let(::initializeFirebase)
                 ?: throw IllegalStateException("Firebase initialization failed")
+
+            // Initialize Koin
+            startKoin {
+                androidLogger()
+                androidContext(this@MyApplication)
+                modules(appModule)
+            }
         }.onFailure {
             Log.e(TAG, "Error initializing components", it)
         }
@@ -60,8 +72,10 @@ class ViewModelFactory(
     override fun <T : ViewModel> create(modelClass: Class<T>): T = when {
         modelClass.isAssignableFrom(HeadViewModel::class.java) ->
             HeadViewModel(context.applicationContext, database) as T
+
         modelClass.isAssignableFrom(GenerativeAiViewModel::class.java) ->
             GenerativeAiViewModel() as T
+
         else -> throw IllegalArgumentException("Unknown ViewModel: ${modelClass.name}")
     }
 }
@@ -85,16 +99,19 @@ class MainActivity : ComponentActivity() {
         setupActivityContent()
     }
 
+    @OptIn(KoinExperimentalAPI::class)
     private fun setupActivityContent() {
         runCatching {
             setContent {
                 ClientJetPackTheme {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        if (permissionsChecked) {
-                            MainScreen(appViewModels)
-                        } else {
-                            // You could show a loading or permissions screen here
-                            // For now, keeping it empty until permissions are checked
+                    KoinAndroidContext {
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            if (permissionsChecked) {
+                                MainScreen(appViewModels)
+                            } else {
+                                // You could show a loading or permissions screen here
+                                // For now, keeping it empty until permissions are checked
+                            }
                         }
                     }
                 }

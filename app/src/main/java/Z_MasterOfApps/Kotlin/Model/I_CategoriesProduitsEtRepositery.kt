@@ -40,6 +40,7 @@ interface I_CategoriesRepository {
     suspend fun getCategoriesById(id: String): I_CategoriesProduits?
     suspend fun updateDatas(datas: SnapshotStateList<I_CategoriesProduits>)
 
+
     companion object {
         val ancienBaseDonneRef = firebaseDatabase.getReference("H_CategorieTabele")
         val caReference = ref_HeadOfModels.child("I_CategoriesProduits")
@@ -61,7 +62,6 @@ class CategoriesRepositoryImpl : I_CategoriesRepository {
         listener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 try {
-                    val categories = mutableListOf<I_CategoriesProduits>()
                     val totalItems = snapshot.childrenCount.toInt()
                     var processedItems = 0
 
@@ -71,7 +71,6 @@ class CategoriesRepositoryImpl : I_CategoriesRepository {
                     for (dataSnapshot in snapshot.children) {
                         val category = dataSnapshot.getValue(I_CategoriesProduits::class.java)
                         category?.let { cat ->
-                            categories.add(cat)
                             modelDatas.add(cat)
                         }
 
@@ -80,7 +79,6 @@ class CategoriesRepositoryImpl : I_CategoriesRepository {
                     }
 
                     // Sort categories by position (classmentDonsParentList)
-                    categories.sortBy { it.statuesMutable.indexDonsParentList }
                     modelDatas.sortBy { it.statuesMutable.indexDonsParentList }
 
                     progressRepo.value = 1.0f // Complete progress
