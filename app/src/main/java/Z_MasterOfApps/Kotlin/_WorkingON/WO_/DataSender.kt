@@ -1,35 +1,42 @@
 package Z_MasterOfApps.Kotlin._WorkingON.WO_
 
+import androidx.lifecycle.viewModelScope
 import com.google.android.gms.nearby.Nearby
-import com.google.android.gms.nearby.connection.Payload
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class DataSender(private val connectionManager: ConnectionManager) {
-    
-    fun sendData(data: Any) {
-        connectionManager.endpointId?.let { endpoint ->
-            try {
-                val payload = when (data) {
-                    is String -> Payload.fromBytes(data.toByteArray())
-                    else -> {
-                        connectionManager.logE("Unsupported data type for sending: ${data.javaClass.simpleName}")
-                        return
-                    }
-                }
 
-                connectionManager.logD("Sending data to endpoint $endpoint: ${(data as? String)?.take(50)}${if ((data as? String)?.length ?: 0 > 50) "..." else ""}")
-                Nearby.getConnectionsClient(connectionManager.context)
-                    .sendPayload(endpoint, payload)
-                    .addOnSuccessListener {
-                        connectionManager.logD("Successfully sent payload to endpoint $endpoint")
+    // In DataSender class
+    fun sendData(message: String) {
+        val endpoint = connectionManager.endpointId
+        if (endpoint != null) {
+            try {
+                // Check message size and handle large messages appropriately
+                if (message.length > 1024) { // If message is large
+                    connectionManager.logD("Large message detected, breaking into chunks")
+                    // Split message into chunks and send separately with delay between
+                    // This is a simple solution - proper chunking would be better
+                    val chunks = message.chunked(1024)
+                    connectionManager.viewModelScope.launch {
+                        for (chunk in chunks) {
+                            Nearby.getConnectionsClient(connectionManager.context)
+                                .sendPayload(endpoint, com.google.android.gms.nearby.connection.Payload.fromBytes(chunk.toByteArray()))
+                            delay(100) // Add small delay between chunks
+                        }
                     }
-                    .addOnFailureListener { e ->
-                        connectionManager.logE("Failed to send payload to endpoint $endpoint", e)
-                        connectionManager.handleTransferFailure()
-                    }
+                } else {
+                    // Send small messages as normal
+                    connectionManager.logD("Sending data to endpoint $endpoint: ${message.take(50)}${if (message.length > 50) "..." else ""}")
+                    Nearby.getConnectionsClient(connectionManager.context)
+                        .sendPayload(endpoint, com.google.android.gms.nearby.connection.Payload.fromBytes(message.toByteArray()))
+                }
             } catch (e: Exception) {
-                connectionManager.logE("Exception while sending data to endpoint $endpoint", e)
+                connectionManager.logE("Failed to send payload to endpoint $endpoint", e)
                 connectionManager.handleTransferFailure()
             }
-        } ?: connectionManager.logE("Cannot send data: No connected endpoint")
+        } else {
+            connectionManager.logE("Cannot send data: No connected endpoint")
+        }
     }
 }

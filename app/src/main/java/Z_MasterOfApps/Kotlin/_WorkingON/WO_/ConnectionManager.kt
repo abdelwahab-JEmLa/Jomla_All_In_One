@@ -2,6 +2,8 @@ package Z_MasterOfApps.Kotlin._WorkingON.WO_
 
 
 import Z_MasterOfApps.Kotlin.Model.J_AppInstalleDonTelephoneRepository
+import Z_MasterOfApps.Kotlin._WorkingON.WO_.Conexion.NearbyPayloadCallback
+import Z_MasterOfApps.Kotlin._WorkingON.WO_.Conexion.PayloadHandler
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
@@ -215,13 +217,14 @@ class ConnectionManager(
         logI("Starting connection monitoring job")
         connectionMonitorJob?.cancel()
         connectionMonitorJob = viewModelScope.launch {
+            delay(5000) // Initial delay to let connection stabilize
             while (isActive) {
-                delay(10000) // Check connection every 10 seconds
                 logD("Connection check: isConnected=${_connectionUiState.value.isConnected}, lastMode=$lastConnectionMode")
                 if (!_connectionUiState.value.isConnected && lastConnectionMode != ConnectionMode.NONE) {
                     logI("Connection not detected, initiating reconnection")
                     initiateReconnection()
                 }
+                delay(5000) // Check every 5 seconds instead of 10
             }
         }
     }
@@ -572,15 +575,21 @@ class ConnectionManager(
             updateConnectionStatus("Connexion en cours avec ${info.endpointName}...")
         }
 
+        // Add a delay before sending initial data in connectionLifecycleCallback
         override fun onConnectionResult(endpointId: String, result: ConnectionResolution) {
-            logI("Connection result for endpoint $endpointId: ${result.status.statusCode}")
             when (result.status.statusCode) {
                 ConnectionsStatusCodes.STATUS_OK -> {
                     this@ConnectionManager.endpointId = endpointId
                     updateConnectionStatus("Connecté")
                     _connectionUiState.update { it.copy(isConnected = true) }
                     retryCount = 0
-                    dataSender.sendData("Connection established")
+
+                    // Add delay before sending first message
+                    viewModelScope.launch {
+                        delay(4000) // Wait 1 second to stabilize connection
+                        dataSender.sendData("Connection established")
+                    }
+
                     logI("Connection successfully established with endpoint $endpointId")
                 }
                 ConnectionsStatusCodes.STATUS_CONNECTION_REJECTED -> {
@@ -608,11 +617,12 @@ class ConnectionManager(
         viewModelScope.launch {
             if (_connectionUiState.value.isConnected) {
                 logI("Still connected despite transfer failure, checking connection health")
+                // Add delay before checking health
+                delay(500)  // Give the connection a moment to stabilize
                 checkConnectionHealth()
             }
         }
     }
-
     private fun checkConnectionHealth() {
         endpointId?.let { endpoint ->
             try {

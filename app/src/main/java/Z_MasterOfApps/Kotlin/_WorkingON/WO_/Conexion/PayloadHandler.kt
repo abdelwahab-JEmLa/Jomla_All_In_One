@@ -1,6 +1,7 @@
-package Z_MasterOfApps.Kotlin._WorkingON.WO_
+package Z_MasterOfApps.Kotlin._WorkingON.WO_.Conexion
 
-import android.util.Log
+import Z_MasterOfApps.Kotlin._WorkingON.WO_.ConnectionManager
+import Z_MasterOfApps.Kotlin._WorkingON.WO_.WifiUpdateClientDisplayerStats
 import com.example.clientjetpack.Models.ProductDisplayController
 
 class PayloadHandler(private val connectionManager: ConnectionManager) {
