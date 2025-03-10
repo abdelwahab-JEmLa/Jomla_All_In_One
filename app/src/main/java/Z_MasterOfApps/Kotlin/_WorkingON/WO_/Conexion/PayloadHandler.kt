@@ -15,8 +15,7 @@ class PayloadHandler(private val connectionManager: ConnectionManager) {
             return
         }
 
-        // Then try to parse regular messages
-        WifiUpdateClientDisplayerStats.fromPayload(payload)?.let { (messageType, content) ->
+         WifiUpdateClientDisplayerStats.fromPayload(payload)?.let { (messageType, content) ->
             connectionManager.logD("Parsed message type: $messageType, content: ${content.take(20)}${if (content.length > 20) "..." else ""}")
             when (messageType) {
                 WifiUpdateClientDisplayerStats.ClientMainGridScrollPosition -> updateDisplayController {

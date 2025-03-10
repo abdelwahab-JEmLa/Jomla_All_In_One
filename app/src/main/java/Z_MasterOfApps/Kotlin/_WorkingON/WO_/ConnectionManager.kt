@@ -19,7 +19,6 @@ import com.google.android.gms.nearby.connection.ConnectionResolution
 import com.google.android.gms.nearby.connection.ConnectionsStatusCodes
 import com.google.android.gms.nearby.connection.DiscoveredEndpointInfo
 import com.google.android.gms.nearby.connection.EndpointDiscoveryCallback
-import com.google.android.gms.nearby.connection.Strategy
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable.isActive
 import kotlinx.coroutines.delay
@@ -38,8 +37,6 @@ class ConnectionManager(
 
     val _connectionUiState = MutableStateFlow(ConnectionUiState())
     var endpointId: String? = null
-    private val serviceId = "com.example.clientjetpack"
-    private val strategy = Strategy.P2P_POINT_TO_POINT
 
     private val isReconnecting = AtomicBoolean(false)
     private var reconnectionJob: Job? = null
@@ -665,7 +662,6 @@ class ConnectionManager(
     }
 
     private fun calculateBackoffDelay(): Long {
-        // Implement exponential backoff with jitter to avoid thundering herd
         val maxExponent = 7 // Limits maximum delay to ~384 seconds
         val exponent = retryCount.coerceAtMost(maxExponent)
         val jitter = (0.5 + Math.random() * 0.5) // 50% to 100% of calculated time
@@ -770,10 +766,7 @@ class ConnectionManager(
     }
 
     companion object {
-        // Using a consistent prefix for all logs to make filtering easier
-        const val APP_TAG = "MyApp"
         const val TAG = "ConnectionManager"
-
 
     }
 
