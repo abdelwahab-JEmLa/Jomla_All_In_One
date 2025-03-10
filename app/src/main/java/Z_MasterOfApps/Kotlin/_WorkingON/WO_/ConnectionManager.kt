@@ -61,6 +61,10 @@ class ConnectionManager(
     private var consecutiveRadioFailures = 0
     private val maxRadioFailuresBeforeRecovery = 3
 
+    // Track connection attempts to avoid redundant requests
+    private val connectionAttempts = ConcurrentHashMap<String, Long>()
+    private val connectionAttemptCooldown = TimeUnit.SECONDS.toMillis(5)
+
     // Create instances of extracted components
     val permissionHandler = PermissionHandler(context, this)
     private val payloadHandler = PayloadHandler(this)
@@ -95,6 +99,7 @@ class ConnectionManager(
         viewModelScope.launch {
             while (isActive) {
                 cleanupStaleEndpoints()
+                cleanupStaleConnectionAttempts()
                 delay(TimeUnit.MINUTES.toMillis(1))
             }
         }
@@ -109,6 +114,18 @@ class ConnectionManager(
         staleEndpoints.forEach { endpoint ->
             logD("Removing stale endpoint: $endpoint")
             discoveredEndpoints.remove(endpoint)
+        }
+    }
+
+    private fun cleanupStaleConnectionAttempts() {
+        val currentTime = System.currentTimeMillis()
+        val staleAttempts = connectionAttempts.entries
+            .filter { currentTime - it.value > connectionAttemptCooldown }
+            .map { it.key }
+
+        staleAttempts.forEach { endpoint ->
+            logD("Removing stale connection attempt: $endpoint")
+            connectionAttempts.remove(endpoint)
         }
     }
 
@@ -184,6 +201,7 @@ class ConnectionManager(
                         )}
                         // Reset retry counter since we're connected
                         retryCount = 0
+                        consecutiveRadioFailures = 0
                     }
                 } catch (e: Exception) {
                     logE("Error during reconnection attempt: ${e.message}", e)
@@ -202,14 +220,14 @@ class ConnectionManager(
         logI("Starting connection monitoring job")
         connectionMonitorJob?.cancel()
         connectionMonitorJob = viewModelScope.launch {
-            delay(5000) // Initial delay to let connection stabilize
+            delay(10000) // Initial delay to let connection stabilize
             while (isActive) {
                 logD("Connection check: isConnected=${_connectionUiState.value.isConnected}, lastMode=$lastConnectionMode")
                 if (!_connectionUiState.value.isConnected && lastConnectionMode != ConnectionMode.NONE) {
                     logI("Connection not detected, initiating reconnection")
                     initiateReconnection()
                 }
-                delay(5000) // Check every 5 seconds
+                delay(15000) // Check less frequently, every 15 seconds
             }
         }
     }
@@ -270,7 +288,7 @@ class ConnectionManager(
                                 client.sendPayload(endpointId!!, com.google.android.gms.nearby.connection.Payload.fromBytes("ping".toByteArray()))
                                 true
                             } catch (e: Exception) {
-                                logE("Failed ping test", e)
+                                logE("Failed ping test: ${e.message}", e)
                                 false
                             }
                         } else false
@@ -279,7 +297,7 @@ class ConnectionManager(
             logI("Connection status check: hasConnectedEndpoints=$hasConnectedEndpoints")
             hasConnectedEndpoints
         } catch (e: Exception) {
-            logE("Error checking connection status", e)
+            logE("Error checking connection status: ${e.message}", e)
             false
         }
     }
@@ -314,7 +332,7 @@ class ConnectionManager(
                 try {
                     Nearby.getConnectionsClient(context).disconnectFromEndpoint(endpoint)
                 } catch (e: Exception) {
-                    logE("Error disconnecting from specific endpoint", e)
+                    logE("Error disconnecting from specific endpoint: ${e.message}", e)
                 }
             }
 
@@ -331,10 +349,13 @@ class ConnectionManager(
                 connectionStatus = "Déconnecté temporairement"
             )}
 
+            // Clear connection attempts tracking
+            connectionAttempts.clear()
+
             // Small delay to ensure services are properly stopped
-            Thread.sleep(200)
+            Thread.sleep(300)
         } catch (e: Exception) {
-            logE("Error during connection cleanup", e)
+            logE("Error during connection cleanup: ${e.message}", e)
         }
     }
 
@@ -355,6 +376,17 @@ class ConnectionManager(
                 logI("Already connected to this endpoint, skipping connection request")
                 return
             }
+
+            // Check if we've recently attempted to connect to this endpoint
+            val currentTime = System.currentTimeMillis()
+            val lastAttemptTime = connectionAttempts[endpointId]
+            if (lastAttemptTime != null && currentTime - lastAttemptTime < connectionAttemptCooldown) {
+                logI("Recently attempted connection to this endpoint, skipping")
+                return
+            }
+
+            // Record this connection attempt
+            connectionAttempts[endpointId] = currentTime
 
             // If we're connected to a different endpoint, disconnect from it first
             if (this@ConnectionManager.endpointId != null) {
@@ -382,6 +414,12 @@ class ConnectionManager(
         }
 
         private fun requestConnection(endpointId: String, endpointName: String) {
+            // Exit if we already have an active connection
+            if (this@ConnectionManager.endpointId != null && _connectionUiState.value.isConnected) {
+                logI("Already have an active connection, skipping connection request")
+                return
+            }
+
             // Update UI to show we're attempting to connect
             updateConnectionStatus("Tentative de connexion à $endpointName...")
 
@@ -395,10 +433,43 @@ class ConnectionManager(
                     logI("Successfully requested connection to endpoint: $endpointId")
                 }
                 .addOnFailureListener { e ->
-                    logE("Failed to request connection to endpoint: $endpointId", e)
+                    val errorMsg = e.message ?: "Unknown error"
+                    logE("Failed to request connection to endpoint: $endpointId - $errorMsg", e)
+
+                    // Handle "already connected" specially
+                    if (errorMsg.contains("STATUS_ALREADY_CONNECTED_TO_ENDPOINT")) {
+                        logI("Already connected to endpoint $endpointId, updating connection state")
+
+                        // Store the endpoint ID since we now know we're connected to it
+                        this@ConnectionManager.endpointId = endpointId
+
+                        // Update the UI to reflect connected state
+                        _connectionUiState.update { it.copy(
+                            isConnected = true,
+                            connectionStatus = "Connecté à $endpointName",
+                            error = null
+                        )}
+
+                        // Reset error counters since we're actually connected
+                        retryCount = 0
+                        consecutiveRadioFailures = 0
+
+                        // If we were previously discovering, stop discovery
+                        if (isDiscovering) {
+                            logI("Stopping discovery after connection established")
+                            try {
+                                Nearby.getConnectionsClient(context).stopDiscovery()
+                                isDiscovering = false
+                            } catch (ex: Exception) {
+                                logE("Error stopping discovery: ${ex.message}", ex)
+                            }
+                        }
+
+                        return@addOnFailureListener
+                    }
 
                     // Handle radio error specifically
-                    if (e.message?.contains("STATUS_RADIO_ERROR") == true) {
+                    if (errorMsg.contains("STATUS_RADIO_ERROR")) {
                         logE("Radio error detected during connection attempt")
                         consecutiveRadioFailures++
 
@@ -409,17 +480,8 @@ class ConnectionManager(
                         }
                     }
 
-                    // Only handle as a connection failure if it's not already connected error
-                    if (e.message?.contains("STATUS_ALREADY_CONNECTED_TO_ENDPOINT") != true) {
-                        handleConnectionFailure("Erreur de connexion: ${e.message}")
-                    } else {
-                        logI("Already connected to endpoint, updating connection state")
-                        // If we're already connected, update the UI state to reflect this
-                        _connectionUiState.update { it.copy(
-                            isConnected = true,
-                            connectionStatus = "Connecté"
-                        )}
-                    }
+                    // Handle as a general connection failure
+                    handleConnectionFailure("Erreur de connexion: $errorMsg")
                 }
         }
 
@@ -428,6 +490,9 @@ class ConnectionManager(
 
             // Remove from tracked endpoints
             discoveredEndpoints.remove(endpointId)
+
+            // Remove from connection attempts
+            connectionAttempts.remove(endpointId)
 
             // Only trigger reconnection if this is the endpoint we were connected to
             if (this@ConnectionManager.endpointId == endpointId) {
@@ -483,7 +548,7 @@ class ConnectionManager(
                     Nearby.getConnectionsClient(context).acceptConnection(endpointId, payloadCallback)
                     logI("Connection accepted for endpoint: $endpointId")
                 } catch (e: Exception) {
-                    logE("Error accepting connection", e)
+                    logE("Error accepting connection: ${e.message}", e)
                     handleError("Erreur d'acceptation de connexion: ${e.message}")
                 }
             }
@@ -500,6 +565,27 @@ class ConnectionManager(
                     retryCount = 0
                     consecutiveRadioFailures = 0
 
+                    // Stop discovery/advertising after successful connection
+                    if (isDiscovering) {
+                        logI("Stopping discovery after connection established")
+                        try {
+                            Nearby.getConnectionsClient(context).stopDiscovery()
+                            isDiscovering = false
+                        } catch (e: Exception) {
+                            logE("Error stopping discovery: ${e.message}", e)
+                        }
+                    }
+
+                    if (isAdvertising) {
+                        logI("Stopping advertising after connection established")
+                        try {
+                            Nearby.getConnectionsClient(context).stopAdvertising()
+                            isAdvertising = false
+                        } catch (e: Exception) {
+                            logE("Error stopping advertising: ${e.message}", e)
+                        }
+                    }
+
                     // Add delay before sending first message
                     viewModelScope.launch {
                         delay(1000) // Wait 1 second to stabilize connection
@@ -507,7 +593,7 @@ class ConnectionManager(
                             dataSender.sendData("Connection established")
                             logI("Initial connection message sent successfully")
                         } catch (e: Exception) {
-                            logE("Failed to send initial message", e)
+                            logE("Failed to send initial message: ${e.message}", e)
                             // Don't trigger reconnection for this failure
                         }
                     }
@@ -553,7 +639,7 @@ class ConnectionManager(
                 logD("Sending ping to test connection with endpoint $endpoint")
                 dataSender.sendData("ping")
             } catch (e: Exception) {
-                logE("Failed to send ping to endpoint $endpoint", e)
+                logE("Failed to send ping to endpoint $endpoint: ${e.message}", e)
                 handleConnectionFailure("Perte de connexion détectée")
             }
         } ?: logW("No endpoint to check connection health")
@@ -579,7 +665,12 @@ class ConnectionManager(
     }
 
     private fun calculateBackoffDelay(): Long {
-        val delay = baseRetryDelayMs * (1L shl retryCount.coerceAtMost(5))
+        // Implement exponential backoff with jitter to avoid thundering herd
+        val maxExponent = 7 // Limits maximum delay to ~384 seconds
+        val exponent = retryCount.coerceAtMost(maxExponent)
+        val jitter = (0.5 + Math.random() * 0.5) // 50% to 100% of calculated time
+        val delay = (baseRetryDelayMs * (1L shl exponent) * jitter).toLong()
+
         logD("Calculated backoff delay for retry #$retryCount: $delay ms")
         return delay
     }
@@ -614,7 +705,7 @@ class ConnectionManager(
             // Small delay to ensure services are properly stopped
             Thread.sleep(100)
         } catch (e: Exception) {
-            logE("Error stopping Nearby services", e)
+            logE("Error stopping Nearby services: ${e.message}", e)
         }
     }
 
@@ -629,7 +720,7 @@ class ConnectionManager(
             Nearby.getConnectionsClient(context).stopAllEndpoints()
             logI("All endpoints stopped")
         } catch (e: Exception) {
-            logE("Error during disconnect/cleanup", e)
+            logE("Error during disconnect/cleanup: ${e.message}", e)
         }
 
         endpointId = null
@@ -640,6 +731,7 @@ class ConnectionManager(
         isAdvertising = false
         isDiscovering = false
         discoveredEndpoints.clear()
+        connectionAttempts.clear()
 
         _connectionUiState.update {
             it.copy(
