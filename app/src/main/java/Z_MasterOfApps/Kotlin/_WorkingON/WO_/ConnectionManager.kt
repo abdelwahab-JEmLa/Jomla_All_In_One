@@ -774,18 +774,7 @@ class ConnectionManager(
         const val APP_TAG = "MyApp"
         const val TAG = "ConnectionManager"
 
-        // Static logging functions for use in other parts of the app
-        fun logD(message: String) {
-            Log.d(APP_TAG, "$TAG: $message")
-        }
 
-        fun logE(message: String, throwable: Throwable? = null) {
-            if (throwable != null) {
-                Log.e(APP_TAG, "$TAG: $message", throwable)
-            } else {
-                Log.e(APP_TAG, "$TAG: $message")
-            }
-        }
     }
 
     private val APP_TAG = "MyApp"
