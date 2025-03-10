@@ -4,7 +4,9 @@ import Z_MasterOfApps.Kotlin.Model.J_AppInstalleDonTelephoneRepository
 import Z_MasterOfApps.Kotlin._WorkingON.WO_.Conexion.ConnectionComponents
 import Z_MasterOfApps.Kotlin._WorkingON.WO_.Conexion.NearbyPayloadCallback
 import Z_MasterOfApps.Kotlin._WorkingON.WO_.Conexion.PayloadHandler
+import android.bluetooth.BluetoothManager
 import android.content.Context
+import android.net.wifi.WifiManager
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -24,6 +26,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 
 class ConnectionManager(
@@ -40,23 +44,32 @@ class ConnectionManager(
     private val isReconnecting = AtomicBoolean(false)
     private var reconnectionJob: Job? = null
     private var connectionMonitorJob: Job? = null
+    private var radioStateCheckJob: Job? = null
     private var retryCount = 0
     private val maxRetries = 50
     private val baseRetryDelayMs = 3000L
+
+    // Track discovered endpoints for validation
+    private val discoveredEndpoints = ConcurrentHashMap<String, Long>()
+    private val endpointTimeout = TimeUnit.MINUTES.toMillis(5)
 
     var lastConnectionMode: ConnectionMode = ConnectionMode.NONE
     var isAdvertising = false
     var isDiscovering = false
 
+    // Track connection failures to adjust strategy
+    private var consecutiveRadioFailures = 0
+    private val maxRadioFailuresBeforeRecovery = 3
+
     // Create instances of extracted components
-     val permissionHandler = PermissionHandler(context, this)
+    val permissionHandler = PermissionHandler(context, this)
     private val payloadHandler = PayloadHandler(this)
     private val displayController = DisplayController(this)
     val dataSender = DataSender(this)
     private val payloadCallback = NearbyPayloadCallback(this, payloadHandler)
 
     // New components class for handling device management
-     val connectionComponents = ConnectionComponents(context, this, j_AppInstalleDonTelephoneRepository)
+    val connectionComponents = ConnectionComponents(context, this, j_AppInstalleDonTelephoneRepository)
 
     enum class ConnectionMode {
         HOST, CLIENT, NONE
@@ -72,6 +85,30 @@ class ConnectionManager(
 
             // Use the extracted components class for initialization
             connectionComponents.initializeModule()
+
+            // Start a periodic task to clean up stale endpoints
+            startEndpointCleanupTask()
+        }
+    }
+
+    private fun startEndpointCleanupTask() {
+        viewModelScope.launch {
+            while (isActive) {
+                cleanupStaleEndpoints()
+                delay(TimeUnit.MINUTES.toMillis(1))
+            }
+        }
+    }
+
+    private fun cleanupStaleEndpoints() {
+        val currentTime = System.currentTimeMillis()
+        val staleEndpoints = discoveredEndpoints.entries
+            .filter { currentTime - it.value > endpointTimeout }
+            .map { it.key }
+
+        staleEndpoints.forEach { endpoint ->
+            logD("Removing stale endpoint: $endpoint")
+            discoveredEndpoints.remove(endpoint)
         }
     }
 
@@ -97,6 +134,13 @@ class ConnectionManager(
                     val isActuallyConnected = checkActualConnectionStatus()
 
                     if (!isActuallyConnected) {
+                        // Check radio state if we've had consecutive failures
+                        if (consecutiveRadioFailures >= maxRadioFailuresBeforeRecovery) {
+                            checkAndRecoverRadioState()
+                            delay(3000) // Wait for radio recovery
+                            consecutiveRadioFailures = 0
+                        }
+
                         val backoffDelay = calculateBackoffDelay()
                         logI("Connection still lost, waiting $backoffDelay ms before retry #${retryCount + 1}")
                         delay(backoffDelay)
@@ -108,7 +152,7 @@ class ConnectionManager(
 
                         // First ensure we properly clean up any existing connections
                         cleanupExistingConnections()
-                        delay(1000) // Longer delay to ensure services are fully stopped
+                        delay(1500) // Longer delay to ensure services are fully stopped
 
                         when (lastConnectionMode) {
                             ConnectionMode.HOST -> {
@@ -138,6 +182,8 @@ class ConnectionManager(
                             connectionStatus = "Connecté",
                             error = null
                         )}
+                        // Reset retry counter since we're connected
+                        retryCount = 0
                     }
                 } catch (e: Exception) {
                     logE("Error during reconnection attempt: ${e.message}", e)
@@ -163,7 +209,51 @@ class ConnectionManager(
                     logI("Connection not detected, initiating reconnection")
                     initiateReconnection()
                 }
-                delay(5000) // Check every 5 seconds instead of 10
+                delay(5000) // Check every 5 seconds
+            }
+        }
+    }
+
+    private fun checkAndRecoverRadioState() {
+        logI("Checking and attempting to recover radio state")
+        radioStateCheckJob?.cancel()
+        radioStateCheckJob = viewModelScope.launch {
+            // Update UI to notify user
+            _connectionUiState.update { it.copy(
+                connectionStatus = "Vérification de l'état radio...",
+                error = "Problèmes de connexion détectés"
+            )}
+
+            try {
+                // Check WiFi state
+                val wifiManager = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+                val wifiEnabled = wifiManager.isWifiEnabled
+
+                // Check Bluetooth state
+                val bluetoothManager = context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+                val bluetoothAdapter = bluetoothManager.adapter
+                val bluetoothEnabled = bluetoothAdapter?.isEnabled == true
+
+                logI("Radio state check - WiFi: $wifiEnabled, Bluetooth: $bluetoothEnabled")
+
+                // Notify user of radio state
+                if (!wifiEnabled || !bluetoothEnabled) {
+                    _connectionUiState.update { it.copy(
+                        connectionStatus = "Veuillez activer WiFi et Bluetooth",
+                        error = "WiFi: ${if (wifiEnabled) "ON" else "OFF"}, BT: ${if (bluetoothEnabled) "ON" else "OFF"}"
+                    )}
+
+                    // Keep checking radio state until it's recovered
+                    delay(10000) // Wait 10 seconds before checking again
+                } else {
+                    logI("Radio state appears normal, continuing reconnection process")
+                    _connectionUiState.update { it.copy(
+                        connectionStatus = "Tentative de reconnexion...",
+                        error = null
+                    )}
+                }
+            } catch (e: Exception) {
+                logE("Error checking radio state", e)
             }
         }
     }
@@ -257,6 +347,9 @@ class ConnectionManager(
         override fun onEndpointFound(endpointId: String, info: DiscoveredEndpointInfo) {
             logI("Endpoint found: $endpointId, name: ${info.endpointName}, serviceId: ${info.serviceId}")
 
+            // Add or update the endpoint in our tracking map
+            discoveredEndpoints[endpointId] = System.currentTimeMillis()
+
             // Check if we're already connected to this endpoint or any other endpoint
             if (this@ConnectionManager.endpointId == endpointId) {
                 logI("Already connected to this endpoint, skipping connection request")
@@ -270,18 +363,28 @@ class ConnectionManager(
 
                 // Use viewModelScope to launch a coroutine for the delay
                 viewModelScope.launch {
-                    delay(500) // Brief delay to allow disconnection to complete
-
+                    delay(800) // Longer delay to allow disconnection to complete
                     // Continue with connection request after delay
-                    requestConnection(endpointId)
+                    requestConnection(endpointId, info.endpointName)
                 }
             } else {
-                // Directly request connection if not connected to any endpoint
-                requestConnection(endpointId)
+                // Add a small delay before requesting connection to allow discovery to stabilize
+                viewModelScope.launch {
+                    delay(500)
+                    // Check if endpoint is still valid before connecting
+                    if (discoveredEndpoints.containsKey(endpointId)) {
+                        requestConnection(endpointId, info.endpointName)
+                    } else {
+                        logW("Endpoint $endpointId is no longer valid, skipping connection")
+                    }
+                }
             }
         }
 
-        private fun requestConnection(endpointId: String) {
+        private fun requestConnection(endpointId: String, endpointName: String) {
+            // Update UI to show we're attempting to connect
+            updateConnectionStatus("Tentative de connexion à $endpointName...")
+
             Nearby.getConnectionsClient(context)
                 .requestConnection(
                     "Client Device",
@@ -293,6 +396,19 @@ class ConnectionManager(
                 }
                 .addOnFailureListener { e ->
                     logE("Failed to request connection to endpoint: $endpointId", e)
+
+                    // Handle radio error specifically
+                    if (e.message?.contains("STATUS_RADIO_ERROR") == true) {
+                        logE("Radio error detected during connection attempt")
+                        consecutiveRadioFailures++
+
+                        if (consecutiveRadioFailures >= maxRadioFailuresBeforeRecovery) {
+                            viewModelScope.launch {
+                                checkAndRecoverRadioState()
+                            }
+                        }
+                    }
+
                     // Only handle as a connection failure if it's not already connected error
                     if (e.message?.contains("STATUS_ALREADY_CONNECTED_TO_ENDPOINT") != true) {
                         handleConnectionFailure("Erreur de connexion: ${e.message}")
@@ -309,6 +425,9 @@ class ConnectionManager(
 
         override fun onEndpointLost(endpointId: String) {
             logW("Endpoint lost: $endpointId")
+
+            // Remove from tracked endpoints
+            discoveredEndpoints.remove(endpointId)
 
             // Only trigger reconnection if this is the endpoint we were connected to
             if (this@ConnectionManager.endpointId == endpointId) {
@@ -350,11 +469,24 @@ class ConnectionManager(
         }
     }
 
-     val connectionLifecycleCallback = object : ConnectionLifecycleCallback() {
+    val connectionLifecycleCallback = object : ConnectionLifecycleCallback() {
         override fun onConnectionInitiated(endpointId: String, info: ConnectionInfo) {
             logI("Connection initiated with endpoint: $endpointId, name: ${info.endpointName}")
-            Nearby.getConnectionsClient(context).acceptConnection(endpointId, payloadCallback)
+
+            // Update UI before accepting connection
             updateConnectionStatus("Connexion en cours avec ${info.endpointName}...")
+
+            // Accept connection with a small delay to ensure stability
+            viewModelScope.launch {
+                delay(300)
+                try {
+                    Nearby.getConnectionsClient(context).acceptConnection(endpointId, payloadCallback)
+                    logI("Connection accepted for endpoint: $endpointId")
+                } catch (e: Exception) {
+                    logE("Error accepting connection", e)
+                    handleError("Erreur d'acceptation de connexion: ${e.message}")
+                }
+            }
         }
 
         override fun onConnectionResult(endpointId: String, result: ConnectionResolution) {
@@ -363,12 +495,21 @@ class ConnectionManager(
                     this@ConnectionManager.endpointId = endpointId
                     updateConnectionStatus("Connecté")
                     _connectionUiState.update { it.copy(isConnected = true) }
+
+                    // Reset error counters on successful connection
                     retryCount = 0
+                    consecutiveRadioFailures = 0
 
                     // Add delay before sending first message
                     viewModelScope.launch {
                         delay(1000) // Wait 1 second to stabilize connection
-                        dataSender.sendData("Connection established")
+                        try {
+                            dataSender.sendData("Connection established")
+                            logI("Initial connection message sent successfully")
+                        } catch (e: Exception) {
+                            logE("Failed to send initial message", e)
+                            // Don't trigger reconnection for this failure
+                        }
                     }
 
                     logI("Connection successfully established with endpoint $endpointId")
@@ -405,6 +546,7 @@ class ConnectionManager(
             }
         }
     }
+
     private fun checkConnectionHealth() {
         endpointId?.let { endpoint ->
             try {
@@ -419,6 +561,14 @@ class ConnectionManager(
 
     fun handleConnectionFailure(reason: String) {
         logE("Connection failure: $reason (retryCount=$retryCount, maxRetries=$maxRetries)")
+
+        // Update UI to show failure reason
+        _connectionUiState.update { it.copy(
+            isConnected = false,
+            connectionStatus = "Échec de connexion",
+            error = reason
+        )}
+
         if (!isReconnecting.get() && retryCount < maxRetries) {
             logI("Initiating reconnection after connection failure")
             initiateReconnection()
@@ -467,10 +617,12 @@ class ConnectionManager(
             logE("Error stopping Nearby services", e)
         }
     }
+
     fun disconnect() {
         logI("Disconnecting and cleaning up resources")
         connectionMonitorJob?.cancel()
         reconnectionJob?.cancel()
+        radioStateCheckJob?.cancel()
 
         try {
             stopNearbyServices()
@@ -483,9 +635,11 @@ class ConnectionManager(
         endpointId = null
         lastConnectionMode = ConnectionMode.NONE
         retryCount = 0
+        consecutiveRadioFailures = 0
         isReconnecting.set(false)
         isAdvertising = false
         isDiscovering = false
+        discoveredEndpoints.clear()
 
         _connectionUiState.update {
             it.copy(
@@ -497,6 +651,7 @@ class ConnectionManager(
         }
         logI("Disconnect complete, connection state reset")
     }
+
     fun updateConnectionStatus(status: String) {
         logI("Updating connection status: $status")
         _connectionUiState.update { it.copy(
@@ -519,7 +674,9 @@ class ConnectionManager(
         disconnect()
         connectionMonitorJob?.cancel()
         reconnectionJob?.cancel()
+        radioStateCheckJob?.cancel()
     }
+
     companion object {
         // Using a consistent prefix for all logs to make filtering easier
         const val APP_TAG = "MyApp"
@@ -564,6 +721,4 @@ class ConnectionManager(
             Log.e(APP_TAG, " $message")
         }
     }
-
-
 }
