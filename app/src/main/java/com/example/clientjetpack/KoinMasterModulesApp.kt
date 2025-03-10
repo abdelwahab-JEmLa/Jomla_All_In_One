@@ -31,16 +31,14 @@ val repositoryModule = module {
 // Module pour les ViewModels
 val viewModelModule = module {
     viewModel { ViewModelInitApp() }
-    viewModel { (context: Context) -> HeadViewModel(get(), context) }
+    viewModel { (context: Context) -> HeadViewModel(get(), AppDatabase.DatabaseModule.getDatabase(get())) }
 }
 
 val servicesModule = module {
     // Create a factory for ConnectionManager that takes HeadViewModel as a parameter
     factory { (viewModel: HeadViewModel, context: Context) ->
         ConnectionManager(
-            viewModel = viewModel,
             context = context,
-            j_AppInstalleDonTelephoneRepository = get()
         )
     }
 }

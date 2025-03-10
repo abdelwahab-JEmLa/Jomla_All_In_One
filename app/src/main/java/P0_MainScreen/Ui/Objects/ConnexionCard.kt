@@ -74,12 +74,14 @@ fun ConnexionCard(
                         isHostEnabled = isHostEnabled,
                         onHostClick = {
                             headViewModel.run {
-                                connectionManager.connectionComponents.startAsHost(connectionManager.connectionLifecycleCallback, connectionManager.permissionHandler)
+                                startAsHost()
+                                updateTypePhone(type = true)
                             }
                         },
                         onClientClick = {
                             headViewModel.run {
-                                connectionManager.startAsClient()
+                                startAsClient()
+                                updateTypePhone()
                             }
                             onClickToStartAsClient()
                         },
@@ -91,11 +93,11 @@ fun ConnexionCard(
                         onMessageChange = { messageText = it },
                         onSendClick = {
                             if (messageText.isNotEmpty()) {
-                                headViewModel.connectionManager.sendOrderToClientDisplayer("Message", messageText)
+                                headViewModel.sendOrderToClientDisplayer("Message", messageText)
                                 messageText = ""
                             }
                         },
-                        onDisconnectClick = { headViewModel.connectionManager.disconnect() },
+                        onDisconnectClick = { headViewModel.disconnect() },
                         receivedMessage = productDisplayController.testMessageByWifi
                     )
                 }

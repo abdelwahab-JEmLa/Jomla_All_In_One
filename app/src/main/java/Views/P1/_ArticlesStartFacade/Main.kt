@@ -199,19 +199,19 @@ fun MainUi(
             if (uiState.productDisplayController.isHostPhone || uiState.productDisplayController.isConnected) {
 
                 Box(modifier = Modifier.weight(1f)) {
-                ArticleGridWithScrollbar(
-                    uiState = uiState,
-                    gridColumns = gridColumns,
-                    filterText = filterText,
-                    showFilter = isFabVisible,
-                    gridState = gridState,
-                    viewModel = viewModel,
-                    reloadTrigger = reloadTrigger,
-                    onClickToOpenWindos = onClickToOpenWindos, currentClient = currentClient
-                    ,viewModelInitApp=viewModelInitApp
-                )
+                    ArticleGridWithScrollbar(
+                        uiState = uiState,
+                        gridColumns = gridColumns,
+                        filterText = filterText,
+                        showFilter = isFabVisible,
+                        gridState = gridState,
+                        viewModel = viewModel,
+                        reloadTrigger = reloadTrigger,
+                        onClickToOpenWindos = onClickToOpenWindos, currentClient = currentClient
+                        ,viewModelInitApp=viewModelInitApp
+                    )
+                }
             }
-        }
         }
 
         AnimatedFabGroup(
@@ -249,7 +249,7 @@ private fun AnimatedFabGroup(
     onClickToDisplayeConexionWifi: () -> Unit, onToggleLockHost: () -> Unit,
     onToggleLockExpandedPricex: () -> Unit, viewModelInitApp: ViewModelInitApp,
 ) {
-    Box(                               
+    Box(
         modifier = Modifier
             .padding(bottom = 16.dp, end = 16.dp),
         contentAlignment = Alignment.BottomEnd
@@ -320,7 +320,7 @@ private fun HandleScrollBroadcast(
                         lastScrollPosition = position
                         onScrollHostChange(position)
                         Log.d(TAG, "Sending scroll position to client: $position")
-                        viewModel.connectionManager.sendOrderToClientDisplayer(
+                        viewModel.sendOrderToClientDisplayer(
                             WifiUpdateClientDisplayerStats.ClientMainGridScrollPosition.prefix,
                             position
                         )
@@ -328,7 +328,7 @@ private fun HandleScrollBroadcast(
                 } else if (isScrollInProgress) {
                     isScrollInProgress = false
                     Log.d(TAG, "Final scroll position sent to client: $position")
-                    viewModel.connectionManager.sendOrderToClientDisplayer(
+                    viewModel.sendOrderToClientDisplayer(
                         WifiUpdateClientDisplayerStats.ClientMainGridScrollPosition.prefix,
                         position
                     )

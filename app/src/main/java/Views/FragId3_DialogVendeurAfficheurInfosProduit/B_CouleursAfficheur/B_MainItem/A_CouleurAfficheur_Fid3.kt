@@ -62,7 +62,7 @@ fun B_CouleurAfficheur(
     currentClient: B_ClientsDataBase?,
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
 
-) {
+    ) {
     var showDialog by remember { mutableStateOf(false) }
     var isSelected by remember { mutableStateOf(false) }
 
@@ -134,7 +134,7 @@ fun B_CouleurAfficheur(
                     showDialog = true
                     color.let {
                         updateColorToBeMain(it.idColore)
-                        viewModel.connectionManager.sendOrderToClientDisplayer(
+                        viewModel.sendOrderToClientDisplayer(
                             WifiUpdateClientDisplayerStats.ClientWindowsSelectedColorId.prefix,
                             it.idColore
                         )
@@ -204,11 +204,11 @@ fun B_CouleurAfficheur(
                 colorName = color.nameColore,
                 onQuantitySelected = { newQuantity ->
                     viewModel.updateColorSelection(color.idColore, newQuantity)
-                    viewModel.connectionManager.sendOrderToClientDisplayer(
+                    viewModel.sendOrderToClientDisplayer(
                         WifiUpdateClientDisplayerStats.ClientWindowsLazyRowSupColorsScrolle.prefix,
                         index
                     )
-                    viewModel.connectionManager.sendOrderToClientDisplayer(
+                    viewModel.sendOrderToClientDisplayer(
                         WifiUpdateClientDisplayerStats.ClientWindowsSelectedColorId.prefix,
                         color.idColore
                     )

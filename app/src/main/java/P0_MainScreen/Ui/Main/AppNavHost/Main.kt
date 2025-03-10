@@ -180,7 +180,7 @@ fun AppNavHost(
                                     pendingIndexColor
                                 )
                                 opnerSaleWindows = true
-                                headViewModel.connectionManager.sendOrderToClientDisplayer(
+                                headViewModel.sendOrderToClientDisplayer(
                                     WifiUpdateClientDisplayerStats.ClientWindowsDisplayedProductId.prefix,
                                     relatedArticleBaseStats!!.idArticle.toLong()
                                 )
@@ -264,9 +264,8 @@ fun AppNavHost(
                 onDismiss = {
                     headViewModel.clearCurrentSale()
                     opnerSaleWindows = false
-                    headViewModel.connectionManager.sendOrderToClientDisplayer(
+                    headViewModel.sendOrderToClientDisplayer(
                         WifiUpdateClientDisplayerStats.DISMISS_PRODUCT_INFO.prefix    //-->
-                        //TODO(1): fait que au client quand ca ce dissmiss il revien a FragmentStartupScreen au liex gps 
                     )
                 },
                 reloadTrigger = reloadTrigger, lockExpandedPrices = lockExpandedPrices,

@@ -69,7 +69,7 @@ fun SearchFilterPB(
                                 onAddNotInBaseArticle(newArticle, 0)
                             }
                         }
-                        viewModel.connectionManager.sendOrderToClientDisplayer(
+                        viewModel.sendOrderToClientDisplayer(
                             WifiUpdateClientDisplayerStats.SearchWindowsDisplaye.prefix,
                             filterText
                         )
