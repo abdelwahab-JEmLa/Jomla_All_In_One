@@ -1,33 +1,28 @@
 package Z_MasterOfApps.Kotlin._WorkingON.WO_
 
-
 import Z_MasterOfApps.Kotlin.Model.J_AppInstalleDonTelephoneRepository
+import Z_MasterOfApps.Kotlin._WorkingON.WO_.Conexion.ConnectionComponents
 import Z_MasterOfApps.Kotlin._WorkingON.WO_.Conexion.NearbyPayloadCallback
 import Z_MasterOfApps.Kotlin._WorkingON.WO_.Conexion.PayloadHandler
 import android.content.Context
-import android.content.pm.PackageManager
-import android.os.Build
 import android.util.Log
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.clientjetpack.Models.ProductDisplayController
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import com.google.android.gms.nearby.Nearby
-import com.google.android.gms.nearby.connection.AdvertisingOptions
 import com.google.android.gms.nearby.connection.ConnectionInfo
 import com.google.android.gms.nearby.connection.ConnectionLifecycleCallback
 import com.google.android.gms.nearby.connection.ConnectionResolution
 import com.google.android.gms.nearby.connection.ConnectionsStatusCodes
 import com.google.android.gms.nearby.connection.DiscoveredEndpointInfo
-import com.google.android.gms.nearby.connection.DiscoveryOptions
 import com.google.android.gms.nearby.connection.EndpointDiscoveryCallback
 import com.google.android.gms.nearby.connection.Strategy
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable.isActive
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -37,7 +32,7 @@ class ConnectionManager(
     private val j_AppInstalleDonTelephoneRepository: J_AppInstalleDonTelephoneRepository
 ) : ViewModel() {
 
-    private val _connectionUiState = MutableStateFlow(ConnectionUiState())
+    val _connectionUiState = MutableStateFlow(ConnectionUiState())
     var endpointId: String? = null
     private val serviceId = "com.example.clientjetpack"
     private val strategy = Strategy.P2P_POINT_TO_POINT
@@ -49,221 +44,34 @@ class ConnectionManager(
     private val maxRetries = 50
     private val baseRetryDelayMs = 3000L
 
-    private var lastConnectionMode: ConnectionMode = ConnectionMode.NONE
-    private var isAdvertising = false
-    private var isDiscovering = false
+    var lastConnectionMode: ConnectionMode = ConnectionMode.NONE
+    var isAdvertising = false
+    var isDiscovering = false
 
     // Create instances of extracted components
-    private val permissionHandler = PermissionHandler(context ,this)
+     val permissionHandler = PermissionHandler(context, this)
     private val payloadHandler = PayloadHandler(this)
     private val displayController = DisplayController(this)
     val dataSender = DataSender(this)
     private val payloadCallback = NearbyPayloadCallback(this, payloadHandler)
 
-    private enum class ConnectionMode {
+    // New components class for handling device management
+     val connectionComponents = ConnectionComponents(context, this, j_AppInstalleDonTelephoneRepository)
+
+    enum class ConnectionMode {
         HOST, CLIENT, NONE
     }
 
     init {
+        initializeModule()
+    }
+
+    private fun initializeModule() {
         viewModelScope.launch {
             logI("Initializing ConnectionManager")
 
-            val timeout = 60000L // 60 second timeout as a safety measure
-            val startTime = System.currentTimeMillis()
-
-            while (j_AppInstalleDonTelephoneRepository.progressRepo.value < 1.0f) {
-                // Check if we've exceeded the timeout
-                if (System.currentTimeMillis() - startTime > timeout) {
-                    logE("Repository loading timeout after ${timeout/1000} seconds")
-                    break
-                }
-
-                logI("Waiting for repository to load, progress: ${j_AppInstalleDonTelephoneRepository.progressRepo.value}")
-                delay(500) // Check every half second
-
-                // Exit if the coroutine is cancelled
-                if (!isActive) return@launch
-            }
-
-            logI("Repository loaded, progress: ${j_AppInstalleDonTelephoneRepository.progressRepo.value}")
-
-            // Get current device name without potential extras
-            val manufacturerModel = "${Build.MANUFACTURER} ${Build.MODEL}"
-            logI("Raw device name: $manufacturerModel")
-
-            // Clean up device name (remove potential extras like "pk" suffix)
-            val currentDeviceName = manufacturerModel.trim().split(" ").take(4).joinToString(" ")
-            logI("Cleaned current device name: $currentDeviceName")
-
-            // Check for and clean up duplicate entries
-            cleanupDuplicateDevices(currentDeviceName)
-
-            // Log available devices in repository for debugging
-            logI("Available devices in repository after cleanup: ${j_AppInstalleDonTelephoneRepository.modelDatas.map { "${it.id}: ${it.infosDeBase.nom}" }}")
-
-            // More flexible device matching
-            val currentPhone = j_AppInstalleDonTelephoneRepository.modelDatas.find { phone ->
-                // Try exact match first
-                if (phone.infosDeBase.nom == currentDeviceName) return@find true
-
-                // Then try case-insensitive contains match
-                if (phone.infosDeBase.nom.contains(currentDeviceName, ignoreCase = true)) return@find true
-
-                // Then try matching just the model part if it's distinctive enough
-                val model = Build.MODEL.trim()
-                if (model.length > 3 && phone.infosDeBase.nom.contains(model, ignoreCase = true)) return@find true
-
-                false
-            }
-
-            if (currentPhone != null) {
-                logI("Found current phone in repository: ${currentPhone.id} - ${currentPhone.infosDeBase.nom}")
-                // Check if this is a receiver phone
-                val isReceiver = currentPhone.etatesMutable.itsReciverTelephone
-                logI("Is this a receiver phone? $isReceiver")
-
-                if (!isReceiver) {
-                    // This is a host device
-                    logI("This is a host device, setting up host configuration")
-                    currentPhone.etatesMutable.nearbyWifiAdressIpConexion = "host_${currentDeviceName.replace(" ", "_")}"
-                    j_AppInstalleDonTelephoneRepository.updatePhones()
-                    logI("Set nearbyWifiAdressIpConexion to: ${currentPhone.etatesMutable.nearbyWifiAdressIpConexion}")
-
-                    // Start as host
-                    logI("Starting as host")
-                    startAsHost()
-                    lastConnectionMode = ConnectionMode.HOST
-                } else {
-                    logI("This is a client device, looking for host phone")
-                    val hostPhone = j_AppInstalleDonTelephoneRepository.modelDatas.find {
-                        !it.etatesMutable.itsReciverTelephone && it.etatesMutable.nearbyWifiAdressIpConexion.isNotEmpty()
-                    }
-
-                    if (hostPhone != null) {
-                        logI("Found host phone: ${hostPhone.infosDeBase.nom} with connection: ${hostPhone.etatesMutable.nearbyWifiAdressIpConexion}")
-                        currentPhone.etatesMutable.nearbyWifiAdressIpConexion = hostPhone.etatesMutable.nearbyWifiAdressIpConexion
-                        j_AppInstalleDonTelephoneRepository.updatePhones()
-                        logI("Set client nearbyWifiAdressIpConexion to: ${currentPhone.etatesMutable.nearbyWifiAdressIpConexion}")
-
-                        // Start as client
-                        logI("Starting as client")
-                        startAsClient()
-                        lastConnectionMode = ConnectionMode.CLIENT
-                    } else {
-                        logE("No host phone found in repository!")
-                        logI("Converting this device to a host as fallback")
-
-                        // Convert this device to a host
-                        currentPhone.etatesMutable.itsReciverTelephone = false
-                        currentPhone.etatesMutable.nearbyWifiAdressIpConexion = "host_${currentDeviceName.replace(" ", "_")}"
-                        j_AppInstalleDonTelephoneRepository.updatePhones()
-
-                        startAsHost()
-                        lastConnectionMode = ConnectionMode.HOST
-                    }
-                }
-
-                // Set up connection monitoring
-                startConnectionMonitoring()
-            } else {
-                logE("Current phone not found in repository! Device: $currentDeviceName")
-                logI("Attempting to register the device automatically")
-
-                // Auto-register this device if possible
-                val newPhone = createNewPhoneEntry(currentDeviceName)
-                if (newPhone != null) {
-                    logI("Successfully registered new device with ID: ${newPhone.id}")
-
-                    // Set up as host by default for a new device
-                    newPhone.etatesMutable.nearbyWifiAdressIpConexion = "host_${currentDeviceName.replace(" ", "_")}"
-                    j_AppInstalleDonTelephoneRepository.updatePhones()
-
-                    logI("Starting as host for new device")
-                    startAsHost()
-                    lastConnectionMode = ConnectionMode.HOST
-
-                    // Start monitoring
-                    startConnectionMonitoring()
-                }
-            }
-        }
-    }
-
-    private fun cleanupDuplicateDevices(deviceName: String) {
-        // Find all entries matching this device
-        val matchingDevices = j_AppInstalleDonTelephoneRepository.modelDatas.filter { phone ->
-            phone.infosDeBase.nom == deviceName ||
-                    phone.infosDeBase.nom.contains(deviceName, ignoreCase = true) ||
-                    deviceName.contains(phone.infosDeBase.nom, ignoreCase = true)
-        }
-
-        if (matchingDevices.size > 1) {
-            logI("Found ${matchingDevices.size} potential duplicate entries for '$deviceName'")
-
-            // Keep the first one and remove others
-            val deviceToKeep = matchingDevices.first()
-            matchingDevices.drop(1).forEach { duplicate ->
-                logI("Removing duplicate device: ID ${duplicate.id} - ${duplicate.infosDeBase.nom}")
-                j_AppInstalleDonTelephoneRepository.modelDatas.remove(duplicate)
-            }
-
-            // Update repository
-            j_AppInstalleDonTelephoneRepository.updatePhones()
-            logI("Repository cleaned, kept device ID: ${deviceToKeep.id}")
-        }
-    }
-
-    private fun startConnectionMonitoring() {
-        logI("Starting connection monitoring job")
-        connectionMonitorJob?.cancel()
-        connectionMonitorJob = viewModelScope.launch {
-            delay(5000) // Initial delay to let connection stabilize
-            while (isActive) {
-                logD("Connection check: isConnected=${_connectionUiState.value.isConnected}, lastMode=$lastConnectionMode")
-                if (!_connectionUiState.value.isConnected && lastConnectionMode != ConnectionMode.NONE) {
-                    logI("Connection not detected, initiating reconnection")
-                    initiateReconnection()
-                }
-                delay(5000) // Check every 5 seconds instead of 10
-            }
-        }
-    }
-
-    private fun createNewPhoneEntry(deviceName: String): Z_MasterOfApps.Kotlin.Model.J_AppInstalleDonTelephone? {
-        try {
-            // Find the highest ID currently in use
-            val maxId = j_AppInstalleDonTelephoneRepository.modelDatas.maxOfOrNull { it.id } ?: 0
-            val newId = maxId + 1
-
-            // Create new phone entry
-            val newPhone = Z_MasterOfApps.Kotlin.Model.J_AppInstalleDonTelephone(newId).apply {
-                infosDeBase.nom = deviceName
-                // Get screen width in dp
-                val displayMetrics = context.resources.displayMetrics
-                val widthInDp = (displayMetrics.widthPixels / displayMetrics.density).toInt()
-                infosDeBase.widthScreen = widthInDp
-
-                // If it's a tablet or has "TAB" in the name, make it a receiver
-                val isTablet = widthInDp > 400 || deviceName.contains("TAB", ignoreCase = true)
-                infosDeBase.itsTablette = isTablet
-                etatesMutable.itsReciverTelephone = isTablet
-
-                // If it's a receiver, set nearbyWifiAdressIpConexion to empty to start as client
-                if (isTablet) {
-                    etatesMutable.nearbyWifiAdressIpConexion = ""
-                } else {
-                    etatesMutable.nearbyWifiAdressIpConexion = "host_${deviceName.replace(" ", "_")}"
-                }
-            }
-
-            // Add to repository
-            j_AppInstalleDonTelephoneRepository.modelDatas.add(newPhone)
-            j_AppInstalleDonTelephoneRepository.updatePhones()
-
-            return newPhone
-        } catch (e: Exception) {
-            logE("Failed to create new phone entry", e)
-            return null
+            // Use the extracted components class for initialization
+            connectionComponents.initializeModule()
         }
     }
 
@@ -305,7 +113,7 @@ class ConnectionManager(
                         when (lastConnectionMode) {
                             ConnectionMode.HOST -> {
                                 logI("Reconnecting as HOST")
-                                startAsHost()
+                                connectionComponents.startAsHost(connectionLifecycleCallback, permissionHandler)
                             }
                             ConnectionMode.CLIENT -> {
                                 logI("Reconnecting as CLIENT")
@@ -344,6 +152,22 @@ class ConnectionManager(
         }
     }
 
+    fun startConnectionMonitoring() {
+        logI("Starting connection monitoring job")
+        connectionMonitorJob?.cancel()
+        connectionMonitorJob = viewModelScope.launch {
+            delay(5000) // Initial delay to let connection stabilize
+            while (isActive) {
+                logD("Connection check: isConnected=${_connectionUiState.value.isConnected}, lastMode=$lastConnectionMode")
+                if (!_connectionUiState.value.isConnected && lastConnectionMode != ConnectionMode.NONE) {
+                    logI("Connection not detected, initiating reconnection")
+                    initiateReconnection()
+                }
+                delay(5000) // Check every 5 seconds instead of 10
+            }
+        }
+    }
+
     private fun checkActualConnectionStatus(): Boolean {
         return try {
             // Check if endpoint ID is not null AND if the Nearby API confirms we have connected endpoints
@@ -378,7 +202,7 @@ class ConnectionManager(
         return shouldRetry
     }
 
-    private fun cleanupExistingConnections() {
+    fun cleanupExistingConnections() {
         logI("Thoroughly cleaning up all existing connections")
         try {
             // Step 1: Stop discovery and advertising
@@ -424,51 +248,9 @@ class ConnectionManager(
         }
     }
 
-    // 4. Modify the startAsClient method to handle duplicate endpoints better
+    // Using the extracted components class for client mode
     fun startAsClient() {
-        viewModelScope.launch {
-            logI("Starting as client")
-            if (!permissionHandler.checkRequiredPermissions()) {
-                logE("Missing required permissions for Nearby Connections")
-                val missingPermissions =permissionHandler. getRequiredPermissions().filter { permission ->
-                    ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED
-                }
-                logE("Missing permissions: $missingPermissions")
-                handleError("Permissions manquantes")
-                return@launch
-            }
-
-            logI("All required permissions granted")
-            lastConnectionMode = ConnectionMode.CLIENT
-            _connectionUiState.update { it.copy(isHostPhone = false) }
-
-            try {
-                // First stop any existing discovery/connections
-                cleanupExistingConnections()
-
-                val discoveryOptions = DiscoveryOptions.Builder()
-                    .setStrategy(strategy)
-                    .build()
-
-                logI("Starting discovery with service ID: $serviceId and strategy: $strategy")
-                Nearby.getConnectionsClient(context).startDiscovery(
-                    serviceId,
-                    endpointDiscoveryCallback,
-                    discoveryOptions
-                ).addOnSuccessListener {
-                    isDiscovering = true
-                    logI("Successfully started discovery as client")
-                    updateConnectionStatus("Recherche d'appareils...")
-                }.addOnFailureListener { e ->
-                    isDiscovering = false
-                    logE("Failed to start discovery: ${e.message}", e)
-                    handleConnectionFailure("Erreur de démarrage de la recherche: ${e.message}")
-                }
-            } catch (e: Exception) {
-                logE("Exception during discovery: ${e.message}", e)
-                handleConnectionFailure(e.message ?: "Erreur inconnue")
-            }
-        }
+        connectionComponents.startAsClient(connectionLifecycleCallback, endpointDiscoveryCallback, permissionHandler)
     }
 
     private val endpointDiscoveryCallback = object : EndpointDiscoveryCallback() {
@@ -568,14 +350,13 @@ class ConnectionManager(
         }
     }
 
-    private val connectionLifecycleCallback = object : ConnectionLifecycleCallback() {
+     val connectionLifecycleCallback = object : ConnectionLifecycleCallback() {
         override fun onConnectionInitiated(endpointId: String, info: ConnectionInfo) {
             logI("Connection initiated with endpoint: $endpointId, name: ${info.endpointName}")
             Nearby.getConnectionsClient(context).acceptConnection(endpointId, payloadCallback)
             updateConnectionStatus("Connexion en cours avec ${info.endpointName}...")
         }
 
-        // Add a delay before sending initial data in connectionLifecycleCallback
         override fun onConnectionResult(endpointId: String, result: ConnectionResolution) {
             when (result.status.statusCode) {
                 ConnectionsStatusCodes.STATUS_OK -> {
@@ -586,7 +367,7 @@ class ConnectionManager(
 
                     // Add delay before sending first message
                     viewModelScope.launch {
-                        delay(4000) // Wait 1 second to stabilize connection
+                        delay(1000) // Wait 1 second to stabilize connection
                         dataSender.sendData("Connection established")
                     }
 
@@ -612,6 +393,7 @@ class ConnectionManager(
             handleDisconnection(endpointId)
         }
     }
+
     fun handleTransferFailure() {
         logE("Handling transfer failure")
         viewModelScope.launch {
@@ -635,7 +417,7 @@ class ConnectionManager(
         } ?: logW("No endpoint to check connection health")
     }
 
-    private fun handleConnectionFailure(reason: String) {
+    fun handleConnectionFailure(reason: String) {
         logE("Connection failure: $reason (retryCount=$retryCount, maxRetries=$maxRetries)")
         if (!isReconnecting.get() && retryCount < maxRetries) {
             logI("Initiating reconnection after connection failure")
@@ -715,7 +497,7 @@ class ConnectionManager(
         }
         logI("Disconnect complete, connection state reset")
     }
-    private fun updateConnectionStatus(status: String) {
+    fun updateConnectionStatus(status: String) {
         logI("Updating connection status: $status")
         _connectionUiState.update { it.copy(
             connectionStatus = status,
@@ -723,7 +505,7 @@ class ConnectionManager(
         )}
     }
 
-    private fun handleError(error: String) {
+    fun handleError(error: String) {
         logE("Error: $error")
         _connectionUiState.update { it.copy(
             error = error,
@@ -738,54 +520,6 @@ class ConnectionManager(
         connectionMonitorJob?.cancel()
         reconnectionJob?.cancel()
     }
-    // 7. Improve the connection initialization logic in startAsHost method
-    fun startAsHost() {
-        viewModelScope.launch {
-            logI("Starting as host")
-            if (!permissionHandler.checkRequiredPermissions()) {
-                logE("Missing required permissions for Nearby Connections")
-                val missingPermissions = permissionHandler.getRequiredPermissions().filter { permission ->
-                    ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED
-                }
-                logE("Missing permissions: $missingPermissions")
-                handleError("Permissions manquantes")
-                return@launch
-            }
-
-            logI("All required permissions granted")
-            lastConnectionMode = ConnectionMode.HOST
-            _connectionUiState.update { it.copy(isHostPhone = true) }
-
-            try {
-                // Clean up any existing connections before starting advertising
-                cleanupExistingConnections()
-
-                val advertisingOptions = AdvertisingOptions.Builder()
-                    .setStrategy(strategy)
-                    .build()
-
-                logI("Starting advertising with service ID: $serviceId and strategy: $strategy")
-                Nearby.getConnectionsClient(context).startAdvertising(
-                    "Host Device",  // Changed from "Host ????????????" to a clean string
-                    serviceId,
-                    connectionLifecycleCallback,
-                    advertisingOptions
-                ).addOnSuccessListener {
-                    isAdvertising = true
-                    logI("Successfully started advertising as host")
-                    updateConnectionStatus("En attente de connexion...")
-                }.addOnFailureListener { e ->
-                    isAdvertising = false
-                    logE("Failed to start advertising: ${e.message}", e)
-                    handleConnectionFailure("Erreur de démarrage du mode hôte: ${e.message}")
-                }
-            } catch (e: Exception) {
-                logE("Exception during advertising: ${e.message}", e)
-                handleConnectionFailure(e.message ?: "Erreur inconnue")
-            }
-        }
-    }
-
     companion object {
         // Using a consistent prefix for all logs to make filtering easier
         const val APP_TAG = "MyApp"

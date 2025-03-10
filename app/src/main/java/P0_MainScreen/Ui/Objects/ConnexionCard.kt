@@ -74,7 +74,7 @@ fun ConnexionCard(
                         isHostEnabled = isHostEnabled,
                         onHostClick = {
                             headViewModel.run {
-                                connectionManager.startAsHost()
+                                connectionManager.connectionComponents.startAsHost(connectionManager.connectionLifecycleCallback, connectionManager.permissionHandler)
                             }
                         },
                         onClientClick = {
