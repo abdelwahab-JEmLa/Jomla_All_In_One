@@ -1,5 +1,7 @@
 package Z_MasterOfApps.Kotlin.ViewModel
 
+import Z_CodePartageEntreApps.Model.B_ClientsDataBase
+import Z_CodePartageEntreApps.Model.B_ClientsDataBase.Companion.updateClientsDataBase
 import Z_CodePartageEntreApps.Model._ModelAppsFather
 import Z_MasterOfApps.Kotlin.ViewModel.Init.A_FirebaseListeners.FromAncienDataBase
 import Z_MasterOfApps.Kotlin.ViewModel.Init.B_Load.loadData
@@ -64,6 +66,22 @@ class ViewModelInitApp : ViewModel() {
             } catch (e: Exception) {
                 Log.e("ViewModelInitApp", "Init failed", e)
                 isLoading = false
+            }
+        }
+    }
+    fun updateStatueClientParID(
+        clientId : Long,
+        statueVente: B_ClientsDataBase.GpsLocation.DernierEtatAAffiche
+    ) {
+        clientDataBaseSnapList.toMutableList().forEach { client ->
+            if (client.id == clientId) {
+                // Now works because gpsLocation is part of the data class
+                val updatedClient = client.copy(
+                    gpsLocation = client.gpsLocation.copy(
+                        actuelleEtat = statueVente
+                    )
+                )
+                updatedClient.updateClientsDataBase(viewModel)
             }
         }
     }

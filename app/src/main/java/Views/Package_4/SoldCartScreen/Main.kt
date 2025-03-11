@@ -56,6 +56,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.lifecycle.viewModelScope
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
@@ -118,6 +119,11 @@ fun SoldCartScreen(
                     itemCount = filteredSoldArticles.sumOf { it.getTotalQuantity() },
                     totalPrice = totalPrice,
                     onConfirmOrder = {
+                        viewModelInitApp.viewModelScope.launch {
+                            if (clientBuyerNow != null) {
+                                viewModelInitApp.updateStatueClientParID(clientBuyerNow.id, B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.VENDU_A_LUI)
+                            }
+                        }
                         scope.launch {
                             showOrderSuccess = true
                             delay(3000)
@@ -219,7 +225,8 @@ fun CartSummaryCard(
             }
 
             Button(
-                onClick = onConfirmOrder,
+                onClick = onConfirmOrder
+                ,
                 modifier = Modifier.fillMaxWidth(),
                 enabled = itemCount > 0
             ) {
