@@ -67,6 +67,8 @@ fun FloatingActionButtonGroup(
     onToggleLockExpandedPricex: () -> Unit,
     viewModelInitApp: ViewModelInitApp,
     ) {
+    var afficheLeButtonSeul by remember { mutableStateOf(true) }
+
     var currentGridColumns by remember { mutableIntStateOf(2) }
     var showLabels by remember { mutableStateOf(true) }
     var isExpanded by remember { mutableStateOf(false) }
@@ -249,6 +251,7 @@ fun FloatingActionButtonGroup(
                 .fillMaxWidth()
                 .padding(end = 16.dp)
         ) {
+
             FloatingActionButton(
                 onClick = { isExpanded = !isExpanded },
                 modifier = Modifier
