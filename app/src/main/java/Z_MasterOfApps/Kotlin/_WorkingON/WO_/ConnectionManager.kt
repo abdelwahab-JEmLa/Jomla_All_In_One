@@ -43,7 +43,7 @@ class ConnectionManager(
 
     private var endpointId: String? = null
     private val serviceId = "com.example.clientjetpack"
-    private val strategy = Strategy.P2P_POINT_TO_POINT // Changé pour une connexion point à point plus stable
+    private val strategy = Strategy.P2P_POINT_TO_POINT
 
     private val isReconnecting = AtomicBoolean(false)
     private var reconnectionJob: Job? = null
