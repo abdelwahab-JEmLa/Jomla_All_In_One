@@ -6,6 +6,8 @@ import Z_MasterOfApps.Kotlin.Model.B_ClientsDataBase.Companion.updateClientsData
 import Z_MasterOfApps.Kotlin.Model.B_ClientsDataBase.StatueDeBase.TypeDeSonMagasine
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Main.Utils.LottieJsonGetterR_Raw_Icons
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircleOutline
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -79,10 +81,11 @@ class ViewModelExtension_App2_F1(
     }
 }
 
-enum class VisbleClientsNow(val icon: LottieJsonGetterR_Raw_Icons) {
+enum class VisbleClientsNow(val icon: Any) {  // Changed from LottieJsonGetterR_Raw_Icons to Any
     showNonAbsentClientsOnly(LottieJsonGetterR_Raw_Icons.reacticonanimatedjsonurl),
     showCibleClientsOnly(LottieJsonGetterR_Raw_Icons.afficheFenetre),
     showAtayClients(LottieJsonGetterR_Raw_Icons.atay),
+    showClientsOnlyAcEtateCIBLE_POUR_2(Icons.Default.CheckCircleOutline),
     showAlimentionlients(LottieJsonGetterR_Raw_Icons.alimentation),
     showAll(LottieJsonGetterR_Raw_Icons.reacticonanimatedjsonurl);
 }

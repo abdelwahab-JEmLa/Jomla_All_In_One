@@ -142,6 +142,11 @@ fun A_id1_ClientsLocationGps(
                     it.gpsLocation.actuelleEtat == B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.Cible
                 }
             }
+            VisbleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 -> {
+                clientDataBaseSnapList.filter {
+                    it.gpsLocation.actuelleEtat == B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CIBLE_POUR_2
+                }
+            }
             VisbleClientsNow.showAtayClients -> {
                 clientDataBaseSnapList.filter {
                     it.statueDeBase.typeDeSonMagasine == B_ClientsDataBase.StatueDeBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT
@@ -236,11 +241,11 @@ fun A_id1_ClientsLocationGps(
                     // Fermer toutes les info-bulles avant de changer le filtre
                     mapView.overlays.filterIsInstance<Marker>().forEach { it.closeInfoWindow() }
 
-                    // Cycle through the different filter modes
                     currentFilterMode = when (currentFilterMode) {
                         VisbleClientsNow.showAll -> VisbleClientsNow.showNonAbsentClientsOnly
                         VisbleClientsNow.showNonAbsentClientsOnly -> VisbleClientsNow.showCibleClientsOnly
-                        VisbleClientsNow.showCibleClientsOnly -> VisbleClientsNow.showAtayClients
+                        VisbleClientsNow.showCibleClientsOnly -> VisbleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2
+                        VisbleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 -> VisbleClientsNow.showAtayClients
                         VisbleClientsNow.showAtayClients -> VisbleClientsNow.showAlimentionlients
                         VisbleClientsNow.showAlimentionlients -> VisbleClientsNow.showAll
                     }

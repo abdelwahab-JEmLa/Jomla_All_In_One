@@ -44,6 +44,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -69,7 +70,12 @@ fun MarkerStatusDialog(
 
     if (selectedMarker == null) return
 
-    Dialog(onDismissRequest = onDismiss) {
+    Dialog(onDismissRequest = onDismiss,
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false,
+            decorFitsSystemWindows = true
+        )
+    ) {
         ElevatedCard(
             modifier = Modifier
                 .fillMaxWidth()
@@ -151,6 +157,7 @@ fun MarkerStatusDialog(
                         }
                     }
                 )
+
                 StatusButton(
                     text = "Client Cible",
                     icon = Icons.Default.Person,
@@ -158,6 +165,18 @@ fun MarkerStatusDialog(
                     onClick = {
                         coroutineScope.launch {
                             extensionVM.updateStatueClient(selectedMarker, B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.Cible)
+                            onDismiss()
+                        }
+                    }
+                )
+
+                StatusButton(
+                    text = "CIBLE_POUR_2",
+                    icon = Icons.Default.Person,
+                    color = Color(ContextCompat.getColor(context, B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CIBLE_POUR_2.color)),
+                    onClick = {
+                        coroutineScope.launch {
+                            extensionVM.updateStatueClient(selectedMarker, B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CIBLE_POUR_2)
                             onDismiss()
                         }
                     }

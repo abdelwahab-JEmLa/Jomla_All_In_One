@@ -19,7 +19,7 @@ fun But_2(
         icon = currentFilterMode.icon,
         contentDescription = "onFilterMarkers",
         showLabels = showLabels,
-        labelText = "onFilterMarkers",
+        labelText = currentFilterMode.name,
         containerColor = Color(0xFF2196F3)
     )
 }
