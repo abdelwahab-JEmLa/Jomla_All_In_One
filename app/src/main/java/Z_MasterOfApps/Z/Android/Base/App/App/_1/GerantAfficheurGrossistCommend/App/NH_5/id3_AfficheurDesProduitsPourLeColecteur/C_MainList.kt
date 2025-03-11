@@ -1,7 +1,7 @@
 package Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_5.id3_AfficheurDesProduitsPourLeColecteur
 
-import Z_MasterOfApps.Kotlin.Model.A_ProduitModel
-import Z_MasterOfApps.Kotlin.Model.A_ProduitModel.Companion.ExtraiGrossistInfos
+import Z_CodePartageEntreApps.Model.A_ProduitModel
+import Z_CodePartageEntreApps.Model.A_ProduitModel.Companion.ExtraiGrossistInfos
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_4.id2_TravaillieurListProduitAchercheChezLeGrossist.D_MainItem.ExpandedMainItem_F2
 import Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_5.id3_AfficheurDesProduitsPourLeColecteur.D_MainItem.MainItem_F3

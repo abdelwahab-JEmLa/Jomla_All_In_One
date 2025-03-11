@@ -1,6 +1,6 @@
 package P5_DialogeClientsEditer
 
-import Z_MasterOfApps.Kotlin.Model.B_ClientsDataBase
+import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.SoldArticlesTabelle
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement

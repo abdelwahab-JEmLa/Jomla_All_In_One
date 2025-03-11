@@ -1,6 +1,6 @@
 package Z_MasterOfApps.Kotlin.ViewModel
 
-import Z_MasterOfApps.Kotlin.Model._ModelAppsFather
+import Z_CodePartageEntreApps.Model._ModelAppsFather
 import Z_MasterOfApps.Kotlin.ViewModel.Init.A_FirebaseListeners.FromAncienDataBase
 import Z_MasterOfApps.Kotlin.ViewModel.Init.B_Load.loadData
 import Z_MasterOfApps.Kotlin.ViewModel.Partage.Functions.FunctionsPartageEntreFragment
@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
 @SuppressLint("SuspiciousIndentation")
 class ViewModelInitApp : ViewModel() {
     var _paramatersAppsViewModelModel by mutableStateOf(ParamatersAppsModel())
-    var _modelAppsFather by mutableStateOf(_ModelAppsFather())    
+    var _modelAppsFather by mutableStateOf(_ModelAppsFather())
 
 
     val modelAppsFather: _ModelAppsFather get() = _modelAppsFather

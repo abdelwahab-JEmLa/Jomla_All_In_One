@@ -1,8 +1,8 @@
 package Z_MasterOfApps.Z.Android.Main.C_EcranDeDepart.Startup.ViewModel
 
-import Z_MasterOfApps.Kotlin.Model.E_AppsOptionsStates
-import Z_MasterOfApps.Kotlin.Model.E_AppsOptionsStates.ApplicationEstInstalleDonTelephone.Companion.metricsWidthPixels
-import Z_MasterOfApps.Kotlin.Model._ModelAppsFather.Companion.updateProduit
+import Z_CodePartageEntreApps.Model.E_AppsOptionsStates
+import Z_CodePartageEntreApps.Model.E_AppsOptionsStates.ApplicationEstInstalleDonTelephone.Companion.metricsWidthPixels
+import Z_CodePartageEntreApps.Model._ModelAppsFather.Companion.updateProduit
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

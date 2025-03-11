@@ -1,8 +1,8 @@
 package com.example.clientjetpack.ViewModel
 
-import Z_MasterOfApps.Kotlin.Model.B_ClientsDataBase
-import Z_MasterOfApps.Kotlin.Model.CategoriesRepositoryImpl
-import Z_MasterOfApps.Kotlin.Model.I_CategoriesRepository
+import Z_CodePartageEntreApps.Model.B_ClientsDataBase
+import Z_CodePartageEntreApps.Model.CategoriesRepositoryImpl
+import Z_CodePartageEntreApps.Model.I_CategoriesRepository
 import Z_MasterOfApps.Kotlin._WorkingON.WO_.ConnectionManager
 import Z_MasterOfApps.Kotlin._WorkingON.WO_.WifiUpdateClientDisplayerStats
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable

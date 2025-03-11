@@ -5,7 +5,7 @@ import Views.FragId3_DialogVendeurAfficheurInfosProduit.C_PrixInfosProduit.Detai
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.Ui.Objects.ActionsButtonRow
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.Ui.Objects.ProductNameSection3
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.Ui.Objects.confirmExitDialog
-import Z_MasterOfApps.Kotlin.Model.B_ClientsDataBase
+import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle

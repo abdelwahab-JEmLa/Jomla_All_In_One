@@ -1,6 +1,6 @@
 package com.example.clientjetpack.Models
 
-import Z_MasterOfApps.Kotlin.Model.A_ProduitModel
+import Z_CodePartageEntreApps.Model.A_ProduitModel
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.SoldArticlesTabelle

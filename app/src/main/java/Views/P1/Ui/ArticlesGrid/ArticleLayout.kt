@@ -1,7 +1,7 @@
 package Views.P1.Ui.ArticlesGrid
 
 import Views.P1.Ui.ArticlesGrid.ArticleItem.ArticleImageWithOverlay
-import Z_MasterOfApps.Kotlin.Model.E_AppsOptionsStates.ApplicationEstInstalleDonTelephone.Companion.metricsWidthPixels
+import Z_CodePartageEntreApps.Model.E_AppsOptionsStates.ApplicationEstInstalleDonTelephone.Companion.metricsWidthPixels
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

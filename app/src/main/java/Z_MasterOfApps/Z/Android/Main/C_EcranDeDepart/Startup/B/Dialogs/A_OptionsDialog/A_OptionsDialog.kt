@@ -1,6 +1,6 @@
 package Z_MasterOfApps.Z.Android.Main.C_EcranDeDepart.Startup.B.Dialogs.A_OptionsDialog
 
-import Z_MasterOfApps.Kotlin.Model.E_AppsOptionsStates
+import Z_CodePartageEntreApps.Model.E_AppsOptionsStates
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
