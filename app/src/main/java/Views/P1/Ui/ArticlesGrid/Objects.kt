@@ -10,7 +10,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -52,6 +54,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.text.NumberFormat
+import java.util.Currency
+import java.util.Locale
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -325,65 +330,57 @@ fun ArticleDetails1(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
+        Text(
+            text = "زبون جديد في طور عرض الخدمة",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.primary
+        )
 
-        //-->
-        //TODO(1): ajoute un text au top contien "زبون جديد في طور تحديد خدمته "
-        //-->
-        //TODO(1): ajoute un autre text si text au top contien @Entity
-        //data class ArticlesBasesStatsTable(
-        //    @PrimaryKey var idArticle: Int = 0,
-        //    var nomArticleFinale: String = "",
-        //    var classementCate: Double = 0.0,
-        //    var nomArab: String = "",
-        //    var autreNomDarticle: String? = null,
-        //    var nmbrCat: Int = 0,
-        //    var couleur1: String? = null,
-        //    var idcolor1: Long = 0,
-        //    var couleur2: String? = null,
-        //    var idcolor2: Long = 0,
-        //    var couleur3: String? = null,
-        //    var idcolor3: Long = 0,
-        //    var couleur4: String? = null,
-        //    var idcolor4: Long = 0,
-        //    var nomCategorie2: String? = null,
-        //    var nmbrUnite: Int = 0,
-        //    var nmbrCaron: Int = 0,
-        //    var affichageUniteState: Boolean = false,
-        //    var commmentSeVent: String? = null,
-        //    var afficheBoitSiUniter: String? = null,
-        //    var monPrixAchat: Double = 0.0,
-        //    var clienPrixVentUnite: Double = 0.0,
-        //    var minQuan: Int = 0,
-        //    var monBenfice: Double = 0.0,
-        //    var monPrixVent: Double = 0.0,
-        //    var neaon2: String = "",
-        //    var idCategorie: Double = 0.0,
-        //    var catalogeParentID: Long = 0,
-        //    var funChangeImagsDimention: Boolean = false, //imgStatIsSmall
-        //    var nomCategorie: String = "",
-        //    var neaon1: Double = 0.0,
-        //    var lastUpdateState: String = "",
-        //    var cartonState: String = "",
-        //    var dateCreationCategorie: String = "",
-        //    var prixDeVentTotaleChezClient: Double = 0.0,
-        //    var benficeTotaleEntreMoiEtClien: Double = 0.0,
-        //    var benificeTotaleEn2: Double = 0.0,
-        //    var monPrixAchatUniter: Double = 0.0,
-        //    var monPrixVentUniter: Double = 0.0,
-        //    var benificeClient: Double = 0.0,
-        //    var monBeneficeUniter: Double = 0.0,
-        //    //Stats
-        //    var diponibilityState: String = "",  //StatsInIt: "Non Dispo"
-        //    var articleHaveUniteImages: Boolean = false,
-        //    var itsNewArrivale: Boolean = false,
-        //    var imageDimention: String = "",
-        //    var idForSearchArticles: Long = 0,
-        //
-        //    ) {
-        //    // No-argument constructor for Firebase
-        //    constructor() : this(0)
-        //}
-        //monPrixVent
+        // Check if monPrixVent is greater than 0
+        if (article.monPrixVent > 0) {
+            // Row to display both prices side by side
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                // Total price
+                Text(
+                    text = remember {
+                        val currencyFormat = NumberFormat.getCurrencyInstance(Locale.getDefault()).apply {
+                            currency = Currency.getInstance("DZD")
+                        }
+                        currencyFormat.format(article.monPrixVent)
+                    },
+                    style = MaterialTheme.typography.bodyMedium
+                )
+
+                if (article.nmbrUnite>1) {
+                    Text("->")
+                    Text(
+                        text = remember {
+                            val currencyFormat =
+                                NumberFormat.getCurrencyInstance(Locale.getDefault()).apply {
+                                    currency = Currency.getInstance("DZD")
+                                }
+                            val unitPrice =
+                                article.monPrixVent / article.nmbrUnite
+
+                            currencyFormat.format(unitPrice)
+                        },
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+                }
+            }
+        } else {
+            // Display alternative text when price is 0 or negative
+            Text(
+                text = "ان شاء الله نحاولو نديرولك سعر شباب",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.secondary
+            )
+        }
+
         Text(
             text = article.nomArticleFinale,
             style = MaterialTheme.typography.titleMedium
