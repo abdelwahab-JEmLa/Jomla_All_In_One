@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Tornado
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedCard
@@ -165,6 +166,21 @@ fun MarkerStatusDialog(
                     onClick = {
                         coroutineScope.launch {
                             extensionVM.updateStatueClient(selectedMarker, B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.Cible)
+                            onDismiss()
+                        }
+                    }
+                )
+
+                val CIBLE_POUR_2 =
+                    B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CIBLE_PRIORITE_2
+                StatusButton(
+                    text = CIBLE_POUR_2.toString(),
+                    icon = Icons.Default.Tornado,
+                    color = Color(ContextCompat.getColor(context, CIBLE_POUR_2.color)),
+                    onClick = {
+                        coroutineScope.launch {
+
+                            extensionVM.updateStatueClient(selectedMarker, CIBLE_POUR_2)
                             onDismiss()
                         }
                     }

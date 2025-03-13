@@ -46,9 +46,10 @@ data class B_ClientsDataBase(
         @IgnoreExtraProperties
         enum class DernierEtatAAffiche(val color: Int, val nomArabe: String) {
             ON_MODE_COMMEND_ACTUELLEMENT(android.R.color.holo_green_light, "نشط / متصل"),
-            VENDU_A_LUI(android.R.color.holo_purple, ""),
+            VENDU_A_LUI(android.R.color.holo_green_light, ""),
             Cible(android.R.color.holo_red_light, "Cible"),
-            CIBLE_POUR_2(android.R.color.holo_orange_light, "CIBLE_POUR_2"),
+            CIBLE_PRIORITE_2(android.R.color.holo_orange_light, "CIBLE_PRIORITE_2"),
+            CIBLE_POUR_2(android.R.color.holo_blue_dark, "CIBLE_POUR_2"),
             CLIENT_ABSENT(android.R.color.darker_gray, "غائب الشاري"),
             AVEC_MARCHANDISE(android.R.color.holo_blue_light, "عندو سلعة"),
             FERME(android.R.color.darker_gray, "مغلق")

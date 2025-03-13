@@ -2,6 +2,7 @@ package Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App
 
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase.Companion.updateClientsDataBase
+import Z_CodePartageEntreApps.Resources.XmlsFilesHandler.Companion.xmlResources
 import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.B.Dialogs.A.A_GlobalOptionsControlsFloatingActionButtons_FragId1
 import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.B.Dialogs.MarkerStatusDialog
 import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.B.Dialogs.Utils.DEFAULT_LATITUDE
@@ -10,7 +11,6 @@ import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.B.Dialogs.Util
 import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.ViewModel.Extension.ViewModelExtension_App2_F1
 import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.ViewModel.Extension.VisbleClientsNow
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_CodePartageEntreApps.Resources.XmlsFilesHandler.Companion.xmlResources
 import android.content.Context
 import android.widget.LinearLayout
 import androidx.compose.foundation.background
@@ -137,26 +137,34 @@ fun A_id1_ClientsLocationGps(
                     it.gpsLocation.actuelleEtat != B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CLIENT_ABSENT
                 }
             }
+
             VisbleClientsNow.showCibleClientsOnly -> {
                 clientDataBaseSnapList.filter {
                     it.gpsLocation.actuelleEtat == B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.Cible
+                            || it.gpsLocation.actuelleEtat == B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CIBLE_PRIORITE_2
+                            || it.gpsLocation.actuelleEtat == B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.VENDU_A_LUI
                 }
             }
+
             VisbleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 -> {
                 clientDataBaseSnapList.filter {
                     it.gpsLocation.actuelleEtat == B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CIBLE_POUR_2
+
                 }
             }
+
             VisbleClientsNow.showAtayClients -> {
                 clientDataBaseSnapList.filter {
                     it.statueDeBase.typeDeSonMagasine == B_ClientsDataBase.StatueDeBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT
                 }
             }
+
             VisbleClientsNow.showAlimentionlients -> {
                 clientDataBaseSnapList.filter {
                     it.statueDeBase.typeDeSonMagasine == B_ClientsDataBase.StatueDeBase.TypeDeSonMagasine.AlIMENTATION_GENERALE
                 }
             }
+
             VisbleClientsNow.showAll -> {
                 clientDataBaseSnapList
             }
@@ -236,7 +244,7 @@ fun A_id1_ClientsLocationGps(
                 mapView = mapView,
                 viewModelInitApp = viewModel,
                 onClear = onClear,
-                currentFilterMode=currentFilterMode,
+                currentFilterMode = currentFilterMode,
                 onFilterMarkers = {
                     // Fermer toutes les info-bulles avant de changer le filtre
                     mapView.overlays.filterIsInstance<Marker>().forEach { it.closeInfoWindow() }
