@@ -5,15 +5,16 @@ import P5_DialogeClientsEditer.ClientSelectionDialog
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.A_VendeurAfficheurInfosProduit_FragmentMainId3
 import Views.P1._ArticlesStartFacade.FragmentStartupScreen
 import Views.Package_4.SoldCartScreen.SoldCartScreen
+import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.A_id1_ClientsLocationGps
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Kotlin._WorkingON.WO_.WifiUpdateClientDisplayerStats
-import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.A_id1_ClientsLocationGps
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ProgressIndicatorDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -73,7 +74,7 @@ object ScreensApp2 {
 @Preview
 @Composable
 private fun PreviewApp2_F1() {
-    val viewModelInitApp: ViewModelInitApp  = viewModel()
+    val viewModelInitApp: ViewModelInitApp = viewModel()
     if (viewModelInitApp.isLoading) {
         Box(modifier = Modifier.fillMaxSize()) {
             CircularProgressIndicator(
@@ -92,8 +93,6 @@ private fun PreviewApp2_F1() {
      , viewModelInitApp, onUpdateLongAppSetting = {}, onClear = {}, headViewModel = _
      ) */
 }
-
-
 
 
 @Composable
@@ -131,148 +130,160 @@ fun AppNavHost(
                 .appSettingsSaverModel.find { it.name == "clientBuyerNowId" }
                 ?.valueLong ?: 0)
     }
+    // Calculate the bottom padding to ensure content doesn't get hidden by the navigation bar
+    val bottomNavHeight = 80.dp
+    val bottomPadding = 8.dp // Additional padding for the navigation bar
 
-    Box(modifier = modifier.fillMaxSize()) {
-        NavHost(
-            navController = navController,
-            startDestination = Screen.A_ClientsLocationGps.route,
-            modifier = Modifier.fillMaxSize()
-        ) {
+    // Fixed: Applied the padding to the Surface modifier and added content parameter
+    Surface(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(bottom = bottomNavHeight + bottomPadding) // Add padding to prevent content from being hidden
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            NavHost(
+                navController = navController,
+                startDestination = Screen.A_ClientsLocationGps.route,
+                modifier = Modifier.fillMaxSize()
+            ) {
 
-            app2(
-                viewModelInitApp, clientEnCourDeVent,
-                navController,
-                {
-                    headViewModel.viewModelScope.launch {
+                app2(
+                    viewModelInitApp, clientEnCourDeVent,
+                    navController,
+                    {
+                        headViewModel.viewModelScope.launch {
 
-                        headViewModel._uiState.update { currentState ->
-                            currentState.copy(soldArticlesModel = emptyList())
-                        }
-
-                        // Clear the database in a coroutine
-                        headViewModel.database.soldArticlesModelDao().deleteAll()
-
-                        // Clear Firebase references
-                        val database = Firebase.database
-                        database.getReference("K_GroupeurBonCommendToSupplierRef").removeValue()
-                        database.getReference("O_SoldArticlesTabelle").removeValue()
-
-                    }
-                },
-            )
-
-            composable(Screen.EditDatabaseWithCreateNewArticles.route) {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    FragmentStartupScreen(
-                        viewModel = headViewModel,
-                        onToggleNavBar = onToggleNavBar,
-                        reloadTrigger = reloadTrigger,
-                        onClickToOpenWindos = { articleDataBaseOn, indexColor ->
-                            relatedArticleBaseStats = articleDataBaseOn
-                            pendingIndexColor = indexColor
-
-                            if (currentClientId == 0L) {
-                                showClientSelection = true
-                            } else {
-                                headViewModel.openWindowsNewSaleWithUpdateCurrent(
-                                    relatedArticleBaseStats!!.idArticle.toLong(),
-                                    currentClientId,
-                                    pendingIndexColor
-                                )
-                                opnerSaleWindows = true
-                                headViewModel.sendOrderToClientDisplayer(
-                                    WifiUpdateClientDisplayerStats.ClientWindowsDisplayedProductId.prefix,
-                                    relatedArticleBaseStats!!.idArticle.toLong()
-                                )
+                            headViewModel._uiState.update { currentState ->
+                                currentState.copy(soldArticlesModel = emptyList())
                             }
-                        },
-                        onClickToOpenClientsW = {
-                            showClientSelectionWithoutCondition = true
-                        },
-                        isFabVisible = isFabVisible,
-                        onClickDonne = onClickDonne,
-                        onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi,
-                        scrollTiger = scrollTiger, onToggleLockHost = onToggleLockHost,
-                        onToggleLockExpandedPricex = { lockExpandedPrices = !lockExpandedPrices },
-                        currentClient = currentClient, viewModelInitApp = viewModelInitApp,
-                    )
 
-                    if (uiState.isLoading) {
-                        LoadingOverlay(
-                            progress = uiState.loadingProgress / 100f,
-                            modifier = Modifier.matchParentSize()
+                            // Clear the database in a coroutine
+                            headViewModel.database.soldArticlesModelDao().deleteAll()
+
+                            // Clear Firebase references
+                            val database = Firebase.database
+                            database.getReference("K_GroupeurBonCommendToSupplierRef").removeValue()
+                            database.getReference("O_SoldArticlesTabelle").removeValue()
+
+                        }
+                    },
+                )
+
+                composable(Screen.EditDatabaseWithCreateNewArticles.route) {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        FragmentStartupScreen(
+                            viewModel = headViewModel,
+                            onToggleNavBar = onToggleNavBar,
+                            reloadTrigger = reloadTrigger,
+                            onClickToOpenWindos = { articleDataBaseOn, indexColor ->
+                                relatedArticleBaseStats = articleDataBaseOn
+                                pendingIndexColor = indexColor
+
+                                if (currentClientId == 0L) {
+                                    showClientSelection = true
+                                } else {
+                                    headViewModel.openWindowsNewSaleWithUpdateCurrent(
+                                        relatedArticleBaseStats!!.idArticle.toLong(),
+                                        currentClientId,
+                                        pendingIndexColor
+                                    )
+                                    opnerSaleWindows = true
+                                    headViewModel.sendOrderToClientDisplayer(
+                                        WifiUpdateClientDisplayerStats.ClientWindowsDisplayedProductId.prefix,
+                                        relatedArticleBaseStats!!.idArticle.toLong()
+                                    )
+                                }
+                            },
+                            onClickToOpenClientsW = {
+                                showClientSelectionWithoutCondition = true
+                            },
+                            isFabVisible = isFabVisible,
+                            onClickDonne = onClickDonne,
+                            onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi,
+                            scrollTiger = scrollTiger, onToggleLockHost = onToggleLockHost,
+                            onToggleLockExpandedPricex = {
+                                lockExpandedPrices = !lockExpandedPrices
+                            },
+                            currentClient = currentClient, viewModelInitApp = viewModelInitApp,
+                        )
+
+                        if (uiState.isLoading) {
+                            LoadingOverlay(
+                                progress = uiState.loadingProgress / 100f,
+                                modifier = Modifier.matchParentSize()
+                            )
+                        }
+                    }
+                }
+                composable(Screen.SoldCart.route) {
+                    // Increment navigation count when entering SoldCart
+                    LaunchedEffect(Unit) {
+                        scrollTiger++
+                    }
+
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        SoldCartScreen(
+                            viewModel = headViewModel,
+                            clientBuyerNow = currentClient,
+                            uiState = uiState,
+                            onConfirmOrder = {
+                                headViewModel
+                                    .updateLongAppSetting("clientBuyerNowId", 0)
+                            }, viewModelInitApp = viewModelInitApp
                         )
                     }
                 }
-            }
-            composable(Screen.SoldCart.route) {
-                // Increment navigation count when entering SoldCart
-                LaunchedEffect(Unit) {
-                    scrollTiger++
-                }
 
-                Box(modifier = Modifier.fillMaxSize()) {
-                    SoldCartScreen(
-                        viewModel = headViewModel,
-                        clientBuyerNow = currentClient,
-                        uiState = uiState,
-                        onConfirmOrder = {
-                            headViewModel
-                                .updateLongAppSetting("clientBuyerNowId", 0)
-                        }, viewModelInitApp = viewModelInitApp
-                    )
-                }
             }
 
-        }
-
-        // Overlay dialogs and windows
-        if (showClientSelectionWithoutCondition || (showClientSelection && currentClientId == 0L)) {
-            ClientSelectionDialog(
-                soldArticle = uiState.soldArticlesModel,
-                viewModel = headViewModel,
-                clients = viewModelInitApp.clientDataBaseSnapList,
-                onClientSelected = { AppSetting ->
-                    headViewModel.updateLongAppSetting(
-                        "clientBuyerNowId",
-                        AppSetting.id
-                    )
-                    if (!showClientSelectionWithoutCondition) {
-                        headViewModel.openWindowsNewSaleWithUpdateCurrent(
-                            relatedArticleBaseStats!!.idArticle.toLong(),
-                            AppSetting.id,
-                            pendingIndexColor
+            // Overlay dialogs and windows
+            if (showClientSelectionWithoutCondition || (showClientSelection && currentClientId == 0L)) {
+                ClientSelectionDialog(
+                    soldArticle = uiState.soldArticlesModel,
+                    viewModel = headViewModel,
+                    clients = viewModelInitApp.clientDataBaseSnapList,
+                    onClientSelected = { AppSetting ->
+                        headViewModel.updateLongAppSetting(
+                            "clientBuyerNowId",
+                            AppSetting.id
                         )
-                        opnerSaleWindows = true
+                        if (!showClientSelectionWithoutCondition) {
+                            headViewModel.openWindowsNewSaleWithUpdateCurrent(
+                                relatedArticleBaseStats!!.idArticle.toLong(),
+                                AppSetting.id,
+                                pendingIndexColor
+                            )
+                            opnerSaleWindows = true
+                        }
+                        showClientSelection = false
+                        showClientSelectionWithoutCondition = false
+                    },
+                    onDismiss = {
+                        showClientSelection = false
+                        showClientSelectionWithoutCondition = false
+
                     }
-                    showClientSelection = false
-                    showClientSelectionWithoutCondition = false
-                },
-                onDismiss = {
-                    showClientSelection = false
-                    showClientSelectionWithoutCondition = false
+                )
+            }
 
-                }
-            )
-        }
-
-        if (opnerSaleWindows) {
-            A_VendeurAfficheurInfosProduit_FragmentMainId3(
-                modifier = Modifier.padding(horizontal = 3.dp),
-                uiState = uiState,
-                viewModel = headViewModel,
-                onDismiss = {
-                    headViewModel.clearCurrentSale()
-                    opnerSaleWindows = false
-                    headViewModel.sendOrderToClientDisplayer(
-                        WifiUpdateClientDisplayerStats.DISMISS_PRODUCT_INFO.prefix    //-->
-                    )
-                },
-                reloadTrigger = reloadTrigger, lockExpandedPrices = lockExpandedPrices,
-                onToggleLockExpandedPricex = { lockExpandedPrices = !lockExpandedPrices },
-                viewModelInitApp = viewModelInitApp,
-                currentClient = currentClient,
-            )
+            if (opnerSaleWindows) {
+                A_VendeurAfficheurInfosProduit_FragmentMainId3(
+                    modifier = Modifier.padding(horizontal = 3.dp),
+                    uiState = uiState,
+                    viewModel = headViewModel,
+                    onDismiss = {
+                        headViewModel.clearCurrentSale()
+                        opnerSaleWindows = false
+                        headViewModel.sendOrderToClientDisplayer(
+                            WifiUpdateClientDisplayerStats.DISMISS_PRODUCT_INFO.prefix    //-->
+                        )
+                    },
+                    reloadTrigger = reloadTrigger, lockExpandedPrices = lockExpandedPrices,
+                    onToggleLockExpandedPricex = { lockExpandedPrices = !lockExpandedPrices },
+                    viewModelInitApp = viewModelInitApp,
+                    currentClient = currentClient,
+                )
+            }
         }
     }
 }
