@@ -94,7 +94,6 @@ private fun PreviewApp2_F1() {
      ) */
 }
 
-
 @Composable
 fun AppNavHost(
     navController: NavHostController,
@@ -287,5 +286,3 @@ fun AppNavHost(
         }
     }
 }
-
-
