@@ -108,10 +108,7 @@ class MainActivity : ComponentActivity() {
                         Box(modifier = Modifier.fillMaxSize()) {
                             if (permissionsChecked) {
                                 MainScreen()
-                            } else {
-                                // You could show a loading or permissions screen here
-                                // For now, keeping it empty until permissions are checked
-                            }
+                            } else {}
                         }
                     }
                 }
