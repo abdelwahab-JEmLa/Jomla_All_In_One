@@ -29,8 +29,11 @@ fun QuantityButton(
     colorDetails: ColorsArticlesTabelle
 ) {
     Button(
+
         onClick = {
+
             onClick()
+
             _DisplayeProductInfosToSeller(viewModelInitApp)
                 .onClickComposeQuantityButton(
                 quantity,
@@ -38,7 +41,6 @@ fun QuantityButton(
                 currentClient,
                 colorDetails,
             )
-
         },
         modifier = Modifier
             .fillMaxWidth()

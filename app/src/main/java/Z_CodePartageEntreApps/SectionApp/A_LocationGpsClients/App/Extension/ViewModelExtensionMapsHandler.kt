@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.ViewModel.Extension
+package Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.Extension
 
 import Z_CodePartageEntreApps.Model.A_ProduitModel
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
@@ -6,8 +6,6 @@ import Z_CodePartageEntreApps.Model.B_ClientsDataBase.Companion.updateClientsDat
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase.StatueDeBase.TypeDeSonMagasine
 import Z_CodePartageEntreApps.Resources.LottieJsonGetterR_Raw_Icons
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircleOutline
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -81,11 +79,10 @@ class ViewModelExtension_App2_F1(
     }
 }
 
-enum class VisbleClientsNow(val icon: Any) {  // Changed from LottieJsonGetterR_Raw_Icons to Any
+enum class VisbleClientsNow(val icon: LottieJsonGetterR_Raw_Icons) {
     showNonAbsentClientsOnly(LottieJsonGetterR_Raw_Icons.reacticonanimatedjsonurl),
     showCibleClientsOnly(LottieJsonGetterR_Raw_Icons.afficheFenetre),
     showAtayClients(LottieJsonGetterR_Raw_Icons.atay),
-    showClientsOnlyAcEtateCIBLE_POUR_2(Icons.Default.CheckCircleOutline),
     showAlimentionlients(LottieJsonGetterR_Raw_Icons.alimentation),
     showAll(LottieJsonGetterR_Raw_Icons.reacticonanimatedjsonurl);
 }

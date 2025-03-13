@@ -1,16 +1,16 @@
-package Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.B.Dialogs.A
+package Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.Dialogs.A
 
 import Z_CodePartageEntreApps.Resources.LottieJsonGetterR_Raw_Icons
 import Z_CodePartageEntreApps.Resources.XmlsFilesHandler.Companion.xmlResources
-import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.B.Dialogs.Utils.A_ChangeIdColor
-import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.B.Dialogs.Utils.AddMarkerButton
-import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.B.Dialogs.Utils.ClearHistoryButton
-import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.B.Dialogs.Utils.LabelsButton
-import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.B.Dialogs.Utils.LocationTrackingButton
-import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.B.Dialogs.Utils.MenuButton
-import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.B.Dialogs.Utils.rememberLocationTracker
-import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.ViewModel.Extension.ViewModelExtension_App2_F1
-import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.ViewModel.Extension.VisbleClientsNow
+import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.Dialogs.Utils.A_ChangeIdColor
+import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.Dialogs.Utils.AddMarkerButton
+import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.Dialogs.Utils.ClearHistoryButton
+import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.Dialogs.Utils.LabelsButton
+import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.Dialogs.Utils.LocationTrackingButton
+import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.Dialogs.Utils.MenuButton
+import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.Dialogs.Utils.rememberLocationTracker
+import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.Extension.ViewModelExtension_App2_F1
+import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.Extension.VisbleClientsNow
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z_AppsFather.Kotlin.Partage.Views.AnimatedIconLottieJsonFile
 import androidx.compose.foundation.background
@@ -118,27 +118,28 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                         showLabels = showLabels,
                         extensionVM=extensionVM,
                     )
-                    But_2(
-                        currentFilterMode=currentFilterMode,
 
-                        extensionVM = extensionVM,
-                        viewModel = viewModelInitApp,
-                        showLabels = showLabels,
-                        onClick = onFilterMarkers
-                    )
-
-                    A_ChangeIdColor(
+                    ClearHistoryButton(
                         viewModelInitApp = viewModelInitApp,
                         showLabels = showLabels,
+                        onClear,
                     )
 
                     if (!packageName.contains("clientje") ) {
+                        But_2(
+                            currentFilterMode=currentFilterMode,
 
-                        ClearHistoryButton(
+                            extensionVM = extensionVM,
+                            viewModel = viewModelInitApp,
+                            showLabels = showLabels,
+                            onClick = onFilterMarkers
+                        )
+
+                        A_ChangeIdColor(
                             viewModelInitApp = viewModelInitApp,
                             showLabels = showLabels,
-                            onClear,
                         )
+
                     }
                 }
 

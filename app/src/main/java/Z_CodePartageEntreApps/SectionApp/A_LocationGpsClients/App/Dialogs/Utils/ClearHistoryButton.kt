@@ -1,6 +1,6 @@
-package Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.B.Dialogs.Utils
+package Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.Dialogs.Utils
 
-import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.B.Dialogs.A.ControlButton
+import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.Dialogs.A.ControlButton
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete

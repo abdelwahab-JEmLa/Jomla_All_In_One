@@ -6,7 +6,7 @@ import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Main.C_EcranDeDepart.Startup.B.Dialogs.Utils.LabelsButton
 import Z_MasterOfApps.Z.Android.Main.C_EcranDeDepart.Startup.B.Dialogs.Utils.MenuButton
 import Z_MasterOfApps.Z.Android.Main.C_EcranDeDepart.Startup.ViewModel.Startup_Extension
-import Z_MasterOfApps.Z.Android.Main.Utils.LottieJsonGetterR_Raw_Icons
+import Z_CodePartageEntreApps.Resources.LottieJsonGetterR_Raw_Icons
 import Z_MasterOfApps.Z_AppsFather.Kotlin.Partage.Views.AnimatedIconLottieJsonFile
 import android.util.Log
 import androidx.compose.foundation.background

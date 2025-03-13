@@ -1,8 +1,8 @@
-package Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.B.Dialogs.A
+package Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.Dialogs.A
 
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase.StatueDeBase.TypeDeSonMagasine
 import Z_CodePartageEntreApps.Resources.LottieJsonGetterR_Raw_Icons
-import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.ViewModel.Extension.ViewModelExtension_App2_F1
+import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.Extension.ViewModelExtension_App2_F1
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 

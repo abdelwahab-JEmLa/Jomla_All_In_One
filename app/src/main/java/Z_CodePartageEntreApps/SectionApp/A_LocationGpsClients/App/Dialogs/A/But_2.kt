@@ -1,7 +1,7 @@
-package Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.B.Dialogs.A
+package Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.Dialogs.A
 
-import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.ViewModel.Extension.ViewModelExtension_App2_F1
-import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.ViewModel.Extension.VisbleClientsNow
+import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.Extension.ViewModelExtension_App2_F1
+import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.Extension.VisbleClientsNow
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -19,7 +19,7 @@ fun But_2(
         icon = currentFilterMode.icon,
         contentDescription = "onFilterMarkers",
         showLabels = showLabels,
-        labelText = currentFilterMode.name,
+        labelText = "onFilterMarkers",
         containerColor = Color(0xFF2196F3)
     )
 }

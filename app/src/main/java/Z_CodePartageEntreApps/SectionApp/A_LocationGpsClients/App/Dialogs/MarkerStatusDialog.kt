@@ -1,10 +1,10 @@
-package Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.B.Dialogs
+package Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.Dialogs
 
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase.Companion.updateClientsDataBase
 import Z_CodePartageEntreApps.Model._ModelAppsFather
-import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.ViewModel.Extension.Utils.updateLongAppSetting
-import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.ViewModel.Extension.ViewModelExtension_App2_F1
+import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.Extension.Utils.updateLongAppSetting
+import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.Extension.ViewModelExtension_App2_F1
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -44,7 +44,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -70,12 +69,7 @@ fun MarkerStatusDialog(
 
     if (selectedMarker == null) return
 
-    Dialog(onDismissRequest = onDismiss,
-        properties = DialogProperties(
-            usePlatformDefaultWidth = false,
-            decorFitsSystemWindows = true
-        )
-    ) {
+    Dialog(onDismissRequest = onDismiss) {
         ElevatedCard(
             modifier = Modifier
                 .fillMaxWidth()
@@ -157,7 +151,6 @@ fun MarkerStatusDialog(
                         }
                     }
                 )
-
                 StatusButton(
                     text = "Client Cible",
                     icon = Icons.Default.Person,
@@ -165,18 +158,6 @@ fun MarkerStatusDialog(
                     onClick = {
                         coroutineScope.launch {
                             extensionVM.updateStatueClient(selectedMarker, B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.Cible)
-                            onDismiss()
-                        }
-                    }
-                )
-
-                StatusButton(
-                    text = "CIBLE_POUR_2",
-                    icon = Icons.Default.Person,
-                    color = Color(ContextCompat.getColor(context, B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CIBLE_POUR_2.color)),
-                    onClick = {
-                        coroutineScope.launch {
-                            extensionVM.updateStatueClient(selectedMarker, B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CIBLE_POUR_2)
                             onDismiss()
                         }
                     }

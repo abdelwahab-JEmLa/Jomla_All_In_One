@@ -28,6 +28,7 @@ class ViewModelInitApp : ViewModel() {
     var _modelAppsFather by mutableStateOf(_ModelAppsFather())
 
 
+
     val modelAppsFather: _ModelAppsFather get() = _modelAppsFather
     val produitsMainDataBase = _modelAppsFather.produitsMainDataBase
     val viewModel = this@ViewModelInitApp
@@ -85,4 +86,6 @@ class ViewModelInitApp : ViewModel() {
             }
         }
     }
+
+
 }
