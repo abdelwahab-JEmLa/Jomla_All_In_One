@@ -373,7 +373,6 @@ fun ArticleDetails1(
                 }
             }
         } else {
-            // Display alternative text when price is 0 or negative
             Text(
                 text = "ان شاء الله نحاولو نديرولك سعر شباب",
                 style = MaterialTheme.typography.bodySmall,
