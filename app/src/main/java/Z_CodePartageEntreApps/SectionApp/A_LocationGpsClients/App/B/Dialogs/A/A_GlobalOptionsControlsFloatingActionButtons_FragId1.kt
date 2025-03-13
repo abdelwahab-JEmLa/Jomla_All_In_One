@@ -132,13 +132,15 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                         showLabels = showLabels,
                     )
 
+                    ClearHistoryButton(
+                        viewModelInitApp = viewModelInitApp,
+                        showLabels = showLabels,
+                        onClear,
+                    )
+
                     if (!packageName.contains("clientje") ) {
 
-                        ClearHistoryButton(
-                            viewModelInitApp = viewModelInitApp,
-                            showLabels = showLabels,
-                            onClear,
-                        )
+
                     }
                 }
 

@@ -1,4 +1,5 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit.Ui.Objects
+import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
@@ -21,6 +22,7 @@ import com.example.clientjetpack.ViewModel.HeadViewModel
 
 @Composable
  fun confirmExitDialog(
+    viewModelInitApp: ViewModelInitApp,
     showConfirmDialog: Boolean,
     viewModel: HeadViewModel,
     onDismiss: () -> Unit
@@ -54,6 +56,7 @@ import com.example.clientjetpack.ViewModel.HeadViewModel
             },
             dismissButton = {
                 OutlinedButton(
+
                     onClick = {
                         onDismiss()
                     }

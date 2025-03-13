@@ -40,7 +40,8 @@ fun A_VendeurAfficheurInfosProduit_FragmentMainId3(
     onDismiss: () -> Unit,
     reloadTrigger: Int,
     modifier: Modifier = Modifier, lockExpandedPrices: Boolean,
-    onToggleLockExpandedPricex: () -> Unit, viewModelInitApp: ViewModelInitApp,
+    onToggleLockExpandedPricex: () -> Unit,
+    viewModelInitApp: ViewModelInitApp,
     currentClient: B_ClientsDataBase?,
 ) {
     val currentSale by viewModel.currentSaleInWindows.collectAsState()
@@ -53,6 +54,7 @@ fun A_VendeurAfficheurInfosProduit_FragmentMainId3(
 
     currentSale?.let {
         MainUi(
+            viewModelInitApp = viewModelInitApp,
             modifier = modifier,
             articlesBaseStats = articlesBaseStats,
             colorsArticlesTabelleModel = uiState.colorsArticlesTabelleModel,
@@ -64,7 +66,6 @@ fun A_VendeurAfficheurInfosProduit_FragmentMainId3(
             uiState = uiState,
             lockExpandedPrices = lockExpandedPrices,
             onToggleLockExpandedPricex = onToggleLockExpandedPricex,
-            viewModelInitApp = viewModelInitApp,
             currentClient = currentClient,
             colorsArticlesTabelleModele = viewModel._uiState.value.colorsArticlesTabelleModel
         )
@@ -74,6 +75,7 @@ fun A_VendeurAfficheurInfosProduit_FragmentMainId3(
 
 @Composable
 fun MainUi(
+    viewModelInitApp: ViewModelInitApp,
     modifier: Modifier = Modifier,
     articlesBaseStats: ArticlesBasesStatsTable?,
     colorsArticlesTabelleModel: List<ColorsArticlesTabelle>,
@@ -85,12 +87,21 @@ fun MainUi(
     uiState: UiState,
     lockExpandedPrices: Boolean,
     onToggleLockExpandedPricex: () -> Unit,
-    viewModelInitApp: ViewModelInitApp,
     currentClient: B_ClientsDataBase?,
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>
 ) {
     var showConfirmDialog by remember { mutableStateOf(false) }
-    showConfirmDialog = confirmExitDialog(showConfirmDialog, viewModel, onDismiss)
+    showConfirmDialog = confirmExitDialog(
+        viewModelInitApp, showConfirmDialog, viewModel,
+                 ) {
+        onDismiss()
+        _DisplayeProductInfosToSeller(viewModelInitApp)
+            .onClickOnMain(
+                viewModelInitApp,
+                currentSale,
+                currentClient
+            )
+    }
 
     Dialog(
         onDismissRequest = { showConfirmDialog = true },
