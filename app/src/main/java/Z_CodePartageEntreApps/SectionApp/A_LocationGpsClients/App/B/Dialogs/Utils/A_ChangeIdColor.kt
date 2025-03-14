@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 fun A_ChangeIdColor(
     viewModelInitApp: ViewModelInitApp,
     showLabels: Boolean,
+    contentDescription: String,
 ) {
     var clearDataClickCount by remember { mutableIntStateOf(0) }
 
@@ -28,9 +29,9 @@ fun A_ChangeIdColor(
             }
         },
         icon = Icons.Default.Repeat,
-        contentDescription = "Repeat",
+        contentDescription = contentDescription,
         showLabels = showLabels,
-        labelText = if (clearDataClickCount == 0) "Repeat" else "Click again to confirm",
+        labelText = if (clearDataClickCount == 0) contentDescription else "Click again to confirm",
         containerColor = if (clearDataClickCount == 0) Color(0xFFE91E63) else Color(0xFFFFEB3B)
     )
 }

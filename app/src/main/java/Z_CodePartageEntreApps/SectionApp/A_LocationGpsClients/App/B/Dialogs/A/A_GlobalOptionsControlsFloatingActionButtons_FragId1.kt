@@ -99,14 +99,6 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                         xmlResources = xmlResources
                     )
 
-                    But1_NearbyMarkersButton(
-                        showLabels = showLabels,
-                        viewModelInitApp = viewModelInitApp,
-                        markers = mapView.overlays.filterIsInstance<Marker>().toMutableList(),
-                        locationTracker = locationTracker,
-                        proximiteMeter = proximiteMeter,
-                        mapView = mapView
-                    )
 
                     AddMarkerButton(
                         extensionVM = extensionVM,
@@ -117,30 +109,38 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                     FragId1But_3(
                         showLabels = showLabels,
                         extensionVM=extensionVM,
-                    )
-                    But_2(
-                        currentFilterMode=currentFilterMode,
-
-                        extensionVM = extensionVM,
-                        viewModel = viewModelInitApp,
-                        showLabels = showLabels,
-                        onClick = onFilterMarkers
+                        contentDescription = "auClickeCaUpdateClientPar",
                     )
 
-                    A_ChangeIdColor(
-                        viewModelInitApp = viewModelInitApp,
-                        showLabels = showLabels,
-                    )
-
-                    ClearHistoryButton(
-                        viewModelInitApp = viewModelInitApp,
-                        showLabels = showLabels,
-                        onClear,
-                    )
 
                     if (!packageName.contains("clientje") ) {
+                        But1_NearbyMarkersButton(
+                            showLabels = showLabels,
+                            viewModelInitApp = viewModelInitApp,
+                            markers = mapView.overlays.filterIsInstance<Marker>().toMutableList(),
+                            locationTracker = locationTracker,
+                            proximiteMeter = proximiteMeter,
+                            mapView = mapView
+                        )
 
-
+                        But_2(
+                            viewModel = viewModelInitApp,
+                            textButton = "onFilterMarkers",
+                            showLabels = showLabels,
+                            onClick = onFilterMarkers,
+                            extensionVM = extensionVM,
+                            currentFilterMode=currentFilterMode
+                        )
+                        A_ChangeIdColor(
+                            viewModelInitApp = viewModelInitApp,
+                            showLabels = showLabels,
+                            contentDescription = "Repeat",
+                        )
+                        ClearHistoryButton(
+                            viewModelInitApp = viewModelInitApp,
+                            showLabels = showLabels,
+                            onClear,
+                        )
                     }
                 }
 

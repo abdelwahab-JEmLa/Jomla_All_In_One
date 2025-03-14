@@ -13,11 +13,12 @@ fun But_2(
     onClick: () -> Unit,
     extensionVM: ViewModelExtension_App2_F1,
     currentFilterMode: VisbleClientsNow,
+    textButton: String="",
 ) {
     ControlButton(
         onClick = onClick,
         icon = currentFilterMode.icon,
-        contentDescription = "onFilterMarkers",
+        contentDescription = textButton,
         showLabels = showLabels,
         labelText = currentFilterMode.name,
         containerColor = Color(0xFF2196F3)

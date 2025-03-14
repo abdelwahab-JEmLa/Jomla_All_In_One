@@ -22,6 +22,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -53,14 +54,14 @@ fun FragmentStartupScreen(
     onClickDonne: () -> Unit,
     onClickToDisplayeConexionWifi: () -> Unit, scrollTiger: Int, onToggleLockHost: () -> Unit,
     onToggleLockExpandedPricex: () -> Unit, currentClient: B_ClientsDataBase?,
-    viewModelInitApp: ViewModelInitApp
+    viewModelInitApp: ViewModelInitApp,
+    targetCategoryId: MutableState<Long?> = mutableStateOf(null)
 ) {
     var gridColumns by remember { mutableStateOf(2) }
     var showFilter by remember { mutableStateOf(false) }
     var filterText by remember { mutableStateOf("") }
     val gridState = rememberLazyStaggeredGridState()
     val uiState by viewModel.uiState.collectAsState()
-
     MainUi(
         uiState = uiState,
         gridColumns = gridColumns,
@@ -82,7 +83,10 @@ fun FragmentStartupScreen(
         scrollTiger, onToggleLockHost = onToggleLockHost,
         onToggleLockExpandedPricex = onToggleLockExpandedPricex, currentClient = currentClient,
         viewModelInitApp = viewModelInitApp,
+        targetCategoryId = targetCategoryId
+
     )
+
 
 }
 
@@ -103,8 +107,12 @@ fun MainUi(
     isFabVisible: Boolean,
     onClickDonne: () -> Unit,
     onClickToDisplayeConexionWifi: () -> Unit,
-    scrollTiger: Int, onToggleLockHost: () -> Unit, onToggleLockExpandedPricex: () -> Unit,
-    currentClient: B_ClientsDataBase?, viewModelInitApp: ViewModelInitApp,
+    scrollTiger: Int,
+    onToggleLockHost: () -> Unit,
+    onToggleLockExpandedPricex: () -> Unit,
+    currentClient: B_ClientsDataBase?,
+    viewModelInitApp: ViewModelInitApp,
+    targetCategoryId: MutableState<Long?> = mutableStateOf(null)
 ) {
     val scope = rememberCoroutineScope()
     val tag = if (uiState.productDisplayController.isHostPhone) "📱 ServerScreen" else "📱 ClientScreen"
@@ -208,7 +216,8 @@ fun MainUi(
                         viewModel = viewModel,
                         reloadTrigger = reloadTrigger,
                         onClickToOpenWindos = onClickToOpenWindos, currentClient = currentClient
-                        ,viewModelInitApp=viewModelInitApp
+                        , viewModelInitApp =viewModelInitApp ,
+                        targetCategoryId =targetCategoryId
                     )
                 }
             }

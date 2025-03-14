@@ -14,13 +14,20 @@ import androidx.compose.material.icons.filled.MapsHomeWork
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,8 +35,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import androidx.wear.compose.material.ContentAlpha
 import com.example.clientjetpack.R
+
+private const val TAG = "NavigationBarWithFab"
 
 @Composable
 fun NavigationBarWithFab(
@@ -38,8 +48,16 @@ fun NavigationBarWithFab(
     onNavigate: (String) -> Unit,
     isFabVisible: Boolean,
     onToggleFabVisibility: () -> Unit,
-    modifier: Modifier = Modifier
+    navController: NavController,
+    onCatalogSelected: (Long) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
+    // Dialog state
+    var showCatalogDialog by remember { mutableStateOf(false) }
+
+    // Track first navigation state
+    var isFirstNavigation by remember { mutableStateOf(true) }
+
     Box(
         modifier = modifier.fillMaxWidth(),
         contentAlignment = Alignment.BottomCenter
@@ -72,7 +90,24 @@ fun NavigationBarWithFab(
                         )
                     },
                     selected = currentRoute == screen.route,
-                    onClick = { onNavigate(screen.route) }
+                    onClick = {
+                        // Check if current destination is start destination
+                        val currentDestId = navController.currentDestination?.id
+                        val startDestId = navController.graph.startDestinationId
+
+                        // Modifier la condition dans l'onClick
+                        if (isFirstNavigation) {
+                            // First click always navigates directly
+                            onNavigate(screen.route)
+                            isFirstNavigation = false
+                        } else if (currentRoute == Screen.EditDatabaseWithCreateNewArticles.route) {
+                            // Si l'utilisateur est sur le fragment EditDatabase, afficher le dialogue
+                            showCatalogDialog = true
+                        } else {
+                            // Autres cas, navigation normale
+                            onNavigate(screen.route)
+                        }
+                    }
                 )
             }
         }
@@ -97,12 +132,70 @@ fun NavigationBarWithFab(
                     imageVector = if (isFabVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
                     contentDescription = "Toggle FAB",
                     modifier = Modifier.align(Alignment.Center),
-                    tint = Color.White // Vous pouvez ajuster la couleur de l'icône pour qu'elle soit bien visible sur votre image
+                    tint = Color.White
                 )
             }
         }
+
+        if (showCatalogDialog) {
+            CatalogSelectionDialog(
+                onDismiss = {
+                    showCatalogDialog = false
+                },
+                onCatalogSelected = { categoryId ->
+                    onCatalogSelected(categoryId)
+                    showCatalogDialog = false
+                }
+            )
+        }
     }
 }
+
+@Composable
+fun CatalogSelectionDialog(
+    onDismiss: () -> Unit,
+    onCatalogSelected: (Long) -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Sélectionner un catalogue") },
+        text = {
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                // Catalog options in the dialog
+                androidx.compose.foundation.layout.Column {
+                    TextButton(
+                        onClick = { onCatalogSelected(148L) }
+                    ) {
+                        Text("Catalogue Cosmétiques")
+                    }
+
+                    TextButton(
+                        onClick = { onCatalogSelected(149L) }
+                    ) {
+                        Text("Catalogue Confiseries")
+                    }
+
+                    TextButton(
+                        onClick = { onCatalogSelected(150L) }
+                    ) {
+                        Text("Catalogue Téléphones")
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = onDismiss
+            ) {
+                Text("Annuler")
+            }
+        }
+    )
+}
+
 // Add this to your project if it's missing
 object NavigationItems {
     fun getItems() = listOf(
@@ -139,14 +232,10 @@ sealed class Screen(
         color = Color(0xFF4CAF50)
     )
 
-
     data object ToggleFab : Screen(
         route = "toggle_fab",
         icon = Icons.Default.Visibility,
         title = "Toggle FAB",
         color = Color(0xFF2196F3)
     )
-
-
 }
-

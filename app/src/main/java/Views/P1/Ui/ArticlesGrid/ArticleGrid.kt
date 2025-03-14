@@ -22,9 +22,11 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -38,6 +40,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.clientjetpack.Models.UiState
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
@@ -57,6 +60,7 @@ fun ArticleGridWithScrollbar(
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     currentClient: B_ClientsDataBase?,
     viewModelInitApp: ViewModelInitApp,
+    targetCategoryId: MutableState<Long?> = mutableStateOf(null)
 ) {
     Box(modifier = modifier) {
         // Scrollbar first (will be on the left)
@@ -79,7 +83,8 @@ fun ArticleGridWithScrollbar(
             reloadTrigger = reloadTrigger,
             modifier = Modifier.fillMaxSize(),
             onClickToOpenWindos = onClickToOpenWindos,
-            currentClient
+            currentClient = currentClient,
+            targetCategoryId = targetCategoryId
         )
     }
 }
@@ -96,11 +101,13 @@ fun ArticleGrid(
     modifier: Modifier = Modifier,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     currentClient: B_ClientsDataBase?,
+    targetCategoryId: MutableState<Long?> = mutableStateOf(null)
 ) {
     // Track scroll state and first visible item
     var lastSettledFirstVisible by remember { mutableStateOf(-1) }
     var isSettled by remember { mutableStateOf(true) }
     var currentCategory by remember { mutableStateOf<String?>(null) }
+    val coroutineScope = rememberCoroutineScope()
 
     // Configure paging with assembly monitoring
     val pagingConfig = remember {
@@ -128,6 +135,7 @@ fun ArticleGrid(
                 TAG, """
                 Processing Category:
                 - Name: ${category.nomCategorieInCategoriesTabele}
+                - ID: ${category.idCategorieInCategoriesTabele}
                 - Articles: ${
                     uiState.articlesBasesStatTables.count {
                         if (category.nomCategorieInCategoriesTabele == "NewArrivale")
@@ -153,8 +161,6 @@ fun ArticleGrid(
                     filterText = filterText,
                     currentClient = currentClient,
                     uiState = uiState
-
-
                 ).also { source ->
                     Log.d(
                         TAG,
@@ -165,7 +171,7 @@ fun ArticleGrid(
         }
     }
 
-    // Collect paging items for each category
+// Collect paging items for each category
     val categoryPagingItems = remember(categoryPagers) {
         mutableMapOf<CategoriesTabelle, LazyPagingItems<ArticlesBasesStatsTable>>()
     }.apply {
@@ -198,6 +204,59 @@ fun ArticleGrid(
                 )
             } else {
                 isSettled = false
+            }
+        }
+    }
+
+    // Calculate item positions for categories
+    val categoryPositions = remember(uiState.categories, categoryPagingItems) {
+        val positions = mutableMapOf<Long, Int>()
+        var currentPosition = 0
+
+        // Add position for banner if present
+        if (!showFilter) {
+            currentPosition += 1
+        }
+
+        uiState.categories
+            .sortedBy { if (it.nomCategorieInCategoriesTabele == "NewArrivale") 0 else 1 }
+            .forEach { category ->
+                val itemCount = categoryPagingItems[category]?.itemCount ?: 0
+
+                if (itemCount > 0) {
+                    // Add position for category header if displayed
+                    if (category.displayedHeader) {
+                        positions[category.idCategorieInCategoriesTabele] = currentPosition
+                        currentPosition += 1
+                    }
+
+                    // Add positions for items in the category
+                    currentPosition += itemCount
+                }
+            }
+
+        positions
+    }
+
+    // Handle scrolling to target category
+    LaunchedEffect(targetCategoryId.value) {
+        targetCategoryId.value?.let { id ->
+            // Special handling for categories with IDs 148, 149, and 150
+            if (id == 148L || id == 149L || id == 150L) {
+                Log.d(TAG, "Scrolling to category with ID: $id")
+
+                // Find the position of the target category
+                val position = categoryPositions[id]
+                if (position != null) {
+                    coroutineScope.launch {
+                        gridState.scrollToItem(position)
+                        // Reset the target category ID after scrolling
+                        delay(500) // Give time for scrolling to complete
+                        targetCategoryId.value = null
+                    }
+                } else {
+                    Log.d(TAG, "Category with ID $id not found in positions map")
+                }
             }
         }
     }
@@ -280,6 +339,14 @@ fun ArticleGrid(
                 }
             }
     }
+}
+
+// Function to handle scrolling to a specific category
+fun scrollToCategory(
+    categoryId: Long,
+    targetCategoryId: MutableState<Long?>
+) {
+    targetCategoryId.value = categoryId
 }
 
 private data class ScrollState(

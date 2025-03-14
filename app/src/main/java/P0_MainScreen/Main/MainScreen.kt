@@ -1,5 +1,6 @@
 package P0_MainScreen.Main
 
+
 import P0_MainScreen.Modules.HandleFullscreenMode
 import P0_MainScreen.Ui.Main.AppNavHost.AppNavHost
 import P0_MainScreen.Ui.Main.AppNavHost.NavigationBarWithFab
@@ -67,8 +68,10 @@ fun MainScreen(
     var isDisplayedConnexionWifiVisible by remember { mutableStateOf(false) }
     var showProductDisplay by remember { mutableStateOf(false) }
     var lockHost by remember { mutableStateOf(false) }
+    // Fix: Create a proper mutableState for targetCategoryId
+    val targetCategoryId = remember { mutableStateOf<Long?>(null) }
 
-// Replace the existing LaunchedEffect block with this updated version
+    // Replace the existing LaunchedEffect block with this updated version
     LaunchedEffect(productDisplayController.clientWindowsDisplayedProductId) {
         showProductDisplay = productDisplayController.clientWindowsDisplayedProductId != null
         if (productDisplayController.clientWindowsDisplayedProductId == null) {
@@ -122,6 +125,7 @@ fun MainScreen(
                         onToggleLockHost = {lockHost=!lockHost}, viewModelInitApp = viewModelInitApp,
                         onClear = {},
                         headViewModel = headViewModel,
+                        targetCategoryId=targetCategoryId
                     )
 
                     // Disable interactions when not host phone
@@ -157,7 +161,11 @@ fun MainScreen(
                         isFabVisible = !isFabVisible
                         isDisplayedConnexionWifiVisible = false
                     },
-                    modifier = Modifier.padding(bottom = 8.dp)
+                    onCatalogSelected = {
+                        targetCategoryId.value = it
+                    },
+                    navController=navController,
+                    modifier = Modifier.padding(bottom = 8.dp),
                 )
             }
             // Product Display Dialog
@@ -200,5 +208,4 @@ fun MainScreen(
             }
         }
     }
-
 }

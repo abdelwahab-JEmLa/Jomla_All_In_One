@@ -17,6 +17,7 @@ import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -106,6 +107,7 @@ fun AppNavHost(
     viewModelInitApp: ViewModelInitApp,
     onClear: () -> Unit,
     headViewModel: HeadViewModel,
+    targetCategoryId: MutableState<Long?> = mutableStateOf(null)
 ) {
     val uiState by headViewModel.uiState.collectAsState()
 
@@ -133,7 +135,6 @@ fun AppNavHost(
     val bottomNavHeight = 80.dp
     val bottomPadding = 8.dp // Additional padding for the navigation bar
 
-    // Fixed: Applied the padding to the Surface modifier and added content parameter
     Surface(
         modifier = modifier
             .fillMaxSize()
@@ -204,6 +205,7 @@ fun AppNavHost(
                                 lockExpandedPrices = !lockExpandedPrices
                             },
                             currentClient = currentClient, viewModelInitApp = viewModelInitApp,
+                            targetCategoryId=targetCategoryId
                         )
 
                         if (uiState.isLoading) {

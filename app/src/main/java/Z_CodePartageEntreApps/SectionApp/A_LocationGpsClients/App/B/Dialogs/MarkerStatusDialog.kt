@@ -71,7 +71,8 @@ fun MarkerStatusDialog(
 
     if (selectedMarker == null) return
 
-    Dialog(onDismissRequest = onDismiss,
+    Dialog(
+        onDismissRequest = onDismiss,
         properties = DialogProperties(
             usePlatformDefaultWidth = false,
             decorFitsSystemWindows = true
@@ -95,6 +96,40 @@ fun MarkerStatusDialog(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column {
+                        // Moved the Row of icons to the top of this Column
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.End
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.LocationOn,
+                                contentDescription = "Edit location",
+                                modifier = Modifier
+                                    .padding(end = 8.dp)
+                                    .clickable {
+                                        onClickToEditeMarquerPosition(selectedMarker.id.toLong())
+                                        onDismiss()
+                                    }
+                            )
+
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = "Edit client"
+                            )
+                            if (!context.packageName.contains("clientje")) {
+                                Icon(
+                                    imageVector = Icons.Default.Delete,
+                                    contentDescription = "Delete client",
+                                    modifier = Modifier
+                                        .padding(start = 8.dp)
+                                        .clickable {
+                                            // Show confirmation dialog instead of deleting immediately
+                                            showDeleteConfirmationDialog = true
+                                        }
+                                )
+                            }
+                        }
+
                         Text(
                             text = selectedMarker.title ?: "Client",
                             style = MaterialTheme.typography.titleLarge,
@@ -113,43 +148,18 @@ fun MarkerStatusDialog(
                             )
                         }
                     }
-
-                    Row {
-                        // GPS position editing button
-                        Icon(
-                            imageVector = Icons.Default.LocationOn,
-                            contentDescription = "Edit location",
-                            modifier = Modifier
-                                .padding(end = 8.dp)
-                                .clickable {
-                                    onClickToEditeMarquerPosition(selectedMarker.id.toLong())
-                                    onDismiss()
-                                }
-                        )
-
-                        Icon(
-                            imageVector = Icons.Default.Edit,
-                            contentDescription = "Edit client"
-                        )
-
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = "Delete client",
-                            modifier = Modifier
-                                .padding(start = 8.dp)
-                                .clickable {
-                                    // Show confirmation dialog instead of deleting immediately
-                                    showDeleteConfirmationDialog = true
-                                }
-                        )
-                    }
                 }
 
                 // Status buttons remain the same
                 StatusButton(
                     text = "Mode Commande",
                     icon = Icons.Default.ShoppingCart,
-                    color = Color(ContextCompat.getColor(context, B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT.color)),
+                    color = Color(
+                        ContextCompat.getColor(
+                            context,
+                            B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT.color
+                        )
+                    ),
                     onClick = {
                         coroutineScope.launch {
                             extensionVM.updateLongAppSetting(selectedMarker.id.toLong())
@@ -160,51 +170,20 @@ fun MarkerStatusDialog(
                 )
 
                 StatusButton(
-                    text = "Client Cible",
-                    icon = Icons.Default.Person,
-                    color = Color(ContextCompat.getColor(context, B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.Cible.color)),
-                    onClick = {
-                        coroutineScope.launch {
-                            extensionVM.updateStatueClient(selectedMarker, B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.Cible)
-                            onDismiss()
-                        }
-                    }
-                )
-
-                val CIBLE_POUR_2 =
-                    B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CIBLE_PRIORITE_2
-                StatusButton(
-                    text = CIBLE_POUR_2.toString(),
-                    icon = Icons.Default.Tornado,
-                    color = Color(ContextCompat.getColor(context, CIBLE_POUR_2.color)),
-                    onClick = {
-                        coroutineScope.launch {
-
-                            extensionVM.updateStatueClient(selectedMarker, CIBLE_POUR_2)
-                            onDismiss()
-                        }
-                    }
-                )
-
-                StatusButton(
-                    text = "CIBLE_POUR_2",
-                    icon = Icons.Default.Person,
-                    color = Color(ContextCompat.getColor(context, B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CIBLE_POUR_2.color)),
-                    onClick = {
-                        coroutineScope.launch {
-                            extensionVM.updateStatueClient(selectedMarker, B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CIBLE_POUR_2)
-                            onDismiss()
-                        }
-                    }
-                )
-
-                StatusButton(
                     text = "Client Absent",
                     icon = Icons.Default.Person,
-                    color = Color(ContextCompat.getColor(context, B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CLIENT_ABSENT.color)),
+                    color = Color(
+                        ContextCompat.getColor(
+                            context,
+                            B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CLIENT_ABSENT.color
+                        )
+                    ),
                     onClick = {
                         coroutineScope.launch {
-                            extensionVM.updateStatueClient(selectedMarker, B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CLIENT_ABSENT)
+                            extensionVM.updateStatueClient(
+                                selectedMarker,
+                                B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CLIENT_ABSENT
+                            )
                             onDismiss()
                         }
                     }
@@ -215,10 +194,18 @@ fun MarkerStatusDialog(
                 StatusButton(
                     text = "Avec Marchandise",
                     icon = Icons.Default.ShoppingCart,
-                    color = Color(ContextCompat.getColor(context, B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.AVEC_MARCHANDISE.color)),
+                    color = Color(
+                        ContextCompat.getColor(
+                            context,
+                            B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.AVEC_MARCHANDISE.color
+                        )
+                    ),
                     onClick = {
                         coroutineScope.launch {
-                            extensionVM.updateStatueClient(selectedMarker, B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.AVEC_MARCHANDISE)
+                            extensionVM.updateStatueClient(
+                                selectedMarker,
+                                B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.AVEC_MARCHANDISE
+                            )
                             onDismiss()
                         }
                     }
@@ -229,17 +216,83 @@ fun MarkerStatusDialog(
                 StatusButton(
                     text = "Fermé",
                     icon = Icons.Default.Lock,
-                    color = Color(ContextCompat.getColor(context, B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.FERME.color)),
+                    color = Color(
+                        ContextCompat.getColor(
+                            context,
+                            B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.FERME.color
+                        )
+                    ),
                     onClick = {
                         coroutineScope.launch {
-                            extensionVM.updateStatueClient(selectedMarker, B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.FERME)
+                            extensionVM.updateStatueClient(
+                                selectedMarker,
+                                B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.FERME
+                            )
                             onDismiss()
                         }
                     }
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                if (!context.packageName.contains("clientje")) {
 
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    StatusButton(
+                        text = "Client Cible",
+                        icon = Icons.Default.Person,
+                        color = Color(
+                            ContextCompat.getColor(
+                                context,
+                                B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.Cible.color
+                            )
+                        ),
+                        onClick = {
+                            coroutineScope.launch {
+                                extensionVM.updateStatueClient(
+                                    selectedMarker,
+                                    B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.Cible
+                                )
+                                onDismiss()
+                            }
+                        }
+                    )
+
+                    val CIBLE_POUR_2 =
+                        B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CIBLE_PRIORITE_2
+
+                    StatusButton(
+                        text = CIBLE_POUR_2.toString(),
+                        icon = Icons.Default.Tornado,
+                        color = Color(ContextCompat.getColor(context, CIBLE_POUR_2.color)),
+                        onClick = {
+                            coroutineScope.launch {
+
+                                extensionVM.updateStatueClient(selectedMarker, CIBLE_POUR_2)
+                                onDismiss()
+                            }
+                        }
+                    )
+
+                    StatusButton(
+                        text = "CIBLE_POUR_2",
+                        icon = Icons.Default.Person,
+                        color = Color(
+                            ContextCompat.getColor(
+                                context,
+                                B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CIBLE_POUR_2.color
+                            )
+                        ),
+                        onClick = {
+                            coroutineScope.launch {
+                                extensionVM.updateStatueClient(
+                                    selectedMarker,
+                                    B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CIBLE_POUR_2
+                                )
+                                onDismiss()
+                            }
+                        }
+                    )
+                }
                 TextButton(
                     onClick = onDismiss,
                     modifier = Modifier.align(Alignment.End)

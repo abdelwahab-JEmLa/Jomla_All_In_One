@@ -10,6 +10,7 @@ import androidx.compose.ui.graphics.Color
 fun FragId1But_3(
     showLabels: Boolean,
     extensionVM: ViewModelExtension_App2_F1,
+    contentDescription: String,
 ) {
     ControlButton(
         onClick = {
@@ -26,9 +27,9 @@ fun FragId1But_3(
         } else {
             LottieJsonGetterR_Raw_Icons.alimentation
         },
-        contentDescription = "auClickeCaUpdateClientPar",
+        contentDescription = contentDescription,
         showLabels = showLabels,
-        labelText = "auClickeCaUpdateClientPar",
+        labelText = contentDescription,
         containerColor = Color(0xFF2196F3)
     )
 }
