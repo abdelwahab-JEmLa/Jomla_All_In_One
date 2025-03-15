@@ -65,7 +65,6 @@ import java.util.Locale
 @Composable
 fun ImageDisplayer1(
     modifier: Modifier = Modifier,
-
     article: ArticlesBasesStatsTable,
     viewModel: HeadViewModel,
     indexColor: Int,

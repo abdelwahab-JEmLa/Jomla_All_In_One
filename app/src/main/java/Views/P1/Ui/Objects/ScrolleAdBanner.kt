@@ -90,9 +90,9 @@ fun ScrolleAdBanner(
     ) {
         // Map images to their corresponding category IDs
         val bannerData = listOf(
-            BannerItem(R.drawable.baked_goods_1, "Confiseries"), // This will navigate to categoryHeaderConfiseries
-            BannerItem(R.drawable.baked_goods_2, null),          // No specific navigation
-            BannerItem(R.drawable.baked_goods_3, null)           // No specific navigation
+            BannerItem(R.drawable.confiseries, "Confiseries"), // This will navigate to categoryHeaderConfiseries
+            BannerItem(R.drawable.cosmitiques, "cosmitiques"),          // No specific navigation
+            BannerItem(R.drawable.atay_moukassarat, "atay_moukassarat")           // No specific navigation
         )
 
         bannerData.forEachIndexed { index, (imageRes, categoryName) ->

@@ -3,6 +3,7 @@ package Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.App
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+
 @Entity
 data class CategoriesTabelle(
     @PrimaryKey(autoGenerate = true)

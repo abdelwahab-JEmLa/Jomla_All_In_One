@@ -107,6 +107,7 @@ fun ArticleGrid(
     lockHost: Boolean,
     viewModelInitApp: ViewModelInitApp
 ) {
+    val categoriesRepositorymodelDatas = viewModel.categoriesRepository.modelDatas
     // Track scroll state and first visible item
     var lastSettledFirstVisible by remember { mutableStateOf(-1) }
     var isSettled by remember { mutableStateOf(true) }
@@ -170,8 +171,6 @@ fun ArticleGrid(
         }
     }
 
-
-
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Fixed(
             if (uiState.categories.any { it.nomCategorieInCategoriesTabele == "NewArrivale" })
@@ -189,7 +188,10 @@ fun ArticleGrid(
                 ScrolleAdBanner(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 8.dp)
+                        .padding(bottom = 8.dp) ,
+                    onBannerClick = {
+
+                    }
                 )
             }
         }

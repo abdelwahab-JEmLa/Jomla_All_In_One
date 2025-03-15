@@ -4,6 +4,7 @@ import Z_CodePartageEntreApps.Model._ModelAppsFather.Companion.firebaseDatabase
 import Z_CodePartageEntreApps.Model._ModelAppsFather.Companion.ref_HeadOfModels
 import android.util.Log
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -26,7 +27,9 @@ class I_CategoriesProduits(
     @IgnoreExtraProperties
     class InfosDeBase(
         var nom: String = "Non Defini",
-    )
+    )  {
+        var groupeParentId by mutableLongStateOf(0L)
+    }
 
     @IgnoreExtraProperties
     class StatuesMutable(
@@ -34,6 +37,7 @@ class I_CategoriesProduits(
 
     ) {
         var afficheSonHeader by mutableStateOf(false)
+
     }
 }
 

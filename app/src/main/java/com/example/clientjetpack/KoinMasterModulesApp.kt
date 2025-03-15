@@ -31,7 +31,9 @@ val repositoryModule = module {
 }
 
 val viewModelModule = module {
-    viewModel { ViewModelInitApp(get()) }
+    viewModel { ViewModelInitApp(
+        get(),get()
+    ) }
     viewModel { (context: Context) -> HeadViewModel(get(), AppDatabase.DatabaseModule.getDatabase(get())) }
 }
 

@@ -57,7 +57,7 @@ fun LoadingOverlay(
     ) {
         // Votre image qui tourne et clignote
         Image(
-            painter = painterResource(id = R.drawable.baked_goods_1),
+            painter = painterResource(id = R.drawable.confiseries),
             contentDescription = "Loading",
             modifier = Modifier
                 .size(64.dp)

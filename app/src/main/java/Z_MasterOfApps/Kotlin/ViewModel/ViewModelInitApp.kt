@@ -3,6 +3,7 @@ package Z_MasterOfApps.Kotlin.ViewModel
 import Z_CodePartageEntreApps.Model.A_ProduitModelRepository
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase.Companion.updateClientsDataBase
+import Z_CodePartageEntreApps.Model.I_CategoriesRepository
 import Z_CodePartageEntreApps.Model._ModelAppsFather
 import Z_MasterOfApps.Kotlin.ViewModel.Init.A_FirebaseListeners.FromAncienDataBase
 import Z_MasterOfApps.Kotlin.ViewModel.Init.B_Load.loadData
@@ -25,7 +26,8 @@ import kotlinx.coroutines.launch
 
 @SuppressLint("SuspiciousIndentation")
 class ViewModelInitApp(
-    val produitModelRepository: A_ProduitModelRepository
+    val produitModelRepository: A_ProduitModelRepository ,
+    val i_CategoriesRepository: I_CategoriesRepository
 ) : ViewModel() {
     var _paramatersAppsViewModelModel by mutableStateOf(ParamatersAppsModel())
     var _modelAppsFather by mutableStateOf(_ModelAppsFather())

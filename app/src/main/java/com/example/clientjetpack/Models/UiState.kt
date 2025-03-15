@@ -9,6 +9,7 @@ import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.App.SuppliersTabelle
 import com.example.Models.DiviseurDeDisplayProductForEachClient
 
 data class UiState(
+
     val appSettingsSaverModel: List<AppSettingsSaverModel> = emptyList(),
     val devicesTypeManager: List<DevicesTypeManager> = emptyList(),
     val articlesBasesStatTables: List<ArticlesBasesStatsTable> = emptyList(),
