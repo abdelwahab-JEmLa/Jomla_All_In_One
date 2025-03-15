@@ -1092,6 +1092,7 @@ open class HeadViewModel(
                     idCategorieInCategoriesTabele = category.id,
                     nomCategorieInCategoriesTabele = category.infosDeBase.nom,
                     idClassementCategorieInCategoriesTabele = category.statuesMutable.indexDonsParentList.toInt(),
+                    displayedHeader = category.statuesMutable.afficheSonHeader,
                 )
             }.toMutableList()
 
