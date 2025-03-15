@@ -42,11 +42,99 @@ import com.example.clientjetpack.Models.UiState
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
 
-private const val TAG = "ArticleGridDebug"
+private const val TAG = "id2"
+
+@Composable
+fun ArticleGridScrollHandlerEffect(
+    gridState: LazyStaggeredGridState,
+    categoryPositions: Map<Long, Int>,
+    scrollHandler: ScrollHandler = koinInject()
+) {
+    val coroutineScope = rememberCoroutineScope()
+    val pendingScrolls = remember { mutableStateOf<Long?>(null) }
+
+    // Monitor category positions for changes
+    LaunchedEffect(categoryPositions) {
+        if (categoryPositions.isNotEmpty()) {
+            // Check if we have a pending scroll request
+            val pendingId = pendingScrolls.value
+            if (pendingId != null) {
+                Log.d(TAG, "Positions now available, processing pending scroll to category $pendingId")
+
+                // Check if the pending ID exists in the positions
+                val position = categoryPositions[pendingId]
+                if (position != null) {
+                    Log.d(TAG, "Found position $position for pending category ID $pendingId")
+                    coroutineScope.launch {
+                        try {
+                            gridState.scrollToItem(position)
+                            Log.d(TAG, "Successfully scrolled to position $position from pending request")
+                            // Clear the pending request
+                            pendingScrolls.value = null
+                            // Also reset the scrollHandler's value
+                            delay(500)
+                            scrollHandler.scrollToCategoryId.value = null
+                        } catch (e: Exception) {
+                            Log.e(TAG, "Error during pending scroll: ${e.message}", e)
+                        }
+                    }
+                } else {
+                    Log.w(TAG, "Pending category ID $pendingId still not found in updated positions map")
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(scrollHandler.scrollToCategoryId.value) {
+        val categoryId = scrollHandler.scrollToCategoryId.value
+        Log.d(TAG, "LaunchedEffect triggered with scrollToCategoryId: $categoryId")
+
+        categoryId?.let { id ->
+            // Special handling for categories with IDs 148, 149, and 150
+            if (id == 148L || id == 149L || id == 150L) {
+                Log.d(TAG, "Processing scroll request for category ID: $id")
+                Log.d(TAG, "Available category positions: $categoryPositions")
+
+                // Check if positions are available yet
+                if (categoryPositions.isEmpty()) {
+                    Log.d(TAG, "Category positions not yet available, storing request for later")
+                    pendingScrolls.value = id
+                    return@LaunchedEffect
+                }
+
+                // Find the position of the target category
+                val position = categoryPositions[id]
+                if (position != null) {
+                    Log.d(TAG, "Found position $position for category ID $id, initiating scroll")
+                    coroutineScope.launch {
+                        try {
+                            gridState.scrollToItem(position)
+                            Log.d(TAG, "Successfully scrolled to position $position")
+                            // Reset the target category ID after scrolling
+                            delay(500) // Give time for scrolling to complete
+                            Log.d(TAG, "About to reset scrollToCategoryId to null")
+                            scrollHandler.scrollToCategoryId.value = null
+                            Log.d(TAG, "Reset scrollToCategoryId to null")
+                        } catch (e: Exception) {
+                            Log.e(TAG, "Error during scrolling: ${e.message}", e)
+                        }
+                    }
+                } else {
+                    Log.w(TAG, "Category with ID $id not found in positions map")
+                    // Save as pending instead of clearing
+                    pendingScrolls.value = id
+                }
+            } else {
+                Log.d(TAG, "Category ID $id is not one of the special categories (148, 149, 150)")
+            }
+        }
+    }
+}
 
 @Composable
 fun ArticleGridWithScrollbar(
@@ -62,7 +150,9 @@ fun ArticleGridWithScrollbar(
     currentClient: B_ClientsDataBase?,
     viewModelInitApp: ViewModelInitApp,
     a_ProduitModelRepository: A_ProduitModelRepository,
-    targetCategoryId: MutableState<Long?> = mutableStateOf(null), lockHost: Boolean
+    targetCategoryId: MutableState<Long?> = mutableStateOf(null),
+    lockHost: Boolean,
+    scrollHandler: ScrollHandler = koinInject()
 ) {
     Box(modifier = modifier) {
         // Scrollbar first (will be on the left)
@@ -86,9 +176,11 @@ fun ArticleGridWithScrollbar(
             modifier = Modifier.fillMaxSize(),
             onClickToOpenWindos = onClickToOpenWindos,
             currentClient = currentClient,
-            targetCategoryId = targetCategoryId ,a_ProduitModelRepository=a_ProduitModelRepository,
-            lockHost = lockHost ,
-            viewModelInitApp =viewModelInitApp
+            targetCategoryId = targetCategoryId,
+            a_ProduitModelRepository = a_ProduitModelRepository,
+            lockHost = lockHost,
+            viewModelInitApp = viewModelInitApp,
+            scrollHandler = scrollHandler
         )
     }
 }
@@ -108,7 +200,8 @@ fun ArticleGrid(
     targetCategoryId: MutableState<Long?> = mutableStateOf(null),
     a_ProduitModelRepository: A_ProduitModelRepository,
     lockHost: Boolean,
-    viewModelInitApp: ViewModelInitApp
+    viewModelInitApp: ViewModelInitApp,
+    scrollHandler: ScrollHandler = koinInject()
 ) {
     // Track scroll state and first visible item
     var lastSettledFirstVisible by remember { mutableStateOf(-1) }
@@ -178,7 +271,7 @@ fun ArticleGrid(
         }
     }
 
-// Collect paging items for each category
+    // Collect paging items for each category
     val categoryPagingItems = remember(categoryPagers) {
         mutableMapOf<CategoriesTabelle, LazyPagingItems<ArticlesBasesStatsTable>>()
     }.apply {
@@ -216,6 +309,7 @@ fun ArticleGrid(
     }
 
     // Calculate item positions for categories
+// Calculate item positions for categories
     val categoryPositions = remember(uiState.categories, categoryPagingItems) {
         val positions = mutableMapOf<Long, Int>()
         var currentPosition = 0
@@ -230,18 +324,23 @@ fun ArticleGrid(
             .forEach { category ->
                 val itemCount = categoryPagingItems[category]?.itemCount ?: 0
 
-                if (itemCount > 0) {
-                    // Add position for category header if displayed
-                    if (category.displayedHeader) {
-                        positions[category.idCategorieInCategoriesTabele] = currentPosition
-                        currentPosition += 1
-                    }
+                // Always register position for special categories
+                if ((category.idCategorieInCategoriesTabele == 148L ||
+                            category.idCategorieInCategoriesTabele == 149L ||
+                            category.idCategorieInCategoriesTabele == 150L) ||
+                    (itemCount > 0 && category.displayedHeader)) {
 
-                    // Add positions for items in the category
+                    positions[category.idCategorieInCategoriesTabele] = currentPosition
+                    currentPosition += 1
+                }
+
+                // Add positions for items in the category
+                if (itemCount > 0) {
                     currentPosition += itemCount
                 }
             }
 
+        Log.d(TAG, "Category positions calculated: $positions")
         positions
     }
 
@@ -268,6 +367,9 @@ fun ArticleGrid(
         }
     }
 
+    // Use the ArticleGridScrollHandlerEffect to handle scroll requests
+    ArticleGridScrollHandlerEffect(gridState, categoryPositions, scrollHandler)
+
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Fixed(
             if (uiState.categories.any { it.nomCategorieInCategoriesTabele == "NewArrivale" })
@@ -291,19 +393,26 @@ fun ArticleGrid(
         }
 
         // Display categories in order
+// In the ArticleGrid function, modify the code that displays categories
+
+// Display categories in order
         uiState.categories
             .sortedBy { if (it.nomCategorieInCategoriesTabele == "NewArrivale") 0 else 1 }
             .forEach { category ->
                 val lazyPagingItems = categoryPagingItems[category]
+                val isSpecialCategory = category.idCategorieInCategoriesTabele in 148L..150L
 
-                if (lazyPagingItems != null && lazyPagingItems.itemCount > 0) {
-                    // Show category header if needed
-                    if (category.displayedHeader) {
-                        item(span = StaggeredGridItemSpan.FullLine) {
-                            CategoryHeader(category)
-                        }
+                // Show category header if it has articles or is a special category
+                if ((category.displayedHeader || isSpecialCategory) &&
+                    ((lazyPagingItems?.itemCount ?: 0) > 0 || isSpecialCategory)
+                ) {
+                    item(span = StaggeredGridItemSpan.FullLine) {
+                        CategoryHeader(category)
                     }
+                }
 
+                // Display articles only if they exist
+                if (lazyPagingItems != null && lazyPagingItems.itemCount > 0) {
                     // Display articles without keys
                     items(
                         count = lazyPagingItems.itemCount,
@@ -327,7 +436,7 @@ fun ArticleGrid(
                             if (isFirstVisible) {
                                 currentCategory = category.nomCategorieInCategoriesTabele
                             }
-                            val produitDepuitNewDATABASE =  a_ProduitModelRepository
+                            val produitDepuitNewDATABASE = a_ProduitModelRepository
                                 .modelDatas.find { it.id.toInt() == article.idArticle }
                             ArticleItem(
                                 article = ancienData,
@@ -341,7 +450,8 @@ fun ArticleGrid(
                                     fadeOutSpec = null
                                 ),
                                 currentClient = currentClient,
-                                produitDepuitNewDATABASE=produitDepuitNewDATABASE, lockHost = lockHost,
+                                produitDepuitNewDATABASE=produitDepuitNewDATABASE,
+                                lockHost = lockHost,
                                 viewModelInitApp =viewModelInitApp
                             )
                         }
@@ -350,8 +460,6 @@ fun ArticleGrid(
             }
     }
 }
-
-
 
 // Function to handle scrolling to a specific category
 fun scrollToCategory(

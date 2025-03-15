@@ -1,5 +1,6 @@
 package P0_MainScreen.Ui.Main.AppNavHost
 
+import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -14,15 +15,12 @@ import androidx.compose.material.icons.filled.MapsHomeWork
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,7 +37,7 @@ import androidx.navigation.NavController
 import androidx.wear.compose.material.ContentAlpha
 import com.example.clientjetpack.R
 
-private const val TAG = "NavigationBarWithFab"
+private const val TAG = "id2"
 
 @Composable
 fun NavigationBarWithFab(
@@ -51,6 +49,7 @@ fun NavigationBarWithFab(
     navController: NavController,
     onCatalogSelected: (Long) -> Unit,
     modifier: Modifier = Modifier,
+    viewModelInitApp: ViewModelInitApp,
 ) {
     // Dialog state
     var showCatalogDialog by remember { mutableStateOf(false) }
@@ -141,57 +140,12 @@ fun NavigationBarWithFab(
                     showCatalogDialog = false
                     // Navigate to the selected screen after selecting a catalog
                     onNavigate(Screen.EditDatabaseWithCreateNewArticles.route)
-                }
+                }  ,
+                viewModelInitApp=viewModelInitApp
             )
         }
     }
 }
-
-@Composable
-fun CatalogSelectionDialog(
-    onDismiss: () -> Unit,
-    onCatalogSelected: (Long) -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Sélectionner un catalogue") },
-        text = {
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
-                // Catalog options in the dialog
-                androidx.compose.foundation.layout.Column {
-                    TextButton(
-                        onClick = { onCatalogSelected(148L) }
-                    ) {
-                        Text("Catalogue Cosmétiques")
-                    }
-
-                    TextButton(
-                        onClick = { onCatalogSelected(149L) }
-                    ) {
-                        Text("Catalogue Confiseries")
-                    }
-
-                    TextButton(
-                        onClick = { onCatalogSelected(150L) }
-                    ) {
-                        Text("Catalogue Téléphones")
-                    }
-                }
-            }
-        },
-        confirmButton = {
-            TextButton(
-                onClick = onDismiss
-            ) {
-                Text("Annuler")
-            }
-        }
-    )
-}
-
 // Add this to your project if it's missing
 object NavigationItems {
     fun getItems() = listOf(
