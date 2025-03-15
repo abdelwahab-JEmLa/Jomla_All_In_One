@@ -4,6 +4,7 @@ import P0_MainScreen.Ui.Objects.LoadingOverlay
 import Views.P1.Ui.ArticlesGrid.ArticleGridWithScrollbar
 import Views.P1.Ui.Objects.SearchFilterPB
 import Views.P1._ArticlesStartFacade.FloatingActionButtonGroup.FloatingActionButtonGroup
+import Z_CodePartageEntreApps.Model.A_ProduitModelRepository
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Kotlin._WorkingON.WO_.WifiUpdateClientDisplayerStats
@@ -42,6 +43,7 @@ import com.example.clientjetpack.ViewModel.HeadViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 
 @Composable
 fun FragmentStartupScreen(
@@ -55,7 +57,7 @@ fun FragmentStartupScreen(
     onClickToDisplayeConexionWifi: () -> Unit, scrollTiger: Int, onToggleLockHost: () -> Unit,
     onToggleLockExpandedPricex: () -> Unit, currentClient: B_ClientsDataBase?,
     viewModelInitApp: ViewModelInitApp,
-    targetCategoryId: MutableState<Long?> = mutableStateOf(null)
+    targetCategoryId: MutableState<Long?> = mutableStateOf(null), lockHost: Boolean
 ) {
     var gridColumns by remember { mutableStateOf(2) }
     var showFilter by remember { mutableStateOf(false) }
@@ -83,7 +85,7 @@ fun FragmentStartupScreen(
         scrollTiger, onToggleLockHost = onToggleLockHost,
         onToggleLockExpandedPricex = onToggleLockExpandedPricex, currentClient = currentClient,
         viewModelInitApp = viewModelInitApp,
-        targetCategoryId = targetCategoryId
+        targetCategoryId = targetCategoryId, lockHost = lockHost
 
     )
 
@@ -112,7 +114,7 @@ fun MainUi(
     onToggleLockExpandedPricex: () -> Unit,
     currentClient: B_ClientsDataBase?,
     viewModelInitApp: ViewModelInitApp,
-    targetCategoryId: MutableState<Long?> = mutableStateOf(null)
+    targetCategoryId: MutableState<Long?> = mutableStateOf(null), lockHost: Boolean
 ) {
     val scope = rememberCoroutineScope()
     val tag = if (uiState.productDisplayController.isHostPhone) "📱 ServerScreen" else "📱 ClientScreen"
@@ -190,6 +192,8 @@ fun MainUi(
     )
 
     Box(modifier = Modifier.fillMaxSize()) {
+        val a_ProduitModelRepository = koinInject<A_ProduitModelRepository>()
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -217,7 +221,8 @@ fun MainUi(
                         reloadTrigger = reloadTrigger,
                         onClickToOpenWindos = onClickToOpenWindos, currentClient = currentClient
                         , viewModelInitApp =viewModelInitApp ,
-                        targetCategoryId =targetCategoryId
+                        targetCategoryId =targetCategoryId ,
+                        a_ProduitModelRepository=a_ProduitModelRepository, lockHost = lockHost
                     )
                 }
             }

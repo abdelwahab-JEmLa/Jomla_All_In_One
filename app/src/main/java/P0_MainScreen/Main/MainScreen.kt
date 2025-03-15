@@ -9,8 +9,10 @@ import P0_MainScreen.Ui.Main.AppNavHost.Screen
 import P0_MainScreen.Ui.Objects.ConnexionCard
 import Views.FragId4_EStorePresentationToClient.FragmentDisplayeInfoProductToClient7
 import Views.FragId4_EStorePresentationToClient.Modules.SearchArticle
+import Z_CodePartageEntreApps.Model.A_ProduitModelRepository
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
@@ -34,26 +36,51 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 import org.koin.core.parameter.parametersOf
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun MainScreen(
     modifier: Modifier = Modifier,
-    viewModelInitApp: ViewModelInitApp = viewModel(),
-    xmlResources: List<Pair<String, Int>>?=null
+    viewModelInitApp: ViewModelInitApp = koinViewModel(),
+    xmlResources: List<Pair<String, Int>>?=null,
 ) {
+    val a_ProduitModelRepository = koinInject<A_ProduitModelRepository>()
+
+    // Track the repository progress
+    val repositoryProgress by a_ProduitModelRepository.progressRepo.collectAsState()
+
+    // Additional state to track if we should show the UI
+    var shouldShowContent by remember { mutableStateOf(false) }
+
     val context = LocalContext.current
     // Get the ViewModel with the context parameter
     val headViewModel: HeadViewModel = koinViewModel(parameters = { parametersOf(context) })
 
     val uiState by headViewModel.uiState.collectAsState()
     val productDisplayController = uiState.productDisplayController
+
+    // Update the HeadViewModel with the repository progress and determine if content should show
+    LaunchedEffect(repositoryProgress) {
+        headViewModel.updateLoadingProgress((repositoryProgress * 100))
+
+        // Consider the data loaded if progress is very close to completion (≥ 99.5%)
+        // This helps handle cases where floating point precision might prevent exactly hitting 1.0
+        val TAG = "id1"
+        if (repositoryProgress >= 0.995f) {
+            Log.d(TAG, "Repository considered loaded at: ${repositoryProgress * 100}%")
+            shouldShowContent = true
+        } else {
+            Log.w(TAG, "UI waiting for repository to load. Current progress: ${repositoryProgress * 100}%")
+            shouldShowContent = false
+        }
+    }
+
     // Handle fullscreen mode
     HandleFullscreenMode(productDisplayController)
 
@@ -68,14 +95,11 @@ fun MainScreen(
     var isDisplayedConnexionWifiVisible by remember { mutableStateOf(false) }
     var showProductDisplay by remember { mutableStateOf(false) }
     var lockHost by remember { mutableStateOf(false) }
-    // Fix: Create a proper mutableState for targetCategoryId
     val targetCategoryId = remember { mutableStateOf<Long?>(null) }
 
-    // Replace the existing LaunchedEffect block with this updated version
     LaunchedEffect(productDisplayController.clientWindowsDisplayedProductId) {
         showProductDisplay = productDisplayController.clientWindowsDisplayedProductId != null
         if (productDisplayController.clientWindowsDisplayedProductId == null) {
-            // Only navigate back to GPS screen if this is the host phone
             if (productDisplayController.isHostPhone && currentRoute != Screen.A_ClientsLocationGps.route) {
                 navController.navigate(Screen.A_ClientsLocationGps.route) {
                     popUpTo(navController.graph.startDestinationId) {
@@ -92,118 +116,137 @@ fun MainScreen(
         color = MaterialTheme.colorScheme.background
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            Column(modifier = Modifier.fillMaxSize()) {
-                // WiFi Connection Card
-                AnimatedVisibility(
-                    visible = isDisplayedConnexionWifiVisible
-                            ||
-                            !productDisplayController.isConnected
-                            && !lockHost
-                ) {
-                    ConnexionCard(
-                        headViewModel=headViewModel,
-                        productDisplayController = productDisplayController,
-                        onClickToStartAsClient = {
-                            isNavBarVisible = false
-                            isFabVisible = false
-                        } ,
-                        lockHost= lockHost
-                    )
-                }
-
-                // Main Content Area
-                Box(modifier = Modifier.weight(1f)) {
-                    AppNavHost(
-                        navController = navController,
-                        onToggleNavBar = { isNavBarVisible = !isNavBarVisible },
-                        modifier = Modifier.fillMaxSize(),
-                        isFabVisible = isFabVisible,
-                        onClickDonne = { isFabVisible = false },
-                        onClickToDisplayeConexionWifi = {
-                            isDisplayedConnexionWifiVisible = !isDisplayedConnexionWifiVisible
-                        },
-                        onToggleLockHost = {lockHost=!lockHost}, viewModelInitApp = viewModelInitApp,
-                        onClear = {},
-                        headViewModel = headViewModel,
-                        targetCategoryId=targetCategoryId
-                    )
-
-                    // Disable interactions when not host phone
-                    if (!productDisplayController.isHostPhone && productDisplayController.isConnected) {
-                        Box(
-                            modifier = Modifier
-                                .matchParentSize()
-                                .clickable(enabled = false) { }
-                        )
-                    }
-                }
-            }
-
-            // Navigation Bar with FAB
-            AnimatedVisibility(
-                visible = productDisplayController.isHostPhone || !productDisplayController.isConnected,
-                modifier = Modifier.align(Alignment.BottomCenter)
-            ) {
-                NavigationBarWithFab(
-                    items = items.filter { it != Screen.ToggleFab },
-                    currentRoute = currentRoute,
-                    onNavigate = { route ->
-                        navController.navigate(route) {
-                            popUpTo(navController.graph.startDestinationId) {
-                                saveState = true
-                            }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    },
-                    isFabVisible = isFabVisible,
-                    onToggleFabVisibility = {
-                        isFabVisible = !isFabVisible
-                        isDisplayedConnexionWifiVisible = false
-                    },
-                    onCatalogSelected = {
-                        targetCategoryId.value = it
-                    },
-                    navController=navController,
-                    modifier = Modifier.padding(bottom = 8.dp),
-                )
-            }
-            // Product Display Dialog
-            if (showProductDisplay) {
-                val productId = productDisplayController.clientWindowsDisplayedProductId
-                val displayProductDataBase = productId?.let { id ->
-                    uiState.articlesBasesStatTables.find { it.idArticle.toLong() == id }
-                }
-
-                if (displayProductDataBase != null) {
-                    FragmentDisplayeInfoProductToClient7(
-                        displayController = productDisplayController,
-                        articleStatsDataBase = displayProductDataBase,
-                        colorsArticlesList = uiState.colorsArticlesTabelleModel,
-                        reloadTrigger = 0, // Use state if needed
-                        modifier = Modifier.fillMaxSize(), viewModelInitApp = viewModelInitApp
-                    )
-                }
-
-            }
-            // Search Display Dialog
-            if (productDisplayController.searchWindowsDisplaye.isNotEmpty()) {
-                SearchArticle(
-                    dsipayeText = productDisplayController.searchWindowsDisplaye
-                )
-            }
-
-            if (uiState.isLoading) {
+            // Show loading indicator while repository is loading
+            if (!shouldShowContent) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator(
-                        progress = { uiState.loadingProgress / 100f },
-                        modifier = Modifier.size(48.dp),
+                        progress = { repositoryProgress },
+                        modifier = Modifier.size(64.dp),
                         trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
                         color = MaterialTheme.colorScheme.primary
                     )
+                }
+            } else {
+                // Main content - only display when repository is loaded
+                Column(modifier = Modifier.fillMaxSize()) {
+                    // WiFi Connection Card
+                    AnimatedVisibility(
+                        visible = isDisplayedConnexionWifiVisible
+                                ||
+                                !productDisplayController.isConnected
+                                && !lockHost
+                    ) {
+                        ConnexionCard(
+                            headViewModel=headViewModel,
+                            productDisplayController = productDisplayController,
+                            onClickToStartAsClient = {
+                                isNavBarVisible = false
+                                isFabVisible = false
+                            } ,
+                            lockHost= lockHost
+                        )
+                    }
+
+                    // Main Content Area
+                    Box(modifier = Modifier.weight(1f)) {
+                        AppNavHost(
+                            navController = navController,
+                            onToggleNavBar = { isNavBarVisible = !isNavBarVisible },
+                            modifier = Modifier.fillMaxSize(),
+                            isFabVisible = isFabVisible,
+                            onClickDonne = { isFabVisible = false },
+                            onClickToDisplayeConexionWifi = {
+                                isDisplayedConnexionWifiVisible = !isDisplayedConnexionWifiVisible
+                            },
+                            onToggleLockHost = {lockHost=!lockHost}, viewModelInitApp = viewModelInitApp,
+                            onClear = {},
+                            headViewModel = headViewModel,
+                            targetCategoryId=targetCategoryId,
+                            lockHost = productDisplayController.isHostPhone
+                        )
+
+                        // Disable interactions when not host phone
+                        if (!productDisplayController.isHostPhone && productDisplayController.isConnected) {
+                            Box(
+                                modifier = Modifier
+                                    .matchParentSize()
+                                    .clickable(enabled = false) { }
+                            )
+                        }
+                    }
+                }
+
+                // Navigation Bar with FAB
+                AnimatedVisibility(
+                    visible = (productDisplayController.isHostPhone || !productDisplayController.isConnected) && shouldShowContent,
+                    modifier = Modifier.align(Alignment.BottomCenter)
+                ) {
+                    NavigationBarWithFab(
+                        items = items.filter { it != Screen.ToggleFab },
+                        currentRoute = currentRoute,
+                        onNavigate = { route ->
+                            navController.navigate(route) {
+                                popUpTo(navController.graph.startDestinationId) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        },
+                        isFabVisible = isFabVisible,
+                        onToggleFabVisibility = {
+                            isFabVisible = !isFabVisible
+                            isDisplayedConnexionWifiVisible = false
+                        },
+                        onCatalogSelected = {
+                            targetCategoryId.value = it
+                        },
+                        navController=navController,
+                        modifier = Modifier.padding(bottom = 8.dp),
+                    )
+                }
+
+                // Product Display Dialog
+                if (showProductDisplay && shouldShowContent) {
+                    val productId = productDisplayController.clientWindowsDisplayedProductId
+                    val displayProductDataBase = productId?.let { id ->
+                        uiState.articlesBasesStatTables.find { it.idArticle.toLong() == id }
+                    }
+
+                    if (displayProductDataBase != null) {
+                        FragmentDisplayeInfoProductToClient7(
+                            displayController = productDisplayController,
+                            articleStatsDataBase = displayProductDataBase,
+                            colorsArticlesList = uiState.colorsArticlesTabelleModel,
+                            reloadTrigger = 0, // Use state if needed
+                            modifier = Modifier.fillMaxSize(), viewModelInitApp = viewModelInitApp
+                        )
+                    }
+                }
+
+                // Search Display Dialog
+                if (productDisplayController.searchWindowsDisplaye.isNotEmpty() && shouldShowContent) {
+                    SearchArticle(
+                        dsipayeText = productDisplayController.searchWindowsDisplaye
+                    )
+                }
+
+                // Show additional loading indicator if needed for other UI states
+                if (uiState.isLoading) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(
+                            progress = { uiState.loadingProgress / 100f },
+                            modifier = Modifier.size(48.dp),
+                            trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 }
             }
         }

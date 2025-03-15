@@ -21,6 +21,8 @@ fun updateNewModelDeLachat(
     colorDetails: ColorsArticlesTabelle,
     viewModelInitApp: ViewModelInitApp
 ) {
+    val produitsMainDataBase = viewModelInitApp.produitsMainDataBaseFromRepositeryPrototype
+
     try {
         if (currentSale == null || currentClient == null) {
             LogUtils.logError(LogUtils.Tags.QUANTITY_BUTTON, "Missing required data")
@@ -28,11 +30,11 @@ fun updateNewModelDeLachat(
         }
 
         // Find product or create new one if it doesn't exist
-        var productIndex = viewModelInitApp._modelAppsFather.produitsMainDataBase
+        var productIndex = produitsMainDataBase
             .indexOfFirst { it.id == currentSale.idArticle }
 
         val product = if (productIndex != -1) {
-            viewModelInitApp._modelAppsFather.produitsMainDataBase[productIndex]
+            produitsMainDataBase[productIndex]
         } else {
             // Create new product with the sale's article name
             createNewProduct(
@@ -40,7 +42,7 @@ fun updateNewModelDeLachat(
                 nameArticle = currentSale.nameArticle
             ).also {
                 // Update productIndex for later use
-                productIndex = viewModelInitApp._modelAppsFather.produitsMainDataBase.size - 1
+                productIndex = produitsMainDataBase.size - 1
             }
         }
 
@@ -120,7 +122,7 @@ fun updateNewModelDeLachat(
         }
 
         viewModelInitApp.viewModelScope.launch {
-            viewModelInitApp._modelAppsFather.produitsMainDataBase[productIndex] = product
+            produitsMainDataBase[productIndex] = product
             _ModelAppsFather.updateProduit(product, viewModelInitApp)
         }
 

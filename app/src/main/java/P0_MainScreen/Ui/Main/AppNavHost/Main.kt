@@ -107,7 +107,7 @@ fun AppNavHost(
     viewModelInitApp: ViewModelInitApp,
     onClear: () -> Unit,
     headViewModel: HeadViewModel,
-    targetCategoryId: MutableState<Long?> = mutableStateOf(null)
+    targetCategoryId: MutableState<Long?> = mutableStateOf(null), lockHost: Boolean
 ) {
     val uiState by headViewModel.uiState.collectAsState()
 
@@ -205,7 +205,7 @@ fun AppNavHost(
                                 lockExpandedPrices = !lockExpandedPrices
                             },
                             currentClient = currentClient, viewModelInitApp = viewModelInitApp,
-                            targetCategoryId=targetCategoryId
+                            targetCategoryId=targetCategoryId, lockHost = lockHost
                         )
 
                         if (uiState.isLoading) {

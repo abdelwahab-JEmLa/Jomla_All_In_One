@@ -1,5 +1,6 @@
 package Z_MasterOfApps.Kotlin.ViewModel
 
+import Z_CodePartageEntreApps.Model.A_ProduitModelRepository
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase.Companion.updateClientsDataBase
 import Z_CodePartageEntreApps.Model._ModelAppsFather
@@ -23,11 +24,14 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
 @SuppressLint("SuspiciousIndentation")
-class ViewModelInitApp : ViewModel() {
+class ViewModelInitApp(
+    val produitModelRepository: A_ProduitModelRepository
+) : ViewModel() {
     var _paramatersAppsViewModelModel by mutableStateOf(ParamatersAppsModel())
     var _modelAppsFather by mutableStateOf(_ModelAppsFather())
 
 
+    val produitsMainDataBaseFromRepositeryPrototype get() = produitModelRepository.modelDatas
 
     val modelAppsFather: _ModelAppsFather get() = _modelAppsFather
     val produitsMainDataBase = _modelAppsFather.produitsMainDataBase
@@ -61,15 +65,23 @@ class ViewModelInitApp : ViewModel() {
             try {
                 isLoading = true
 
-                loadData(viewModel)
-                FromAncienDataBase.setupRealtimeListeners(viewModel)
-                isLoading = false
+                // Observe progress changes
+                produitModelRepository.progressRepo.collect { progress ->
+                    loadingProgress = progress
+                    if (progress >= 1.0f && isLoading) {
+                        // Data is fully loaded, proceed with other initialization
+                        loadData(viewModel)
+                        FromAncienDataBase.setupRealtimeListeners(viewModel)
+                        isLoading = false
+                    }
+                }
             } catch (e: Exception) {
                 Log.e("ViewModelInitApp", "Init failed", e)
                 isLoading = false
             }
         }
     }
+
     fun updateStatueClientParID(
         clientId : Long,
         statueVente: B_ClientsDataBase.GpsLocation.DernierEtatAAffiche

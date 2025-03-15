@@ -1,6 +1,7 @@
 package Views.P1.Ui.ArticlesGrid
 
 import Views.P1.Ui.ArticlesGrid.ArticleItem.ColorOverlay
+import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle
 import android.graphics.drawable.Drawable
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -33,6 +35,7 @@ import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
@@ -62,6 +65,7 @@ import java.util.Locale
 @Composable
 fun ImageDisplayer1(
     modifier: Modifier = Modifier,
+
     article: ArticlesBasesStatsTable,
     viewModel: HeadViewModel,
     indexColor: Int,
@@ -73,7 +77,13 @@ fun ImageDisplayer1(
     cornerRadius: Dp = 4.dp,
     imageSize: DpSize,
     finalequalityImagePourcentage: Int = 100,
-) {
+    viewModelInitApp: ViewModelInitApp,
+    ) {
+    val a_ProduitModelRepository = viewModelInitApp.produitModelRepository
+
+    val produitDepuitNewDATABASE = a_ProduitModelRepository
+        .modelDatas.find { it.id.toInt() == article.idArticle }
+
     var currentQuality by remember { mutableStateOf(5f) }
     var isLoading by remember { mutableStateOf(true) }
     var imageLoaded by remember { mutableStateOf(false) }
@@ -166,6 +176,34 @@ fun ImageDisplayer1(
                         color = color,
                         cornerRadius = cornerRadius,
                         onClickToOpenWindow = { onClickToOpenWindow(article, indexColor) }
+                    )
+                }
+            }
+        }
+
+        produitDepuitNewDATABASE?.let { produit ->
+            if (produit.etatesMutable.porbableNonDispo) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            color = Color(0xFFFFA000).copy(alpha = 0.8f),
+                            shape = RoundedCornerShape(
+                                topStart = cornerRadius,
+                                topEnd = cornerRadius
+                            )
+                        )
+                ) {
+                    Text(
+                        text = "احتمال انو غير متوفر لكن نحاولو نبحثولك عليه",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.White,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(4.dp),
+                        textAlign = TextAlign.Center,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
             }
@@ -321,63 +359,69 @@ fun RequestBuilder<Drawable>.applyImageOptions(
 
 
 @Composable
-fun ArticleDetails1(
+fun InfosArticleBottom(
     article: ArticlesBasesStatsTable,
     modifier: Modifier = Modifier,
-    uiState: UiState
+    uiState: UiState,
+    cAfficheurTelephone: Boolean
 ) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
+
         Text(
             text = "زبون جديد في طور عرض الخدمة",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.primary
         )
 
-        // Check if monPrixVent is greater than 0
-        if (article.monPrixVent > 0) {
-            // Row to display both prices side by side
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                // Total price
-                Text(
-                    text = remember {
-                        val currencyFormat = NumberFormat.getCurrencyInstance(Locale.getDefault()).apply {
-                            currency = Currency.getInstance("DZD")
-                        }
-                        currencyFormat.format(article.monPrixVent)
-                    },
-                    style = MaterialTheme.typography.bodyMedium
-                )
+        if (cAfficheurTelephone) {
 
-                if (article.nmbrUnite>1) {
-                    Text("->")
+            // Check if monPrixVent is greater than 0
+            if (article.monPrixVent > 0) {
+                // Row to display both prices side by side
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    // Total price
                     Text(
                         text = remember {
                             val currencyFormat =
                                 NumberFormat.getCurrencyInstance(Locale.getDefault()).apply {
                                     currency = Currency.getInstance("DZD")
                                 }
-                            val unitPrice =
-                                article.monPrixVent / article.nmbrUnite
-
-                            currencyFormat.format(unitPrice)
+                            currencyFormat.format(article.monPrixVent)
                         },
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.secondary
+                        style = MaterialTheme.typography.bodyMedium
                     )
+
+                    if (article.nmbrUnite > 1) {
+                        Text("->")
+                        Text(
+                            text = remember {
+                                val currencyFormat =
+                                    NumberFormat.getCurrencyInstance(Locale.getDefault()).apply {
+                                        currency = Currency.getInstance("DZD")
+                                    }
+                                val unitPrice =
+                                    article.monPrixVent / article.nmbrUnite
+
+                                currencyFormat.format(unitPrice)
+                            },
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                    }
                 }
+            } else {
+                Text(
+                    text = "ان شاء الله نحاولو نديرولك سعر شباب",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.secondary
+                )
             }
-        } else {
-            Text(
-                text = "ان شاء الله نحاولو نديرولك سعر شباب",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.secondary
-            )
         }
 
         Text(

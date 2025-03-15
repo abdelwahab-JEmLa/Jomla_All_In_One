@@ -166,20 +166,15 @@ fun MainUi(
                 ) {
                     ActionsButtonRow(
                         modifier = Modifier.padding(8.dp),
+                        currentSale=currentSale,
+                        currentClient=currentClient,
                         onConfirm = {
                             viewModel.saveSaleTransactionToSoldAriclesList()
                             onDismiss()
                         },
-                        onCancel = {
-                            viewModel.deleteSoldArticle(currentSale.vid)
-                            onDismiss()
-                            _DisplayeProductInfosToSeller(viewModelInitApp)
-                                .onClickOnMain(
-                                    viewModelInitApp,
-                                    currentSale,
-                                    currentClient
-                                )
-                        }
+                        onDismiss = onDismiss ,
+                        viewModel=viewModel,
+                        viewModelInitApp=viewModelInitApp
                     )
                 }
             }

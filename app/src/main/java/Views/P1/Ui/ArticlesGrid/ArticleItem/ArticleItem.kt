@@ -5,7 +5,9 @@ import Views.P1.Ui.ArticlesGrid.ImageDisplayer1
 import Views.P1.Ui.ArticlesGrid.checkImageExists
 import Views.P1.Ui.ArticlesGrid.countColors
 import Views.P1.Ui.ArticlesGrid.getColorIdForIndex
+import Z_CodePartageEntreApps.Model.A_ProduitModel
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
+import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -38,7 +40,9 @@ fun ArticleItem(
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     uiState: UiState,
     isFirstVisible: Boolean = false,
-    currentClient: B_ClientsDataBase?
+    currentClient: B_ClientsDataBase?,
+    produitDepuitNewDATABASE: A_ProduitModel?,
+    lockHost: Boolean, viewModelInitApp: ViewModelInitApp
 ) {
     val colorCount = countColors(article)
 
@@ -59,16 +63,6 @@ fun ArticleItem(
         colors = CardDefaults.cardColors(containerColor = cardColor)
     ) {
 
-        val currentProductByCurrentClient = uiState.diviseurDeDisplayProductForEachClient.find {
-            it.keyVid == "${currentClient?.id}->${article.idArticle}"
-        }
-
-        val currentProductByClientStandard = uiState.diviseurDeDisplayProductForEachClient.find {
-            it.keyVid == "100->${article.idArticle}"
-        }
-
-        val switcher = currentProductByCurrentClient?.itsBigImage
-            ?: currentProductByClientStandard?.itsBigImage
 
         val layout = when {
             article.diponibilityState != "" && colorCount == 1 -> ArticleLayout.DemiUno
@@ -85,7 +79,7 @@ fun ArticleItem(
             viewModel = viewModel,
             reloadTrigger = reloadTrigger,
             onClickToOpenWindos = onClickToOpenWindos,
-            uiState = uiState
+            uiState = uiState, lockHost = lockHost, viewModelInitApp = viewModelInitApp
         )
     }
 }
@@ -102,8 +96,8 @@ fun ArticleImageWithOverlay(
     modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.Fit,
     onClickToOpenWindow: (ArticlesBasesStatsTable, Int) -> Unit,
-    imageSize: DpSize ,
-    qualityImagePourcentage: Int =100
+    imageSize: DpSize,
+    qualityImagePourcentage: Int =100, viewModelInitApp: ViewModelInitApp
 
 ) {
     Surface(
@@ -130,8 +124,9 @@ fun ArticleImageWithOverlay(
                 uiState = uiState,
                 showOverlay = !imageExists,
                 imageScale = contentScale,
-                imageSize = imageSize   ,
+                imageSize = imageSize,
                 finalequalityImagePourcentage=qualityImagePourcentage,
+                viewModelInitApp=viewModelInitApp,
             )
 
             if (imageExists) {

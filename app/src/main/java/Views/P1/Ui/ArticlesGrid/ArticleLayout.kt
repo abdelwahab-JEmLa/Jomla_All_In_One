@@ -2,6 +2,7 @@ package Views.P1.Ui.ArticlesGrid
 
 import Views.P1.Ui.ArticlesGrid.ArticleItem.ArticleImageWithOverlay
 import Z_CodePartageEntreApps.Model.E_AppsOptionsStates.ApplicationEstInstalleDonTelephone.Companion.metricsWidthPixels
+import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -49,38 +50,38 @@ sealed class ArticleLayout {
         reloadTrigger: Int,
         onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
         uiState: UiState,
-        modifier: Modifier = Modifier,
+        modifier: Modifier = Modifier, lockHost: Boolean, viewModelInitApp: ViewModelInitApp,
     ) {
         when (this) {
             is DemiUno -> SmallSingleColorDisplayer(
                 article, viewModel, reloadTrigger, onClickToOpenWindos, uiState,
                 imageSize = this.imageSize,
-                modifier = modifier
+                modifier = modifier, lockHost = lockHost, viewModelInitApp = viewModelInitApp
             )
             is DemiDual -> DemiDisplayerDualColor(
                 article, viewModel, reloadTrigger, onClickToOpenWindos, uiState,
                 imageSize = this.imageSize,
-                modifier = modifier
+                modifier = modifier, lockHost = lockHost, viewModelInitApp = viewModelInitApp
             )
             is DemiMulti -> DemiDisplayerMultiColor(
                 article, viewModel, reloadTrigger, onClickToOpenWindos, uiState,
                 imageSize = this.imageSize,
-                modifier = modifier
+                modifier = modifier, lockHost = lockHost, viewModelInitApp = viewModelInitApp
             )
             is SmallUno -> DemiSingleColorDisplayer(
                 article, viewModel, reloadTrigger, onClickToOpenWindos, uiState,
                 imageSize = this.imageSize,
-                modifier = modifier
+                modifier = modifier, lockHost = lockHost, viewModelInitApp = viewModelInitApp
             )
             is SmallDual -> SmallDisplayerDualColor(
                 article, viewModel, reloadTrigger, onClickToOpenWindos, uiState,
                 imageSize = this.imageSize,
-                modifier = modifier
+                modifier = modifier, lockHost = lockHost, viewModelInitApp = viewModelInitApp
             )
             is SmallMulti -> SmallDisplayerMultiColor(
                 article, viewModel, reloadTrigger, onClickToOpenWindos, uiState,
                 imageSize = this.imageSize,
-                modifier = modifier
+                modifier = modifier, lockHost = lockHost, viewModelInitApp = viewModelInitApp
             )
         }
     }
@@ -94,7 +95,8 @@ private fun SmallDisplayerDualColor(
     reloadTrigger: Int,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     uiState: UiState,
-    modifier: Modifier = Modifier, imageSize: DpSize
+    modifier: Modifier = Modifier, imageSize: DpSize, lockHost: Boolean,
+    viewModelInitApp: ViewModelInitApp
 ) {
     Column(
         modifier = modifier.padding(3.dp),
@@ -106,7 +108,7 @@ private fun SmallDisplayerDualColor(
             colorIndex = 0,
             reloadTrigger = reloadTrigger,
             onClickToOpenWindow = onClickToOpenWindos,
-            uiState = uiState, imageSize = imageSize
+            uiState = uiState, imageSize = imageSize, viewModelInitApp = viewModelInitApp
         )
 
         ArticleImageWithOverlay(
@@ -117,13 +119,14 @@ private fun SmallDisplayerDualColor(
             modifier = Modifier.height(100.dp),
             onClickToOpenWindow = onClickToOpenWindos,
             uiState = uiState,
-            contentScale = ContentScale.Crop, imageSize = imageSize
+            contentScale = ContentScale.Crop, imageSize = imageSize, viewModelInitApp = viewModelInitApp
         )
 
-        ArticleDetails1(
-            uiState=uiState,
+        InfosArticleBottom(
             article = article,
-            modifier = Modifier.padding(horizontal = 3.dp)
+            modifier = Modifier.padding(horizontal = 3.dp),
+            uiState=uiState,
+            lockHost
         )
     }
 }
@@ -136,7 +139,7 @@ private fun SmallDisplayerMultiColor(
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     uiState: UiState,
     modifier: Modifier = Modifier,
-    imageSize: DpSize
+    imageSize: DpSize, lockHost: Boolean, viewModelInitApp: ViewModelInitApp
 ) {
     Column(
         modifier = modifier.padding(3.dp),
@@ -151,7 +154,7 @@ private fun SmallDisplayerMultiColor(
             onClickToOpenWindow = onClickToOpenWindos,
             uiState = uiState,
             imageSize = imageSize ,
-            qualityImagePourcentage= 48
+            qualityImagePourcentage= 48, viewModelInitApp = viewModelInitApp
         )
 
         // Replace LazyColumn with Column since we have a small fixed number of items
@@ -168,15 +171,16 @@ private fun SmallDisplayerMultiColor(
                 onClickToOpenWindow = onClickToOpenWindos,
                 uiState = uiState,
                 contentScale = ContentScale.Crop,
-                imageSize = imageSize
+                imageSize = imageSize, viewModelInitApp = viewModelInitApp
             )
         }
 
         // Details
-        ArticleDetails1(
+        InfosArticleBottom(
             article = article,
             modifier = Modifier.padding(horizontal = 3.dp),
-            uiState = uiState
+            uiState = uiState,
+            lockHost
         )
     }
 }
@@ -188,10 +192,11 @@ private fun DemiDisplayerMultiColor(
     reloadTrigger: Int,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     uiState: UiState,
-    modifier: Modifier = Modifier, imageSize: DpSize
+    modifier: Modifier = Modifier, imageSize: DpSize, lockHost: Boolean,
+    viewModelInitApp: ViewModelInitApp
 ) {
     Column(modifier = modifier.padding(3.dp)) {
-        ArticleDetails1(article, uiState = uiState)
+        InfosArticleBottom(article, uiState = uiState, cAfficheurTelephone=lockHost)
 
         // Main image display
         ArticleImageWithOverlay(
@@ -200,7 +205,7 @@ private fun DemiDisplayerMultiColor(
             colorIndex = 0,
             reloadTrigger = reloadTrigger,
             onClickToOpenWindow = onClickToOpenWindos,
-            uiState = uiState, imageSize = imageSize
+            uiState = uiState, imageSize = imageSize, viewModelInitApp = viewModelInitApp
         )
 
         // Secondary images row
@@ -226,7 +231,7 @@ private fun DemiDisplayerMultiColor(
                         .height(if (!imageExists) 70.dp else 250.dp),
                     contentScale = if (!imageExists) ContentScale.Crop else ContentScale.Fit,
                     onClickToOpenWindow = onClickToOpenWindos,
-                    uiState = uiState, imageSize = imageSize
+                    uiState = uiState, imageSize = imageSize, viewModelInitApp = viewModelInitApp
                 )
             }
         }
@@ -240,17 +245,18 @@ private fun DemiDisplayerDualColor(
     reloadTrigger: Int,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     uiState: UiState,
-    modifier: Modifier = Modifier, imageSize: DpSize
+    modifier: Modifier = Modifier, imageSize: DpSize, lockHost: Boolean,
+    viewModelInitApp: ViewModelInitApp
 ) {
     Column(modifier = modifier.padding(3.dp)) {
-        ArticleDetails1(article, uiState = uiState)
+        InfosArticleBottom(article, uiState = uiState, cAfficheurTelephone=lockHost)
         ArticleImageWithOverlay(
             article = article,
             viewModel = viewModel,
             colorIndex = 0,
             reloadTrigger = reloadTrigger,
             onClickToOpenWindow = onClickToOpenWindos,
-            uiState = uiState, imageSize = imageSize
+            uiState = uiState, imageSize = imageSize, viewModelInitApp = viewModelInitApp
         )
 
         Box(modifier = Modifier.height(100.dp)) {
@@ -261,7 +267,7 @@ private fun DemiDisplayerDualColor(
                 reloadTrigger = reloadTrigger,
                 onClickToOpenWindow = onClickToOpenWindos,
                 uiState = uiState,
-                contentScale = ContentScale.Crop, imageSize = imageSize
+                contentScale = ContentScale.Crop, imageSize = imageSize, viewModelInitApp = viewModelInitApp
             )
         }
     }
@@ -273,7 +279,8 @@ private fun SmallSingleColorDisplayer(
     reloadTrigger: Int,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     uiState: UiState,
-    modifier: Modifier = Modifier, imageSize: DpSize
+    modifier: Modifier = Modifier, imageSize: DpSize, lockHost: Boolean,
+    viewModelInitApp: ViewModelInitApp
 ) {
     Column(modifier = modifier.padding(3.dp)) {
         Box(
@@ -286,10 +293,10 @@ private fun SmallSingleColorDisplayer(
                 colorIndex = 0,
                 reloadTrigger = reloadTrigger,
                 onClickToOpenWindow = onClickToOpenWindos,
-                uiState = uiState, imageSize = imageSize
+                uiState = uiState, imageSize = imageSize, viewModelInitApp = viewModelInitApp
             )
         }
-        ArticleDetails1(article, uiState = uiState)
+        InfosArticleBottom(article, uiState = uiState, cAfficheurTelephone=lockHost)
     }
 }
 @Composable
@@ -299,7 +306,8 @@ private fun DemiSingleColorDisplayer(
     reloadTrigger: Int,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     uiState: UiState,
-    modifier: Modifier = Modifier, imageSize: DpSize
+    modifier: Modifier = Modifier, imageSize: DpSize, lockHost: Boolean,
+    viewModelInitApp: ViewModelInitApp
 ) {
     Column(modifier = modifier.padding(3.dp)) {
         Box(
@@ -312,9 +320,9 @@ private fun DemiSingleColorDisplayer(
                 colorIndex = 0,
                 reloadTrigger = reloadTrigger,
                 onClickToOpenWindow = onClickToOpenWindos,
-                uiState = uiState, imageSize = imageSize
+                uiState = uiState, imageSize = imageSize, viewModelInitApp = viewModelInitApp
             )
         }
-        ArticleDetails1(article, uiState = uiState)
+        InfosArticleBottom(article, uiState = uiState, cAfficheurTelephone=lockHost)
     }
 }

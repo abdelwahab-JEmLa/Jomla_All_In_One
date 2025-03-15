@@ -58,7 +58,6 @@ open class HeadViewModel(
         )
     )
 
-
     open val uiState = _uiState.asStateFlow()
 
     val categoriesRepository: I_CategoriesRepository = CategoriesRepositoryImpl()
@@ -326,7 +325,7 @@ open class HeadViewModel(
         firebaseDatabase.getReference("3_DiviseurDeDisplayProductForEachClient")
 
 
-    private fun updateLoadingProgress(progress: Float) {
+    fun updateLoadingProgress(progress: Float) {
         _uiState.update { it.copy(loadingProgress = progress) }
     }
 

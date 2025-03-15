@@ -1,4 +1,8 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit.Ui.Objects
+import Z_CodePartageEntreApps.Model.B_ClientsDataBase
+import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
+import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.SoldArticlesTabelle
+import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Package_3._DisplayeProductInfosToSeller
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,12 +25,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.clientjetpack.R
+import com.example.clientjetpack.ViewModel.HeadViewModel
 
 @Composable
  fun ActionsButtonRow(
+    viewModel: HeadViewModel,
+    currentSale: SoldArticlesTabelle,
+    currentClient: B_ClientsDataBase?,
     onConfirm: () -> Unit,
-    onCancel: () -> Unit,
-    modifier: Modifier = Modifier
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
+    viewModelInitApp: ViewModelInitApp
 ) {
     Row(
         modifier = modifier
@@ -36,7 +45,14 @@ import com.example.clientjetpack.R
     ) {
         OutlinedButton(
             onClick = {
-                onCancel()
+                viewModel.deleteSoldArticle(currentSale.vid)
+                onDismiss()
+                _DisplayeProductInfosToSeller(viewModelInitApp)
+                    .onClickOnMain(
+                        viewModelInitApp,
+                        currentSale,
+                        currentClient
+                    )
             },
             modifier = Modifier.weight(1f),
             colors = ButtonDefaults.outlinedButtonColors(

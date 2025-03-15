@@ -5,6 +5,7 @@ import Views.P1.Ui.ArticlesGrid.Res.Scrollbar
 import Views.P1.Ui.Objects.CategoryHeader
 import Views.P1.Ui.Objects.ScrolleAdBanner
 import Views.P1._ArticlesStartFacade.ArticlePagingSource
+import Z_CodePartageEntreApps.Model.A_ProduitModelRepository
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
@@ -60,15 +61,16 @@ fun ArticleGridWithScrollbar(
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     currentClient: B_ClientsDataBase?,
     viewModelInitApp: ViewModelInitApp,
-    targetCategoryId: MutableState<Long?> = mutableStateOf(null)
+    a_ProduitModelRepository: A_ProduitModelRepository,
+    targetCategoryId: MutableState<Long?> = mutableStateOf(null), lockHost: Boolean
 ) {
     Box(modifier = modifier) {
         // Scrollbar first (will be on the left)
         Scrollbar(
             state = gridState,
             modifier = Modifier
-                .align(Alignment.CenterStart)  // Align to left instead of right
-                .padding(start = 2.dp)         // Padding from left edge
+                .align(Alignment.CenterStart)
+                .padding(start = 2.dp)
                 .alpha(0.8f)
         )
 
@@ -84,7 +86,9 @@ fun ArticleGridWithScrollbar(
             modifier = Modifier.fillMaxSize(),
             onClickToOpenWindos = onClickToOpenWindos,
             currentClient = currentClient,
-            targetCategoryId = targetCategoryId
+            targetCategoryId = targetCategoryId ,a_ProduitModelRepository=a_ProduitModelRepository,
+            lockHost = lockHost ,
+            viewModelInitApp =viewModelInitApp
         )
     }
 }
@@ -101,7 +105,10 @@ fun ArticleGrid(
     modifier: Modifier = Modifier,
     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     currentClient: B_ClientsDataBase?,
-    targetCategoryId: MutableState<Long?> = mutableStateOf(null)
+    targetCategoryId: MutableState<Long?> = mutableStateOf(null),
+    a_ProduitModelRepository: A_ProduitModelRepository,
+    lockHost: Boolean,
+    viewModelInitApp: ViewModelInitApp
 ) {
     // Track scroll state and first visible item
     var lastSettledFirstVisible by remember { mutableStateOf(-1) }
@@ -311,7 +318,7 @@ fun ArticleGrid(
                         }
                     ) { index ->
                         val article = lazyPagingItems[index]
-                        article?.let {
+                        article?.let { ancienData ->
                             val isFirstVisible = when {
                                 !isSettled -> index == lastSettledFirstVisible
                                 else -> index == gridState.firstVisibleItemIndex
@@ -320,9 +327,10 @@ fun ArticleGrid(
                             if (isFirstVisible) {
                                 currentCategory = category.nomCategorieInCategoriesTabele
                             }
-
+                            val produitDepuitNewDATABASE =  a_ProduitModelRepository
+                                .modelDatas.find { it.id.toInt() == article.idArticle }
                             ArticleItem(
-                                article = it,
+                                article = ancienData,
                                 viewModel = viewModel,
                                 reloadTrigger = reloadTrigger,
                                 onClickToOpenWindos = onClickToOpenWindos,
@@ -332,7 +340,9 @@ fun ArticleGrid(
                                     fadeInSpec = null,
                                     fadeOutSpec = null
                                 ),
-                                currentClient = currentClient
+                                currentClient = currentClient,
+                                produitDepuitNewDATABASE=produitDepuitNewDATABASE, lockHost = lockHost,
+                                viewModelInitApp =viewModelInitApp
                             )
                         }
                     }
@@ -340,6 +350,8 @@ fun ArticleGrid(
             }
     }
 }
+
+
 
 // Function to handle scrolling to a specific category
 fun scrollToCategory(

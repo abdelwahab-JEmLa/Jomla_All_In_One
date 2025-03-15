@@ -28,9 +28,8 @@ val repositoryModule = module {
     single { AppDatabase.DatabaseModule.getDatabase(get()) }
 }
 
-// Module pour les ViewModels
 val viewModelModule = module {
-    viewModel { ViewModelInitApp() }
+    viewModel { ViewModelInitApp(get()) }
     viewModel { (context: Context) -> HeadViewModel(get(), AppDatabase.DatabaseModule.getDatabase(get())) }
 }
 
