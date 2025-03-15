@@ -1,6 +1,5 @@
 package P0_MainScreen.Main
 
-
 import P0_MainScreen.Modules.HandleFullscreenMode
 import P0_MainScreen.Ui.Main.AppNavHost.AppNavHost
 import P0_MainScreen.Ui.Main.AppNavHost.NavigationBarWithFab
@@ -65,12 +64,9 @@ fun MainScreen(
     val uiState by headViewModel.uiState.collectAsState()
     val productDisplayController = uiState.productDisplayController
 
-    // Update the HeadViewModel with the repository progress and determine if content should show
     LaunchedEffect(repositoryProgress) {
         headViewModel.updateLoadingProgress((repositoryProgress * 100))
 
-        // Consider the data loaded if progress is very close to completion (≥ 99.5%)
-        // This helps handle cases where floating point precision might prevent exactly hitting 1.0
         val TAG = "id1"
         if (repositoryProgress >= 0.995f) {
             Log.d(TAG, "Repository considered loaded at: ${repositoryProgress * 100}%")

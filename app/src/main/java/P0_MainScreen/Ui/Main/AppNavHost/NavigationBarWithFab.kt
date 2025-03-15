@@ -91,21 +91,15 @@ fun NavigationBarWithFab(
                     },
                     selected = currentRoute == screen.route,
                     onClick = {
-                        // Check if current destination is start destination
-                        val currentDestId = navController.currentDestination?.id
-                        val startDestId = navController.graph.startDestinationId
-
-                        // Modifier la condition dans l'onClick
-                        if (isFirstNavigation) {
-                            // First click always navigates directly
-                            onNavigate(screen.route)
-                            isFirstNavigation = false
-                        } else if (currentRoute == Screen.EditDatabaseWithCreateNewArticles.route) {
-                            // Si l'utilisateur est sur le fragment EditDatabase, afficher le dialogue
+                        // Check if we're currently on the EditDatabaseWithCreateNewArticles screen
+                        if (currentRoute == Screen.EditDatabaseWithCreateNewArticles.route &&
+                            screen.route == Screen.EditDatabaseWithCreateNewArticles.route) {
+                            // Show catalog dialog when leaving the EditDatabase screen
                             showCatalogDialog = true
                         } else {
-                            // Autres cas, navigation normale
+                            // Normal navigation for other cases
                             onNavigate(screen.route)
+                            isFirstNavigation = false
                         }
                     }
                 )
@@ -145,6 +139,8 @@ fun NavigationBarWithFab(
                 onCatalogSelected = { categoryId ->
                     onCatalogSelected(categoryId)
                     showCatalogDialog = false
+                    // Navigate to the selected screen after selecting a catalog
+                    onNavigate(Screen.EditDatabaseWithCreateNewArticles.route)
                 }
             )
         }
