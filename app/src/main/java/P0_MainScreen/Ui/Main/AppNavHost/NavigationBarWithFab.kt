@@ -15,12 +15,15 @@ import androidx.compose.material.icons.filled.MapsHomeWork
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,7 +40,7 @@ import androidx.navigation.NavController
 import androidx.wear.compose.material.ContentAlpha
 import com.example.clientjetpack.R
 
-private const val TAG = "id2"
+private const val TAG = "NavigationBarWithFab"
 
 @Composable
 fun NavigationBarWithFab(
@@ -146,6 +149,55 @@ fun NavigationBarWithFab(
         }
     }
 }
+
+@Composable
+fun CatalogSelectionDialog(
+    onDismiss: () -> Unit,
+    onCatalogSelected: (Long) -> Unit,
+    viewModelInitApp: ViewModelInitApp
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Sélectionner un catalogue") },
+        text = {
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                // Catalog options in the dialog
+                androidx.compose.foundation.layout.Column {
+                    TextButton(
+                        onClick = { onCatalogSelected(148L)
+
+                        }
+                    ) {
+                        Text("Catalogue Cosmétiques")
+                    }
+
+                    TextButton(
+                        onClick = { onCatalogSelected(149L) }
+                    ) {
+                        Text("Catalogue Confiseries")
+                    }
+
+                    TextButton(
+                        onClick = { onCatalogSelected(150L) }
+                    ) {
+                        Text("Catalogue Téléphones")
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = onDismiss
+            ) {
+                Text("Annuler")
+            }
+        }
+    )
+}
+
 // Add this to your project if it's missing
 object NavigationItems {
     fun getItems() = listOf(

@@ -30,6 +30,7 @@ import kotlinx.coroutines.delay
 fun ScrolleAdBanner(
     modifier: Modifier = Modifier
 ) {
+
     var currentBannerIndex by remember { mutableStateOf(0) }
     val scrollState = rememberScrollState()
     val density = LocalDensity.current
@@ -85,8 +86,11 @@ fun ScrolleAdBanner(
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         val images = listOf(
-            R.drawable.baked_goods_1,
-            R.drawable.baked_goods_2,
+            R.drawable.baked_goods_1,   //-->
+            //TODO(1): fait que au click a ca d aller au  CategoryHeader  avec nom contien  == "Con"
+            R.drawable.baked_goods_2, //-->
+            //TODO(1): fait que au click a ca d aller au CategoryHeader avec nom contien  == "Cos"
+
             R.drawable.baked_goods_3
         )
 

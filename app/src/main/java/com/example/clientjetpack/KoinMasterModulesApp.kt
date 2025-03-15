@@ -1,6 +1,5 @@
 package com.example.clientjetpack
 
-import Views.P1.Ui.ArticlesGrid.ScrollHandler
 import Z_CodePartageEntreApps.Model.A_ProduitModelRepository
 import Z_CodePartageEntreApps.Model.A_ProduitModelRepositoryImpl
 import Z_CodePartageEntreApps.Model.CategoriesRepositoryImpl
