@@ -10,7 +10,6 @@ import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.App.CategoriesTabelle
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -118,7 +117,6 @@ fun ArticleGrid(
 
     // Configure paging with assembly monitoring
     val pagingConfig = remember {
-        Log.d(TAG, "Initializing paging configuration for grid assembly")
         PagingConfig(
             pageSize = 3,
             enablePlaceholders = true,
@@ -128,32 +126,7 @@ fun ArticleGrid(
 
     // Create category pagers with assembly tracking
     val categoryPagers = remember(uiState.categories, filterText) {
-        Log.d(
-            TAG, """
-            Starting Grid Assembly:
-            - Total Categories: ${uiState.categories.size}
-            - Filter: ${if (filterText.isEmpty()) "None" else filterText}
-            - Articles Total: ${uiState.articlesBasesStatTables.size}
-        """.trimIndent()
-        )
-
         uiState.categories.associateWith { category ->
-            Log.d(
-                TAG, """
-                Processing Category:
-                - Name: ${category.nomCategorieInCategoriesTabele}
-                - ID: ${category.idCategorieInCategoriesTabele}
-                - Articles: ${
-                    uiState.articlesBasesStatTables.count {
-                        if (category.nomCategorieInCategoriesTabele == "NewArrivale")
-                            it.itsNewArrivale
-                        else
-                            it.nomCategorie == category.nomCategorieInCategoriesTabele && !it.itsNewArrivale
-                    }
-                }
-            """.trimIndent()
-            )
-
             Pager(pagingConfig) {
                 ArticlePagingSource(
                     articles = when {
@@ -168,12 +141,7 @@ fun ArticleGrid(
                     filterText = filterText,
                     currentClient = currentClient,
                     uiState = uiState
-                ).also { source ->
-                    Log.d(
-                        TAG,
-                        "Created PagingSource for ${category.nomCategorieInCategoriesTabele}"
-                    )
-                }
+                )
             }
         }
     }
@@ -199,16 +167,6 @@ fun ArticleGrid(
                 delay(100) // Brief delay for scroll settlement
                 lastSettledFirstVisible = scrollState.index
                 isSettled = true
-
-                // Log settled position
-                Log.d(
-                    TAG, """
-                    Scroll Settled:
-                    - Index: ${scrollState.index}
-                    - Previous Index: $lastSettledFirstVisible
-                    - Category: $currentCategory
-                """.trimIndent()
-                )
             } else {
                 isSettled = false
             }
@@ -250,8 +208,6 @@ fun ArticleGrid(
         targetCategoryId.value?.let { id ->
             // Special handling for categories with IDs 148, 149, and 150
             if (id == 148L || id == 149L || id == 150L) {
-                Log.d(TAG, "Scrolling to category with ID: $id")
-
                 // Find the position of the target category
                 val position = categoryPositions[id]
                 if (position != null) {
@@ -261,8 +217,6 @@ fun ArticleGrid(
                         delay(500) // Give time for scrolling to complete
                         targetCategoryId.value = null
                     }
-                } else {
-                    Log.d(TAG, "Category with ID $id not found in positions map")
                 }
             }
         }
@@ -350,8 +304,6 @@ fun ArticleGrid(
             }
     }
 }
-
-
 
 // Function to handle scrolling to a specific category
 fun scrollToCategory(
