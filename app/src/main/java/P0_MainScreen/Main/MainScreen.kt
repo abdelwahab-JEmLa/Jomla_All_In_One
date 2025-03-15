@@ -97,20 +97,23 @@ fun MainScreen(
     var lockHost by remember { mutableStateOf(false) }
     val targetCategoryId = remember { mutableStateOf<Long?>(null) }
 
+// In MainScreen.kt, replace the LaunchedEffect block with:
     LaunchedEffect(productDisplayController.clientWindowsDisplayedProductId) {
         showProductDisplay = productDisplayController.clientWindowsDisplayedProductId != null
-        if (productDisplayController.clientWindowsDisplayedProductId == null) {
-            if (productDisplayController.isHostPhone && currentRoute != Screen.A_ClientsLocationGps.route) {
-                navController.navigate(Screen.A_ClientsLocationGps.route) {
-                    popUpTo(navController.graph.startDestinationId) {
-                        inclusive = true
-                    }
-                    launchSingleTop = true
-                }
+
+        // Only navigate if needed, and don't force back to start every time
+        if (productDisplayController.clientWindowsDisplayedProductId == null
+            && productDisplayController.isHostPhone
+            && currentRoute != Screen.A_ClientsLocationGps.route
+            && navController.currentDestination != null) {
+
+            // Navigate without popping the entire back stack
+            navController.navigate(Screen.A_ClientsLocationGps.route) {
+                // Only pop up to start if explicitly returning to home
+                // launchSingleTop = true
             }
         }
     }
-
     Surface(
         modifier = modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
