@@ -2,8 +2,14 @@ package Z_CodePartageEntreApps.Resources
 
 import com.example.clientjetpack.R
 
-class XmlsFilesHandler {
+/*
+import com.example.abdelwahabjemlajetpack.R
 
+import com.example.clientjetpack.R
+
+*/
+
+class XmlsFilesHandler {
     companion object {
         val xmlResources = listOf(
             Pair("marker_info_window", R.layout.marker_info_window),

@@ -11,7 +11,6 @@ import Z_CodePartageEntreApps.Model.J_AppInstalleDonTelephoneRepositoryImpl
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Kotlin._WorkingON.WO_.ConnectionManager
 import android.content.Context
-import android.util.Log
 import com.example.clientjetpack.Modules.AppDatabase
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -44,13 +43,6 @@ val servicesModule = module {
         )
     }
 
-    // Add ScrollHandler singleton
-    single {
-        Log.d(TAG, "Creating ScrollHandler singleton in Koin")
-        ScrollHandler().also {
-            Log.d(TAG, "ScrollHandler created with initial state: ${it.scrollToCategoryId.value}")
-        }
-    }
 }
 
 // Update appModule to include the servicesModule

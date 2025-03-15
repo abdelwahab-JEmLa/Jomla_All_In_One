@@ -3,7 +3,10 @@ package Z_CodePartageEntreApps.Model
 import Z_CodePartageEntreApps.Model._ModelAppsFather.Companion.firebaseDatabase
 import Z_CodePartageEntreApps.Model._ModelAppsFather.Companion.ref_HeadOfModels
 import android.util.Log
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -28,7 +31,10 @@ class I_CategoriesProduits(
     @IgnoreExtraProperties
     class StatuesMutable(
         var indexDonsParentList: Long = 0,
-    )
+
+    ) {
+        var afficheSonHeader by mutableStateOf(false)
+    }
 }
 
 interface I_CategoriesRepository {
@@ -39,6 +45,7 @@ interface I_CategoriesRepository {
     suspend fun onDataBaseChangeListnerAndLoad(): Pair<List<I_CategoriesProduits>, Flow<Float>>
     suspend fun getCategoriesById(id: String): I_CategoriesProduits?
     suspend fun updateDatas(datas: SnapshotStateList<I_CategoriesProduits>)
+    fun updateUneSeulData(data: I_CategoriesProduits)
 
 
     companion object {
@@ -185,7 +192,17 @@ class CategoriesRepositoryImpl : I_CategoriesRepository {
         return modelDatas.find { it.id.toString() == id }
     }
 
+    // Fix 2: A_ProduitModel.kt - Fixing the updateUneSeulData method
+    override fun updateUneSeulData(data: I_CategoriesProduits) {
+        // Find and update the item in the modelDatas list if it exists
+        val index = modelDatas.indexOfFirst { it.id == data.id }
+        if (index >= 0) {
+            modelDatas[index] = data
+        }
 
+        // Update the item in Firebase
+        I_CategoriesRepository.caReference.child(data.id.toString()).setValue(data)
+    }
     override suspend fun updateDatas(datas: SnapshotStateList<I_CategoriesProduits>) {
         // Update local modelDatas with the new data
         modelDatas.clear()

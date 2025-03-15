@@ -3,7 +3,6 @@ package Z_CodePartageEntreApps.Model
 import Z_CodePartageEntreApps.Model._ModelAppsFather.Companion.firebaseDatabase
 import Z_CodePartageEntreApps.Model._ModelAppsFather.Companion.ref_HeadOfModels
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_MasterOfApps.Z.Android.Main.C_EcranDeDepart.Startup.B.Dialogs.TAG
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -236,7 +235,7 @@ interface A_ProduitModelRepository {
         get() = if (progressRepo.value >= 1.0f) _modelDatas else mutableStateListOf()
 
     // Make this private to prevent direct access
-     val _modelDatas: SnapshotStateList<A_ProduitModel>
+    val _modelDatas: SnapshotStateList<A_ProduitModel>
 
     val progressRepo: MutableStateFlow<Float>
 
@@ -320,7 +319,7 @@ class A_ProduitModelRepositoryImpl : A_ProduitModelRepository {
     }
     override suspend fun onDataBaseChangeListnerAndLoad(): Pair<List<A_ProduitModel>, Flow<Float>> {
         val progressFlow = MutableStateFlow(0f)
-
+        val TAG = "onDataBaseChangeListnerAndLoad"
         val datasLisning = suspendCancellableCoroutine<List<A_ProduitModel>> { continuation ->
             val listener = object : ValueEventListener {
                 // In A_ProduitModelRepositoryImpl.kt, modify the onDataChange method:
