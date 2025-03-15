@@ -1,6 +1,8 @@
 package Views.P1.Ui.Objects
 
+import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -14,6 +16,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,9 +31,9 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun ScrolleAdBanner(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onBannerClick: (Int) -> Unit = {} // Default empty handler
 ) {
-
     var currentBannerIndex by remember { mutableStateOf(0) }
     val scrollState = rememberScrollState()
     val density = LocalDensity.current
@@ -48,7 +51,7 @@ fun ScrolleAdBanner(
                 val totalSteps = 35
                 val stepSize = cardWidth / totalSteps
 
-                // Smooth scroll to  card
+                // Smooth scroll to card
                 for (step in 0 until totalSteps) {
                     val nextPosition = (currentBannerIndex * cardWidth) + (step * stepSize)
                     scrollState.scrollTo(nextPosition.toInt())
@@ -85,20 +88,22 @@ fun ScrolleAdBanner(
             .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        val images = listOf(
-            R.drawable.baked_goods_1,   //-->
-            //TODO(1): fait que au click a ca d aller au  CategoryHeader  avec nom contien  == "Con"
-            R.drawable.baked_goods_2, //-->
-            //TODO(1): fait que au click a ca d aller au CategoryHeader avec nom contien  == "Cos"
-
-            R.drawable.baked_goods_3
+        // Map images to their corresponding category IDs
+        val bannerData = listOf(
+            BannerItem(R.drawable.baked_goods_1, "Confiseries"), // This will navigate to categoryHeaderConfiseries
+            BannerItem(R.drawable.baked_goods_2, null),          // No specific navigation
+            BannerItem(R.drawable.baked_goods_3, null)           // No specific navigation
         )
 
-        images.forEachIndexed { index, imageRes ->
+        bannerData.forEachIndexed { index, (imageRes, categoryName) ->
             Card(
                 modifier = Modifier
                     .width(320.dp)
-                    .height(150.dp),
+                    .height(150.dp)
+                    .clickable {
+                        // Pass the banner index to the click handler
+                        onBannerClick(index)
+                    },
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
             ) {
                 Image(
@@ -112,4 +117,17 @@ fun ScrolleAdBanner(
     }
 }
 
-
+// Data class to hold banner image and target category
+private data class BannerItem(
+    val imageResId: Int,
+    val targetCategoryName: String?
+)
+@Composable
+fun scrollToCategory(
+    categoryId: Long,
+    targetCategoryId: MutableState<Long?>,
+    logTag: String = "ScrollDebug"
+) {
+    Log.d(logTag, "Attempting to scroll to category ID: $categoryId")
+    targetCategoryId.value = categoryId
+}
