@@ -2,10 +2,8 @@ package Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.Model.R
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.Model.K_TempTravaille
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import com.google.firebase.Firebase
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.database
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -113,6 +111,31 @@ class K_TempTravailleRepositoryImpl : K_TempTravailleRepository {
             typeTemp = typeTemp
         ) { updatedRecordId ->
             updateUnSeulData(updatedRecordId)
+        }
+    }
+
+    override fun updateOnPasseData(record: K_TempTravaille?) {
+        if (record != null) {
+            // Find the index of the record in the modelDatas list
+            val recordIndex = modelDatas.indexOfFirst { it.vid == record.vid }
+
+            if (recordIndex != -1) {
+                // Update the record in the modelDatas list
+                modelDatas.removeAt(recordIndex)
+                modelDatas.add(recordIndex, record)
+
+                // Update the Firebase database with the updated record
+                try {
+                    // Check connectivity before trying to update Firebase
+                    checkConnectivityAndSync()
+
+                    // Update Firebase database with the updated record
+                    updateDataUnSeulDataInFirebase(record)
+                } catch (e: Exception) {
+                    // Log the error or handle it appropriately
+                    println("Firebase update failed in updateOnPasseData: ${e.message}")
+                }
+            }
         }
     }
 

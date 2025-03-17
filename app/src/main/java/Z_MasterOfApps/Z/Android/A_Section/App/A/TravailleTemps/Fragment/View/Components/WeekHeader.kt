@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Payment
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
@@ -128,8 +129,8 @@ fun WeekHeader(
                         modifier = Modifier.size(40.dp)
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Check,
-                            contentDescription = "تم الدفع",  // "Paid" in Arabic
+                            imageVector = if (allDaysPaid.value) Icons.Default.Check else Icons.Default.Payment,
+                            contentDescription = if (allDaysPaid.value) "تم الدفع" else "في انتظار الدفع",  // "Paid" or "Awaiting payment" in Arabic
                             tint = if (allDaysPaid.value) Color.White else Color.White.copy(alpha = 0.7f),
                             modifier = Modifier.size(24.dp)
                         )
@@ -200,12 +201,14 @@ fun markAllDaysAsPaid(weekInfo: WeekInfo, viewModel: Windows__ViewModel, paidSta
 
     // In a real implementation, you would iterate through each record and update their paid status
     // This would likely involve a repository function call to update the database
-    weekRecords.forEach { record ->
+    weekRecords.forEach { record ->     //<--
+    //TODO(1): pk ca n update pas paye 
+        record.infosDeBase.paye=true
         // Example of what this might look like:
         // viewModel.repository.updatePaidStatus(record.vid, paidStatus.value)
 
         // For now, just a placeholder to show what would happen
-        viewModel.repository.updateUnSeulData(record.vid)
+        viewModel.repository.updateOnPasseData(record)
     }
 }
 

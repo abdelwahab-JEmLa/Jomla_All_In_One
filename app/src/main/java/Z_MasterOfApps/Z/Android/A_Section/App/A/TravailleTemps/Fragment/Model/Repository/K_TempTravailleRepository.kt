@@ -38,6 +38,10 @@ interface K_TempTravailleRepository {
         endTime: String? = null,
         typeTemp: K_TempTravaille.IntervalesDeTravaille.TypeTemp? = null
     )
+    // Updated method signature to match the implementation in MockTempTravailleRepository
+    fun updateOnPasseData(
+        record: K_TempTravaille? = null,
+    )
 
     companion object {
         val caReference = Firebase.database.getReference("K_TempTravaille")
