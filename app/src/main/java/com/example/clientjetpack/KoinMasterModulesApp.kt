@@ -10,6 +10,7 @@ import Z_CodePartageEntreApps.Model.J_AppInstalleDonTelephoneRepository
 import Z_CodePartageEntreApps.Model.J_AppInstalleDonTelephoneRepositoryImpl
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Kotlin._WorkingON.WO_.ConnectionManager
+import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
 import android.content.Context
 import com.example.clientjetpack.Modules.AppDatabase
 import com.example.clientjetpack.ViewModel.HeadViewModel
@@ -35,6 +36,7 @@ val viewModelModule = module {
         get(),get()
     ) }
     viewModel { (context: Context) -> HeadViewModel(get(), AppDatabase.DatabaseModule.getDatabase(get())) }
+    viewModel { Windows__ViewModel(get()) }
 }
 
 val servicesModule = module {

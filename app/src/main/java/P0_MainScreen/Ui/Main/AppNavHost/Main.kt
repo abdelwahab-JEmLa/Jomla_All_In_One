@@ -8,6 +8,7 @@ import Views.Package_4.SoldCartScreen.SoldCartScreen
 import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.A_id1_ClientsLocationGps
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Kotlin._WorkingON.WO_.WifiUpdateClientDisplayerStats
+import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.MainScreen_Windows
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -209,6 +210,11 @@ fun AppNavHost(
                     }
                 }
 
+                composable(Screen.TravailleTempRecorder.route) {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        MainScreen_Windows()
+                    }
+                }
             }
 
             // Overlay dialogs and windows

@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.MapsHomeWork
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.filled.Work
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
@@ -93,16 +94,7 @@ fun NavigationBarWithFab(
                     },
                     selected = currentRoute == screen.route,
                     onClick = {
-                        // Check if we're currently on the EditDatabaseWithCreateNewArticles screen
-                        if (currentRoute == Screen.EditDatabaseWithCreateNewArticles.route &&
-                            screen.route == Screen.EditDatabaseWithCreateNewArticles.route) {
-                            // Show catalog dialog when leaving the EditDatabase screen
-                            showCatalogDialog = true
-                        } else {
-                            // Normal navigation for other cases
-                            onNavigate(screen.route)
-                            isFirstNavigation = false
-                        }
+                        onNavigate(screen.route)
                     }
                 )
             }
@@ -204,6 +196,7 @@ object NavigationItems {
         ScreensApp2.A_ClientsLocationGps,
         Screen.EditDatabaseWithCreateNewArticles,
         Screen.SoldCart,
+        Screen.TravailleTempRecorder,
         Screen.ToggleFab
     )
 }
@@ -232,6 +225,13 @@ sealed class Screen(
         icon = Icons.Default.ShoppingCart,
         title = "Panier Sold",
         color = Color(0xFF4CAF50)
+    )
+
+    data object TravailleTempRecorder : Screen(
+        route = "TravailleTempRecorder",
+        icon = Icons.Default.Work,
+        title = "TravailleTempRecorder",
+        color = Color(0xFF9C27B0)
     )
 
     data object ToggleFab : Screen(

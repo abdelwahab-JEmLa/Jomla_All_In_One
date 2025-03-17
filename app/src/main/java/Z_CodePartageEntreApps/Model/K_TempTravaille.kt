@@ -1,0 +1,77 @@
+package Z_CodePartageEntreApps.Model
+
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BackHand
+import androidx.compose.material.icons.filled.DirectionsCar
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Store
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.ui.graphics.Color
+import com.google.firebase.database.Exclude
+import com.google.firebase.database.IgnoreExtraProperties
+
+class K_TempTravaille(var vid: String = "2025_01_01") {
+    var infosDeBase by mutableStateOf(InfosDeBase())
+
+    @IgnoreExtraProperties
+    class InfosDeBase {
+        var dateInString by mutableStateOf("2025_01_01")
+    }
+
+    @get:Exclude
+    var intervalesDeTravaille: SnapshotStateList<IntervalesDeTravaille> = mutableStateListOf()
+
+    @IgnoreExtraProperties
+    class IntervalesDeTravaille(var vid: String = "HH_mm") {
+        var typeTemp by mutableStateOf(TypeTemp.DEPLACEMENT)
+
+        enum class TypeTemp(val color: Color, val icon: androidx.compose.ui.graphics.vector.ImageVector) {
+            DEPLACEMENT(Color(0xFF2196F3), Icons.Filled.DirectionsCar),
+            VENT(Color(0xFF4CAF50), Icons.Filled.ShoppingCart),
+            ACHAT(Color(0xFFFFC107), Icons.Filled.Store) ,
+            ENTRE_PAR_MAIN(Color(0xFFFFC107), Icons.Filled.BackHand)
+        }
+
+        var idBonDeCetteIntervale by mutableStateOf(0L)
+        var enCoureDEnregestrement by mutableStateOf(false)
+        var tempDepart by mutableStateOf("HH:mm")
+        var temparrete by mutableStateOf("HH:mm")
+
+        companion object {
+            fun calculateDuration(start: String, end: String): String {
+                if (start == "HH:mm" || end == "HH:mm") return "N/A"
+
+                try {
+                    val startTime = start.split(":").let { it[0].toInt() * 60 + it[1].toInt() }
+                    val endTime = end.split(":").let { it[0].toInt() * 60 + it[1].toInt() }
+                    val durationMinutes = endTime - startTime
+                    val hours = durationMinutes / 60
+                    val minutes = durationMinutes % 60
+                    return "${hours}h ${minutes}m"
+                } catch (e: Exception) {
+                    return "N/A"
+                }
+            }
+        }
+    }
+
+    companion object {
+
+        fun calculateDurationMinutes(start: String, end: String): Int {
+            if (start == "HH:mm" || end == "HH:mm") return 0
+
+            try {
+                val startTime = start.split(":").let { it[0].toInt() * 60 + it[1].toInt() }
+                val endTime = end.split(":").let { it[0].toInt() * 60 + it[1].toInt() }
+                return endTime - startTime
+            } catch (e: Exception) {
+                return 0
+            }
+        }
+    }
+}
+

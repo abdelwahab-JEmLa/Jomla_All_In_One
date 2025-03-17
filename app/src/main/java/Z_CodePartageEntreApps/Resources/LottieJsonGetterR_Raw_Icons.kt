@@ -3,7 +3,7 @@ package Z_CodePartageEntreApps.Resources
 import com.example.clientjetpack.R
 
 /*
-  import com.example.abdelwahabjemlajetpack.R
+import com.example.abdelwahabjemlajetpack.R
 
 import com.example.clientjetpack.R
 
