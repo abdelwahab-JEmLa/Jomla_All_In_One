@@ -25,6 +25,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -46,7 +47,9 @@ fun A_OptionsControlsButtons_FragId_(
     paddingValues: PaddingValues,
     viewModel: Windows__ViewModel,
 ) {
-    var showMenu by remember { mutableStateOf(true) }
+    val isAbdelwahabLeGerant by viewModel.isAbdelwahabLeGerant.collectAsState()
+
+    var showMenu by remember { mutableStateOf(false) }
     var showLabels by remember { mutableStateOf(true) }
 
     var offsetX by remember { mutableFloatStateOf(0f) }
@@ -73,8 +76,12 @@ fun A_OptionsControlsButtons_FragId_(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 if (showMenu) {
-                    FragID_0_Butt_7( viewModel,showLabels)
-                    FragID_0_Butt_2( viewModel,showLabels)
+                    if (isAbdelwahabLeGerant) {
+                        FragID_0_Butt_1(viewModel, showLabels, "Start Recording")
+                        FragID_0_Butt_2(viewModel, showLabels, "Add Day")
+                    }
+
+                    FragID_0_Butt_3(viewModel, showLabels, "Mode Admin")
 
                     LabelsButton(
                         showLabels = showLabels,

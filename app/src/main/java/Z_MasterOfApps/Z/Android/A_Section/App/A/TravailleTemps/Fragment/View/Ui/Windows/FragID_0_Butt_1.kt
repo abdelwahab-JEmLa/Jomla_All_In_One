@@ -10,9 +10,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 
 @Composable
-fun FragID_0_Butt_7(
+fun FragID_0_Butt_1(
     viewModel: Windows__ViewModel,
     showLabels: Boolean,
+    label: String,
 ) {
     // Collect recording state
     val isRecording by viewModel.isRecording.collectAsState()
@@ -23,7 +24,7 @@ fun FragID_0_Butt_7(
             viewModel.toggleRecording()
         },
         icon = if (isRecording) Icons.Default.Stop else Icons.Default.PlayArrow,
-        contentDescription = if (isRecording) "Stop Recording" else "Start Recording",
+        contentDescription = if (isRecording) "Stop Recording" else label,
         showLabels = showLabels,
         labelText = displayTime,
         containerColor = if (isRecording) Color(0xFFE53935) else Color(0xFF2196F3)

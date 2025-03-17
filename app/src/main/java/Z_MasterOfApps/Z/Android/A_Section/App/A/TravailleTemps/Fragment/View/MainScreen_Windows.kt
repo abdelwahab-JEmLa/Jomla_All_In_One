@@ -65,7 +65,10 @@ fun MainScreen_Windows(
                 .padding(paddingValues),
         ) {
             MainList_Windows(viewModel = viewModel)
-            A_OptionsControlsButtons_FragId_(paddingValues, viewModel = viewModel)
+
+            A_OptionsControlsButtons_FragId_(paddingValues, viewModel = viewModel)  //<-
+            //TODO(1): fait que ca ne s affiche pas que si cAbdelwahabLeGerant
+
         }
     }
 }

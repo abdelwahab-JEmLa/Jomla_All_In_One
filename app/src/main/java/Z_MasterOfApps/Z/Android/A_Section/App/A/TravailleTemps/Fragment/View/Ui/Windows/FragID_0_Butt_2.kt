@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 fun FragID_0_Butt_2(
     viewModel: Windows__ViewModel,
     showLabels: Boolean,
+    labelText: String,
 ) {
     var showDialog by remember { mutableStateOf(false) }
     var dateInput by remember { mutableStateOf("") }
@@ -67,7 +68,7 @@ fun FragID_0_Butt_2(
         icon = Icons.Filled.Add,
         contentDescription = "Add new day",
         showLabels = showLabels,
-        labelText = "Add Day",
+        labelText = labelText,
         containerColor = Color(0xFF4CAF50)  // Green color for add button
     )
 }

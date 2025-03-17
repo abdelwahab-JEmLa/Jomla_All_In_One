@@ -22,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,6 +41,9 @@ fun DayHeader(
     tempTravaille: K_TempTravaille,
     viewModel: Windows__ViewModel
 ) {
+    // Get admin state
+    val isAbdelwahabLeGerant by viewModel.isAbdelwahabLeGerant.collectAsState()
+
     // State for dialog visibility
     var showTimeDialog by remember { mutableStateOf(false) }
 
@@ -209,20 +213,22 @@ fun DayHeader(
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                // Edit Button
-                IconButton(
-                    onClick = {
-                        startTimeInput = ""
-                        endTimeInput = ""
-                        showTimeDialog = true
-                    },
-                    modifier = Modifier.size(36.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Edit,
-                        contentDescription = "Modifier le temps",
-                        tint = MaterialTheme.colorScheme.primary
-                    )
+                // Edit Button - only show if in admin mode
+                if (isAbdelwahabLeGerant) {
+                    IconButton(
+                        onClick = {
+                            startTimeInput = ""
+                            endTimeInput = ""
+                            showTimeDialog = true
+                        },
+                        modifier = Modifier.size(36.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "Modifier le temps",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 }
 
                 // Time summary

@@ -17,6 +17,10 @@ class Windows__ViewModel(
 
     val dateList get() = repository.modelDatas
 
+    // Added state for Abdelwahab Le Gérant privileges
+    private val _isAbdelwahabLeGerant = MutableStateFlow(false)
+    val isAbdelwahabLeGerant: StateFlow<Boolean> = _isAbdelwahabLeGerant.asStateFlow()
+
     // State tracking
     private val _isRecording = MutableStateFlow(false)
     val isRecording: StateFlow<Boolean> = _isRecording.asStateFlow()
@@ -39,6 +43,11 @@ class Windows__ViewModel(
 
     init {
         updateTotalWorkedTime()
+    }
+
+    // Function to toggle admin privileges
+    fun toggleAbdelwahabLeGerant() {
+        _isAbdelwahabLeGerant.value = !_isAbdelwahabLeGerant.value
     }
 
     fun ajoutJour(date: String): Unit {

@@ -16,6 +16,7 @@ class E_AppsOptionsStates {
         var nom by mutableStateOf("")
         var widthScreen by mutableStateOf(0)
         var itsReciverTelephone by mutableStateOf(false)
+        var cAbdelwahabLeGerant by mutableStateOf(false)
 
         companion object {
             val metricsWidthPixels = Resources.getSystem().displayMetrics.widthPixels
