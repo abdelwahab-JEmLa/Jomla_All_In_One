@@ -108,6 +108,7 @@ fun ArticleGrid(
     viewModelInitApp: ViewModelInitApp
 ) {
     val categoriesRepositorymodelDatas = viewModel.categoriesRepository.modelDatas
+
     // Track scroll state and first visible item
     var lastSettledFirstVisible by remember { mutableStateOf(-1) }
     var isSettled by remember { mutableStateOf(true) }
