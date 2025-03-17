@@ -1,11 +1,11 @@
 package Z_CodePartageEntreApps.Model
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BackHand
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.MonetizationOn
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Store
+import androidx.compose.material.icons.filled.Timer
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -35,8 +35,8 @@ class K_TempTravaille(var vid: String = "2025_01_01") {
             DEPLACEMENT(Color(0xFF2196F3), Icons.Filled.DirectionsCar, "تنقل"),
             VENT(Color(0xFF4CAF50), Icons.Filled.ShoppingCart, "بيع"),
             ACHAT(Color(0xFFFFC107), Icons.Filled.Store, "شراء"),
-            ENTRE_PAR_MAIN(Color(0xFFFFC107), Icons.Filled.BackHand, "غير محدد"),
-            MAHABAT_KHATER(Color(0xFFFFC107), Icons.Filled.MonetizationOn, "محبة خاطر");
+            ENTRE_PAR_MAIN(Color(0xFF7F7866), Icons.Filled.Timer, "غير محدد"),
+            MAHABAT_KHATER(Color(0xFF9C27B0), Icons.Filled.MonetizationOn, "هل جزاء الاحسان الا الاحسان");
 
             override fun toString(): String {
                 return name
