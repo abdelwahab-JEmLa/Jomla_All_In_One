@@ -111,8 +111,9 @@ fun MainItem_Windows(
                     intervale.tempDepart,
                     intervale.temparrete
                 )
+                val s = " : الوقت"
                 Text(
-                    text = "Duration: $duration",
+                    text = "$duration$s",
                     style = MaterialTheme.typography.bodyMedium
                 )
 

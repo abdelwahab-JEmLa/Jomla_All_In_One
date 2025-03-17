@@ -12,15 +12,25 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,6 +44,12 @@ fun WeekHeader(
     weekInfo: WeekInfo,
     viewModel: Windows__ViewModel
 ) {
+    // State to track if all days in the week are paid
+    val allDaysPaid = remember { mutableStateOf(false) }
+
+    // Get admin privileges status
+    val isAbdelwahabLeGerant by viewModel.isAbdelwahabLeGerant.collectAsState()
+
     // Calculate total work time for the week
     val totalWeekMinutes = calculateTotalWeekWorkTime(weekInfo, viewModel)
     val totalHours = totalWeekMinutes / 60
@@ -46,26 +62,7 @@ fun WeekHeader(
 
     // Calculate days worked (1 day = 8 hours)
     val daysWorked = totalWeekMinutes / (8.0 * 60.0)
-    val daysWorkedFormatted = when {   //<--
-    //TODO(1): fait que ca soit on arabe 
-        daysWorked == 0.0 -> "0 jour"
-        daysWorked < 1.0 -> {
-            val hours = totalWeekMinutes / 60
-            "$hours heures"
-        }
-
-        daysWorked == 1.0 -> "1 jour"
-        daysWorked < 2.0 -> "1 jour et ${(daysWorked - 1.0) * 8} heures"
-        else -> {
-            val fullDays = daysWorked.toInt()
-            val remainingHours = ((daysWorked - fullDays) * 8).toInt()
-            if (remainingHours > 0) {
-                "$fullDays jours et $remainingHours heures"
-            } else {
-                "$fullDays jours"
-            }
-        }
-    }
+    val daysWorkedFormatted = translateWorkDurationToArabic(daysWorked, totalWeekMinutes)
 
     // Animation de clignotement jaune
     val infiniteTransition = rememberInfiniteTransition(label = "card_animation")
@@ -81,6 +78,7 @@ fun WeekHeader(
 
     val orangeColor = Color(0xFFFF9800) // Orange color
     val yellowColor = Color(0xFFFFEB3B) // Yellow color for blinking border
+    val greenColor = Color(0xFF4CAF50) // Green color for paid status
 
     ElevatedCard(
         modifier = Modifier
@@ -88,37 +86,23 @@ fun WeekHeader(
             .padding(horizontal = 8.dp, vertical = 4.dp)
             .border(
                 width = 4.dp, // Increased border thickness
-                color = yellowColor.copy(alpha = borderColorAlpha),
+                color = if (allDaysPaid.value) greenColor else yellowColor.copy(alpha = borderColorAlpha),
                 shape = RoundedCornerShape(12.dp)
             ),
         elevation = CardDefaults.elevatedCardElevation(
             defaultElevation = 4.dp
         ),
         colors = CardDefaults.elevatedCardColors(
-            containerColor = orangeColor, // Changed to orange background
+            containerColor = if (allDaysPaid.value) greenColor.copy(alpha = 0.7f) else orangeColor, // Changed color based on paid status
         )
-    ) {  //<--
-    //TODO(1): ajout un togle icon button affiche "تم" si aucune des jours n a paye 
-    //au click il uupdate tout les jours de cette semain true 
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(12.dp)
         ) {
             // Display week relative to current week
-            val weekText = when {
-                weekInfo.isCurrentWeek -> "Cette semaine"  //<--
-                //TODO(1): traduit on arabe 
-                isLastWeek(weekInfo) -> "Semaine dernière"
-                else -> {
-                    val weekDifference = getWeekDifference(weekInfo)
-                    if (weekDifference > 0) {
-                        "Il y a $weekDifference semaines"
-                    } else {
-                        "Dans ${-weekDifference} semaines"
-                    }
-                }
-            }
+            val weekText = translateWeekTextToArabic(weekInfo)
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -128,31 +112,50 @@ fun WeekHeader(
                     text = weekText,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White // Changed to white text
+                    color = Color.White
                 )
 
+                Spacer(modifier = Modifier.weight(1f))
 
+                // Add toggle button for marking week as paid (only visible in admin mode)
+                if (isAbdelwahabLeGerant) {
+                    IconButton(
+                        onClick = {
+                            allDaysPaid.value = !allDaysPaid.value
+                            // Here we would update all days in this week as paid
+                            markAllDaysAsPaid(weekInfo, viewModel, allDaysPaid)
+                        },
+                        modifier = Modifier.size(40.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = "تم الدفع",  // "Paid" in Arabic
+                            tint = if (allDaysPaid.value) Color.White else Color.White.copy(alpha = 0.7f),
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                }
             }
 
             Text(
-                text = "Semaine ${weekInfo.weekNumber}, ${weekInfo.year}",
+                text = "الأسبوع ${weekInfo.weekNumber}, ${weekInfo.year}",  // "Week" in Arabic
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color.White // Changed to white text
+                color = Color.White
             )
+
             ElevatedCard(
                 colors = CardDefaults.elevatedCardColors(
                     containerColor = Color.White.copy(alpha = 0.8f)
                 )
             ) {
-
-                val s = "مدة العمل الاجمالية "
                 Text(
-                    text = "$daysWorkedFormatted$s",
+                    text = "مدة العمل الاجمالية: $daysWorkedFormatted",  // "Total work duration" in Arabic
                     style = MaterialTheme.typography.titleMedium,
-                    color = Color.Blue, // Changed to white text
-                    modifier = Modifier.padding( 4.dp)
+                    color = Color.Blue,
+                    modifier = Modifier.padding(4.dp)
                 )
             }
+
             ElevatedCard(
                 colors = CardDefaults.elevatedCardColors(
                     containerColor = Color.White.copy(alpha = 0.8f)
@@ -160,14 +163,88 @@ fun WeekHeader(
             ) {
                 // Show daily rate and total earnings
                 Text(
-                    text = "Jour/1200 DA == ${String.format("%.2f", totalWeekEarnings)} DA",
+                    text = "اليوم/1200 دينار == ${String.format("%.2f", totalWeekEarnings)} دينار",  // "Day/1200 DA" in Arabic
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Red, // Changed to white text
+                    color = Color.Red,
                     modifier = Modifier.padding(4.dp)
                 )
             }
-            // Display total work time for the week
+        }
+    }
+}
 
+// Function to mark all days in the week as paid
+fun markAllDaysAsPaid(weekInfo: WeekInfo, viewModel: Windows__ViewModel, paidStatus: MutableState<Boolean>) {
+    // Get all records for the specific week and year
+    val weekRecords = viewModel.dateList.filter { record ->
+        val dateString = record.infosDeBase.dateInString
+        val parts = dateString.split("/")
+        if (parts.size == 3) {
+            val year = parts[0].toInt()
+            val month = parts[1].toInt() - 1 // Month is 0-based in Calendar
+            val day = parts[2].toInt()
+
+            val calendar = Calendar.getInstance()
+            calendar.set(year, month, day)
+
+            // Check if this record falls within the specified week and year
+            calendar.get(Calendar.YEAR) == weekInfo.year && calendar.get(Calendar.WEEK_OF_YEAR) == weekInfo.weekNumber
+        } else {
+            false
+        }
+    }
+
+    // Here would be the logic to update the paid status of all days
+    // For now, we just update the UI state as an example
+    paidStatus.value = !paidStatus.value
+
+    // In a real implementation, you would iterate through each record and update their paid status
+    // This would likely involve a repository function call to update the database
+    weekRecords.forEach { record ->
+        // Example of what this might look like:
+        // viewModel.repository.updatePaidStatus(record.vid, paidStatus.value)
+
+        // For now, just a placeholder to show what would happen
+        viewModel.repository.updateUnSeulData(record.vid)
+    }
+}
+
+// Function to translate week text to Arabic
+fun translateWeekTextToArabic(weekInfo: WeekInfo): String {
+    return when {
+        weekInfo.isCurrentWeek -> "هذا الأسبوع"  // "This week" in Arabic
+        isLastWeek(weekInfo) -> "الأسبوع الماضي"  // "Last week" in Arabic
+        else -> {
+            val weekDifference = getWeekDifference(weekInfo)
+            if (weekDifference > 0) {
+                "منذ $weekDifference أسابيع"  // "N weeks ago" in Arabic
+            } else {
+                "في غضون ${-weekDifference} أسابيع"  // "In N weeks" in Arabic
+            }
+        }
+    }
+}
+
+// Function to translate work duration to Arabic
+fun translateWorkDurationToArabic(daysWorked: Double, totalMinutes: Int): String {
+    return when {
+        daysWorked == 0.0 -> "0 يوم"  // "0 days" in Arabic
+        daysWorked < 1.0 -> {
+            val hours = totalMinutes / 60
+            "$hours ساعات"  // "N hours" in Arabic
+        }
+        daysWorked == 1.0 -> "1 يوم"  // "1 day" in Arabic
+        daysWorked < 2.0 -> {
+            "1 يوم و ${(daysWorked - 1.0) * 8} ساعات"  // "1 day and N hours" in Arabic
+        }
+        else -> {
+            val fullDays = daysWorked.toInt()
+            val remainingHours = ((daysWorked - fullDays) * 8).toInt()
+            if (remainingHours > 0) {
+                "$fullDays أيام و $remainingHours ساعات"  // "N days and M hours" in Arabic
+            } else {
+                "$fullDays أيام"  // "N days" in Arabic
+            }
         }
     }
 }

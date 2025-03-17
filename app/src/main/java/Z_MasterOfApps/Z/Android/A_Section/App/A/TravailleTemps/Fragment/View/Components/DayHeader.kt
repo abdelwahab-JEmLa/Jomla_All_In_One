@@ -37,6 +37,33 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+// Map for Arabic month names
+private val arabicMonths = mapOf(
+    "January" to "يناير",
+    "February" to "فبراير",
+    "March" to "مارس",
+    "April" to "أبريل",
+    "May" to "مايو",
+    "June" to "يونيو",
+    "July" to "يوليو",
+    "August" to "أغسطس",
+    "September" to "سبتمبر",
+    "October" to "أكتوبر",
+    "November" to "نوفمبر",
+    "December" to "ديسمبر"
+)
+
+// Map for Arabic days of the week
+private val arabicDays = mapOf(
+    "Lundi" to "الاثنين",
+    "Mardi" to "الثلاثاء",
+    "Mercredi" to "الأربعاء",
+    "Jeudi" to "الخميس",
+    "Vendredi" to "الجمعة",
+    "Samedi" to "السبت",
+    "Dimanche" to "الأحد"
+)
+
 @Composable
 fun DayHeader(
     tempTravaille: K_TempTravaille,
@@ -44,8 +71,6 @@ fun DayHeader(
 ) {
     // Get admin state
     val isAbdelwahabLeGerant by viewModel.isAbdelwahabLeGerant.collectAsState()
-
-    // State for dialog visibility
 
     // States for time inputs
     var startTimeInput by remember { mutableStateOf("") }
@@ -61,21 +86,31 @@ fun DayHeader(
         Date()
     }
 
-    // Format for full date display
+    // Format for full date display with Arabic month
     val formattedDate = try {
-        val outputFormat = SimpleDateFormat("d MMMM ", Locale.getDefault())   //-->
-        //TODO(1): fait que le moi soit on arabe 
-        outputFormat.format(parsedDate)
+        val englishFormat = SimpleDateFormat("d MMMM ", Locale.ENGLISH)
+        val dateWithEnglishMonth = englishFormat.format(parsedDate)
+        val parts = dateWithEnglishMonth.split(" ")
+
+        if (parts.size >= 2) {
+            val day = parts[0]
+            val englishMonth = parts[1].trim()
+            val arabicMonth = arabicMonths[englishMonth] ?: englishMonth
+            "$day $arabicMonth"  // Arabic month name
+        } else {
+            dateWithEnglishMonth
+        }
     } catch (e: Exception) {
         jour
     }
 
-    // Get day of week (e.g., "Dimanche", "Lundi")
+    // Get day of week in Arabic
     val dayOfWeek = try {
         val dayFormat = SimpleDateFormat("EEEE", Locale.FRENCH)
-        dayFormat.format(parsedDate).capitalize()
+        val frenchDayName = dayFormat.format(parsedDate).capitalize()
+        arabicDays[frenchDayName] ?: frenchDayName  // Use Arabic day name
     } catch (e: Exception) {
-        "Jour"
+        "يوم"  // Default "Day" in Arabic
     }
 
     // Calculate total duration for the day
@@ -86,14 +121,15 @@ fun DayHeader(
     val totalHours = totalMinutes / 60
     val remainingMinutes = totalMinutes % 60
     val totalDuration =
-        if (totalMinutes > 0) "${totalHours}h ${remainingMinutes}m" else "Pas de temps enregistré"
+        if (totalMinutes > 0) "${totalHours}h ${remainingMinutes}m" else "لا وقت مسجل"  // "No time recorded" in Arabic
+
     // In DayHeader.kt, observe the editingInterval state
     val editingInterval by viewModel.editingInterval.collectAsState()
 
-// Modify the showTimeDialog initialization
+    // Modify the showTimeDialog initialization
     var showTimeDialog by remember { mutableStateOf(false) }
 
-// Set up a side effect to show the dialog when editingInterval is not null
+    // Set up a side effect to show the dialog when editingInterval is not null
     LaunchedEffect(editingInterval) {
         if (editingInterval != null) {
             startTimeInput = editingInterval?.tempDepart?.replace(":", ".") ?: ""
@@ -110,7 +146,7 @@ fun DayHeader(
 
         AlertDialog(
             onDismissRequest = { showTimeDialog = false },
-            title = { Text("Ajouter un temps manuel") },
+            title = { Text("إضافة وقت يدوي") },  // "Add manual time" in Arabic
             text = {
                 Column(modifier = Modifier.padding(8.dp)) {
                     // First card for start time
@@ -121,7 +157,7 @@ fun DayHeader(
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
-                                text = "Temp Départ",
+                                text = "وقت البدء",  // "Start Time" in Arabic
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold
                             )
@@ -146,7 +182,7 @@ fun DayHeader(
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
-                                text = "Temp Arrêté",
+                                text = "وقت الانتهاء",  // "End Time" in Arabic
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold
                             )
@@ -180,9 +216,8 @@ fun DayHeader(
                                 tint = selectedType.color,
                                 modifier = Modifier.padding(end = 8.dp)
                             )
-                            Text("Type: ${selectedType.name}")
+                            Text("النوع: ${selectedType.nomArabe}")  // "Type:" in Arabic
                             Spacer(modifier = Modifier.weight(1f))
-                            Text(selectedType.nomArabe)
                         }
                     }
 
@@ -190,7 +225,7 @@ fun DayHeader(
                     if (showTypeSelector) {
                         AlertDialog(
                             onDismissRequest = { showTypeSelector = false },
-                            title = { Text("Sélectionner le type") },
+                            title = { Text("اختر النوع") },  // "Select type" in Arabic
                             text = {
                                 Column {
                                     K_TempTravaille.IntervalesDeTravaille.TypeTemp.values()
@@ -214,9 +249,8 @@ fun DayHeader(
                                                         tint = type.color,
                                                         modifier = Modifier.padding(end = 8.dp)
                                                     )
-                                                    Text(type.name)
-                                                    Spacer(modifier = Modifier.weight(1f))
                                                     Text(type.nomArabe)
+                                                    Spacer(modifier = Modifier.weight(1f))
                                                 }
                                             }
                                         }
@@ -224,7 +258,7 @@ fun DayHeader(
                             },
                             confirmButton = {
                                 Button(onClick = { showTypeSelector = false }) {
-                                    Text("Annuler")
+                                    Text("إلغاء")  // "Cancel" in Arabic
                                 }
                             }
                         )
@@ -256,18 +290,17 @@ fun DayHeader(
                         showTimeDialog = false
                     }
                 ) {
-                    Text(if (editingInterval != null) "Mettre à jour" else "Confirmer")
+                    Text(if (editingInterval != null) "تحديث" else "تأكيد")  // "Update" or "Confirm" in Arabic
                 }
             },
             dismissButton = {
-                // In the dismissButton
                 Button(
                     onClick = {
                         showTimeDialog = false
                         viewModel.clearEditingInterval()
                     }
                 ) {
-                    Text("Annuler")
+                    Text("إلغاء")  // "Cancel" in Arabic
                 }
             }
         )
@@ -290,8 +323,7 @@ fun DayHeader(
                     .padding(horizontal = 12.dp, vertical = 8.dp)
             ) {
                 Text(
-                    text = dayOfWeek, //<--
-                    //TODO(1): fait que les jours on arabe
+                    text = dayOfWeek,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
@@ -320,7 +352,6 @@ fun DayHeader(
 
                 // Edit Button - only show if in admin mode
                 if (isAbdelwahabLeGerant) {
-
                     IconButton(
                         onClick = {
                             startTimeInput = ""
@@ -331,7 +362,7 @@ fun DayHeader(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Edit,
-                            contentDescription = "Modifier le temps",
+                            contentDescription = "تعديل الوقت",  // "Edit time" in Arabic
                             tint = MaterialTheme.colorScheme.primary
                         )
                     }
@@ -342,7 +373,7 @@ fun DayHeader(
                     modifier = Modifier.padding(start = 8.dp)
                 ) {
                     Text(
-                        text = "Total: $totalDuration",
+                        text = "ٌTotale == $totalDuration",  // "Total:" in Arabic
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Medium,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
