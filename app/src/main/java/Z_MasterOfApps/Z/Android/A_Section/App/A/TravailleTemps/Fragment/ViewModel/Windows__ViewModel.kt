@@ -46,10 +46,6 @@ class Windows__ViewModel(
 
     init {
         updateTotalWorkedTime()
-    }
-    // In Windows__ViewModel.kt, inside the init block
-    init {
-        updateTotalWorkedTime()
         setupRecordingStateListener()
     }
 
@@ -122,6 +118,7 @@ class Windows__ViewModel(
     fun toggleAbdelwahabLeGerant() {
         _isAbdelwahabLeGerant.value = !_isAbdelwahabLeGerant.value
     }
+
     // Add these state variables to Windows__ViewModel class
     private val _editingInterval = MutableStateFlow<K_TempTravaille.IntervalesDeTravaille?>(null)
     val editingInterval = _editingInterval.asStateFlow()
@@ -140,26 +137,10 @@ class Windows__ViewModel(
         repository.ajoutJour(date)
     }
 
-
-    fun deleteIntervaleTemp(intervalId: String) {   //<--
-        //TODO(1): deplace ver repositeri
-        // Find the interval
-        var recordId: String? = null
-
-        // Find which record contains this interval
-        dateList.forEach { record ->
-            val hasInterval = record.intervalesDeTravaille.any { it.vid == intervalId }
-            if (hasInterval) {
-                recordId = record.vid
-                return@forEach
-            }
-        }
-
-        // If found the record containing this interval
-        if (recordId != null) {
-            repository.deleteIntevaleDeTemp(intervalId)
-            updateTotalWorkedTime() // Update the time calculations after deletion
-        }
+    fun deleteIntervaleTemp(intervalId: String) {
+        // Utiliser la méthode de repository directement
+        repository.deleteIntevaleDeTemp(intervalId)
+        updateTotalWorkedTime() // Update the time calculations after deletion
     }
 
     fun updatePareMain(
@@ -176,53 +157,65 @@ class Windows__ViewModel(
             val activeInterval = existingRecord.intervalesDeTravaille.find { it.enCoureDEnregestrement }
 
             if (activeInterval != null) {
-                // Update start time if provided
-                if (startTime != null) {
-                    val formattedStartTime = formatTimeInput(startTime)
-                    activeInterval.tempDepart = formattedStartTime
-                }
-
-                // Update end time if provided
-                if (endTime != null) {
-                    val formattedEndTime = formatTimeInput(endTime)
-                    activeInterval.temparrete = formattedEndTime
-
-                    // If end time is set, the interval is no longer recording
-                    if (formattedEndTime != "HH:mm") {
-                        activeInterval.enCoureDEnregestrement = false
-                        _isRecording.value = false
-                    }
-                }
-
-                // Update type
-                activeInterval.typeTemp = typeTemp
-
-                // Update the data in the repository
-                repository.updateUnSeulData(existingRecord.vid)
+                // Update the existing interval using repository
+                repository.updateExistingInterval(
+                    recordId = existingRecord.vid,
+                    intervalId = activeInterval.vid,
+                    startTime = startTime,
+                    endTime = endTime,
+                    typeTemp = typeTemp
+                )
 
                 // Update the total worked time to reflect the changes
                 updateTotalWorkedTime()
             } else {
                 // If no active interval, create a new one if both start and end time are provided
                 if (startTime != null && endTime != null) {
-                    val formattedStartTime = formatTimeInput(startTime)
-                    val formattedEndTime = formatTimeInput(endTime)
+                    val currentTime = TimeFormatUtils.getCurrentTime()
+                    val currentTimeFormatted = currentTime.replace(":", "_")
 
-                    val currentTimeFormatted = formattedStartTime.replace(":", "_")
-                    val newInterval = K_TempTravaille.IntervalesDeTravaille(vid = currentTimeFormatted)
+                    // Add new interval with repository
+                    repository.addNewInterval(
+                        recordId = existingRecord.vid,
+                        intervalId = currentTimeFormatted,
+                        startTime = startTime
+                    )
 
-                    newInterval.tempDepart = formattedStartTime
-                    newInterval.temparrete = formattedEndTime
-                    newInterval.enCoureDEnregestrement = false
-                    newInterval.typeTemp = typeTemp // Set the specified type
-                    newInterval.idBonDeCetteIntervale = System.currentTimeMillis()
-
-                    existingRecord.intervalesDeTravaille.add(newInterval)
-                    repository.updateUnSeulData(existingRecord.vid)
+                    // Update the interval we just created
+                    repository.updateExistingInterval(
+                        recordId = existingRecord.vid,
+                        intervalId = currentTimeFormatted,
+                        endTime = endTime,
+                        typeTemp = typeTemp
+                    )
 
                     updateTotalWorkedTime()
                 }
             }
+        }
+    }
+
+    private fun startTimeInterval() {
+        val currentDate = TimeFormatUtils.getCurrentDate()
+        val currentDateStr = currentDate.replace("/", "_")
+        val currentTime = TimeFormatUtils.getCurrentTime()
+        val currentTimeStr = currentTime.replace(":", "_")
+
+        _currentRecordId.value = currentDateStr
+        _currentIntervalId.value = currentTimeStr
+        _currentStartTime.value = currentTime
+        _currentElapsedSeconds.value = 0L
+        _lastUpdateTime.value = System.currentTimeMillis()
+
+        viewModelScope.launch {
+            // Utiliser la méthode de repository pour ajouter un nouvel intervalle
+            repository.addNewInterval(
+                recordId = currentDateStr,
+                intervalId = currentTimeStr,
+                startTime = currentTime
+            )
+            _isRecording.value = true
+            _elapsedTimeInSeconds.value = 0
         }
     }
 
@@ -240,29 +233,6 @@ class Windows__ViewModel(
             "HH:mm"
         }
     }
-    private fun startTimeInterval() {
-        val currentDate = TimeFormatUtils.getCurrentDate()
-        val currentDateStr = currentDate.replace("/", "_")
-        val currentTime = TimeFormatUtils.getCurrentTime()
-        val currentTimeStr = currentTime.replace(":", "_")
-
-        _currentRecordId.value = currentDateStr
-        _currentIntervalId.value = currentTimeStr
-        _currentStartTime.value = currentTime
-        _currentElapsedSeconds.value = 0L
-        _lastUpdateTime.value = System.currentTimeMillis()
-
-        viewModelScope.launch {
-            addNewInterval(
-                recordId = currentDateStr,
-                intervalId = currentTimeStr,
-                startTime = currentTime
-            )
-            _isRecording.value = true
-            _elapsedTimeInSeconds.value = 0
-        }
-    }
-
     private fun stopTimeInterval() {
         val currentDate = TimeFormatUtils.getCurrentDate()
         val currentDateStr = currentDate.replace("/", "_")
@@ -270,9 +240,11 @@ class Windows__ViewModel(
         val currentTimeStr = currentTime.replace(":", "_")
 
         viewModelScope.launch {
-            updateExistingInterval(
+            // Utiliser la méthode de repository pour mettre à jour l'intervalle existant
+            val intervalId = _currentIntervalId.value ?: currentTimeStr
+            repository.updateExistingInterval(
                 recordId = currentDateStr,
-                intervalId = currentTimeStr,
+                intervalId = intervalId,
                 endTime = currentTime
             )
 
@@ -286,130 +258,6 @@ class Windows__ViewModel(
             updateTotalWorkedTime()
         }
     }
-
-    private fun addNewInterval(  //<--
-        //TODO(1): deplace ver repositeri
-        recordId: String? = null,
-        intervalId: String? = null,
-        startTime: String? = null
-    ) {
-        val currentDate = TimeFormatUtils.getCurrentDate()
-        val currentTime = TimeFormatUtils.getCurrentTime()
-
-        val existingRecord = if (recordId != null) {
-            dateList.find { it.vid == recordId }
-        } else {
-            dateList.find { it.infosDeBase.dateInString == currentDate }
-        }
-
-        if (existingRecord != null) {
-            val currentTimeFormatted = intervalId ?: currentTime.replace(":", "_")
-            val newInterval = K_TempTravaille.IntervalesDeTravaille(
-                vid = currentTimeFormatted
-            )
-
-            newInterval.tempDepart = startTime ?: currentTime
-            newInterval.enCoureDEnregestrement = true
-            newInterval.typeTemp = K_TempTravaille.IntervalesDeTravaille.TypeTemp.ACHAT
-            newInterval.idBonDeCetteIntervale = System.currentTimeMillis()
-
-            existingRecord.intervalesDeTravaille.add(newInterval)
-            repository.updateUnSeulData(existingRecord.vid)
-        } else {
-            val newRecord = K_TempTravaille(vid = currentDate)
-            newRecord.infosDeBase.dateInString = currentDate
-
-            val currentTimeFormatted = intervalId ?: currentTime.replace(":", "_")
-            val newInterval = K_TempTravaille.IntervalesDeTravaille(vid = currentTimeFormatted)
-
-            newInterval.tempDepart = startTime ?: currentTime
-            newInterval.enCoureDEnregestrement = true
-            newInterval.typeTemp = K_TempTravaille.IntervalesDeTravaille.TypeTemp.ACHAT
-            newInterval.idBonDeCetteIntervale = System.currentTimeMillis()
-
-            newRecord.intervalesDeTravaille.add(newInterval)
-            dateList.add(newRecord)
-            repository.updateUnSeulData(newRecord.vid)
-        }
-    }
-
-    fun updateExistingInterval(      //<--
-        //TODO(1): deplace ver repositeri
-        recordId: String? = null,
-        intervalId: String? = null,
-        startTime: String? = null,
-        endTime: String? = null,
-        typeTemp: K_TempTravaille.IntervalesDeTravaille.TypeTemp? = null
-    ) {
-        if (recordId == null || intervalId == null) {
-            return
-        }
-
-        val existingRecord = dateList.find { it.vid == recordId }
-
-        if (existingRecord != null) {
-            val existingInterval = existingRecord.intervalesDeTravaille.find { it.vid == intervalId }
-
-            if (existingInterval != null) {
-                // Update start time if provided
-                if (startTime != null) {
-                    val formattedStartTime = formatTimeInput(startTime)
-                    existingInterval.tempDepart = formattedStartTime
-                }
-
-                // Update end time if provided
-                if (endTime != null) {
-                    val formattedEndTime = formatTimeInput(endTime)
-                    existingInterval.temparrete = formattedEndTime
-
-                    // If end time is set, the interval is no longer recording
-                    if (formattedEndTime != "HH:mm") {
-                        existingInterval.enCoureDEnregestrement = false
-                    }
-                }
-
-                // Update type if provided
-                if (typeTemp != null) {
-                    existingInterval.typeTemp = typeTemp
-                }
-
-                repository.updateUnSeulData(existingRecord.vid)
-                updateTotalWorkedTime()
-            } else {
-                val recordingInterval = existingRecord.intervalesDeTravaille.find { it.enCoureDEnregestrement }
-                if (recordingInterval != null) {
-                    // Update start time if provided
-                    if (startTime != null) {
-                        val formattedStartTime = formatTimeInput(startTime)
-                        recordingInterval.tempDepart = formattedStartTime
-                    }
-
-                    // Update end time if provided
-                    if (endTime != null) {
-                        val formattedEndTime = formatTimeInput(endTime)
-                        recordingInterval.temparrete = formattedEndTime
-
-                        // If end time is set, the interval is no longer recording
-                        if (formattedEndTime != "HH:mm") {
-                            recordingInterval.enCoureDEnregestrement = false
-                        }
-                    }
-
-                    // Update type if provided
-                    if (typeTemp != null) {
-                        recordingInterval.typeTemp = typeTemp
-                    }
-
-                    repository.updateUnSeulData(existingRecord.vid)
-                    updateTotalWorkedTime()
-                }
-            }
-        }
-    }
-
-
-
-
 
     fun updateElapsedTime() {
         if (_isRecording.value) {

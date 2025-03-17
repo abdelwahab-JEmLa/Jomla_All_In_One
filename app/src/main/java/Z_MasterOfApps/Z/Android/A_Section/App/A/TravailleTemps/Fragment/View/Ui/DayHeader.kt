@@ -236,7 +236,7 @@ fun DayHeader(
                     onClick = {
                         if (editingInterval != null) {
                             // Update the existing interval
-                            viewModel.updateExistingInterval(
+                            viewModel.repository.updateExistingInterval(
                                 recordId = tempTravaille.vid,
                                 intervalId = editingInterval?.vid,
                                 startTime = startTimeInput.takeIf { it.isNotEmpty() },

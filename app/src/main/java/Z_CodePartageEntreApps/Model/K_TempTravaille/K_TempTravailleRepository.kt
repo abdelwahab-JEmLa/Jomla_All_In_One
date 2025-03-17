@@ -1,5 +1,6 @@
 package Z_CodePartageEntreApps.Model.K_TempTravaille
 
+import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Modules.TimeFormatUtils
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.firebase.Firebase
@@ -47,6 +48,7 @@ interface K_TempTravailleRepository {
 }
 
 
+
 class K_TempTravailleRepositoryImpl : K_TempTravailleRepository {
     override var modelDatas: SnapshotStateList<K_TempTravaille> = mutableStateListOf()
     override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
@@ -74,6 +76,22 @@ class K_TempTravailleRepositoryImpl : K_TempTravailleRepository {
     // Check connectivity and sync if state has changed
     override fun checkConnectivityAndSync() {
         FirebaseUtils.checkConnectivityAndSync(this)
+    }
+
+    // Added helper method to format time input
+    private fun formatTimeInput(timeInput: String): String {
+        return try {
+            val parts = timeInput.split(".")
+            if (parts.size == 2) {
+                val hours = parts[0].toInt().toString().padStart(2, '0')
+                val minutes = parts[1].padStart(2, '0')
+                "$hours:$minutes"
+            } else {
+                "HH:mm"
+            }
+        } catch (e: Exception) {
+            "HH:mm"
+        }
     }
 
     override fun deleteIntevaleDeTemp(intervalId: String) {
@@ -121,6 +139,124 @@ class K_TempTravailleRepositoryImpl : K_TempTravailleRepository {
                 updateUnSeulData(recordToUpdate!!.vid)
             } catch (e: Exception) {
                 println("Error deleting interval: ${e.message}")
+            }
+        }
+    }
+
+    // Implemented from ViewModel
+    override fun addNewInterval(
+        recordId: String?,
+        intervalId: String?,
+        startTime: String?
+    ) {
+        val currentDate = TimeFormatUtils.getCurrentDate()
+        val currentTime = TimeFormatUtils.getCurrentTime()
+
+        val existingRecord = if (recordId != null) {
+            modelDatas.find { it.vid == recordId }
+        } else {
+            modelDatas.find { it.infosDeBase.dateInString == currentDate }
+        }
+
+        if (existingRecord != null) {
+            val currentTimeFormatted = intervalId ?: currentTime.replace(":", "_")
+            val newInterval = K_TempTravaille.IntervalesDeTravaille(
+                vid = currentTimeFormatted
+            )
+
+            newInterval.tempDepart = startTime ?: currentTime
+            newInterval.enCoureDEnregestrement = true
+            newInterval.typeTemp = K_TempTravaille.IntervalesDeTravaille.TypeTemp.ACHAT
+            newInterval.idBonDeCetteIntervale = System.currentTimeMillis()
+
+            existingRecord.intervalesDeTravaille.add(newInterval)
+            updateUnSeulData(existingRecord.vid)
+        } else {
+            val newRecord = K_TempTravaille(vid = currentDate)
+            newRecord.infosDeBase.dateInString = currentDate
+
+            val currentTimeFormatted = intervalId ?: currentTime.replace(":", "_")
+            val newInterval = K_TempTravaille.IntervalesDeTravaille(vid = currentTimeFormatted)
+
+            newInterval.tempDepart = startTime ?: currentTime
+            newInterval.enCoureDEnregestrement = true
+            newInterval.typeTemp = K_TempTravaille.IntervalesDeTravaille.TypeTemp.ACHAT
+            newInterval.idBonDeCetteIntervale = System.currentTimeMillis()
+
+            newRecord.intervalesDeTravaille.add(newInterval)
+            modelDatas.add(newRecord)
+            updateUnSeulData(newRecord.vid)
+        }
+    }
+
+    // Implemented from ViewModel
+    override fun updateExistingInterval(
+        recordId: String?,
+        intervalId: String?,
+        startTime: String?,
+        endTime: String?,
+        typeTemp: K_TempTravaille.IntervalesDeTravaille.TypeTemp?
+    ) {
+        if (recordId == null || intervalId == null) {
+            return
+        }
+
+        val existingRecord = modelDatas.find { it.vid == recordId }
+
+        if (existingRecord != null) {
+            val existingInterval = existingRecord.intervalesDeTravaille.find { it.vid == intervalId }
+
+            if (existingInterval != null) {
+                // Update start time if provided
+                if (startTime != null) {
+                    val formattedStartTime = formatTimeInput(startTime)
+                    existingInterval.tempDepart = formattedStartTime
+                }
+
+                // Update end time if provided
+                if (endTime != null) {
+                    val formattedEndTime = formatTimeInput(endTime)
+                    existingInterval.temparrete = formattedEndTime
+
+                    // If end time is set, the interval is no longer recording
+                    if (formattedEndTime != "HH:mm") {
+                        existingInterval.enCoureDEnregestrement = false
+                    }
+                }
+
+                // Update type if provided
+                if (typeTemp != null) {
+                    existingInterval.typeTemp = typeTemp
+                }
+
+                updateUnSeulData(existingRecord.vid)
+            } else {
+                val recordingInterval = existingRecord.intervalesDeTravaille.find { it.enCoureDEnregestrement }
+                if (recordingInterval != null) {
+                    // Update start time if provided
+                    if (startTime != null) {
+                        val formattedStartTime = formatTimeInput(startTime)
+                        recordingInterval.tempDepart = formattedStartTime
+                    }
+
+                    // Update end time if provided
+                    if (endTime != null) {
+                        val formattedEndTime = formatTimeInput(endTime)
+                        recordingInterval.temparrete = formattedEndTime
+
+                        // If end time is set, the interval is no longer recording
+                        if (formattedEndTime != "HH:mm") {
+                            recordingInterval.enCoureDEnregestrement = false
+                        }
+                    }
+
+                    // Update type if provided
+                    if (typeTemp != null) {
+                        recordingInterval.typeTemp = typeTemp
+                    }
+
+                    updateUnSeulData(existingRecord.vid)
+                }
             }
         }
     }
@@ -212,7 +348,6 @@ class K_TempTravailleRepositoryImpl : K_TempTravailleRepository {
                 // Make sure we properly read the recording state
                 interval.enCoureDEnregestrement = intervalSnapshot.child("enCoureDEnregestrement").getValue(Boolean::class.java) ?: false
 
-                // No longer skip empty intervals - this could cause data loss
                 newTempTravaille.intervalesDeTravaille.add(interval)
             }
 

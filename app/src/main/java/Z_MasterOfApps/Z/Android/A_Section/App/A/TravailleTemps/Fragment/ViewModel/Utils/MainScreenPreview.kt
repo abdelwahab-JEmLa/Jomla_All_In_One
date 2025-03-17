@@ -1,18 +1,14 @@
 package Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Utils
 
-import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.MainScreen_Windows
 import Z_CodePartageEntreApps.Model.K_TempTravaille.K_TempTravaille
-import Z_CodePartageEntreApps.Model.K_TempTravaille.K_TempTravailleRepository
 import Z_CodePartageEntreApps.Model.K_TempTravaille.K_TempTravailleRepositoryImpl
+import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.MainScreen_Windows
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.tooling.preview.Preview
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 
 // Added preview without mock that uses the actual Firebase repository
 @Preview
@@ -31,7 +27,7 @@ fun MainScreenWithFirebasePreview() {
         MainScreen_Windows(viewModel = realViewModel, fabsVisibility = false)
     }
 }
-
+   /*
 @Preview
 @Composable
 fun MainScreenWhithMockPreview() {
@@ -51,7 +47,7 @@ fun MainScreenWhithMockPreview() {
         MainScreen_Windows(viewModel = sampleViewModel, fabsVisibility = false)
     }
 }
-
+         */
 
 
 // Populate the provided list with hardcoded sample data
@@ -152,51 +148,5 @@ private fun populateSampleData(dateList: SnapshotStateList<K_TempTravaille>) {
 
         // Add the day data to the provided list
         dateList.add(tempTravaille)
-    }
-}
-
-/**
- * Mock implementation of the K_TempTravailleRepository for preview purposes
- * This avoids using Firebase in the preview
- */
-class MockTempTravailleRepository : K_TempTravailleRepository {
-    override var modelDatas: SnapshotStateList<K_TempTravaille> = mutableStateListOf()
-    override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(1.0f)
-
-    // Added dateList property to match what's being accessed in the ViewModel
-    val dateList: SnapshotStateList<K_TempTravaille> = modelDatas
-
-    override suspend fun onDataBaseChangeListnerAndLoad(): Pair<List<K_TempTravaille>, Flow<Float>> {
-        return Pair(modelDatas.toList(), progressRepo)
-    }
-
-    override suspend fun updateDatas(datas: SnapshotStateList<K_TempTravaille>) {
-        modelDatas.clear()
-        modelDatas.addAll(datas)
-    }
-
-    override fun stopDatabaseListener() {
-        // No-op for mock implementation
-    }
-
-    override fun checkConnectivityAndSync() {
-        // No-op for mock implementation
-    }
-
-    override fun deleteIntevaleDeTemp(intervalId: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun updateUnSeulData(
-        recordId: String?,
-    ) {
-        if (recordId != null) {
-            val recordIndex = modelDatas.indexOfFirst { it.vid == recordId }
-            if (recordIndex != -1) {
-                val record = modelDatas[recordIndex]
-                modelDatas.removeAt(recordIndex)
-                modelDatas.add(recordIndex, record)
-            }
-        }
     }
 }
