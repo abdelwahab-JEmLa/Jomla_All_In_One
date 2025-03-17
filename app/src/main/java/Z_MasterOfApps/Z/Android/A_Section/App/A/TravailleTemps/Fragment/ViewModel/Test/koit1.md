@@ -27,6 +27,8 @@ val repositoryModule = module {
     single<I_CategoriesRepository> { CategoriesRepositoryImpl() }
     single<H_GroupesCategoriesRepository> { H_GroupesCategoriesRepositoryImpl() }
     single<J_AppInstalleDonTelephoneRepository> { J_AppInstalleDonTelephoneRepositoryImpl() }
+// In your module definition
+single { Z_CodePartageEntreApps.Model.K_TempTravailleRepository() }
 }
 
 // Module pour les ViewModels

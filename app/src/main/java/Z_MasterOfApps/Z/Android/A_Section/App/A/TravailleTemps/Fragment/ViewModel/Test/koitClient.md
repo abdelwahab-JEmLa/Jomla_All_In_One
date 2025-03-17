@@ -23,8 +23,8 @@ private const val TAG = "id2"
 
 // Module pour les repositories
 val repositoryModule = module {
-    // Singleton: une seule instance pour toute l'application
-    single<A_ProduitModelRepository> { A_ProduitModelRepositoryImpl() }
+// Singleton: une seule instance pour toute l'application
+single<A_ProduitModelRepository> { A_ProduitModelRepositoryImpl() }
 
     single<I_CategoriesRepository> { CategoriesRepositoryImpl() }
     single<H_GroupesCategoriesRepository> { H_GroupesCategoriesRepositoryImpl() }
@@ -37,24 +37,24 @@ val repositoryModule = module {
 }
 
 val viewModelModule = module {
-    viewModel { ViewModelInitApp(
-        get(),get()
-    ) }
-    viewModel { (context: Context) -> HeadViewModel(get(), AppDatabase.DatabaseModule.getDatabase(get())) }
-    viewModel { Windows__ViewModel(get()) }
+viewModel { ViewModelInitApp(
+get(),get()
+) }
+viewModel { (context: Context) -> HeadViewModel(get(), AppDatabase.DatabaseModule.getDatabase(get())) }
+viewModel { Windows__ViewModel(get()) }
 }
 
 val servicesModule = module {
-    // Create a factory for ConnectionManager that takes HeadViewModel as a parameter
-    factory { (viewModel: HeadViewModel, context: Context) ->
-        ConnectionManager(
-            context = context,
-        )
-    }
+// Create a factory for ConnectionManager that takes HeadViewModel as a parameter
+factory { (viewModel: HeadViewModel, context: Context) ->
+ConnectionManager(
+context = context,
+)
+}
 
 }
 
 // Update appModule to include the servicesModule
 val appModule = module {
-    includes(repositoryModule, servicesModule, viewModelModule)
+includes(repositoryModule, servicesModule, viewModelModule)
 }
