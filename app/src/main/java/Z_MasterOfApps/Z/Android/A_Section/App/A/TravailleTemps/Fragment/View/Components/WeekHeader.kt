@@ -10,6 +10,7 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -36,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import java.util.Calendar
 import java.util.Locale
@@ -137,24 +139,46 @@ fun WeekHeader(
                 )
 
                 Spacer(modifier = Modifier.weight(1f))
+                      if (allDaysPaid.value) {
+                          Text(
+                              text = if (allDaysPaid.value) "تم الدفع" else "",
+                              color = Color.White,
+                              textAlign = TextAlign.End,
+                              modifier = Modifier.padding(end = 4.dp)
+                          )
+                          Icon(
+                              imageVector = if (allDaysPaid.value) Icons.Default.Check else Icons.Default.Payment,
+                              contentDescription = if (allDaysPaid.value) "تم الدفع" else "في انتظار الدفع",  // "Paid" or "Awaiting payment" in Arabic
+                              tint = if (allDaysPaid.value) Color.White else Color.White.copy(alpha = 0.7f),
+                              modifier = Modifier.size(24.dp)
+                          )
+                      }
 
                 // Add toggle button for marking week as paid (only visible in admin mode)
                 if (isAbdelwahabLeGerant) {
-                    IconButton(
-                        onClick = {
-                            // Toggle the paid state for all days in this week
-                            val newPaidState = !allDaysPaid.value
-                            allDaysPaid.value = newPaidState
-                            markAllDaysAsPaid(weekInfo, viewModel, allDaysPaid)
-                        },
-                        modifier = Modifier.size(40.dp)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        Icon(
-                            imageVector = if (allDaysPaid.value) Icons.Default.Check else Icons.Default.Payment,
-                            contentDescription = if (allDaysPaid.value) "تم الدفع" else "في انتظار الدفع",  // "Paid" or "Awaiting payment" in Arabic
-                            tint = if (allDaysPaid.value) Color.White else Color.White.copy(alpha = 0.7f),
-                            modifier = Modifier.size(24.dp)
-                        )
+
+                        IconButton(
+                            onClick = {
+                                // Toggle the paid state for all days in this week
+                                val newPaidState = !allDaysPaid.value
+                                allDaysPaid.value = newPaidState
+                                markAllDaysAsPaid(weekInfo, viewModel, allDaysPaid)
+                            },
+                            modifier = Modifier.size(40.dp)
+                        ) {
+                            Icon(
+                                imageVector = if (allDaysPaid.value) Icons.Default.Check else Icons.Default.Payment,
+                                contentDescription = if (allDaysPaid.value) "تم الدفع" else "في انتظار الدفع",  // "Paid" or "Awaiting payment" in Arabic
+                                tint = if (allDaysPaid.value) Color.White else Color.White.copy(alpha = 0.7f),
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+
+
                     }
                 }
             }
