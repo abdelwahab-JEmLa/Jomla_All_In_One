@@ -2,7 +2,7 @@ package Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View
 
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Ui.DayHeader
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Ui.WeekHeader
-import Z_CodePartageEntreApps.Model.K_TempTravaille
+import Z_CodePartageEntreApps.Model.K_TempTravaille.K_TempTravaille
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box

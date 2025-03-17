@@ -1,6 +1,6 @@
 package Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Ui
 
-import Z_CodePartageEntreApps.Model.K_TempTravaille
+import Z_CodePartageEntreApps.Model.K_TempTravaille.K_TempTravaille
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.WeekInfo
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
 import androidx.compose.animation.core.LinearEasing
@@ -46,7 +46,8 @@ fun WeekHeader(
 
     // Calculate days worked (1 day = 8 hours)
     val daysWorked = totalWeekMinutes / (8.0 * 60.0)
-    val daysWorkedFormatted = when {
+    val daysWorkedFormatted = when {   //<--
+    //TODO(1): fait que ca soit on arabe 
         daysWorked == 0.0 -> "0 jour"
         daysWorked < 1.0 -> {
             val hours = totalWeekMinutes / 60
@@ -96,7 +97,9 @@ fun WeekHeader(
         colors = CardDefaults.elevatedCardColors(
             containerColor = orangeColor, // Changed to orange background
         )
-    ) {
+    ) {  //<--
+    //TODO(1): ajout un togle icon button affiche "تم" si aucune des jours n a paye 
+    //au click il uupdate tout les jours de cette semain true 
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -104,7 +107,8 @@ fun WeekHeader(
         ) {
             // Display week relative to current week
             val weekText = when {
-                weekInfo.isCurrentWeek -> "Cette semaine"
+                weekInfo.isCurrentWeek -> "Cette semaine"  //<--
+                //TODO(1): traduit on arabe 
                 isLastWeek(weekInfo) -> "Semaine dernière"
                 else -> {
                     val weekDifference = getWeekDifference(weekInfo)

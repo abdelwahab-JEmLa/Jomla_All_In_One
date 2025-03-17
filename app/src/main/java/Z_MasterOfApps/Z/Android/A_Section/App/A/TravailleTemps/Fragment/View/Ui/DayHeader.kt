@@ -1,6 +1,6 @@
 package Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Ui
 
-import Z_CodePartageEntreApps.Model.K_TempTravaille
+import Z_CodePartageEntreApps.Model.K_TempTravaille.K_TempTravaille
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -63,7 +63,8 @@ fun DayHeader(
 
     // Format for full date display
     val formattedDate = try {
-        val outputFormat = SimpleDateFormat("EEEE, MMMM d, yyyy", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("d MMMM ", Locale.getDefault())   //-->
+        //TODO(1): fait que le moi soit on arabe 
         outputFormat.format(parsedDate)
     } catch (e: Exception) {
         jour
@@ -289,7 +290,8 @@ fun DayHeader(
                     .padding(horizontal = 12.dp, vertical = 8.dp)
             ) {
                 Text(
-                    text = dayOfWeek,
+                    text = dayOfWeek, //<--
+                    //TODO(1): fait que les jours on arabe
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary

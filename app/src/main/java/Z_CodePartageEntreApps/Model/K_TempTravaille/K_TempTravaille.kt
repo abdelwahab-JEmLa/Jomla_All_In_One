@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Model
+package Z_CodePartageEntreApps.Model.K_TempTravaille
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DirectionsCar
@@ -22,6 +22,7 @@ class K_TempTravaille(var vid: String = "2025_01_01") {
     @IgnoreExtraProperties
     class InfosDeBase {
         var dateInString by mutableStateOf("2025_01_01")
+        var paye by mutableStateOf(false)
     }
 
     @get:Exclude

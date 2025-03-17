@@ -1,16 +1,13 @@
-package Z_CodePartageEntreApps.Model
+package Z_CodePartageEntreApps.Model.K_TempTravaille
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.firebase.Firebase
 import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.database
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import java.net.InetSocketAddress
-import java.net.Socket
 
 interface K_TempTravailleRepository {
     var modelDatas: SnapshotStateList<K_TempTravaille>
@@ -33,149 +30,36 @@ interface K_TempTravailleRepository {
     }
 }
 
+
 class K_TempTravailleRepositoryImpl : K_TempTravailleRepository {
     override var modelDatas: SnapshotStateList<K_TempTravaille> = mutableStateListOf()
     override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
 
     private var listener: ValueEventListener? = null
-    private var isUpdating = false
-    private var lastUpdateTimestamp = 0L
-    private var lastConnectivityCheck = 0L
-    private var lastConnectivityState = false
-    private val DEBOUNCE_INTERVAL = 500L
-    private val CONNECTIVITY_CHECK_INTERVAL = 10000L // 10 seconds
-    private val CACHE_SIZE_BYTES = 100L * 1024L * 1024L // 100MB
+    internal var isUpdating = false
+    internal var lastUpdateTimestamp = 0L
 
     init {
-        initializeFirebaseOfflineCapability()
+        FirebaseUtils.initializeFirebaseOfflineCapability()
         startDatabaseListener()
-    }
-
-    // Initialize Firebase offline capability
-    private fun initializeFirebaseOfflineCapability() {
-        try {
-            // Enable disk persistence
-            Firebase.database.setPersistenceEnabled(true)
-            // Set cache size
-            Firebase.database.setPersistenceCacheSizeBytes(CACHE_SIZE_BYTES)
-            // Keep the reference synced
-            K_TempTravailleRepository.caReference.keepSynced(true)
-        } catch (e: Exception) {
-            // Log error or handle exception
-            println("Firebase initialization error: ${e.message}")
-        }
-    }
-
-    // Sanitize Firebase key to avoid invalid characters
-    private fun sanitizeFirebaseKey(key: String): String {
-        return key.replace("/", "_")
-            .replace(".", "_")
-            .replace("#", "_")
-            .replace("$", "_")
-            .replace("[", "_")
-            .replace("]", "_")
     }
 
     private fun startDatabaseListener() {
         stopDatabaseListener()
-
-        listener = object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                if (isUpdating) return
-
-                val currentTime = System.currentTimeMillis()
-                if (currentTime - lastUpdateTimestamp < DEBOUNCE_INTERVAL) return
-                lastUpdateTimestamp = currentTime
-
-                try {
-                    isUpdating = true
-                    val totalItems = snapshot.childrenCount.toInt()
-
-                    modelDatas.clear()
-                    if (totalItems == 0) {
-                        progressRepo.value = 1.0f
-                        isUpdating = false
-                        return
-                    }
-
-                    progressRepo.value = 0f
-                    var processedItems = 0
-
-                    for (dataSnapshot in snapshot.children) {
-                        val tempTravaille = syncData(dataSnapshot = dataSnapshot) as K_TempTravaille
-
-                        // Fixed the reference error by explicitly casting and checking
-                        if (tempTravaille.intervalesDeTravaille.isNotEmpty()) {
-                            modelDatas.add(tempTravaille)
-                        }
-
-                        processedItems++
-                        progressRepo.value = processedItems.toFloat() / totalItems.toFloat()
-                    }
-
-                    modelDatas.sortBy { it.infosDeBase.dateInString }
-                    progressRepo.value = 1.0f
-                } catch (e: Exception) {
-                    progressRepo.value = 0f
-                    println("Error processing Firebase data: ${e.message}")
-                } finally {
-                    isUpdating = false
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                progressRepo.value = 0f
-                println("Firebase database error: ${error.message}")
-            }
+        FirebaseUtils.startDatabaseListener(this) { newListener ->
+            listener = newListener
         }
+    }
 
-        listener?.let {
-            K_TempTravailleRepository.caReference.addValueEventListener(it)
-        }
+    internal fun restartDatabaseListener() {
+        startDatabaseListener()
     }
 
     // Check connectivity and sync if state has changed
     override fun checkConnectivityAndSync() {
-        val currentTime = System.currentTimeMillis()
-
-        // Only check every CONNECTIVITY_CHECK_INTERVAL milliseconds
-        if (currentTime - lastConnectivityCheck < CONNECTIVITY_CHECK_INTERVAL) {
-            return
-        }
-
-        lastConnectivityCheck = currentTime
-
-        // Check current connectivity
-        val isConnected = try {
-            val socket = Socket()
-            val socketAddress = InetSocketAddress("8.8.8.8", 53)
-            socket.connect(socketAddress, 3000) // 3 seconds timeout
-            socket.close()
-            true
-        } catch (e: Exception) {
-            false
-        }
-
-        // If connectivity state has changed
-        if (isConnected != lastConnectivityState) {
-            lastConnectivityState = isConnected
-
-            if (isConnected) {
-                // We've reconnected, force sync with server
-                K_TempTravailleRepository.caReference.keepSynced(false)
-                K_TempTravailleRepository.caReference.keepSynced(true)
-
-                // Make sure we're online
-                Firebase.database.goOnline()
-
-                // Restart listener to get fresh data
-                startDatabaseListener()
-            } else {
-                // We've gone offline, make sure we're in offline mode
-                Firebase.database.goOffline()
-            }
-        }
+        FirebaseUtils.checkConnectivityAndSync(this)
     }
+
     override fun deleteIntevaleDeTemp(intervalId: String) {
         // Locate the record containing this interval
         var recordToUpdate: K_TempTravaille? = null
@@ -197,10 +81,10 @@ class K_TempTravailleRepositoryImpl : K_TempTravailleRepository {
                 checkConnectivityAndSync()
 
                 // Sanitize the record ID
-                val sanitizedRecordId = sanitizeFirebaseKey(recordToUpdate!!.vid)
+                val sanitizedRecordId = FirebaseUtils.sanitizeFirebaseKey(recordToUpdate!!.vid)
 
                 // Sanitize the interval ID
-                val sanitizedIntervalId = sanitizeFirebaseKey(intervalId)
+                val sanitizedIntervalId = FirebaseUtils.sanitizeFirebaseKey(intervalId)
 
                 // Create reference to the interval
                 val intervalRef = K_TempTravailleRepository.caReference
@@ -264,7 +148,7 @@ class K_TempTravailleRepositoryImpl : K_TempTravailleRepository {
             val firebaseData = syncData(tempTravaille = tempTravaille) as Map<String, Any>
 
             // Sanitize the key before using it in Firebase
-            val sanitizedKey = sanitizeFirebaseKey(tempTravaille.vid)
+            val sanitizedKey = FirebaseUtils.sanitizeFirebaseKey(tempTravaille.vid)
 
             // Update the data in Firebase
             val dateRef = K_TempTravailleRepository.caReference.child(sanitizedKey)
@@ -280,7 +164,7 @@ class K_TempTravailleRepositoryImpl : K_TempTravailleRepository {
         }
     }
 
-    private fun syncData(
+    internal fun syncData(
         dataSnapshot: DataSnapshot? = null,
         tempTravaille: K_TempTravaille? = null
     ): Any {
@@ -339,7 +223,7 @@ class K_TempTravailleRepositoryImpl : K_TempTravailleRepository {
                 )
 
                 // Make sure the interval ID is also sanitized
-                val sanitizedIntervalId = sanitizeFirebaseKey(interval.vid)
+                val sanitizedIntervalId = FirebaseUtils.sanitizeFirebaseKey(interval.vid)
                 intervalesDeTravaille[sanitizedIntervalId] = intervalData
             }
             result["intervalesDeTravaille"] = intervalesDeTravaille
@@ -353,9 +237,7 @@ class K_TempTravailleRepositoryImpl : K_TempTravailleRepository {
     }
 
     override suspend fun onDataBaseChangeListnerAndLoad(): Pair<List<K_TempTravaille>, Flow<Float>> {
-        checkConnectivityAndSync()
-        // The listener setup is already handled by checkConnectivityAndSync or init
-        return Pair(modelDatas.toList(), progressRepo)
+        return FirebaseUtils.onDataBaseChangeListnerAndLoad(this)
     }
 
     override suspend fun updateDatas(datas: SnapshotStateList<K_TempTravaille>) {
@@ -378,7 +260,7 @@ class K_TempTravailleRepositoryImpl : K_TempTravailleRepository {
                 val firebaseData = syncData(tempTravaille = tempTravaille) as Map<String, Any>
 
                 // Sanitize the key before using it in Firebase
-                val sanitizedKey = sanitizeFirebaseKey(tempTravaille.vid)
+                val sanitizedKey = FirebaseUtils.sanitizeFirebaseKey(tempTravaille.vid)
 
                 // Update the data in Firebase
                 val dateRef = K_TempTravailleRepository.caReference.child(sanitizedKey)
