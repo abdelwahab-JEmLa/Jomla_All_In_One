@@ -21,6 +21,7 @@ import org.koin.androidx.compose.koinViewModel
 fun MainScreen_Windows(
     modifier: Modifier = Modifier,
     viewModel: Windows__ViewModel = koinViewModel(),
+    fabsVisibility: Boolean,
 ) {
     // Collect recording state
     val isRecording by viewModel.isRecording.collectAsState()
@@ -65,10 +66,9 @@ fun MainScreen_Windows(
                 .padding(paddingValues),
         ) {
             MainList_Windows(viewModel = viewModel)
-
-            A_OptionsControlsButtons_FragId_(paddingValues, viewModel = viewModel)  //<-
-            //TODO(1): fait que ca ne s affiche pas que si cAbdelwahabLeGerant
-
+            if (fabsVisibility) {
+                A_OptionsControlsButtons_FragId_(paddingValues, viewModel = viewModel)
+            }
         }
     }
 }

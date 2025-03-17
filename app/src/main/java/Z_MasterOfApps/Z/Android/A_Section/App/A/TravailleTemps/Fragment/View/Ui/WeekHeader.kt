@@ -29,7 +29,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import java.util.Calendar
 import java.util.Locale
-
 @Composable
 fun WeekHeader(
     weekInfo: WeekInfo,
@@ -41,11 +40,36 @@ fun WeekHeader(
     val remainingMinutes = totalWeekMinutes % 60
     val totalWeekTimeFormatted = "${totalHours}h ${remainingMinutes}m"
 
-    // Animation de clignotement orange
+    // Calculate daily rate based on total week minutes
+    val hourlyRate = 1200.0 / 8.0 / 60.0 // 1200 DA per day, 8 hours per day, 60 minutes per hour
+    val totalWeekEarnings = hourlyRate * totalWeekMinutes
+
+    // Calculate days worked (1 day = 8 hours)
+    val daysWorked = totalWeekMinutes / (8.0 * 60.0)
+    val daysWorkedFormatted = when {
+        daysWorked == 0.0 -> "0 jour"
+        daysWorked < 1.0 -> {
+            val hours = totalWeekMinutes / 60
+            "$hours heures"
+        }
+        daysWorked == 1.0 -> "1 jour"
+        daysWorked < 2.0 -> "1 jour et ${(daysWorked - 1.0) * 8} heures"
+        else -> {
+            val fullDays = daysWorked.toInt()
+            val remainingHours = ((daysWorked - fullDays) * 8).toInt()
+            if (remainingHours > 0) {
+                "$fullDays jours et $remainingHours heures"
+            } else {
+                "$fullDays jours"
+            }
+        }
+    }
+
+    // Animation de clignotement jaune
     val infiniteTransition = rememberInfiniteTransition(label = "card_animation")
     val borderColorAlpha by infiniteTransition.animateFloat(
-        initialValue = 0.1f,
-        targetValue = 0.8f,
+        initialValue = 0.3f,
+        targetValue = 1.0f,
         animationSpec = infiniteRepeatable(
             animation = tween(1500, easing = LinearEasing),
             repeatMode = RepeatMode.Reverse
@@ -53,22 +77,23 @@ fun WeekHeader(
         label = "border_blink_animation"
     )
 
-    val orangeColor = Color(0xFFF44336) // Couleur orange vive
+    val orangeColor = Color(0xFFFF9800) // Orange color
+    val yellowColor = Color(0xFFFFEB3B) // Yellow color for blinking border
 
     ElevatedCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 8.dp, vertical = 4.dp)
             .border(
-                width = 2.dp,
-                color = orangeColor.copy(alpha = borderColorAlpha),
+                width = 4.dp, // Increased border thickness
+                color = yellowColor.copy(alpha = borderColorAlpha),
                 shape = RoundedCornerShape(12.dp)
             ),
         elevation = CardDefaults.elevatedCardElevation(
             defaultElevation = 4.dp
         ),
         colors = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.surface,
+            containerColor = orangeColor, // Changed to orange background
         )
     ) {
         Column(
@@ -98,7 +123,7 @@ fun WeekHeader(
                     text = weekText,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
+                    color = Color.White // Changed to white text
                 )
 
                 Spacer(modifier = Modifier.weight(1f))
@@ -106,7 +131,7 @@ fun WeekHeader(
                 // Display total work time for the week
                 ElevatedCard(
                     colors = CardDefaults.elevatedCardColors(
-                        containerColor = orangeColor.copy(alpha = 0.2f)
+                        containerColor = Color.White.copy(alpha = 0.2f)
                     )
                 ) {
                     Text(
@@ -114,7 +139,7 @@ fun WeekHeader(
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Medium,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                        color = Color.DarkGray
+                        color = Color.White // Changed to white text
                     )
                 }
             }
@@ -122,7 +147,23 @@ fun WeekHeader(
             Text(
                 text = "Semaine ${weekInfo.weekNumber}, ${weekInfo.year}",
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = Color.White // Changed to white text
+            )
+
+            // Show daily rate and total earnings
+            Text(
+                text = "Jour/1200 DA == ${String.format("%.2f", totalWeekEarnings)} DA",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.White, // Changed to white text
+                modifier = Modifier.padding(top = 4.dp)
+            )
+
+            // Show approximate days worked
+            Text(
+                text = "On a travaillé à proximité de $daysWorkedFormatted",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.White, // Changed to white text
+                modifier = Modifier.padding(top = 2.dp)
             )
         }
     }

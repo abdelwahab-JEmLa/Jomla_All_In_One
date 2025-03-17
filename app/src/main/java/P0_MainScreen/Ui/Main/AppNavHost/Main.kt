@@ -212,7 +212,7 @@ fun AppNavHost(
 
                 composable(Screen.TravailleTempRecorder.route) {
                     Box(modifier = Modifier.fillMaxSize()) {
-                        MainScreen_Windows()
+                        MainScreen_Windows(fabsVisibility=viewModelInitApp._paramatersAppsViewModelModel.fabsVisibility)
                     }
                 }
             }

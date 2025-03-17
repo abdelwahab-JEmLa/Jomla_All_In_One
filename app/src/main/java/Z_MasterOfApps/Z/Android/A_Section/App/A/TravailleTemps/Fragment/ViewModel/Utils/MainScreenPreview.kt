@@ -28,7 +28,7 @@ fun MainScreenWithFirebasePreview() {
 
     // Use the MaterialTheme with the real implementation
     MaterialTheme {
-        MainScreen_Windows(viewModel = realViewModel)
+        MainScreen_Windows(viewModel = realViewModel, fabsVisibility = false)
     }
 }
 
@@ -48,7 +48,7 @@ fun MainScreenWhithMockPreview() {
 
     // Use the MaterialTheme with the sample data
     MaterialTheme {
-        MainScreen_Windows(viewModel = sampleViewModel)
+        MainScreen_Windows(viewModel = sampleViewModel, fabsVisibility = false)
     }
 }
 
