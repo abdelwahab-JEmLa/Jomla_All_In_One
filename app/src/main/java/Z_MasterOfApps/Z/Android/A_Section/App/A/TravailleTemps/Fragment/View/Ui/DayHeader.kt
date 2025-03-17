@@ -22,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,7 +46,6 @@ fun DayHeader(
     val isAbdelwahabLeGerant by viewModel.isAbdelwahabLeGerant.collectAsState()
 
     // State for dialog visibility
-    var showTimeDialog by remember { mutableStateOf(false) }
 
     // States for time inputs
     var startTimeInput by remember { mutableStateOf("") }
@@ -84,10 +84,29 @@ fun DayHeader(
 
     val totalHours = totalMinutes / 60
     val remainingMinutes = totalMinutes % 60
-    val totalDuration = if (totalMinutes > 0) "${totalHours}h ${remainingMinutes}m" else "Pas de temps enregistré"
+    val totalDuration =
+        if (totalMinutes > 0) "${totalHours}h ${remainingMinutes}m" else "Pas de temps enregistré"
+    // In DayHeader.kt, observe the editingInterval state
+    val editingInterval by viewModel.editingInterval.collectAsState()
+
+// Modify the showTimeDialog initialization
+    var showTimeDialog by remember { mutableStateOf(false) }
+
+// Set up a side effect to show the dialog when editingInterval is not null
+    LaunchedEffect(editingInterval) {
+        if (editingInterval != null) {
+            startTimeInput = editingInterval?.tempDepart?.replace(":", ".") ?: ""
+            endTimeInput = editingInterval?.temparrete?.replace(":", ".") ?: ""
+            showTimeDialog = true
+        }
+    }
 
     // Time Dialog
     if (showTimeDialog) {
+        // Add state for TypeTemp selection
+        var selectedType by remember { mutableStateOf(K_TempTravaille.IntervalesDeTravaille.TypeTemp.ENTRE_PAR_MAIN) }
+        var showTypeSelector by remember { mutableStateOf(false) }
+
         AlertDialog(
             onDismissRequest = { showTimeDialog = false },
             title = { Text("Ajouter un temps manuel") },
@@ -142,26 +161,110 @@ fun DayHeader(
                             )
                         }
                     }
+
+                    // Type selection button
+                    Button(
+                        onClick = { showTypeSelector = true },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Icon(
+                                imageVector = selectedType.icon,
+                                contentDescription = null,
+                                tint = selectedType.color,
+                                modifier = Modifier.padding(end = 8.dp)
+                            )
+                            Text("Type: ${selectedType.name}")
+                            Spacer(modifier = Modifier.weight(1f))
+                            Text(selectedType.nomArabe)
+                        }
+                    }
+
+                    // Show type selector dialog
+                    if (showTypeSelector) {
+                        AlertDialog(
+                            onDismissRequest = { showTypeSelector = false },
+                            title = { Text("Sélectionner le type") },
+                            text = {
+                                Column {
+                                    K_TempTravaille.IntervalesDeTravaille.TypeTemp.values()
+                                        .forEach { type ->
+                                            Button(
+                                                onClick = {
+                                                    selectedType = type
+                                                    showTypeSelector = false
+                                                },
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .padding(vertical = 4.dp)
+                                            ) {
+                                                Row(
+                                                    verticalAlignment = Alignment.CenterVertically,
+                                                    modifier = Modifier.fillMaxWidth()
+                                                ) {
+                                                    Icon(
+                                                        imageVector = type.icon,
+                                                        contentDescription = null,
+                                                        tint = type.color,
+                                                        modifier = Modifier.padding(end = 8.dp)
+                                                    )
+                                                    Text(type.name)
+                                                    Spacer(modifier = Modifier.weight(1f))
+                                                    Text(type.nomArabe)
+                                                }
+                                            }
+                                        }
+                                }
+                            },
+                            confirmButton = {
+                                Button(onClick = { showTypeSelector = false }) {
+                                    Text("Annuler")
+                                }
+                            }
+                        )
+                    }
                 }
             },
             confirmButton = {
                 Button(
                     onClick = {
-                        // Use updatePareMain to update the times
-                        viewModel.updatePareMain(
-                            recordId = tempTravaille.vid,
-                            startTime = startTimeInput.takeIf { it.isNotEmpty() },
-                            endTime = endTimeInput.takeIf { it.isNotEmpty() }
-                        )
+                        if (editingInterval != null) {
+                            // Update the existing interval
+                            viewModel.updateExistingInterval(
+                                recordId = tempTravaille.vid,
+                                intervalId = editingInterval?.vid,
+                                startTime = startTimeInput.takeIf { it.isNotEmpty() },
+                                endTime = endTimeInput.takeIf { it.isNotEmpty() },
+                                typeTemp = selectedType
+                            )
+                            viewModel.clearEditingInterval()
+                        } else {
+                            // Create a new interval
+                            viewModel.updatePareMain(
+                                recordId = tempTravaille.vid,
+                                startTime = startTimeInput.takeIf { it.isNotEmpty() },
+                                endTime = endTimeInput.takeIf { it.isNotEmpty() },
+                                typeTemp = selectedType
+                            )
+                        }
                         showTimeDialog = false
                     }
                 ) {
-                    Text("Confirmer")
+                    Text(if (editingInterval != null) "Mettre à jour" else "Confirmer")
                 }
             },
             dismissButton = {
+                // In the dismissButton
                 Button(
-                    onClick = { showTimeDialog = false }
+                    onClick = {
+                        showTimeDialog = false
+                        viewModel.clearEditingInterval()
+                    }
                 ) {
                     Text("Annuler")
                 }
@@ -215,6 +318,7 @@ fun DayHeader(
 
                 // Edit Button - only show if in admin mode
                 if (isAbdelwahabLeGerant) {
+
                     IconButton(
                         onClick = {
                             startTimeInput = ""

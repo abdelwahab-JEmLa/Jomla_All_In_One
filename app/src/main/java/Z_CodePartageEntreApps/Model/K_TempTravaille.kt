@@ -11,6 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import com.google.firebase.database.Exclude
 import com.google.firebase.database.IgnoreExtraProperties
 
@@ -29,11 +30,16 @@ class K_TempTravaille(var vid: String = "2025_01_01") {
     class IntervalesDeTravaille(var vid: String = "HH_mm") {
         var typeTemp by mutableStateOf(TypeTemp.DEPLACEMENT)
 
-        enum class TypeTemp(val color: Color, val icon: androidx.compose.ui.graphics.vector.ImageVector) {
-            DEPLACEMENT(Color(0xFF2196F3), Icons.Filled.DirectionsCar),
-            VENT(Color(0xFF4CAF50), Icons.Filled.ShoppingCart),
-            ACHAT(Color(0xFFFFC107), Icons.Filled.Store) ,
-            ENTRE_PAR_MAIN(Color(0xFFFFC107), Icons.Filled.BackHand)
+        enum class TypeTemp(val color: Color, val icon: ImageVector, val nomArabe: String = "") {
+            DEPLACEMENT(Color(0xFF2196F3), Icons.Filled.DirectionsCar, "تنقل"),
+            VENT(Color(0xFF4CAF50), Icons.Filled.ShoppingCart, "بيع"),
+            ACHAT(Color(0xFFFFC107), Icons.Filled.Store, "شراء"),
+            ENTRE_PAR_MAIN(Color(0xFFFFC107), Icons.Filled.BackHand, "إدخال يدوي"),
+            MAHABAT_KHATER(Color(0xFFFFC107), Icons.Filled.BackHand, "محبة خاطر");
+
+            override fun toString(): String {
+                return name
+            }
         }
 
         var idBonDeCetteIntervale by mutableStateOf(0L)
@@ -60,7 +66,6 @@ class K_TempTravaille(var vid: String = "2025_01_01") {
     }
 
     companion object {
-
         fun calculateDurationMinutes(start: String, end: String): Int {
             if (start == "HH:mm" || end == "HH:mm") return 0
 
@@ -74,4 +79,3 @@ class K_TempTravaille(var vid: String = "2025_01_01") {
         }
     }
 }
-
