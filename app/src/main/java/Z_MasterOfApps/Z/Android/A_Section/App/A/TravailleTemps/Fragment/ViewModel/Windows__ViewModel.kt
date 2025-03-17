@@ -19,7 +19,7 @@ class Windows__ViewModel(
 
     val dateList get() = repository.modelDatas
     // Added state for Abdelwahab Le Gérant privileges
-    private val _isAbdelwahabLeGerant = MutableStateFlow(false)
+    private val _isAbdelwahabLeGerant = MutableStateFlow(true)
     val isAbdelwahabLeGerant: StateFlow<Boolean> = _isAbdelwahabLeGerant.asStateFlow()
     // Expose recording states from handler
     val isRecording = recordingHandler.isRecording

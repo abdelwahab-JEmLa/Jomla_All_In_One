@@ -205,6 +205,7 @@ class K_TempTravailleRepositoryImpl : K_TempTravailleRepository {
             // Parse infosDeBase
             val infosDeBaseSnapshot = dataSnapshot.child("infosDeBase")
             newTempTravaille.infosDeBase.dateInString = infosDeBaseSnapshot.child("dateInString").getValue(String::class.java) ?: newTempTravaille.vid
+            newTempTravaille.infosDeBase.paye = infosDeBaseSnapshot.child("paye").getValue(Boolean::class.java) ?: false
 
             // Parse intervals
             val intervalsSnapshot = dataSnapshot.child("intervalesDeTravaille")
@@ -235,9 +236,10 @@ class K_TempTravailleRepositoryImpl : K_TempTravailleRepository {
         else if (tempTravaille != null && dataSnapshot == null) {
             val result = mutableMapOf<String, Any>()
 
-            // Add infosDeBase
             val infosDeBase = mutableMapOf<String, Any>()
             infosDeBase["dateInString"] = tempTravaille.infosDeBase.dateInString
+            result["infosDeBase"] = infosDeBase
+            infosDeBase["paye"] = tempTravaille.infosDeBase.paye
             result["infosDeBase"] = infosDeBase
 
             // Add intervalesDeTravaille

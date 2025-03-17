@@ -45,8 +45,28 @@ fun WeekHeader(
     weekInfo: WeekInfo,
     viewModel: Windows__ViewModel
 ) {
-    // State to track if all days in the week are paid
-    val allDaysPaid = remember { mutableStateOf(false) }
+    // Get all records for this specific week and check if all are paid
+    val weekRecords = viewModel.dateList.filter { record ->
+        val dateString = record.infosDeBase.dateInString
+        val parts = dateString.split("/")
+        if (parts.size == 3) {
+            val year = parts[0].toInt()
+            val month = parts[1].toInt() - 1 // Month is 0-based in Calendar
+            val day = parts[2].toInt()
+
+            val calendar = Calendar.getInstance()
+            calendar.set(year, month, day)
+
+            // Check if this record falls within the specified week and year
+            calendar.get(Calendar.YEAR) == weekInfo.year && calendar.get(Calendar.WEEK_OF_YEAR) == weekInfo.weekNumber
+        } else {
+            false
+        }
+    }
+
+    // Calculate if all days are paid - initialize from actual data
+    val areAllDaysPaid = weekRecords.isNotEmpty() && weekRecords.all { it.infosDeBase.paye }
+    val allDaysPaid = remember { mutableStateOf(areAllDaysPaid) }
 
     // Get admin privileges status
     val isAbdelwahabLeGerant by viewModel.isAbdelwahabLeGerant.collectAsState()
@@ -122,8 +142,9 @@ fun WeekHeader(
                 if (isAbdelwahabLeGerant) {
                     IconButton(
                         onClick = {
-                            allDaysPaid.value = !allDaysPaid.value
-                            // Here we would update all days in this week as paid
+                            // Toggle the paid state for all days in this week
+                            val newPaidState = !allDaysPaid.value
+                            allDaysPaid.value = newPaidState
                             markAllDaysAsPaid(weekInfo, viewModel, allDaysPaid)
                         },
                         modifier = Modifier.size(40.dp)
@@ -195,19 +216,10 @@ fun markAllDaysAsPaid(weekInfo: WeekInfo, viewModel: Windows__ViewModel, paidSta
         }
     }
 
-    // Here would be the logic to update the paid status of all days
-    // For now, we just update the UI state as an example
-    paidStatus.value = !paidStatus.value
-
-    // In a real implementation, you would iterate through each record and update their paid status
-    // This would likely involve a repository function call to update the database
-    weekRecords.forEach { record ->     //<--
-    //TODO(1): pk ca n update pas paye 
-        record.infosDeBase.paye=true
-        // Example of what this might look like:
-        // viewModel.repository.updatePaidStatus(record.vid, paidStatus.value)
-
-        // For now, just a placeholder to show what would happen
+    // Update each record's paid status based on the new state
+    weekRecords.forEach { record ->
+        record.infosDeBase.paye = paidStatus.value
+        // Update the record in the repository
         viewModel.repository.updateOnPasseData(record)
     }
 }
