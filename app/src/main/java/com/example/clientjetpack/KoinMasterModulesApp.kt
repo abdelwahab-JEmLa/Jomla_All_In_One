@@ -8,8 +8,8 @@ import Z_CodePartageEntreApps.Model.H_GroupesCategoriesRepositoryImpl
 import Z_CodePartageEntreApps.Model.I_CategoriesRepository
 import Z_CodePartageEntreApps.Model.J_AppInstalleDonTelephoneRepository
 import Z_CodePartageEntreApps.Model.J_AppInstalleDonTelephoneRepositoryImpl
-import Z_CodePartageEntreApps.Model.K_TempTravaille.K_TempTravailleRepository
-import Z_CodePartageEntreApps.Model.K_TempTravaille.K_TempTravailleRepositoryImpl
+import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.Model.K_TempTravailleRepository
+import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.Model.K_TempTravailleRepositoryImpl
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Kotlin._WorkingON.WO_.ConnectionManager
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Windows__ViewModel

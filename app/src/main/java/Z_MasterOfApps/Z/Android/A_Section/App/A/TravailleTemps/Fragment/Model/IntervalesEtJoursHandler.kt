@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Model.K_TempTravaille
+package Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.Model
 
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Modules.TimeFormatUtils
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -190,7 +190,8 @@ object IntervalesEtJoursHandler {
                 defaultInterval.tempDepart = "00:00"
                 defaultInterval.temparrete = "00:00"
                 defaultInterval.enCoureDEnregestrement = false
-                defaultInterval.typeTemp = K_TempTravaille.IntervalesDeTravaille.TypeTemp.ENTRE_PAR_MAIN
+                defaultInterval.typeTemp =
+                    K_TempTravaille.IntervalesDeTravaille.TypeTemp.ENTRE_PAR_MAIN
                 defaultInterval.idBonDeCetteIntervale = System.currentTimeMillis()
 
                 // Add the interval to the new record
