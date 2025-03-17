@@ -54,7 +54,7 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="DisplayArticleInfoToClientWindowsPreview">
+      <SelectionState runConfigName="MainScreenWithFirebasePreview">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

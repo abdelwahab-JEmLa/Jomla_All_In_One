@@ -57,7 +57,7 @@ fun MainItem_Windows(
                 Spacer(modifier = Modifier.width(8.dp))
 
                 Text(
-                    text = intervale.typeTemp.name,
+                    text = intervale.typeTemp.nomArabe,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )

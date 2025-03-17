@@ -12,7 +12,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -29,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import java.util.Calendar
 import java.util.Locale
+
 @Composable
 fun WeekHeader(
     weekInfo: WeekInfo,
@@ -52,6 +52,7 @@ fun WeekHeader(
             val hours = totalWeekMinutes / 60
             "$hours heures"
         }
+
         daysWorked == 1.0 -> "1 jour"
         daysWorked < 2.0 -> "1 jour et ${(daysWorked - 1.0) * 8} heures"
         else -> {
@@ -126,22 +127,7 @@ fun WeekHeader(
                     color = Color.White // Changed to white text
                 )
 
-                Spacer(modifier = Modifier.weight(1f))
 
-                // Display total work time for the week
-                ElevatedCard(
-                    colors = CardDefaults.elevatedCardColors(
-                        containerColor = Color.White.copy(alpha = 0.2f)
-                    )
-                ) {
-                    Text(
-                        text = "Total: $totalWeekTimeFormatted",
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Medium,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                        color = Color.White // Changed to white text
-                    )
-                }
             }
 
             Text(
@@ -149,22 +135,35 @@ fun WeekHeader(
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color.White // Changed to white text
             )
+            ElevatedCard(
+                colors = CardDefaults.elevatedCardColors(
+                    containerColor = Color.White.copy(alpha = 0.8f)
+                )
+            ) {
 
-            // Show daily rate and total earnings
-            Text(
-                text = "Jour/1200 DA == ${String.format("%.2f", totalWeekEarnings)} DA",
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.White, // Changed to white text
-                modifier = Modifier.padding(top = 4.dp)
-            )
+                val s = "مدة العمل الاجمالية "
+                Text(
+                    text = "$daysWorkedFormatted$s",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color.Blue, // Changed to white text
+                    modifier = Modifier.padding( 4.dp)
+                )
+            }
+            ElevatedCard(
+                colors = CardDefaults.elevatedCardColors(
+                    containerColor = Color.White.copy(alpha = 0.8f)
+                )
+            ) {
+                // Show daily rate and total earnings
+                Text(
+                    text = "Jour/1200 DA == ${String.format("%.2f", totalWeekEarnings)} DA",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Red, // Changed to white text
+                    modifier = Modifier.padding(4.dp)
+                )
+            }
+            // Display total work time for the week
 
-            // Show approximate days worked
-            Text(
-                text = "On a travaillé à proximité de $daysWorkedFormatted",
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.White, // Changed to white text
-                modifier = Modifier.padding(top = 2.dp)
-            )
         }
     }
 }

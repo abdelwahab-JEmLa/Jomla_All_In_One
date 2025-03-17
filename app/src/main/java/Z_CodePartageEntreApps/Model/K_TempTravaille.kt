@@ -3,6 +3,7 @@ package Z_CodePartageEntreApps.Model
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BackHand
 import androidx.compose.material.icons.filled.DirectionsCar
+import androidx.compose.material.icons.filled.MonetizationOn
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Store
 import androidx.compose.runtime.getValue
@@ -28,14 +29,14 @@ class K_TempTravaille(var vid: String = "2025_01_01") {
 
     @IgnoreExtraProperties
     class IntervalesDeTravaille(var vid: String = "HH_mm") {
-        var typeTemp by mutableStateOf(TypeTemp.DEPLACEMENT)
+        var typeTemp by mutableStateOf(TypeTemp.ACHAT)
 
         enum class TypeTemp(val color: Color, val icon: ImageVector, val nomArabe: String = "") {
             DEPLACEMENT(Color(0xFF2196F3), Icons.Filled.DirectionsCar, "تنقل"),
             VENT(Color(0xFF4CAF50), Icons.Filled.ShoppingCart, "بيع"),
             ACHAT(Color(0xFFFFC107), Icons.Filled.Store, "شراء"),
-            ENTRE_PAR_MAIN(Color(0xFFFFC107), Icons.Filled.BackHand, "إدخال يدوي"),
-            MAHABAT_KHATER(Color(0xFFFFC107), Icons.Filled.BackHand, "محبة خاطر");
+            ENTRE_PAR_MAIN(Color(0xFFFFC107), Icons.Filled.BackHand, "غير محدد"),
+            MAHABAT_KHATER(Color(0xFFFFC107), Icons.Filled.MonetizationOn, "محبة خاطر");
 
             override fun toString(): String {
                 return name
