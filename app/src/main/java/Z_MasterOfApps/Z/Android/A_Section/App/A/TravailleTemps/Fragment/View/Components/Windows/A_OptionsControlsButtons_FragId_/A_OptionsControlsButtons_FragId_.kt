@@ -36,14 +36,13 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import org.koin.androidx.compose.koinViewModel
 import kotlin.math.roundToInt
 
 const val TAG = "ControlButton"
 
 @Composable
 fun A_OptionsControlsButtons_FragId_(
-    viewModel: Windows__ViewModel = koinViewModel(),
+    viewModel: Windows__ViewModel ,
 ) {
     val isAbdelwahabLeGerant by viewModel.isAbdelwahabLeGerant.collectAsState()
 

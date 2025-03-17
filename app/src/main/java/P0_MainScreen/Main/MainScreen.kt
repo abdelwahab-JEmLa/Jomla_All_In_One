@@ -10,6 +10,7 @@ import Views.FragId4_EStorePresentationToClient.FragmentDisplayeInfoProductToCli
 import Views.FragId4_EStorePresentationToClient.Modules.SearchArticle
 import Z_CodePartageEntreApps.Model.A_ProduitModelRepository
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
+import P0_MainScreen.Main.Windows.RecordAfficheurFAB
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -130,6 +131,7 @@ fun MainScreen(
                 }
             } else {
                 // Main content - only display when repository is loaded
+                val isHostPhone = productDisplayController.isHostPhone
                 Column(modifier = Modifier.fillMaxSize()) {
                     // WiFi Connection Card
                     AnimatedVisibility(
@@ -164,11 +166,11 @@ fun MainScreen(
                             onClear = {},
                             headViewModel = headViewModel,
                             targetCategoryId=targetCategoryId,
-                            lockHost = productDisplayController.isHostPhone
+                            lockHost = isHostPhone
                         )
 
                         // Disable interactions when not host phone
-                        if (!productDisplayController.isHostPhone && productDisplayController.isConnected) {
+                        if (!isHostPhone && productDisplayController.isConnected) {
                             Box(
                                 modifier = Modifier
                                     .matchParentSize()
@@ -180,7 +182,7 @@ fun MainScreen(
 
                 // Navigation Bar with FAB
                 AnimatedVisibility(
-                    visible = (productDisplayController.isHostPhone || !productDisplayController.isConnected) && shouldShowContent,
+                    visible = (isHostPhone || !productDisplayController.isConnected) && shouldShowContent,
                     modifier = Modifier.align(Alignment.BottomCenter)
                 ) {
                     NavigationBarWithFab(
@@ -233,6 +235,10 @@ fun MainScreen(
                         dsipayeText = productDisplayController.searchWindowsDisplaye
                     )
                 }
+                if (isHostPhone) {
+                    RecordAfficheurFAB()
+                }
+
 
                 // Show additional loading indicator if needed for other UI states
                 if (uiState.isLoading) {
