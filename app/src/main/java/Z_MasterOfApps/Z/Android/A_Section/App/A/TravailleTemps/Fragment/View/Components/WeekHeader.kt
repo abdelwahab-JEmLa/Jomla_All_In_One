@@ -139,20 +139,20 @@ fun WeekHeader(
                 )
 
                 Spacer(modifier = Modifier.weight(1f))
-                      if (allDaysPaid.value) {
-                          Text(
-                              text = if (allDaysPaid.value) "تم الدفع" else "",
-                              color = Color.White,
-                              textAlign = TextAlign.End,
-                              modifier = Modifier.padding(end = 4.dp)
-                          )
-                          Icon(
-                              imageVector = if (allDaysPaid.value) Icons.Default.Check else Icons.Default.Payment,
-                              contentDescription = if (allDaysPaid.value) "تم الدفع" else "في انتظار الدفع",  // "Paid" or "Awaiting payment" in Arabic
-                              tint = if (allDaysPaid.value) Color.White else Color.White.copy(alpha = 0.7f),
-                              modifier = Modifier.size(24.dp)
-                          )
-                      }
+                if (allDaysPaid.value) {
+                    Text(
+                        text = if (allDaysPaid.value) "تم الدفع" else "",
+                        color = Color.White,
+                        textAlign = TextAlign.End,
+                        modifier = Modifier.padding(end = 4.dp)
+                    )
+                    Icon(
+                        imageVector = if (allDaysPaid.value) Icons.Default.Check else Icons.Default.Payment,
+                        contentDescription = if (allDaysPaid.value) "تم الدفع" else "في انتظار الدفع",  // "Paid" or "Awaiting payment" in Arabic
+                        tint = if (allDaysPaid.value) Color.White else Color.White.copy(alpha = 0.7f),
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
 
                 // Add toggle button for marking week as paid (only visible in admin mode)
                 if (isAbdelwahabLeGerant) {
@@ -173,7 +173,9 @@ fun WeekHeader(
                             Icon(
                                 imageVector = if (allDaysPaid.value) Icons.Default.Check else Icons.Default.Payment,
                                 contentDescription = if (allDaysPaid.value) "تم الدفع" else "في انتظار الدفع",  // "Paid" or "Awaiting payment" in Arabic
-                                tint = if (allDaysPaid.value) Color.White else Color.White.copy(alpha = 0.7f),
+                                tint = if (allDaysPaid.value) Color.White else Color.White.copy(
+                                    alpha = 0.7f
+                                ),
                                 modifier = Modifier.size(24.dp)
                             )
                         }
@@ -209,7 +211,12 @@ fun WeekHeader(
             ) {
                 // Show daily rate and total earnings
                 Text(
-                    text = "اليوم/1200 دينار == ${String.format("%.2f", totalWeekEarnings)} دينار",  // "Day/1200 DA" in Arabic
+                    text = "اليوم/1200 دينار == ${
+                        String.format(
+                            "%.2f",
+                            totalWeekEarnings
+                        )
+                    } دينار",  // "Day/1200 DA" in Arabic
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.Red,
                     modifier = Modifier.padding(4.dp)
@@ -220,7 +227,11 @@ fun WeekHeader(
 }
 
 // Function to mark all days in the week as paid
-fun markAllDaysAsPaid(weekInfo: WeekInfo, viewModel: Windows__ViewModel, paidStatus: MutableState<Boolean>) {
+fun markAllDaysAsPaid(
+    weekInfo: WeekInfo,
+    viewModel: Windows__ViewModel,
+    paidStatus: MutableState<Boolean>
+) {
     // Get all records for the specific week and year
     val weekRecords = viewModel.dateList.filter { record ->
         val dateString = record.infosDeBase.dateInString
@@ -272,10 +283,12 @@ fun translateWorkDurationToArabic(daysWorked: Double, totalMinutes: Int): String
             val hours = totalMinutes / 60
             "$hours ساعات"  // "N hours" in Arabic
         }
+
         daysWorked == 1.0 -> "1 يوم"  // "1 day" in Arabic
         daysWorked < 2.0 -> {
             "1 يوم و ${(daysWorked - 1.0) * 8} ساعات"  // "1 day and N hours" in Arabic
         }
+
         else -> {
             val fullDays = daysWorked.toInt()
             val remainingHours = ((daysWorked - fullDays) * 8).toInt()
