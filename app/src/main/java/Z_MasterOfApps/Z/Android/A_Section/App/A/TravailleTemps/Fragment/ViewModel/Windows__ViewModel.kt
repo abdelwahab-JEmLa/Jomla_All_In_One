@@ -14,26 +14,17 @@ import kotlinx.coroutines.flow.asStateFlow
 class Windows__ViewModel(
     val repository: K_TempTravailleRepository = K_TempTravailleRepositoryImpl()
 ) : ViewModel() {
-
-    val dateList get() = repository.modelDatas
-
-    // Added state for Abdelwahab Le Gérant privileges
-    private val _isAbdelwahabLeGerant = MutableStateFlow(false)
-    val isAbdelwahabLeGerant: StateFlow<Boolean> = _isAbdelwahabLeGerant.asStateFlow()
-
     // Recording handler handles all recording-related functionality
     private val recordingHandler = RecordingHandler(repository, viewModelScope)
 
+    val dateList get() = repository.modelDatas
+    // Added state for Abdelwahab Le Gérant privileges
+    private val _isAbdelwahabLeGerant = MutableStateFlow(false)
+    val isAbdelwahabLeGerant: StateFlow<Boolean> = _isAbdelwahabLeGerant.asStateFlow()
     // Expose recording states from handler
     val isRecording = recordingHandler.isRecording
-    val elapsedTimeInSeconds = recordingHandler.elapsedTimeInSeconds
-    val totalWorkedSeconds = recordingHandler.totalWorkedSeconds
     val displayTime = recordingHandler.displayTime
-    val currentElapsedSeconds = recordingHandler.currentElapsedSeconds
-    val lastUpdateTime = recordingHandler.lastUpdateTime
-
     private val _currentDate = MutableStateFlow(TimeFormatUtils.getCurrentDate())
-    val currentDate: StateFlow<String> = _currentDate.asStateFlow()
 
     init {
         recordingHandler.updateTotalWorkedTime()

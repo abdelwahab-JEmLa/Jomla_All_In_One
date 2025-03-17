@@ -26,15 +26,11 @@ class RecordingHandler(
     private val _currentIntervalId = MutableStateFlow<String?>(null)
     private val _currentStartTime = MutableStateFlow<String?>(null)
     private val _elapsedTimeInSeconds = MutableStateFlow(0)
-    val elapsedTimeInSeconds: StateFlow<Int> = _elapsedTimeInSeconds.asStateFlow()
     private val _totalWorkedSeconds = MutableStateFlow(0L)
-    val totalWorkedSeconds: StateFlow<Long> = _totalWorkedSeconds.asStateFlow()
     private val _displayTime = MutableStateFlow("00:00:00")
     val displayTime: StateFlow<String> = _displayTime.asStateFlow()
     private val _currentElapsedSeconds = MutableStateFlow(0L)
-    val currentElapsedSeconds: StateFlow<Long> = _currentElapsedSeconds.asStateFlow()
     private val _lastUpdateTime = MutableStateFlow(System.currentTimeMillis())
-    val lastUpdateTime: StateFlow<Long> = _lastUpdateTime.asStateFlow()
 
     fun setupRecordingStateListener() {
         val recordingStateRef = K_TempTravailleRepository.caReference.child("_isRecording")
