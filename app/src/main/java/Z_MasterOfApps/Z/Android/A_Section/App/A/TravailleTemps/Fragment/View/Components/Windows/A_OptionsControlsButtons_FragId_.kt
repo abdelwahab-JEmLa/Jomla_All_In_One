@@ -1,10 +1,10 @@
-package Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Ui.Windows
+package Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Components.Windows
 
 // A_OptionsControlsButtons.kt
 
 import Z_CodePartageEntreApps.Resources.LottieJsonGetterR_Raw_Icons
-import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Ui.Windows.Components.LabelsButton
-import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Ui.Windows.Components.MenuButton
+import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Components.Windows.Components.LabelsButton
+import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Components.Windows.Components.MenuButton
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
 import Z_MasterOfApps.Z_AppsFather.Kotlin.Partage.Views.AnimatedIconLottieJsonFile
 import android.util.Log
@@ -175,7 +175,7 @@ fun ControlButton(
                         ),
                     contentAlignment = Alignment.Center
                 ) {
-                    Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Ui.Windows.Components.AnimatedIconLottieJsonFile(
+                    Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Components.Windows.Components.AnimatedIconLottieJsonFile(
                         resourceId = icon,
                         onClick = if (enabled) onClick else ({})
                     )
