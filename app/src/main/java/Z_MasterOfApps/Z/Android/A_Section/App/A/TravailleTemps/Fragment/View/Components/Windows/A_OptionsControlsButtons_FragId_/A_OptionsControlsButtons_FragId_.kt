@@ -1,10 +1,9 @@
-package Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Components.Windows
+package Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_
 
-// A_OptionsControlsButtons.kt
 
 import Z_CodePartageEntreApps.Resources.LottieJsonGetterR_Raw_Icons
-import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Components.Windows.Components.LabelsButton
-import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Components.Windows.Components.MenuButton
+import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.Components.LabelsButton
+import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.Components.MenuButton
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
 import Z_MasterOfApps.Z_AppsFather.Kotlin.Partage.Views.AnimatedIconLottieJsonFile
 import android.util.Log
@@ -14,7 +13,6 @@ import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
@@ -38,14 +36,14 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import org.koin.androidx.compose.koinViewModel
 import kotlin.math.roundToInt
 
 const val TAG = "ControlButton"
 
 @Composable
 fun A_OptionsControlsButtons_FragId_(
-    paddingValues: PaddingValues,
-    viewModel: Windows__ViewModel,
+    viewModel: Windows__ViewModel = koinViewModel(),
 ) {
     val isAbdelwahabLeGerant by viewModel.isAbdelwahabLeGerant.collectAsState()
 
@@ -79,6 +77,7 @@ fun A_OptionsControlsButtons_FragId_(
 
                     if (isAbdelwahabLeGerant) {
                         FragID_0_Butt_2(viewModel, showLabels, "Add Day")
+                        FragID_0_Butt_1(viewModel, showLabels, "Start Recording")
                     }
 
                     FragID_0_Butt_3(viewModel, showLabels, "Mode Admin")
@@ -88,7 +87,6 @@ fun A_OptionsControlsButtons_FragId_(
                         onShowLabelsChange = { showLabels = it }
                     )
                 }
-                FragID_0_Butt_1(viewModel, showLabels, "Start Recording")
 
 
                 MenuButton(
@@ -175,7 +173,7 @@ fun ControlButton(
                         ),
                     contentAlignment = Alignment.Center
                 ) {
-                    Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Components.Windows.Components.AnimatedIconLottieJsonFile(
+                    Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.Components.AnimatedIconLottieJsonFile(
                         resourceId = icon,
                         onClick = if (enabled) onClick else ({})
                     )

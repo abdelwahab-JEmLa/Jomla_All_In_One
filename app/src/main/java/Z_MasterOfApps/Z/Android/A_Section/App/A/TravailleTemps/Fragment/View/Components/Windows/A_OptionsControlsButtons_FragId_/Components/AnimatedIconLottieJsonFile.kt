@@ -1,4 +1,4 @@
-package Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Components.Windows.Components
+package Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.Components
 
 import Z_CodePartageEntreApps.Resources.LottieJsonGetterR_Raw_Icons
 import androidx.compose.foundation.layout.Box

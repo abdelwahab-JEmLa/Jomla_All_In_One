@@ -8,6 +8,7 @@ import Z_CodePartageEntreApps.Model.A_ProduitModelRepository
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Kotlin._WorkingON.WO_.WifiUpdateClientDisplayerStats
+import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Components.Windows.RecordAfficheurFAB
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
@@ -240,6 +241,8 @@ fun MainUi(
             onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi, onToggleLockHost = onToggleLockHost,
             onToggleLockExpandedPricex = onToggleLockExpandedPricex, viewModelInitApp = viewModelInitApp
         )
+
+        RecordAfficheurFAB()
 
         if (uiState.isLoading) {
             LoadingOverlay(

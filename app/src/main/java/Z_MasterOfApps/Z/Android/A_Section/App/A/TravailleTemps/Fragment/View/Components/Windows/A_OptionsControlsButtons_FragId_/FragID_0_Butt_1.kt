@@ -1,4 +1,4 @@
-package Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Components.Windows
+package Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_
 
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
 import androidx.compose.material.icons.Icons
@@ -7,10 +7,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun FragID_0_Butt_1(
-    viewModel: Windows__ViewModel,
+    viewModel: Windows__ViewModel = koinViewModel(),
     showLabels: Boolean,
     label: String,
 ) {

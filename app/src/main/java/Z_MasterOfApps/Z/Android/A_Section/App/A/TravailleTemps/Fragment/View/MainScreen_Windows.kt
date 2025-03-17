@@ -1,6 +1,7 @@
 package Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View
 
-import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_
+import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.A_OptionsControlsButtons_FragId_
+import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Components.Windows.RecordAfficheurFAB
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -66,9 +67,12 @@ fun MainScreen_Windows(
                 .padding(paddingValues),
         ) {
             MainList_Windows(viewModel = viewModel)
+
             if (fabsVisibility) {
-                A_OptionsControlsButtons_FragId_(paddingValues, viewModel = viewModel)
+                A_OptionsControlsButtons_FragId_( viewModel = viewModel)
             }
+
+            RecordAfficheurFAB()
         }
     }
 }
