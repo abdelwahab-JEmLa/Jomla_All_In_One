@@ -49,7 +49,7 @@ fun A_OptionsControlsButtons_FragId_(
 ) {
     val isAbdelwahabLeGerant by viewModel.isAbdelwahabLeGerant.collectAsState()
 
-    var showMenu by remember { mutableStateOf(false) }
+    var showMenu by remember { mutableStateOf(true) }
     var showLabels by remember { mutableStateOf(true) }
 
     var offsetX by remember { mutableFloatStateOf(0f) }
@@ -76,8 +76,8 @@ fun A_OptionsControlsButtons_FragId_(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 if (showMenu) {
+
                     if (isAbdelwahabLeGerant) {
-                        FragID_0_Butt_1(viewModel, showLabels, "Start Recording")
                         FragID_0_Butt_2(viewModel, showLabels, "Add Day")
                     }
 
@@ -88,6 +88,8 @@ fun A_OptionsControlsButtons_FragId_(
                         onShowLabelsChange = { showLabels = it }
                     )
                 }
+                FragID_0_Butt_1(viewModel, showLabels, "Start Recording")
+
 
                 MenuButton(
                     showLabels = showLabels,
@@ -99,7 +101,6 @@ fun A_OptionsControlsButtons_FragId_(
     }
 }
 
-// Fix for A_OptionsControlsButtons.kt
 @Composable
 fun ControlButton(
     onClick: () -> Unit,
@@ -108,7 +109,8 @@ fun ControlButton(
     showLabels: Boolean,
     labelText: String,
     containerColor: Color,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
 ) {
     Log.d(TAG, "ControlButton called with icon type: ${icon.javaClass.simpleName}")
 
@@ -121,11 +123,14 @@ fun ControlButton(
                 Log.d(TAG, "Rendering ImageVector icon")
                 FloatingActionButton(
                     onClick = {
-                        Log.d(TAG, "ImageVector FAB clicked")
-                        onClick()
+                        if (enabled) {
+                            Log.d(TAG, "ImageVector FAB clicked")
+                            onClick()
+                        }
                     },
                     modifier = modifier.size(40.dp),
-                    containerColor = containerColor
+                    containerColor =  containerColor,
+
                 ) {
                     Icon(icon, contentDescription)
                 }
@@ -135,12 +140,12 @@ fun ControlButton(
                 Box(
                     modifier = Modifier
                         .size(40.dp)
-                        .clickable {
+                        .clickable(enabled = enabled) {
                             Log.d(TAG, "LottieJson Box clicked")
                             onClick()
                         }
                         .background(
-                            color = containerColor,
+                            color = if (enabled) containerColor else Color.Gray,
                             shape = CircleShape
                         )
                         .also {
@@ -150,7 +155,7 @@ fun ControlButton(
                 ) {
                     AnimatedIconLottieJsonFile(
                         ressourceXml = icon,
-                        onClick = onClick
+                        onClick = if (enabled) onClick else ({})
                     )
                 }
             }
@@ -160,19 +165,19 @@ fun ControlButton(
                 Box(
                     modifier = Modifier
                         .size(40.dp)
-                        .clickable {
+                        .clickable(enabled = enabled) {
                             Log.d(TAG, "Resource ID Box clicked")
                             onClick()
                         }
                         .background(
-                            color = containerColor,
+                            color = if (enabled) containerColor else Color.Gray,
                             shape = CircleShape
                         ),
                     contentAlignment = Alignment.Center
                 ) {
                     Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Ui.Windows.Components.AnimatedIconLottieJsonFile(
                         resourceId = icon,
-                        onClick = onClick
+                        onClick = if (enabled) onClick else ({})
                     )
                 }
             }
@@ -186,7 +191,7 @@ fun ControlButton(
             Text(
                 labelText,
                 modifier = Modifier
-                    .background(containerColor)
+                    .background(if (enabled) containerColor else Color.Gray)
                     .padding(4.dp),
                 color = Color.White
             )

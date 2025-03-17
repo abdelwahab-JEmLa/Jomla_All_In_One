@@ -2,7 +2,7 @@ package Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Ui
 
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.DesktopAccessDisabled
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -21,7 +21,7 @@ fun FragID_0_Butt_3(
         onClick = {
             viewModel.toggleAbdelwahabLeGerant()
         },
-        icon = if (isAbdelwahabLeGerant) Icons.Default.Person else Icons.Default.Home,
+        icon = if (isAbdelwahabLeGerant) Icons.Default.Person else Icons.Default.DesktopAccessDisabled,
         contentDescription = if (isAbdelwahabLeGerant) "Désactiver mode administrateur" else "Activer mode administrateur",
         showLabels = showLabels,
         labelText = if (isAbdelwahabLeGerant) "Mode Admin Actif" else labelText,

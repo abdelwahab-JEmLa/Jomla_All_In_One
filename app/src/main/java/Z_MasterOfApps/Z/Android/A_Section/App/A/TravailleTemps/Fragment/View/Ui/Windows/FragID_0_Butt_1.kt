@@ -15,7 +15,7 @@ fun FragID_0_Butt_1(
     showLabels: Boolean,
     label: String,
 ) {
-    // Collect recording state
+    val abdelwahabLeGerant by viewModel.isAbdelwahabLeGerant.collectAsState()
     val isRecording by viewModel.isRecording.collectAsState()
     val displayTime by viewModel.displayTime.collectAsState()
 
@@ -27,6 +27,8 @@ fun FragID_0_Butt_1(
         contentDescription = if (isRecording) "Stop Recording" else label,
         showLabels = showLabels,
         labelText = displayTime,
-        containerColor = if (isRecording) Color(0xFFE53935) else Color(0xFF2196F3)
+        containerColor = if (isRecording) Color(0xFFE53935) else Color(0xFFF44336),
+        enabled = abdelwahabLeGerant // Add this line to disable the button if not Abdelwahab Le Gérant
     )
+
 }

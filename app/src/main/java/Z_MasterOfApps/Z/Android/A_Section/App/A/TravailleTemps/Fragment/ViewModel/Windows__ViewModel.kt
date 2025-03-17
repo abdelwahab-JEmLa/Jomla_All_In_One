@@ -6,6 +6,9 @@ import Z_CodePartageEntreApps.Model.K_TempTravailleRepositoryImpl
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Modules.TimeFormatUtils
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -43,6 +46,76 @@ class Windows__ViewModel(
 
     init {
         updateTotalWorkedTime()
+    }
+    // In Windows__ViewModel.kt, inside the init block
+    init {
+        updateTotalWorkedTime()
+        setupRecordingStateListener()
+    }
+
+    private fun setupRecordingStateListener() {
+        val recordingStateRef = K_TempTravailleRepository.caReference.child("_isRecording")
+        recordingStateRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val isRecordingValue = snapshot.getValue(Boolean::class.java) ?: false
+                if (isRecordingValue != _isRecording.value) {
+                    _isRecording.value = isRecordingValue
+                    if (isRecordingValue) {
+                        // We're now recording but weren't before, so setup the recording state
+                        val currentDate = TimeFormatUtils.getCurrentDate()
+                        val currentDateStr = currentDate.replace("/", "_")
+                        // Check if there's an active interval
+                        val existingRecord = dateList.find { it.vid == currentDateStr }
+                        val activeInterval = existingRecord?.intervalesDeTravaille?.find { it.enCoureDEnregestrement }
+                        if (activeInterval != null) {
+                            _currentRecordId.value = currentDateStr
+                            _currentIntervalId.value = activeInterval.vid
+                            _currentStartTime.value = activeInterval.tempDepart
+                            _currentElapsedSeconds.value = 0L
+                            _lastUpdateTime.value = System.currentTimeMillis()
+                        } else {
+                            // No active interval, strange state, reset recording
+                            updateRecordingState(false)
+                        }
+                    } else {
+                        // We're no longer recording
+                        _currentRecordId.value = null
+                        _currentIntervalId.value = null
+                        _currentStartTime.value = null
+                        _elapsedTimeInSeconds.value = 0
+                        _currentElapsedSeconds.value = 0L
+                        updateTotalWorkedTime()
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                println("Error listening to recording state: ${error.message}")
+            }
+        })
+    }
+
+    // Add this method to update the recording state in Firebase
+    private fun updateRecordingState(isRecording: Boolean) {
+        val recordingStateRef = K_TempTravailleRepository.caReference.child("_isRecording")
+        recordingStateRef.setValue(isRecording)
+            .addOnSuccessListener {
+                println("Recording state updated successfully")
+            }
+            .addOnFailureListener { e ->
+                println("Failed to update recording state: ${e.message}")
+            }
+    }
+
+    // Modify the toggleRecording method to use the new updateRecordingState method
+    fun toggleRecording() {
+        if (_isRecording.value) {
+            stopTimeInterval()
+            updateRecordingState(false)
+        } else {
+            startTimeInterval()
+            updateRecordingState(true)
+        }
     }
 
     // Function to toggle admin privileges
@@ -316,13 +389,7 @@ class Windows__ViewModel(
 
 
 
-    fun toggleRecording() {
-        if (_isRecording.value) {
-            stopTimeInterval()
-        } else {
-            startTimeInterval()
-        }
-    }
+
 
     fun updateElapsedTime() {
         if (_isRecording.value) {
