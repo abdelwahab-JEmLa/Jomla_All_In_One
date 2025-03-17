@@ -150,9 +150,6 @@ class Windows__ViewModel(
         return dateList.find { it.infosDeBase.dateInString == currentDate }
     }
 
-    fun calculateTotalWorkedTime(record: K_TempTravaille?, isCurrentlyRecording: Boolean): Long {
-        return recordingHandler.calculateTotalWorkedTime(record, isCurrentlyRecording)
-    }
 
     fun resetSessionTimer() {
         recordingHandler.resetSessionTimer()
