@@ -49,7 +49,7 @@ fun A_OptionsControlsButtons_FragId_(
 ) {
     val isAbdelwahabLeGerant by viewModel.isAbdelwahabLeGerant.collectAsState()
 
-    var showMenu by remember { mutableStateOf(true) }
+    var showMenu by remember { mutableStateOf(false) }
     var showLabels by remember { mutableStateOf(true) }
 
     var offsetX by remember { mutableFloatStateOf(0f) }
