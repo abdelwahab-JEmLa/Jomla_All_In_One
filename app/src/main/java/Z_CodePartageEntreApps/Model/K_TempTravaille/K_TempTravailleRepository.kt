@@ -18,11 +18,27 @@ interface K_TempTravailleRepository {
     suspend fun updateDatas(datas: SnapshotStateList<K_TempTravaille>)
     fun stopDatabaseListener()
     fun checkConnectivityAndSync()
-    fun deleteIntevaleDeTemp(intervalId:String)
+    fun deleteIntevaleDeTemp(intervalId: String)
+    fun ajoutJour(date: String)
 
     // Updated method signature to match the implementation in MockTempTravailleRepository
     fun updateUnSeulData(
         recordId: String? = null,
+    )
+
+    // Added methods that were previously in ViewModel
+    fun addNewInterval(
+        recordId: String? = null,
+        intervalId: String? = null,
+        startTime: String? = null
+    )
+
+    fun updateExistingInterval(
+        recordId: String? = null,
+        intervalId: String? = null,
+        startTime: String? = null,
+        endTime: String? = null,
+        typeTemp: K_TempTravaille.IntervalesDeTravaille.TypeTemp? = null
     )
 
     companion object {
@@ -280,6 +296,56 @@ class K_TempTravailleRepositoryImpl : K_TempTravailleRepository {
         } finally {
             isUpdating = false
             startDatabaseListener() // Restart the database listener
+        }
+    }
+    override fun ajoutJour(date: String) {
+        try {
+            // Parse input format MM.DD to the format used in the app (yyyy/MM/dd)
+            val currentYear = java.time.Year.now().value
+            val parts = date.split(".")
+
+            if (parts.size != 2) {
+                // Handle invalid format
+                return
+            }
+
+            val month = parts[0].padStart(2, '0')
+            val day = parts[1].padStart(2, '0')
+
+            // Format the date in the format expected by the app
+            val formattedDate = "$currentYear/$month/$day"
+            val recordId = formattedDate.replace("/", "_")
+
+            // Check if the date already exists
+            val existingRecord = modelDatas.find { it.vid == recordId }
+
+            if (existingRecord == null) {
+                // Create a new record if it doesn't exist
+                val newRecord = K_TempTravaille(vid = recordId)
+                newRecord.infosDeBase.dateInString = formattedDate
+
+                val defaultInterval = K_TempTravaille.IntervalesDeTravaille(vid = "00_00")
+                defaultInterval.tempDepart = "00:00"
+                defaultInterval.temparrete = "00:00"
+                defaultInterval.enCoureDEnregestrement = false
+                defaultInterval.typeTemp = K_TempTravaille.IntervalesDeTravaille.TypeTemp.ENTRE_PAR_MAIN
+                defaultInterval.idBonDeCetteIntervale = System.currentTimeMillis()
+
+                // Add the interval to the new record
+                newRecord.intervalesDeTravaille.add(defaultInterval)
+
+                // Add the new record to the list
+                modelDatas.add(newRecord)
+
+                // Update the database
+                updateUnSeulData(newRecord.vid)
+            } else {
+                // If record already exists, just update it to ensure UI refreshes
+                updateUnSeulData(existingRecord.vid)
+            }
+        } catch (e: Exception) {
+            // Handle any exceptions
+            println("Error adding new day: ${e.message}")
         }
     }
 

@@ -136,58 +136,13 @@ class Windows__ViewModel(
         _editingInterval.value = null
     }
 
-    fun ajoutJour(date: String): Unit {
-        try {
-            // Parse input format MM.DD to the format used in the app (yyyy/MM/dd)
-            val currentYear = java.time.Year.now().value
-            val parts = date.split(".")
-
-            if (parts.size != 2) {
-                // Handle invalid format
-                return
-            }
-
-            val month = parts[0].padStart(2, '0')
-            val day = parts[1].padStart(2, '0')
-
-            // Format the date in the format expected by the app
-            val formattedDate = "$currentYear/$month/$day"
-            val recordId = formattedDate.replace("/", "_")
-
-            // Check if the date already exists
-            val existingRecord = dateList.find { it.vid == recordId }
-
-            if (existingRecord == null) {
-                // Create a new record if it doesn't exist
-                val newRecord = K_TempTravaille(vid = recordId)
-                newRecord.infosDeBase.dateInString = formattedDate
-
-                val defaultInterval = K_TempTravaille.IntervalesDeTravaille(vid = "00_00")
-                defaultInterval.tempDepart = "00:00"
-                defaultInterval.temparrete = "00:00"
-                defaultInterval.enCoureDEnregestrement = false
-                defaultInterval.typeTemp = K_TempTravaille.IntervalesDeTravaille.TypeTemp.ENTRE_PAR_MAIN
-                defaultInterval.idBonDeCetteIntervale = System.currentTimeMillis()
-
-                // Add the interval to the new record
-                newRecord.intervalesDeTravaille.add(defaultInterval)
-
-                // Add the new record to the list
-                dateList.add(newRecord)
-
-                // Update the database
-                repository.updateUnSeulData(newRecord.vid)
-            } else {
-                // If record already exists, just update it to ensure UI refreshes
-                repository.updateUnSeulData(existingRecord.vid)
-            }
-        } catch (e: Exception) {
-            // Handle any exceptions
-            println("Error adding new day: ${e.message}")
-        }
+    fun ajoutJour(date: String) {
+        repository.ajoutJour(date)
     }
 
-    fun deleteIntervaleTemp(intervalId: String) {
+
+    fun deleteIntervaleTemp(intervalId: String) {   //<--
+        //TODO(1): deplace ver repositeri
         // Find the interval
         var recordId: String? = null
 
@@ -332,7 +287,8 @@ class Windows__ViewModel(
         }
     }
 
-    private fun addNewInterval(
+    private fun addNewInterval(  //<--
+        //TODO(1): deplace ver repositeri
         recordId: String? = null,
         intervalId: String? = null,
         startTime: String? = null
@@ -377,7 +333,8 @@ class Windows__ViewModel(
         }
     }
 
-    fun updateExistingInterval(
+    fun updateExistingInterval(      //<--
+        //TODO(1): deplace ver repositeri
         recordId: String? = null,
         intervalId: String? = null,
         startTime: String? = null,
