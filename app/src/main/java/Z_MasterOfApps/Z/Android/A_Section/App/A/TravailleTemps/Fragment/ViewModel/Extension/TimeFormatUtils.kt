@@ -1,4 +1,4 @@
-package Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Modules
+package Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Extension
 
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -20,16 +20,6 @@ object TimeFormatUtils {
     fun getCurrentTime(): String {
         return timeFormat.format(Date())
     }
-
-
-
-    // Format duration in minutes to readable string
-    fun formatDuration(totalMinutes: Int): String {
-        val hours = totalMinutes / 60
-        val minutes = totalMinutes % 60
-        return if (totalMinutes > 0) "${hours}h ${minutes}m" else "Pas de temps enregistré"
-    }
-
     // Format seconds to HH:MM:SS
     fun formatSecondsToTime(seconds: Long): String {
         val hours = seconds / 3600
