@@ -15,8 +15,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -135,7 +135,9 @@ fun MainItem_Windows(
             }
 
             Spacer(modifier = Modifier.height(8.dp))
-            Divider()
+
+            HorizontalDivider()
+
             Spacer(modifier = Modifier.height(8.dp))
 
             Row(
