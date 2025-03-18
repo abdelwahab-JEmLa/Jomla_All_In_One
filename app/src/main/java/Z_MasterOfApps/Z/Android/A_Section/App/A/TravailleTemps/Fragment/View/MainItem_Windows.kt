@@ -1,5 +1,6 @@
 package Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View
 
+import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.Model.K_TempTravaille
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
 import androidx.compose.foundation.layout.Column
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Divider
@@ -27,13 +29,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun MainItem_Windows(
     modifier: Modifier = Modifier,
     intervale: K_TempTravaille.IntervalesDeTravaille,
-    viewModel: Windows__ViewModel // Add the viewModel parameter
+    viewModel: Windows__ViewModel,
+    viewModelInitApp: ViewModelInitApp= koinViewModel(),
 ) {
+    val clientDataBaseSnapList = viewModelInitApp.clientDataBaseSnapList.find {
+        it.id==intervale.idClientSiAchat
+    }
     ElevatedCard(
         modifier = modifier
             .fillMaxWidth()
@@ -47,6 +54,7 @@ fun MainItem_Windows(
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
+
                 Icon(
                     imageVector = intervale.typeTemp.icon,
                     contentDescription = "Type: ${intervale.typeTemp.name}",
@@ -56,11 +64,37 @@ fun MainItem_Windows(
 
                 Spacer(modifier = Modifier.width(8.dp))
 
-                Text(
-                    text = intervale.typeTemp.nomArabe,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
+                ElevatedCard(
+                    modifier = Modifier.padding(4.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = intervale.typeTemp.nomArabe,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+
+                        if (clientDataBaseSnapList != null) {
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Icon(
+                                imageVector = Icons.Default.ArrowForward,
+                                contentDescription = "Arrow to client",
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+
+                            Text(
+                                text = clientDataBaseSnapList.nom,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
 
                 Spacer(modifier = Modifier.weight(1f))
 
