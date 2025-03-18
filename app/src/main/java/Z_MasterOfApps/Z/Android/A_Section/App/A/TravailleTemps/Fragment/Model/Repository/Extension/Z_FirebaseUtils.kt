@@ -74,7 +74,7 @@ object Z_FirebaseUtils {
      * Create value event listener for Firebase database changes
      * Extracted from K_TempTravailleRepositoryImpl
      */
-    fun createValueEventListener(repository: K_TempTravailleRepositoryImpl): ValueEventListener {
+    private fun createValueEventListener(repository: K_TempTravailleRepositoryImpl): ValueEventListener {
         return object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (repository.isUpdating) return

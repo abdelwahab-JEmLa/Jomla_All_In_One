@@ -141,14 +141,14 @@ fun WeekHeader(
                 Spacer(modifier = Modifier.weight(1f))
                 if (allDaysPaid.value) {
                     Text(
-                        text = if (allDaysPaid.value) "تم الدفع" else "",
+                        text = if (allDaysPaid.value) "تم" else "",
                         color = Color.White,
                         textAlign = TextAlign.End,
                         modifier = Modifier.padding(end = 4.dp)
                     )
                     Icon(
                         imageVector = if (allDaysPaid.value) Icons.Default.Check else Icons.Default.Payment,
-                        contentDescription = if (allDaysPaid.value) "تم الدفع" else "في انتظار الدفع",  // "Paid" or "Awaiting payment" in Arabic
+                        contentDescription = if (allDaysPaid.value) "تم " else "في انتظار الدفع",  // "Paid" or "Awaiting payment" in Arabic
                         tint = if (allDaysPaid.value) Color.White else Color.White.copy(alpha = 0.7f),
                         modifier = Modifier.size(24.dp)
                     )

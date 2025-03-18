@@ -99,7 +99,8 @@ fun A_OptionsControlsButtons_FragId_(
 }
 
 @Composable
-fun ControlButton(
+fun ControlButton(  //<--
+//TODO(1): enlve le gray colos si diable 
     onClick: () -> Unit,
     icon: Any,
     contentDescription: String,

@@ -196,7 +196,8 @@ class K_TempTravailleRepositoryImpl : K_TempTravailleRepository {
         }
     }
 
-    internal fun syncData(
+    internal fun syncData(  //<--
+    //TODO(1): extract au Z_FirebaseUtils
         dataSnapshot: DataSnapshot? = null,
         tempTravaille: K_TempTravaille? = null
     ): Any {
