@@ -165,7 +165,7 @@ object Z_FirebaseUtils {
             lastConnectivityState = isConnected
 
             if (isConnected) {
-                // We've reconnected, force sync with server
+
                 K_TempTravailleRepository.caReference.keepSynced(false)
                 K_TempTravailleRepository.caReference.keepSynced(true)
 
