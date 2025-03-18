@@ -113,7 +113,7 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                     )
 
 
-                    if (!packageName.contains("clientje") ) {
+                    if (!packageName.contains("clientje")||true ) {
                         But1_NearbyMarkersButton(
                             showLabels = showLabels,
                             viewModelInitApp = viewModelInitApp,

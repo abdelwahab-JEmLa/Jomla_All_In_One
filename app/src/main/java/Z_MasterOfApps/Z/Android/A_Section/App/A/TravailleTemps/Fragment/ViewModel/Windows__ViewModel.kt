@@ -112,20 +112,7 @@ class Windows__ViewModel(
         }
     }
 
-    private fun formatTimeInput(timeInput: String): String {
-        return try {
-            val parts = timeInput.split(".")
-            if (parts.size == 2) {
-                val hours = parts[0].toInt().toString().padStart(2, '0')
-                val minutes = parts[1].padStart(2, '0')
-                "$hours:$minutes"
-            } else {
-                "HH:mm"
-            }
-        } catch (e: Exception) {
-            "HH:mm"
-        }
-    }
+
 
     // Delegate recording functions to RecordingHandler
     fun toggleRecording() {

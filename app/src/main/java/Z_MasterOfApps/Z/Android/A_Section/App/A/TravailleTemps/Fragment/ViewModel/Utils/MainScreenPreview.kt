@@ -140,7 +140,7 @@ private fun populateSampleData(dateList: SnapshotStateList<K_TempTravaille>) {
             interval.temparrete = end
 
             // Set a sample ID based on the date and interval index
-            interval.idBonDeCetteIntervale = dayIndex * 100L + i
+            interval.idClientSiAchat = dayIndex * 100L + i
 
             // Add the interval to the day's intervals
             tempTravaille.intervalesDeTravaille.add(interval)

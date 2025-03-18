@@ -2,6 +2,7 @@ package Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.Model.R
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.Model.K_TempTravaille
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.Model.Repository.Extension.IntervalesEtJoursHandler
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.Model.Repository.Extension.Z_FirebaseUtils
+import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Extension.TimeFormatUtils
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.firebase.database.DataSnapshot
@@ -37,7 +38,91 @@ class K_TempTravailleRepositoryImpl : K_TempTravailleRepository {
     override fun checkConnectivityAndSync() {
         Z_FirebaseUtils.checkConnectivityAndSync(this)
     }
+    override fun updateOnPasseData(record: K_TempTravaille?) {
+        if (record != null) {
+            // Find the index of the record in the modelDatas list
+            val recordIndex = modelDatas.indexOfFirst { it.vid == record.vid }
 
+            if (recordIndex != -1) {
+                // Update the record in the modelDatas list
+                modelDatas.removeAt(recordIndex)
+                modelDatas.add(recordIndex, record)
+
+                // Update the Firebase database with the updated record
+                try {
+                    // Check connectivity before trying to update Firebase
+                    checkConnectivityAndSync()
+
+                    // Update Firebase database with the updated record
+                    updateDataUnSeulDataInFirebase(record)
+                } catch (e: Exception) {
+                    // Log the error or handle it appropriately
+                    println("Firebase update failed in updateOnPasseData: ${e.message}")
+                }
+            }
+        }
+    }
+    override fun ajouteRecodeAvecIntervaleDAchat(clientId: Long) {
+        val currentDate = TimeFormatUtils.getCurrentDate()
+        val currentDateStr = currentDate.replace("/", "_")
+        val currentTime = TimeFormatUtils.getCurrentTime()
+        val currentTimeFormatted = currentTime.replace(":", "_")
+
+        // Check if the date already exists
+        val existingRecord = modelDatas.find { it.vid == currentDateStr }
+
+        if (existingRecord != null) {
+            // Add new interval with ACHAT type
+            IntervalesEtJoursHandler.addNewInterval(
+                modelDatas = modelDatas,
+                recordId = existingRecord.vid,
+                intervalId = currentTimeFormatted,
+                startTime = currentTime
+            ) { recordId ->
+                // Find the newly created interval
+                val record = modelDatas.find { it.vid == recordId }
+                val interval = record?.intervalesDeTravaille?.find {
+                    it.vid == currentTimeFormatted && it.enCoureDEnregestrement
+                }
+
+                // Set client ID
+                interval?.idClientSiAchat = clientId
+
+                // Update database
+                updateOnPasseData(record)
+            }
+        } else {
+            // First create the day record
+            IntervalesEtJoursHandler.ajoutJour(
+                modelDatas = modelDatas,
+                date = currentDate.split("/").let { "${it[1]}.${it[2]}" } // Convert from yyyy/MM/dd to MM.dd
+            ) { recordId ->
+                // Now add the interval
+                val record = modelDatas.find { it.vid == recordId }
+                if (record != null) {
+                    IntervalesEtJoursHandler.addNewInterval(
+                        modelDatas = modelDatas,
+                        recordId = recordId,
+                        intervalId = currentTimeFormatted,
+                        startTime = currentTime
+                    ) { updatedRecordId ->
+                        // Find the newly created interval
+                        val updatedRecord = modelDatas.find { it.vid == updatedRecordId }
+                        val interval = updatedRecord?.intervalesDeTravaille?.find {
+                            it.vid == currentTimeFormatted && it.enCoureDEnregestrement
+                        }
+
+                        // Set client ID and type
+                        interval?.idClientSiAchat = clientId
+                        interval?.typeTemp = K_TempTravaille.IntervalesDeTravaille.TypeTemp.ACHAT
+
+                        // Update database
+                        updateOnPasseData(updatedRecord)
+                    }
+                }
+            }
+        }
+    }
     override fun deleteIntevaleDeTemp(intervalId: String) {
         // Use the extracted handler to perform the deletion
         val recordToUpdate = IntervalesEtJoursHandler.deleteIntervaleDeTemp(
@@ -116,30 +201,7 @@ class K_TempTravailleRepositoryImpl : K_TempTravailleRepository {
         }
     }
 
-    override fun updateOnPasseData(record: K_TempTravaille?) {
-        if (record != null) {
-            // Find the index of the record in the modelDatas list
-            val recordIndex = modelDatas.indexOfFirst { it.vid == record.vid }
 
-            if (recordIndex != -1) {
-                // Update the record in the modelDatas list
-                modelDatas.removeAt(recordIndex)
-                modelDatas.add(recordIndex, record)
-
-                // Update the Firebase database with the updated record
-                try {
-                    // Check connectivity before trying to update Firebase
-                    checkConnectivityAndSync()
-
-                    // Update Firebase database with the updated record
-                    updateDataUnSeulDataInFirebase(record)
-                } catch (e: Exception) {
-                    // Log the error or handle it appropriately
-                    println("Firebase update failed in updateOnPasseData: ${e.message}")
-                }
-            }
-        }
-    }
 
     override fun updateUnSeulData(
         recordId: String?,
@@ -196,8 +258,8 @@ class K_TempTravailleRepositoryImpl : K_TempTravailleRepository {
         }
     }
 
-    internal fun syncData(  //<--
-    //TODO(1): extract au Z_FirebaseUtils
+    internal fun syncData(
+    // extract au Z_FirebaseUtils
         dataSnapshot: DataSnapshot? = null,
         tempTravaille: K_TempTravaille? = null
     ): Any {
@@ -225,7 +287,7 @@ class K_TempTravailleRepositoryImpl : K_TempTravailleRepository {
 
                 interval.tempDepart = intervalSnapshot.child("tempDepart").getValue(String::class.java) ?: "HH:mm"
                 interval.temparrete = intervalSnapshot.child("temparrete").getValue(String::class.java) ?: "HH:mm"
-                interval.idBonDeCetteIntervale = intervalSnapshot.child("idBonDeCetteIntervale").getValue(Long::class.java) ?: 0L
+                interval.idClientSiAchat = intervalSnapshot.child("idBonDeCetteIntervale").getValue(Long::class.java) ?: 0L
 
                 // Make sure we properly read the recording state
                 interval.enCoureDEnregestrement = intervalSnapshot.child("enCoureDEnregestrement").getValue(Boolean::class.java) ?: false
@@ -252,7 +314,7 @@ class K_TempTravailleRepositoryImpl : K_TempTravailleRepository {
                     "typeTemp" to interval.typeTemp.name,
                     "tempDepart" to interval.tempDepart,
                     "temparrete" to interval.temparrete,
-                    "idBonDeCetteIntervale" to interval.idBonDeCetteIntervale,
+                    "idBonDeCetteIntervale" to interval.idClientSiAchat,
                     "enCoureDEnregestrement" to interval.enCoureDEnregestrement
                 )
 

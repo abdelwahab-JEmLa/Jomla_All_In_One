@@ -31,7 +31,16 @@ class RecordingHandler(
     val displayTime: StateFlow<String> = _displayTime.asStateFlow()
     private val _currentElapsedSeconds = MutableStateFlow(0L)
     private val _lastUpdateTime = MutableStateFlow(System.currentTimeMillis())
-
+    // Toggle recording state
+    fun toggleRecording() {
+        if (_isRecording.value) {
+            stopTimeInterval()
+            updateRecordingState(false)
+        } else {
+            startTimeInterval()
+            updateRecordingState(true)
+        }
+    }
     fun setupRecordingStateListener() {
         val recordingStateRef = K_TempTravailleRepository.caReference.child("_isRecording")
         recordingStateRef.addValueEventListener(object : ValueEventListener {
@@ -86,16 +95,7 @@ class RecordingHandler(
             }
     }
 
-    // Toggle recording state
-    fun toggleRecording() {
-        if (_isRecording.value) {
-            stopTimeInterval()
-            updateRecordingState(false)
-        } else {
-            startTimeInterval()
-            updateRecordingState(true)
-        }
-    }
+
 
     private fun startTimeInterval() {
         val currentDate = TimeFormatUtils.getCurrentDate()

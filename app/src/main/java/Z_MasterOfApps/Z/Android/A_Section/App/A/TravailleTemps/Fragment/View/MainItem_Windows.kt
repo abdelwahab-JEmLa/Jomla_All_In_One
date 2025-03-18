@@ -120,7 +120,7 @@ fun MainItem_Windows(
                 Spacer(modifier = Modifier.weight(1f))
 
                 Text(
-                    text = "ID: ${intervale.idBonDeCetteIntervale}",
+                    text = "ID: ${intervale.idClientSiAchat}",
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.Gray
                 )

@@ -44,7 +44,7 @@ class K_TempTravaille(var vid: String = "2025_01_01") {
             }
         }
 
-        var idBonDeCetteIntervale by mutableStateOf(0L)
+        var idClientSiAchat by mutableStateOf(0L)
         var enCoureDEnregestrement by mutableStateOf(false)
         var tempDepart by mutableStateOf("HH:mm")
         var temparrete by mutableStateOf("HH:mm")

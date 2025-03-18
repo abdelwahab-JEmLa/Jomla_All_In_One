@@ -74,7 +74,7 @@ object IntervalesEtJoursHandler {
             newInterval.tempDepart = startTime ?: currentTime
             newInterval.enCoureDEnregestrement = true
             newInterval.typeTemp = K_TempTravaille.IntervalesDeTravaille.TypeTemp.ACHAT
-            newInterval.idBonDeCetteIntervale = System.currentTimeMillis()
+            newInterval.idClientSiAchat = System.currentTimeMillis()
 
             existingRecord.intervalesDeTravaille.add(newInterval)
             callback(existingRecord.vid)
@@ -88,7 +88,7 @@ object IntervalesEtJoursHandler {
             newInterval.tempDepart = startTime ?: currentTime
             newInterval.enCoureDEnregestrement = true
             newInterval.typeTemp = K_TempTravaille.IntervalesDeTravaille.TypeTemp.ACHAT
-            newInterval.idBonDeCetteIntervale = System.currentTimeMillis()
+            newInterval.idClientSiAchat = System.currentTimeMillis()
 
             newRecord.intervalesDeTravaille.add(newInterval)
             modelDatas.add(newRecord)
@@ -100,8 +100,8 @@ object IntervalesEtJoursHandler {
      * Update an existing interval with new start/end times or type
      * With enhanced logging and improved time formatting
      */
-    fun updateExistingInterval(   //->
-        //TODO(FIXME):Fix erreur enleve logs
+    fun updateExistingInterval(
+        //enleve logs
         modelDatas: SnapshotStateList<K_TempTravaille>,
         recordId: String? = null,
         intervalId: String? = null,
@@ -274,7 +274,7 @@ object IntervalesEtJoursHandler {
                 defaultInterval.enCoureDEnregestrement = false
                 defaultInterval.typeTemp =
                     K_TempTravaille.IntervalesDeTravaille.TypeTemp.ENTRE_PAR_MAIN
-                defaultInterval.idBonDeCetteIntervale = System.currentTimeMillis()
+                defaultInterval.idClientSiAchat = System.currentTimeMillis()
 
                 // Add the interval to the new record
                 newRecord.intervalesDeTravaille.add(defaultInterval)
