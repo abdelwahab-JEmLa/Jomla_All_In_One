@@ -11,19 +11,37 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 object IntervalesEtJoursHandler {
 
     /**
-     * Format time input from decimal format to HH:mm format
+     * Format time input from various formats to HH:mm format
+     * Enhanced to handle both decimal format (7.30) and time format (07:30)
      */
     fun formatTimeInput(timeInput: String): String {
         return try {
+            // Check if already in HH:mm format
+            if (timeInput.contains(":") && timeInput.matches("\\d{1,2}:\\d{2}".toRegex())) {
+                // Already in correct format, ensure proper padding
+                val parts = timeInput.split(":")
+                val hours = parts[0].toInt().toString().padStart(2, '0')
+                val minutes = parts[1].padStart(2, '0')
+                return "$hours:$minutes"
+            }
+
+            // Try to parse as decimal format (e.g. 7.30)
             val parts = timeInput.split(".")
             if (parts.size == 2) {
                 val hours = parts[0].toInt().toString().padStart(2, '0')
                 val minutes = parts[1].padStart(2, '0')
                 "$hours:$minutes"
             } else {
-                "HH:mm"
+                // Try to parse as integer (e.g., 7)
+                val hours = timeInput.toIntOrNull()?.toString()?.padStart(2, '0')
+                if (hours != null) {
+                    "$hours:00"
+                } else {
+                    "HH:mm"
+                }
             }
         } catch (e: Exception) {
+            println("DEBUG: Error formatting time '$timeInput': ${e.message}")
             "HH:mm"
         }
     }
@@ -80,6 +98,7 @@ object IntervalesEtJoursHandler {
 
     /**
      * Update an existing interval with new start/end times or type
+     * With enhanced logging and improved time formatting
      */
     fun updateExistingInterval(
         modelDatas: SnapshotStateList<K_TempTravaille>,
@@ -88,68 +107,129 @@ object IntervalesEtJoursHandler {
         startTime: String? = null,
         endTime: String? = null,
         typeTemp: K_TempTravaille.IntervalesDeTravaille.TypeTemp? = null,
-        callback: (String) -> Unit
+        callback: (K_TempTravaille) -> Unit
     ) {
+        println("DEBUG: updateExistingInterval called")
+        println("DEBUG: Parameters - recordId: $recordId, intervalId: $intervalId")
+        println("DEBUG: Parameters - startTime: $startTime, endTime: $endTime, typeTemp: $typeTemp")
+
         if (recordId == null || intervalId == null) {
+            println("DEBUG: Early return - recordId or intervalId is null")
             return
         }
 
         val existingRecord = modelDatas.find { it.vid == recordId }
 
-        if (existingRecord != null) {
-            val existingInterval = existingRecord.intervalesDeTravaille.find { it.vid == intervalId }
+        if (existingRecord == null) {
+            println("DEBUG: No record found with ID: $recordId")
+            return
+        }
 
-            if (existingInterval != null) {
+        println("DEBUG: Found record with ID: ${existingRecord.vid}")
+        println("DEBUG: Record has ${existingRecord.intervalesDeTravaille.size} intervals")
+
+        val existingInterval = existingRecord.intervalesDeTravaille.find { it.vid == intervalId }
+
+        if (existingInterval != null) {
+            println("DEBUG: Found interval with ID: ${existingInterval.vid}")
+            println("DEBUG: Current values - start: ${existingInterval.tempDepart}, end: ${existingInterval.temparrete}")
+            println("DEBUG: Current recording state: ${existingInterval.enCoureDEnregestrement}")
+
+            // Update start time if provided
+            if (startTime != null) {
+                val formattedStartTime = formatTimeInput(startTime)
+                println("DEBUG: Updating start time from ${existingInterval.tempDepart} to $formattedStartTime")
+                existingInterval.tempDepart = formattedStartTime
+                println("DEBUG: After update, start time is: ${existingInterval.tempDepart}")
+            }
+
+            // Update end time if provided
+            if (endTime != null) {
+                // Use the actual endTime directly if it's already in the right format
+                val formattedEndTime = formatTimeInput(endTime)
+                println("DEBUG: Raw endTime: $endTime")
+                println("DEBUG: Formatted endTime: $formattedEndTime")
+                println("DEBUG: Updating end time from ${existingInterval.temparrete} to $formattedEndTime")
+
+                // Perform the update
+                existingInterval.temparrete = formattedEndTime
+
+                // Verify the update happened
+                println("DEBUG: After update, end time is: ${existingInterval.temparrete}")
+
+                // If end time is set to a valid time, the interval is no longer recording
+                if (formattedEndTime != "HH:mm") {
+                    println("DEBUG: Setting recording state to false")
+                    existingInterval.enCoureDEnregestrement = false
+                    println("DEBUG: After update, recording state is: ${existingInterval.enCoureDEnregestrement}")
+                }
+            }
+
+            // Update type if provided
+            if (typeTemp != null) {
+                println("DEBUG: Updating type from ${existingInterval.typeTemp} to $typeTemp")
+                existingInterval.typeTemp = typeTemp
+                println("DEBUG: After update, type is: ${existingInterval.typeTemp}")
+            }
+
+            println("DEBUG: Final interval state - start: ${existingInterval.tempDepart}, end: ${existingInterval.temparrete}")
+            println("DEBUG: Final recording state: ${existingInterval.enCoureDEnregestrement}")
+
+            println("DEBUG: Calling callback with updated record")
+            callback(existingRecord)
+        } else {
+            println("DEBUG: No interval found with ID: $intervalId")
+            println("DEBUG: Checking for any recording interval")
+
+            val recordingInterval = existingRecord.intervalesDeTravaille.find { it.enCoureDEnregestrement }
+            if (recordingInterval != null) {
+                println("DEBUG: Found recording interval with ID: ${recordingInterval.vid}")
+                println("DEBUG: Current values - start: ${recordingInterval.tempDepart}, end: ${recordingInterval.temparrete}")
+
                 // Update start time if provided
                 if (startTime != null) {
                     val formattedStartTime = formatTimeInput(startTime)
-                    existingInterval.tempDepart = formattedStartTime
+                    println("DEBUG: Updating start time from ${recordingInterval.tempDepart} to $formattedStartTime")
+                    recordingInterval.tempDepart = formattedStartTime
+                    println("DEBUG: After update, start time is: ${recordingInterval.tempDepart}")
                 }
 
                 // Update end time if provided
                 if (endTime != null) {
+                    // Use the actual endTime directly if it's already in the right format
                     val formattedEndTime = formatTimeInput(endTime)
-                    existingInterval.temparrete = formattedEndTime
+                    println("DEBUG: Raw endTime: $endTime")
+                    println("DEBUG: Formatted endTime: $formattedEndTime")
+                    println("DEBUG: Updating end time from ${recordingInterval.temparrete} to $formattedEndTime")
 
-                    // If end time is set, the interval is no longer recording
+                    // Perform the update
+                    recordingInterval.temparrete = formattedEndTime
+
+                    // Verify the update happened
+                    println("DEBUG: After update, end time is: ${recordingInterval.temparrete}")
+
+                    // If end time is set to a valid time, the interval is no longer recording
                     if (formattedEndTime != "HH:mm") {
-                        existingInterval.enCoureDEnregestrement = false
+                        println("DEBUG: Setting recording state to false")
+                        recordingInterval.enCoureDEnregestrement = false
+                        println("DEBUG: After update, recording state is: ${recordingInterval.enCoureDEnregestrement}")
                     }
                 }
 
                 // Update type if provided
                 if (typeTemp != null) {
-                    existingInterval.typeTemp = typeTemp
+                    println("DEBUG: Updating type from ${recordingInterval.typeTemp} to $typeTemp")
+                    recordingInterval.typeTemp = typeTemp
+                    println("DEBUG: After update, type is: ${recordingInterval.typeTemp}")
                 }
 
-                callback(existingRecord.vid)
+                println("DEBUG: Final interval state - start: ${recordingInterval.tempDepart}, end: ${recordingInterval.temparrete}")
+                println("DEBUG: Final recording state: ${recordingInterval.enCoureDEnregestrement}")
+
+                println("DEBUG: Calling callback with updated record")
+                callback(existingRecord)
             } else {
-                val recordingInterval = existingRecord.intervalesDeTravaille.find { it.enCoureDEnregestrement }
-                if (recordingInterval != null) {
-                    // Update start time if provided
-                    if (startTime != null) {
-                        val formattedStartTime = formatTimeInput(startTime)
-                        recordingInterval.tempDepart = formattedStartTime
-                    }
-
-                    // Update end time if provided
-                    if (endTime != null) {
-                        val formattedEndTime = formatTimeInput(endTime)
-                        recordingInterval.temparrete = formattedEndTime
-
-                        // If end time is set, the interval is no longer recording
-                        if (formattedEndTime != "HH:mm") {
-                            recordingInterval.enCoureDEnregestrement = false
-                        }
-                    }
-
-                    // Update type if provided
-                    if (typeTemp != null) {
-                        recordingInterval.typeTemp = typeTemp
-                    }
-
-                    callback(existingRecord.vid)
-                }
+                println("DEBUG: No recording interval found")
             }
         }
     }

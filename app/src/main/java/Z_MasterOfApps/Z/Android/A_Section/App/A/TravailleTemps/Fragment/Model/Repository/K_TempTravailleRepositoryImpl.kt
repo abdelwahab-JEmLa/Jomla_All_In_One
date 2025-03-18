@@ -110,7 +110,7 @@ class K_TempTravailleRepositoryImpl : K_TempTravailleRepository {
             endTime = endTime,
             typeTemp = typeTemp
         ) { updatedRecordId ->
-            updateUnSeulData(updatedRecordId)
+            updateOnPasseData(updatedRecordId)
         }
     }
 
