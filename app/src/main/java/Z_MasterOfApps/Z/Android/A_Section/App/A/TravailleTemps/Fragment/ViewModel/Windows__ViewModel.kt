@@ -44,6 +44,22 @@ class Windows__ViewModel(
     fun editIntervaleTemp(interval: K_TempTravaille.IntervalesDeTravaille) {
         _editingInterval.value = interval
     }
+    // In Windows__ViewModel.kt
+    fun togleRecodingOnUtilisontCetteIntervale(record: K_TempTravaille?) {
+        if (record == null) return
+
+        // Find the active interval that was just created
+        val activeInterval = record.intervalesDeTravaille.find { it.enCoureDEnregestrement }
+
+        if (activeInterval != null) {
+            // Set the recording state variables in the RecordingHandler
+            recordingHandler.startRecordingWithInterval(
+                recordId = record.vid,
+                intervalId = activeInterval.vid,
+                startTime = activeInterval.tempDepart
+            )
+        }
+    }
 
     // Add this function to Windows__ViewModel class
     fun clearEditingInterval() {

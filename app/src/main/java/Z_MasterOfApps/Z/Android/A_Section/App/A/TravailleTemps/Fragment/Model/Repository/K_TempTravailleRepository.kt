@@ -43,7 +43,8 @@ interface K_TempTravailleRepository {
         record: K_TempTravaille? = null,
     )
 
-    fun ajouteRecodeAvecIntervaleDAchat(clientId: Long)
+    fun ajouteRecodeAvecIntervaleDAchat(clientId: Long): K_TempTravaille?
+
 
 
     companion object {

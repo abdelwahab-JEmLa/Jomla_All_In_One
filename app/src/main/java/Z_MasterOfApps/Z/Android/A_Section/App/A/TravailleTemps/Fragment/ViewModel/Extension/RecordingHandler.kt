@@ -41,6 +41,20 @@ class RecordingHandler(
             updateRecordingState(true)
         }
     }
+    // In RecordingHandler.kt
+    fun startRecordingWithInterval(recordId: String, intervalId: String, startTime: String) {
+        _currentRecordId.value = recordId
+        _currentIntervalId.value = intervalId
+        _currentStartTime.value = startTime
+        _currentElapsedSeconds.value = 0L
+        _lastUpdateTime.value = System.currentTimeMillis()
+        _elapsedTimeInSeconds.value = 0
+
+        // Update the recording state
+        _isRecording.value = true
+        updateRecordingState(true)
+    }
+
     fun setupRecordingStateListener() {
         val recordingStateRef = K_TempTravailleRepository.caReference.child("_isRecording")
         recordingStateRef.addValueEventListener(object : ValueEventListener {

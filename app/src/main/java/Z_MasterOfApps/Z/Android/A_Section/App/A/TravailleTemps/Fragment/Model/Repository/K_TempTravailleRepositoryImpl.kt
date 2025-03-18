@@ -18,6 +18,7 @@ class K_TempTravailleRepositoryImpl : K_TempTravailleRepository {
     internal var isUpdating = false
     internal var lastUpdateTimestamp = 0L
 
+
     init {
         Z_FirebaseUtils.initializeFirebaseOfflineCapability()
         startDatabaseListener()
@@ -33,7 +34,75 @@ class K_TempTravailleRepositoryImpl : K_TempTravailleRepository {
     internal fun restartDatabaseListener() {
         startDatabaseListener()
     }
+    // In K_TempTravailleRepository.kt - Update the interface
 
+    // In K_TempTravailleRepositoryImpl.kt - Modify the implementation
+    override fun ajouteRecodeAvecIntervaleDAchat(clientId: Long): K_TempTravaille? {
+        val currentDate = TimeFormatUtils.getCurrentDate()
+        val currentDateStr = currentDate.replace("/", "_")
+        val currentTime = TimeFormatUtils.getCurrentTime()
+        val currentTimeFormatted = currentTime.replace(":", "_")
+        var createdRecord: K_TempTravaille? = null
+
+        // Check if the date already exists
+        val existingRecord = modelDatas.find { it.vid == currentDateStr }
+
+        if (existingRecord != null) {
+            // Add new interval with ACHAT type
+            IntervalesEtJoursHandler.addNewInterval(
+                modelDatas = modelDatas,
+                recordId = existingRecord.vid,
+                intervalId = currentTimeFormatted,
+                startTime = currentTime
+            ) { recordId ->
+                // Find the newly created interval
+                val record = modelDatas.find { it.vid == recordId }
+                val interval = record?.intervalesDeTravaille?.find {
+                    it.vid == currentTimeFormatted && it.enCoureDEnregestrement
+                }
+
+                // Set client ID
+                interval?.idClientSiAchat = clientId
+
+                // Update database
+                updateOnPasseData(record)
+                createdRecord = record
+            }
+        } else {
+            // First create the day record
+            IntervalesEtJoursHandler.ajoutJour(
+                modelDatas = modelDatas,
+                date = currentDate.split("/").let { "${it[1]}.${it[2]}" } // Convert from yyyy/MM/dd to MM.dd
+            ) { recordId ->
+                // Now add the interval
+                val record = modelDatas.find { it.vid == recordId }
+                if (record != null) {
+                    IntervalesEtJoursHandler.addNewInterval(
+                        modelDatas = modelDatas,
+                        recordId = recordId,
+                        intervalId = currentTimeFormatted,
+                        startTime = currentTime
+                    ) { updatedRecordId ->
+                        // Find the newly created interval
+                        val updatedRecord = modelDatas.find { it.vid == updatedRecordId }
+                        val interval = updatedRecord?.intervalesDeTravaille?.find {
+                            it.vid == currentTimeFormatted && it.enCoureDEnregestrement
+                        }
+
+                        // Set client ID and type
+                        interval?.idClientSiAchat = clientId
+                        interval?.typeTemp = K_TempTravaille.IntervalesDeTravaille.TypeTemp.VENT
+
+                        // Update database
+                        updateOnPasseData(updatedRecord)
+                        createdRecord = updatedRecord
+                    }
+                }
+            }
+        }
+
+        return createdRecord
+    }
     // Check connectivity and sync if state has changed
     override fun checkConnectivityAndSync() {
         Z_FirebaseUtils.checkConnectivityAndSync(this)
@@ -62,67 +131,7 @@ class K_TempTravailleRepositoryImpl : K_TempTravailleRepository {
             }
         }
     }
-    override fun ajouteRecodeAvecIntervaleDAchat(clientId: Long) {
-        val currentDate = TimeFormatUtils.getCurrentDate()
-        val currentDateStr = currentDate.replace("/", "_")
-        val currentTime = TimeFormatUtils.getCurrentTime()
-        val currentTimeFormatted = currentTime.replace(":", "_")
 
-        // Check if the date already exists
-        val existingRecord = modelDatas.find { it.vid == currentDateStr }
-
-        if (existingRecord != null) {
-            // Add new interval with ACHAT type
-            IntervalesEtJoursHandler.addNewInterval(
-                modelDatas = modelDatas,
-                recordId = existingRecord.vid,
-                intervalId = currentTimeFormatted,
-                startTime = currentTime
-            ) { recordId ->
-                // Find the newly created interval
-                val record = modelDatas.find { it.vid == recordId }
-                val interval = record?.intervalesDeTravaille?.find {
-                    it.vid == currentTimeFormatted && it.enCoureDEnregestrement
-                }
-
-                // Set client ID
-                interval?.idClientSiAchat = clientId
-
-                // Update database
-                updateOnPasseData(record)
-            }
-        } else {
-            // First create the day record
-            IntervalesEtJoursHandler.ajoutJour(
-                modelDatas = modelDatas,
-                date = currentDate.split("/").let { "${it[1]}.${it[2]}" } // Convert from yyyy/MM/dd to MM.dd
-            ) { recordId ->
-                // Now add the interval
-                val record = modelDatas.find { it.vid == recordId }
-                if (record != null) {
-                    IntervalesEtJoursHandler.addNewInterval(
-                        modelDatas = modelDatas,
-                        recordId = recordId,
-                        intervalId = currentTimeFormatted,
-                        startTime = currentTime
-                    ) { updatedRecordId ->
-                        // Find the newly created interval
-                        val updatedRecord = modelDatas.find { it.vid == updatedRecordId }
-                        val interval = updatedRecord?.intervalesDeTravaille?.find {
-                            it.vid == currentTimeFormatted && it.enCoureDEnregestrement
-                        }
-
-                        // Set client ID and type
-                        interval?.idClientSiAchat = clientId
-                        interval?.typeTemp = K_TempTravaille.IntervalesDeTravaille.TypeTemp.ACHAT
-
-                        // Update database
-                        updateOnPasseData(updatedRecord)
-                    }
-                }
-            }
-        }
-    }
     override fun deleteIntevaleDeTemp(intervalId: String) {
         // Use the extracted handler to perform the deletion
         val recordToUpdate = IntervalesEtJoursHandler.deleteIntervaleDeTemp(

@@ -7,6 +7,7 @@ import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.ViewModel.Exte
 import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.ViewModel.Extension.ViewModelExtension_App2_F1
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.Model.Repository.K_TempTravailleRepository
+import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -50,6 +51,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import org.osmdroid.views.overlay.Marker
 
@@ -62,9 +64,11 @@ fun MarkerStatusDialog(
     onUpdateLongAppSetting: () -> Unit = {},
     onClickToEditeMarquerPosition: (Long) -> Unit,
     onRemoveMark: (Marker?) -> Unit,
-    repository: K_TempTravailleRepository = koinInject() // Inject the repository
+    repository: K_TempTravailleRepository = koinInject(),
+    vindows__ViewModel: Windows__ViewModel = koinViewModel(),
 
-) {
+
+    ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     var showEditDialog by remember { mutableStateOf(false) }
@@ -168,7 +172,8 @@ fun MarkerStatusDialog(
                         coroutineScope.launch {
                             extensionVM.updateLongAppSetting(selectedMarker.id.toLong())
                             onUpdateLongAppSetting()
-                            repository.ajouteRecodeAvecIntervaleDAchat(selectedMarker.id.toLong())
+                            val createdRecord = repository.ajouteRecodeAvecIntervaleDAchat(selectedMarker.id.toLong())
+                            vindows__ViewModel.togleRecodingOnUtilisontCetteIntervale(createdRecord)
                             onDismiss()
                         }
                     }
