@@ -3,7 +3,6 @@ package Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.Model.K_TempTravaille
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -27,6 +27,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
@@ -41,13 +42,17 @@ fun MainItem_Windows(
     val clientDataBaseSnapList = viewModelInitApp.clientDataBaseSnapList.find {
         it.id == intervale.idClientSiAchat
     }
+    // Instead of reducing alpha, lighten the color
+    val lightGreen = intervale.typeTemp.color.copy(alpha = 1f)
+        .compositeOver(androidx.compose.ui.graphics.Color.White)
 
     ElevatedCard(
         modifier = modifier
             .fillMaxWidth()
-            .padding(8.dp)
-            // Apply background color through the modifier instead
-            .then(Modifier.background(intervale.typeTemp.color.copy(alpha = 0.1f)))
+            .padding(8.dp),
+        // Use CardDefaults.elevatedCardColors() with containerColor parameter
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = lightGreen )
     ) {
         Column(
             modifier = Modifier
