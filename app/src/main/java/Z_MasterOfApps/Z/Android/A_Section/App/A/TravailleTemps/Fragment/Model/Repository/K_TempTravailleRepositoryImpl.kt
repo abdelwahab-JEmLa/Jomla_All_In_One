@@ -37,7 +37,10 @@ class K_TempTravailleRepositoryImpl : K_TempTravailleRepository {
     // In K_TempTravailleRepository.kt - Update the interface
 
     // In K_TempTravailleRepositoryImpl.kt - Modify the implementation
-    override fun ajouteRecodeAvecIntervaleDAchat(clientId: Long): K_TempTravaille? {
+    override fun ajouteRecodeAvecIntervaleDAchat(
+        clientId: Long,
+        typeTemp: K_TempTravaille.IntervalesDeTravaille.TypeTemp
+    ): K_TempTravaille? {
         val currentDate = TimeFormatUtils.getCurrentDate()
         val currentDateStr = currentDate.replace("/", "_")
         val currentTime = TimeFormatUtils.getCurrentTime()
@@ -91,7 +94,7 @@ class K_TempTravailleRepositoryImpl : K_TempTravailleRepository {
 
                         // Set client ID and type
                         interval?.idClientSiAchat = clientId
-                        interval?.typeTemp = K_TempTravaille.IntervalesDeTravaille.TypeTemp.VENT
+                        interval?.typeTemp = typeTemp
 
                         // Update database
                         updateOnPasseData(updatedRecord)

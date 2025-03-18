@@ -135,7 +135,7 @@ class RecordingHandler(
         }
     }
 
-    private fun stopTimeInterval() {
+     fun stopTimeInterval() {
         val currentDate = TimeFormatUtils.getCurrentDate()
         val currentDateStr = currentDate.replace("/", "_")
         val currentTime = TimeFormatUtils.getCurrentTime()

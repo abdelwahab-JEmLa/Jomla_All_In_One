@@ -6,6 +6,7 @@ import Z_CodePartageEntreApps.Model._ModelAppsFather
 import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.ViewModel.Extension.Utils.updateLongAppSetting
 import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.ViewModel.Extension.ViewModelExtension_App2_F1
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
+import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.Model.K_TempTravaille
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.Model.Repository.K_TempTravailleRepository
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
 import androidx.compose.foundation.clickable
@@ -66,8 +67,6 @@ fun MarkerStatusDialog(
     onRemoveMark: (Marker?) -> Unit,
     repository: K_TempTravailleRepository = koinInject(),
     vindows__ViewModel: Windows__ViewModel = koinViewModel(),
-
-
     ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -172,8 +171,12 @@ fun MarkerStatusDialog(
                         coroutineScope.launch {
                             extensionVM.updateLongAppSetting(selectedMarker.id.toLong())
                             onUpdateLongAppSetting()
-                            val createdRecord = repository.ajouteRecodeAvecIntervaleDAchat(selectedMarker.id.toLong())
+                            val createdRecord = repository.ajouteRecodeAvecIntervaleDAchat(
+                                selectedMarker.id.toLong(),
+                                K_TempTravaille.IntervalesDeTravaille.TypeTemp.VENT
+                            )
                             vindows__ViewModel.togleRecodingOnUtilisontCetteIntervale(createdRecord)
+
                             onDismiss()
                         }
                     }

@@ -43,7 +43,10 @@ interface K_TempTravailleRepository {
         record: K_TempTravaille? = null,
     )
 
-    fun ajouteRecodeAvecIntervaleDAchat(clientId: Long): K_TempTravaille?
+    fun ajouteRecodeAvecIntervaleDAchat(
+        clientId: Long,
+        typeTemp: K_TempTravaille.IntervalesDeTravaille.TypeTemp
+    ): K_TempTravaille?
 
 
 

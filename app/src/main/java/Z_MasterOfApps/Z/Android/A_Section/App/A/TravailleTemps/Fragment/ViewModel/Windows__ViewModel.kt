@@ -15,7 +15,7 @@ class Windows__ViewModel(
     val repository: K_TempTravailleRepository = K_TempTravailleRepositoryImpl()
 ) : ViewModel() {
     // Recording handler handles all recording-related functionality
-    private val recordingHandler = RecordingHandler(repository, viewModelScope)
+     val recordingHandler = RecordingHandler(repository, viewModelScope)
 
     val dateList get() = repository.modelDatas
     // Added state for Abdelwahab Le Gérant privileges

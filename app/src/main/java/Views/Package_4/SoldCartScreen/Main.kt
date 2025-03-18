@@ -2,6 +2,8 @@ package Views.Package_4.SoldCartScreen
 
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
+import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.Model.K_TempTravaille
+import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.SoldArticlesTabelle
@@ -65,6 +67,7 @@ import com.example.clientjetpack.R
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 import java.io.File
 
 @Composable
@@ -121,7 +124,10 @@ fun SoldCartScreen(
                     onConfirmOrder = {
                         viewModelInitApp.viewModelScope.launch {
                             if (clientBuyerNow != null) {
-                                viewModelInitApp.updateStatueClientParID(clientBuyerNow.id, B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.VENDU_A_LUI)
+                                viewModelInitApp.updateStatueClientParID(
+                                    clientBuyerNow.id,
+                                    B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.VENDU_A_LUI
+                                )
                             }
                         }
                         scope.launch {
@@ -190,8 +196,10 @@ fun CartSummaryCard(
     client: B_ClientsDataBase?,
     itemCount: Int,
     totalPrice: Double,
-    onConfirmOrder: () -> Unit
-) {
+    onConfirmOrder: () -> Unit,
+    windows__ViewModel: Windows__ViewModel = koinViewModel(),
+
+    ) {
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp)
@@ -224,9 +232,19 @@ fun CartSummaryCard(
                 )
             }
 
+
             Button(
-                onClick = onConfirmOrder
-                ,
+                onClick = {
+                    onConfirmOrder()
+                    windows__ViewModel.toggleRecording()
+                    val createdRecord = client?.let {
+                        windows__ViewModel.repository.ajouteRecodeAvecIntervaleDAchat(
+                            it.id,
+                            K_TempTravaille.IntervalesDeTravaille.TypeTemp.DEPLACEMENT
+                        )
+                    }
+                    windows__ViewModel.togleRecodingOnUtilisontCetteIntervale(createdRecord)
+                },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = itemCount > 0
             ) {
@@ -466,7 +484,7 @@ private fun ColorItemWithQuantity(
                 onClick = {
                     onDelete()
                     _SoldCartScreen(viewModelInitApp)
-                        .onClickOnMain(viewModelInitApp,colorIndex, article, clientBuyerNow)
+                        .onClickOnMain(viewModelInitApp, colorIndex, article, clientBuyerNow)
                 },
                 modifier = Modifier
                     .align(Alignment.TopEnd)
