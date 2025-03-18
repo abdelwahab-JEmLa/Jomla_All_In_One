@@ -4,11 +4,12 @@ plugins {
     alias(libs.plugins.google.gms.google.services)
     id("kotlin-kapt")
     id("org.jetbrains.kotlin.plugin.serialization") version "1.8.0"
+    alias(libs.plugins.kotlin.compose) // Fixed plugin reference
 }
 
 android {
     namespace = "com.example.clientjetpack"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.clientjetpack"
@@ -104,18 +105,18 @@ dependencies {
     implementation(libs.kotlin.reflect)
     implementation(libs.androidx.material.icons.extended)
 
-    implementation( libs.gson)
+    implementation(libs.gson)
 
-    implementation  (libs.androidx.paging.runtime )
-    implementation (libs.androidx.paging.compose)
+    implementation(libs.androidx.paging.runtime)
+    implementation(libs.androidx.paging.compose)
     // Glide core dependencies
     implementation(libs.glide)
     kapt(libs.compiler)
 
     // Glide Compose integration
     implementation(libs.compose.v100beta01)
-    implementation (libs.glide.transformations)
-    implementation (libs.play.services.nearby)
+    implementation(libs.glide.transformations)
+    implementation(libs.play.services.nearby)
 
     // OSMDroid dependencies
     implementation(libs.osmdroid.android)
@@ -123,13 +124,11 @@ dependencies {
     implementation(libs.osmdroid.mapsforge)
 
     // Lottie Compose
-    implementation ("com.airbnb.android:lottie-compose:6.1.0")
+    implementation("com.airbnb.android:lottie-compose:6.1.0")
 
-    // Koin pour Android
-    implementation ("io.insert-koin:koin-android:3.5.0")
-    implementation ("io.insert-koin:koin-androidx-compose:3.5.0")
-
+    // Koin for Android
+    implementation("io.insert-koin:koin-android:3.5.0")
+    implementation("io.insert-koin:koin-androidx-compose:3.5.0")
 }
 
 apply(plugin = "com.google.gms.google-services")
-
