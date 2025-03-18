@@ -26,7 +26,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
@@ -36,10 +35,10 @@ fun MainItem_Windows(
     modifier: Modifier = Modifier,
     intervale: K_TempTravaille.IntervalesDeTravaille,
     viewModel: Windows__ViewModel,
-    viewModelInitApp: ViewModelInitApp= koinViewModel(),
+    viewModelInitApp: ViewModelInitApp = koinViewModel(),
 ) {
     val clientDataBaseSnapList = viewModelInitApp.clientDataBaseSnapList.find {
-        it.id==intervale.idClientSiAchat
+        it.id == intervale.idClientSiAchat
     }
     ElevatedCard(
         modifier = modifier
@@ -96,15 +95,34 @@ fun MainItem_Windows(
                     }
                 }
 
-                Spacer(modifier = Modifier.weight(1f))
 
-                Text(
-                    text = "${intervale.tempDepart} - ${intervale.temparrete}",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-
+                Spacer(modifier = Modifier.weight(1f))  // Push the following content to the right
                 // Add delete button
                 Spacer(modifier = Modifier.width(8.dp))
+
+                val duration = K_TempTravaille.IntervalesDeTravaille.calculateDuration(
+                    intervale.tempDepart,
+                    intervale.temparrete
+                )
+                val s = " : الوقت"
+                Text(
+                    text = "$duration$s",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            HorizontalDivider()
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()  // Make the row fill the entire width
+            ) {
+
+                // Move this code to the right side using Spacer with weight
                 val isAbdelwahabLeGerant by viewModel.isAbdelwahabLeGerant.collectAsState()
 
                 if (isAbdelwahabLeGerant) {
@@ -132,33 +150,12 @@ fun MainItem_Windows(
                         )
                     }
                 }
-            }
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            HorizontalDivider()
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                val duration = K_TempTravaille.IntervalesDeTravaille.calculateDuration(
-                    intervale.tempDepart,
-                    intervale.temparrete
-                )
-                val s = " : الوقت"
-                Text(
-                    text = "$duration$s",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-
-                Spacer(modifier = Modifier.weight(1f))
+                Spacer(modifier = Modifier.weight(1f))  // Push the following content to the right
 
                 Text(
-                    text = "ID: ${intervale.idClientSiAchat}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray
+                    text = "${intervale.tempDepart} - ${intervale.temparrete}",
+                    style = MaterialTheme.typography.bodyLarge
                 )
             }
         }

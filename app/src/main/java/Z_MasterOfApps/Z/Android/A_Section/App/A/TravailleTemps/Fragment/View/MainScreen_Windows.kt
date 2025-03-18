@@ -59,6 +59,7 @@ fun MainScreen_Windows(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
+        containerColor = androidx.compose.ui.graphics.Color(0xFFFCE4EC), // Light pink color
     ) { paddingValues ->
         Box(
             modifier = Modifier
@@ -70,7 +71,6 @@ fun MainScreen_Windows(
             if (fabsVisibility) {
                 A_OptionsControlsButtons_FragId_( viewModel = viewModel)
             }
-
         }
     }
 }
