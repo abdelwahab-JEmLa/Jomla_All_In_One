@@ -131,8 +131,12 @@ class Windows__ViewModel(
 
 
     // Delegate recording functions to RecordingHandler
-    fun toggleRecording() {
-        recordingHandler.toggleRecording()
+    fun toggleRecording(forceStop : Boolean = false) {
+        recordingHandler.toggleRecording(forceStop)
+    }
+    // Delegate recording functions to RecordingHandler
+    fun stopRecording() {
+        recordingHandler.stopRecording()
     }
 
     fun updateElapsedTime() {

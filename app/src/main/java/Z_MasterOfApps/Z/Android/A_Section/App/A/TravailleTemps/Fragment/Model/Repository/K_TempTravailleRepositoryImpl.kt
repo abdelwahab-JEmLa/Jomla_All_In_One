@@ -66,6 +66,7 @@ class K_TempTravailleRepositoryImpl : K_TempTravailleRepository {
 
                 // Set client ID
                 interval?.idClientSiAchat = clientId
+                interval?.typeTemp = typeTemp
 
                 // Update database
                 updateOnPasseData(record)

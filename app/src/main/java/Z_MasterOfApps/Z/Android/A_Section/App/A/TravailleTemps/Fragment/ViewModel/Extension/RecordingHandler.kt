@@ -31,9 +31,15 @@ class RecordingHandler(
     val displayTime: StateFlow<String> = _displayTime.asStateFlow()
     private val _currentElapsedSeconds = MutableStateFlow(0L)
     private val _lastUpdateTime = MutableStateFlow(System.currentTimeMillis())
+
     // Toggle recording state
-    fun toggleRecording() {
-        if (_isRecording.value) {
+    fun stopRecording() {
+        stopTimeInterval()
+        updateRecordingState(false)
+    }
+
+    fun toggleRecording(forceStop: Boolean) {
+        if (_isRecording.value && !forceStop) {
             stopTimeInterval()
             updateRecordingState(false)
         } else {
@@ -41,6 +47,7 @@ class RecordingHandler(
             updateRecordingState(true)
         }
     }
+
     // In RecordingHandler.kt
     fun startRecordingWithInterval(recordId: String, intervalId: String, startTime: String) {
         _currentRecordId.value = recordId
@@ -68,7 +75,8 @@ class RecordingHandler(
                         val currentDateStr = currentDate.replace("/", "_")
                         // Check if there's an active interval
                         val existingRecord = repository.modelDatas.find { it.vid == currentDateStr }
-                        val activeInterval = existingRecord?.intervalesDeTravaille?.find { it.enCoureDEnregestrement }
+                        val activeInterval =
+                            existingRecord?.intervalesDeTravaille?.find { it.enCoureDEnregestrement }
                         if (activeInterval != null) {
                             _currentRecordId.value = currentDateStr
                             _currentIntervalId.value = activeInterval.vid
@@ -110,7 +118,6 @@ class RecordingHandler(
     }
 
 
-
     private fun startTimeInterval() {
         val currentDate = TimeFormatUtils.getCurrentDate()
         val currentDateStr = currentDate.replace("/", "_")
@@ -135,7 +142,7 @@ class RecordingHandler(
         }
     }
 
-     fun stopTimeInterval() {
+    fun stopTimeInterval() {
         val currentDate = TimeFormatUtils.getCurrentDate()
         val currentDateStr = currentDate.replace("/", "_")
         val currentTime = TimeFormatUtils.getCurrentTime()

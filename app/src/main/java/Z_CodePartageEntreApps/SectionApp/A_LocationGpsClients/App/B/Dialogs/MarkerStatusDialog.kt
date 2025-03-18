@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import org.koin.androidx.compose.koinViewModel
@@ -66,7 +67,7 @@ fun MarkerStatusDialog(
     onClickToEditeMarquerPosition: (Long) -> Unit,
     onRemoveMark: (Marker?) -> Unit,
     repository: K_TempTravailleRepository = koinInject(),
-    vindows__ViewModel: Windows__ViewModel = koinViewModel(),
+    windows__ViewModel: Windows__ViewModel = koinViewModel(),
     ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -171,11 +172,14 @@ fun MarkerStatusDialog(
                         coroutineScope.launch {
                             extensionVM.updateLongAppSetting(selectedMarker.id.toLong())
                             onUpdateLongAppSetting()
+                            windows__ViewModel.stopRecording()
+                            delay(2000)
+
                             val createdRecord = repository.ajouteRecodeAvecIntervaleDAchat(
                                 selectedMarker.id.toLong(),
                                 K_TempTravaille.IntervalesDeTravaille.TypeTemp.VENT
                             )
-                            vindows__ViewModel.togleRecodingOnUtilisontCetteIntervale(createdRecord)
+                            windows__ViewModel.togleRecodingOnUtilisontCetteIntervale(createdRecord)
 
                             onDismiss()
                         }

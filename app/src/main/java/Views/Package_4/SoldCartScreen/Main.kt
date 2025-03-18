@@ -65,6 +65,8 @@ import coil.size.Size
 import com.example.clientjetpack.Models.UiState
 import com.example.clientjetpack.R
 import com.example.clientjetpack.ViewModel.HeadViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -236,14 +238,19 @@ fun CartSummaryCard(
             Button(
                 onClick = {
                     onConfirmOrder()
-                    windows__ViewModel.toggleRecording()
-                    val createdRecord = client?.let {
-                        windows__ViewModel.repository.ajouteRecodeAvecIntervaleDAchat(
-                            it.id,
-                            K_TempTravaille.IntervalesDeTravaille.TypeTemp.DEPLACEMENT
-                        )
+                    windows__ViewModel.stopRecording()
+
+                    // Launch a coroutine to handle the suspend functions
+                    CoroutineScope(Dispatchers.Main).launch {
+                        delay(2000)
+                        val createdRecord = client?.let {
+                            windows__ViewModel.repository.ajouteRecodeAvecIntervaleDAchat(
+                                it.id,
+                                K_TempTravaille.IntervalesDeTravaille.TypeTemp.DEPLACEMENT
+                            )
+                        }
+                        windows__ViewModel.togleRecodingOnUtilisontCetteIntervale(createdRecord)
                     }
-                    windows__ViewModel.togleRecodingOnUtilisontCetteIntervale(createdRecord)
                 },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = itemCount > 0
