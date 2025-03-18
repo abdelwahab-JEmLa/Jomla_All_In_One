@@ -1,8 +1,8 @@
 package Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View
 
+import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.Model.K_TempTravaille
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Components.DayHeader
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Components.WeekHeader
-import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.Model.K_TempTravaille
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
@@ -34,7 +34,30 @@ fun MainList_Windows(
     modifier: Modifier = Modifier,
     viewModel: Windows__ViewModel = koinViewModel(),
 ) {
-    val dateList = viewModel.dateList
+    val filteredDateList = viewModel.dateList
+        .map { tempTravaille ->
+            // Create a copy with filtered intervals
+            val filteredIntervals = tempTravaille.intervalesDeTravaille
+                .filter { interval ->
+                    val duration = K_TempTravaille.calculateDurationMinutes(
+                        interval.tempDepart,
+                        interval.temparrete
+                    )
+                    duration > 0 || interval.enCoureDEnregestrement
+                }
+
+            // Create a new K_TempTravaille with the filtered intervals
+            K_TempTravaille(tempTravaille.vid).apply {
+                this.infosDeBase = tempTravaille.infosDeBase
+                this.intervalesDeTravaille.clear()
+                this.intervalesDeTravaille.addAll(filteredIntervals)
+            }
+        }
+        // Filter out days with no intervals
+        .filter { it.intervalesDeTravaille.isNotEmpty() }
+        // Sort by date, newest first
+        .sortedByDescending { it.infosDeBase.dateInString }
+
     val progress by viewModel.repository.progressRepo.collectAsState()
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -47,13 +70,13 @@ fun MainList_Windows(
             }
 
             // Group items by week
-            val groupedByWeek = groupItemsByWeek(dateList)
+            val groupedByWeek = groupItemsByWeek(filteredDateList)
 
             // Iterate through each week group
             groupedByWeek.forEach { (weekInfo, itemsInWeek) ->
                 // Add weekly header
                 stickyHeader {
-                    WeekHeader(viewModel=viewModel,weekInfo = weekInfo)
+                    WeekHeader(viewModel=viewModel, weekInfo = weekInfo)
                 }
 
                 // Process items for each day in this week
@@ -70,7 +93,6 @@ fun MainList_Windows(
                         MainItem_Windows(
                             intervale = intervale,
                             viewModel = viewModel
-
                         )
                     }
                 }
