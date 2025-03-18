@@ -120,12 +120,12 @@ fun RecordAfficheurFAB(
                     onClick = {
                         viewModel.toggleRecording()
                     },
-                    icon = if (isRecording) Icons.Default.Stop else Icons.Default.PlayArrow,
+                    icon = if (isRecording) Icons.Default. PlayArrow else Icons.Default.Stop,
                     contentDescription = if (isRecording) "Stop Recording" else "",
                     showLabels = showLabels,
                     labelText = displayTime,
-                    containerColor = if (isRecording) Color(0xFF8D7474) else Color(0xFF03A9F4),
-                    enabled = abdelwahabLeGerant
+                    containerColor = if (isRecording) Color(0xFFFF9800) else Color(0xFF8B8781),
+                    enabled = false
                 )
             }
         }
