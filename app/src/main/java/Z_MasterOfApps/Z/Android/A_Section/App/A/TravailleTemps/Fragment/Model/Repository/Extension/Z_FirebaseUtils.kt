@@ -1,6 +1,8 @@
-package Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.Model.Repository
+package Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.Model.Repository.Extension
 
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.Model.K_TempTravaille
+import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.Model.Repository.K_TempTravailleRepository
+import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.Model.Repository.K_TempTravailleRepositoryImpl
 import com.google.firebase.Firebase
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -14,7 +16,7 @@ import java.net.Socket
  * Utility class for Firebase operations related to K_TempTravaille
  * Contains extracted functions from K_TempTravailleRepositoryImpl
  */
-object FirebaseUtils {
+object Z_FirebaseUtils {
     private val CACHE_SIZE_BYTES = 100L * 1024L * 1024L // 100MB
     private val CONNECTIVITY_CHECK_INTERVAL = 10000L // 10 seconds
     private val DEBOUNCE_INTERVAL = 500L

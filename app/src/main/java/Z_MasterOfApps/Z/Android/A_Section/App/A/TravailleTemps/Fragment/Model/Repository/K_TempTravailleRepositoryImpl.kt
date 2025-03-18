@@ -1,5 +1,7 @@
 package Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.Model.Repository
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.Model.K_TempTravaille
+import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.Model.Repository.Extension.IntervalesEtJoursHandler
+import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.Model.Repository.Extension.Z_FirebaseUtils
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.firebase.database.DataSnapshot
@@ -16,13 +18,13 @@ class K_TempTravailleRepositoryImpl : K_TempTravailleRepository {
     internal var lastUpdateTimestamp = 0L
 
     init {
-        FirebaseUtils.initializeFirebaseOfflineCapability()
+        Z_FirebaseUtils.initializeFirebaseOfflineCapability()
         startDatabaseListener()
     }
 
     private fun startDatabaseListener() {
         stopDatabaseListener()
-        FirebaseUtils.startDatabaseListener(this) { newListener ->
+        Z_FirebaseUtils.startDatabaseListener(this) { newListener ->
             listener = newListener
         }
     }
@@ -33,7 +35,7 @@ class K_TempTravailleRepositoryImpl : K_TempTravailleRepository {
 
     // Check connectivity and sync if state has changed
     override fun checkConnectivityAndSync() {
-        FirebaseUtils.checkConnectivityAndSync(this)
+        Z_FirebaseUtils.checkConnectivityAndSync(this)
     }
 
     override fun deleteIntevaleDeTemp(intervalId: String) {
@@ -48,10 +50,10 @@ class K_TempTravailleRepositoryImpl : K_TempTravailleRepository {
                 checkConnectivityAndSync()
 
                 // Sanitize the record ID
-                val sanitizedRecordId = FirebaseUtils.sanitizeFirebaseKey(recordId)
+                val sanitizedRecordId = Z_FirebaseUtils.sanitizeFirebaseKey(recordId)
 
                 // Sanitize the interval ID
-                val sanitizedIntervalId = FirebaseUtils.sanitizeFirebaseKey(intervalId)
+                val sanitizedIntervalId = Z_FirebaseUtils.sanitizeFirebaseKey(intervalId)
 
                 // Create reference to the interval
                 val intervalRef = K_TempTravailleRepository.caReference
@@ -178,7 +180,7 @@ class K_TempTravailleRepositoryImpl : K_TempTravailleRepository {
             val firebaseData = syncData(tempTravaille = tempTravaille) as Map<String, Any>
 
             // Sanitize the key before using it in Firebase
-            val sanitizedKey = FirebaseUtils.sanitizeFirebaseKey(tempTravaille.vid)
+            val sanitizedKey = Z_FirebaseUtils.sanitizeFirebaseKey(tempTravaille.vid)
 
             // Update the data in Firebase
             val dateRef = K_TempTravailleRepository.caReference.child(sanitizedKey)
@@ -254,7 +256,7 @@ class K_TempTravailleRepositoryImpl : K_TempTravailleRepository {
                 )
 
                 // Make sure the interval ID is also sanitized
-                val sanitizedIntervalId = FirebaseUtils.sanitizeFirebaseKey(interval.vid)
+                val sanitizedIntervalId = Z_FirebaseUtils.sanitizeFirebaseKey(interval.vid)
                 intervalesDeTravaille[sanitizedIntervalId] = intervalData
             }
             result["intervalesDeTravaille"] = intervalesDeTravaille
@@ -268,7 +270,7 @@ class K_TempTravailleRepositoryImpl : K_TempTravailleRepository {
     }
 
     override suspend fun onDataBaseChangeListnerAndLoad(): Pair<List<K_TempTravaille>, Flow<Float>> {
-        return FirebaseUtils.onDataBaseChangeListnerAndLoad(this)
+        return Z_FirebaseUtils.onDataBaseChangeListnerAndLoad(this)
     }
 
     override suspend fun updateDatas(datas: SnapshotStateList<K_TempTravaille>) {
@@ -291,7 +293,7 @@ class K_TempTravailleRepositoryImpl : K_TempTravailleRepository {
                 val firebaseData = syncData(tempTravaille = tempTravaille) as Map<String, Any>
 
                 // Sanitize the key before using it in Firebase
-                val sanitizedKey = FirebaseUtils.sanitizeFirebaseKey(tempTravaille.vid)
+                val sanitizedKey = Z_FirebaseUtils.sanitizeFirebaseKey(tempTravaille.vid)
 
                 // Update the data in Firebase
                 val dateRef = K_TempTravailleRepository.caReference.child(sanitizedKey)

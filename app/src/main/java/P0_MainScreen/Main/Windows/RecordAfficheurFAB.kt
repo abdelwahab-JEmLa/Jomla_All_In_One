@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -25,6 +26,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import kotlin.math.roundToInt
 
@@ -32,11 +40,58 @@ import kotlin.math.roundToInt
 fun RecordAfficheurFAB(
     viewModel: Windows__ViewModel = koinViewModel(),
 ) {
-
     var showLabels by remember { mutableStateOf(true) }
-
     var offsetX by remember { mutableFloatStateOf(0f) }
     var offsetY by remember { mutableFloatStateOf(0f) }
+    val isRecording by viewModel.isRecording.collectAsState()
+    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+
+    // Set up a timer to update the elapsed time every second when recording
+    DisposableEffect(isRecording) {
+        var job: Job? = null
+        val coroutineScope = CoroutineScope(Dispatchers.Main)
+
+        if (isRecording) {
+            job = coroutineScope.launch {
+                while (true) {
+                    viewModel.updateElapsedTime()
+                    delay(1000) // Update every second
+                }
+            }
+        }
+
+        // Monitor lifecycle events to handle pause/resume correctly
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_RESUME -> {
+                    viewModel.onLifecycleResume()
+                    if (isRecording && job == null) {
+                        job = coroutineScope.launch {
+                            while (true) {
+                                viewModel.updateElapsedTime()
+                                delay(1000)
+                            }
+                        }
+                    }
+                }
+                Lifecycle.Event.ON_PAUSE -> {
+                    if (isRecording) {
+                        viewModel.onRecordingStopped()
+                    }
+                    job?.cancel()
+                    job = null
+                }
+                else -> { /* do nothing */ }
+            }
+        }
+
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            job?.cancel()
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -59,7 +114,6 @@ fun RecordAfficheurFAB(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 val abdelwahabLeGerant by viewModel.isAbdelwahabLeGerant.collectAsState()
-                val isRecording by viewModel.isRecording.collectAsState()
                 val displayTime by viewModel.displayTime.collectAsState()
 
                 ControlButton(
@@ -70,8 +124,8 @@ fun RecordAfficheurFAB(
                     contentDescription = if (isRecording) "Stop Recording" else "",
                     showLabels = showLabels,
                     labelText = displayTime,
-                    containerColor = if (isRecording) Color(0xFFE53935) else Color(0xFFF44336),
-                    enabled = abdelwahabLeGerant // Add this line to disable the button if not Abdelwahab Le Gérant
+                    containerColor = if (isRecording) Color(0xFF8D7474) else Color(0xFF03A9F4),
+                    enabled = abdelwahabLeGerant
                 )
             }
         }
