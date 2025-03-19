@@ -37,6 +37,7 @@ class ViewModelExtension_App2_F1(
         }
         val newnom = "Nouveau client #$newID"
 
+
         val newClient =
             B_ClientsDataBase(
                 id = newID,
@@ -51,6 +52,7 @@ class ViewModelExtension_App2_F1(
                     longitude = center.longitude
                     title = newnom
                     snippet = "Client temporaire"
+                    actuelleEtat= B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CIBLE_PRIORITE_2
                 }
             }
 
