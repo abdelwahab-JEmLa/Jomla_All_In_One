@@ -48,11 +48,15 @@ open class _ModelAppsFather(
         get() = grossistsDataBase.map { grossist ->
             val matchingProducts = produitsMainDataBase.filter { product ->
                 product.bonCommendDeCetteCota?.idGrossistChoisi == grossist.id &&
-                        product.bonsVentDeCetteCota.any { bonVent ->
+                        (product.bonsVentDeCetteCota.any { bonVent ->
                             bonVent.colours_Achete.any { color ->
                                 color.quantity_Achete > 0
                             }
-                        }
+                        } ||
+
+                                (product.bonCommendDeCetteCota?.coloursEtGoutsCommendee?.any { bon ->
+                                    bon.quantityAchete > 0
+                                } ?: false))
             }
 
             java.util.AbstractMap.SimpleEntry(grossist, matchingProducts)

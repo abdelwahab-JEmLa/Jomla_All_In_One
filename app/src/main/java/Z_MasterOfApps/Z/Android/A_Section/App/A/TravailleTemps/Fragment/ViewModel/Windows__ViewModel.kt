@@ -1,8 +1,8 @@
 package Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel
 
-import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.Model.K_TempTravaille
-import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.Model.Repository.K_TempTravailleRepository
-import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.Model.Repository.K_TempTravailleRepositoryImpl
+import Z_CodePartageEntreApps.Model.K_TempTravaille.K_TempTravaille
+import Z_CodePartageEntreApps.Model.K_TempTravaille.Repository.K_TempTravailleRepository
+import Z_CodePartageEntreApps.Model.K_TempTravaille.Repository.K_TempTravailleRepositoryImpl
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Extension.RecordingHandler
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Extension.TimeFormatUtils
 import androidx.lifecycle.ViewModel

@@ -1,4 +1,4 @@
-package Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.Model
+package Z_CodePartageEntreApps.Model.K_TempTravaille
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DirectionsCar

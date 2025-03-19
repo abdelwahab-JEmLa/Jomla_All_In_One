@@ -1,8 +1,8 @@
-package Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.Model.Repository.Extension
+package Z_CodePartageEntreApps.Model.K_TempTravaille.Repository.Extension
 
-import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.Model.K_TempTravaille
-import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.Model.Repository.K_TempTravailleRepository
-import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.Model.Repository.K_TempTravailleRepositoryImpl
+import Z_CodePartageEntreApps.Model.K_TempTravaille.K_TempTravaille
+import Z_CodePartageEntreApps.Model.K_TempTravaille.Repository.K_TempTravailleRepository
+import Z_CodePartageEntreApps.Model.K_TempTravaille.Repository.K_TempTravailleRepositoryImpl
 import com.google.firebase.Firebase
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
