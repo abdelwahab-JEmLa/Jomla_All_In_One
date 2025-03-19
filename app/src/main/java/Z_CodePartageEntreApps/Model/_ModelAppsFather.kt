@@ -1,5 +1,6 @@
 package Z_CodePartageEntreApps.Model
 
+import Z_CodePartageEntreApps.Model.B_ClientsDataBase.Model.B_ClientsDataBase
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.util.Log
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -11,6 +12,7 @@ import com.google.firebase.database.database
 import com.google.firebase.storage.storage
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+
 open class _ModelAppsFather(
     initial_Produits_Main_DataBase: List<A_ProduitModel> = emptyList()
 ) {

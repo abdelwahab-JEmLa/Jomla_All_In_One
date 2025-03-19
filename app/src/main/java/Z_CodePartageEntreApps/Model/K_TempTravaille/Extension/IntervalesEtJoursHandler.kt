@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Model.K_TempTravaille.Repository.Extension
+package Z_CodePartageEntreApps.Model.K_TempTravaille.Extension
 
 import Z_CodePartageEntreApps.Model.K_TempTravaille.K_TempTravaille
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Extension.TimeFormatUtils

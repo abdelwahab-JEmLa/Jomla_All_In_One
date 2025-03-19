@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Model
+package Z_CodePartageEntreApps.Model.B_ClientsDataBase.Model
 
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.util.Log

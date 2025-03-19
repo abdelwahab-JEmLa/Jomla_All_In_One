@@ -6,7 +6,7 @@ import Views.P1.Ui.Objects.CategoryHeader
 import Views.P1.Ui.Objects.ScrolleAdBanner
 import Views.P1._ArticlesStartFacade.ArticlePagingSource
 import Z_CodePartageEntreApps.Model.A_ProduitModelRepository
-import Z_CodePartageEntreApps.Model.B_ClientsDataBase
+import Z_CodePartageEntreApps.Model.B_ClientsDataBase.Model.B_ClientsDataBase
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.App.CategoriesTabelle

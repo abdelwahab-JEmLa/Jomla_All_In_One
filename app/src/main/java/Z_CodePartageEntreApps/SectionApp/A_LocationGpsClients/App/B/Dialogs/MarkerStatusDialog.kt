@@ -1,13 +1,13 @@
 package Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.B.Dialogs
 
-import Z_CodePartageEntreApps.Model.B_ClientsDataBase
-import Z_CodePartageEntreApps.Model.B_ClientsDataBase.Companion.updateClientsDataBase
+import Z_CodePartageEntreApps.Model.B_ClientsDataBase.Model.B_ClientsDataBase
+import Z_CodePartageEntreApps.Model.B_ClientsDataBase.Model.B_ClientsDataBase.Companion.updateClientsDataBase
+import Z_CodePartageEntreApps.Model.K_TempTravaille.K_TempTravaille
+import Z_CodePartageEntreApps.Model.K_TempTravaille.Repository.K_TempTravailleRepository
 import Z_CodePartageEntreApps.Model._ModelAppsFather
 import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.ViewModel.Extension.Utils.updateLongAppSetting
 import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.ViewModel.Extension.ViewModelExtension_App2_F1
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_CodePartageEntreApps.Model.K_TempTravaille.K_TempTravaille
-import Z_CodePartageEntreApps.Model.K_TempTravaille.Repository.K_TempTravailleRepository
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

@@ -1,7 +1,7 @@
 package Z_MasterOfApps.Kotlin.ViewModel.Init.A_FirebaseListeners
 
 import Z_CodePartageEntreApps.Model.A_ProduitModel
-import Z_CodePartageEntreApps.Model.B_ClientsDataBase
+import Z_CodePartageEntreApps.Model.B_ClientsDataBase.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.C_GrossistsDataBase
 import Z_CodePartageEntreApps.Model.D_CouleursEtGoutesProduitsInfos
 import Z_CodePartageEntreApps.Model.E_AppsOptionsStates

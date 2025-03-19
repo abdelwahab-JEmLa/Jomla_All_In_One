@@ -1,9 +1,8 @@
 package Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.Extension
 
 import Z_CodePartageEntreApps.Model.A_ProduitModel
-import Z_CodePartageEntreApps.Model.B_ClientsDataBase
-import Z_CodePartageEntreApps.Model.B_ClientsDataBase.Companion.updateClientsDataBase
-import Z_CodePartageEntreApps.Model.B_ClientsDataBase.StatueDeBase.TypeDeSonMagasine
+import Z_CodePartageEntreApps.Model.B_ClientsDataBase.Model.B_ClientsDataBase
+import Z_CodePartageEntreApps.Model.B_ClientsDataBase.Model.B_ClientsDataBase.Companion.updateClientsDataBase
 import Z_CodePartageEntreApps.Resources.LottieJsonGetterR_Raw_Icons
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.runtime.getValue
@@ -20,7 +19,7 @@ class ViewModelExtension_App2_F1(
     private val clientDataBaseSnapList: SnapshotStateList<B_ClientsDataBase>,
     val viewModel: ViewModelInitApp,
 ) {
-    var auClickeCaUpdateClientPar by mutableStateOf(TypeDeSonMagasine.ATAYAT_MOUKASSARAT)
+    var auClickeCaUpdateClientPar by mutableStateOf(B_ClientsDataBase.StatueDeBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT)
     // Add this property to ViewModelInitApp
 
     fun onClickAddMarkerButton(

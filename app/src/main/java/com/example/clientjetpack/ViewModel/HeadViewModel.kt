@@ -1,6 +1,6 @@
 package com.example.clientjetpack.ViewModel
 
-import Z_CodePartageEntreApps.Model.B_ClientsDataBase
+import Z_CodePartageEntreApps.Model.B_ClientsDataBase.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.CategoriesRepositoryImpl
 import Z_CodePartageEntreApps.Model.I_CategoriesRepository
 import Z_MasterOfApps.Kotlin._WorkingON.WO_.ConnectionManager

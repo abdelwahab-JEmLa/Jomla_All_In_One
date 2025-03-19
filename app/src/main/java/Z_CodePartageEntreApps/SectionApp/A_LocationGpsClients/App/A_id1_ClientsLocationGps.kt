@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App
 
-import Z_CodePartageEntreApps.Model.B_ClientsDataBase
-import Z_CodePartageEntreApps.Model.B_ClientsDataBase.Companion.updateClientsDataBase
+import Z_CodePartageEntreApps.Model.B_ClientsDataBase.Model.B_ClientsDataBase
+import Z_CodePartageEntreApps.Model.B_ClientsDataBase.Model.B_ClientsDataBase.Companion.updateClientsDataBase
 import Z_CodePartageEntreApps.Resources.XmlsFilesHandler.Companion.xmlResources
 import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.B.Dialogs.A.A_GlobalOptionsControlsFloatingActionButtons_FragId1
 import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.B.Dialogs.MarkerStatusDialog

@@ -1,7 +1,7 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur
 
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem.B_CouleurAfficheur
-import Z_CodePartageEntreApps.Model.B_ClientsDataBase
+import Z_CodePartageEntreApps.Model.B_ClientsDataBase.Model.B_ClientsDataBase
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle
