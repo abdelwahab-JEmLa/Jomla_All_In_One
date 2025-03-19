@@ -37,7 +37,6 @@ class ViewModelExtension_App2_F1(
         }
         val newnom = "Nouveau client #$newID"
 
-
         val newClient =
             B_ClientsDataBase(
                 id = newID,
