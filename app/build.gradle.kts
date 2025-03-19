@@ -4,7 +4,7 @@ plugins {
     alias(libs.plugins.google.gms.google.services)
     id("kotlin-kapt")
     id("org.jetbrains.kotlin.plugin.serialization") version "1.8.0"
-    alias(libs.plugins.kotlin.compose) // Fixed plugin reference
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
@@ -16,7 +16,7 @@ android {
         minSdk = 26
         targetSdk = 34
         versionCode = 1
-        versionName = "ID>-3 /Jour18 Heur 14:00"
+        versionName = "ID>- 3 /Jour18 Heur 14:00"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
