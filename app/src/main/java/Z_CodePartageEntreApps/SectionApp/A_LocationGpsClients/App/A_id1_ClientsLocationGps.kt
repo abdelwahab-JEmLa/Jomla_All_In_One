@@ -76,7 +76,7 @@ fun A_id1_ClientsLocationGps(
     var selectedMarker by remember { mutableStateOf<Marker?>(null) }
     var showMarkerDialog by remember { mutableStateOf(false) }
     val showMarkerDetails by remember { mutableStateOf(true) }
-    var currentFilterMode by remember { mutableStateOf<VisbleClientsNow>(VisbleClientsNow.showCibleClientsOnly) }
+    var currentFilterMode by remember { mutableStateOf<VisbleClientsNow>(VisbleClientsNow.affichePourCollecteurCommendes) }
 
     // New state variables for marker editing mode
     var editingMarkerId by remember { mutableLongStateOf(0L) }
@@ -138,11 +138,15 @@ fun A_id1_ClientsLocationGps(
                 }
             }
 
-            VisbleClientsNow.showCibleClientsOnly -> {
+            VisbleClientsNow.affichePourCollecteurCommendes -> {
                 clientDataBaseSnapList.filter {
                     it.gpsLocation.actuelleEtat == B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.Cible
                             || it.gpsLocation.actuelleEtat == B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CIBLE_PRIORITE_2
                             || it.gpsLocation.actuelleEtat == B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.VENDU_A_LUI
+                            || it.gpsLocation.actuelleEtat == B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.FERME
+                            || it.gpsLocation.actuelleEtat == B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.A_EVITE
+                            || it.gpsLocation.actuelleEtat == B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.AVEC_MARCHANDISE
+                            || it.gpsLocation.actuelleEtat == B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CLIENT_ABSENT
                 }
             }
 
@@ -251,8 +255,8 @@ fun A_id1_ClientsLocationGps(
 
                     currentFilterMode = when (currentFilterMode) {
                         VisbleClientsNow.showAll -> VisbleClientsNow.showNonAbsentClientsOnly
-                        VisbleClientsNow.showNonAbsentClientsOnly -> VisbleClientsNow.showCibleClientsOnly
-                        VisbleClientsNow.showCibleClientsOnly -> VisbleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2
+                        VisbleClientsNow.showNonAbsentClientsOnly -> VisbleClientsNow.affichePourCollecteurCommendes
+                        VisbleClientsNow.affichePourCollecteurCommendes -> VisbleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2
                         VisbleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 -> VisbleClientsNow.showAtayClients
                         VisbleClientsNow.showAtayClients -> VisbleClientsNow.showAlimentionlients
                         VisbleClientsNow.showAlimentionlients -> VisbleClientsNow.showAll

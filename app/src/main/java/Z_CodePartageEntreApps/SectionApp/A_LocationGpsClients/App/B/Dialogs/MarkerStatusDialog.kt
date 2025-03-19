@@ -310,6 +310,26 @@ fun MarkerStatusDialog(
                             }
                         }
                     )
+
+                    StatusButton(
+                        text = "A_EVITE",
+                        icon = Icons.Default.Person,
+                        color = Color(
+                            ContextCompat.getColor(
+                                context,
+                                B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.A_EVITE.color
+                            )
+                        ),
+                        onClick = {
+                            coroutineScope.launch {
+                                extensionVM.updateStatueClient(
+                                    selectedMarker,
+                                    B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.A_EVITE
+                                )
+                                onDismiss()
+                            }
+                        }
+                    )
                 }
                 TextButton(
                     onClick = onDismiss,

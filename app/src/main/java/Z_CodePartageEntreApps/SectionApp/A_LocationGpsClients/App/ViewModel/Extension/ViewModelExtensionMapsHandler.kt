@@ -83,7 +83,7 @@ class ViewModelExtension_App2_F1(
 
 enum class VisbleClientsNow(val icon: Any) {  // Changed from LottieJsonGetterR_Raw_Icons to Any
     showNonAbsentClientsOnly(LottieJsonGetterR_Raw_Icons.reacticonanimatedjsonurl),
-    showCibleClientsOnly(LottieJsonGetterR_Raw_Icons.afficheFenetre),
+    affichePourCollecteurCommendes(LottieJsonGetterR_Raw_Icons.afficheFenetre),
     showAtayClients(LottieJsonGetterR_Raw_Icons.atay),
     showClientsOnlyAcEtateCIBLE_POUR_2(Icons.Default.CheckCircleOutline),
     showAlimentionlients(LottieJsonGetterR_Raw_Icons.alimentation),
