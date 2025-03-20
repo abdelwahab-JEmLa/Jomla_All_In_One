@@ -23,7 +23,7 @@ data class B_ClientsDataBase(
         var bonDuClientsSu: String = "",
         var currentCreditBalance: Double = 0.0,
         var positionDonClientsList: Int = 0,
-        var caRefDonAncienDataBase: String = "G_Clients",
+        var caRefDonAncienDataBase: String = "G_Clients",       
         var cUnClientTemporaire: Boolean = true,
         var auFilterFAB: Boolean = false ,
         var typeDeSonMagasine: TypeDeSonMagasine? = TypeDeSonMagasine.ATAYAT_MOUKASSARAT

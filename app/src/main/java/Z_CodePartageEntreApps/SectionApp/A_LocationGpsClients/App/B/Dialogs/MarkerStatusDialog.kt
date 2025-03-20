@@ -2,7 +2,6 @@ package Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.B.Dialogs
 
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase.Model.B_ClientsDataBase.Companion.updateClientsDataBase
-import Z_CodePartageEntreApps.Model.K_TempTravaille.K_TempTravaille
 import Z_CodePartageEntreApps.Model.K_TempTravaille.Repository.K_TempTravailleRepository
 import Z_CodePartageEntreApps.Model._ModelAppsFather
 import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.ViewModel.Extension.Utils.updateLongAppSetting
@@ -50,7 +49,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import org.koin.androidx.compose.koinViewModel
@@ -173,6 +171,7 @@ fun MarkerStatusDialog(
                         coroutineScope.launch {
                             extensionVM.updateLongAppSetting(selectedMarker.id.toLong())
                             onUpdateLongAppSetting()
+                            /*
                             windows__ViewModel.stopRecording()
                             delay(2000)
 
@@ -181,7 +180,7 @@ fun MarkerStatusDialog(
                                 K_TempTravaille.IntervalesDeTravaille.TypeTemp.VENT
                             )
                             windows__ViewModel.togleRecodingOnUtilisontCetteIntervale(createdRecord)
-
+                                  */
                             onDismiss()
                         }
                     }

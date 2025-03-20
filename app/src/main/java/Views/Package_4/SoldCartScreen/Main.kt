@@ -2,7 +2,6 @@ package Views.Package_4.SoldCartScreen
 
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase.Model.B_ClientsDataBase
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_CodePartageEntreApps.Model.K_TempTravaille.K_TempTravaille
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle
@@ -237,11 +236,11 @@ fun CartSummaryCard(
             Button(
                 onClick = {
                     onConfirmOrder()
-                    windows__ViewModel.stopRecording()
+                  /*  windows__ViewModel.stopRecording()   */
 
                     // Launch a coroutine to handle the suspend functions
                     CoroutineScope(Dispatchers.Main).launch {
-                        delay(2000)
+                      /*  delay(2000)
                         val createdRecord = client?.let {
                             windows__ViewModel.repository.ajouteRecodeAvecIntervaleDAchat(
                                 it.id,
@@ -249,7 +248,7 @@ fun CartSummaryCard(
                             )
                         }
                         windows__ViewModel.togleRecodingOnUtilisontCetteIntervale(createdRecord)
-                    }
+                   */ }
                 },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = itemCount > 0
