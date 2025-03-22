@@ -24,6 +24,7 @@ interface K_TempTravailleRepository {
         recordId: String? = null,
     )
 
+
     // Added methods that were previously in ViewModel
     fun addNewInterval(
         recordId: String? = null,
@@ -54,5 +55,6 @@ interface K_TempTravailleRepository {
         val caReference = Firebase.database.getReference("K_TempTravaille")
     }
 }
+
 
 
