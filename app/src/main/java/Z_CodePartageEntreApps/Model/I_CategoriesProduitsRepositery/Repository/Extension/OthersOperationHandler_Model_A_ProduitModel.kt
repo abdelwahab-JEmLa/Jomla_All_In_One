@@ -1,0 +1,3 @@
+package Z_CodePartageEntreApps.Model.I_CategoriesProduitsRepositery.Repository.Extension
+
+object OthersOperationHandler_Model_I_CategoriesProduits

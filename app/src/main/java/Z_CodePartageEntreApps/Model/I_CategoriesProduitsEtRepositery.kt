@@ -38,6 +38,33 @@ class I_CategoriesProduits(
     ) {
         var afficheSonHeader by mutableStateOf(false)
 
+
+    }
+    companion object{
+
+        fun syncData(
+            data: I_CategoriesProduits? = null,
+            dataSnapshot: DataSnapshot? = null
+        ): Any {
+            // Convert from Firebase to model
+            if (dataSnapshot != null) {
+                return dataSnapshot.getValue(I_CategoriesProduits::class.java) ?: I_CategoriesProduits()
+            }
+
+            // Convert from model to Firebase map
+            val sourceData = data ?: I_CategoriesProduits()
+            return mapOf(
+                "id" to sourceData.id,
+                "infosDeBase" to mapOf(
+                    "nom" to sourceData.infosDeBase.nom,
+                    "groupeParentId" to sourceData.infosDeBase.groupeParentId
+                ),
+                "statuesMutable" to mapOf(
+                    "indexDonsParentList" to sourceData.statuesMutable.indexDonsParentList,
+                    "afficheSonHeader" to sourceData.statuesMutable.afficheSonHeader
+                )
+            )
+        }
     }
 }
 
