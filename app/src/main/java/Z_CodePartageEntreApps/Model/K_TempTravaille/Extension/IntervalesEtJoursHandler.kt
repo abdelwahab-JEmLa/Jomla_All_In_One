@@ -1,5 +1,4 @@
 package Z_CodePartageEntreApps.Model.K_TempTravaille.Extension
-    /*
 import Z_CodePartageEntreApps.Model.K_TempTravaille.K_TempTravaille
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Extension.TimeFormatUtils
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -100,6 +99,7 @@ object IntervalesEtJoursHandler {
      * Update an existing interval with new start/end times or type
      * With enhanced logging and improved time formatting
      */
+
     fun updateExistingInterval(
         //enleve logs
         modelDatas: SnapshotStateList<K_TempTravaille>,
@@ -323,4 +323,3 @@ object IntervalesEtJoursHandler {
         return recordToUpdate
     }
 }
-                */

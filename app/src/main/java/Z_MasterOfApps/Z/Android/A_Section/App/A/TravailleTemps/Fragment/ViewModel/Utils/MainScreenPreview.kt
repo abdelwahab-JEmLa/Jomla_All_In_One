@@ -1,7 +1,10 @@
 package Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Utils
 
 import Z_CodePartageEntreApps.Model.K_TempTravaille.K_TempTravaille
-import Z_CodePartageEntreApps.Model.K_TempTravaille.Repository.K_TempTravailleRepositoryImpl
+import androidx.compose.runtime.snapshots.SnapshotStateList
+
+/*
+import Z_CodePartageEntreApps.Model.K_TempTravaille.K_TempTravaille
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.MainScreen_Windows
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
 import androidx.compose.material3.MaterialTheme
@@ -14,40 +17,40 @@ import androidx.compose.ui.tooling.preview.Preview
 @Preview
 @Composable
 fun MainScreenWithFirebasePreview() {
-    // Create a real repository
-    val firebaseRepository = remember { K_TempTravailleRepositoryImpl() }
+  // Create a real repository
+  val firebaseRepository = remember { K_TempTravailleRepositoryImpl() }
 
-    // Create a ViewModel with the real Firebase repository
-    val realViewModel = remember {
-        Windows__ViewModel(repository = firebaseRepository)
-    }
+  // Create a ViewModel with the real Firebase repository
+  val realViewModel = remember {
+      Windows__ViewModel(repository = firebaseRepository)
+  }
 
-    // Use the MaterialTheme with the real implementation
-    MaterialTheme {
-        MainScreen_Windows(viewModel = realViewModel, fabsVisibility = false)
-    }
+  // Use the MaterialTheme with the real implementation
+  MaterialTheme {
+      MainScreen_Windows(viewModel = realViewModel, fabsVisibility = false)
+  }
 }
-   /*
+
 @Preview
 @Composable
 fun MainScreenWhithMockPreview() {
-    // Create a mock repository
-    val mockRepository = remember { MockTempTravailleRepository() }
+  // Create a mock repository
+  val mockRepository = remember { MockTempTravailleRepository() }
 
-    // Create a sample ViewModel with the mock repository
-    val sampleViewModel = remember {
-        Windows__ViewModel(repository = mockRepository).apply {
-            // Populate with sample data
-            populateSampleData(dateList)
-        }
-    }
+  // Create a sample ViewModel with the mock repository
+  val sampleViewModel = remember {
+      Windows__ViewModel(repository = mockRepository).apply {
+          // Populate with sample data
+          populateSampleData(dateList)
+      }
+  }
 
-    // Use the MaterialTheme with the sample data
-    MaterialTheme {
-        MainScreen_Windows(viewModel = sampleViewModel, fabsVisibility = false)
-    }
+  // Use the MaterialTheme with the sample data
+  MaterialTheme {
+      MainScreen_Windows(viewModel = sampleViewModel, fabsVisibility = false)
+  }
 }
-         */
+       */
 
 
 // Populate the provided list with hardcoded sample data
