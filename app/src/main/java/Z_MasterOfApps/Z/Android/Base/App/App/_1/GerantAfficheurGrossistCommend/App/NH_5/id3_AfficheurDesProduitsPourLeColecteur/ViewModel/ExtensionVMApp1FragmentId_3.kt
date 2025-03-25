@@ -2,7 +2,6 @@ package Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.
 
 import Z_CodePartageEntreApps.Model.A_ProduitModel
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
-import Z_CodePartageEntreApps.Model.B_ClientsDataBase.Companion.updateClientsDataBase
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,7 +37,7 @@ class ExtensionVMApp1FragmentId_3(
         clientDataBaseSnapList[index - 1] = currentClient
 
         // Update both clients in the database
-        currentClient.updateClientsDataBase(viewModelInitApp)
-        prevClient.updateClientsDataBase(viewModelInitApp)
+        viewModelInitApp.updateClientsDataBase(currentClient)
+        viewModelInitApp.updateClientsDataBase(prevClient)
     }
 }

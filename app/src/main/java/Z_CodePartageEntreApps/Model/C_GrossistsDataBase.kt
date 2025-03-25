@@ -31,7 +31,7 @@ data class C_GrossistsDataBase(
     companion object {
         val sonAncienRef = firebaseDatabase.getReference("F_Suppliers")
 
-        val refClientsDataBase = firebaseDatabase
+        val refGrossistDataBase = firebaseDatabase
             .getReference("0_UiState_3_Host_Package_3_Prototype11Dec")
             .child("C_GrossistsDataBase")
 
@@ -61,7 +61,7 @@ data class C_GrossistsDataBase(
 
                     // Update Firebase with error handling
                     try {
-                        refClientsDataBase.child(currentState.id.toString())
+                        refGrossistDataBase.child(currentState.id.toString())
                             .setValue(currentState)
                             .await()
                     } catch (e: Exception) {

@@ -1,7 +1,7 @@
 package Z_MasterOfApps.Kotlin.ViewModel
 
 import Z_CodePartageEntreApps.Model.A_ProduitModelRepository
-import Z_CodePartageEntreApps.Model.B_ClientsDataBase.Companion.updateClientsDataBase
+import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.I_CategoriesRepository
 import Z_CodePartageEntreApps.Model._ModelAppsFather
 import Z_MasterOfApps.Kotlin.ViewModel.Init.A_FirebaseListeners.FromAncienDataBase
@@ -22,6 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 @SuppressLint("SuspiciousIndentation")
 class ViewModelInitApp(
@@ -85,7 +86,7 @@ class ViewModelInitApp(
 
     fun updateStatueClientParID(
         clientId : Long,
-        statueVente: Z_CodePartageEntreApps.Model.B_ClientsDataBase.GpsLocation.DernierEtatAAffiche
+        statueVente: B_ClientsDataBase.GpsLocation.DernierEtatAAffiche
     ) {
         clientDataBaseSnapList.toMutableList().forEach { client ->
             if (client.id == clientId) {
@@ -95,7 +96,49 @@ class ViewModelInitApp(
                         actuelleEtat = statueVente
                     )
                 )
-                updatedClient.updateClientsDataBase(viewModel)
+                updateClientsDataBase(updatedClient)
+            }
+        }
+    }
+    fun updateClientsDataBase(data : B_ClientsDataBase) {
+        viewModel.viewModelScope.launch {
+            try {
+                // Create a snapshot of the current state
+                val currentState = data.copy()
+
+                // Update local state using clear and addAll
+                val clientsList = viewModel._modelAppsFather.clientDataBase
+                val updatedList = clientsList.toMutableList()
+                val index = updatedList.indexOfFirst { it.id == currentState.id }
+
+                if (index != -1) {
+                    updatedList[index] = currentState
+                } else {
+                    // If client doesn't exist, add them
+                    updatedList.add(currentState)
+                }
+
+                // Replace entire list
+                clientsList.clear()
+                clientsList.addAll(updatedList)
+
+                // Update Firebase with error handling
+                try {
+                    B_ClientsDataBase.refClientsDataBase.child(currentState.id.toString())
+                        .setValue(currentState)
+                        .await()
+                } catch (e: Exception) {
+                    // Revert local state if Firebase update fails
+                    clientsList.clear()
+                    clientsList.addAll(
+                        if (index != -1) updatedList.toMutableList().apply { this[index] = data }
+                        else updatedList.dropLast(1)
+                    )
+                    throw e
+                }
+
+            } catch (e: Exception) {
+                Log.e("B_ClientsDataBase", "Failed to update client", e)
             }
         }
     }

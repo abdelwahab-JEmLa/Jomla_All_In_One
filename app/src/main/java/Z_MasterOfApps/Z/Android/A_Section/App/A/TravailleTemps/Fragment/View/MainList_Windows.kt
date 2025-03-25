@@ -39,7 +39,7 @@ fun MainList_Windows(
             // Create a copy with filtered intervals
             val filteredIntervals = tempTravaille.intervalesDeTravaille
                 .filter { interval ->
-                    val duration = Z_CodePartageEntreApps.Model.K_TempTravailleRepository.calculateDurationMinutes(
+                    val duration =K_TempTravaille.calculateDurationMinutes(
                         interval.tempDepart,
                         interval.temparrete
                     )

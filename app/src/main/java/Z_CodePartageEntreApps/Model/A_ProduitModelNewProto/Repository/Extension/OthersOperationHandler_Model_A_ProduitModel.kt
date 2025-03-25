@@ -1,0 +1,3 @@
+package Z_CodePartageEntreApps.Model.A_ProduitModelNewProto.Repository.Extension
+
+object OthersOperationHandler_Model_A_ProduitModel

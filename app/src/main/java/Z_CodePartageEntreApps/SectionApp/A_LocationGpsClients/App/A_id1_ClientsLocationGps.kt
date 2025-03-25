@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App
 
-import Z_CodePartageEntreApps.Model.B_ClientsDataBase.Companion.updateClientsDataBase
+import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Resources.XmlsFilesHandler.Companion.xmlResources
 import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.B.Dialogs.A.A_GlobalOptionsControlsFloatingActionButtons_FragId1
 import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.B.Dialogs.MarkerStatusDialog
@@ -133,38 +133,38 @@ fun A_id1_ClientsLocationGps(
         val clientsToShow = when (currentFilterMode) {
             VisbleClientsNow.showNonAbsentClientsOnly -> {
                 clientDataBaseSnapList.filter {
-                    it.gpsLocation.actuelleEtat != Z_CodePartageEntreApps.Model.B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CLIENT_ABSENT
+                    it.gpsLocation.actuelleEtat != B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CLIENT_ABSENT
                 }
             }
 
             VisbleClientsNow.affichePourCollecteurCommendes -> {
                 clientDataBaseSnapList.filter {
-                    it.gpsLocation.actuelleEtat == Z_CodePartageEntreApps.Model.B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.Cible
-                            || it.gpsLocation.actuelleEtat == Z_CodePartageEntreApps.Model.B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CIBLE_PRIORITE_2
-                            || it.gpsLocation.actuelleEtat == Z_CodePartageEntreApps.Model.B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.VENDU_A_LUI
-                            || it.gpsLocation.actuelleEtat == Z_CodePartageEntreApps.Model.B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.FERME
-                            || it.gpsLocation.actuelleEtat == Z_CodePartageEntreApps.Model.B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.A_EVITE
-                            || it.gpsLocation.actuelleEtat == Z_CodePartageEntreApps.Model.B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.AVEC_MARCHANDISE
-                            || it.gpsLocation.actuelleEtat == Z_CodePartageEntreApps.Model.B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CLIENT_ABSENT
+                    it.gpsLocation.actuelleEtat == B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.Cible
+                            || it.gpsLocation.actuelleEtat == B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CIBLE_PRIORITE_2
+                            || it.gpsLocation.actuelleEtat == B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.VENDU_A_LUI
+                            || it.gpsLocation.actuelleEtat == B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.FERME
+                            || it.gpsLocation.actuelleEtat == B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.A_EVITE
+                            || it.gpsLocation.actuelleEtat == B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.AVEC_MARCHANDISE
+                            || it.gpsLocation.actuelleEtat == B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CLIENT_ABSENT
                 }
             }
 
             VisbleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 -> {
                 clientDataBaseSnapList.filter {
-                    it.gpsLocation.actuelleEtat == Z_CodePartageEntreApps.Model.B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CIBLE_POUR_2
+                    it.gpsLocation.actuelleEtat == B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CIBLE_POUR_2
 
                 }
             }
 
             VisbleClientsNow.showAtayClients -> {
                 clientDataBaseSnapList.filter {
-                    it.statueDeBase.typeDeSonMagasine == Z_CodePartageEntreApps.Model.B_ClientsDataBase.StatueDeBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT
+                    it.statueDeBase.typeDeSonMagasine == B_ClientsDataBase.StatueDeBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT
                 }
             }
 
             VisbleClientsNow.showAlimentionlients -> {
                 clientDataBaseSnapList.filter {
-                    it.statueDeBase.typeDeSonMagasine == Z_CodePartageEntreApps.Model.B_ClientsDataBase.StatueDeBase.TypeDeSonMagasine.AlIMENTATION_GENERALE
+                    it.statueDeBase.typeDeSonMagasine == B_ClientsDataBase.StatueDeBase.TypeDeSonMagasine.AlIMENTATION_GENERALE
                 }
             }
 
@@ -177,7 +177,7 @@ fun A_id1_ClientsLocationGps(
         clientsToShow.forEach { client ->
             val actuelleEtat =
                 if (client.id == clientEnCourDeVent)
-                    Z_CodePartageEntreApps.Model.B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT
+                    B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT
                 else client.gpsLocation.actuelleEtat
 
             val marker = Marker(mapView).apply {
@@ -319,7 +319,7 @@ fun A_id1_ClientsLocationGps(
                                         longitude = centerPoint.longitude
                                     )
                                 )
-                                updatedClient.updateClientsDataBase(viewModel)
+                                viewModel.updateClientsDataBase(updatedClient)
                             }
 
                             // Clear editing mode

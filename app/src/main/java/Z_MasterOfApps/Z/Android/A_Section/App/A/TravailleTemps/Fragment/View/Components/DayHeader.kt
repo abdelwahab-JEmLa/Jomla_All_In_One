@@ -115,7 +115,7 @@ fun DayHeader(
 
     // Calculate total duration for the day
     val totalMinutes = tempTravaille.intervalesDeTravaille.sumOf { intervale ->
-        Z_CodePartageEntreApps.Model.K_TempTravailleRepository.calculateDurationMinutes(intervale.tempDepart, intervale.temparrete)
+        K_TempTravaille.calculateDurationMinutes(intervale.tempDepart, intervale.temparrete)
     }
 
     val totalHours = totalMinutes / 60
@@ -141,7 +141,7 @@ fun DayHeader(
     // Time Dialog
     if (showTimeDialog) {
         // Add state for TypeTemp selection
-        var selectedType by remember { mutableStateOf(Z_CodePartageEntreApps.Model.K_TempTravailleRepository.IntervalesDeTravaille.TypeTemp.ENTRE_PAR_MAIN) }
+        var selectedType by remember { mutableStateOf(K_TempTravaille.IntervalesDeTravaille.TypeTemp.ENTRE_PAR_MAIN) }
         var showTypeSelector by remember { mutableStateOf(false) }
 
         AlertDialog(
@@ -228,7 +228,7 @@ fun DayHeader(
                             title = { Text("اختر النوع") },  // "Select type" in Arabic
                             text = {
                                 Column {
-                                    Z_CodePartageEntreApps.Model.K_TempTravailleRepository.IntervalesDeTravaille.TypeTemp.values()
+                                    K_TempTravaille.IntervalesDeTravaille.TypeTemp.entries
                                         .forEach { type ->
                                             Button(
                                                 onClick = {

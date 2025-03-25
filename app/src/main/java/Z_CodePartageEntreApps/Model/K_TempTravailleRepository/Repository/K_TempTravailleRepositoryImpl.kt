@@ -1,8 +1,7 @@
 package Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository
 
-import Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.Extension.IntervalesEtJoursHandler
 import Z_CodePartageEntreApps.Model.K_TempTravaille
-import Z_CodePartageEntreApps.Model.K_TempTravaille .IntervalesDeTravaille
+import Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.Extension.IntervalesEtJoursHandler
 import Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.Extension.Z_FirebaseUtils
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Extension.TimeFormatUtils
 import androidx.compose.runtime.mutableStateListOf
@@ -42,7 +41,7 @@ class K_TempTravailleRepositoryImpl :
     // In K_TempTravailleRepositoryImpl.kt - Modify the implementation
     override fun ajouteRecodeAvecIntervaleDAchat(
         clientId: Long,
-        typeTemp: K_TempTravaille.IntervalesDeTravaille.TypeTemp
+        typeTemp:  K_TempTravaille.IntervalesDeTravaille.TypeTemp
     ): K_TempTravaille? {
         val currentDate = TimeFormatUtils.getCurrentDate()
         val currentDateStr = currentDate.replace("/", "_")
@@ -292,13 +291,13 @@ class K_TempTravailleRepositoryImpl :
             val intervalsSnapshot = dataSnapshot.child("intervalesDeTravaille")
             for (intervalSnapshot in intervalsSnapshot.children) {
                 val interval =
-                    IntervalesDeTravaille(vid = intervalSnapshot.key ?: "00_00")
+                     K_TempTravaille.IntervalesDeTravaille(vid = intervalSnapshot.key ?: "00_00")
 
                 try {
                     val typeStr = intervalSnapshot.child("typeTemp").getValue(String::class.java) ?: "DEPLACEMENT"
-                    interval.typeTemp = IntervalesDeTravaille.TypeTemp.valueOf(typeStr)
+                    interval.typeTemp =  K_TempTravaille.IntervalesDeTravaille.TypeTemp.valueOf(typeStr)
                 } catch (e: Exception) {
-                    interval.typeTemp = IntervalesDeTravaille.TypeTemp.DEPLACEMENT
+                    interval.typeTemp =  K_TempTravaille.IntervalesDeTravaille.TypeTemp.DEPLACEMENT
                 }
 
                 interval.tempDepart = intervalSnapshot.child("tempDepart").getValue(String::class.java) ?: "HH:mm"

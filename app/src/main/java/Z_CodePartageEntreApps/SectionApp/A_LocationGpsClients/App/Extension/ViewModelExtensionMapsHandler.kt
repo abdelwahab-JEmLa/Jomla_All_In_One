@@ -2,7 +2,6 @@ package Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.Extension
 
 import Z_CodePartageEntreApps.Model.A_ProduitModel
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
-import Z_CodePartageEntreApps.Model.B_ClientsDataBase.Companion.updateClientsDataBase
 import Z_CodePartageEntreApps.Resources.LottieJsonGetterR_Raw_Icons
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.runtime.getValue
@@ -19,7 +18,7 @@ class ViewModelExtension_App2_F1(
     private val clientDataBaseSnapList: SnapshotStateList<B_ClientsDataBase>,
     val viewModel: ViewModelInitApp,
 ) {
-    var auClickeCaUpdateClientPar by mutableStateOf(Z_CodePartageEntreApps.Model.B_ClientsDataBase.StatueDeBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT)
+    var auClickeCaUpdateClientPar by mutableStateOf(B_ClientsDataBase.StatueDeBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT)
     // Add this property to ViewModelInitApp
 
     fun onClickAddMarkerButton(
@@ -54,7 +53,7 @@ class ViewModelExtension_App2_F1(
 
         viewModel._modelAppsFather.clientDataBase.add(newClient)
 
-        Z_CodePartageEntreApps.Model.B_ClientsDataBase.refClientsDataBase
+        B_ClientsDataBase.refClientsDataBase
             .child(newClient.id.toString())
             .setValue(newClient)
     }
@@ -62,7 +61,7 @@ class ViewModelExtension_App2_F1(
     // ViewModelExtensionMapsHandler.kt
     fun updateStatueClient(
         selectedMarker: Marker?,
-        statueVente: Z_CodePartageEntreApps.Model.B_ClientsDataBase.GpsLocation.DernierEtatAAffiche
+        statueVente: B_ClientsDataBase.GpsLocation.DernierEtatAAffiche
     ) {
         clientDataBaseSnapList.toMutableList().forEach { client ->
             if (client.id == selectedMarker?.id?.toLong()) {
@@ -72,7 +71,7 @@ class ViewModelExtension_App2_F1(
                         actuelleEtat = statueVente
                     )
                 )
-                updatedClient.updateClientsDataBase(viewModel)
+                viewModel.updateClientsDataBase(updatedClient)
             }
         }
     }

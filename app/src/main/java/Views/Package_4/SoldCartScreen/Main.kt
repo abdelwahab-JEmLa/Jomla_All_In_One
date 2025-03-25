@@ -127,7 +127,7 @@ fun SoldCartScreen(
                             if (clientBuyerNow != null) {
                                 viewModelInitApp.updateStatueClientParID(
                                     clientBuyerNow.id,
-                                    Z_CodePartageEntreApps.Model.B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.VENDU_A_LUI
+                                    B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.VENDU_A_LUI
                                 )
                             }
                         }

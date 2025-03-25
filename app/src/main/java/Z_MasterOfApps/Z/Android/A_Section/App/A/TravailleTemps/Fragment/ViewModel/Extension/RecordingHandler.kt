@@ -194,7 +194,7 @@ class RecordingHandler(
 
         record.intervalesDeTravaille.forEach { interval ->
             if (!interval.enCoureDEnregestrement) {
-                val durationMinutes = Z_CodePartageEntreApps.Model.K_TempTravailleRepository.calculateDurationMinutes(
+                val durationMinutes = K_TempTravaille.calculateDurationMinutes(
                     interval.tempDepart,
                     interval.temparrete
                 )

@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.Dialogs.A
 
-import Z_CodePartageEntreApps.Model.B_ClientsDataBase.StatueDeBase.TypeDeSonMagasine
+import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Resources.LottieJsonGetterR_Raw_Icons
 import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.Extension.ViewModelExtension_App2_F1
 import androidx.compose.runtime.Composable
@@ -14,14 +14,14 @@ fun FragId1But_3(
     ControlButton(
         onClick = {
             // Toggle between the two TypeDeSonMagasine values
-            extensionVM.auClickeCaUpdateClientPar = if ( extensionVM.auClickeCaUpdateClientPar == TypeDeSonMagasine.ATAYAT_MOUKASSARAT) {
-                TypeDeSonMagasine.AlIMENTATION_GENERALE
+            extensionVM.auClickeCaUpdateClientPar = if ( extensionVM.auClickeCaUpdateClientPar == B_ClientsDataBase.StatueDeBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT) {
+                B_ClientsDataBase.StatueDeBase.TypeDeSonMagasine.AlIMENTATION_GENERALE
             } else {
-                TypeDeSonMagasine.ATAYAT_MOUKASSARAT
+                B_ClientsDataBase.StatueDeBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT
             }
         },
         // Choose icon based on current state
-        icon = if ( extensionVM.auClickeCaUpdateClientPar == TypeDeSonMagasine.ATAYAT_MOUKASSARAT) {
+        icon = if ( extensionVM.auClickeCaUpdateClientPar == B_ClientsDataBase.StatueDeBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT) {
             LottieJsonGetterR_Raw_Icons.atay
         } else {
             LottieJsonGetterR_Raw_Icons.alimentation

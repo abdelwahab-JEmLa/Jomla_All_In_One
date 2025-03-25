@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.Dialogs
 
-import Z_CodePartageEntreApps.Model.B_ClientsDataBase.Companion.updateClientsDataBase
+import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model._ModelAppsFather
 import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.Extension.Utils.updateLongAppSetting
 import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.Extension.ViewModelExtension_App2_F1
@@ -141,7 +141,7 @@ fun MarkerStatusDialog(
                 StatusButton(
                     text = "Mode Commande",
                     icon = Icons.Default.ShoppingCart,
-                    color = Color(ContextCompat.getColor(context, Z_CodePartageEntreApps.Model.B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT.color)),
+                    color = Color(ContextCompat.getColor(context, B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT.color)),
                     onClick = {
                         coroutineScope.launch {
                             extensionVM.updateLongAppSetting(selectedMarker.id.toLong())
@@ -153,10 +153,10 @@ fun MarkerStatusDialog(
                 StatusButton(
                     text = "Client Cible",
                     icon = Icons.Default.Person,
-                    color = Color(ContextCompat.getColor(context, Z_CodePartageEntreApps.Model.B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.Cible.color)),
+                    color = Color(ContextCompat.getColor(context, B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.Cible.color)),
                     onClick = {
                         coroutineScope.launch {
-                            extensionVM.updateStatueClient(selectedMarker, Z_CodePartageEntreApps.Model.B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.Cible)
+                            extensionVM.updateStatueClient(selectedMarker, B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.Cible)
                             onDismiss()
                         }
                     }
@@ -165,10 +165,10 @@ fun MarkerStatusDialog(
                 StatusButton(
                     text = "Client Absent",
                     icon = Icons.Default.Person,
-                    color = Color(ContextCompat.getColor(context, Z_CodePartageEntreApps.Model.B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CLIENT_ABSENT.color)),
+                    color = Color(ContextCompat.getColor(context, B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CLIENT_ABSENT.color)),
                     onClick = {
                         coroutineScope.launch {
-                            extensionVM.updateStatueClient(selectedMarker, Z_CodePartageEntreApps.Model.B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CLIENT_ABSENT)
+                            extensionVM.updateStatueClient(selectedMarker, B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CLIENT_ABSENT)
                             onDismiss()
                         }
                     }
@@ -179,10 +179,10 @@ fun MarkerStatusDialog(
                 StatusButton(
                     text = "Avec Marchandise",
                     icon = Icons.Default.ShoppingCart,
-                    color = Color(ContextCompat.getColor(context, Z_CodePartageEntreApps.Model.B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.AVEC_MARCHANDISE.color)),
+                    color = Color(ContextCompat.getColor(context, B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.AVEC_MARCHANDISE.color)),
                     onClick = {
                         coroutineScope.launch {
-                            extensionVM.updateStatueClient(selectedMarker, Z_CodePartageEntreApps.Model.B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.AVEC_MARCHANDISE)
+                            extensionVM.updateStatueClient(selectedMarker, B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.AVEC_MARCHANDISE)
                             onDismiss()
                         }
                     }
@@ -193,10 +193,10 @@ fun MarkerStatusDialog(
                 StatusButton(
                     text = "Fermé",
                     icon = Icons.Default.Lock,
-                    color = Color(ContextCompat.getColor(context, Z_CodePartageEntreApps.Model.B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.FERME.color)),
+                    color = Color(ContextCompat.getColor(context, B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.FERME.color)),
                     onClick = {
                         coroutineScope.launch {
-                            extensionVM.updateStatueClient(selectedMarker, Z_CodePartageEntreApps.Model.B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.FERME)
+                            extensionVM.updateStatueClient(selectedMarker, B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.FERME)
                             onDismiss()
                         }
                     }
@@ -248,7 +248,7 @@ fun MarkerStatusDialog(
                             client?.let { foundClient ->
                                 foundClient.nom = editedName
                                 foundClient.statueDeBase.numTelephone = editedPhone
-                                foundClient.updateClientsDataBase(viewModel)
+                                viewModel.updateClientsDataBase(foundClient)
 
                                 viewModel._modelAppsFather.produitsMainDataBase
                                     .filter { product ->
@@ -314,7 +314,7 @@ fun MarkerStatusDialog(
                             }
 
                             clientToDelete?.let { client ->
-                                Z_CodePartageEntreApps.Model.B_ClientsDataBase.refClientsDataBase
+                                B_ClientsDataBase.refClientsDataBase
                                     .child(client.id.toString())
                                     .removeValue()
                                     .await()

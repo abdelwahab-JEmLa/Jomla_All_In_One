@@ -224,6 +224,53 @@ class A_ProduitModel(
             viewModel: ViewModelInitApp
         ) = viewModel._modelAppsFather.grossistsDataBase.find { it.id == this.bonCommendDeCetteCota?.idGrossistChoisi }
 
+        fun syncData(
+            data: A_ProduitModel? = null,
+            dataSnapshot: DataSnapshot? = null
+        ): Any {
+            // Convert from Firebase to model
+            if (dataSnapshot != null) {
+                return dataSnapshot.getValue(A_ProduitModel::class.java) ?: A_ProduitModel()
+            }
+
+            // Convert from model to Firebase map
+            val sourceData = data ?: A_ProduitModel()
+            return mapOf(
+                "id" to sourceData.id,
+                "itsTempProduit" to sourceData.itsTempProduit,
+                "nom" to sourceData.nom,
+                "besoinToBeUpdated" to sourceData.besoinToBeUpdated,
+                "non_Trouve" to sourceData.non_Trouve,
+                "isVisible" to sourceData.isVisible,
+                "parentCategoryId" to sourceData.parentCategoryId,
+                "indexInParentCategorie" to sourceData.indexInParentCategorie,
+                "statuesBase" to mapOf(
+                    "coloursEtGoutsIds" to sourceData.statuesBase.coloursEtGoutsIds,
+                    "ilAUneCouleurAvecImage" to sourceData.statuesBase.ilAUneCouleurAvecImage,
+                    "naAucunImage" to sourceData.statuesBase.naAucunImage,
+                    "sonImageBesoinActualisation" to sourceData.statuesBase.sonImageBesoinActualisation,
+                    "imageGlidReloadTigger" to sourceData.statuesBase.imageGlidReloadTigger,
+                    "prePourCameraCapture" to sourceData.statuesBase.prePourCameraCapture,
+                    "seTrouveAuDernieDuCamionCarCCarton" to sourceData.statuesBase.seTrouveAuDernieDuCamionCarCCarton,
+                    "characterProduit" to mapOf(
+                        "emballageCartone" to sourceData.statuesBase.characterProduit.emballageCartone
+                    ),
+                    "infosCoutes" to mapOf(
+                        "monPrixAchat" to sourceData.statuesBase.infosCoutes.monPrixAchat,
+                        "monPrixVent" to sourceData.statuesBase.infosCoutes.monPrixVent
+                    )
+                ),
+                "etatesMutable" to mapOf(
+                    "diponibilityEtate" to sourceData.etatesMutable.diponibilityEtate,
+                    "porbableNonDispo" to sourceData.etatesMutable.porbableNonDispo
+                ),
+                "coloursEtGoutsList" to sourceData.coloursEtGoutsList,
+                "bonCommendDeCetteCota" to sourceData.bonCommendDeCetteCota,
+                "historiqueBonsCommendList" to sourceData.historiqueBonsCommendList,
+                "bonsVentDeCetteCotaList" to sourceData.bonsVentDeCetteCotaList,
+                "historiqueBonsVentsList" to sourceData.historiqueBonsVentsList
+            )
+        }
     }
 
     constructor() : this(0)
