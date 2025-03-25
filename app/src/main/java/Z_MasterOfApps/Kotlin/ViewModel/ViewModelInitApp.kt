@@ -1,8 +1,7 @@
 package Z_MasterOfApps.Kotlin.ViewModel
 
 import Z_CodePartageEntreApps.Model.A_ProduitModelRepository
-import Z_CodePartageEntreApps.Model.B_ClientsDataBase.Model.B_ClientsDataBase
-import Z_CodePartageEntreApps.Model.B_ClientsDataBase.Model.B_ClientsDataBase.Companion.updateClientsDataBase
+import Z_CodePartageEntreApps.Model.B_ClientsDataBase.Companion.updateClientsDataBase
 import Z_CodePartageEntreApps.Model.I_CategoriesRepository
 import Z_CodePartageEntreApps.Model._ModelAppsFather
 import Z_MasterOfApps.Kotlin.ViewModel.Init.A_FirebaseListeners.FromAncienDataBase
@@ -86,7 +85,7 @@ class ViewModelInitApp(
 
     fun updateStatueClientParID(
         clientId : Long,
-        statueVente: B_ClientsDataBase.GpsLocation.DernierEtatAAffiche
+        statueVente: Z_CodePartageEntreApps.Model.B_ClientsDataBase.GpsLocation.DernierEtatAAffiche
     ) {
         clientDataBaseSnapList.toMutableList().forEach { client ->
             if (client.id == clientId) {

@@ -1,8 +1,8 @@
-package Z_CodePartageEntreApps.Model.K_TempTravaille.Extension
+package Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.Extension
 
-import Z_CodePartageEntreApps.Model.K_TempTravaille.K_TempTravaille
-import Z_CodePartageEntreApps.Model.K_TempTravaille.Repository.K_TempTravailleRepository
-import Z_CodePartageEntreApps.Model.K_TempTravaille.Repository.K_TempTravailleRepositoryImpl
+import Z_CodePartageEntreApps.Model.K_TempTravaille
+import Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.K_TempTravailleRepository
+import Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.K_TempTravailleRepositoryImpl
 import com.google.firebase.Firebase
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError

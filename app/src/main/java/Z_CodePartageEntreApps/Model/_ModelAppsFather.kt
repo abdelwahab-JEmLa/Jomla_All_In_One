@@ -1,6 +1,5 @@
 package Z_CodePartageEntreApps.Model
 
-import Z_CodePartageEntreApps.Model.B_ClientsDataBase.Model.B_ClientsDataBase
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.util.Log
 import androidx.compose.runtime.snapshots.SnapshotStateList

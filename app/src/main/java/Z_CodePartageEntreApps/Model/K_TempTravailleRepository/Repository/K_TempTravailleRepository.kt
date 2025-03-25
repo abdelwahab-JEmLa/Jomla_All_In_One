@@ -1,6 +1,6 @@
-package Z_CodePartageEntreApps.Model.K_TempTravaille.Repository
+package Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository
 
-import Z_CodePartageEntreApps.Model.K_TempTravaille.K_TempTravaille
+import Z_CodePartageEntreApps.Model.K_TempTravaille
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.firebase.Firebase
 import com.google.firebase.database.database

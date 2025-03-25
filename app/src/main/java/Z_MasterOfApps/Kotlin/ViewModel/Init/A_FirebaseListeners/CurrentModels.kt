@@ -1,7 +1,7 @@
 package Z_MasterOfApps.Kotlin.ViewModel.Init.A_FirebaseListeners
 
 import Z_CodePartageEntreApps.Model.A_ProduitModel
-import Z_CodePartageEntreApps.Model.B_ClientsDataBase.Model.B_ClientsDataBase
+import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.C_GrossistsDataBase
 import Z_CodePartageEntreApps.Model.D_CouleursEtGoutesProduitsInfos
 import Z_CodePartageEntreApps.Model.E_AppsOptionsStates
@@ -40,7 +40,7 @@ object CurrentModels {
         listeners.forEach { info ->
             when (info.path) {
                 "products" -> _ModelAppsFather.produitsFireBaseRef.removeEventListener(info.listener)
-                "clients" -> B_ClientsDataBase.refClientsDataBase.removeEventListener(info.listener)
+                "clients" -> Z_CodePartageEntreApps.Model.B_ClientsDataBase.refClientsDataBase.removeEventListener(info.listener)
                 "grossists" -> _ModelAppsFather.ref_HeadOfModels.removeEventListener(info.listener)
                 "couleurs" -> D_CouleursEtGoutesProduitsInfos.caReference.removeEventListener(info.listener)
                 "appInstalle" -> E_AppsOptionsStates.caReference.removeEventListener(info.listener)
@@ -145,7 +145,7 @@ object CurrentModels {
     private fun setupClientsListener(viewModel: ViewModelInitApp) {
         Log.d(TAG, "Setting up clients listener")
 
-        B_ClientsDataBase.refClientsDataBase.keepSynced(true)
+        Z_CodePartageEntreApps.Model.B_ClientsDataBase.refClientsDataBase.keepSynced(true)
 
         val listener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -163,11 +163,11 @@ object CurrentModels {
                                     nom = map["nom"] as? String ?: ""
                                 ).apply {
                                     snap.child("statueDeBase")
-                                        .getValue(B_ClientsDataBase.StatueDeBase::class.java)?.let {
+                                        .getValue(Z_CodePartageEntreApps.Model.B_ClientsDataBase.StatueDeBase::class.java)?.let {
                                             statueDeBase = it
                                         }
                                     snap.child("gpsLocation")
-                                        .getValue(B_ClientsDataBase.GpsLocation::class.java)?.let {
+                                        .getValue(Z_CodePartageEntreApps.Model.B_ClientsDataBase.GpsLocation::class.java)?.let {
                                             gpsLocation = it
                                         }
                                     clients.add(this)
@@ -195,7 +195,7 @@ object CurrentModels {
         }
 
         listeners.add(ListenerInfo(listener, "clients"))
-        B_ClientsDataBase.refClientsDataBase.addValueEventListener(listener)
+        Z_CodePartageEntreApps.Model.B_ClientsDataBase.refClientsDataBase.addValueEventListener(listener)
     }
 
     private fun setupGrossistsListener(viewModel: ViewModelInitApp) {

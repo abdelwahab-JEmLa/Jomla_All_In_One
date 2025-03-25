@@ -1,8 +1,7 @@
 package Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.B.Dialogs
 
-import Z_CodePartageEntreApps.Model.B_ClientsDataBase.Model.B_ClientsDataBase
-import Z_CodePartageEntreApps.Model.B_ClientsDataBase.Model.B_ClientsDataBase.Companion.updateClientsDataBase
-import Z_CodePartageEntreApps.Model.K_TempTravaille.Repository.K_TempTravailleRepository
+import Z_CodePartageEntreApps.Model.B_ClientsDataBase.Companion.updateClientsDataBase
+import Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.K_TempTravailleRepository
 import Z_CodePartageEntreApps.Model._ModelAppsFather
 import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.ViewModel.Extension.Utils.updateLongAppSetting
 import Z_CodePartageEntreApps.SectionApp.A_LocationGpsClients.App.ViewModel.Extension.ViewModelExtension_App2_F1
@@ -164,7 +163,7 @@ fun MarkerStatusDialog(
                     color = Color(
                         ContextCompat.getColor(
                             context,
-                            B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT.color
+                            Z_CodePartageEntreApps.Model.B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT.color
                         )
                     ),
                     onClick = {
@@ -192,14 +191,14 @@ fun MarkerStatusDialog(
                     color = Color(
                         ContextCompat.getColor(
                             context,
-                            B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CLIENT_ABSENT.color
+                            Z_CodePartageEntreApps.Model.B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CLIENT_ABSENT.color
                         )
                     ),
                     onClick = {
                         coroutineScope.launch {
                             extensionVM.updateStatueClient(
                                 selectedMarker,
-                                B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CLIENT_ABSENT
+                                Z_CodePartageEntreApps.Model.B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CLIENT_ABSENT
                             )
                             onDismiss()
                         }
@@ -214,14 +213,14 @@ fun MarkerStatusDialog(
                     color = Color(
                         ContextCompat.getColor(
                             context,
-                            B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.AVEC_MARCHANDISE.color
+                            Z_CodePartageEntreApps.Model.B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.AVEC_MARCHANDISE.color
                         )
                     ),
                     onClick = {
                         coroutineScope.launch {
                             extensionVM.updateStatueClient(
                                 selectedMarker,
-                                B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.AVEC_MARCHANDISE
+                                Z_CodePartageEntreApps.Model.B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.AVEC_MARCHANDISE
                             )
                             onDismiss()
                         }
@@ -236,14 +235,14 @@ fun MarkerStatusDialog(
                     color = Color(
                         ContextCompat.getColor(
                             context,
-                            B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.FERME.color
+                            Z_CodePartageEntreApps.Model.B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.FERME.color
                         )
                     ),
                     onClick = {
                         coroutineScope.launch {
                             extensionVM.updateStatueClient(
                                 selectedMarker,
-                                B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.FERME
+                                Z_CodePartageEntreApps.Model.B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.FERME
                             )
                             onDismiss()
                         }
@@ -260,14 +259,14 @@ fun MarkerStatusDialog(
                         color = Color(
                             ContextCompat.getColor(
                                 context,
-                                B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.Cible.color
+                                Z_CodePartageEntreApps.Model.B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.Cible.color
                             )
                         ),
                         onClick = {
                             coroutineScope.launch {
                                 extensionVM.updateStatueClient(
                                     selectedMarker,
-                                    B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.Cible
+                                    Z_CodePartageEntreApps.Model.B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.Cible
                                 )
                                 onDismiss()
                             }
@@ -275,7 +274,7 @@ fun MarkerStatusDialog(
                     )
 
                     val CIBLE_POUR_2 =
-                        B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CIBLE_PRIORITE_2
+                        Z_CodePartageEntreApps.Model.B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CIBLE_PRIORITE_2
 
                     StatusButton(
                         text = CIBLE_POUR_2.toString(),
@@ -296,14 +295,14 @@ fun MarkerStatusDialog(
                         color = Color(
                             ContextCompat.getColor(
                                 context,
-                                B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CIBLE_POUR_2.color
+                                Z_CodePartageEntreApps.Model.B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CIBLE_POUR_2.color
                             )
                         ),
                         onClick = {
                             coroutineScope.launch {
                                 extensionVM.updateStatueClient(
                                     selectedMarker,
-                                    B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CIBLE_POUR_2
+                                    Z_CodePartageEntreApps.Model.B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CIBLE_POUR_2
                                 )
                                 onDismiss()
                             }
@@ -316,14 +315,14 @@ fun MarkerStatusDialog(
                         color = Color(
                             ContextCompat.getColor(
                                 context,
-                                B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.A_EVITE.color
+                                Z_CodePartageEntreApps.Model.B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.A_EVITE.color
                             )
                         ),
                         onClick = {
                             coroutineScope.launch {
                                 extensionVM.updateStatueClient(
                                     selectedMarker,
-                                    B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.A_EVITE
+                                    Z_CodePartageEntreApps.Model.B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.A_EVITE
                                 )
                                 onDismiss()
                             }
@@ -440,7 +439,7 @@ fun MarkerStatusDialog(
                             }
 
                             clientToDelete?.let { client ->
-                                B_ClientsDataBase.refClientsDataBase
+                                Z_CodePartageEntreApps.Model.B_ClientsDataBase.refClientsDataBase
                                     .child(client.id.toString())
                                     .removeValue()
                                     .await()

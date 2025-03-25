@@ -1,7 +1,6 @@
 package Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View
 
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_CodePartageEntreApps.Model.K_TempTravaille.K_TempTravaille
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -35,7 +34,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun MainItem_Windows(
     modifier: Modifier = Modifier,
-    intervale: K_TempTravaille.IntervalesDeTravaille,
+    intervale: Z_CodePartageEntreApps.Model.K_TempTravailleRepository.IntervalesDeTravaille,
     viewModel: Windows__ViewModel,
     viewModelInitApp: ViewModelInitApp = koinViewModel(),
 ) {
@@ -111,7 +110,7 @@ fun MainItem_Windows(
                     // Add delete button
                     Spacer(modifier = Modifier.width(8.dp))
 
-                    val duration = K_TempTravaille.IntervalesDeTravaille.calculateDuration(
+                    val duration = Z_CodePartageEntreApps.Model.K_TempTravailleRepository.IntervalesDeTravaille.calculateDuration(
                         intervale.tempDepart,
                         intervale.temparrete
                     )

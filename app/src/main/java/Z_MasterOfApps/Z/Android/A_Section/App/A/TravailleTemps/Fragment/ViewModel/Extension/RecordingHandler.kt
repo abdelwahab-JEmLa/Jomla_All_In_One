@@ -1,7 +1,7 @@
 package Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Extension
 
-import Z_CodePartageEntreApps.Model.K_TempTravaille.K_TempTravaille
-import Z_CodePartageEntreApps.Model.K_TempTravaille.Repository.K_TempTravailleRepository
+import Z_CodePartageEntreApps.Model.K_TempTravaille
+import Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.K_TempTravailleRepository
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -194,7 +194,7 @@ class RecordingHandler(
 
         record.intervalesDeTravaille.forEach { interval ->
             if (!interval.enCoureDEnregestrement) {
-                val durationMinutes = K_TempTravaille.calculateDurationMinutes(
+                val durationMinutes = Z_CodePartageEntreApps.Model.K_TempTravailleRepository.calculateDurationMinutes(
                     interval.tempDepart,
                     interval.temparrete
                 )

@@ -1,8 +1,8 @@
 package Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel
 
-import Z_CodePartageEntreApps.Model.K_TempTravaille.K_TempTravaille
-import Z_CodePartageEntreApps.Model.K_TempTravaille.Repository.K_TempTravailleRepository
-import Z_CodePartageEntreApps.Model.K_TempTravaille.Repository.K_TempTravailleRepositoryImpl
+import Z_CodePartageEntreApps.Model.K_TempTravaille
+import Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.K_TempTravailleRepository
+import Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.K_TempTravailleRepositoryImpl
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Extension.RecordingHandler
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Extension.TimeFormatUtils
 import androidx.lifecycle.ViewModel
@@ -37,11 +37,11 @@ class Windows__ViewModel(
     }
 
     // Add these state variables to Windows__ViewModel class
-    private val _editingInterval = MutableStateFlow<K_TempTravaille.IntervalesDeTravaille?>(null)
+    private val _editingInterval = MutableStateFlow<Z_CodePartageEntreApps.Model.K_TempTravailleRepository.IntervalesDeTravaille?>(null)
     val editingInterval = _editingInterval.asStateFlow()
 
     // Add this function to Windows__ViewModel class
-    fun editIntervaleTemp(interval: K_TempTravaille.IntervalesDeTravaille) {
+    fun editIntervaleTemp(interval: Z_CodePartageEntreApps.Model.K_TempTravailleRepository.IntervalesDeTravaille) {
         _editingInterval.value = interval
     }
     // In Windows__ViewModel.kt
@@ -80,7 +80,7 @@ class Windows__ViewModel(
         recordId: String,
         startTime: String? = null,
         endTime: String? = null,
-        typeTemp: K_TempTravaille.IntervalesDeTravaille.TypeTemp = K_TempTravaille.IntervalesDeTravaille.TypeTemp.ENTRE_PAR_MAIN
+        typeTemp: Z_CodePartageEntreApps.Model.K_TempTravailleRepository.IntervalesDeTravaille.TypeTemp = Z_CodePartageEntreApps.Model.K_TempTravailleRepository.IntervalesDeTravaille.TypeTemp.ENTRE_PAR_MAIN
     ) {
         // Find the existing record
         val existingRecord = dateList.find { it.vid == recordId }

@@ -1,6 +1,6 @@
 package Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Components
 
-import Z_CodePartageEntreApps.Model.K_TempTravaille.K_TempTravaille
+import Z_CodePartageEntreApps.Model.K_TempTravaille
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -115,7 +115,7 @@ fun DayHeader(
 
     // Calculate total duration for the day
     val totalMinutes = tempTravaille.intervalesDeTravaille.sumOf { intervale ->
-        K_TempTravaille.calculateDurationMinutes(intervale.tempDepart, intervale.temparrete)
+        Z_CodePartageEntreApps.Model.K_TempTravailleRepository.calculateDurationMinutes(intervale.tempDepart, intervale.temparrete)
     }
 
     val totalHours = totalMinutes / 60
@@ -141,7 +141,7 @@ fun DayHeader(
     // Time Dialog
     if (showTimeDialog) {
         // Add state for TypeTemp selection
-        var selectedType by remember { mutableStateOf(K_TempTravaille.IntervalesDeTravaille.TypeTemp.ENTRE_PAR_MAIN) }
+        var selectedType by remember { mutableStateOf(Z_CodePartageEntreApps.Model.K_TempTravailleRepository.IntervalesDeTravaille.TypeTemp.ENTRE_PAR_MAIN) }
         var showTypeSelector by remember { mutableStateOf(false) }
 
         AlertDialog(
@@ -228,7 +228,7 @@ fun DayHeader(
                             title = { Text("اختر النوع") },  // "Select type" in Arabic
                             text = {
                                 Column {
-                                    K_TempTravaille.IntervalesDeTravaille.TypeTemp.values()
+                                    Z_CodePartageEntreApps.Model.K_TempTravailleRepository.IntervalesDeTravaille.TypeTemp.values()
                                         .forEach { type ->
                                             Button(
                                                 onClick = {

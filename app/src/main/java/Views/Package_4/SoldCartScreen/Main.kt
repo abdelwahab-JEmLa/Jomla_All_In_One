@@ -1,6 +1,6 @@
 package Views.Package_4.SoldCartScreen
 
-import Z_CodePartageEntreApps.Model.B_ClientsDataBase.Model.B_ClientsDataBase
+import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
@@ -127,7 +127,7 @@ fun SoldCartScreen(
                             if (clientBuyerNow != null) {
                                 viewModelInitApp.updateStatueClientParID(
                                     clientBuyerNow.id,
-                                    B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.VENDU_A_LUI
+                                    Z_CodePartageEntreApps.Model.B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.VENDU_A_LUI
                                 )
                             }
                         }

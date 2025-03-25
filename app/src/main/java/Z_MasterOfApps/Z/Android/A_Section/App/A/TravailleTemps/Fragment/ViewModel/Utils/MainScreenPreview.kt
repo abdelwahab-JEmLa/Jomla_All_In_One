@@ -1,10 +1,10 @@
 package Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Utils
 
-import Z_CodePartageEntreApps.Model.K_TempTravaille.K_TempTravaille
+import Z_CodePartageEntreApps.Model.K_TempTravaille
 import androidx.compose.runtime.snapshots.SnapshotStateList
 
 /*
-import Z_CodePartageEntreApps.Model.K_TempTravaille.K_TempTravaille
+import Z_CodePartageEntreApps.Model.K_TempTravaille
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.MainScreen_Windows
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
 import androidx.compose.material3.MaterialTheme
@@ -69,59 +69,59 @@ private fun populateSampleData(dateList: SnapshotStateList<K_TempTravaille>) {
     val sampleData = mapOf(
         // Week 1
         "2025/01/01" to listOf(
-            Triple(K_TempTravaille.IntervalesDeTravaille.TypeTemp.DEPLACEMENT, "08:30", "10:00"),
-            Triple(K_TempTravaille.IntervalesDeTravaille.TypeTemp.VENT, "13:15", "15:45")
+            Triple(Z_CodePartageEntreApps.Model.K_TempTravailleRepository.IntervalesDeTravaille.TypeTemp.DEPLACEMENT, "08:30", "10:00"),
+            Triple(Z_CodePartageEntreApps.Model.K_TempTravailleRepository.IntervalesDeTravaille.TypeTemp.VENT, "13:15", "15:45")
         ),
         "2025/01/02" to listOf(
-            Triple(K_TempTravaille.IntervalesDeTravaille.TypeTemp.ACHAT, "09:00", "11:30"),
-            Triple(K_TempTravaille.IntervalesDeTravaille.TypeTemp.DEPLACEMENT, "14:00", "16:30"),
-            Triple(K_TempTravaille.IntervalesDeTravaille.TypeTemp.VENT, "17:15", "18:45")
+            Triple(Z_CodePartageEntreApps.Model.K_TempTravailleRepository.IntervalesDeTravaille.TypeTemp.ACHAT, "09:00", "11:30"),
+            Triple(Z_CodePartageEntreApps.Model.K_TempTravailleRepository.IntervalesDeTravaille.TypeTemp.DEPLACEMENT, "14:00", "16:30"),
+            Triple(Z_CodePartageEntreApps.Model.K_TempTravailleRepository.IntervalesDeTravaille.TypeTemp.VENT, "17:15", "18:45")
         ),
         "2025/01/03" to listOf(
-            Triple(K_TempTravaille.IntervalesDeTravaille.TypeTemp.VENT, "08:45", "12:15"),
-            Triple(K_TempTravaille.IntervalesDeTravaille.TypeTemp.DEPLACEMENT, "14:30", "17:00")
+            Triple(Z_CodePartageEntreApps.Model.K_TempTravailleRepository.IntervalesDeTravaille.TypeTemp.VENT, "08:45", "12:15"),
+            Triple(Z_CodePartageEntreApps.Model.K_TempTravailleRepository.IntervalesDeTravaille.TypeTemp.DEPLACEMENT, "14:30", "17:00")
         ),
         "2025/01/04" to listOf(
-            Triple(K_TempTravaille.IntervalesDeTravaille.TypeTemp.ACHAT, "10:00", "11:30")
+            Triple(Z_CodePartageEntreApps.Model.K_TempTravailleRepository.IntervalesDeTravaille.TypeTemp.ACHAT, "10:00", "11:30")
         ),
         "2025/01/05" to listOf(
-            Triple(K_TempTravaille.IntervalesDeTravaille.TypeTemp.DEPLACEMENT, "11:30", "13:00")
+            Triple(Z_CodePartageEntreApps.Model.K_TempTravailleRepository.IntervalesDeTravaille.TypeTemp.DEPLACEMENT, "11:30", "13:00")
         ),
         "2025/01/06" to listOf(
-            Triple(K_TempTravaille.IntervalesDeTravaille.TypeTemp.DEPLACEMENT, "08:15", "09:45"),
-            Triple(K_TempTravaille.IntervalesDeTravaille.TypeTemp.VENT, "13:00", "16:30")
+            Triple(Z_CodePartageEntreApps.Model.K_TempTravailleRepository.IntervalesDeTravaille.TypeTemp.DEPLACEMENT, "08:15", "09:45"),
+            Triple(Z_CodePartageEntreApps.Model.K_TempTravailleRepository.IntervalesDeTravaille.TypeTemp.VENT, "13:00", "16:30")
         ),
         "2025/01/07" to listOf(
-            Triple(K_TempTravaille.IntervalesDeTravaille.TypeTemp.ACHAT, "09:30", "12:00"),
-            Triple(K_TempTravaille.IntervalesDeTravaille.TypeTemp.DEPLACEMENT, "14:15", "17:30"),
-            Triple(K_TempTravaille.IntervalesDeTravaille.TypeTemp.VENT, "18:00", "19:30")
+            Triple(Z_CodePartageEntreApps.Model.K_TempTravailleRepository.IntervalesDeTravaille.TypeTemp.ACHAT, "09:30", "12:00"),
+            Triple(Z_CodePartageEntreApps.Model.K_TempTravailleRepository.IntervalesDeTravaille.TypeTemp.DEPLACEMENT, "14:15", "17:30"),
+            Triple(Z_CodePartageEntreApps.Model.K_TempTravailleRepository.IntervalesDeTravaille.TypeTemp.VENT, "18:00", "19:30")
         ),
         // Week 2
         "2025/01/08" to listOf(
-            Triple(K_TempTravaille.IntervalesDeTravaille.TypeTemp.DEPLACEMENT, "08:00", "10:30"),
-            Triple(K_TempTravaille.IntervalesDeTravaille.TypeTemp.ACHAT, "13:30", "15:00")
+            Triple(Z_CodePartageEntreApps.Model.K_TempTravailleRepository.IntervalesDeTravaille.TypeTemp.DEPLACEMENT, "08:00", "10:30"),
+            Triple(Z_CodePartageEntreApps.Model.K_TempTravailleRepository.IntervalesDeTravaille.TypeTemp.ACHAT, "13:30", "15:00")
         ),
         "2025/01/09" to listOf(
-            Triple(K_TempTravaille.IntervalesDeTravaille.TypeTemp.VENT, "09:15", "11:45"),
-            Triple(K_TempTravaille.IntervalesDeTravaille.TypeTemp.DEPLACEMENT, "14:45", "16:15")
+            Triple(Z_CodePartageEntreApps.Model.K_TempTravailleRepository.IntervalesDeTravaille.TypeTemp.VENT, "09:15", "11:45"),
+            Triple(Z_CodePartageEntreApps.Model.K_TempTravailleRepository.IntervalesDeTravaille.TypeTemp.DEPLACEMENT, "14:45", "16:15")
         ),
         "2025/01/10" to listOf(
-            Triple(K_TempTravaille.IntervalesDeTravaille.TypeTemp.ACHAT, "08:45", "11:15"),
-            Triple(K_TempTravaille.IntervalesDeTravaille.TypeTemp.VENT, "14:00", "17:30")
+            Triple(Z_CodePartageEntreApps.Model.K_TempTravailleRepository.IntervalesDeTravaille.TypeTemp.ACHAT, "08:45", "11:15"),
+            Triple(Z_CodePartageEntreApps.Model.K_TempTravailleRepository.IntervalesDeTravaille.TypeTemp.VENT, "14:00", "17:30")
         ),
         "2025/01/11" to listOf(
-            Triple(K_TempTravaille.IntervalesDeTravaille.TypeTemp.DEPLACEMENT, "10:30", "12:00")
+            Triple(Z_CodePartageEntreApps.Model.K_TempTravailleRepository.IntervalesDeTravaille.TypeTemp.DEPLACEMENT, "10:30", "12:00")
         ),
         "2025/01/12" to listOf(
-            Triple(K_TempTravaille.IntervalesDeTravaille.TypeTemp.ACHAT, "12:00", "13:30")
+            Triple(Z_CodePartageEntreApps.Model.K_TempTravailleRepository.IntervalesDeTravaille.TypeTemp.ACHAT, "12:00", "13:30")
         ),
         "2025/01/13" to listOf(
-            Triple(K_TempTravaille.IntervalesDeTravaille.TypeTemp.DEPLACEMENT, "08:30", "10:00"),
-            Triple(K_TempTravaille.IntervalesDeTravaille.TypeTemp.VENT, "13:45", "16:15")
+            Triple(Z_CodePartageEntreApps.Model.K_TempTravailleRepository.IntervalesDeTravaille.TypeTemp.DEPLACEMENT, "08:30", "10:00"),
+            Triple(Z_CodePartageEntreApps.Model.K_TempTravailleRepository.IntervalesDeTravaille.TypeTemp.VENT, "13:45", "16:15")
         ),
         "2025/01/14" to listOf(
-            Triple(K_TempTravaille.IntervalesDeTravaille.TypeTemp.ACHAT, "09:00", "12:30"),
-            Triple(K_TempTravaille.IntervalesDeTravaille.TypeTemp.DEPLACEMENT, "14:30", "17:00")
+            Triple(Z_CodePartageEntreApps.Model.K_TempTravailleRepository.IntervalesDeTravaille.TypeTemp.ACHAT, "09:00", "12:30"),
+            Triple(Z_CodePartageEntreApps.Model.K_TempTravailleRepository.IntervalesDeTravaille.TypeTemp.DEPLACEMENT, "14:30", "17:00")
         )
     )
 
@@ -135,7 +135,7 @@ private fun populateSampleData(dateList: SnapshotStateList<K_TempTravaille>) {
 
         // Create each interval for this date
         intervals.forEachIndexed { i, (type, start, end) ->
-            val interval = K_TempTravaille.IntervalesDeTravaille(vid = "${dateString}_$i")
+            val interval = Z_CodePartageEntreApps.Model.K_TempTravailleRepository.IntervalesDeTravaille(vid = "${dateString}_$i")
 
             // Set the defined type and times
             interval.typeTemp = type

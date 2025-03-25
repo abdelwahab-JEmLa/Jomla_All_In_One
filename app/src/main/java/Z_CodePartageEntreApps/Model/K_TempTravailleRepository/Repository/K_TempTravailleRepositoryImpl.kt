@@ -1,8 +1,9 @@
-package Z_CodePartageEntreApps.Model.K_TempTravaille.Repository
+package Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository
 
-import Z_CodePartageEntreApps.Model.K_TempTravaille.Extension.IntervalesEtJoursHandler
-import Z_CodePartageEntreApps.Model.K_TempTravaille.Extension.Z_FirebaseUtils
-import Z_CodePartageEntreApps.Model.K_TempTravaille.K_TempTravaille
+import Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.Extension.IntervalesEtJoursHandler
+import Z_CodePartageEntreApps.Model.K_TempTravaille
+import Z_CodePartageEntreApps.Model.K_TempTravaille .IntervalesDeTravaille
+import Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.Extension.Z_FirebaseUtils
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Extension.TimeFormatUtils
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -291,13 +292,13 @@ class K_TempTravailleRepositoryImpl :
             val intervalsSnapshot = dataSnapshot.child("intervalesDeTravaille")
             for (intervalSnapshot in intervalsSnapshot.children) {
                 val interval =
-                    K_TempTravaille.IntervalesDeTravaille(vid = intervalSnapshot.key ?: "00_00")
+                    IntervalesDeTravaille(vid = intervalSnapshot.key ?: "00_00")
 
                 try {
                     val typeStr = intervalSnapshot.child("typeTemp").getValue(String::class.java) ?: "DEPLACEMENT"
-                    interval.typeTemp = K_TempTravaille.IntervalesDeTravaille.TypeTemp.valueOf(typeStr)
+                    interval.typeTemp = IntervalesDeTravaille.TypeTemp.valueOf(typeStr)
                 } catch (e: Exception) {
-                    interval.typeTemp = K_TempTravaille.IntervalesDeTravaille.TypeTemp.DEPLACEMENT
+                    interval.typeTemp = IntervalesDeTravaille.TypeTemp.DEPLACEMENT
                 }
 
                 interval.tempDepart = intervalSnapshot.child("tempDepart").getValue(String::class.java) ?: "HH:mm"

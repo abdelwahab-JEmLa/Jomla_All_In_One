@@ -1,5 +1,6 @@
-package Z_CodePartageEntreApps.Model.K_TempTravaille.Extension
-import Z_CodePartageEntreApps.Model.K_TempTravaille.K_TempTravaille
+package Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.Extension
+import Z_CodePartageEntreApps.Model.K_TempTravaille
+import Z_CodePartageEntreApps.Model.K_TempTravaille .IntervalesDeTravaille
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Extension.TimeFormatUtils
 import androidx.compose.runtime.snapshots.SnapshotStateList
 
@@ -72,7 +73,7 @@ object IntervalesEtJoursHandler {
 
             newInterval.tempDepart = startTime ?: currentTime
             newInterval.enCoureDEnregestrement = true
-            newInterval.typeTemp = K_TempTravaille.IntervalesDeTravaille.TypeTemp.ACHAT
+            newInterval.typeTemp = IntervalesDeTravaille.TypeTemp.ACHAT
             newInterval.idClientSiAchat = System.currentTimeMillis()
 
             existingRecord.intervalesDeTravaille.add(newInterval)
@@ -82,11 +83,11 @@ object IntervalesEtJoursHandler {
             newRecord.infosDeBase.dateInString = currentDate
 
             val currentTimeFormatted = intervalId ?: currentTime.replace(":", "_")
-            val newInterval = K_TempTravaille.IntervalesDeTravaille(vid = currentTimeFormatted)
+            val newInterval = IntervalesDeTravaille(vid = currentTimeFormatted)
 
             newInterval.tempDepart = startTime ?: currentTime
             newInterval.enCoureDEnregestrement = true
-            newInterval.typeTemp = K_TempTravaille.IntervalesDeTravaille.TypeTemp.ACHAT
+            newInterval.typeTemp = IntervalesDeTravaille.TypeTemp.ACHAT
             newInterval.idClientSiAchat = System.currentTimeMillis()
 
             newRecord.intervalesDeTravaille.add(newInterval)
@@ -107,7 +108,7 @@ object IntervalesEtJoursHandler {
         intervalId: String? = null,
         startTime: String? = null,
         endTime: String? = null,
-        typeTemp: K_TempTravaille.IntervalesDeTravaille.TypeTemp? = null,
+        typeTemp: IntervalesDeTravaille.TypeTemp? = null,
         callback: (K_TempTravaille) -> Unit
     ) {
         println("DEBUG: updateExistingInterval called")
@@ -268,12 +269,12 @@ object IntervalesEtJoursHandler {
                 val newRecord = K_TempTravaille(vid = recordId)
                 newRecord.infosDeBase.dateInString = formattedDate
 
-                val defaultInterval = K_TempTravaille.IntervalesDeTravaille(vid = "00_00")
+                val defaultInterval = IntervalesDeTravaille(vid = "00_00")
                 defaultInterval.tempDepart = "00:00"
                 defaultInterval.temparrete = "00:00"
                 defaultInterval.enCoureDEnregestrement = false
                 defaultInterval.typeTemp =
-                    K_TempTravaille.IntervalesDeTravaille.TypeTemp.ENTRE_PAR_MAIN
+                    IntervalesDeTravaille.TypeTemp.ENTRE_PAR_MAIN
                 defaultInterval.idClientSiAchat = System.currentTimeMillis()
 
                 // Add the interval to the new record

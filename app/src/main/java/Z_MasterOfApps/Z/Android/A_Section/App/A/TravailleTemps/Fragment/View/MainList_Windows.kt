@@ -1,6 +1,6 @@
 package Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View
 
-import Z_CodePartageEntreApps.Model.K_TempTravaille.K_TempTravaille
+import Z_CodePartageEntreApps.Model.K_TempTravaille
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Components.DayHeader
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Components.WeekHeader
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
@@ -39,7 +39,7 @@ fun MainList_Windows(
             // Create a copy with filtered intervals
             val filteredIntervals = tempTravaille.intervalesDeTravaille
                 .filter { interval ->
-                    val duration = K_TempTravaille.calculateDurationMinutes(
+                    val duration = Z_CodePartageEntreApps.Model.K_TempTravailleRepository.calculateDurationMinutes(
                         interval.tempDepart,
                         interval.temparrete
                     )

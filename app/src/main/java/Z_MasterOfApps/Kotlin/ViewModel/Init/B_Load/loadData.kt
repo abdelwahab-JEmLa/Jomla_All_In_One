@@ -1,7 +1,7 @@
 package Z_MasterOfApps.Kotlin.ViewModel.Init.B_Load
 
 import Z_CodePartageEntreApps.Model.A_ProduitModel
-import Z_CodePartageEntreApps.Model.B_ClientsDataBase.Model.B_ClientsDataBase
+import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.C_GrossistsDataBase
 import Z_CodePartageEntreApps.Model.D_CouleursEtGoutesProduitsInfos
 import Z_CodePartageEntreApps.Model._ModelAppsFather
@@ -179,7 +179,7 @@ private fun setupDatabaseRefs(): List<DatabaseReference> {
     return listOf(
         _ModelAppsFather.ref_HeadOfModels,
         _ModelAppsFather.produitsFireBaseRef,
-        B_ClientsDataBase.refClientsDataBase
+        Z_CodePartageEntreApps.Model.B_ClientsDataBase.refClientsDataBase
     ).onEach {
         it.keepSynced(true)
         Log.d(TAG, "Database reference synced: ${it.key}")
@@ -344,11 +344,11 @@ private fun createClient(snap: DataSnapshot): B_ClientsDataBase? {
         nom = map["nom"] as? String ?: ""
     ).apply {
         snap.child("statueDeBase")
-            .getValue(B_ClientsDataBase.StatueDeBase::class.java)?.let {
+            .getValue(Z_CodePartageEntreApps.Model.B_ClientsDataBase.StatueDeBase::class.java)?.let {
                 statueDeBase = it
             }
         snap.child("gpsLocation")
-            .getValue(B_ClientsDataBase.GpsLocation::class.java)?.let {
+            .getValue(Z_CodePartageEntreApps.Model.B_ClientsDataBase.GpsLocation::class.java)?.let {
                 gpsLocation = it
             }
     }

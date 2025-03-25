@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Model.B_ClientsDataBase.Model
+package Z_CodePartageEntreApps.Model
 
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.util.Log
@@ -26,7 +26,7 @@ data class B_ClientsDataBase(
         var caRefDonAncienDataBase: String = "G_Clients",       
         var cUnClientTemporaire: Boolean = true,
         var auFilterFAB: Boolean = false ,
-        var typeDeSonMagasine: TypeDeSonMagasine? = TypeDeSonMagasine.ATAYAT_MOUKASSARAT
+        var typeDeSonMagasine: StatueDeBase.TypeDeSonMagasine? = StatueDeBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT
     )  {
         @IgnoreExtraProperties
         enum class TypeDeSonMagasine(val color: Int, val nomArabe: String) {
@@ -41,7 +41,7 @@ data class B_ClientsDataBase(
         var longitude: Double = 0.0,
         var title: String = "",
         var snippet: String = "",
-        var actuelleEtat: DernierEtatAAffiche? = null,
+        var actuelleEtat: GpsLocation.DernierEtatAAffiche? = null,
     ) {
         @IgnoreExtraProperties
         enum class DernierEtatAAffiche(val color: Int, val nomArabe: String) {
@@ -90,7 +90,7 @@ data class B_ClientsDataBase(
 
                     // Update Firebase with error handling
                     try {
-                        refClientsDataBase.child(currentState.id.toString())
+                        Companion.refClientsDataBase.child(currentState.id.toString())
                             .setValue(currentState)
                             .await()
                     } catch (e: Exception) {

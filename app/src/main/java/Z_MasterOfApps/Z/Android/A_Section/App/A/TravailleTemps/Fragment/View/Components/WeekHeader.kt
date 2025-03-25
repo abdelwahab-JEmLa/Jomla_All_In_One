@@ -1,6 +1,5 @@
 package Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Components
 
-import Z_CodePartageEntreApps.Model.K_TempTravaille.K_TempTravaille
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.WeekInfo
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
 import androidx.compose.animation.core.LinearEasing
@@ -327,7 +326,7 @@ fun calculateTotalWeekWorkTime(weekInfo: WeekInfo, viewModel: Windows__ViewModel
     // Calculate total minutes from all intervals in all days of the week
     weekRecords.forEach { record ->
         record.intervalesDeTravaille.forEach { interval ->
-            val intervalMinutes = K_TempTravaille.calculateDurationMinutes(
+            val intervalMinutes = Z_CodePartageEntreApps.Model.K_TempTravailleRepository.calculateDurationMinutes(
                 interval.tempDepart,
                 interval.temparrete
             )
