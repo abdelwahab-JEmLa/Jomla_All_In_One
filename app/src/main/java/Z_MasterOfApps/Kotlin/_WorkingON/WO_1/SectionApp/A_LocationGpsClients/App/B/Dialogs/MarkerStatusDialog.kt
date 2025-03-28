@@ -3,9 +3,9 @@ package Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.Ap
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.K_TempTravailleRepository
 import Z_CodePartageEntreApps.Model._ModelAppsFather
+import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.Extension.Utils.updateLongAppSetting
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.Extension.ViewModelExtension_App2_F1
-import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -122,7 +122,6 @@ fun MarkerStatusDialog(
                                 imageVector = Icons.Default.Edit,
                                 contentDescription = "Edit client"
                             )
-                            if (!context.packageName.contains("clientje")) {
                                 Icon(
                                     imageVector = Icons.Default.Delete,
                                     contentDescription = "Delete client",
@@ -133,7 +132,6 @@ fun MarkerStatusDialog(
                                             showDeleteConfirmationDialog = true
                                         }
                                 )
-                            }
                         }
 
                         Text(
@@ -184,6 +182,7 @@ fun MarkerStatusDialog(
                         }
                     }
                 )
+
 
                 StatusButton(
                     text = "Client Absent",
@@ -249,7 +248,6 @@ fun MarkerStatusDialog(
                     }
                 )
 
-                if (!context.packageName.contains("clientje")) {
 
                     Spacer(modifier = Modifier.height(16.dp))
 
@@ -336,7 +334,6 @@ fun MarkerStatusDialog(
                     Text("Fermer")
                 }
             }
-        }
     }
 
     if (showEditDialog) {
