@@ -1,7 +1,7 @@
 package Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs.A
 
-import Z_CodePartageEntreApps.Resources.LottieJsonGetterR_Raw_Icons
-import Z_CodePartageEntreApps.Resources.XmlsFilesHandler.Companion.xmlResources
+import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
+import Z_MasterOfApps.Resources.XmlsFilesHandler.Companion.xmlResources
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs.Utils.A_ChangeIdColor
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs.Utils.AddMarkerButton
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs.Utils.ClearHistoryButton

@@ -1,6 +1,6 @@
 package Z_MasterOfApps.Z_AppsFather.Kotlin.Partage.Views
 
-import Z_CodePartageEntreApps.Resources.LottieJsonGetterR_Raw_Icons
+import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size

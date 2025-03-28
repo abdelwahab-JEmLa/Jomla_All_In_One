@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Resources
+package Z_MasterOfApps.Resources
 
 import com.example.clientjetpack.R
 

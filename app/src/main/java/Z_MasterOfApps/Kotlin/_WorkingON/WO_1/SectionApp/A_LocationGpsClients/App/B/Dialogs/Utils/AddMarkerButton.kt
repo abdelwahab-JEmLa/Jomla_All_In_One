@@ -1,6 +1,6 @@
 package Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs.Utils
 
-import Z_CodePartageEntreApps.Resources.XmlsFilesHandler.Companion.fixXmlResources
+import Z_MasterOfApps.Resources.XmlsFilesHandler.Companion.fixXmlResources
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.Extension.ViewModelExtension_App2_F1
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset
