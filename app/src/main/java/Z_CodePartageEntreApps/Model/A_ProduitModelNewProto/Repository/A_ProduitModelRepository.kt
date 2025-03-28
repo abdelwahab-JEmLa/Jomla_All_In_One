@@ -1,6 +1,7 @@
 package Z_CodePartageEntreApps.Model.A_ProduitModelNewProto.Repository
 
 import Z_CodePartageEntreApps.Model.A_ProduitModel
+import Z_CodePartageEntreApps.Model._ModelAppsFather.Companion.firebaseDatabase
 import Z_CodePartageEntreApps.Model._ModelAppsFather.Companion.ref_HeadOfModels
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import kotlinx.coroutines.flow.Flow
@@ -23,7 +24,9 @@ interface A_ProduitModelRepository{
 
     companion object {
         val caReference = ref_HeadOfModels.child("A_ProduitModel")
-
+        val caReferenceProtoDecembre = ref_HeadOfModels.child("produits")
+        val autreRef = firebaseDatabase
+            .getReference("1_SQL_PROTO_MARS").child("A_ProduitModel")
     }
 }
 
