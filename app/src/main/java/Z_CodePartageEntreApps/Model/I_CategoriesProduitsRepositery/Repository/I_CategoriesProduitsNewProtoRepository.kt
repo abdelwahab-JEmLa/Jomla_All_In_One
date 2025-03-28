@@ -1,9 +1,8 @@
 package Z_CodePartageEntreApps.Model.I_CategoriesProduitsRepositery.Repository
 
 import Z_CodePartageEntreApps.Model.I_CategoriesProduits
+import Z_CodePartageEntreApps.Model._ModelAppsFather.Companion.ref_HeadOfModels
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import com.google.firebase.Firebase
-import com.google.firebase.database.database
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -19,8 +18,11 @@ interface I_CategoriesProduitsNewProtoRepository{
     fun updateData(data: I_CategoriesProduits? = null,)
 
     companion object {
-        val caReference = Firebase.database.getReference("produits")
+        val caReference = ref_HeadOfModels.child("I_CategoriesProduits")
     }
+
+    fun restartDatabaseListener()
+    fun checkConnectivity()
 }
 
 

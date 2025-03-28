@@ -8,7 +8,7 @@ import P0_MainScreen.Ui.Main.AppNavHost.Screen
 import P0_MainScreen.Ui.Objects.ConnexionCard
 import Views.FragId4_EStorePresentationToClient.FragmentDisplayeInfoProductToClient7
 import Views.FragId4_EStorePresentationToClient.Modules.SearchArticle
-import Z_CodePartageEntreApps.Model.A_ProduitModelRepository
+import Z_CodePartageEntreApps.Model.A_ProduitModelNewProto.Repository.A_ProduitModelRepository
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import P0_MainScreen.Main.Windows.RecordAfficheurFAB
 import android.os.Build

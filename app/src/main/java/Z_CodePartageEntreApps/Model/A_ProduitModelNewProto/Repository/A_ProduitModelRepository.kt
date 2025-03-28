@@ -1,25 +1,29 @@
 package Z_CodePartageEntreApps.Model.A_ProduitModelNewProto.Repository
 
 import Z_CodePartageEntreApps.Model.A_ProduitModel
+import Z_CodePartageEntreApps.Model._ModelAppsFather.Companion.ref_HeadOfModels
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import com.google.firebase.Firebase
-import com.google.firebase.database.database
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
-interface A_ProduitModelNewProtoRepository{
+interface A_ProduitModelRepository{
     var modelDatas: SnapshotStateList<A_ProduitModel>
     val progressRepo: MutableStateFlow<Float>
         get() = MutableStateFlow(0f)
 
-    suspend fun onDataBaseChangeListnerAndLoad(): Pair<List<A_ProduitModel>, Flow<Float>>
-    fun stopDatabaseListener()
+    fun checkConnectivity()
     fun checkConnectivityAndSync()
-    suspend fun updateDatas(datas: SnapshotStateList<A_ProduitModel>)
+
+    suspend fun onDataBaseChangeListnerAndLoad(): Pair<List<A_ProduitModel>, Flow<Float>>
+    fun restartDatabaseListener()
+    fun stopDatabaseListener()
+
     fun updateData(data: A_ProduitModel? = null,)
+    suspend fun updateDatas(datas: SnapshotStateList<A_ProduitModel>)
 
     companion object {
-        val caReference = Firebase.database.getReference("produits")
+        val caReference = ref_HeadOfModels.child("A_ProduitModel")
+
     }
 }
 

@@ -3,7 +3,7 @@ package Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository
 import Z_CodePartageEntreApps.Model.K_TempTravaille
 import Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.Extension.IntervalesEtJoursHandler
 import Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.Extension.Z_FirebaseUtils
-import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Extension.TimeFormatUtils
+import Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.Extension.TimeFormatUtils
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.firebase.database.DataSnapshot

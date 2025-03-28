@@ -1,10 +1,13 @@
 package Z_CodePartageEntreApps.Model.I_CategoriesProduitsRepositery.Repository
 
 import Z_CodePartageEntreApps.Model.I_CategoriesProduits
-import Z_CodePartageEntreApps.Model.I_CategoriesProduitsRepositery.Repository.Extension.FirebaseUtilsI_CategoriesProduits
+import Z_CodePartageEntreApps.Model.I_CategoriesProduitsRepositery.Repository.Extension.FirebaseUtilsI_CategoriesProduitsNewProto
+import Z_CodePartageEntreApps.Modules.ConnectivityMonitorNewProto
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.firebase.database.ValueEventListener
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -13,33 +16,80 @@ class I_CategoriesProduitsNewProtoRepositoryImpl(
     override var modelDatas: SnapshotStateList<I_CategoriesProduits> = mutableStateListOf()
     override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
 
+    val connectivityMonitor = ConnectivityMonitorNewProto(CoroutineScope(Dispatchers.Default))
+
     private var listener: ValueEventListener? = null
     internal var isUpdating = false
     internal var lastUpdateTimestamp = 0L
     var initialDataLoaded = false
 
     init {
-        FirebaseUtilsI_CategoriesProduits.initializeFirebaseOfflineCapability()
-        startDatabaseListener()
-
+        FirebaseUtilsI_CategoriesProduitsNewProto.initializeFirebaseOfflineCapability()
+        startDatabaseListener {
+        }
     }
 
     private fun startDatabaseListener(onDatabaseListenerEnd: () -> Unit = {}) {
         stopDatabaseListener()
         initialDataLoaded = false
 
-        FirebaseUtilsI_CategoriesProduits.startDatabaseListener(this) { newListener ->
+        FirebaseUtilsI_CategoriesProduitsNewProto.startDatabaseListener(this) { newListener ->
             listener = newListener
             onDatabaseListenerEnd()
         }
     }
 
-    internal fun restartDatabaseListener() {
+
+    override fun restartDatabaseListener() {
         startDatabaseListener()
     }
 
     override fun checkConnectivityAndSync() {
-        FirebaseUtilsI_CategoriesProduits.checkConnectivityAndSync(this)
+        connectivityMonitor.checkConnectivityAndSync(
+            I_CategoriesProduitsNewProtoRepository.caReference,
+            onOnline = {
+                restartDatabaseListener()
+            },
+        )
+
+    }
+    override fun checkConnectivity() {
+        connectivityMonitor.checkConnectivityAndSync(
+            I_CategoriesProduitsNewProtoRepository.caReference,
+            onOnline = {
+                restartDatabaseListener()
+            }
+        )
+
+    }
+
+    private fun dataFlomOffline(): () -> Unit = {
+        I_CategoriesProduitsNewProtoRepository.caReference.get()
+            .addOnSuccessListener { snapshot ->
+                if (!this.isUpdating) {
+                    try {
+                        this.isUpdating = true
+                        this.modelDatas.clear()
+
+                        snapshot.children.forEach { dataSnapshot ->
+                            try {
+                                val data =
+                                    I_CategoriesProduits.syncData(dataSnapshot = dataSnapshot) as I_CategoriesProduits
+                                if (data.id > 0) {
+                                    this.modelDatas.add(data)
+                                }
+                            } catch (e: Exception) {
+                            }
+                        }
+
+                        this.progressRepo.value = 1.0f
+                        this.initialDataLoaded = true
+                    } finally {
+                        this.isUpdating = false
+                    }
+                }
+            }
+            .addOnFailureListener {}
     }
 
     override fun updateData(data: I_CategoriesProduits?) {
@@ -54,7 +104,7 @@ class I_CategoriesProduitsNewProtoRepositoryImpl(
 
             try {
                 // Check connectivity before trying to update Firebase
-                checkConnectivityAndSync()
+                checkConnectivity()
 
                 // Update Firebase database with the updated record
                 firebaseUpdateData(data)
@@ -69,17 +119,23 @@ class I_CategoriesProduitsNewProtoRepositoryImpl(
             val firebaseData = I_CategoriesProduits.syncData() as Map<String, Any>
 
             // Sanitize the key before using it in Firebase
-            val sanitizedKey = FirebaseUtilsI_CategoriesProduits.sanitizeFirebaseKey(data.id.toString())
+            val sanitizedKey =
+                FirebaseUtilsI_CategoriesProduitsNewProto.sanitizeFirebaseKey(data.id.toString())
 
             // Update the data in Firebase
-            I_CategoriesProduitsNewProtoRepository.caReference.child(sanitizedKey).updateChildren(firebaseData)
+            I_CategoriesProduitsNewProtoRepository.caReference.child(sanitizedKey)
+                .updateChildren(firebaseData)
         } catch (e: Exception) {
             // Silent catch
         }
     }
 
     override suspend fun onDataBaseChangeListnerAndLoad(): Pair<List<I_CategoriesProduits>, Flow<Float>> {
-        return FirebaseUtilsI_CategoriesProduits.onDataBaseChangeListnerAndLoad(this)
+        // Check connectivity before loading
+        checkConnectivityAndSync()
+
+        // Return the current list of model data and the progress repository flow
+        return Pair(modelDatas.toList(), progressRepo)
     }
 
     override suspend fun updateDatas(datas: SnapshotStateList<I_CategoriesProduits>) {
@@ -95,17 +151,20 @@ class I_CategoriesProduitsNewProtoRepositoryImpl(
             stopDatabaseListener()
 
             // Check connectivity before trying to update
-            checkConnectivityAndSync()
+            checkConnectivity()
 
             datas.forEach { data ->
                 try {
-                    val firebaseData = I_CategoriesProduits.syncData(data = data) as Map<String, Any>
+                    val firebaseData =
+                        I_CategoriesProduits.syncData(data = data) as Map<String, Any>
 
                     // Sanitize the key before using it in Firebase
-                    val sanitizedKey = FirebaseUtilsI_CategoriesProduits.sanitizeFirebaseKey(data.id.toString())
+                    val sanitizedKey =
+                        FirebaseUtilsI_CategoriesProduitsNewProto.sanitizeFirebaseKey(data.id.toString())
 
                     // Update the data in Firebase
-                    I_CategoriesProduitsNewProtoRepository.caReference.child(sanitizedKey).updateChildren(firebaseData)
+                    I_CategoriesProduitsNewProtoRepository.caReference.child(sanitizedKey)
+                        .updateChildren(firebaseData)
 
                     processedItems++
                     progressRepo.value = processedItems.toFloat() / totalItems.toFloat()

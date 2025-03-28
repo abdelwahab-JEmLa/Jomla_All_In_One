@@ -1,17 +1,22 @@
 package Z_CodePartageEntreApps.Model.A_ProduitModelNewProto.Repository
 
 import Z_CodePartageEntreApps.Model.A_ProduitModel
-import Z_CodePartageEntreApps.Model.A_ProduitModelNewProto.Repository.Extension.FirebaseUtilsA_ProduitModel
+import Z_CodePartageEntreApps.Model.A_ProduitModelNewProto.Repository.Extension.FirebaseUtilsA_ProduitModelNewProto
+import Z_CodePartageEntreApps.Modules.ConnectivityMonitorNewProto
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.firebase.database.ValueEventListener
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class A_ProduitModelNewProtoRepositoryImpl(
-) : A_ProduitModelNewProtoRepository {
+class A_ProduitModelRepositoryImpl(
+) : A_ProduitModelRepository {
     override var modelDatas: SnapshotStateList<A_ProduitModel> = mutableStateListOf()
     override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
+
+    val connectivityMonitor = ConnectivityMonitorNewProto(CoroutineScope(Dispatchers.Default))
 
     private var listener: ValueEventListener? = null
     internal var isUpdating = false
@@ -19,67 +24,69 @@ class A_ProduitModelNewProtoRepositoryImpl(
     var initialDataLoaded = false
 
     init {
-        FirebaseUtilsA_ProduitModel.initializeFirebaseOfflineCapability()
+        FirebaseUtilsA_ProduitModelNewProto.initializeFirebaseOfflineCapability()
         startDatabaseListener()
-
     }
 
     private fun startDatabaseListener(onDatabaseListenerEnd: () -> Unit = {}) {
         stopDatabaseListener()
         initialDataLoaded = false
 
-        FirebaseUtilsA_ProduitModel.startDatabaseListener(this) { newListener ->
+        FirebaseUtilsA_ProduitModelNewProto.startDatabaseListener(this) { newListener ->
             listener = newListener
             onDatabaseListenerEnd()
         }
     }
 
-    internal fun restartDatabaseListener() {
+    override fun restartDatabaseListener() {
         startDatabaseListener()
     }
 
     override fun checkConnectivityAndSync() {
-        FirebaseUtilsA_ProduitModel.checkConnectivityAndSync(this)
+        connectivityMonitor.checkConnectivityAndSync(
+            A_ProduitModelRepository.caReference,
+            onOnline = {
+                restartDatabaseListener()
+            },
+        )
+    }
+
+    override fun checkConnectivity() {
+        connectivityMonitor.checkConnectivityAndSync(
+            A_ProduitModelRepository.caReference,
+            onOnline = {
+                restartDatabaseListener()
+            }
+        )
     }
 
     override fun updateData(data: A_ProduitModel?) {
         if (data == null) return
 
-        // Find the index of the record in the modelDatas list
         val recordIndex = modelDatas.indexOfFirst { it.id == data.id }
 
         if (recordIndex != -1) {
-            // Update the record in the modelDatas list
             modelDatas[recordIndex] = data
 
             try {
-                // Check connectivity before trying to update Firebase
-                checkConnectivityAndSync()
-
-                // Update Firebase database with the updated record
                 firebaseUpdateData(data)
             } catch (e: Exception) {
-                // Silent catch
             }
         }
     }
 
-    private fun firebaseUpdateData(data: A_ProduitModel) {
-        try {
-            val firebaseData = A_ProduitModel.syncData() as Map<String, Any>
-
-            // Sanitize the key before using it in Firebase
-            val sanitizedKey = FirebaseUtilsA_ProduitModel.sanitizeFirebaseKey(data.id.toString())
-
-            // Update the data in Firebase
-            A_ProduitModelNewProtoRepository.caReference.child(sanitizedKey).updateChildren(firebaseData)
-        } catch (e: Exception) {
-            // Silent catch
-        }
+    override suspend fun onDataBaseChangeListnerAndLoad(): Pair<List<A_ProduitModel>, Flow<Float>> {
+        checkConnectivityAndSync()
+        return Pair(modelDatas.toList(), progressRepo)
     }
 
-    override suspend fun onDataBaseChangeListnerAndLoad(): Pair<List<A_ProduitModel>, Flow<Float>> {
-        return FirebaseUtilsA_ProduitModel.onDataBaseChangeListnerAndLoad(this)
+    private fun firebaseUpdateData(data: A_ProduitModel) {
+        try {
+            // Get reference to the specific product
+            A_ProduitModelRepository.caReference.child(data.id.toString()).setValue(data)
+        } catch (e: Exception) {
+            // Optional: Handle unexpected error
+        }
     }
 
     override suspend fun updateDatas(datas: SnapshotStateList<A_ProduitModel>) {
@@ -93,24 +100,15 @@ class A_ProduitModelNewProtoRepositoryImpl(
             var processedItems = 0
 
             stopDatabaseListener()
-
-            // Check connectivity before trying to update
-            checkConnectivityAndSync()
+            checkConnectivity()
 
             datas.forEach { data ->
                 try {
-                    val firebaseData = A_ProduitModel.syncData(data = data) as Map<String, Any>
-
-                    // Sanitize the key before using it in Firebase
-                    val sanitizedKey = FirebaseUtilsA_ProduitModel.sanitizeFirebaseKey(data.id.toString())
-
-                    // Update the data in Firebase
-                    A_ProduitModelNewProtoRepository.caReference.child(sanitizedKey).updateChildren(firebaseData)
-
+                    A_ProduitModelRepository.caReference.child(data.id.toString()).setValue(data)
                     processedItems++
                     progressRepo.value = processedItems.toFloat() / totalItems.toFloat()
                 } catch (e: Exception) {
-                    // Silent catch
+                    // Silently handle exception
                 }
             }
 
@@ -121,13 +119,12 @@ class A_ProduitModelNewProtoRepositoryImpl(
             progressRepo.value = 0f
         } finally {
             isUpdating = false
-            startDatabaseListener() // Restart the database listener
+            startDatabaseListener()
         }
     }
-
     override fun stopDatabaseListener() {
         listener?.let {
-            A_ProduitModelNewProtoRepository.caReference.removeEventListener(it)
+            A_ProduitModelRepository.caReference.removeEventListener(it)
         }
         listener = null
     }

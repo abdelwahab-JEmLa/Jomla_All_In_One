@@ -1,7 +1,7 @@
 package com.example.clientjetpack
 
-import Z_CodePartageEntreApps.Model.A_ProduitModelRepository
-import Z_CodePartageEntreApps.Model.A_ProduitModelRepositoryImpl
+import Z_CodePartageEntreApps.Model.A_ProduitModelNewProto.Repository.A_ProduitModelRepository
+import Z_CodePartageEntreApps.Model.A_ProduitModelNewProto.Repository.A_ProduitModelRepositoryImpl
 import Z_CodePartageEntreApps.Model.CategoriesRepositoryImpl
 import Z_CodePartageEntreApps.Model.H_GroupesCategoriesRepository
 import Z_CodePartageEntreApps.Model.H_GroupesCategoriesRepositoryImpl

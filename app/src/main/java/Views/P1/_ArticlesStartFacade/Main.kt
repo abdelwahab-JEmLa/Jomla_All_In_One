@@ -4,7 +4,7 @@ import P0_MainScreen.Ui.Objects.LoadingOverlay
 import Views.P1.Ui.ArticlesGrid.ArticleGridWithScrollbar
 import Views.P1.Ui.Objects.SearchFilterPB
 import Views.P1._ArticlesStartFacade.FloatingActionButtonGroup.FloatingActionButtonGroup
-import Z_CodePartageEntreApps.Model.A_ProduitModelRepository
+import Z_CodePartageEntreApps.Model.A_ProduitModelNewProto.Repository.A_ProduitModelRepository
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Kotlin._WorkingON.WO_.WifiUpdateClientDisplayerStats
@@ -36,8 +36,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import androidx.paging.PagingSource
-import androidx.paging.PagingState
 import com.example.clientjetpack.Models.UiState
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import kotlinx.coroutines.delay
@@ -401,73 +399,3 @@ private fun Int.toScrollUpdate(): ScrollUpdate {
 }
 
 
-
-class ArticlePagingSource(
-    private val articles: List<ArticlesBasesStatsTable>,
-    private val filterText: String,
-    private val currentClient: B_ClientsDataBase?,
-    private val uiState: UiState,
-) : PagingSource<Int, ArticlesBasesStatsTable>() {
-    private val pageSize = 10
-    private val cachedFilteredArticles = mutableMapOf<Int, List<ArticlesBasesStatsTable>>()
-
-    override fun getRefreshKey(state: PagingState<Int, ArticlesBasesStatsTable>): Int? {
-        return state.anchorPosition?.let { anchorPosition ->
-            state.closestPageToPosition(anchorPosition)?.let { anchorPage ->
-                anchorPage.prevKey?.plus(1) ?: anchorPage.nextKey?.minus(1)
-            }
-        }
-    }
-
-    private fun filterArticles(): List<ArticlesBasesStatsTable> {
-        return if (filterText.isEmpty()) {
-            articles.filter { article ->
-                val currentProductByCurrentClient = uiState.diviseurDeDisplayProductForEachClient.find { divis1 ->
-                    divis1.keyVid == "${currentClient?.id}->${article.idArticle}"
-                }
-                val currentProductByClientStandard = uiState.diviseurDeDisplayProductForEachClient.find {divis2 ->
-                    divis2.keyVid == "100->${article.idArticle}"
-                }
-                val denied = currentProductByCurrentClient?.deniedFromDislplayToClient
-                    ?: currentProductByClientStandard?.deniedFromDislplayToClient
-
-                article.idForSearchArticles <= 0 &&
-                        article.diponibilityState.isEmpty() &&
-                        !article.nomArticleFinale.contains("New")
-            }
-        } else {
-            articles.filter { article ->
-                article.nomArticleFinale.contains(filterText, ignoreCase = true) ||
-                        article.idForSearchArticles > 0
-            }
-        }
-    }
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ArticlesBasesStatsTable> {
-        val page = params.key ?: 0
-
-        return try {
-            val filteredArticles = cachedFilteredArticles.getOrPut(page) {
-                filterArticles()
-                    .drop(page * pageSize)
-                    .take(pageSize)
-            }
-
-            LoadResult.Page(
-                data = filteredArticles,
-                prevKey = if (page == 0) null else page - 1,
-                nextKey = if (filteredArticles.size < pageSize) null else page + 1
-            )
-        } catch (e: Exception) {
-            LoadResult.Error(e)
-        } finally {
-            // Clean up cache to prevent memory leaks
-            cleanupCache(page)
-        }
-    }
-
-    private fun cleanupCache(currentPage: Int) {
-        cachedFilteredArticles.keys
-            .filter { it < currentPage - 1 || it > currentPage + 1 }
-            .forEach { cachedFilteredArticles.remove(it) }
-    }
-}

@@ -3,11 +3,9 @@ package Z_CodePartageEntreApps.Model.C_GrossistsDataBaseRepository.Extension
 import Z_CodePartageEntreApps.Model.C_GrossistsDataBase
 import Z_CodePartageEntreApps.Model.C_GrossistsDataBaseRepository.C_GrossistsDataBaseRepository
 import Z_CodePartageEntreApps.Model.C_GrossistsDataBaseRepository.C_GrossistsDataBaseRepositoryImpl
-import com.google.firebase.Firebase
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.database
 import kotlinx.coroutines.flow.Flow
 import java.net.InetSocketAddress
 import java.net.Socket
@@ -27,7 +25,6 @@ object FirebaseUtilsC_GrossistsDataBase {
         try {
             C_GrossistsDataBaseRepository.caReference.keepSynced(true)
         } catch (e: Exception) {
-            println("Firebase initialization error: ${e.message}")
         }
     }
 
@@ -92,7 +89,6 @@ object FirebaseUtilsC_GrossistsDataBase {
                     repository.progressRepo.value = 1.0f
                 } catch (e: Exception) {
                     repository.progressRepo.value = 0f
-                    println("Error processing Firebase data: ${e.message}")
                 } finally {
                     repository.isUpdating = false
                 }
@@ -100,7 +96,6 @@ object FirebaseUtilsC_GrossistsDataBase {
 
             override fun onCancelled(error: DatabaseError) {
                 repository.progressRepo.value = 0f
-                println("Firebase database error: ${error.message}")
             }
         }
     }
@@ -137,13 +132,11 @@ object FirebaseUtilsC_GrossistsDataBase {
                 C_GrossistsDataBaseRepository.caReference.keepSynced(true)
 
                 // Make sure we're online
-                Firebase.database.goOnline()
 
                 // Restart listener to get fresh data
                 repository.restartDatabaseListener()
             } else {
                 // We've gone offline, make sure we're in offline mode
-                Firebase.database.goOffline()
             }
         }
     }

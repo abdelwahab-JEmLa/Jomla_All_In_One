@@ -1,8 +1,13 @@
 package Z_CodePartageEntreApps.Model
 
+import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
+import android.util.Log
+import androidx.lifecycle.viewModelScope
 import com.google.firebase.Firebase
 import com.google.firebase.database.IgnoreExtraProperties
 import com.google.firebase.database.database
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 @IgnoreExtraProperties
 data class B_ClientsDataBase(
@@ -59,7 +64,50 @@ data class B_ClientsDataBase(
             .getReference("0_UiState_3_Host_Package_3_Prototype11Dec")
             .child("B_ClientsDataBase")
 
+        fun B_ClientsDataBase.updateClientsDataBase(
+            viewModel: ViewModelInitApp
+        ) {
+            viewModel.viewModelScope.launch {
+                try {
+                    // Create a snapshot of the current state
+                    val currentState = this@updateClientsDataBase.copy()
 
+                    // Update local state using clear and addAll
+                    val clientsList = viewModel._modelAppsFather.clientDataBase
+                    val updatedList = clientsList.toMutableList()
+                    val index = updatedList.indexOfFirst { it.id == currentState.id }
+
+                    if (index != -1) {
+                        updatedList[index] = currentState
+                    } else {
+                        // If client doesn't exist, add them
+                        updatedList.add(currentState)
+                    }
+
+                    // Replace entire list
+                    clientsList.clear()
+                    clientsList.addAll(updatedList)
+
+                    // Update Firebase with error handling
+                    try {
+                        refClientsDataBase.child(currentState.id.toString())
+                            .setValue(currentState)
+                            .await()
+                    } catch (e: Exception) {
+                        // Revert local state if Firebase update fails
+                        clientsList.clear()
+                        clientsList.addAll(
+                            if (index != -1) updatedList.toMutableList().apply { this[index] = this@updateClientsDataBase }
+                            else updatedList.dropLast(1)
+                        )
+                        throw e
+                    }
+
+                } catch (e: Exception) {
+                    Log.e("B_ClientsDataBase", "Failed to update client", e)
+                }
+            }
+        }
     }
 
     override fun equals(other: Any?): Boolean {

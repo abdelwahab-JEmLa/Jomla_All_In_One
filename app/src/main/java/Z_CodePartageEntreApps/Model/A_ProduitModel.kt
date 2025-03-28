@@ -1,26 +1,17 @@
 package Z_CodePartageEntreApps.Model
 
-import Z_CodePartageEntreApps.Model._ModelAppsFather.Companion.firebaseDatabase
-import Z_CodePartageEntreApps.Model._ModelAppsFather.Companion.ref_HeadOfModels
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
+import androidx.compose.ui.graphics.Color
 import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.Exclude
 import com.google.firebase.database.IgnoreExtraProperties
-import com.google.firebase.database.ValueEventListener
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlin.coroutines.resumeWithException
 
 @IgnoreExtraProperties
 class A_ProduitModel(
@@ -89,9 +80,42 @@ class A_ProduitModel(
     var etatesMutable by mutableStateOf(EtatesMutable())
 
     @IgnoreExtraProperties
-    class EtatesMutable{
+    class EtatesMutable {
         var diponibilityEtate: Boolean by mutableStateOf(false)
         var porbableNonDispo: Boolean by mutableStateOf(false)
+
+        // Add a string property for Firebase serialization
+        var nonDispoPourClientsString: String? by mutableStateOf(null)
+
+        // Transient property for local use
+        @get:Exclude
+        var nonDispoPourClients: NON_DISPO_POUR_CLIENTS?
+            get() = when (nonDispoPourClientsString) {
+                "TOUT" -> NON_DISPO_POUR_CLIENTS.TOUT
+                "NEVEAU" -> NON_DISPO_POUR_CLIENTS.NEVEAU
+                "DEFINIE" -> NON_DISPO_POUR_CLIENTS.DEFINIE
+                else -> null
+            }
+            set(value) {
+                nonDispoPourClientsString = value?.name
+            }
+
+        enum class NON_DISPO_POUR_CLIENTS(val color: Color) {
+            TOUT(Color(0xFFF44336)),
+            NEVEAU(Color(0xFFFF9800)),
+            DEFINIE(Color(0xFF2196F3));
+
+            companion object {
+                fun fromNullable(value: NON_DISPO_POUR_CLIENTS?): String {
+                    return when (value) {
+                        null -> "Disponible"
+                        TOUT -> "Tout"
+                        NEVEAU -> "Neveau"
+                        DEFINIE -> "Définie"
+                    }
+                }
+            }
+        }
     }
 
     @get:Exclude
@@ -230,7 +254,9 @@ class A_ProduitModel(
         ): Any {
             // Convert from Firebase to model
             if (dataSnapshot != null) {
-                return dataSnapshot.getValue(A_ProduitModel::class.java) ?: A_ProduitModel()
+                val value = dataSnapshot.getValue(A_ProduitModel::class.java) ?: A_ProduitModel().also {
+                }
+                return value
             }
 
             // Convert from model to Firebase map
@@ -262,7 +288,8 @@ class A_ProduitModel(
                 ),
                 "etatesMutable" to mapOf(
                     "diponibilityEtate" to sourceData.etatesMutable.diponibilityEtate,
-                    "porbableNonDispo" to sourceData.etatesMutable.porbableNonDispo
+                    "porbableNonDispo" to sourceData.etatesMutable.porbableNonDispo,
+                    "nonDispoPourClientsString" to sourceData.etatesMutable.nonDispoPourClientsString
                 ),
                 "coloursEtGoutsList" to sourceData.coloursEtGoutsList,
                 "bonCommendDeCetteCota" to sourceData.bonCommendDeCetteCota,
@@ -274,179 +301,4 @@ class A_ProduitModel(
     }
 
     constructor() : this(0)
-}
-
-interface A_ProduitModelRepository {
-    // Changed from direct access to a getter with validation
-    val modelDatas: SnapshotStateList<A_ProduitModel>
-        get() = if (progressRepo.value >= 1.0f) _modelDatas else mutableStateListOf()
-
-    // Make this private to prevent direct access
-    val _modelDatas: SnapshotStateList<A_ProduitModel>
-
-    val progressRepo: MutableStateFlow<Float>
-
-    suspend fun onDataBaseChangeListnerAndLoad(): Pair<List<A_ProduitModel>, Flow<Float>>
-    fun updateModelDatas(datas: SnapshotStateList<A_ProduitModel>)
-    fun updateUneSeulData(data: A_ProduitModel)
-
-    companion object {
-        val ancienFireBaseRef = firebaseDatabase.getReference("e_DBJetPackExport")
-        val caReference = ref_HeadOfModels.child("produits")
-    }
-}
-
-class A_ProduitModelRepositoryImpl : A_ProduitModelRepository {
-    // Now private with underscore
-    override val _modelDatas: SnapshotStateList<A_ProduitModel> = mutableStateListOf()
-    override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
-
-    private var listener: ValueEventListener? = null
-
-    init {
-        startDatabaseListener()
-    }
-
-    private fun startDatabaseListener() {
-        listener = object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val TAG = "id1"
-                try {
-                    val datas = mutableListOf<A_ProduitModel>()
-                    val totalItems = snapshot.childrenCount.toInt()
-                    var processedItems = 0
-
-                    _modelDatas.clear()
-                    progressRepo.value = 0f
-
-                    if (totalItems == 0) {
-                        // Handle edge case of empty data
-                        progressRepo.value = 1.0f
-                        Log.d(TAG, "No items found in database, marking as complete")
-                        return
-                    }
-
-                    for (dataSnapshot in snapshot.children) {
-                        val data = dataSnapshot.getValue(A_ProduitModel::class.java)
-                        data?.let { cat ->
-                            datas.add(cat)
-                            _modelDatas.add(cat)
-                        }
-
-                        processedItems++
-                        // Calculate progress with improved precision
-                        val calculatedProgress = processedItems.toFloat() / totalItems.toFloat()
-                        progressRepo.value = calculatedProgress
-
-                        Log.d(TAG, "Loading progress: $calculatedProgress (${processedItems}/${totalItems})")
-                    }
-
-                    // Ensure we always set to exactly 1.0f at the end for consistency
-                    if (processedItems >= totalItems) {
-                        progressRepo.value = 1.0f
-                        Log.d(TAG, "Loading complete with ${_modelDatas.size} items")
-                    }
-                } catch (e: Exception) {
-                    Log.e(TAG, "Error loading data: ${e.message}")
-                    // Set progress to 1.0f even in error case to avoid UI being stuck in loading state
-                    progressRepo.value = 1.0f
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Log.e("A_ProduitModelRepositoryImpl", "Database error: ${error.message}")
-                // Set progress to 1.0f even in error case to avoid UI being stuck in loading state
-                progressRepo.value = 1.0f
-            }
-        }
-
-        listener?.let {
-            A_ProduitModelRepository.caReference.addValueEventListener(it)
-        }
-    }
-    override suspend fun onDataBaseChangeListnerAndLoad(): Pair<List<A_ProduitModel>, Flow<Float>> {
-        val progressFlow = MutableStateFlow(0f)
-        val TAG = "onDataBaseChangeListnerAndLoad"
-        val datasLisning = suspendCancellableCoroutine<List<A_ProduitModel>> { continuation ->
-            val listener = object : ValueEventListener {
-                // In A_ProduitModelRepositoryImpl.kt, modify the onDataChange method:
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    try {
-                        val datas = mutableListOf<A_ProduitModel>()
-                        val totalItems = snapshot.childrenCount.toInt()
-                        var processedItems = 0
-
-                        _modelDatas.clear()
-                        progressRepo.value = 0f
-
-                        for (dataSnapshot in snapshot.children) {
-                            try {
-                                val data = dataSnapshot.getValue(A_ProduitModel::class.java)
-                                data?.let { cat ->
-                                    datas.add(cat)
-                                    _modelDatas.add(cat)
-                                }
-                            } catch (e: Exception) {
-                                // Log the error but continue processing other items
-                                Log.e(TAG, "Error converting item ${dataSnapshot.key}: ${e.message}")
-                            }
-
-                            processedItems++
-                            progressRepo.value = processedItems.toFloat() / totalItems.toFloat()
-                        }
-
-                        progressRepo.value = 1.0f
-                    } catch (e: Exception) {
-                        Log.e(TAG, "Error loading data: ${e.message}")
-                        progressRepo.value = 1.0f
-                    }
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    continuation.resumeWithException(Exception("Database error: ${error.message}"))
-                }
-            }
-
-            A_ProduitModelRepository.caReference.addValueEventListener(listener)
-            continuation.invokeOnCancellation {
-                A_ProduitModelRepository.caReference.removeEventListener(listener)
-            }
-        }
-
-        return Pair(datasLisning, progressFlow)
-    }
-
-    override fun updateUneSeulData(data: A_ProduitModel) {
-        // Ensure data is only modified when fully loaded
-        if (progressRepo.value >= 1.0f) {
-            val index = _modelDatas.indexOfFirst { it.id == data.id }
-            if (index >= 0) {
-                _modelDatas[index] = data
-            }
-
-            A_ProduitModelRepository.caReference.child(data.id.toString()).setValue(data)
-        } else {
-            Log.w("A_ProduitModelRepositoryImpl", "Cannot update data until fully loaded")
-        }
-    }
-
-    override fun updateModelDatas(datas: SnapshotStateList<A_ProduitModel>) {
-        // Ensure data is only modified when fully loaded
-        if (progressRepo.value >= 1.0f) {
-            _modelDatas.clear()
-            _modelDatas.addAll(datas)
-
-            datas.forEach {
-                A_ProduitModelRepository.caReference.child(it.id.toString()).setValue(it)
-            }
-        } else {
-            Log.w("A_ProduitModelRepositoryImpl", "Cannot update data until fully loaded")
-        }
-    }
-
-    fun cleanup() {
-        listener?.let {
-            A_ProduitModelRepository.caReference.removeEventListener(it)
-        }
-    }
 }

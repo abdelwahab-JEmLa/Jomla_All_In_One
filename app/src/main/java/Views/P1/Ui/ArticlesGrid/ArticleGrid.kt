@@ -5,7 +5,7 @@ import Views.P1.Ui.ArticlesGrid.Res.Scrollbar
 import Views.P1.Ui.Objects.CategoryHeader
 import Views.P1.Ui.Objects.ScrolleAdBanner
 import Views.P1._ArticlesStartFacade.ArticlePagingSource
-import Z_CodePartageEntreApps.Model.A_ProduitModelRepository
+import Z_CodePartageEntreApps.Model.A_ProduitModelNewProto.Repository.A_ProduitModelRepository
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
@@ -107,8 +107,6 @@ fun ArticleGrid(
     lockHost: Boolean,
     viewModelInitApp: ViewModelInitApp
 ) {
-    val categoriesRepositorymodelDatas = viewModel.categoriesRepository.modelDatas
-
     // Track scroll state and first visible item
     var lastSettledFirstVisible by remember { mutableStateOf(-1) }
     var isSettled by remember { mutableStateOf(true) }
@@ -172,6 +170,7 @@ fun ArticleGrid(
         }
     }
 
+
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Fixed(
             if (uiState.categories.any { it.nomCategorieInCategoriesTabele == "NewArrivale" })
@@ -199,7 +198,10 @@ fun ArticleGrid(
 
         // Display categories in order
         uiState.categories
-            .sortedBy { if (it.nomCategorieInCategoriesTabele == "NewArrivale") 0 else 1 }
+            .sortedBy { when {
+                it.nomCategorieInCategoriesTabele == "NewArrivale" -> 0
+                else -> it.idClassementCategorieInCategoriesTabele + 1
+            } }
             .forEach { category ->
                 val lazyPagingItems = categoryPagingItems[category]
 
