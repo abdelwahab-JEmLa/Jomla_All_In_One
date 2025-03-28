@@ -4,6 +4,7 @@ import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Firebase
+import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.IgnoreExtraProperties
 import com.google.firebase.database.database
 import kotlinx.coroutines.launch
@@ -63,6 +64,41 @@ data class B_ClientsDataBase(
         val refClientsDataBase = Firebase.database
             .getReference("0_UiState_3_Host_Package_3_Prototype11Dec")
             .child("B_ClientsDataBase")
+
+        fun syncData(
+            data: B_ClientsDataBase? = null,
+            dataSnapshot: DataSnapshot? = null
+        ): Any {
+            // Convert from Firebase to model
+            if (dataSnapshot != null) {
+                return dataSnapshot.getValue(B_ClientsDataBase::class.java) ?: B_ClientsDataBase()
+            }
+
+            // Convert from model to Firebase map
+            val sourceData = data ?: B_ClientsDataBase()
+            return mapOf(
+                "id" to sourceData.id,
+                "nom" to sourceData.nom,
+                "statueDeBase" to mapOf(
+                    "numTelephone" to sourceData.statueDeBase.numTelephone,
+                    "couleur" to sourceData.statueDeBase.couleur,
+                    "bonDuClientsSu" to sourceData.statueDeBase.bonDuClientsSu,
+                    "currentCreditBalance" to sourceData.statueDeBase.currentCreditBalance,
+                    "positionDonClientsList" to sourceData.statueDeBase.positionDonClientsList,
+                    "caRefDonAncienDataBase" to sourceData.statueDeBase.caRefDonAncienDataBase,
+                    "cUnClientTemporaire" to sourceData.statueDeBase.cUnClientTemporaire,
+                    "auFilterFAB" to sourceData.statueDeBase.auFilterFAB,
+                    "typeDeSonMagasine" to sourceData.statueDeBase.typeDeSonMagasine?.name
+                ),
+                "gpsLocation" to mapOf(
+                    "latitude" to sourceData.gpsLocation.latitude,
+                    "longitude" to sourceData.gpsLocation.longitude,
+                    "title" to sourceData.gpsLocation.title,
+                    "snippet" to sourceData.gpsLocation.snippet,
+                    "actuelleEtat" to sourceData.gpsLocation.actuelleEtat?.name
+                )
+            )
+        }
 
         fun B_ClientsDataBase.updateClientsDataBase(
             viewModel: ViewModelInitApp
