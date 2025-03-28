@@ -1,15 +1,15 @@
-package Z_MasterOfApps.Z.Android.Main.C_EcranDeDepart.Startup.B.Dialogs.Utils
+package Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.Dialogs.Utils
 
+import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.Dialogs.A.ControlButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs.A.ControlButton
 
 @Composable
- fun LabelsButton(
+fun LabelsButton(
     showLabels: Boolean,
     onShowLabelsChange: (Boolean) -> Unit
 ) {
@@ -24,7 +24,7 @@ import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App
 }
 
 @Composable
- fun MenuButton(
+fun MenuButton(
     showLabels: Boolean,
     showMenu: Boolean,
     onShowMenuChange: (Boolean) -> Unit
