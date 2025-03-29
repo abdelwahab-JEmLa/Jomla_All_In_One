@@ -39,7 +39,6 @@ fun MainList_Windows(
             // Create a copy with filtered intervals
             val filteredIntervals = tempTravaille.intervalesDeTravaille
 
-
             // Create a new K_TempTravaille with the filtered intervals
             K_TempTravaille(tempTravaille.vid).apply {
                 this.infosDeBase = tempTravaille.infosDeBase

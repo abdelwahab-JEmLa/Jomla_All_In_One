@@ -18,6 +18,7 @@ class ArticlePagingSource(
     private val pageSize = 10
     private val cachedFilteredArticles = mutableMapOf<Int, List<ArticlesBasesStatsTable>>()
 
+
     override fun getRefreshKey(state: PagingState<Int, ArticlesBasesStatsTable>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
             state.closestPageToPosition(anchorPosition)?.let { anchorPage ->
