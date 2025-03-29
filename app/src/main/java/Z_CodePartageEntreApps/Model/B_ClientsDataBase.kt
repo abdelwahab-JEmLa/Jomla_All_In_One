@@ -3,9 +3,9 @@ package Z_CodePartageEntreApps.Model
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.util.Log
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Tornado
+import androidx.compose.material.icons.filled.MonetizationOn
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -56,11 +56,11 @@ data class B_ClientsDataBase(
             val color: Color
         ) {
             NEVEAU(
-                icon = Icons.Default.Tornado,
+                icon = Icons.Default.Add,
                 color = Color.Red
             ),
             ANCIEN(
-                icon = Icons.Default.Person,
+                icon = Icons.Default.MonetizationOn,
                 color = Color.Blue
             ),
             EVITE(
