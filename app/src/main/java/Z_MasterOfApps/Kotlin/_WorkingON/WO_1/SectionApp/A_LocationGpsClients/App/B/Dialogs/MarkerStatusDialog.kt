@@ -74,6 +74,7 @@ fun MarkerStatusDialog(
 
     // Enum to track client type mode
     var clientTypeMode by remember { mutableStateOf(ClientTypeMode.ANCIEN) }
+
     val relatedClients = viewModele.b_ClientsDataBase.find {
         it.id == (selectedMarker?.id?.toLong() ?: 0)
     }
@@ -104,83 +105,78 @@ fun MarkerStatusDialog(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column {
-                        // Updated row with card-based icons
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.End
-                        ) {
-                            // Location Edit Icon
-                            Card(
-                                modifier = Modifier
-                                    .padding(end = 8.dp)
-                                    .clickable {
-                                        onClickToEditeMarquerPosition(selectedMarker.id.toLong())
-                                        onDismiss()
-                                    }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.LocationOn,
-                                    contentDescription = "Edit location"
-                                )
+
+                    // Location Edit Icon
+                    Card(
+                        modifier = Modifier
+                            .padding(end = 8.dp)
+                            .clickable {
+                                onClickToEditeMarquerPosition(selectedMarker.id.toLong())
+                                onDismiss()
                             }
-
-                            // Client Type Mode Toggle
-                            Card(
-                                modifier = Modifier
-                                    .padding(end = 8.dp)
-                                    .clickable {
-                                        clientTypeMode = when (clientTypeMode) {
-                                            ClientTypeMode.ANCIEN -> ClientTypeMode.NEVEAU
-                                            ClientTypeMode.NEVEAU -> ClientTypeMode.EVITE
-                                            ClientTypeMode.EVITE -> ClientTypeMode.ANCIEN
-                                        }
-
-                                        // Update the client's type mode
-                                        relatedClients?.let { client ->
-                                            client.etatesMutable.clientTypeMode = clientTypeMode
-                                            viewModele.updateClient(client)
-                                        }
-                                    }
-                            ) {
-                                Icon(
-                                    imageVector = clientTypeMode.icon,
-                                    contentDescription = "Toggle Client Type",
-                                    tint = clientTypeMode.color
-                                )
-                            }
-
-                            // Delete Icon
-                            Card(
-                                modifier = Modifier
-                                    .clickable {
-                                        showDeleteConfirmationDialog = true
-                                    }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Delete,
-                                    contentDescription = "Delete client"
-                                )
-                            }
-                        }
-
-                        Text(
-                            text = selectedMarker.title ?: "Client",
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.LocationOn,
+                            contentDescription = "Edit location"
                         )
-                        // Display phone number if available
-                        val client = viewModelInitApp._modelAppsFather.clientDataBase.find {
-                            it.id.toString() == selectedMarker.id
-                        }
-                        if (!client?.statueDeBase?.numTelephone.isNullOrEmpty()) {
-                            Text(
-                                text = client?.statueDeBase?.numTelephone ?: "",
-                                modifier = Modifier.clickable { showPhoneDialog = true },
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                        }
+                    }
+
+                    // Client Type Mode Toggle
+                    Card(
+                        modifier = Modifier
+                            .padding(end = 8.dp)
+                            .clickable {
+                                clientTypeMode = when (clientTypeMode) {
+                                    ClientTypeMode.ANCIEN -> ClientTypeMode.NEVEAU
+                                    ClientTypeMode.NEVEAU -> ClientTypeMode.EVITE
+                                    ClientTypeMode.EVITE -> ClientTypeMode.ANCIEN
+                                }
+
+                                // Update the client's type mode
+                                relatedClients?.let { client ->
+                                    client.etatesMutable.clientTypeMode = clientTypeMode
+                                    viewModele.updateClient(client)
+                                }
+                            }
+                    ) {
+                        Icon(
+                            imageVector = clientTypeMode.icon,
+                            contentDescription = "Toggle Client Type",
+                            tint = clientTypeMode.color
+                        )
+                    }
+
+                    // Delete Icon
+                    Card(
+                        modifier = Modifier
+                            .clickable {
+                                showDeleteConfirmationDialog = true
+                            }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Delete client"
+                        )
+                    }
+                }
+
+                Row {
+                    Text(
+                        text = selectedMarker.title ?: "Client",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                    // Display phone number if available
+                    val client = viewModelInitApp._modelAppsFather.clientDataBase.find {
+                        it.id.toString() == selectedMarker.id
+                    }
+                    if (!client?.statueDeBase?.numTelephone.isNullOrEmpty()) {
+                        Text(
+                            text = client?.statueDeBase?.numTelephone ?: "",
+                            modifier = Modifier.clickable { showPhoneDialog = true },
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
                     }
                 }
 
@@ -198,10 +194,12 @@ fun MarkerStatusDialog(
                         coroutineScope.launch {
                             viewModelEXT.updateLongAppSetting(selectedMarker.id.toLong())
                             onUpdateLongAppSetting()
+
                             onDismiss()
                         }
                     }
                 )
+
 
                 StatusButton(
                     text = "Client Absent",
@@ -268,91 +266,85 @@ fun MarkerStatusDialog(
                 )
 
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-                    StatusButton(
-                        text = "Client Cible",
-                        icon = Icons.Default.Person,
-                        color = Color(
-                            ContextCompat.getColor(
-                                context,
-                                B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.Cible.color
+                StatusButton(
+                    text = "Client Cible",
+                    icon = Icons.Default.Person,
+                    color = Color(
+                        ContextCompat.getColor(
+                            context,
+                            B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.Cible.color
+                        )
+                    ),
+                    onClick = {
+                        coroutineScope.launch {
+                            viewModelEXT.updateStatueClient(
+                                selectedMarker,
+                                B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.Cible
                             )
-                        ),
-                        onClick = {
-                            coroutineScope.launch {
-                                viewModelEXT.updateStatueClient(
-                                    selectedMarker,
-                                    B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.Cible
-                                )
-                                onDismiss()
-                            }
+                            onDismiss()
                         }
-                    )
+                    }
+                )
 
-                    val CIBLE_POUR_2 =
-                        B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CIBLE_PRIORITE_2
+                val CIBLE_POUR_2 =
+                    B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CIBLE_PRIORITE_2
 
-                    StatusButton(
-                        text = CIBLE_POUR_2.toString(),
-                        icon = Icons.Default.Tornado,
-                        color = Color(ContextCompat.getColor(context, CIBLE_POUR_2.color)),
-                        onClick = {
-                            coroutineScope.launch {
+                StatusButton(
+                    text = CIBLE_POUR_2.toString(),
+                    icon = Icons.Default.Tornado,
+                    color = Color(ContextCompat.getColor(context, CIBLE_POUR_2.color)),
+                    onClick = {
+                        coroutineScope.launch {
 
-                                viewModelEXT.updateStatueClient(selectedMarker, CIBLE_POUR_2)
-                                onDismiss()
-                            }
+                            viewModelEXT.updateStatueClient(selectedMarker, CIBLE_POUR_2)
+                            onDismiss()
                         }
-                    )
+                    }
+                )
 
-                    StatusButton(
-                        text = "CIBLE_POUR_2",
-                        icon = Icons.Default.Person,
-                        color = Color(
-                            ContextCompat.getColor(
-                                context,
-                                B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CIBLE_POUR_2.color
+                StatusButton(
+                    text = "CIBLE_POUR_2",
+                    icon = Icons.Default.Person,
+                    color = Color(
+                        ContextCompat.getColor(
+                            context,
+                            B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CIBLE_POUR_2.color
+                        )
+                    ),
+                    onClick = {
+                        coroutineScope.launch {
+                            viewModelEXT.updateStatueClient(
+                                selectedMarker,
+                                B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CIBLE_POUR_2
                             )
-                        ),
-                        onClick = {
-                            coroutineScope.launch {
-                                viewModelEXT.updateStatueClient(
-                                    selectedMarker,
-                                    B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CIBLE_POUR_2
-                                )
-                                onDismiss()
-                            }
+                            onDismiss()
                         }
-                    )
+                    }
+                )
 
-                    StatusButton(
-                        text = "A_EVITE",
-                        icon = Icons.Default.Person,
-                        color = Color(
-                            ContextCompat.getColor(
-                                context,
-                                B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.A_EVITE.color
+                StatusButton(
+                    text = "A_EVITE",
+                    icon = Icons.Default.Person,
+                    color = Color(
+                        ContextCompat.getColor(
+                            context,
+                            B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.A_EVITE.color
+                        )
+                    ),
+                    onClick = {
+                        coroutineScope.launch {
+                            viewModelEXT.updateStatueClient(
+                                selectedMarker,
+                                B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.A_EVITE
                             )
-                        ),
-                        onClick = {
-                            coroutineScope.launch {
-                                viewModelEXT.updateStatueClient(
-                                    selectedMarker,
-                                    B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.A_EVITE
-                                )
-                                onDismiss()
-                            }
+                            onDismiss()
                         }
-                    )
-                }
-                TextButton(
-                    onClick = onDismiss,
-                    modifier = Modifier.align(Alignment.End)
-                ) {
-                    Text("Fermer")
-                }
+                    }
+                )
             }
+        }
     }
 
     if (showEditDialog) {
@@ -438,7 +430,7 @@ fun MarkerStatusDialog(
         )
     }
 
-    // New delete confirmation dialog
+// New delete confirmation dialog
     if (showDeleteConfirmationDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteConfirmationDialog = false },
@@ -450,9 +442,10 @@ fun MarkerStatusDialog(
                 TextButton(
                     onClick = {
                         coroutineScope.launch {
-                            val clientToDelete = viewModelInitApp._modelAppsFather.clientDataBase.find {
-                                it.id.toString() == selectedMarker.id
-                            }
+                            val clientToDelete =
+                                viewModelInitApp._modelAppsFather.clientDataBase.find {
+                                    it.id.toString() == selectedMarker.id
+                                }
 
                             clientToDelete?.let { client ->
                                 B_ClientsDataBase.refClientsDataBase
