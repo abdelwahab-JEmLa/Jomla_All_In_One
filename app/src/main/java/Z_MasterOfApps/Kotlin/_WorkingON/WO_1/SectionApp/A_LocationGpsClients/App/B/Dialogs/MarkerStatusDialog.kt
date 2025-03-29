@@ -73,11 +73,12 @@ fun MarkerStatusDialog(
     var showDeleteConfirmationDialog by remember { mutableStateOf(false) }
 
     // Enum to track client type mode
-    var clientTypeMode by remember { mutableStateOf(ClientTypeMode.ANCIEN) }
 
     val relatedClients = viewModele.b_ClientsDataBase.find {
         it.id == (selectedMarker?.id?.toLong() ?: 0)
     }
+    var clientTypeMode = relatedClients?.etatesMutable?.clientTypeMode
+
 
     if (selectedMarker == null) return
 
@@ -140,41 +141,45 @@ fun MarkerStatusDialog(
                                     ClientTypeMode.ANCIEN -> ClientTypeMode.NEVEAU
                                     ClientTypeMode.NEVEAU -> ClientTypeMode.EVITE
                                     ClientTypeMode.EVITE -> ClientTypeMode.ANCIEN
+                                    null -> ClientTypeMode.NEVEAU
                                 }
 
                                 // Update the client's type mode
                                 relatedClients?.let { client ->
-                                    client.etatesMutable.clientTypeMode = clientTypeMode
+                                    client.etatesMutable.clientTypeMode = clientTypeMode!!
                                     viewModele.updateClient(client)
                                 }
                             }
                     ) {
-                        Icon(
-                            imageVector = clientTypeMode.icon,
-                            contentDescription = "Toggle Client Type",
-                            tint = clientTypeMode.color
-                        )
+                        clientTypeMode?.let {
+                            Icon(
+                                imageVector = it.icon,
+                                contentDescription = "Toggle Client Type",
+                                tint = it.color
+                            )
+                        }
                     }
-
                 }
 
-                Row {
-                    Text(
-                        text = selectedMarker.title ?: "Client",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
-                    )
-                    // Display phone number if available
-                    val client = viewModelInitApp._modelAppsFather.clientDataBase.find {
-                        it.id.toString() == selectedMarker.id
-                    }
-                    if (!client?.statueDeBase?.numTelephone.isNullOrEmpty()) {
+                Card {
+                    Column {
                         Text(
-                            text = client?.statueDeBase?.numTelephone ?: "",
-                            modifier = Modifier.clickable { showPhoneDialog = true },
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.primary
+                            text = selectedMarker.title ?: "Client",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold
                         )
+                        // Display phone number if available
+                        val client = viewModelInitApp._modelAppsFather.clientDataBase.find {
+                            it.id.toString() == selectedMarker.id
+                        }
+                        if (!client?.statueDeBase?.numTelephone.isNullOrEmpty()) {
+                            Text(
+                                text = client?.statueDeBase?.numTelephone ?: "",
+                                modifier = Modifier.clickable { showPhoneDialog = true },
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
                     }
                 }
 
