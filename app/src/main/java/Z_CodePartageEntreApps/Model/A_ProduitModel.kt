@@ -85,12 +85,14 @@ class A_ProduitModel(
         var porbableNonDispo: Boolean by mutableStateOf(false)
 
         // Add a string property for Firebase serialization
+        var enumVarNonDispoPourClients by mutableStateOf(NON_DISPO_POUR_CLIENTS.DISPONIBLE_POUR_TOUT)
         var nonDispoPourClientsString: String? by mutableStateOf(null)
 
         // Transient property for local use
         @get:Exclude
         var nonDispoPourClients: NON_DISPO_POUR_CLIENTS?
             get() = when (nonDispoPourClientsString) {
+                "DISPONIBLE_POUR_TOUT" -> NON_DISPO_POUR_CLIENTS.DISPONIBLE_POUR_TOUT
                 "TOUT" -> NON_DISPO_POUR_CLIENTS.TOUT
                 "NEVEAU" -> NON_DISPO_POUR_CLIENTS.NEVEAU
                 "DEFINIE" -> NON_DISPO_POUR_CLIENTS.DEFINIE
@@ -101,6 +103,7 @@ class A_ProduitModel(
             }
 
         enum class NON_DISPO_POUR_CLIENTS(val color: Color) {
+            DISPONIBLE_POUR_TOUT(Color(0xFF786C69)),
             TOUT(Color(0xFFF44336)),
             NEVEAU(Color(0xFFFF9800)),
             DEFINIE(Color(0xFF2196F3));
@@ -112,6 +115,7 @@ class A_ProduitModel(
                         TOUT -> "Tout"
                         NEVEAU -> "Neveau"
                         DEFINIE -> "Définie"
+                        DISPONIBLE_POUR_TOUT -> "DISPONIBLE_POUR_TOUT"
                     }
                 }
             }
@@ -289,7 +293,8 @@ class A_ProduitModel(
                 "etatesMutable" to mapOf(
                     "diponibilityEtate" to sourceData.etatesMutable.diponibilityEtate,
                     "porbableNonDispo" to sourceData.etatesMutable.porbableNonDispo,
-                    "nonDispoPourClientsString" to sourceData.etatesMutable.nonDispoPourClientsString
+                    "nonDispoPourClientsString" to sourceData.etatesMutable.nonDispoPourClientsString,
+                    "enumVarNonDispoPourClients" to sourceData.etatesMutable.enumVarNonDispoPourClients.name
                 ),
                 "coloursEtGoutsList" to sourceData.coloursEtGoutsList,
                 "bonCommendDeCetteCota" to sourceData.bonCommendDeCetteCota,
