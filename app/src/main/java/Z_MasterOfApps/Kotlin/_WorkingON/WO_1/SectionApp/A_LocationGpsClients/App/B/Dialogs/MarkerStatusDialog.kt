@@ -105,7 +105,18 @@ fun MarkerStatusDialog(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-
+                    // Delete Icon
+                    Card(
+                        modifier = Modifier
+                            .clickable {
+                                showDeleteConfirmationDialog = true
+                            }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Delete client"
+                        )
+                    }
                     // Location Edit Icon
                     Card(
                         modifier = Modifier
@@ -120,7 +131,6 @@ fun MarkerStatusDialog(
                             contentDescription = "Edit location"
                         )
                     }
-
                     // Client Type Mode Toggle
                     Card(
                         modifier = Modifier
@@ -146,18 +156,6 @@ fun MarkerStatusDialog(
                         )
                     }
 
-                    // Delete Icon
-                    Card(
-                        modifier = Modifier
-                            .clickable {
-                                showDeleteConfirmationDialog = true
-                            }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = "Delete client"
-                        )
-                    }
                 }
 
                 Row {
