@@ -2,6 +2,8 @@ package com.example.clientjetpack
 
 import Z_CodePartageEntreApps.Model.A_ProduitModelNewProto.Repository.A_ProduitModelRepository
 import Z_CodePartageEntreApps.Model.A_ProduitModelNewProto.Repository.A_ProduitModelRepositoryImpl
+import Z_CodePartageEntreApps.Model.B_ClientsDataBaseRepo.Repository.B_ClientsDataBaseRepository
+import Z_CodePartageEntreApps.Model.B_ClientsDataBaseRepo.Repository.B_ClientsDataBaseRepositoryImpl
 import Z_CodePartageEntreApps.Model.CategoriesRepositoryImpl
 import Z_CodePartageEntreApps.Model.H_GroupesCategoriesRepository
 import Z_CodePartageEntreApps.Model.H_GroupesCategoriesRepositoryImpl
@@ -12,6 +14,7 @@ import Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.K_TempT
 import Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.K_TempTravailleRepositoryImpl
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Kotlin._WorkingON.WO_.ConnectionManager
+import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.ViewModel_App2FragID1
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
 import android.content.Context
 import com.example.clientjetpack.Modules.AppDatabase
@@ -26,6 +29,7 @@ val repositoryModule = module {
     // Singleton: une seule instance pour toute l'application
     single<A_ProduitModelRepository> { A_ProduitModelRepositoryImpl() }
 
+    single<B_ClientsDataBaseRepository> { B_ClientsDataBaseRepositoryImpl() }
     single<I_CategoriesRepository> { CategoriesRepositoryImpl() }
     single<H_GroupesCategoriesRepository> { H_GroupesCategoriesRepositoryImpl() }
     single<J_AppInstalleDonTelephoneRepository> { J_AppInstalleDonTelephoneRepositoryImpl() }
@@ -42,6 +46,7 @@ val viewModelModule = module {
     ) }
     viewModel { (context: Context) -> HeadViewModel(get(), AppDatabase.DatabaseModule.getDatabase(get())) }
     viewModel { Windows__ViewModel(get()) }
+    viewModel { ViewModel_App2FragID1(get()) }
 }
 
 val servicesModule = module {

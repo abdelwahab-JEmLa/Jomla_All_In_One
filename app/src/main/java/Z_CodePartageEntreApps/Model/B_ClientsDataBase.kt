@@ -2,6 +2,15 @@ package Z_CodePartageEntreApps.Model
 
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.util.Log
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Tornado
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Firebase
 import com.google.firebase.database.DataSnapshot
@@ -34,6 +43,33 @@ data class B_ClientsDataBase(
             ATAYAT_MOUKASSARAT(android.R.color.holo_green_light, ""),
             AlIMENTATION_GENERALE(android.R.color.holo_purple, ""),
         }
+    }
+
+    var etatesMutable by mutableStateOf(EtatesMutable())
+    @IgnoreExtraProperties
+    class EtatesMutable {
+        var clientTypeMode by mutableStateOf(ClientTypeMode.NEVEAU)
+
+        // New enum to represent client type modes
+        enum class ClientTypeMode(
+            val icon: ImageVector,
+            val color: Color
+        ) {
+            NEVEAU(
+                icon = Icons.Default.Tornado,
+                color = Color.Red
+            ),
+            ANCIEN(
+                icon = Icons.Default.Person,
+                color = Color.Blue
+            ),
+            EVITE(
+                icon = Icons.Default.Lock,
+                color = Color.Gray
+            )
+        }
+
+
     }
 
     @IgnoreExtraProperties
@@ -96,6 +132,10 @@ data class B_ClientsDataBase(
                     "title" to sourceData.gpsLocation.title,
                     "snippet" to sourceData.gpsLocation.snippet,
                     "actuelleEtat" to sourceData.gpsLocation.actuelleEtat?.name
+                ),
+                // New addition for clientTypeMode
+                "etatesMutable" to mapOf(
+                    "clientTypeMode" to sourceData.etatesMutable.clientTypeMode.name
                 )
             )
         }

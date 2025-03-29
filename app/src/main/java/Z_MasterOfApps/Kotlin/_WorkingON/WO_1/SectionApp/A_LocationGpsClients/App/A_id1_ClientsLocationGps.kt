@@ -62,7 +62,12 @@ fun A_id1_ClientsLocationGps(
     onUpdateLongAppSetting: () -> Unit = {},
     onClear: () -> Unit = {},
 ) {
-    val extensionVM = ViewModelExtension_App2_F1(
+    val extensionVM = ViewModelExtension_App2_F1( //->
+        //TODO(FIXME):Fix erreur Type mismatch.
+        //Required:
+        //B_ClientsDataBaseRepository
+        //Found:
+        //CoroutineScope
         viewModel.viewModelScope,
         viewModel.produitsMainDataBase,
         viewModel.clientDataBaseSnapList,
@@ -336,8 +341,8 @@ fun A_id1_ClientsLocationGps(
 
         if (showMarkerDialog && selectedMarker != null) {
             MarkerStatusDialog(
-                extensionVM = extensionVM,
-                viewModel = viewModel,
+                viewModelEXT = extensionVM,
+                viewModelInitApp = viewModel,
                 selectedMarker = selectedMarker,
                 onDismiss = { showMarkerDialog = false },
                 onUpdateLongAppSetting = onUpdateLongAppSetting,

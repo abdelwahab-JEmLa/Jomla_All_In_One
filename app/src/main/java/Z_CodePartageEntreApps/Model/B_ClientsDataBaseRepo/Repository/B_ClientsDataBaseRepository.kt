@@ -1,7 +1,6 @@
 package Z_CodePartageEntreApps.Model.B_ClientsDataBaseRepo.Repository
 
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
-import Z_CodePartageEntreApps.Model._ModelAppsFather.Companion.firebaseDatabase
 import Z_CodePartageEntreApps.Model._ModelAppsFather.Companion.ref_HeadOfModels
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import kotlinx.coroutines.flow.Flow
@@ -24,9 +23,6 @@ interface B_ClientsDataBaseRepository{
 
     companion object {
         val caReference = ref_HeadOfModels.child("B_ClientsDataBase")
-        val caReferenceProtoDecembre = ref_HeadOfModels.child("produits")
-        val autreRef = firebaseDatabase
-            .getReference("1_SQL_PROTO_MARS").child("B_ClientsDataBase")
     }
 }
 

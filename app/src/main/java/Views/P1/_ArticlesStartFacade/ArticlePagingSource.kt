@@ -33,7 +33,8 @@ class ArticlePagingSource(
                 val productModel = a_ProduitModelRepository.modelDatas
                     .find { it.id.toInt() == article.idArticle }
 
-                val isTemporaryClient = currentClient?.statueDeBase?.cUnClientTemporaire == true
+                val isTemporaryClient = currentClient?.etatesMutable?.clientTypeMode ==
+                        B_ClientsDataBase.EtatesMutable.ClientTypeMode.NEVEAU
 
                 // Check if the product is completely unavailable for all clients
                 val isProductUnavailableForAll = productModel?.etatesMutable?.nonDispoPourClientsString ==

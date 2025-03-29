@@ -1,12 +1,12 @@
 package Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs
 
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
-import Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.K_TempTravailleRepository
+import Z_CodePartageEntreApps.Model.B_ClientsDataBase.EtatesMutable.ClientTypeMode
 import Z_CodePartageEntreApps.Model._ModelAppsFather
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.Extension.Utils.updateLongAppSetting
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.Extension.ViewModelExtension_App2_F1
-import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
+import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.ViewModel_App2FragID1
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
@@ -25,6 +24,7 @@ import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Tornado
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
@@ -51,22 +51,19 @@ import androidx.core.content.ContextCompat
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import org.koin.androidx.compose.koinViewModel
-import org.koin.compose.koinInject
 import org.osmdroid.views.overlay.Marker
 
 @Composable
 fun MarkerStatusDialog(
-    extensionVM: ViewModelExtension_App2_F1,
-    viewModel: ViewModelInitApp,
+    viewModele: ViewModel_App2FragID1 = koinViewModel(),
+    viewModelEXT: ViewModelExtension_App2_F1,
+    viewModelInitApp: ViewModelInitApp,
     selectedMarker: Marker?,
     onDismiss: () -> Unit,
     onUpdateLongAppSetting: () -> Unit = {},
     onClickToEditeMarquerPosition: (Long) -> Unit,
     onRemoveMark: (Marker?) -> Unit,
-    repository: K_TempTravailleRepository = koinInject(),
-    windows__ViewModel: Windows__ViewModel = koinViewModel(),
-    ) {
-
+) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     var showEditDialog by remember { mutableStateOf(false) }
@@ -74,6 +71,12 @@ fun MarkerStatusDialog(
     var editedPhone by remember { mutableStateOf("") }
     var showPhoneDialog by remember { mutableStateOf(false) }
     var showDeleteConfirmationDialog by remember { mutableStateOf(false) }
+
+    // Enum to track client type mode
+    var clientTypeMode by remember { mutableStateOf(ClientTypeMode.ANCIEN) }
+    val relatedClients = viewModele.b_ClientsDataBase.find {
+        it.id == (selectedMarker?.id?.toLong() ?: 0)
+    }
 
     if (selectedMarker == null) return
 
@@ -102,36 +105,63 @@ fun MarkerStatusDialog(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column {
-                        // Moved the Row of icons to the top of this Column
+                        // Updated row with card-based icons
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.End
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.LocationOn,
-                                contentDescription = "Edit location",
+                            // Location Edit Icon
+                            Card(
                                 modifier = Modifier
                                     .padding(end = 8.dp)
                                     .clickable {
                                         onClickToEditeMarquerPosition(selectedMarker.id.toLong())
                                         onDismiss()
                                     }
-                            )
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.LocationOn,
+                                    contentDescription = "Edit location"
+                                )
+                            }
 
-                            Icon(
-                                imageVector = Icons.Default.Edit,
-                                contentDescription = "Edit client"
-                            )
+                            // Client Type Mode Toggle
+                            Card(
+                                modifier = Modifier
+                                    .padding(end = 8.dp)
+                                    .clickable {
+                                        clientTypeMode = when (clientTypeMode) {
+                                            ClientTypeMode.ANCIEN -> ClientTypeMode.NEVEAU
+                                            ClientTypeMode.NEVEAU -> ClientTypeMode.EVITE
+                                            ClientTypeMode.EVITE -> ClientTypeMode.ANCIEN
+                                        }
+
+                                        // Update the client's type mode
+                                        relatedClients?.let { client ->
+                                            client.etatesMutable.clientTypeMode = clientTypeMode
+                                            viewModele.updateClient(client)
+                                        }
+                                    }
+                            ) {
+                                Icon(
+                                    imageVector = clientTypeMode.icon,
+                                    contentDescription = "Toggle Client Type",
+                                    tint = clientTypeMode.color
+                                )
+                            }
+
+                            // Delete Icon
+                            Card(
+                                modifier = Modifier
+                                    .clickable {
+                                        showDeleteConfirmationDialog = true
+                                    }
+                            ) {
                                 Icon(
                                     imageVector = Icons.Default.Delete,
-                                    contentDescription = "Delete client",
-                                    modifier = Modifier
-                                        .padding(start = 8.dp)
-                                        .clickable {
-                                            // Show confirmation dialog instead of deleting immediately
-                                            showDeleteConfirmationDialog = true
-                                        }
+                                    contentDescription = "Delete client"
                                 )
+                            }
                         }
 
                         Text(
@@ -140,7 +170,7 @@ fun MarkerStatusDialog(
                             fontWeight = FontWeight.Bold
                         )
                         // Display phone number if available
-                        val client = viewModel._modelAppsFather.clientDataBase.find {
+                        val client = viewModelInitApp._modelAppsFather.clientDataBase.find {
                             it.id.toString() == selectedMarker.id
                         }
                         if (!client?.statueDeBase?.numTelephone.isNullOrEmpty()) {
@@ -166,23 +196,12 @@ fun MarkerStatusDialog(
                     ),
                     onClick = {
                         coroutineScope.launch {
-                            extensionVM.updateLongAppSetting(selectedMarker.id.toLong())
+                            viewModelEXT.updateLongAppSetting(selectedMarker.id.toLong())
                             onUpdateLongAppSetting()
-                            /*
-                            windows__ViewModel.stopRecording()
-                            delay(2000)
-
-                            val createdRecord = repository.ajouteRecodeAvecIntervaleDAchat(
-                                selectedMarker.id.toLong(),
-                                K_TempTravaille.IntervalesDeTravaille.TypeTemp.VENT
-                            )
-                            windows__ViewModel.togleRecodingOnUtilisontCetteIntervale(createdRecord)
-                                  */
                             onDismiss()
                         }
                     }
                 )
-
 
                 StatusButton(
                     text = "Client Absent",
@@ -195,7 +214,7 @@ fun MarkerStatusDialog(
                     ),
                     onClick = {
                         coroutineScope.launch {
-                            extensionVM.updateStatueClient(
+                            viewModelEXT.updateStatueClient(
                                 selectedMarker,
                                 B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CLIENT_ABSENT
                             )
@@ -217,7 +236,7 @@ fun MarkerStatusDialog(
                     ),
                     onClick = {
                         coroutineScope.launch {
-                            extensionVM.updateStatueClient(
+                            viewModelEXT.updateStatueClient(
                                 selectedMarker,
                                 B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.AVEC_MARCHANDISE
                             )
@@ -239,7 +258,7 @@ fun MarkerStatusDialog(
                     ),
                     onClick = {
                         coroutineScope.launch {
-                            extensionVM.updateStatueClient(
+                            viewModelEXT.updateStatueClient(
                                 selectedMarker,
                                 B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.FERME
                             )
@@ -262,7 +281,7 @@ fun MarkerStatusDialog(
                         ),
                         onClick = {
                             coroutineScope.launch {
-                                extensionVM.updateStatueClient(
+                                viewModelEXT.updateStatueClient(
                                     selectedMarker,
                                     B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.Cible
                                 )
@@ -281,7 +300,7 @@ fun MarkerStatusDialog(
                         onClick = {
                             coroutineScope.launch {
 
-                                extensionVM.updateStatueClient(selectedMarker, CIBLE_POUR_2)
+                                viewModelEXT.updateStatueClient(selectedMarker, CIBLE_POUR_2)
                                 onDismiss()
                             }
                         }
@@ -298,7 +317,7 @@ fun MarkerStatusDialog(
                         ),
                         onClick = {
                             coroutineScope.launch {
-                                extensionVM.updateStatueClient(
+                                viewModelEXT.updateStatueClient(
                                     selectedMarker,
                                     B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CIBLE_POUR_2
                                 )
@@ -318,7 +337,7 @@ fun MarkerStatusDialog(
                         ),
                         onClick = {
                             coroutineScope.launch {
-                                extensionVM.updateStatueClient(
+                                viewModelEXT.updateStatueClient(
                                     selectedMarker,
                                     B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.A_EVITE
                                 )
@@ -363,23 +382,23 @@ fun MarkerStatusDialog(
                     onClick = {
                         coroutineScope.launch {
                             selectedMarker.title = editedName
-                            val client = viewModel._modelAppsFather.clientDataBase.find {
+                            val client = viewModelInitApp._modelAppsFather.clientDataBase.find {
                                 it.id.toString() == selectedMarker.id
                             }
 
                             client?.let { foundClient ->
                                 foundClient.nom = editedName
                                 foundClient.statueDeBase.numTelephone = editedPhone
-                                viewModel.updateClientsDataBase(foundClient)
+                                viewModelInitApp.updateClientsDataBase(foundClient)
 
-                                viewModel._modelAppsFather.produitsMainDataBase
+                                viewModelInitApp._modelAppsFather.produitsMainDataBase
                                     .filter { product ->
                                         product.bonsVentDeCetteCota.any { bonVent ->
                                             bonVent.clientIdChoisi == foundClient.id
                                         }
                                     }
                                     .forEach { product ->
-                                        _ModelAppsFather.updateProduit(product, viewModel)
+                                        _ModelAppsFather.updateProduit(product, viewModelInitApp)
                                     }
                             }
                             selectedMarker.showInfoWindow()
@@ -399,7 +418,7 @@ fun MarkerStatusDialog(
     }
 
     if (showPhoneDialog) {
-        val client = viewModel._modelAppsFather.clientDataBase.find {
+        val client = viewModelInitApp._modelAppsFather.clientDataBase.find {
             it.id.toString() == selectedMarker.id
         }
         AlertDialog(
@@ -431,7 +450,7 @@ fun MarkerStatusDialog(
                 TextButton(
                     onClick = {
                         coroutineScope.launch {
-                            val clientToDelete = viewModel._modelAppsFather.clientDataBase.find {
+                            val clientToDelete = viewModelInitApp._modelAppsFather.clientDataBase.find {
                                 it.id.toString() == selectedMarker.id
                             }
 
@@ -441,7 +460,7 @@ fun MarkerStatusDialog(
                                     .removeValue()
                                     .await()
 
-                                viewModel._modelAppsFather.clientDataBase.remove(client)
+                                viewModelInitApp._modelAppsFather.clientDataBase.remove(client)
                                 onRemoveMark(selectedMarker)
                                 onDismiss()
                             }
