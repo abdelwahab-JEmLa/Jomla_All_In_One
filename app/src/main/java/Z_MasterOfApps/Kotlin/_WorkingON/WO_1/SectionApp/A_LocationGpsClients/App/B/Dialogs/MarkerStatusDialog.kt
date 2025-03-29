@@ -7,6 +7,7 @@ import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.Extension.Utils.updateLongAppSetting
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.Extension.ViewModelExtension_App2_F1
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.ViewModel_App2FragID1
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -72,13 +73,10 @@ fun MarkerStatusDialog(
     var showPhoneDialog by remember { mutableStateOf(false) }
     var showDeleteConfirmationDialog by remember { mutableStateOf(false) }
 
-    // Enum to track client type mode
-
     val relatedClients = viewModele.b_ClientsDataBase.find {
         it.id == (selectedMarker?.id?.toLong() ?: 0)
     }
     var clientTypeMode = relatedClients?.etatesMutable?.clientTypeMode
-
 
     if (selectedMarker == null) return
 
@@ -101,7 +99,6 @@ fun MarkerStatusDialog(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { showEditDialog = true }
                         .padding(bottom = 16.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
@@ -109,13 +106,14 @@ fun MarkerStatusDialog(
                     // Delete Icon
                     Card(
                         modifier = Modifier
+                            .background(color = Color.Red)
                             .clickable {
                                 showDeleteConfirmationDialog = true
                             }
                     ) {
                         Icon(
                             imageVector = Icons.Default.Delete,
-                            contentDescription = "Delete client"
+                            contentDescription = "Delete client",
                         )
                     }
                     // Location Edit Icon
@@ -161,20 +159,20 @@ fun MarkerStatusDialog(
                     }
                 }
 
-                Card {
+                Card (
+                    modifier = Modifier.clickable { showEditDialog = true }
+                        .fillMaxWidth()
+                ){
                     Column {
                         Text(
                             text = selectedMarker.title ?: "Client",
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold
                         )
-                        // Display phone number if available
-                        val client = viewModelInitApp._modelAppsFather.clientDataBase.find {
-                            it.id.toString() == selectedMarker.id
-                        }
-                        if (!client?.statueDeBase?.numTelephone.isNullOrEmpty()) {
+
+                        if (!relatedClients?.statueDeBase?.numTelephone.isNullOrEmpty()) {
                             Text(
-                                text = client?.statueDeBase?.numTelephone ?: "",
+                                text = relatedClients?.statueDeBase?.numTelephone ?: "",
                                 modifier = Modifier.clickable { showPhoneDialog = true },
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.primary
