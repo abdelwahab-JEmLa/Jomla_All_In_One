@@ -1,7 +1,6 @@
 package Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App
 
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
-import Z_MasterOfApps.Resources.XmlsFilesHandler.Companion.xmlResources
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs.A.A_GlobalOptionsControlsFloatingActionButtons_FragId1
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs.MarkerStatusDialog
@@ -10,6 +9,7 @@ import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs.Utils.getCurrentLocation
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.Extension.ViewModelExtension_App2_F1
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.Extension.VisbleClientsNow
+import Z_MasterOfApps.Resources.XmlsFilesHandler.Companion.xmlResources
 import android.content.Context
 import android.widget.LinearLayout
 import androidx.compose.foundation.background
@@ -62,12 +62,7 @@ fun A_id1_ClientsLocationGps(
     onUpdateLongAppSetting: () -> Unit = {},
     onClear: () -> Unit = {},
 ) {
-    val extensionVM = ViewModelExtension_App2_F1( //->
-        //TODO(FIXME):Fix erreur Type mismatch.
-        //Required:
-        //B_ClientsDataBaseRepository
-        //Found:
-        //CoroutineScope
+    val extensionVM = ViewModelExtension_App2_F1(
         viewModel.viewModelScope,
         viewModel.produitsMainDataBase,
         viewModel.clientDataBaseSnapList,

@@ -38,13 +38,7 @@ fun MainList_Windows(
         .map { tempTravaille ->
             // Create a copy with filtered intervals
             val filteredIntervals = tempTravaille.intervalesDeTravaille
-                .filter { interval ->
-                    val duration =K_TempTravaille.calculateDurationMinutes(
-                        interval.tempDepart,
-                        interval.temparrete
-                    )
-                    duration > 0 || interval.enCoureDEnregestrement
-                }
+
 
             // Create a new K_TempTravaille with the filtered intervals
             K_TempTravaille(tempTravaille.vid).apply {
@@ -53,8 +47,6 @@ fun MainList_Windows(
                 this.intervalesDeTravaille.addAll(filteredIntervals)
             }
         }
-        // Filter out days with no intervals
-        .filter { it.intervalesDeTravaille.isNotEmpty() }
         // Sort by date, newest first
         .sortedByDescending { it.infosDeBase.dateInString }
 
