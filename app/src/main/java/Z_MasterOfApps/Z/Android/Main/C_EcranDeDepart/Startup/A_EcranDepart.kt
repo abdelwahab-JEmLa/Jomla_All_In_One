@@ -44,7 +44,6 @@ internal fun A_StartupScreen(
     onNavigate: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val showDatabaseEditDialog = remember { mutableStateOf(false) }
 
     val isManagerPhone =
         viewModelInitApp._paramatersAppsViewModelModel.cLeTelephoneDuGerant ?: false
@@ -146,11 +145,6 @@ internal fun A_StartupScreen(
             onDismiss = { viewModelInitApp.extentionStartup.dialogeOptions = false }
         )
 
-        // Show DataBaseEditeWindows dialog when showDatabaseEditDialog is true
-        if (showDatabaseEditDialog.value) {
-            DataBaseEditeWindows(
-                onDissmis = { showDatabaseEditDialog.value = false }
-            )
-        }
+
     }
 }

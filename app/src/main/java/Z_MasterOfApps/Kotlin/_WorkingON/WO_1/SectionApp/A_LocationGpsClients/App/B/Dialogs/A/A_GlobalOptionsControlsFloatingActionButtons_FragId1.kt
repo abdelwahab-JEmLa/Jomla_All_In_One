@@ -1,5 +1,6 @@
 package Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs.A
 
+import Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.DataBaseEditeWindows
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs.Utils.A_ChangeIdColor
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs.Utils.AddMarkerButton
@@ -24,6 +25,8 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Fireplace
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -53,6 +56,8 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
     onFilterMarkers: () -> Unit,
     currentFilterMode: ViewModel_App2FragID1.VisbleClientsNow,
     ) {
+    var showDatabaseEditDialog by remember { mutableStateOf(false) }
+
     var showMenu by remember { mutableStateOf(false) }
     var showLabels by remember { mutableStateOf(false) }
     val proximiteMeter = 50.0
@@ -91,6 +96,18 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 if (showMenu) {
+
+                    ControlButton(
+                        onClick = {
+                            showDatabaseEditDialog=true
+                        },
+                        icon = Icons.Default.Fireplace,
+                        contentDescription =  "showDatabaseEditDialog",
+                        showLabels = showLabels,
+                        labelText =  "showDatabaseEditDialog",
+                        containerColor = Color(0xFFF44336)
+                    )
+
                     LocationTrackingButton(
                         showLabels = showLabels,
                         mapView = mapView,
@@ -156,6 +173,12 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                     onShowMenuChange = { showMenu = it }
                 )
             }
+        }
+        // Show DataBaseEditeWindows dialog when showDatabaseEditDialog is true
+        if (showDatabaseEditDialog) {
+            DataBaseEditeWindows(
+                onDissmis = { showDatabaseEditDialog= false }
+            )
         }
     }
 }
