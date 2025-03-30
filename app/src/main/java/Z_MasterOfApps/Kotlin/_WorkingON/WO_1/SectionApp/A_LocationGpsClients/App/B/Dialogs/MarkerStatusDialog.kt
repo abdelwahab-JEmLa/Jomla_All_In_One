@@ -139,7 +139,7 @@ fun MarkerStatusDialog(
                                 // Update the client's type mode
                                 relatedClients?.let { client ->
                                     client.clientTypeMode = clientTypeMode!!
-                                    viewModel.updateClient(client)
+                                    viewModel.updateDataTiggerreRelode(client)
                                 }
                             }
                     ) {
@@ -211,7 +211,7 @@ fun MarkerStatusDialog(
 
                             relatedClients?.actuelleEtat=CLIENT_ABSENT
 
-                            viewModel.updateClient(relatedClients!!)
+                            viewModel.updateDataTiggerreRelode(relatedClients!!)
 
                             onDismiss()
                         }
@@ -236,7 +236,7 @@ fun MarkerStatusDialog(
 
                             relatedClients?.actuelleEtat=AVEC_MARCHANDISE
 
-                            viewModel.updateClient(relatedClients!!)
+                            viewModel.updateDataTiggerreRelode(relatedClients!!)
 
                             onDismiss()
                         }
@@ -262,7 +262,7 @@ fun MarkerStatusDialog(
 
                             relatedClients?.actuelleEtat=FERME
 
-                            viewModel.updateClient(relatedClients!!)
+                            viewModel.updateDataTiggerreRelode(relatedClients!!)
 
                             onDismiss()
                         }
@@ -287,7 +287,7 @@ fun MarkerStatusDialog(
 
                             relatedClients?.actuelleEtat=Cible
 
-                            viewModel.updateClient(relatedClients!!)
+                            viewModel.updateDataTiggerreRelode(relatedClients!!)
 
                             onDismiss()
                         }
@@ -311,7 +311,7 @@ fun MarkerStatusDialog(
 
                             relatedClients?.actuelleEtat=CIBLE_PRIORITE_2
 
-                            viewModel.updateClient(relatedClients!!)
+                            viewModel.updateDataTiggerreRelode(relatedClients!!)
 
                             onDismiss()
                         }
@@ -336,7 +336,7 @@ fun MarkerStatusDialog(
 
                             relatedClients?.actuelleEtat=CIBLE_POUR_2
 
-                            viewModel.updateClient(relatedClients!!)
+                            viewModel.updateDataTiggerreRelode(relatedClients!!)
 
                             onDismiss()
                         }
@@ -361,7 +361,7 @@ fun MarkerStatusDialog(
 
                             relatedClients?.actuelleEtat=A_EVITE
 
-                            viewModel.updateClient(relatedClients!!)
+                            viewModel.updateDataTiggerreRelode(relatedClients!!)
 
                             onDismiss()
                         }
