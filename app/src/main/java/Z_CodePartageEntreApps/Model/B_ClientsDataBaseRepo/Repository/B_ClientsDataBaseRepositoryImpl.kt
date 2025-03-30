@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class B_ClientsDataBaseRepositoryImpl(
-) : B_ClientsDataBaseRepository {
+) : Z_CodePartageEntreApps.Model.BProto_ClientsDataBaseRepo.Repository.B_ClientsDataBaseRepository {
     override var modelDatas: SnapshotStateList<B_ClientsDataBase> = mutableStateListOf()
     override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
 

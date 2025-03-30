@@ -1,7 +1,7 @@
 package Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel
 
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
-import Z_CodePartageEntreApps.Model.B_ClientsDataBaseRepo.Repository.B_ClientsDataBaseRepository
+import Z_CodePartageEntreApps.Model.BProto_ClientsDataBaseRepo.Repository.B_ClientsDataBaseRepository
 import androidx.lifecycle.ViewModel
 
 class ViewModel_App2FragID1(

@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Model.B_ClientsDataBaseRepo.Repository.Extension
 
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
-import Z_CodePartageEntreApps.Model.B_ClientsDataBaseRepo.Repository.B_ClientsDataBaseRepository
+import Z_CodePartageEntreApps.Model.BProto_ClientsDataBaseRepo.Repository.B_ClientsDataBaseRepository
 import Z_CodePartageEntreApps.Model.B_ClientsDataBaseRepo.Repository.B_ClientsDataBaseRepositoryImpl
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
