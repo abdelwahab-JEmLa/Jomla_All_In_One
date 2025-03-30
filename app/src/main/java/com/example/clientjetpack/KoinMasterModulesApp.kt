@@ -2,7 +2,9 @@ package com.example.clientjetpack
 
 import Z_CodePartageEntreApps.Model.A_ProduitModelNewProto.Repository.A_ProduitModelRepository
 import Z_CodePartageEntreApps.Model.A_ProduitModelNewProto.Repository.A_ProduitModelRepositoryImpl
-import Z_CodePartageEntreApps.Model.BProto_ClientsDataBaseRepo.Repository.B_ClientsDataBaseRepository
+import Z_CodePartageEntreApps.Model.BProto_ClientsDataBaseRepo.Repository.BProto_ClientsDataBaseRepository
+import Z_CodePartageEntreApps.Model.BProto_ClientsDataBaseRepo.Repository.BProto_ClientsDataBaseRepositoryImpl
+import Z_CodePartageEntreApps.Model.B_ClientsDataBaseRepo.Repository.B_ClientsDataBaseRepository
 import Z_CodePartageEntreApps.Model.B_ClientsDataBaseRepo.Repository.B_ClientsDataBaseRepositoryImpl
 import Z_CodePartageEntreApps.Model.CategoriesRepositoryImpl
 import Z_CodePartageEntreApps.Model.H_GroupesCategoriesRepository
@@ -30,6 +32,7 @@ val repositoryModule = module {
     single<A_ProduitModelRepository> { A_ProduitModelRepositoryImpl() }
 
     single<B_ClientsDataBaseRepository> { B_ClientsDataBaseRepositoryImpl() }
+    single<BProto_ClientsDataBaseRepository> { BProto_ClientsDataBaseRepositoryImpl() }
     single<I_CategoriesRepository> { CategoriesRepositoryImpl() }
     single<H_GroupesCategoriesRepository> { H_GroupesCategoriesRepositoryImpl() }
     single<J_AppInstalleDonTelephoneRepository> { J_AppInstalleDonTelephoneRepositoryImpl() }

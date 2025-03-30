@@ -12,11 +12,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class B_ClientsDataBaseRepositoryImpl(
-) : Z_CodePartageEntreApps.Model.BProto_ClientsDataBaseRepo.Repository.B_ClientsDataBaseRepository {
+) : B_ClientsDataBaseRepository{
     override var modelDatas: SnapshotStateList<B_ClientsDataBase> = mutableStateListOf()
     override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
 
-    val connectivityMonitor = ConnectivityMonitorNewProto(CoroutineScope(Dispatchers.Default))
+    private val connectivityMonitor = ConnectivityMonitorNewProto(CoroutineScope(Dispatchers.Default))
 
     private var listener: ValueEventListener? = null
     internal var isUpdating = false
