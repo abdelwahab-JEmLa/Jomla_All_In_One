@@ -16,6 +16,7 @@ interface BProto_ClientsDataBaselDao{
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(items: List<BProto_ClientsDataBase>)
+
     @Query("DELETE FROM BProto_ClientsDataBase")
     suspend fun deleteAll()
 
