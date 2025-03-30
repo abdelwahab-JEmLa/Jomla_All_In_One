@@ -9,9 +9,6 @@ import com.google.firebase.database.database
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import java.net.InetSocketAddress
@@ -103,37 +100,5 @@ class ConnectivityMonitorNewProto(private val scope: CoroutineScope) {
         }
     }
 
-    fun startMonitoring(onChange: (Boolean) -> Unit) {
-        onConnectivityChanged = onChange
-        connectivityCheckJob?.cancel()
 
-        // Do not immediately report offline
-        connectivityCheckJob = scope.launch {
-            try {
-                // Perform initial check after a slight delay to allow UI to settle
-                delay(1000)
-                checkConnectivity()
-
-                // Continue monitoring periodically
-                while (isActive) {
-                    delay(CHECK_INTERVAL)
-                    checkConnectivity()
-                }
-            } catch (e: Exception) {
-                // Silently handle exceptions
-            }
-        }
-    }
-
-    fun stopMonitoring() {
-        // Remove Firebase connection listener
-        connectedRef?.removeEventListener(connectionListener!!)
-        connectionListener = null
-        connectedRef = null
-
-        connectivityCheckJob?.cancel()
-        connectivityCheckJob = null
-        onConnectivityChanged = null
-        lastNotifiedState = null
-    }
 }
