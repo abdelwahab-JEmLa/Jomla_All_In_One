@@ -66,10 +66,10 @@ fun MarkerStatusDialog(
     var editedPhone by remember { mutableStateOf("") }
     var showPhoneDialog by remember { mutableStateOf(false) }
     var showDeleteConfirmationDialog by remember { mutableStateOf(false) }
-    
-    var relatedClients by remember { mutableStateOf(viewModel.bProto_ClientsDataBase.find { it.id==selectedMarker?.id?.toLong() }) }
 
-
+    val relatedClients = viewModel.bProto_ClientsDataBase.find {
+        it.id == (selectedMarker?.id?.toLong() ?: 0)
+    }
     var clientTypeMode = relatedClients?.clientTypeMode
 
     if (selectedMarker == null) return
