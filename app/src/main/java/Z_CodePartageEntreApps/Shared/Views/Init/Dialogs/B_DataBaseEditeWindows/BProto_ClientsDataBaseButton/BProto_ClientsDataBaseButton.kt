@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows
+package Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.BProto_ClientsDataBaseButton
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -18,8 +18,8 @@ import androidx.compose.ui.Modifier
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun A_ProduitModelButtons(
-    viewModel: ViewModelA_ProduitModelButtons = koinViewModel()
+fun BProto_ClientsDataBaseButton(
+    viewModel: ViewModel_BProto_ClientsDataBase = koinViewModel()
 ) {
     var displayeButtonsFunctionRelated by remember { mutableStateOf(false) }
     var updateProgress by remember { mutableStateOf(0f) }
@@ -32,8 +32,8 @@ fun A_ProduitModelButtons(
     ) {
         Text(
             text = if (updateProgress > 0)
-                "A_ProduitModel (${(updateProgress * 100).toInt()}%)"
-            else "A_ProduitModel"
+                "BProto_ClientsDataBase (${(updateProgress * 100).toInt()}%)"
+            else "BProto_ClientsDataBase"
         )
     }
 
@@ -44,23 +44,16 @@ fun A_ProduitModelButtons(
     ) {
         LazyColumn {
             item {
-                ButtonFun_1(
+                ButtonModelB_Fun_1(
                     viewModel = viewModel,
                     onProgressUpdate = { progress ->
                         updateProgress = progress
                     },
-                    nameFunciotn = "UpdatenonDispoPourClients()"
+                    nameFunciotn = "importDeFireBaseAuRoom()"
                 )
             }
 
-            item {
-                ButtonFun_2(
-                    viewModel = viewModel,
-                    onProgressUpdate = { progress ->
-                        updateProgress = progress
-                    }
-                )
-            }
+
         }
     }
 }

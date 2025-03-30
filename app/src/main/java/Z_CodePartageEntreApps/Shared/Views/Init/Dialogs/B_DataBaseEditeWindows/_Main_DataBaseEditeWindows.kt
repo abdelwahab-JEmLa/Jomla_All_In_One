@@ -1,5 +1,9 @@
 package Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows
 
+import Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.A.A_ProduitModelButtons
+import Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.A.ViewModelA_ProduitModelButtons
+import Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.BProto_ClientsDataBaseButton.BProto_ClientsDataBaseButton
+import Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.BProto_ClientsDataBaseButton.ViewModel_BProto_ClientsDataBase
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,6 +26,7 @@ import org.koin.dsl.module
 
 val dataBaseEditeWindowsModules = module {
     viewModel { ViewModelA_ProduitModelButtons(get()) }
+    viewModel { ViewModel_BProto_ClientsDataBase(get()) }
 }
 
 // Load the module when the composable is first used
@@ -55,6 +60,9 @@ fun DataBaseEditeWindows(onDissmis: () -> Unit) {
                     HorizontalDivider(thickness = 4.dp)
 
                     A_ProduitModelButtons()
+
+
+                    BProto_ClientsDataBaseButton()
                 }
             }
         }

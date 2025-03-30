@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows
+package Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.A
 
 import Z_CodePartageEntreApps.Model.A_ProduitModel
 import Z_CodePartageEntreApps.Model.A_ProduitModelNewProto.Repository.A_ProduitModelRepository
@@ -52,6 +52,5 @@ class ViewModelA_ProduitModelButtons(
     suspend fun updateMultiDatas(a_Produitsl: SnapshotStateList<A_ProduitModel>) {
         a_ProduitModelRepository.updateDatas(a_Produitsl)
     }
-
 
 }

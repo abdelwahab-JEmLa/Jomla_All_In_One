@@ -23,15 +23,12 @@ import java.util.Date
         CategoriesTabelle::class,
         ColorsArticlesTabelle::class,
         SoldArticlesTabelle::class,
-        AppSettingsSaverModel::class ,
-        DevicesTypeManager::class ,
-        DiviseurDeDisplayProductForEachClient::class ,
-
+        AppSettingsSaverModel::class,
+        DevicesTypeManager::class,
+        DiviseurDeDisplayProductForEachClient::class,
         BProto_ClientsDataBase::class,
-
-
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(DateConverter::class)
@@ -56,7 +53,9 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "app_database"
-                ).build()
+                )
+                    .fallbackToDestructiveMigration()  // Add this line to allow destructive migration
+                    .build()
                 INSTANCE = instance
                 instance
             }
@@ -64,7 +63,7 @@ abstract class AppDatabase : RoomDatabase() {
     }
 }
 
-// First, let's properly set up the DateConverter
+// DateConverter class remains unchanged
 class DateConverter {
     @TypeConverter
     fun toDate(timestamp: Long?): Date? {

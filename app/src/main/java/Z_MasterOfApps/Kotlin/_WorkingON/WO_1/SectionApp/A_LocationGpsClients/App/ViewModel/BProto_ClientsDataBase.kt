@@ -7,13 +7,14 @@ import androidx.compose.material.icons.filled.MonetizationOn
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.firebase.database.IgnoreExtraProperties
 
 @Entity
 data class BProto_ClientsDataBase(
-    var id: Long = 1L,
+    @PrimaryKey(autoGenerate = true)
+    var id: Long = 0L,
 
-    // Section InfosBase
     var nom: String = "Non Defini",
 
     // Section Etates Mutable

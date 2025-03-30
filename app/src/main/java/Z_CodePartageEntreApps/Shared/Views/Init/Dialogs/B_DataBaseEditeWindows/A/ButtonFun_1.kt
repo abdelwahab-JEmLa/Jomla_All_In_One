@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows
+package Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.A
 
 import Z_CodePartageEntreApps.Model.A_ProduitModel
 import android.util.Log // Import Android Log

@@ -1,5 +1,6 @@
 package Z_MasterOfApps.Z.Android.Main.C_EcranDeDepart.Startup
 
+import Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.DataBaseEditeWindows
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Main.C_EcranDeDepart.Startup.B.Dialogs.A_OptionsControlsButtons
 import Z_MasterOfApps.Z.Android.Main.C_EcranDeDepart.Startup.B.Dialogs.A_OptionsDialog.A_OptionsDialog
@@ -27,6 +28,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,7 +44,10 @@ internal fun A_StartupScreen(
     onNavigate: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val isManagerPhone = viewModelInitApp._paramatersAppsViewModelModel.cLeTelephoneDuGerant ?: false
+    val showDatabaseEditDialog = remember { mutableStateOf(false) }
+
+    val isManagerPhone =
+        viewModelInitApp._paramatersAppsViewModelModel.cLeTelephoneDuGerant ?: false
     val items = remember(isManagerPhone) { NavigationItems.getItems(isManagerPhone) }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -56,10 +61,17 @@ internal fun A_StartupScreen(
             listOf(
                 "القائمة الرئيسية" to { screen: Screen -> screen.route == "StartupIcon_Start" },
                 "قسم المدير" to { screen: Screen ->
-                    screen.route in setOf("main_screen_f4", "fragment_main_screen_1", "A_ID5_VerificationProduitAcGrossist")
+                    screen.route in setOf(
+                        "main_screen_f4",
+                        "fragment_main_screen_1",
+                        "A_ID5_VerificationProduitAcGrossist"
+                    )
                 },
                 "قسم العملاء" to { screen: Screen ->
-                    screen.route in setOf("main_screen_f2", "مظهر الاماكن لمقسم المنتجات على الزبائن")
+                    screen.route in setOf(
+                        "main_screen_f2",
+                        "مظهر الاماكن لمقسم المنتجات على الزبائن"
+                    )
                 },
                 "خريطة التطبيق" to { screen: Screen -> screen.route == "Id_App2Fragment1" }
             ).forEach { (title, filter) ->
@@ -125,7 +137,7 @@ internal fun A_StartupScreen(
             A_OptionsControlsButtons(
                 extensionVM = viewModelInitApp.extentionStartup, // Utilisez l'instance existante
                 viewModelInitApp = viewModelInitApp,
-                paddingValues = PaddingValues()  ,
+                paddingValues = PaddingValues(),
             )
         }
 
@@ -133,5 +145,12 @@ internal fun A_StartupScreen(
             viewModelInitApp = viewModelInitApp,
             onDismiss = { viewModelInitApp.extentionStartup.dialogeOptions = false }
         )
+
+        // Show DataBaseEditeWindows dialog when showDatabaseEditDialog is true
+        if (showDatabaseEditDialog.value) {
+            DataBaseEditeWindows(
+                onDissmis = { showDatabaseEditDialog.value = false }
+            )
+        }
     }
 }

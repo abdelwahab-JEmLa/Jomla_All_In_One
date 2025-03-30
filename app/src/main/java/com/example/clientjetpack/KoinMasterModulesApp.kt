@@ -24,11 +24,10 @@ import com.example.clientjetpack.ViewModel.HeadViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
-private const val TAG = "id2"
 
 // Module pour les repositories
 val repositoryModule = module {
-    single<BProto_ClientsDataBaseRepository> { BProto_ClientsDataBaseRepositoryImpl() }
+    single<BProto_ClientsDataBaseRepository> { BProto_ClientsDataBaseRepositoryImpl(get()) }
     // Singleton: une seule instance pour toute l'application
     single<A_ProduitModelRepository> { A_ProduitModelRepositoryImpl() }
 
