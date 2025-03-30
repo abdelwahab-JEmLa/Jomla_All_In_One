@@ -12,6 +12,7 @@ interface BProto_ClientsDataBaseRepository{
 
     fun checkConnectivity()
 
+
     fun addData(data: BProto_ClientsDataBase)
     fun updateData(data: BProto_ClientsDataBase? = null,)
     suspend fun updateDatas(datas: SnapshotStateList<BProto_ClientsDataBase>)
