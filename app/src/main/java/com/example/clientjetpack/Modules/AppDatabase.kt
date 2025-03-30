@@ -1,5 +1,7 @@
 package com.example.clientjetpack.Modules
 
+import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.BProto_ClientsDataBase
+import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.Repository.Extension.BProto_ClientsDataBaselDao
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.SoldArticlesTabelle
@@ -23,8 +25,9 @@ import java.util.Date
         SoldArticlesTabelle::class,
         AppSettingsSaverModel::class ,
         DevicesTypeManager::class ,
-
         DiviseurDeDisplayProductForEachClient::class ,
+
+        BProto_ClientsDataBase::class,
 
 
     ],
@@ -41,7 +44,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun appSettingsSaverModelDao(): AppSettingsSaverModelDao
     abstract fun devicesTypeManagerDao(): DevicesTypeManagerDao
     abstract fun diviseurDeDisplayProductForEachClientDao(): DiviseurDeDisplayProductForEachClientDao
-    // DatabaseModule.kt
+    abstract fun bProtoClientsDataBaseDao(): BProto_ClientsDataBaselDao
+
     object DatabaseModule {
         @Volatile
         private var INSTANCE: AppDatabase? = null

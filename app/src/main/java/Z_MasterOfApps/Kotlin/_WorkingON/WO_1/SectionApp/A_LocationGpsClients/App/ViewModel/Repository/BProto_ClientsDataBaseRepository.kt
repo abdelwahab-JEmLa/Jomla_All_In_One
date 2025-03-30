@@ -10,6 +10,8 @@ interface BProto_ClientsDataBaseRepository{
     val progressRepo: MutableStateFlow<Float>
         get() = MutableStateFlow(0f)
 
+    suspend fun importDeFireBaseAuRoom()
+
     fun checkConnectivity()
 
 
@@ -20,6 +22,7 @@ interface BProto_ClientsDataBaseRepository{
     companion object {
         val caReference = firebaseDatabase.getReference("B_ClientsDataBase")
     }
+
 }
 
 

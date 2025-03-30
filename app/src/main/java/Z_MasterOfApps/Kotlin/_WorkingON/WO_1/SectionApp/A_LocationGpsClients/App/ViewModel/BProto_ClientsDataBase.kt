@@ -4,37 +4,37 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.MonetizationOn
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.room.Entity
 import com.google.firebase.database.IgnoreExtraProperties
 
-class BProto_ClientsDataBase {
-    var id by mutableStateOf(1L)
+@Entity
+data class BProto_ClientsDataBase(
+    var id: Long = 1L,
 
-    //Section InfosBase
-    var nom by mutableStateOf("Non Defini")
+    // Section InfosBase
+    var nom: String = "Non Defini",
 
-    //Section Etates Mutable
-    var numTelephone by mutableStateOf("")
-    var couleur by mutableStateOf("#FFFFFF")
-    var bonDuClientsSu by mutableStateOf("")
-    var currentCreditBalance by mutableStateOf(0.0)
-    var positionDonClientsList by mutableStateOf(0)
-    var cUnClientTemporaire by mutableStateOf(true)
-    var auFilterFAB by mutableStateOf(false)
-    var typeDeSonMagasine by mutableStateOf(TypeDeSonMagasine.ATAYAT_MOUKASSARAT)
-    var clientTypeMode by mutableStateOf(ClientTypeMode.NEVEAU)
+    // Section Etates Mutable
+    var numTelephone: String = "",
+    var couleur: String = "#FFFFFF",
+    var bonDuClientsSu: String = "",
+    var currentCreditBalance: Double = 0.0,
+    var positionDonClientsList: Int = 0,
+    var cUnClientTemporaire: Boolean = true,
+    var auFilterFAB: Boolean = false,
+    var typeDeSonMagasine: TypeDeSonMagasine = TypeDeSonMagasine.ATAYAT_MOUKASSARAT,
+    var clientTypeMode: ClientTypeMode = ClientTypeMode.NEVEAU,
 
-    //Section GpsLocation
-    var latitude by mutableStateOf(0.0)
-    var longitude by mutableStateOf(0.0)
-    var title by mutableStateOf("")
-    var snippet by mutableStateOf("")
-    var actuelleEtat by mutableStateOf(DernierEtatAAffiche.آNON_DEFINI)
-
+    // Section GpsLocation
+    var latitude: Double = 0.0,
+    var longitude: Double = 0.0,
+    var title: String = "",
+    var snippet: String = "",
+    var actuelleEtat: DernierEtatAAffiche = DernierEtatAAffiche.آNON_DEFINI
+) {
+    // Keep the enum classes as they are
     @IgnoreExtraProperties
     enum class DernierEtatAAffiche(val color: Int, val nomArabe: String) {
         آNON_DEFINI(android.R.color.white, "غير محدد"),
@@ -73,5 +73,7 @@ class BProto_ClientsDataBase {
             color = Color.Gray
         )
     }
-}
 
+    // Add no-arg constructor for Firebase
+    constructor() : this(1L)
+}
