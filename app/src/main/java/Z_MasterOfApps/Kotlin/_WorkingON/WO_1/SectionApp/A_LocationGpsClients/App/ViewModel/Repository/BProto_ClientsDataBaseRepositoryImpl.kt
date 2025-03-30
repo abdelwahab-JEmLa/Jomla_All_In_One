@@ -12,8 +12,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class BProto_ClientsDataBaseRepositoryImpl(
-) : BProto_ClientsDataBaseRepository {
+class BProto_ClientsDataBaseRepositoryImpl : BProto_ClientsDataBaseRepository {
+
     val connectivityMonitor = ConnectivityMonitorNewProto(CoroutineScope(Dispatchers.Default))
 
     override var modelDatas: SnapshotStateList<BProto_ClientsDataBase> = mutableStateListOf()
