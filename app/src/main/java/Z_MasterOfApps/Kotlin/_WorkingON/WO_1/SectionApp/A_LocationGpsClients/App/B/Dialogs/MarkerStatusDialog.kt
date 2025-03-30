@@ -1,7 +1,6 @@
 package Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs
 
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
-import Z_CodePartageEntreApps.Model._ModelAppsFather
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.BProto_ClientsDataBase
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.ViewModel_App2FragID1
@@ -397,27 +396,13 @@ fun MarkerStatusDialog(
                 TextButton(
                     onClick = {
                         coroutineScope.launch {
-                            selectedMarker.title = editedName
-                            val client = viewModelInitApp._modelAppsFather.clientDataBase.find {
-                                it.id.toString() == selectedMarker.id
+                            relatedClients?.apply {
+                                nom = editedName
+                                numTelephone = editedPhone
                             }
 
-                            client?.let { foundClient ->
-                                foundClient.nom = editedName
-                                foundClient.statueDeBase.numTelephone = editedPhone
-                                viewModelInitApp.updateClientsDataBase(foundClient)
+                            viewModel.updateDataTiggerreRelode(relatedClients!!)
 
-                                viewModelInitApp._modelAppsFather.produitsMainDataBase
-                                    .filter { product ->
-                                        product.bonsVentDeCetteCota.any { bonVent ->
-                                            bonVent.clientIdChoisi == foundClient.id
-                                        }
-                                    }
-                                    .forEach { product ->
-                                        _ModelAppsFather.updateProduit(product, viewModelInitApp)
-                                    }
-                            }
-                            selectedMarker.showInfoWindow()
                             showEditDialog = false
                         }
                     }
