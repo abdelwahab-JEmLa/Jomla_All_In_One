@@ -44,7 +44,7 @@ fun NavGraphBuilder.app2(
 ) {
     composable(Screen.A_ClientsLocationGps.route) {
         A_id1_ClientsLocationGps(
-            viewModel = viewModelInitApp,
+            viewModelInitApp = viewModelInitApp,
             clientEnCourDeVent = clientEnCourDeVent,
             onUpdateLongAppSetting = {
                 allerAuFragment(navController)

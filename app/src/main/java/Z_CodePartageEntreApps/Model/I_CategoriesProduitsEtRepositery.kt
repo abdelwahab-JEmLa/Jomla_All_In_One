@@ -116,7 +116,9 @@ class CategoriesRepositoryImpl : I_CategoriesRepository {
 
     init {
         // Initialize the listener when the repository is created
-        startDatabaseListener()
+     //   startDatabaseListener()
+        progressRepo.value = 1.0f
+
     }
 
     private fun startDatabaseListener() {

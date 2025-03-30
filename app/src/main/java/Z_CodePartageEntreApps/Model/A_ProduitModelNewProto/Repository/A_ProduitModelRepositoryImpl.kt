@@ -25,7 +25,9 @@ class A_ProduitModelRepositoryImpl(
 
     init {
         FirebaseUtilsA_ProduitModelNewProto.initializeFirebaseOfflineCapability()
-        startDatabaseListener()
+   //     startDatabaseListener()
+        progressRepo.value = 1.0f
+
     }
 
     private fun startDatabaseListener(onDatabaseListenerEnd: () -> Unit = {}) {

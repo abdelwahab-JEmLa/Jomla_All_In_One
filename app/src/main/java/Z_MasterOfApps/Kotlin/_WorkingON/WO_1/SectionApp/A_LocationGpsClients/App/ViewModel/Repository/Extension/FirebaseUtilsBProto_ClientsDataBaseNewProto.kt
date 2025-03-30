@@ -1,6 +1,6 @@
-package Z_CodePartageEntreApps.Model.BProto_ClientsDataBaseRepo.Repository.Extension
+package Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.Repository.Extension
 
-import Z_CodePartageEntreApps.Model.BProto_ClientsDataBaseRepo.Repository.BProto_ClientsDataBaseRepository
+import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.Repository.BProto_ClientsDataBaseRepository
 
 object FirebaseUtilsBProto_ClientsDataBaseNewProto {
     private const val DEBOUNCE_INTERVAL = 500L

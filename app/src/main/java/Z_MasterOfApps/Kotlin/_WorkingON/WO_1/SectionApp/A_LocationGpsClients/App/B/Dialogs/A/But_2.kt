@@ -1,19 +1,18 @@
 package Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs.A
 
-import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.Extension.ViewModelExtension_App2_F1
-import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.Extension.VisbleClientsNow
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
+import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.ViewModel_App2FragID1
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 @Composable
 fun But_2(
-    viewModel: ViewModelInitApp,
     showLabels: Boolean,
     onClick: () -> Unit,
-    extensionVM: ViewModelExtension_App2_F1,
-    currentFilterMode: VisbleClientsNow,
-    textButton: String="",
+    currentFilterMode: ViewModel_App2FragID1.VisbleClientsNow,
+    textButton: String = "",
+    viewModelInitApp: ViewModelInitApp,
+    viewModel: ViewModel_App2FragID1,
 ) {
     ControlButton(
         onClick = onClick,

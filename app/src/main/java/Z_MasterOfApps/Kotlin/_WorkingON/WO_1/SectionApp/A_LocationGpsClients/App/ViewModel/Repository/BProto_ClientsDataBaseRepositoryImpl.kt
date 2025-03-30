@@ -1,8 +1,8 @@
-package Z_CodePartageEntreApps.Model.BProto_ClientsDataBaseRepo.Repository
+package Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.Repository
 
-import Z_CodePartageEntreApps.Model.BProto_ClientsDataBase
-import Z_CodePartageEntreApps.Model.BProto_ClientsDataBaseRepo.Repository.Extension.FirebaseUtilsBProto_ClientsDataBaseNewProto
 import Z_CodePartageEntreApps.Modules.ConnectivityMonitorNewProto
+import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.BProto_ClientsDataBase
+import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.Repository.Extension.FirebaseUtilsBProto_ClientsDataBaseNewProto
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import kotlinx.coroutines.CoroutineScope
@@ -23,10 +23,11 @@ class BProto_ClientsDataBaseRepositoryImpl(
 
     init {
         FirebaseUtilsBProto_ClientsDataBaseNewProto.initializeFirebaseOfflineCapability()
+        load()
     }
 
-    override fun load() {
-        // Simple load implementation from Firebase reference without using a data listener
+    private fun load() {   //->
+        //TODO(FIXME):Fix erreur Cannot weaken access privilege 'public' for 'load' in 'BProto_ClientsDataBaseRepository'
         try {
             progressRepo.value = 0f
             modelDatas.clear()
@@ -48,6 +49,18 @@ class BProto_ClientsDataBaseRepositoryImpl(
         } catch (e: Exception) {
             // Silently handle exception
             progressRepo.value = 0f
+        }
+    }
+
+    override fun addData(data: BProto_ClientsDataBase) {
+        // Add to the local data model
+        modelDatas.add(data)
+
+        try {
+            // Add to Firebase
+            BProto_ClientsDataBaseRepository.caReference.child(data.id.toString()).setValue(data)
+        } catch (e: Exception) {
+            // Silently handle exception
         }
     }
 

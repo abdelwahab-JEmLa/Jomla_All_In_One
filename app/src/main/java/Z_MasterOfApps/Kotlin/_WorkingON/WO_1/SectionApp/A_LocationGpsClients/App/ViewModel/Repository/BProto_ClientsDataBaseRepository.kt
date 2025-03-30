@@ -1,7 +1,7 @@
-package Z_CodePartageEntreApps.Model.BProto_ClientsDataBaseRepo.Repository
+package Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.Repository
 
-import Z_CodePartageEntreApps.Model.BProto_ClientsDataBase
-import Z_CodePartageEntreApps.Model._ModelAppsFather.Companion.ref_HeadOfModels
+import Z_CodePartageEntreApps.Model._ModelAppsFather.Companion.firebaseDatabase
+import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.BProto_ClientsDataBase
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -12,13 +12,12 @@ interface BProto_ClientsDataBaseRepository{
 
     fun checkConnectivity()
 
-    fun load()
-
+    fun addData(data: BProto_ClientsDataBase)
     fun updateData(data: BProto_ClientsDataBase? = null,)
     suspend fun updateDatas(datas: SnapshotStateList<BProto_ClientsDataBase>)
 
     companion object {
-        val caReference = ref_HeadOfModels.child("B_ClientsDataBase")
+        val caReference = firebaseDatabase.getReference("B_ClientsDataBase")
     }
 }
 

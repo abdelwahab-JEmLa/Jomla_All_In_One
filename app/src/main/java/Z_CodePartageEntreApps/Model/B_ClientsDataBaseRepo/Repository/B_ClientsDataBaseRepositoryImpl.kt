@@ -25,7 +25,9 @@ class B_ClientsDataBaseRepositoryImpl(
 
     init {
         FirebaseUtilsB_ClientsDataBaseNewProto.initializeFirebaseOfflineCapability()
-        startDatabaseListener()
+      //  startDatabaseListener()
+        progressRepo.value = 1.0f
+
     }
 
     private fun startDatabaseListener(onDatabaseListenerEnd: () -> Unit = {}) {

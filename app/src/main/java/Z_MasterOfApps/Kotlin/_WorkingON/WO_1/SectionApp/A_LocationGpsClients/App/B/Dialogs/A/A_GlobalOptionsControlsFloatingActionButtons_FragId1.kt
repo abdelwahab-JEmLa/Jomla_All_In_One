@@ -1,7 +1,6 @@
 package Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs.A
 
-import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
-import Z_MasterOfApps.Resources.XmlsFilesHandler.Companion.xmlResources
+import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs.Utils.A_ChangeIdColor
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs.Utils.AddMarkerButton
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs.Utils.ClearHistoryButton
@@ -9,9 +8,9 @@ import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs.Utils.LocationTrackingButton
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs.Utils.MenuButton
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs.Utils.rememberLocationTracker
-import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.Extension.ViewModelExtension_App2_F1
-import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.Extension.VisbleClientsNow
-import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
+import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.ViewModel_App2FragID1
+import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
+import Z_MasterOfApps.Resources.XmlsFilesHandler.Companion.xmlResources
 import Z_MasterOfApps.Z_AppsFather.Kotlin.Partage.Views.AnimatedIconLottieJsonFile
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -47,12 +46,12 @@ import kotlin.math.roundToInt
 
 @Composable
 fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
-    extensionVM: ViewModelExtension_App2_F1,
     mapView: MapView,
+    viewModel: ViewModel_App2FragID1,
     viewModelInitApp: ViewModelInitApp,
     onClear: () -> Unit,
     onFilterMarkers: () -> Unit,
-    currentFilterMode: VisbleClientsNow,
+    currentFilterMode: ViewModel_App2FragID1.VisbleClientsNow,
     ) {
     var showMenu by remember { mutableStateOf(false) }
     var showLabels by remember { mutableStateOf(false) }
@@ -101,20 +100,21 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
 
 
                     AddMarkerButton(
-                        extensionVM = extensionVM,
+                        viewModel = viewModel,
                         showLabels = showLabels,
                         mapView = mapView,
                     )
 
                     FragId1But_3(
+                        viewModel = viewModel,
                         showLabels = showLabels,
-                        extensionVM=extensionVM,
                         contentDescription = "auClickeCaUpdateClientPar",
                     )
 
 
                     if (!packageName.contains("clientje")||true ) {
                         But1_NearbyMarkersButton(
+                            viewModel=viewModel,
                             showLabels = showLabels,
                             viewModelInitApp = viewModelInitApp,
                             markers = mapView.overlays.filterIsInstance<Marker>().toMutableList(),
@@ -124,14 +124,15 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                         )
 
                         But_2(
-                            viewModel = viewModelInitApp,
+                            viewModel =viewModel,
+                            viewModelInitApp = viewModelInitApp,
                             textButton = "onFilterMarkers",
                             showLabels = showLabels,
                             onClick = onFilterMarkers,
-                            extensionVM = extensionVM,
-                            currentFilterMode=currentFilterMode
+                            currentFilterMode =currentFilterMode
                         )
                         A_ChangeIdColor(
+                            viewModel=viewModel,
                             viewModelInitApp = viewModelInitApp,
                             showLabels = showLabels,
                             contentDescription = "Repeat",

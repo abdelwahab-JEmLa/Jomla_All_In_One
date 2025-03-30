@@ -1,14 +1,13 @@
 package Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App
 
-import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs.A.A_GlobalOptionsControlsFloatingActionButtons_FragId1
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs.MarkerStatusDialog
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs.Utils.DEFAULT_LATITUDE
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs.Utils.DEFAULT_LONGITUDE
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs.Utils.getCurrentLocation
-import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.Extension.ViewModelExtension_App2_F1
-import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.Extension.VisbleClientsNow
+import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.BProto_ClientsDataBase
+import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.ViewModel_App2FragID1
 import Z_MasterOfApps.Resources.XmlsFilesHandler.Companion.xmlResources
 import android.content.Context
 import android.widget.LinearLayout
@@ -45,8 +44,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import org.koin.androidx.compose.koinViewModel
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
@@ -57,17 +56,13 @@ import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow
 @Composable
 fun A_id1_ClientsLocationGps(
     modifier: Modifier = Modifier,
-    viewModel: ViewModelInitApp = viewModel(),
+    viewModel: ViewModel_App2FragID1 = koinViewModel(),
+    viewModelInitApp: ViewModelInitApp = viewModel(),
     clientEnCourDeVent: Long = 0,
     onUpdateLongAppSetting: () -> Unit = {},
     onClear: () -> Unit = {},
 ) {
-    val extensionVM = ViewModelExtension_App2_F1(
-        viewModel.viewModelScope,
-        viewModel.produitsMainDataBase,
-        viewModel.clientDataBaseSnapList,
-        viewModel
-    )
+
 
     val context = LocalContext.current
     val currentZoom by remember { mutableDoubleStateOf(18.2) }
@@ -75,7 +70,7 @@ fun A_id1_ClientsLocationGps(
     var selectedMarker by remember { mutableStateOf<Marker?>(null) }
     var showMarkerDialog by remember { mutableStateOf(false) }
     val showMarkerDetails by remember { mutableStateOf(true) }
-    var currentFilterMode by remember { mutableStateOf<VisbleClientsNow>(VisbleClientsNow.affichePourCollecteurCommendes) }
+    var currentFilterMode by remember { mutableStateOf<ViewModel_App2FragID1.VisbleClientsNow>(ViewModel_App2FragID1.VisbleClientsNow.affichePourCollecteurCommendes) }
 
     // New state variables for marker editing mode
     var editingMarkerId by remember { mutableLongStateOf(0L) }
@@ -118,7 +113,7 @@ fun A_id1_ClientsLocationGps(
         }
     }
 
-    val clientDataBaseSnapList = viewModel.clientDataBaseSnapList
+    val clientDataBaseSnapList = viewModel.bProto_ClientsDataBase
 
     LaunchedEffect(clientDataBaseSnapList.toList(), clientEnCourDeVent, currentFilterMode) {
         // Masquer toutes les info-bulles existantes
@@ -131,44 +126,43 @@ fun A_id1_ClientsLocationGps(
 
         // Filtrer les clients
         val clientsToShow = when (currentFilterMode) {
-            VisbleClientsNow.showNonAbsentClientsOnly -> {
+            ViewModel_App2FragID1.VisbleClientsNow.showNonAbsentClientsOnly -> {
                 clientDataBaseSnapList.filter {
-                    it.gpsLocation.actuelleEtat != B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CLIENT_ABSENT
+                    it.actuelleEtat != BProto_ClientsDataBase.DernierEtatAAffiche.CLIENT_ABSENT
                 }
             }
 
-            VisbleClientsNow.affichePourCollecteurCommendes -> {
+            ViewModel_App2FragID1.VisbleClientsNow.affichePourCollecteurCommendes -> {
                 clientDataBaseSnapList.filter {
-                    it.gpsLocation.actuelleEtat == B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.Cible
-                            || it.gpsLocation.actuelleEtat == B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CIBLE_PRIORITE_2
-                            || it.gpsLocation.actuelleEtat == B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.VENDU_A_LUI
-                            || it.gpsLocation.actuelleEtat == B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.FERME
-                            || it.gpsLocation.actuelleEtat == B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.A_EVITE
-                            || it.gpsLocation.actuelleEtat == B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.AVEC_MARCHANDISE
-                            || it.gpsLocation.actuelleEtat == B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CLIENT_ABSENT
+                    it.actuelleEtat == BProto_ClientsDataBase.DernierEtatAAffiche.Cible
+                            || it.actuelleEtat == BProto_ClientsDataBase.DernierEtatAAffiche.CIBLE_PRIORITE_2
+                            || it.actuelleEtat == BProto_ClientsDataBase.DernierEtatAAffiche.VENDU_A_LUI
+                            || it.actuelleEtat == BProto_ClientsDataBase.DernierEtatAAffiche.FERME
+                            || it.actuelleEtat == BProto_ClientsDataBase.DernierEtatAAffiche.A_EVITE
+                            || it.actuelleEtat == BProto_ClientsDataBase.DernierEtatAAffiche.AVEC_MARCHANDISE
+                            || it.actuelleEtat == BProto_ClientsDataBase.DernierEtatAAffiche.CLIENT_ABSENT
                 }
             }
 
-            VisbleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 -> {
+            ViewModel_App2FragID1.VisbleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 -> {
                 clientDataBaseSnapList.filter {
-                    it.gpsLocation.actuelleEtat == B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CIBLE_POUR_2
-
+                    it.actuelleEtat == BProto_ClientsDataBase.DernierEtatAAffiche.CIBLE_POUR_2
                 }
             }
 
-            VisbleClientsNow.showAtayClients -> {
+            ViewModel_App2FragID1.VisbleClientsNow.showAtayClients -> {
                 clientDataBaseSnapList.filter {
-                    it.statueDeBase.typeDeSonMagasine == B_ClientsDataBase.StatueDeBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT
+                    it.typeDeSonMagasine == BProto_ClientsDataBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT
                 }
             }
 
-            VisbleClientsNow.showAlimentionlients -> {
+            ViewModel_App2FragID1.VisbleClientsNow.showAlimentionlients -> {
                 clientDataBaseSnapList.filter {
-                    it.statueDeBase.typeDeSonMagasine == B_ClientsDataBase.StatueDeBase.TypeDeSonMagasine.AlIMENTATION_GENERALE
+                    it.typeDeSonMagasine == BProto_ClientsDataBase.TypeDeSonMagasine.AlIMENTATION_GENERALE
                 }
             }
 
-            VisbleClientsNow.showAll -> {
+            ViewModel_App2FragID1.VisbleClientsNow.showAll -> {
                 clientDataBaseSnapList
             }
         }
@@ -177,17 +171,17 @@ fun A_id1_ClientsLocationGps(
         clientsToShow.forEach { client ->
             val actuelleEtat =
                 if (client.id == clientEnCourDeVent)
-                    B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT
-                else client.gpsLocation.actuelleEtat
+                    BProto_ClientsDataBase.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT
+                else client.actuelleEtat
 
             val marker = Marker(mapView).apply {
                 id = client.id.toString()
                 position = GeoPoint(
-                    client.gpsLocation.latitude.takeIf { it != 0.0 } ?: DEFAULT_LATITUDE,
-                    client.gpsLocation.longitude
+                    client.latitude.takeIf { it != 0.0 } ?: DEFAULT_LATITUDE,
+                    client.longitude
                 )
                 title = client.nom
-                snippet = if (client.statueDeBase.cUnClientTemporaire)
+                snippet = if (client.cUnClientTemporaire)
                     "Client temporaire" else "Client permanent"
                 setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
 
@@ -241,11 +235,11 @@ fun A_id1_ClientsLocationGps(
                 .align(Alignment.Center)
         )
 
-        if (viewModel._paramatersAppsViewModelModel.fabsVisibility) {
+        if (viewModelInitApp._paramatersAppsViewModelModel.fabsVisibility) {
             A_GlobalOptionsControlsFloatingActionButtons_FragId1(
-                extensionVM = extensionVM,
+                viewModel =viewModel,
                 mapView = mapView,
-                viewModelInitApp = viewModel,
+                viewModelInitApp = viewModelInitApp,
                 onClear = onClear,
                 currentFilterMode = currentFilterMode,
                 onFilterMarkers = {
@@ -253,14 +247,13 @@ fun A_id1_ClientsLocationGps(
                     mapView.overlays.filterIsInstance<Marker>().forEach { it.closeInfoWindow() }
 
                     currentFilterMode = when (currentFilterMode) {
-                        VisbleClientsNow.showAll -> VisbleClientsNow.showNonAbsentClientsOnly
-                        VisbleClientsNow.showNonAbsentClientsOnly -> VisbleClientsNow.affichePourCollecteurCommendes
-                        VisbleClientsNow.affichePourCollecteurCommendes -> VisbleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2
-                        VisbleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 -> VisbleClientsNow.showAtayClients
-                        VisbleClientsNow.showAtayClients -> VisbleClientsNow.showAlimentionlients
-                        VisbleClientsNow.showAlimentionlients -> VisbleClientsNow.showAll
+                        ViewModel_App2FragID1.VisbleClientsNow.showAll -> ViewModel_App2FragID1.VisbleClientsNow.showNonAbsentClientsOnly
+                        ViewModel_App2FragID1.VisbleClientsNow.showNonAbsentClientsOnly -> ViewModel_App2FragID1.VisbleClientsNow.affichePourCollecteurCommendes
+                        ViewModel_App2FragID1.VisbleClientsNow.affichePourCollecteurCommendes -> ViewModel_App2FragID1.VisbleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2
+                        ViewModel_App2FragID1.VisbleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 -> ViewModel_App2FragID1.VisbleClientsNow.showAtayClients
+                        ViewModel_App2FragID1.VisbleClientsNow.showAtayClients -> ViewModel_App2FragID1.VisbleClientsNow.showAlimentionlients
+                        ViewModel_App2FragID1.VisbleClientsNow.showAlimentionlients -> ViewModel_App2FragID1.VisbleClientsNow.showAll
                     }
-
                 }
             )
         }
@@ -307,19 +300,35 @@ fun A_id1_ClientsLocationGps(
                     FloatingActionButton(
                         onClick = {
                             // Update the marker position
-                            val clientToUpdate = viewModel._modelAppsFather.clientDataBase.find {
+                            val clientToUpdate = clientDataBaseSnapList.find {
                                 it.id == editingMarkerId
                             }
 
                             clientToUpdate?.let { client ->
                                 val centerPoint = mapView.mapCenter
-                                val updatedClient = client.copy(
-                                    gpsLocation = client.gpsLocation.copy(
-                                        latitude = centerPoint.latitude,
-                                        longitude = centerPoint.longitude
-                                    )
-                                )
-                                viewModel.updateClientsDataBase(updatedClient)
+                                // Create updated client with new location
+                                val updatedClient = BProto_ClientsDataBase().apply {
+                                    id = client.id
+                                    nom = client.nom
+                                    numTelephone = client.numTelephone
+                                    couleur = client.couleur
+                                    bonDuClientsSu = client.bonDuClientsSu
+                                    currentCreditBalance = client.currentCreditBalance
+                                    positionDonClientsList = client.positionDonClientsList
+                                    cUnClientTemporaire = client.cUnClientTemporaire
+                                    auFilterFAB = client.auFilterFAB
+                                    typeDeSonMagasine = client.typeDeSonMagasine
+                                    clientTypeMode = client.clientTypeMode
+
+                                    // Update location
+                                    latitude = centerPoint.latitude
+                                    longitude = centerPoint.longitude
+                                    title = client.title
+                                    snippet = client.snippet
+                                    actuelleEtat = client.actuelleEtat
+                                }
+
+                                viewModel.updateClient(updatedClient)
                             }
 
                             // Clear editing mode
@@ -336,8 +345,8 @@ fun A_id1_ClientsLocationGps(
 
         if (showMarkerDialog && selectedMarker != null) {
             MarkerStatusDialog(
-                viewModelEXT = extensionVM,
-                viewModelInitApp = viewModel,
+                viewModel=viewModel,
+                viewModelInitApp = viewModelInitApp,
                 selectedMarker = selectedMarker,
                 onDismiss = { showMarkerDialog = false },
                 onUpdateLongAppSetting = onUpdateLongAppSetting,
@@ -364,4 +373,3 @@ private data class MapPosition(
     val longitude: Double,
     val isInitialized: Boolean
 )
-

@@ -1,11 +1,9 @@
 package Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs
 
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
-import Z_CodePartageEntreApps.Model.B_ClientsDataBase.EtatesMutable.ClientTypeMode
 import Z_CodePartageEntreApps.Model._ModelAppsFather
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.Extension.Utils.updateLongAppSetting
-import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.Extension.ViewModelExtension_App2_F1
+import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.BProto_ClientsDataBase
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.ViewModel_App2FragID1
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,10 +17,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.filled.Tornado
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -51,13 +47,11 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import org.koin.androidx.compose.koinViewModel
 import org.osmdroid.views.overlay.Marker
 
 @Composable
 fun MarkerStatusDialog(
-    viewModele: ViewModel_App2FragID1 = koinViewModel(),
-    viewModelEXT: ViewModelExtension_App2_F1,
+    viewModel: ViewModel_App2FragID1,
     viewModelInitApp: ViewModelInitApp,
     selectedMarker: Marker?,
     onDismiss: () -> Unit,
@@ -72,11 +66,11 @@ fun MarkerStatusDialog(
     var editedPhone by remember { mutableStateOf("") }
     var showPhoneDialog by remember { mutableStateOf(false) }
     var showDeleteConfirmationDialog by remember { mutableStateOf(false) }
+    
+    var relatedClients by remember { mutableStateOf(viewModel.bProto_ClientsDataBase.find { it.id==selectedMarker?.id?.toLong() }) }
 
-    val relatedClients = viewModele.b_ClientsDataBase.find {
-        it.id == (selectedMarker?.id?.toLong() ?: 0)
-    }
-    var clientTypeMode = relatedClients?.etatesMutable?.clientTypeMode
+
+    var clientTypeMode = relatedClients?.clientTypeMode
 
     if (selectedMarker == null) return
 
@@ -136,16 +130,16 @@ fun MarkerStatusDialog(
                             .padding(end = 8.dp)
                             .clickable {
                                 clientTypeMode = when (clientTypeMode) {
-                                    ClientTypeMode.ANCIEN -> ClientTypeMode.NEVEAU
-                                    ClientTypeMode.NEVEAU -> ClientTypeMode.EVITE
-                                    ClientTypeMode.EVITE -> ClientTypeMode.ANCIEN
-                                    null -> ClientTypeMode.NEVEAU
+                                    BProto_ClientsDataBase.ClientTypeMode.ANCIEN -> BProto_ClientsDataBase.ClientTypeMode.NEVEAU
+                                    BProto_ClientsDataBase.ClientTypeMode.NEVEAU -> BProto_ClientsDataBase.ClientTypeMode.EVITE
+                                    BProto_ClientsDataBase.ClientTypeMode.EVITE -> BProto_ClientsDataBase.ClientTypeMode.ANCIEN
+                                    null -> BProto_ClientsDataBase.ClientTypeMode.NEVEAU
                                 }
 
                                 // Update the client's type mode
                                 relatedClients?.let { client ->
-                                    client.etatesMutable.clientTypeMode = clientTypeMode!!
-                                    viewModele.updateClient(client)
+                                    client.clientTypeMode = clientTypeMode!!
+                                    viewModel.updateClient(client)
                                 }
                             }
                     ) {
@@ -170,9 +164,9 @@ fun MarkerStatusDialog(
                             fontWeight = FontWeight.Bold
                         )
 
-                        if (!relatedClients?.statueDeBase?.numTelephone.isNullOrEmpty()) {
+                        if (!relatedClients?.numTelephone.isNullOrEmpty()) {
                             Text(
-                                text = relatedClients?.statueDeBase?.numTelephone ?: "",
+                                text = relatedClients?.numTelephone ?: "",
                                 modifier = Modifier.clickable { showPhoneDialog = true },
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.primary
@@ -188,12 +182,12 @@ fun MarkerStatusDialog(
                     color = Color(
                         ContextCompat.getColor(
                             context,
-                            B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT.color
+                            BProto_ClientsDataBase.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT.color
                         )
                     ),
                     onClick = {
                         coroutineScope.launch {
-                            viewModelEXT.updateLongAppSetting(selectedMarker.id.toLong())
+                            viewModel.updateLongAppSetting(selectedMarker.id.toLong())
                             onUpdateLongAppSetting()
 
                             onDismiss()
@@ -201,22 +195,24 @@ fun MarkerStatusDialog(
                     }
                 )
 
-
+                val CLIENT_ABSENT =
+                    BProto_ClientsDataBase.DernierEtatAAffiche.CLIENT_ABSENT
                 StatusButton(
-                    text = "Client Absent",
+                    text = CLIENT_ABSENT.nomArabe,
                     icon = Icons.Default.Person,
                     color = Color(
                         ContextCompat.getColor(
                             context,
-                            B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CLIENT_ABSENT.color
+                            CLIENT_ABSENT.color
                         )
                     ),
                     onClick = {
                         coroutineScope.launch {
-                            viewModelEXT.updateStatueClient(
-                                selectedMarker,
-                                B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CLIENT_ABSENT
-                            )
+
+                            relatedClients?.actuelleEtat=CLIENT_ABSENT
+
+                            viewModel.updateClient(relatedClients!!)
+
                             onDismiss()
                         }
                     }
@@ -224,21 +220,24 @@ fun MarkerStatusDialog(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
+                val AVEC_MARCHANDISE =
+                    BProto_ClientsDataBase.DernierEtatAAffiche.AVEC_MARCHANDISE
                 StatusButton(
-                    text = "Avec Marchandise",
-                    icon = Icons.Default.ShoppingCart,
+                    text = AVEC_MARCHANDISE.nomArabe,
+                    icon = Icons.Default.Person,
                     color = Color(
                         ContextCompat.getColor(
                             context,
-                            B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.AVEC_MARCHANDISE.color
+                            AVEC_MARCHANDISE.color
                         )
                     ),
                     onClick = {
                         coroutineScope.launch {
-                            viewModelEXT.updateStatueClient(
-                                selectedMarker,
-                                B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.AVEC_MARCHANDISE
-                            )
+
+                            relatedClients?.actuelleEtat=AVEC_MARCHANDISE
+
+                            viewModel.updateClient(relatedClients!!)
+
                             onDismiss()
                         }
                     }
@@ -246,100 +245,124 @@ fun MarkerStatusDialog(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
+
+                val FERME =
+                    BProto_ClientsDataBase.DernierEtatAAffiche.FERME
                 StatusButton(
-                    text = "Fermé",
-                    icon = Icons.Default.Lock,
+                    text = FERME.nomArabe,
+                    icon = Icons.Default.Person,
                     color = Color(
                         ContextCompat.getColor(
                             context,
-                            B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.FERME.color
+                            FERME.color
                         )
                     ),
                     onClick = {
                         coroutineScope.launch {
-                            viewModelEXT.updateStatueClient(
-                                selectedMarker,
-                                B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.FERME
-                            )
+
+                            relatedClients?.actuelleEtat=FERME
+
+                            viewModel.updateClient(relatedClients!!)
+
                             onDismiss()
                         }
                     }
                 )
-
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                val Cible =
+                    BProto_ClientsDataBase.DernierEtatAAffiche.Cible
                 StatusButton(
-                    text = "Client Cible",
+                    text = Cible.nomArabe,
                     icon = Icons.Default.Person,
                     color = Color(
                         ContextCompat.getColor(
                             context,
-                            B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.Cible.color
+                            Cible.color
                         )
                     ),
                     onClick = {
                         coroutineScope.launch {
-                            viewModelEXT.updateStatueClient(
-                                selectedMarker,
-                                B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.Cible
-                            )
+
+                            relatedClients?.actuelleEtat=Cible
+
+                            viewModel.updateClient(relatedClients!!)
+
                             onDismiss()
                         }
                     }
                 )
+
+                val CIBLE_PRIORITE_2 =
+                    BProto_ClientsDataBase.DernierEtatAAffiche.CIBLE_PRIORITE_2
+
+                StatusButton(
+                    text = CIBLE_PRIORITE_2.nomArabe,
+                    icon = Icons.Default.Person,
+                    color = Color(
+                        ContextCompat.getColor(
+                            context,
+                            CIBLE_PRIORITE_2.color
+                        )
+                    ),
+                    onClick = {
+                        coroutineScope.launch {
+
+                            relatedClients?.actuelleEtat=CIBLE_PRIORITE_2
+
+                            viewModel.updateClient(relatedClients!!)
+
+                            onDismiss()
+                        }
+                    }
+                )
+
 
                 val CIBLE_POUR_2 =
-                    B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CIBLE_PRIORITE_2
+                    BProto_ClientsDataBase.DernierEtatAAffiche.CIBLE_POUR_2
 
                 StatusButton(
-                    text = CIBLE_POUR_2.toString(),
-                    icon = Icons.Default.Tornado,
-                    color = Color(ContextCompat.getColor(context, CIBLE_POUR_2.color)),
+                    text = CIBLE_POUR_2.nomArabe,
+                    icon = Icons.Default.Person,
+                    color = Color(
+                        ContextCompat.getColor(
+                            context,
+                            CIBLE_POUR_2.color
+                        )
+                    ),
                     onClick = {
                         coroutineScope.launch {
 
-                            viewModelEXT.updateStatueClient(selectedMarker, CIBLE_POUR_2)
+                            relatedClients?.actuelleEtat=CIBLE_POUR_2
+
+                            viewModel.updateClient(relatedClients!!)
+
                             onDismiss()
                         }
                     }
                 )
 
-                StatusButton(
-                    text = "CIBLE_POUR_2",
-                    icon = Icons.Default.Person,
-                    color = Color(
-                        ContextCompat.getColor(
-                            context,
-                            B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CIBLE_POUR_2.color
-                        )
-                    ),
-                    onClick = {
-                        coroutineScope.launch {
-                            viewModelEXT.updateStatueClient(
-                                selectedMarker,
-                                B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CIBLE_POUR_2
-                            )
-                            onDismiss()
-                        }
-                    }
-                )
+
+                val A_EVITE =
+                    BProto_ClientsDataBase.DernierEtatAAffiche.A_EVITE
 
                 StatusButton(
-                    text = "A_EVITE",
+                    text = A_EVITE.nomArabe,
                     icon = Icons.Default.Person,
                     color = Color(
                         ContextCompat.getColor(
                             context,
-                            B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.A_EVITE.color
+                            A_EVITE.color
                         )
                     ),
                     onClick = {
                         coroutineScope.launch {
-                            viewModelEXT.updateStatueClient(
-                                selectedMarker,
-                                B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.A_EVITE
-                            )
+
+                            relatedClients?.actuelleEtat=A_EVITE
+
+                            viewModel.updateClient(relatedClients!!)
+
                             onDismiss()
                         }
                     }

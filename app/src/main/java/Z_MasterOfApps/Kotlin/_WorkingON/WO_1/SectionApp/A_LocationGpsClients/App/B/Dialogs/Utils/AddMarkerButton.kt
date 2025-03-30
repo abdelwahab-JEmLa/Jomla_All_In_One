@@ -1,7 +1,7 @@
 package Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs.Utils
 
+import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.ViewModel_App2FragID1
 import Z_MasterOfApps.Resources.XmlsFilesHandler.Companion.fixXmlResources
-import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.Extension.ViewModelExtension_App2_F1
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
@@ -26,7 +26,7 @@ import org.osmdroid.views.MapView
 
 @Composable
 fun AddMarkerButton(
-    extensionVM: ViewModelExtension_App2_F1,
+    viewModel: ViewModel_App2FragID1,
     showLabels: Boolean,
     mapView: MapView,
 ) {
@@ -52,7 +52,7 @@ fun AddMarkerButton(
     IconButton(
         onClick = {
             isPlaying = true
-            extensionVM.onClickAddMarkerButton(mapView)
+            viewModel.onClickAddMarkerButton(mapView)
         },
         modifier = Modifier
             .size(40.dp)

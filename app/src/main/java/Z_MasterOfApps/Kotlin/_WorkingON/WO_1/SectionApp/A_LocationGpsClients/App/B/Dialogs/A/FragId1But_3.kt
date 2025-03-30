@@ -1,28 +1,28 @@
 package Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs.A
 
-import Z_CodePartageEntreApps.Model.B_ClientsDataBase
+import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.BProto_ClientsDataBase
+import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.ViewModel_App2FragID1
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
-import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.Extension.ViewModelExtension_App2_F1
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 @Composable
 fun FragId1But_3(
+    viewModel: ViewModel_App2FragID1,
     showLabels: Boolean,
-    extensionVM: ViewModelExtension_App2_F1,
     contentDescription: String,
 ) {
     ControlButton(
         onClick = {
             // Toggle between the two TypeDeSonMagasine values
-            extensionVM.auClickeCaUpdateClientPar = if ( extensionVM.auClickeCaUpdateClientPar == B_ClientsDataBase.StatueDeBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT) {
-                B_ClientsDataBase.StatueDeBase.TypeDeSonMagasine.AlIMENTATION_GENERALE
+            viewModel.auClickeCaUpdateClientPar = if ( viewModel.auClickeCaUpdateClientPar == BProto_ClientsDataBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT) {
+                BProto_ClientsDataBase.TypeDeSonMagasine.AlIMENTATION_GENERALE
             } else {
-                B_ClientsDataBase.StatueDeBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT
+                BProto_ClientsDataBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT
             }
         },
         // Choose icon based on current state
-        icon = if ( extensionVM.auClickeCaUpdateClientPar == B_ClientsDataBase.StatueDeBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT) {
+        icon = if ( viewModel.auClickeCaUpdateClientPar == BProto_ClientsDataBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT) {
             LottieJsonGetterR_Raw_Icons.atay
         } else {
             LottieJsonGetterR_Raw_Icons.alimentation

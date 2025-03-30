@@ -2,8 +2,8 @@ package Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository
 
 import Z_CodePartageEntreApps.Model.K_TempTravaille
 import Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.Extension.IntervalesEtJoursHandler
-import Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.Extension.Z_FirebaseUtils
 import Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.Extension.TimeFormatUtils
+import Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.Extension.Z_FirebaseUtils
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.firebase.database.DataSnapshot
@@ -23,7 +23,9 @@ class K_TempTravailleRepositoryImpl :
 
     init {
         Z_FirebaseUtils.initializeFirebaseOfflineCapability()
-        startDatabaseListener()
+      //  startDatabaseListener()
+        progressRepo.value = 1.0f
+
     }
 
     private fun startDatabaseListener() {
