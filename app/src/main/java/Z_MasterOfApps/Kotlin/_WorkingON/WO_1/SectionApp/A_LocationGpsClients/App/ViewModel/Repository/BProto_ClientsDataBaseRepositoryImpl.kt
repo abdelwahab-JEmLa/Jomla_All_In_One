@@ -121,9 +121,7 @@ class BProto_ClientsDataBaseRepositoryImpl(
                     BProto_ClientsDataBaseRepository.caReference.child(data.id.toString()).setValue(data)
                     processedItems++
                     progressRepo.value = processedItems.toFloat() / totalItems.toFloat()
-                } catch (e: Exception) {
-                    // Exception handling remains but without logging
-                }
+                } catch (e: Exception) {}
             }
 
             modelDatas.clear()
