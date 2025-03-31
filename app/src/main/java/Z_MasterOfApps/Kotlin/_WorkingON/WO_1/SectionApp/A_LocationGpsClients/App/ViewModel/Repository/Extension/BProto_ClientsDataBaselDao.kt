@@ -24,4 +24,7 @@ interface BProto_ClientsDataBaselDao{
     @Query("DELETE FROM BProto_ClientsDataBase")
     suspend fun deleteAll()
 
+    @Query("SELECT COUNT(*) FROM BProto_ClientsDataBase")
+    fun getCount(): Int
+
 }

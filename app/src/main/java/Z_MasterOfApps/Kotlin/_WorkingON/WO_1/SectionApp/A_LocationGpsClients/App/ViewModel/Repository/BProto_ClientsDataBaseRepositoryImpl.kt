@@ -34,9 +34,37 @@ class BProto_ClientsDataBaseRepositoryImpl(
     init {
         FirebaseUtilsBProto_ClientsDataBaseNewProto.initializeFirebaseOfflineCapability()
         repositoryScope.launch {
-            loadDepuitRoom()
+            checkDataConsistency()
         }
         onDataChangeListnerlatitudeEtlongitude()
+    }
+
+    private suspend fun checkDataConsistency() {
+        try {
+            // Get count from Room database
+            val roomCount = withContext(Dispatchers.IO) {
+                appDatabase.bProtoClientsDataBaseDao().getCount()
+            }
+
+            // Get count from Firebase
+            val firebaseSnapshot = withContext(Dispatchers.IO) {
+                val task = BProto_ClientsDataBaseRepository.caReference.get()
+                Tasks.await(task)
+            }
+
+            val firebaseCount = firebaseSnapshot.childrenCount.toInt()
+
+            if (roomCount != firebaseCount || roomCount == 0) {
+                // Room and Firebase are out of sync, import from Firebase
+                importDeFireBaseAuRoom(repositoryScope)
+            } else {
+                // Data is in sync, load from Room for performance
+                loadDepuitRoom()
+            }
+        } catch (e: Exception) {
+            // If there's any error, default to loading from Room
+            loadDepuitRoom()
+        }
     }
 
     private fun onDataChangeListnerlatitudeEtlongitude() {
@@ -118,7 +146,7 @@ class BProto_ClientsDataBaseRepositoryImpl(
         }
     }
 
-    override fun importDeFireBaseAuRoom(viewModelScope: CoroutineScope) {
+    private fun importDeFireBaseAuRoom(viewModelScope: CoroutineScope) {
         try {
             progressRepo.value = 0f
             modelDatas.clear()
@@ -155,7 +183,7 @@ class BProto_ClientsDataBaseRepositoryImpl(
         }
     }
 
-    suspend fun loadDepuitRoom() {
+    private suspend fun loadDepuitRoom() {
         try {
             progressRepo.value = 0f
 
@@ -231,12 +259,6 @@ class BProto_ClientsDataBaseRepositoryImpl(
         }
 
         try {
-            isUpdating = true
-            progressRepo.value = 0f
-
-            val totalItems = datas.size
-            var processedItems = 0
-
             checkConnectivity()
 
             withContext(Dispatchers.IO) {
@@ -250,8 +272,6 @@ class BProto_ClientsDataBaseRepositoryImpl(
                 try {
                     BProto_ClientsDataBaseRepository.caReference.child(data.id.toString())
                         .setValue(data)
-                    processedItems++
-                    progressRepo.value = processedItems.toFloat() / totalItems.toFloat()
                 } catch (e: Exception) {
                     // Error handling
                 }
@@ -259,11 +279,8 @@ class BProto_ClientsDataBaseRepositoryImpl(
 
             modelDatas.clear()
             modelDatas.addAll(datas)
-            progressRepo.value = 1.0f
         } catch (e: Exception) {
-            progressRepo.value = 0f
         } finally {
-            isUpdating = false
         }
     }
 }
