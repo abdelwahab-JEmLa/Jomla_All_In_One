@@ -10,7 +10,6 @@ import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.ViewModel_App2FragID1
 import Z_MasterOfApps.Resources.XmlsFilesHandler.Companion.xmlResources
 import android.content.Context
-import android.util.Log
 import android.widget.LinearLayout
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -66,17 +65,12 @@ fun A_id1_ClientsLocationGps(
     onUpdateLongAppSetting: () -> Unit = {},
     onClear: () -> Unit = {},
 ) {
-    // Get the progress value from the repository
     val progress by viewModel.mainRepositery.progressRepo.collectAsState()
 
-    // Box wrapper to allow stacking the loading overlay
     Box(modifier = modifier.fillMaxSize()) {
-        // First check if loading is in progress
         if (progress < 1.0f) {
-            // Display loading overlay before anything else
             LoadingProgressOverlay(progress = progress)
         } else {
-            // Only show the map content when loading is complete
             MapContent(
                 viewModel = viewModel,
                 viewModelInitApp = viewModelInitApp,
@@ -96,7 +90,7 @@ private fun MapContent(
     onUpdateLongAppSetting: () -> Unit,
     onClear: () -> Unit
 ) {
-    
+
     val context = LocalContext.current
     val currentZoom by remember { mutableDoubleStateOf(18.2) }
     val mapView = remember { MapView(context) }
@@ -105,11 +99,9 @@ private fun MapContent(
     val showMarkerDetails by remember { mutableStateOf(true) }
     var currentFilterMode by remember { mutableStateOf<ViewModel_App2FragID1.VisbleClientsNow>(ViewModel_App2FragID1.VisbleClientsNow.affichePourCollecteurCommendes) }
 
-    // New state variables for marker editing mode
     var editingMarkerId by remember { mutableLongStateOf(0L) }
     var showEditMarkerMode by remember { mutableStateOf(false) }
 
-    // Initialize map position with current location
     LaunchedEffect(Unit) {
         val location = getCurrentLocation(context)
 
@@ -147,39 +139,22 @@ private fun MapContent(
     }
 
     val clientDataBaseSnapList = viewModel.bProto_ClientsDataBase
-    Log.d("MapContent", "Current clientDataBaseSnapList size inside composable: ${clientDataBaseSnapList.size}")
 
-// Add this right before the LaunchedEffect that updates markers
-    Log.d("MapContent", "Starting marker refresh with ${clientDataBaseSnapList.size} total clients, filtered mode: $currentFilterMode, selected client: $clientEnCourDeVent")
-
-// Replace the LaunchedEffect with this updated version
     LaunchedEffect(clientDataBaseSnapList.toList(), clientEnCourDeVent, currentFilterMode) {
-        // Log start of marker update process
-        Log.d("MapContent", "Refreshing markers - Current filter: $currentFilterMode")
-        Log.d("MapContent", "Current database size: ${clientDataBaseSnapList.size} clients")
-
-        // Close existing info windows
         val existingMarkers = mapView.overlays.filterIsInstance<Marker>()
-        Log.d("MapContent", "Existing markers count: ${existingMarkers.size}")
         existingMarkers.forEach { it.closeInfoWindow() }
 
-        // Remove existing markers that match client IDs
         val markersToRemove = mapView.overlays.filterIsInstance<Marker>()
             .filter { marker -> clientDataBaseSnapList.any { it.id.toString() == marker.id } }
-        Log.d("MapContent", "Markers to remove: ${markersToRemove.size}")
         mapView.overlays.removeAll(markersToRemove)
 
-        // Filter clients according to current mode
         val clientsToShow = when (currentFilterMode) {
             ViewModel_App2FragID1.VisbleClientsNow.showNonAbsentClientsOnly -> {
-                Log.d("MapContent", "Filter: showNonAbsentClientsOnly")
                 clientDataBaseSnapList.filter {
                     it.actuelleEtat != BProto_ClientsDataBase.DernierEtatAAffiche.CLIENT_ABSENT
                 }
             }
-            // Keep other filter cases as they are
             ViewModel_App2FragID1.VisbleClientsNow.affichePourCollecteurCommendes -> {
-                Log.d("MapContent", "Filter: affichePourCollecteurCommendes")
                 clientDataBaseSnapList.filter {
                     it.actuelleEtat == BProto_ClientsDataBase.DernierEtatAAffiche.Cible
                             || it.actuelleEtat == BProto_ClientsDataBase.DernierEtatAAffiche.CIBLE_PRIORITE_2
@@ -191,51 +166,31 @@ private fun MapContent(
                 }
             }
             ViewModel_App2FragID1.VisbleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 -> {
-                Log.d("MapContent", "Filter: showClientsOnlyAcEtateCIBLE_POUR_2")
                 clientDataBaseSnapList.filter {
                     it.actuelleEtat == BProto_ClientsDataBase.DernierEtatAAffiche.CIBLE_POUR_2
                 }
             }
             ViewModel_App2FragID1.VisbleClientsNow.showAtayClients -> {
-                Log.d("MapContent", "Filter: showAtayClients")
                 clientDataBaseSnapList.filter {
                     it.typeDeSonMagasine == BProto_ClientsDataBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT
                 }
             }
             ViewModel_App2FragID1.VisbleClientsNow.showAlimentionlients -> {
-                Log.d("MapContent", "Filter: showAlimentionlients")
                 clientDataBaseSnapList.filter {
                     it.typeDeSonMagasine == BProto_ClientsDataBase.TypeDeSonMagasine.AlIMENTATION_GENERALE
                 }
             }
             ViewModel_App2FragID1.VisbleClientsNow.showAll -> {
-                Log.d("MapContent", "Filter: showAll")
                 clientDataBaseSnapList
             }
         }
 
-        Log.d("MapContent", "Filtered clients count: ${clientsToShow.size}")
-
-        // Tracking successful marker additions
-        var markersAdded = 0
-        var markersWithErrors = 0
-
-        // Create and add new markers
         clientsToShow.forEach { client ->
             try {
                 val actuelleEtat =
                     if (client.id == clientEnCourDeVent)
                         BProto_ClientsDataBase.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT
                     else client.actuelleEtat
-
-                // Log marker creation details
-                Log.d("MapContent", "Creating marker for client ${client.id} - ${client.nom}")
-                Log.d("MapContent", "Position: lat=${client.latitude}, lon=${client.longitude}")
-
-                // Check for invalid coordinates
-                if (client.latitude == 0.0 && client.longitude == 0.0) {
-                    Log.w("MapContent", "Warning: Client ${client.id} has invalid coordinates (0,0)")
-                }
 
                 val marker = Marker(mapView).apply {
                     id = client.id.toString()
@@ -253,7 +208,6 @@ private fun MapContent(
                             .find { it.first == "marker_info_window" }?.second
 
                         if (markerInfoWindowLayout == null) {
-                            Log.e("MapContent", "Error: marker_info_window layout not found")
                             throw IllegalStateException("marker_info_window layout not found")
                         }
 
@@ -263,7 +217,6 @@ private fun MapContent(
                             .find { it.first == "info_window_container" }?.second
 
                         if (containerResourceId == null) {
-                            Log.e("MapContent", "Error: info_window_container ID not found")
                             throw IllegalStateException("info_window_container ID not found")
                         }
 
@@ -273,16 +226,11 @@ private fun MapContent(
                                 ContextCompat.getColor(context, statue.color)
                             } ?: ContextCompat.getColor(context, android.R.color.white)
                             it.setBackgroundColor(backgroundColor)
-                        } ?: run {
-                            Log.e("MapContent", "Error: Container view not found for marker ${client.id}")
                         }
                     } catch (e: Exception) {
-                        Log.e("MapContent", "Error setting up marker info window: ${e.message}")
-                        markersWithErrors++
                     }
 
                     setOnMarkerClickListener { clickedMarker, _ ->
-                        Log.d("MapContent", "Marker clicked: ${clickedMarker.id}")
                         selectedMarker = clickedMarker
                         showMarkerDialog = true
                         if (showMarkerDetails) clickedMarker.showInfoWindow()
@@ -290,29 +238,16 @@ private fun MapContent(
                     }
                 }
 
-                // Add marker and log success
                 mapView.overlays.add(marker)
-                markersAdded++
-                Log.d("MapContent", "Added marker for client ${client.id}")
 
-                // Show info window if needed
                 if (showMarkerDetails) {
                     marker.showInfoWindow()
                 }
             } catch (e: Exception) {
-                Log.e("MapContent", "Failed to create marker for client ${client.id}: ${e.message}")
-                e.printStackTrace()
-                markersWithErrors++
             }
         }
 
-        // Log summary of marker creation process
-        Log.d("MapContent", "Marker refresh complete. Added $markersAdded markers, $markersWithErrors errors")
-        Log.d("MapContent", "Total overlays on map: ${mapView.overlays.size}")
-
-        // Invalidate to refresh the map
         mapView.invalidate()
-        Log.d("MapContent", "Map view invalidated")
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -336,7 +271,6 @@ private fun MapContent(
                 onClear = onClear,
                 currentFilterMode = currentFilterMode,
                 onFilterMarkers = {
-                    // Fermer toutes les info-bulles avant de changer le filtre
                     mapView.overlays.filterIsInstance<Marker>().forEach { it.closeInfoWindow() }
 
                     currentFilterMode = when (currentFilterMode) {
@@ -351,14 +285,12 @@ private fun MapContent(
             )
         }
 
-        // Edit marker mode overlay
         if (showEditMarkerMode) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(Color.Black.copy(alpha = 0.5f))
             ) {
-                // Text notification at top
                 Text(
                     text = "Mode Édition de Marqueur",
                     color = Color.White,
@@ -372,7 +304,6 @@ private fun MapContent(
                         .padding(8.dp)
                 )
 
-                // Buttons at bottom
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -392,14 +323,12 @@ private fun MapContent(
 
                     FloatingActionButton(
                         onClick = {
-                            // Update the marker position
                             val clientToUpdate = clientDataBaseSnapList.find {
                                 it.id == editingMarkerId
                             }
 
                             clientToUpdate?.let { client ->
                                 val centerPoint = mapView.mapCenter
-                                // Create updated client with new location
                                 val updatedClient = BProto_ClientsDataBase().apply {
                                     id = client.id
                                     nom = client.nom
@@ -413,7 +342,6 @@ private fun MapContent(
                                     typeDeSonMagasine = client.typeDeSonMagasine
                                     clientTypeMode = client.clientTypeMode
 
-                                    // Update location
                                     latitude = centerPoint.latitude
                                     longitude = centerPoint.longitude
                                     title = client.title
@@ -424,7 +352,6 @@ private fun MapContent(
                                 viewModel.updateClient(updatedClient)
                             }
 
-                            // Clear editing mode
                             showEditMarkerMode = false
                             editingMarkerId = 0L
                         },
@@ -444,9 +371,7 @@ private fun MapContent(
                 onDismiss = { showMarkerDialog = false },
                 onUpdateLongAppSetting = onUpdateLongAppSetting,
                 onClickToEditeMarquerPosition = { clientId ->
-                    // Hide the marker dialog
                     showMarkerDialog = false
-                    // Enable edit marker mode
                     editingMarkerId = clientId
                     showEditMarkerMode = true
                 },
@@ -477,7 +402,6 @@ private fun LoadingProgressOverlay(
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.padding(16.dp)
         ) {
-            // Circular progress indicator
             CircularProgressIndicator(
                 progress = { progress },
                 modifier = Modifier.size(64.dp),
@@ -485,7 +409,6 @@ private fun LoadingProgressOverlay(
                 trackColor = MaterialTheme.colorScheme.surfaceVariant
             )
 
-            // Percentage text
             Text(
                 text = "${(progress * 100).toInt()}%",
                 style = MaterialTheme.typography.headlineMedium,
@@ -493,7 +416,6 @@ private fun LoadingProgressOverlay(
                 modifier = Modifier.padding(top = 16.dp)
             )
 
-            // Loading message
             Text(
                 text = "Chargement des données...",
                 style = MaterialTheme.typography.bodyLarge,
