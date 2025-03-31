@@ -10,7 +10,6 @@ interface BProto_ClientsDataBaseRepository {
     val progressRepo: MutableStateFlow<Float>
         get() = MutableStateFlow(0f)
 
-    fun checkConnectivity()
 
     fun addData(data: BProto_ClientsDataBase)
     fun updateData(data: BProto_ClientsDataBase? = null)

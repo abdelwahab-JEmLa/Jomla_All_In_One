@@ -26,14 +26,18 @@ class ViewModel_App2FragID1(
     val bProto_ClientsDataBase = mainRepositery.modelDatas
 
     var auClickeCaUpdateClientPar by mutableStateOf(TypeDeSonMagasine.ATAYAT_MOUKASSARAT)
-    var mapReloadTigger by mutableStateOf(0)   //<--
-    //TODO(1): cree log debug suit pk le relod ce refait plusieur foits
+    var mapReloadTigger by mutableStateOf(0)
+    // In ViewModel_App2FragID1.kt
 
     fun updateData(client: BProto_ClientsDataBase): Unit {
+        Log.d(TAG, "updateData called for client: ${client.id}, state: ${client.actuelleEtat?.name}, mapReloadTrigger before: $mapReloadTigger")
+
         viewModelScope.launch {
             mainRepositery.updateData(client)
         }
+
         mapReloadTigger++
+        Log.d(TAG, "mapReloadTrigger after increment: $mapReloadTigger")
     }
 
     fun onClickAddMarkerButton(mapView: MapView) {

@@ -3,6 +3,7 @@ package Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.Ap
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.BProto_ClientsDataBase
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.ViewModel_App2FragID1
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -195,6 +196,7 @@ fun MarkerStatusDialog(
 
                 val CLIENT_ABSENT =
                     BProto_ClientsDataBase.DernierEtatAAffiche.CLIENT_ABSENT
+
                 StatusButton(
                     text = CLIENT_ABSENT.nomArabe,
                     icon = Icons.Default.Person,
@@ -206,6 +208,7 @@ fun MarkerStatusDialog(
                     ),
                     onClick = {
                         coroutineScope.launch {
+                            Log.d("MarkerStatusDialog", "Setting client ${selectedMarker?.id} to state: CLIENT_ABSENT")
                             relatedClients?.actuelleEtat = CLIENT_ABSENT
                             viewModel.updateData(relatedClients!!)
                             onDismiss()
