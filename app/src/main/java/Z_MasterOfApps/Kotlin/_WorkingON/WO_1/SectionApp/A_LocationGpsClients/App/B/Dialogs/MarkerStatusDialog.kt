@@ -1,6 +1,5 @@
 package Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs
 
-import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.BProto_ClientsDataBase
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.ViewModel_App2FragID1
@@ -45,7 +44,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import org.osmdroid.views.overlay.Marker
 
 @Composable
@@ -152,10 +150,11 @@ fun MarkerStatusDialog(
                     }
                 }
 
-                Card (
-                    modifier = Modifier.clickable { showEditDialog = true }
+                Card(
+                    modifier = Modifier
+                        .clickable { showEditDialog = true }
                         .fillMaxWidth()
-                ){
+                ) {
                     Column {
                         Text(
                             text = selectedMarker.title ?: "Client",
@@ -208,7 +207,7 @@ fun MarkerStatusDialog(
                     onClick = {
                         coroutineScope.launch {
 
-                            relatedClients?.actuelleEtat=CLIENT_ABSENT
+                            relatedClients?.actuelleEtat = CLIENT_ABSENT
 
                             viewModel.updateDataTiggerreRelode(relatedClients!!)
 
@@ -233,7 +232,7 @@ fun MarkerStatusDialog(
                     onClick = {
                         coroutineScope.launch {
 
-                            relatedClients?.actuelleEtat=AVEC_MARCHANDISE
+                            relatedClients?.actuelleEtat = AVEC_MARCHANDISE
 
                             viewModel.updateDataTiggerreRelode(relatedClients!!)
 
@@ -259,7 +258,7 @@ fun MarkerStatusDialog(
                     onClick = {
                         coroutineScope.launch {
 
-                            relatedClients?.actuelleEtat=FERME
+                            relatedClients?.actuelleEtat = FERME
 
                             viewModel.updateDataTiggerreRelode(relatedClients!!)
 
@@ -284,7 +283,7 @@ fun MarkerStatusDialog(
                     onClick = {
                         coroutineScope.launch {
 
-                            relatedClients?.actuelleEtat=Cible
+                            relatedClients?.actuelleEtat = Cible
 
                             viewModel.updateDataTiggerreRelode(relatedClients!!)
 
@@ -308,7 +307,7 @@ fun MarkerStatusDialog(
                     onClick = {
                         coroutineScope.launch {
 
-                            relatedClients?.actuelleEtat=CIBLE_PRIORITE_2
+                            relatedClients?.actuelleEtat = CIBLE_PRIORITE_2
 
                             viewModel.updateDataTiggerreRelode(relatedClients!!)
 
@@ -333,7 +332,7 @@ fun MarkerStatusDialog(
                     onClick = {
                         coroutineScope.launch {
 
-                            relatedClients?.actuelleEtat=CIBLE_POUR_2
+                            relatedClients?.actuelleEtat = CIBLE_POUR_2
 
                             viewModel.updateDataTiggerreRelode(relatedClients!!)
 
@@ -358,7 +357,7 @@ fun MarkerStatusDialog(
                     onClick = {
                         coroutineScope.launch {
 
-                            relatedClients?.actuelleEtat=A_EVITE
+                            relatedClients?.actuelleEtat = A_EVITE
 
                             viewModel.updateDataTiggerreRelode(relatedClients!!)
 
@@ -457,12 +456,17 @@ fun MarkerStatusDialog(
                                 }
 
                             clientToDelete?.let { client ->
-                                B_ClientsDataBase.refClientsDataBase
-                                    .child(client.id.toString())
-                                    .removeValue()
-                                    .await()
+                                // Find and delete the corresponding BProto_ClientsDataBase object
+                                val relatedClient = viewModel.bProto_ClientsDataBase.find {
+                                    it.id == client.id
+                                }
 
-                                viewModelInitApp._modelAppsFather.clientDataBase.remove(client)
+                                // Delete the client from repository
+                                relatedClient?.let {
+                                    viewModel.deleteUnSeulData(it)
+                                }
+
+                                // Remove the marker from the map
                                 onRemoveMark(selectedMarker)
                                 onDismiss()
                             }

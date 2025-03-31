@@ -2,6 +2,7 @@ package Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.Ap
 
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.BProto_ClientsDataBase
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -16,6 +17,9 @@ interface BProto_ClientsDataBaselDao{
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(items: List<BProto_ClientsDataBase>)
+
+    @Delete
+    suspend fun delete(item: BProto_ClientsDataBase)
 
     @Query("DELETE FROM BProto_ClientsDataBase")
     suspend fun deleteAll()

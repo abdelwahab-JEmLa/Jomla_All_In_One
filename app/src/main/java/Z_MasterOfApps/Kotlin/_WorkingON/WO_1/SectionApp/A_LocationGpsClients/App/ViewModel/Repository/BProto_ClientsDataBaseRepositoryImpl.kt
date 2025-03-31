@@ -31,6 +31,30 @@ class BProto_ClientsDataBaseRepositoryImpl(
         FirebaseUtilsBProto_ClientsDataBaseNewProto.initializeFirebaseOfflineCapability()
     }
 
+    override fun deleteUnSeulData(data: BProto_ClientsDataBase) {
+        try {
+            // Remove from local model data
+            val recordIndex = modelDatas.indexOfFirst { it.id == data.id }
+            if (recordIndex != -1) {
+                Log.d(TAG, "deleteUnSeulData: Removing client ${data.id} at index $recordIndex from modelDatas")
+                modelDatas.removeAt(recordIndex)
+            } else {
+                Log.w(TAG, "deleteUnSeulData: Client ${data.id} not found in modelDatas")
+            }
+
+            // Remove from Firebase
+            Log.d(TAG, "deleteUnSeulData: Removing client ${data.id} from Firebase")
+            BProto_ClientsDataBaseRepository.caReference.child(data.id.toString()).removeValue()
+
+            // Remove from Room database
+            CoroutineScope(Dispatchers.IO).launch {
+                Log.d(TAG, "deleteUnSeulData: Removing client ${data.id} from Room database")
+                appDatabase.bProtoClientsDataBaseDao().delete(data)
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "deleteUnSeulData: Error deleting data for client ${data.id}", e)
+        }
+    }
     // In BProto_ClientsDataBaseRepositoryImpl.kt
     override fun importDeFireBaseAuRoom(viewModelScope: CoroutineScope) {
         try {

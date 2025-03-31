@@ -29,7 +29,11 @@ class ViewModel_App2FragID1(
 
     init {
         mainRepositery.loadDepuitRoom(viewModelScope)
-        // Add this right after loading clients from Room
+        Log.d(
+            "TAG",
+            "ViewModel init: After loadDepuitRoom, client count is ${mainRepositery.modelDatas.size}"
+        )
+
         Log.d("TAG", "Client states: ${mainRepositery.modelDatas.map { it.id to it.actuelleEtat }}")
     }
 
@@ -133,6 +137,10 @@ class ViewModel_App2FragID1(
             } catch (_: Exception) {
             }
         }
+    }
+
+    fun deleteUnSeulData(data: BProto_ClientsDataBase) {
+        mainRepositery.deleteUnSeulData(data)
     }
 
     enum class VisbleClientsNow(val icon: Any) {  // Changed from LottieJsonGetterR_Raw_Icons to Any

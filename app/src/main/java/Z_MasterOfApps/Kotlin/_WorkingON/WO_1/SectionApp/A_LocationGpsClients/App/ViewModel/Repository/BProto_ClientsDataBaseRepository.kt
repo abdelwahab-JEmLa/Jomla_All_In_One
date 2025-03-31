@@ -25,6 +25,8 @@ interface BProto_ClientsDataBaseRepository{
 
     fun loadDepuitRoom(viewModelScope: CoroutineScope)
 
+
+    fun deleteUnSeulData(data: BProto_ClientsDataBase)
 }
 
 

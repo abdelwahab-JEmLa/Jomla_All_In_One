@@ -147,6 +147,7 @@ private fun MapContent(
     }
 
     val clientDataBaseSnapList = viewModel.bProto_ClientsDataBase
+    Log.d("MapContent", "Current clientDataBaseSnapList size inside composable: ${clientDataBaseSnapList.size}")
 
 // Add this right before the LaunchedEffect that updates markers
     Log.d("MapContent", "Starting marker refresh with ${clientDataBaseSnapList.size} total clients, filtered mode: $currentFilterMode, selected client: $clientEnCourDeVent")
