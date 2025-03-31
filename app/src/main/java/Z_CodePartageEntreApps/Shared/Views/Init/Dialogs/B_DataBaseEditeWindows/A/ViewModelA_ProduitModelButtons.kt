@@ -28,42 +28,53 @@ import java.util.Locale
 class ViewModelA_ProduitModelButtons(
     private val a_ProduitModelRepository: A_ProduitModelRepository
 ) : ViewModel() {
+    val TAG = "ViewModelA_ProduitModelButtons"
     val a_ProduitModel = a_ProduitModelRepository.modelDatas
     var produitsAncienDataBaseMains: List<ProduitsAncienDataBaseMain> by mutableStateOf(emptyList())
-    private val backupTriggerRef = Firebase.database.getReference("Z_BackupsModels/A_ProduitModel/TiggersBakups")
-    private val backupBaseRef = Firebase.database.getReference("Z_BackupsModels/A_ProduitModel/Backup")
+    private val backupTriggerRef =
+        Firebase.database.getReference("Z_BackupsModels/A_ProduitModel/TiggersBakups")
+    private val backupBaseRef =
+        Firebase.database.getReference("Z_BackupsModels/A_ProduitModel/Backup0")
 
     // Added StateFlow for backup state
-    private val _backupState = MutableStateFlow(false)
+    private val _backupState = MutableStateFlow(true)
     val backupState: StateFlow<Boolean> = _backupState
 
     init {
         viewModelScope.launch {
-            setupBackupTriggerListener()
-            checkCurrentBackupState()
+            a_ProduitModelRepository.progressRepo.collect { progress ->
+                if (progress >= 1.0f) {
+                    viewModelScope.launch {
+                        checkCurrentBackupState()
+                        setupBackupTriggerListener()
+                    }
+                }
+            }
         }
+
     }
 
     // Added function to check the current backup state during initialization
     private suspend fun checkCurrentBackupState() {
-        _backupState.value = !checkIfBackupNeededForToday()
+        _backupState.value = checkIfBackupNeededForToday()
     }
 
-    private suspend fun implimentProduitsAncienDataBaseMains(): List<ProduitsAncienDataBaseMain> = withContext(Dispatchers.IO) {
-        return@withContext try {
-            Firebase.database
-                .getReference("e_DBJetPackExport")
-                .get()
-                .await()
-                .children
-                .mapNotNull {
-                    it.getValue(ProduitsAncienDataBaseMain::class.java)
-                }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error retrieving ancien produits: ${e.message}", e)
-            emptyList()
+    private suspend fun implimentProduitsAncienDataBaseMains(): List<ProduitsAncienDataBaseMain> =
+        withContext(Dispatchers.IO) {
+            return@withContext try {
+                Firebase.database
+                    .getReference("e_DBJetPackExport")
+                    .get()
+                    .await()
+                    .children
+                    .mapNotNull {
+                        it.getValue(ProduitsAncienDataBaseMain::class.java)
+                    }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error retrieving ancien produits: ${e.message}", e)
+                emptyList()
+            }
         }
-    }
 
     fun updateData(produit: A_ProduitModel) {
         a_ProduitModelRepository.updateData(produit)
@@ -86,14 +97,31 @@ class ViewModelA_ProduitModelButtons(
     private fun setupBackupTriggerListener() {
         backupTriggerRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val triggerValue = snapshot.getValue(Boolean::class.java) ?: false
+                // If value doesn't exist, default to true
+                val triggerValue = if (snapshot.exists()) {
+                    snapshot.getValue(Boolean::class.java) ?: true
+                } else {
+                    // No value exists, set it to true and return true
+                    backupTriggerRef.setValue(true)
+                    true
+                }
+
+                Log.d(TAG, "Backup trigger value: $triggerValue, exists: ${snapshot.exists()}")
+
                 if (triggerValue) {
                     viewModelScope.launch {
                         val shouldPerformBackup = checkIfBackupNeededForToday()
+                        Log.d(TAG, "Should perform backup check result: $shouldPerformBackup")
+
                         if (shouldPerformBackup) {
+                            Log.d(TAG, "Starting backup process...")
                             performBackup()
-                            _backupState.value = true // Update backup state after successful backup
+                            Log.d(TAG, "Backup process completed")
+                            _backupState.value = true
+                        } else {
+                            Log.d(TAG, "Backup skipped: not needed for today or already performed")
                         }
+
                         backupTriggerRef.setValue(false)
                     }
                 }

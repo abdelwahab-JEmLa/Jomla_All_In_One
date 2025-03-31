@@ -40,7 +40,7 @@ fun ButFun_3_toggleBackupTrigger(
 ) {
     var showConfirmationDialog by remember { mutableStateOf(false) }
     // Get the backup state from the ViewModel
-    val backupState by viewModel.backupState.collectAsState(initial = false)
+    val backupState by viewModel.backupState.collectAsState(initial = true)
 
     Card(
         modifier = Modifier
