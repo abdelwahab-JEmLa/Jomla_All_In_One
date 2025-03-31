@@ -61,6 +61,16 @@ fun A_ProduitModelButtons(
                     }
                 )
             }
+
+            item {
+                ButFun_3_toggleBackupTrigger(
+                    viewModel = viewModel,
+                    onProgressUpdate = { progress ->
+                        updateProgress = progress
+                    } ,
+                    nameFunciotn = "ButFun_3_toggleBackupTrigger()"
+                )
+            }
         }
     }
 }
