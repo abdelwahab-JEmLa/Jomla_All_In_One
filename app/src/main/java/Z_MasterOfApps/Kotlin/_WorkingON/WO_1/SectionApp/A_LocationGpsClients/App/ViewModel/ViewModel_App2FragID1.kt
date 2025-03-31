@@ -28,10 +28,11 @@ class ViewModel_App2FragID1(
     val bProto_ClientsDataBase = mainRepositery.modelDatas
 
     init {
-        mainRepositery.loadDepuitRoom(viewModelScope)
+        // Call importDeFireBaseAuRoom to ensure initial data is loaded
+        mainRepositery.importDeFireBaseAuRoom(viewModelScope)
         Log.d(
             "TAG",
-            "ViewModel init: After loadDepuitRoom, client count is ${mainRepositery.modelDatas.size}"
+            "ViewModel init: After importDeFireBaseAuRoom, client count is ${mainRepositery.modelDatas.size}"
         )
 
         Log.d("TAG", "Client states: ${mainRepositery.modelDatas.map { it.id to it.actuelleEtat }}")

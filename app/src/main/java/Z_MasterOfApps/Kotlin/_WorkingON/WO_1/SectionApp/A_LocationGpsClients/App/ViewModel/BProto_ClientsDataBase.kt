@@ -33,12 +33,12 @@ data class BProto_ClientsDataBase(
     var longitude: Double = 0.0,
     var title: String = "",
     var snippet: String = "",
-    var actuelleEtat: DernierEtatAAffiche = DernierEtatAAffiche.آNON_DEFINI
+    var actuelleEtat: DernierEtatAAffiche = DernierEtatAAffiche.NON_DEFINI
 ) {
     // Keep the enum classes as they are
     @IgnoreExtraProperties
     enum class DernierEtatAAffiche(val color: Int, val nomArabe: String) {
-        آNON_DEFINI(android.R.color.white, "غير محدد"),
+        NON_DEFINI(android.R.color.white, "غير محدد"),
         ON_MODE_COMMEND_ACTUELLEMENT(android.R.color.holo_green_light, "نشط / متصل"),
         VENDU_A_LUI(android.R.color.holo_purple, ""),
         Cible(android.R.color.holo_red_light, "Cible"),

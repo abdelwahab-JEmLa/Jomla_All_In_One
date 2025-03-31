@@ -8,6 +8,9 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.example.clientjetpack.Modules.AppDatabase
 import com.google.android.gms.tasks.Tasks
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,9 +29,51 @@ class BProto_ClientsDataBaseRepositoryImpl(
     internal var isUpdating = false
     internal var lastUpdateTimestamp = 0L
     var initialDataLoaded = false
+    private val repositoryScope = CoroutineScope(Dispatchers.IO)
 
     init {
         FirebaseUtilsBProto_ClientsDataBaseNewProto.initializeFirebaseOfflineCapability()
+        repositoryScope.launch {
+            loadDepuitRoom()
+        }
+        onDataChangeListnerlatitudeEtlongitude()
+    }
+
+    fun onDataChangeListnerlatitudeEtlongitude() {
+        BProto_ClientsDataBaseRepository.caReference.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (dataSnapshot in snapshot.children) {
+                    try {
+                        val clientData = dataSnapshot.getValue(BProto_ClientsDataBase::class.java)
+                        clientData?.let { newData ->
+                            // Find existing data in our local list
+                            val existingIndex = modelDatas.indexOfFirst { it.id == newData.id }
+                            if (existingIndex != -1) {
+                                val existingData = modelDatas[existingIndex]
+
+                                // Check if latitude or longitude has changed
+                                if (existingData.latitude != newData.latitude ||
+                                    existingData.longitude != newData.longitude) {
+
+                                    Log.d(TAG, "Location changed for client ${newData.id}: " +
+                                            "lat: ${existingData.latitude} -> ${newData.latitude}, " +
+                                            "long: ${existingData.longitude} -> ${newData.longitude}")
+
+                                    // Update the local data
+                                    updateData(newData)
+                                }
+                            }
+                        }
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Error tracking location changes", e)
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e(TAG, "Location tracking cancelled: ${error.message}")
+            }
+        })
     }
 
     override fun deleteUnSeulData(data: BProto_ClientsDataBase) {
@@ -55,7 +100,7 @@ class BProto_ClientsDataBaseRepositoryImpl(
             Log.e(TAG, "deleteUnSeulData: Error deleting data for client ${data.id}", e)
         }
     }
-    // In BProto_ClientsDataBaseRepositoryImpl.kt
+
     override fun importDeFireBaseAuRoom(viewModelScope: CoroutineScope) {
         try {
             Log.d(
@@ -117,17 +162,12 @@ class BProto_ClientsDataBaseRepositoryImpl(
         }
     }
 
-    // Dans BProto_ClientsDataBaseRepositoryImpl.kt
-    override fun loadDepuitRoom(viewModelScope: CoroutineScope) {
+    suspend fun loadDepuitRoom() {
         try {
             Log.d(TAG, "loadDepuitRoom: Started loading data, setting progressRepo to 0")
             progressRepo.value = 0f
 
-            // Ne pas vider modelDatas ici car cela pourrait causer
-            // des problèmes de synchronisation avec la composition
-            // modelDatas.clear() <- c'est probablement la source du problème
-
-            viewModelScope.launch(Dispatchers.IO) {
+            withContext(Dispatchers.IO) {
                 // Get all clients from Room database
                 Log.d(TAG, "loadDepuitRoom: Fetching clients from Room database")
                 val clientsList = appDatabase.bProtoClientsDataBaseDao().getAll()
@@ -150,46 +190,6 @@ class BProto_ClientsDataBaseRepositoryImpl(
             Log.e(TAG, "loadDepuitRoom: Error loading data from Room", e)
             progressRepo.value = 0f
             Log.d(TAG, "loadDepuitRoom: Reset progressRepo to 0 due to error")
-        }
-    }
-
-    private suspend fun loadDepuitFireStore() {
-        try {
-            Log.d(TAG, "loadDepuitFireStore: Started loading data, setting progressRepo to 0")
-            progressRepo.value = 0f
-            modelDatas.clear()
-
-            withContext(Dispatchers.IO) {
-                // Get data asynchronously
-                Log.d(TAG, "loadDepuitFireStore: Fetching data from Firebase")
-                val task = BProto_ClientsDataBaseRepository.caReference.get()
-                val snapshot = Tasks.await(task)
-                Log.d(
-                    TAG,
-                    "loadDepuitFireStore: Firebase returned ${snapshot.childrenCount} records"
-                )
-
-                for (dataSnapshot in snapshot.children) {
-                    try {
-                        val clientData = dataSnapshot.getValue(BProto_ClientsDataBase::class.java)
-                        clientData?.let {
-                            modelDatas.add(it)
-                        }
-                    } catch (e: Exception) {
-                        Log.e(TAG, "loadDepuitFireStore: Error parsing client data", e)
-                    }
-                }
-                Log.d(TAG, "loadDepuitFireStore: Parsed ${modelDatas.size} clients")
-            }
-
-            initialDataLoaded = true
-            Log.d(TAG, "loadDepuitFireStore: Setting progressRepo to 1.0")
-            progressRepo.value = 1.0f
-            Log.d(TAG, "loadDepuitFireStore: Current progressRepo value: ${progressRepo.value}")
-        } catch (e: Exception) {
-            Log.e(TAG, "loadDepuitFireStore: Error loading data from Firebase", e)
-            progressRepo.value = 0f
-            Log.d(TAG, "loadDepuitFireStore: Reset progressRepo to 0 due to error")
         }
     }
 

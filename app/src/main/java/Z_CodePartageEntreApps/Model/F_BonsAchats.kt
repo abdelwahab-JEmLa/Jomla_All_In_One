@@ -106,7 +106,7 @@ interface J_AppInstalleDonTelephoneRepository {
         get() = MutableStateFlow(0f)
 
     suspend fun onDataBaseChangeListnerAndLoad(): Pair<List<J_AppInstalleDonTelephone>, Flow<Float>>
-    suspend fun updateDatas(datas: SnapshotStateList<J_AppInstalleDonTelephone>)
+    suspend fun updateUnSeulData(datas: SnapshotStateList<J_AppInstalleDonTelephone>)
     fun updatePhones()
 
     companion object {
@@ -350,7 +350,7 @@ class J_AppInstalleDonTelephoneRepositoryImpl : J_AppInstalleDonTelephoneReposit
         }
     }
 
-    override suspend fun updateDatas(datas: SnapshotStateList<J_AppInstalleDonTelephone>) {
+    override suspend fun updateUnSeulData(datas: SnapshotStateList<J_AppInstalleDonTelephone>) {
         // Update local modelDatas with the new data
         modelDatas.clear()
         modelDatas.addAll(datas)
