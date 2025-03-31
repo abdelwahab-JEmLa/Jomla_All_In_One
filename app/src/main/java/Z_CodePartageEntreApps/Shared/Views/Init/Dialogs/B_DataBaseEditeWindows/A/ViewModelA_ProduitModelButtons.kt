@@ -18,7 +18,7 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
 class ViewModelA_ProduitModelButtons(
-    val a_ProduitModelRepository: A_ProduitModelRepository
+    private val a_ProduitModelRepository: A_ProduitModelRepository
 ) : ViewModel() {
     val a_ProduitModel = a_ProduitModelRepository.modelDatas
     var produitsAncienDataBaseMains: List<ProduitsAncienDataBaseMain> by mutableStateOf(emptyList())
@@ -29,7 +29,7 @@ class ViewModelA_ProduitModelButtons(
         }
     }
 
-    suspend fun implimentProduitsAncienDataBaseMains(): List<ProduitsAncienDataBaseMain> = withContext(Dispatchers.IO) {
+    private suspend fun implimentProduitsAncienDataBaseMains(): List<ProduitsAncienDataBaseMain> = withContext(Dispatchers.IO) {
         return@withContext try {
             Firebase.database
                 .getReference("e_DBJetPackExport")
@@ -52,5 +52,11 @@ class ViewModelA_ProduitModelButtons(
     suspend fun updateMultiDatas(a_Produitsl: SnapshotStateList<A_ProduitModel>) {
         a_ProduitModelRepository.updateDatas(a_Produitsl)
     }
+     //<--
+     //TODO(1): cree une fun qui add au fire base Z_BakupksModels /TiggersBakups/"A_ProduitModel" bolean
+     //au tiggere ca ce change son etate
+    //-->
+    //TODO(2): cre une autre fun si Z_BakupksModels /TiggersBakups/"A_ProduitModel = true
+
 
 }
