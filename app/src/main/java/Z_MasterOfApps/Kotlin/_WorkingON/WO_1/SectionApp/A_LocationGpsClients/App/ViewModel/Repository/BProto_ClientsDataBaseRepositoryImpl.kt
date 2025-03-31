@@ -2,7 +2,6 @@ package Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.Ap
 
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.BProto_ClientsDataBase
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.Repository.Extension.FirebaseUtilsBProto_ClientsDataBaseNewProto
-import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.example.clientjetpack.Modules.AppDatabase
@@ -29,89 +28,62 @@ class BProto_ClientsDataBaseRepositoryImpl(
     internal var lastUpdateTimestamp = 0L
     var initialDataLoaded = false
     private val repositoryScope = CoroutineScope(Dispatchers.IO)
-
-    // Keep track of our value event listener
     private var valueEventListener: ValueEventListener? = null
 
     init {
-        // Initialize Firebase capabilities, but avoid calling keepSynced directly here
-        // to prevent the "listen() called twice for same QuerySpec" error
         repositoryScope.launch {
             initializeRepository()
         }
     }
 
     private suspend fun initializeRepository() {
-        // Initialize Firebase offline capabilities first
         FirebaseUtilsBProto_ClientsDataBaseNewProto.initializeFirebaseOfflineCapability()
-
-        // Then check data consistency
         checkDataConsistency()
-
-        // Finally set up the listener
         setUpDataChangeListener()
     }
 
-    // Make this method safer
     private suspend fun loadDepuitRoom() {
         try {
             progressRepo.value = 0.2f
-
             withContext(Dispatchers.IO) {
                 val clientsList = appDatabase.bProtoClientsDataBaseDao().getAll()
-
                 withContext(Dispatchers.Main) {
-                    // Safely update the list
                     modelDatas.clear()
                     if (clientsList.isNotEmpty()) {
                         modelDatas.addAll(clientsList)
                     }
-
                     initialDataLoaded = true
                     progressRepo.value = 1.0f
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to load data from Room", e)
             progressRepo.value = 0f
         }
     }
 
     private suspend fun checkDataConsistency() {
         try {
-            // Get count from Room database
             val roomCount = withContext(Dispatchers.IO) {
                 appDatabase.bProtoClientsDataBaseDao().getCount()
             }
-
-            // Get count from Firebase
             val firebaseSnapshot = withContext(Dispatchers.IO) {
                 val task = BProto_ClientsDataBaseRepository.caReference.get()
                 Tasks.await(task)
             }
-
             val firebaseCount = firebaseSnapshot.childrenCount.toInt()
 
             if (roomCount != firebaseCount || roomCount == 0) {
-                // Room and Firebase are out of sync, import from Firebase
                 importDeFireBaseAuRoom(repositoryScope)
             } else {
-                // Data is in sync, load from Room for performance
                 loadDepuitRoom()
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error checking data consistency", e)
-            // If there's any error, default to loading from Room
             loadDepuitRoom()
         }
     }
 
-    // Renamed and refactored to clarify purpose
     private fun setUpDataChangeListener() {
-        // Remove any existing listener first to prevent duplicates
         removeDataChangeListener()
-
-        // Create and store a new listener
         valueEventListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 for (dataSnapshot in snapshot.children) {
@@ -120,19 +92,15 @@ class BProto_ClientsDataBaseRepositoryImpl(
                         clientData?.let { newData ->
                             val existingIndex = modelDatas.indexOfFirst { it.id == newData.id }
                             if (existingIndex != -1) {
-                                // Only update if data has actually changed
                                 val existingData = modelDatas[existingIndex]
                                 if (hasRelevantChanges(existingData, newData)) {
-                                    Log.d(TAG, "Firebase update for client ${newData.id}: Data changed, updating")
                                     repositoryScope.launch {
                                         updateData(newData)
                                     }
                                 } else {
-                                    Log.d(TAG, "Firebase update for client ${newData.id}: No relevant changes, skipping update")
                                 }
                             } else {
                                 // New client data not in our list
-                                Log.d(TAG, "New client data from Firebase: ${newData.id}")
                                 modelDatas.add(newData)
                                 repositoryScope.launch {
                                     appDatabase.bProtoClientsDataBaseDao().insert(newData)
@@ -140,32 +108,26 @@ class BProto_ClientsDataBaseRepositoryImpl(
                             }
                         }
                     } catch (e: Exception) {
-                        Log.e(TAG, "Error processing Firebase data update", e)
+                        // Error handling
                     }
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Log.e(TAG, "Firebase data listener cancelled", error.toException())
+                // Error handling
             }
         }
-
-        // Add the listener
         BProto_ClientsDataBaseRepository.caReference.addValueEventListener(valueEventListener!!)
-        Log.d(TAG, "Firebase data change listener set up")
     }
 
     private fun removeDataChangeListener() {
         valueEventListener?.let {
             BProto_ClientsDataBaseRepository.caReference.removeEventListener(it)
-            Log.d(TAG, "Removed existing Firebase data change listener")
         }
         valueEventListener = null
     }
 
-    // Helper method to determine if relevant data has changed
     private fun hasRelevantChanges(oldData: BProto_ClientsDataBase, newData: BProto_ClientsDataBase): Boolean {
-        // Check only fields that would require a map reload
         return oldData.latitude != newData.latitude ||
                 oldData.longitude != newData.longitude ||
                 oldData.actuelleEtat != newData.actuelleEtat ||
@@ -186,15 +148,13 @@ class BProto_ClientsDataBaseRepositoryImpl(
                 appDatabase.bProtoClientsDataBaseDao().delete(data)
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error deleting data", e)
+            // Error handling
         }
     }
 
     private fun importDeFireBaseAuRoom(viewModelScope: CoroutineScope) {
         try {
             progressRepo.value = 0f
-
-            // Clear modelDatas on the main thread to avoid concurrent modification
             viewModelScope.launch(Dispatchers.Main) {
                 modelDatas.clear()
             }
@@ -202,10 +162,7 @@ class BProto_ClientsDataBaseRepositoryImpl(
             viewModelScope.launch(Dispatchers.IO) {
                 val task = BProto_ClientsDataBaseRepository.caReference.get()
                 val snapshot = Tasks.await(task)
-
-                // First delete all existing records
                 appDatabase.bProtoClientsDataBaseDao().deleteAll()
-
                 val clientsList = mutableListOf<BProto_ClientsDataBase>()
 
                 for (dataSnapshot in snapshot.children) {
@@ -215,15 +172,12 @@ class BProto_ClientsDataBaseRepositoryImpl(
                             clientsList.add(it)
                         }
                     } catch (e: Exception) {
-                        Log.e(TAG, "Error processing data snapshot", e)
+                        // Error handling
                     }
                 }
 
-                // Batch insert all clients
                 if (clientsList.isNotEmpty()) {
                     appDatabase.bProtoClientsDataBaseDao().insertAll(clientsList)
-
-                    // Update the UI list on the main thread
                     withContext(Dispatchers.Main) {
                         modelDatas.addAll(clientsList)
                     }
@@ -233,40 +187,33 @@ class BProto_ClientsDataBaseRepositoryImpl(
                 progressRepo.value = 1.0f
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error importing data from Firebase to Room", e)
             progressRepo.value = 0f
         }
     }
 
     override fun addData(data: BProto_ClientsDataBase) {
         try {
-            // Update model list on main thread
             repositoryScope.launch(Dispatchers.Main) {
                 modelDatas.add(data)
             }
 
-            // Update Firebase and Room in background
             repositoryScope.launch(Dispatchers.IO) {
-                // Firebase update
                 try {
                     BProto_ClientsDataBaseRepository.caReference.child(data.id.toString()).setValue(data).await()
                 } catch (e: Exception) {
-                    Log.e(TAG, "Error updating Firebase for client ${data.id}", e)
+                    // Error handling
                 }
 
-                // Room update
                 try {
                     appDatabase.bProtoClientsDataBaseDao().insert(data)
                 } catch (e: Exception) {
-                    Log.e(TAG, "Error updating Room for client ${data.id}", e)
+                    // Error handling
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error adding data", e)
+            // Error handling
         }
     }
-
-
 
     override fun updateData(data: BProto_ClientsDataBase?) {
         if (data == null) {
@@ -282,13 +229,10 @@ class BProto_ClientsDataBaseRepositoryImpl(
 
         repositoryScope.launch(Dispatchers.IO) {
             try {
-                // Update Firebase
                 firebaseUpdateData(data)
-
-                // Update Room
                 appDatabase.bProtoClientsDataBaseDao().insert(data)
             } catch (e: Exception) {
-                Log.e(TAG, "Error updating data for client ${data.id}", e)
+                // Error handling
             }
         }
     }
@@ -297,53 +241,47 @@ class BProto_ClientsDataBaseRepositoryImpl(
         try {
             BProto_ClientsDataBaseRepository.caReference.child(data.id.toString()).setValue(data)
         } catch (e: Exception) {
-            Log.e(TAG, "Error updating Firebase data for client ${data.id}", e)
+            // Error handling
         }
     }
 
     override suspend fun updateDatas(datas: SnapshotStateList<BProto_ClientsDataBase>) {
         if (isUpdating) {
-            Log.d(TAG, "Already updating, skipping this update")
             return
         }
 
         isUpdating = true
 
         try {
-
             val datasList = datas.toList()
 
-            // Update Room database first
             withContext(Dispatchers.IO) {
                 appDatabase.bProtoClientsDataBaseDao().deleteAll()
                 appDatabase.bProtoClientsDataBaseDao().insertAll(datasList)
             }
 
-            // Update Firebase after database update
             withContext(Dispatchers.IO) {
                 datas.forEach { data ->
                     try {
                         BProto_ClientsDataBaseRepository.caReference.child(data.id.toString())
                             .setValue(data)
                     } catch (e: Exception) {
-                        Log.e(TAG, "Error updating Firebase for client ${data.id}", e)
+                        // Error handling
                     }
                 }
             }
 
-            // Update modelDatas on the main thread
             withContext(Dispatchers.Main) {
                 modelDatas.clear()
                 modelDatas.addAll(datas)
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error updating data batch", e)
+            // Error handling
         } finally {
             isUpdating = false
         }
     }
 
-    // This method is called when the ViewModel is cleared to clean up resources
     fun cleanup() {
         removeDataChangeListener()
     }
