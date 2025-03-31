@@ -92,7 +92,7 @@ fun ButtonModelB_Fun_1(
                         }
 
                         // Call importDeFireBaseAuRoom in the main coroutine
-                        viewModel.mainRepo.importDeFireBaseAuRoom()
+                        viewModel.importDeFireBaseAuRoom()
 
                         showConfirmationDialog = false
                     }

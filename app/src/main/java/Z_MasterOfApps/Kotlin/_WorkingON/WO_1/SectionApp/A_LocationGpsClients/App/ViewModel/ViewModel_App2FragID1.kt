@@ -5,6 +5,7 @@ import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.Repository.BProto_ClientsDataBaseRepository
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
 import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.Parent.AppSettingsSaverModel
+import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircleOutline
 import androidx.compose.runtime.getValue
@@ -24,7 +25,13 @@ import java.util.Date
 class ViewModel_App2FragID1(
     val mainRepositery: BProto_ClientsDataBaseRepository,
 ) : ViewModel() {
-    val bProto_ClientsDataBase= mainRepositery.modelDatas
+    val bProto_ClientsDataBase = mainRepositery.modelDatas
+
+    init {
+        mainRepositery.loadDepuitRoom(viewModelScope)
+        // Add this right after loading clients from Room
+        Log.d("TAG", "Client states: ${mainRepositery.modelDatas.map { it.id to it.actuelleEtat }}")
+    }
 
     fun updateClient(client: BProto_ClientsDataBase): Unit {
         mainRepositery.updateData(client)
@@ -42,11 +49,7 @@ class ViewModel_App2FragID1(
                 val updatedClient = BProto_ClientsDataBase().apply {
                     // Copy all properties from client
                     id = client.id
-
-                    // Section InfosBase
                     nom = client.nom
-
-                    // Section Etates Mutable
                     numTelephone = client.numTelephone
                     couleur = client.couleur
                     bonDuClientsSu = client.bonDuClientsSu
@@ -56,8 +59,6 @@ class ViewModel_App2FragID1(
                     auFilterFAB = client.auFilterFAB
                     typeDeSonMagasine = client.typeDeSonMagasine
                     clientTypeMode = client.clientTypeMode
-
-                    // Section GpsLocation
                     latitude = client.latitude
                     longitude = client.longitude
                     title = client.title

@@ -10,6 +10,7 @@ import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.ViewModel_App2FragID1
 import Z_MasterOfApps.Resources.XmlsFilesHandler.Companion.xmlResources
 import android.content.Context
+import android.util.Log
 import android.widget.LinearLayout
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -68,6 +69,34 @@ fun A_id1_ClientsLocationGps(
     // Get the progress value from the repository
     val progress by viewModel.mainRepositery.progressRepo.collectAsState()
 
+    // Box wrapper to allow stacking the loading overlay
+    Box(modifier = modifier.fillMaxSize()) {
+        // First check if loading is in progress
+        if (progress < 1.0f) {
+            // Display loading overlay before anything else
+            LoadingProgressOverlay(progress = progress)
+        } else {
+            // Only show the map content when loading is complete
+            MapContent(
+                viewModel = viewModel,
+                viewModelInitApp = viewModelInitApp,
+                clientEnCourDeVent = clientEnCourDeVent,
+                onUpdateLongAppSetting = onUpdateLongAppSetting,
+                onClear = onClear
+            )
+        }
+    }
+}
+
+@Composable
+private fun MapContent(
+    viewModel: ViewModel_App2FragID1,
+    viewModelInitApp: ViewModelInitApp,
+    clientEnCourDeVent: Long,
+    onUpdateLongAppSetting: () -> Unit,
+    onClear: () -> Unit
+) {
+    
     val context = LocalContext.current
     val currentZoom by remember { mutableDoubleStateOf(18.2) }
     val mapView = remember { MapView(context) }
@@ -119,24 +148,37 @@ fun A_id1_ClientsLocationGps(
 
     val clientDataBaseSnapList = viewModel.bProto_ClientsDataBase
 
-    LaunchedEffect(clientDataBaseSnapList.toList(), clientEnCourDeVent, currentFilterMode) {
-        // Masquer toutes les info-bulles existantes
-        mapView.overlays.filterIsInstance<Marker>().forEach { it.closeInfoWindow() }
+// Add this right before the LaunchedEffect that updates markers
+    Log.d("MapContent", "Starting marker refresh with ${clientDataBaseSnapList.size} total clients, filtered mode: $currentFilterMode, selected client: $clientEnCourDeVent")
 
-        // Supprimer les marqueurs existants
+// Replace the LaunchedEffect with this updated version
+    LaunchedEffect(clientDataBaseSnapList.toList(), clientEnCourDeVent, currentFilterMode) {
+        // Log start of marker update process
+        Log.d("MapContent", "Refreshing markers - Current filter: $currentFilterMode")
+        Log.d("MapContent", "Current database size: ${clientDataBaseSnapList.size} clients")
+
+        // Close existing info windows
+        val existingMarkers = mapView.overlays.filterIsInstance<Marker>()
+        Log.d("MapContent", "Existing markers count: ${existingMarkers.size}")
+        existingMarkers.forEach { it.closeInfoWindow() }
+
+        // Remove existing markers that match client IDs
         val markersToRemove = mapView.overlays.filterIsInstance<Marker>()
             .filter { marker -> clientDataBaseSnapList.any { it.id.toString() == marker.id } }
+        Log.d("MapContent", "Markers to remove: ${markersToRemove.size}")
         mapView.overlays.removeAll(markersToRemove)
 
-        // Filtrer les clients
+        // Filter clients according to current mode
         val clientsToShow = when (currentFilterMode) {
             ViewModel_App2FragID1.VisbleClientsNow.showNonAbsentClientsOnly -> {
+                Log.d("MapContent", "Filter: showNonAbsentClientsOnly")
                 clientDataBaseSnapList.filter {
                     it.actuelleEtat != BProto_ClientsDataBase.DernierEtatAAffiche.CLIENT_ABSENT
                 }
             }
-
+            // Keep other filter cases as they are
             ViewModel_App2FragID1.VisbleClientsNow.affichePourCollecteurCommendes -> {
+                Log.d("MapContent", "Filter: affichePourCollecteurCommendes")
                 clientDataBaseSnapList.filter {
                     it.actuelleEtat == BProto_ClientsDataBase.DernierEtatAAffiche.Cible
                             || it.actuelleEtat == BProto_ClientsDataBase.DernierEtatAAffiche.CIBLE_PRIORITE_2
@@ -147,86 +189,132 @@ fun A_id1_ClientsLocationGps(
                             || it.actuelleEtat == BProto_ClientsDataBase.DernierEtatAAffiche.CLIENT_ABSENT
                 }
             }
-
             ViewModel_App2FragID1.VisbleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 -> {
+                Log.d("MapContent", "Filter: showClientsOnlyAcEtateCIBLE_POUR_2")
                 clientDataBaseSnapList.filter {
                     it.actuelleEtat == BProto_ClientsDataBase.DernierEtatAAffiche.CIBLE_POUR_2
                 }
             }
-
             ViewModel_App2FragID1.VisbleClientsNow.showAtayClients -> {
+                Log.d("MapContent", "Filter: showAtayClients")
                 clientDataBaseSnapList.filter {
                     it.typeDeSonMagasine == BProto_ClientsDataBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT
                 }
             }
-
             ViewModel_App2FragID1.VisbleClientsNow.showAlimentionlients -> {
+                Log.d("MapContent", "Filter: showAlimentionlients")
                 clientDataBaseSnapList.filter {
                     it.typeDeSonMagasine == BProto_ClientsDataBase.TypeDeSonMagasine.AlIMENTATION_GENERALE
                 }
             }
-
             ViewModel_App2FragID1.VisbleClientsNow.showAll -> {
+                Log.d("MapContent", "Filter: showAll")
                 clientDataBaseSnapList
             }
         }
 
-        // Créer et ajouter les nouveaux marqueurs
+        Log.d("MapContent", "Filtered clients count: ${clientsToShow.size}")
+
+        // Tracking successful marker additions
+        var markersAdded = 0
+        var markersWithErrors = 0
+
+        // Create and add new markers
         clientsToShow.forEach { client ->
-            val actuelleEtat =
-                if (client.id == clientEnCourDeVent)
-                    BProto_ClientsDataBase.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT
-                else client.actuelleEtat
+            try {
+                val actuelleEtat =
+                    if (client.id == clientEnCourDeVent)
+                        BProto_ClientsDataBase.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT
+                    else client.actuelleEtat
 
-            val marker = Marker(mapView).apply {
-                id = client.id.toString()
-                position = GeoPoint(
-                    client.latitude.takeIf { it != 0.0 } ?: DEFAULT_LATITUDE,
-                    client.longitude
-                )
-                title = client.nom
-                snippet = if (client.cUnClientTemporaire)
-                    "Client temporaire" else "Client permanent"
-                setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                // Log marker creation details
+                Log.d("MapContent", "Creating marker for client ${client.id} - ${client.nom}")
+                Log.d("MapContent", "Position: lat=${client.latitude}, lon=${client.longitude}")
 
-                val markerInfoWindowLayout = xmlResources
-                    .find { it.first == "marker_info_window" }?.second
-                    ?: throw IllegalStateException("marker_info_window layout not found")
-
-                infoWindow = MarkerInfoWindow(markerInfoWindowLayout, mapView)
-
-                val containerResourceId = xmlResources
-                    .find { it.first == "info_window_container" }?.second
-                    ?: throw IllegalStateException("info_window_container ID not found")
-
-                val container = infoWindow.view.findViewById<LinearLayout>(containerResourceId)
-                container?.let {
-                    val backgroundColor = actuelleEtat?.let { statue ->
-                        ContextCompat.getColor(context, statue.color)
-                    } ?: ContextCompat.getColor(context, android.R.color.white)
-                    it.setBackgroundColor(backgroundColor)
+                // Check for invalid coordinates
+                if (client.latitude == 0.0 && client.longitude == 0.0) {
+                    Log.w("MapContent", "Warning: Client ${client.id} has invalid coordinates (0,0)")
                 }
 
-                setOnMarkerClickListener { clickedMarker, _ ->
-                    selectedMarker = clickedMarker
-                    showMarkerDialog = true
-                    if (showMarkerDetails) clickedMarker.showInfoWindow()
-                    true
+                val marker = Marker(mapView).apply {
+                    id = client.id.toString()
+                    position = GeoPoint(
+                        client.latitude.takeIf { it != 0.0 } ?: DEFAULT_LATITUDE,
+                        client.longitude
+                    )
+                    title = client.nom
+                    snippet = if (client.cUnClientTemporaire)
+                        "Client temporaire" else "Client permanent"
+                    setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+
+                    try {
+                        val markerInfoWindowLayout = xmlResources
+                            .find { it.first == "marker_info_window" }?.second
+
+                        if (markerInfoWindowLayout == null) {
+                            Log.e("MapContent", "Error: marker_info_window layout not found")
+                            throw IllegalStateException("marker_info_window layout not found")
+                        }
+
+                        infoWindow = MarkerInfoWindow(markerInfoWindowLayout, mapView)
+
+                        val containerResourceId = xmlResources
+                            .find { it.first == "info_window_container" }?.second
+
+                        if (containerResourceId == null) {
+                            Log.e("MapContent", "Error: info_window_container ID not found")
+                            throw IllegalStateException("info_window_container ID not found")
+                        }
+
+                        val container = infoWindow.view.findViewById<LinearLayout>(containerResourceId)
+                        container?.let {
+                            val backgroundColor = actuelleEtat?.let { statue ->
+                                ContextCompat.getColor(context, statue.color)
+                            } ?: ContextCompat.getColor(context, android.R.color.white)
+                            it.setBackgroundColor(backgroundColor)
+                        } ?: run {
+                            Log.e("MapContent", "Error: Container view not found for marker ${client.id}")
+                        }
+                    } catch (e: Exception) {
+                        Log.e("MapContent", "Error setting up marker info window: ${e.message}")
+                        markersWithErrors++
+                    }
+
+                    setOnMarkerClickListener { clickedMarker, _ ->
+                        Log.d("MapContent", "Marker clicked: ${clickedMarker.id}")
+                        selectedMarker = clickedMarker
+                        showMarkerDialog = true
+                        if (showMarkerDetails) clickedMarker.showInfoWindow()
+                        true
+                    }
                 }
-            }
 
-            mapView.overlays.add(marker)
+                // Add marker and log success
+                mapView.overlays.add(marker)
+                markersAdded++
+                Log.d("MapContent", "Added marker for client ${client.id}")
 
-            // Afficher l'info-bulle seulement si le marqueur est visible et showMarkerDetails est true
-            if (showMarkerDetails) {
-                marker.showInfoWindow()
+                // Show info window if needed
+                if (showMarkerDetails) {
+                    marker.showInfoWindow()
+                }
+            } catch (e: Exception) {
+                Log.e("MapContent", "Failed to create marker for client ${client.id}: ${e.message}")
+                e.printStackTrace()
+                markersWithErrors++
             }
         }
 
+        // Log summary of marker creation process
+        Log.d("MapContent", "Marker refresh complete. Added $markersAdded markers, $markersWithErrors errors")
+        Log.d("MapContent", "Total overlays on map: ${mapView.overlays.size}")
+
+        // Invalidate to refresh the map
         mapView.invalidate()
+        Log.d("MapContent", "Map view invalidated")
     }
 
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize()) {
         AndroidView(
             modifier = Modifier.fillMaxSize(),
             factory = { mapView }
@@ -369,9 +457,6 @@ fun A_id1_ClientsLocationGps(
                 }
             )
         }
-
-        // Add the loading overlay
-        LoadingProgressOverlay(progress = progress)
     }
 }
 
@@ -380,43 +465,40 @@ private fun LoadingProgressOverlay(
     progress: Float,
     modifier: Modifier = Modifier
 ) {
-    // Only show when progress is not 1.0f (not complete)
-    if (progress < 1.0f) {
-        Box(
-            modifier = modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.7f)),
-            contentAlignment = Alignment.Center
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.7f)),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.padding(16.dp)
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier.padding(16.dp)
-            ) {
-                // Circular progress indicator
-                CircularProgressIndicator(
-                    progress = { progress },
-                    modifier = Modifier.size(64.dp),
-                    color = MaterialTheme.colorScheme.primary,
-                    trackColor = MaterialTheme.colorScheme.surfaceVariant
-                )
+            // Circular progress indicator
+            CircularProgressIndicator(
+                progress = { progress },
+                modifier = Modifier.size(64.dp),
+                color = MaterialTheme.colorScheme.primary,
+                trackColor = MaterialTheme.colorScheme.surfaceVariant
+            )
 
-                // Percentage text
-                Text(
-                    text = "${(progress * 100).toInt()}%",
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = Color.White,
-                    modifier = Modifier.padding(top = 16.dp)
-                )
+            // Percentage text
+            Text(
+                text = "${(progress * 100).toInt()}%",
+                style = MaterialTheme.typography.headlineMedium,
+                color = Color.White,
+                modifier = Modifier.padding(top = 16.dp)
+            )
 
-                // Loading message
-                Text(
-                    text = "Chargement des données...",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = Color.White,
-                    modifier = Modifier.padding(top = 8.dp)
-                )
-            }
+            // Loading message
+            Text(
+                text = "Chargement des données...",
+                style = MaterialTheme.typography.bodyLarge,
+                color = Color.White,
+                modifier = Modifier.padding(top = 8.dp)
+            )
         }
     }
 }
