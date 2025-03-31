@@ -7,6 +7,7 @@ import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.Parent.AppSettingsSaverModel
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircleOutline
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -24,7 +25,7 @@ class ViewModel_App2FragID1(
     val bProto_ClientsDataBase = mainRepositery.modelDatas
 
     var auClickeCaUpdateClientPar by mutableStateOf(TypeDeSonMagasine.ATAYAT_MOUKASSARAT)
-    var mapReloadTigger by mutableStateOf(0)
+    var mapReloadTigger by mutableIntStateOf(0)
 
     fun updateData(client: BProto_ClientsDataBase): Unit {
         viewModelScope.launch {
