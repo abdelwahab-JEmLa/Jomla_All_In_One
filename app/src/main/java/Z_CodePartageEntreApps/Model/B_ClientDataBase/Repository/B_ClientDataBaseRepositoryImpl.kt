@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import java.util.concurrent.atomic.AtomicBoolean
 
 class B_ClientDataBaseRepositoryImpl(
     private val appDatabase: AppDatabase
@@ -24,11 +25,15 @@ class B_ClientDataBaseRepositoryImpl(
     override var modelDatas: SnapshotStateList<B_ClientDataBase> = mutableStateListOf()
     override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
 
-    internal var isUpdating = false
+    // Use AtomicBoolean for thread safety
+    private val isUpdating = AtomicBoolean(false)
+    private val isListenerActive = AtomicBoolean(false)
+
     internal var lastUpdateTimestamp = 0L
     var initialDataLoaded = false
     private val repositoryScope = CoroutineScope(Dispatchers.IO)
     private var valueEventListener: ValueEventListener? = null
+    private val listenerLock = Any()
 
     init {
         repositoryScope.launch {
@@ -37,9 +42,13 @@ class B_ClientDataBaseRepositoryImpl(
     }
 
     private suspend fun initializeRepository() {
-        FirebaseUtils_B_ClientDataBase.initializeFirebaseOfflineCapability()
-        checkDataConsistency()
-        setUpDataChangeListener()
+        try {
+            FirebaseUtils_B_ClientDataBase.initializeFirebaseOfflineCapability()
+            loadDepuitRoom() // Always load from Room first for faster UI response
+            checkDataConsistency() // Then check and update if necessary
+        } catch (e: Exception) {
+            // Log error
+        }
     }
 
     private suspend fun loadDepuitRoom() {
@@ -58,6 +67,7 @@ class B_ClientDataBaseRepositoryImpl(
             }
         } catch (e: Exception) {
             progressRepo.value = 0f
+            // Log error
         }
     }
 
@@ -74,57 +84,84 @@ class B_ClientDataBaseRepositoryImpl(
 
             if (roomCount != firebaseCount || roomCount == 0) {
                 importDeFireBaseAuRoom(repositoryScope)
-            } else {
-                loadDepuitRoom()
+            }
+
+            // Set up listener after data consistency check
+            withContext(Dispatchers.Main) {
+                setUpDataChangeListener()
             }
         } catch (e: Exception) {
-            loadDepuitRoom()
+            // Set up listener even if consistency check fails
+            withContext(Dispatchers.Main) {
+                setUpDataChangeListener()
+            }
+            // Log error
         }
     }
 
     private fun setUpDataChangeListener() {
-        removeDataChangeListener()
-        valueEventListener = object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                for (dataSnapshot in snapshot.children) {
-                    try {
-                        val clientData = dataSnapshot.getValue(B_ClientDataBase::class.java)
-                        clientData?.let { newData ->
-                            val existingIndex = modelDatas.indexOfFirst { it.id == newData.id }
-                            if (existingIndex != -1) {
-                                val existingData = modelDatas[existingIndex]
-                                if (hasRelevantChanges(existingData, newData)) {
-                                    repositoryScope.launch {
-                                        updateData(newData)
+        synchronized(listenerLock) {
+            // Always remove existing listener first
+            removeDataChangeListener()
+
+            // Only proceed if no active listener
+            if (!isListenerActive.get()) {
+                valueEventListener = object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        for (dataSnapshot in snapshot.children) {
+                            try {
+                                val clientData = dataSnapshot.getValue(B_ClientDataBase::class.java)
+                                clientData?.let { newData ->
+                                    val existingIndex = modelDatas.indexOfFirst { it.id == newData.id }
+                                    if (existingIndex != -1) {
+                                        val existingData = modelDatas[existingIndex]
+                                        if (hasRelevantChanges(existingData, newData)) {
+                                            repositoryScope.launch {
+                                                updateData(newData)
+                                            }
+                                        } else {
+                                            // No relevant changes
+                                        }
+                                    } else {
+                                        // New client data not in our list
+                                        repositoryScope.launch(Dispatchers.Main) {
+                                            modelDatas.add(newData)
+                                        }
+                                        repositoryScope.launch {
+                                            appDatabase.b_ClientDataBaseDao().insert(newData)
+                                        }
                                     }
-                                } else {
                                 }
-                            } else {
-                                // New client data not in our list
-                                modelDatas.add(newData)
-                                repositoryScope.launch {
-                                    appDatabase.b_ClientDataBaseDao().insert(newData)
-                                }
+                            } catch (e: Exception) {
+                                // Log error
                             }
                         }
-                    } catch (e: Exception) {
-                        // Error handling
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        // Log error
                     }
                 }
-            }
 
-            override fun onCancelled(error: DatabaseError) {
-                // Error handling
+                // Set flag before adding listener
+                isListenerActive.set(true)
+                B_ClientDataBaseRepository.caReference.addValueEventListener(valueEventListener!!)
             }
         }
-        B_ClientDataBaseRepository.caReference.addValueEventListener(valueEventListener!!)
     }
 
     private fun removeDataChangeListener() {
-        valueEventListener?.let {
-            B_ClientDataBaseRepository.caReference.removeEventListener(it)
+        synchronized(listenerLock) {
+            valueEventListener?.let {
+                try {
+                    B_ClientDataBaseRepository.caReference.removeEventListener(it)
+                } catch (e: Exception) {
+                    // Log error but continue
+                }
+            }
+            valueEventListener = null
+            isListenerActive.set(false)
         }
-        valueEventListener = null
     }
 
     private fun hasRelevantChanges(oldData: B_ClientDataBase, newData: B_ClientDataBase): Boolean {
@@ -137,18 +174,23 @@ class B_ClientDataBaseRepositoryImpl(
 
     override fun deleteUnSeulData(data: B_ClientDataBase) {
         try {
-            val recordIndex = modelDatas.indexOfFirst { it.id == data.id }
-            if (recordIndex != -1) {
-                modelDatas.removeAt(recordIndex)
+            repositoryScope.launch(Dispatchers.Main) {
+                val recordIndex = modelDatas.indexOfFirst { it.id == data.id }
+                if (recordIndex != -1) {
+                    modelDatas.removeAt(recordIndex)
+                }
             }
 
-            B_ClientDataBaseRepository.caReference.child(data.id.toString()).removeValue()
-
-            repositoryScope.launch {
-                appDatabase.b_ClientDataBaseDao().delete(data)
+            repositoryScope.launch(Dispatchers.IO) {
+                try {
+                    B_ClientDataBaseRepository.caReference.child(data.id.toString()).removeValue().await()
+                    appDatabase.b_ClientDataBaseDao().delete(data)
+                } catch (e: Exception) {
+                    // Log error
+                }
             }
         } catch (e: Exception) {
-            // Error handling
+            // Log error
         }
     }
 
@@ -160,34 +202,40 @@ class B_ClientDataBaseRepositoryImpl(
             }
 
             viewModelScope.launch(Dispatchers.IO) {
-                val task = B_ClientDataBaseRepository.caReference.get()
-                val snapshot = Tasks.await(task)
-                appDatabase.b_ClientDataBaseDao().deleteAll()
-                val clientsList = mutableListOf<B_ClientDataBase>()
+                try {
+                    val task = B_ClientDataBaseRepository.caReference.get()
+                    val snapshot = Tasks.await(task)
+                    appDatabase.b_ClientDataBaseDao().deleteAll()
+                    val clientsList = mutableListOf<B_ClientDataBase>()
 
-                for (dataSnapshot in snapshot.children) {
-                    try {
-                        val clientData = dataSnapshot.getValue(B_ClientDataBase::class.java)
-                        clientData?.let {
-                            clientsList.add(it)
+                    for (dataSnapshot in snapshot.children) {
+                        try {
+                            val clientData = dataSnapshot.getValue(B_ClientDataBase::class.java)
+                            clientData?.let {
+                                clientsList.add(it)
+                            }
+                        } catch (e: Exception) {
+                            // Log error
                         }
-                    } catch (e: Exception) {
-                        // Error handling
                     }
-                }
 
-                if (clientsList.isNotEmpty()) {
-                    appDatabase.b_ClientDataBaseDao().insertAll(clientsList)
-                    withContext(Dispatchers.Main) {
-                        modelDatas.addAll(clientsList)
+                    if (clientsList.isNotEmpty()) {
+                        appDatabase.b_ClientDataBaseDao().insertAll(clientsList)
+                        withContext(Dispatchers.Main) {
+                            modelDatas.addAll(clientsList)
+                        }
                     }
-                }
 
-                initialDataLoaded = true
-                progressRepo.value = 1.0f
+                    initialDataLoaded = true
+                    progressRepo.value = 1.0f
+                } catch (e: Exception) {
+                    // Log error and ensure progress is reset
+                    progressRepo.value = 0f
+                }
             }
         } catch (e: Exception) {
             progressRepo.value = 0f
+            // Log error
         }
     }
 
@@ -200,18 +248,13 @@ class B_ClientDataBaseRepositoryImpl(
             repositoryScope.launch(Dispatchers.IO) {
                 try {
                     B_ClientDataBaseRepository.caReference.child(data.id.toString()).setValue(data).await()
-                } catch (e: Exception) {
-                    // Error handling
-                }
-
-                try {
                     appDatabase.b_ClientDataBaseDao().insert(data)
                 } catch (e: Exception) {
-                    // Error handling
+                    // Log error
                 }
             }
         } catch (e: Exception) {
-            // Error handling
+            // Log error
         }
     }
 
@@ -232,57 +275,91 @@ class B_ClientDataBaseRepositoryImpl(
                 firebaseUpdateData(data)
                 appDatabase.b_ClientDataBaseDao().insert(data)
             } catch (e: Exception) {
-                // Error handling
+                // Log error
             }
         }
     }
 
-    private fun firebaseUpdateData(data: B_ClientDataBase) {
+    private suspend fun firebaseUpdateData(data: B_ClientDataBase) {
         try {
-            B_ClientDataBaseRepository.caReference.child(data.id.toString()).setValue(data)
+            B_ClientDataBaseRepository.caReference.child(data.id.toString()).setValue(data).await()
         } catch (e: Exception) {
-            // Error handling
+            // Log error
         }
     }
 
     override suspend fun updateDatas(datas: SnapshotStateList<B_ClientDataBase>) {
-        if (isUpdating) {
+        if (isUpdating.getAndSet(true)) {
             return
         }
-
-        isUpdating = true
 
         try {
             val datasList = datas.toList()
 
+            // First, handle Room database update
             withContext(Dispatchers.IO) {
-                appDatabase.b_ClientDataBaseDao().deleteAll()
-                appDatabase.b_ClientDataBaseDao().insertAll(datasList)
+                try {
+                    appDatabase.b_ClientDataBaseDao().deleteAll()
+                    appDatabase.b_ClientDataBaseDao().insertAll(datasList)
+                } catch (e: Exception) {
+                    // Log error but continue with Firebase updates
+                }
             }
 
+            // Then update Firebase (temporarily remove listener to avoid cycles)
             withContext(Dispatchers.IO) {
-                datas.forEach { data ->
-                    try {
+                val tempListener = valueEventListener
+
+                try {
+                    // Remove listener before batch updates
+                    synchronized(listenerLock) {
+                        valueEventListener?.let {
+                            B_ClientDataBaseRepository.caReference.removeEventListener(it)
+                        }
+                        valueEventListener = null
+                        isListenerActive.set(false)
+                    }
+
+                    // Update each record individually outside synchronized block
+                    for (data in datas) {
                         B_ClientDataBaseRepository.caReference.child(data.id.toString())
-                            .setValue(data)
-                    } catch (e: Exception) {
-                        // Error handling
+                            .setValue(data).await()
+                    }
+                } catch (e: Exception) {
+                    // Log error
+                } finally {
+                    // Restore listener
+                    synchronized(listenerLock) {
+                        // Only restore if not already set by another thread
+                        if (!isListenerActive.get() && tempListener != null) {
+                            valueEventListener = tempListener
+                            B_ClientDataBaseRepository.caReference.addValueEventListener(tempListener)
+                            isListenerActive.set(true)
+                        }
                     }
                 }
             }
 
+            // Finally update UI
             withContext(Dispatchers.Main) {
                 modelDatas.clear()
                 modelDatas.addAll(datas)
             }
         } catch (e: Exception) {
-            // Error handling
+            // Log error
         } finally {
-            isUpdating = false
+            isUpdating.set(false)
         }
     }
 
     fun cleanup() {
-        removeDataChangeListener()
+        repositoryScope.launch {
+            removeDataChangeListener()
+        }
+    }
+
+    // Called when the repository owner is destroyed
+    fun onDestroy() {
+        cleanup()
     }
 }
