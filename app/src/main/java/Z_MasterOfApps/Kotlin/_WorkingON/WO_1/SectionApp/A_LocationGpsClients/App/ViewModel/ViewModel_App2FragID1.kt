@@ -29,7 +29,7 @@ class ViewModel_App2FragID1(
 
     fun updateData(client: B_ClientDataBase): Unit {
         viewModelScope.launch {
-            mainRepositery.updateData(client)
+            mainRepositery.updateUnSeulData(client)
         }
 
         mapReloadTigger++

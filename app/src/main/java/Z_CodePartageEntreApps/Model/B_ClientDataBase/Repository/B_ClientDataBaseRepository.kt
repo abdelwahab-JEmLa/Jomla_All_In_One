@@ -12,8 +12,8 @@ interface B_ClientDataBaseRepository {
 
 
     fun addData(data: B_ClientDataBase)
-    fun updateData(data: B_ClientDataBase? = null)
-    suspend fun updateDatas(datas: SnapshotStateList<B_ClientDataBase>)
+    fun updateUnSeulData(data: B_ClientDataBase? = null)
+    suspend fun updateMultiDatas(datas: SnapshotStateList<B_ClientDataBase>)
 
     companion object {
         val caReference = firebaseDatabase.getReference("B_ClientsDataBase")

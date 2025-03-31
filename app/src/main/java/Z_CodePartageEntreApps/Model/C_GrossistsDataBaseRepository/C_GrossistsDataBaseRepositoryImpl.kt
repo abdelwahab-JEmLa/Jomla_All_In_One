@@ -54,7 +54,7 @@ class C_GrossistsDataBaseRepositoryImpl : C_GrossistsDataBaseRepository {
                 // Update Firebase database with the updated record
                 firebaseUpdateData(data)
             } catch (e: Exception) {
-                println("Firebase update failed in updateData: ${e.message}")
+                println("Firebase update failed in updateUnSeulData: ${e.message}")
             }
         }
     }

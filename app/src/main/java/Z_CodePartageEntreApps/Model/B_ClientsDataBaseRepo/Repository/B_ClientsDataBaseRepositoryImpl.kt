@@ -62,7 +62,7 @@ class B_ClientsDataBaseRepositoryImpl(
         )
     }
 
-    override fun updateData(data: B_ClientsDataBase?) {
+    override fun updateUnSeulData(data: B_ClientsDataBase?) {
         if (data == null) return
 
         val recordIndex = modelDatas.indexOfFirst { it.id == data.id }
@@ -91,7 +91,7 @@ class B_ClientsDataBaseRepositoryImpl(
         }
     }
 
-    override suspend fun updateDatas(datas: SnapshotStateList<B_ClientsDataBase>) {
+    override suspend fun updateMultiDatas(datas: SnapshotStateList<B_ClientsDataBase>) {
         if (isUpdating) return
 
         try {

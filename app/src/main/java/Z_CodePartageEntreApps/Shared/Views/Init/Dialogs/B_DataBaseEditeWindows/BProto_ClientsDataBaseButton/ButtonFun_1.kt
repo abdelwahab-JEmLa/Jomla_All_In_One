@@ -30,7 +30,7 @@ import org.koin.androidx.compose.koinViewModel
 
 
 @Composable
-fun ButtonModelB_Fun_1(
+fun ButFun_1_populateB_ClientDataBaseParSonAncien(
     viewModel: ViewModel_BProto_ClientsDataBase = koinViewModel(),
     onProgressUpdate: (Float) -> Unit,
     nameFunciotn: String
@@ -73,6 +73,7 @@ fun ButtonModelB_Fun_1(
                 Text(
                     text = """
                              $nameFunciotn
+                             
                     """.trimIndent(),
                     modifier = Modifier
                         .background(Color.Black.copy(alpha = 0.1f))
@@ -91,8 +92,7 @@ fun ButtonModelB_Fun_1(
                             }
                         }
 
-                        // Call importDeFireBaseAuRoom in the main coroutine
-                        viewModel.importDeFireBaseAuRoom()
+                        viewModel.populateB_ClientDataBaseParSonAncien()
 
                         showConfirmationDialog = false
                     }

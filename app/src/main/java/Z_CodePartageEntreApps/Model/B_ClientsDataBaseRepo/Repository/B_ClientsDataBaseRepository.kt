@@ -18,8 +18,8 @@ interface B_ClientsDataBaseRepository{
     fun restartDatabaseListener()
     fun stopDatabaseListener()
 
-    fun updateData(data: B_ClientsDataBase? = null,)
-    suspend fun updateDatas(datas: SnapshotStateList<B_ClientsDataBase>)
+    fun updateUnSeulData(data: B_ClientsDataBase? = null,)
+    suspend fun updateMultiDatas(datas: SnapshotStateList<B_ClientsDataBase>)
 
     companion object {
         val caReference = ref_HeadOfModels.child("B_ClientsDataBase")

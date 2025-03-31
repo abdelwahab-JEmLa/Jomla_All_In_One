@@ -117,7 +117,7 @@ class B_ClientDataBaseRepositoryImpl(
                                         val existingData = modelDatas[existingIndex]
                                         if (hasRelevantChanges(existingData, newData)) {
                                             repositoryScope.launch {
-                                                updateData(newData)
+                                                updateUnSeulData(newData)
                                             }
                                         } else {
                                             // No relevant changes
@@ -258,7 +258,7 @@ class B_ClientDataBaseRepositoryImpl(
         }
     }
 
-    override fun updateData(data: B_ClientDataBase?) {
+    override fun updateUnSeulData(data: B_ClientDataBase?) {
         if (data == null) {
             return
         }
@@ -288,7 +288,7 @@ class B_ClientDataBaseRepositoryImpl(
         }
     }
 
-    override suspend fun updateDatas(datas: SnapshotStateList<B_ClientDataBase>) {
+    override suspend fun updateMultiDatas(datas: SnapshotStateList<B_ClientDataBase>) {
         if (isUpdating.getAndSet(true)) {
             return
         }

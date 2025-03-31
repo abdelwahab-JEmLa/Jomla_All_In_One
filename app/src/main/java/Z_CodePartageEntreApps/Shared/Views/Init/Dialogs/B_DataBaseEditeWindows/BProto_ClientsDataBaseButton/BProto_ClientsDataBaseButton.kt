@@ -44,12 +44,12 @@ fun BProto_ClientsDataBaseButton(
     ) {
         LazyColumn {
             item {
-                ButtonModelB_Fun_1(
+                ButFun_1_populateB_ClientDataBaseParSonAncien(
                     viewModel = viewModel,
                     onProgressUpdate = { progress ->
                         updateProgress = progress
                     },
-                    nameFunciotn = "importDeFireBaseAuRoom()"
+                    nameFunciotn = "populateB_ClientDataBaseParSonAncien()"
                 )
             }
 
