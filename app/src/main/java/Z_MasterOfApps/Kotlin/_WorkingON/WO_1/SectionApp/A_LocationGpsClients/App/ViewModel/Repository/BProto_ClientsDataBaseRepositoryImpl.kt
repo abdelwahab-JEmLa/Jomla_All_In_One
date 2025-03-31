@@ -3,9 +3,9 @@ package Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.Ap
 import Z_CodePartageEntreApps.Modules.ConnectivityMonitorNewProto
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.BProto_ClientsDataBase
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.Repository.Extension.FirebaseUtilsBProto_ClientsDataBaseNewProto
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.runtime.toMutableStateList
 import com.example.clientjetpack.Modules.AppDatabase
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.database.DataSnapshot
@@ -37,6 +37,31 @@ class BProto_ClientsDataBaseRepositoryImpl(
             checkDataConsistency()
         }
         onDataChangeListnerlatitudeEtlongitude()
+    }
+
+    // Make this method safer
+    private suspend fun loadDepuitRoom() {
+        try {
+            progressRepo.value = 0.2f
+
+            withContext(Dispatchers.IO) {
+                val clientsList = appDatabase.bProtoClientsDataBaseDao().getAll()
+
+                withContext(Dispatchers.Main) {
+                    // Safely update the list
+                    modelDatas.clear()
+                    if (clientsList.isNotEmpty()) {
+                        modelDatas.addAll(clientsList)
+                    }
+
+                    initialDataLoaded = true
+                    progressRepo.value = 1.0f
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to load data from Room", e)
+            progressRepo.value = 0f
+        }
     }
 
     private suspend fun checkDataConsistency() {
@@ -78,7 +103,7 @@ class BProto_ClientsDataBaseRepositoryImpl(
                             val existingIndex = modelDatas.indexOfFirst { it.id == newData.id }
                             if (existingIndex != -1) {
                                 repositoryScope.launch {
-                                    updateDataTiggerreRelode(newData)
+                                    updateData(newData)
                                 }
                             }
                         }
@@ -94,40 +119,6 @@ class BProto_ClientsDataBaseRepositoryImpl(
         })
     }
 
-    override fun updateDataTiggerreRelode(client: BProto_ClientsDataBase) {
-        val currentList = modelDatas.toList()
-        val updatedClients = mutableStateListOf<BProto_ClientsDataBase>()
-
-        for (existingClient in currentList) {
-            if (existingClient.id == client.id) {
-                val updatedClient = BProto_ClientsDataBase().apply {
-                    id = client.id
-                    nom = client.nom
-                    numTelephone = client.numTelephone
-                    couleur = client.couleur
-                    bonDuClientsSu = client.bonDuClientsSu
-                    currentCreditBalance = client.currentCreditBalance
-                    positionDonClientsList = client.positionDonClientsList
-                    cUnClientTemporaire = client.cUnClientTemporaire
-                    auFilterFAB = client.auFilterFAB
-                    typeDeSonMagasine = client.typeDeSonMagasine
-                    clientTypeMode = client.clientTypeMode
-                    latitude = client.latitude
-                    longitude = client.longitude
-                    title = client.title
-                    snippet = client.snippet
-                    actuelleEtat = client.actuelleEtat
-                }
-                updatedClients.add(updatedClient)
-            } else {
-                updatedClients.add(existingClient)
-            }
-        }
-
-        repositoryScope.launch {
-            updateDatas(updatedClients.toMutableStateList())
-        }
-    }
 
     override fun deleteUnSeulData(data: BProto_ClientsDataBase) {
         try {
@@ -183,25 +174,6 @@ class BProto_ClientsDataBaseRepositoryImpl(
         }
     }
 
-    private suspend fun loadDepuitRoom() {
-        try {
-            progressRepo.value = 0f
-
-            withContext(Dispatchers.IO) {
-                val clientsList = appDatabase.bProtoClientsDataBaseDao().getAll()
-
-                withContext(Dispatchers.Main) {
-                    modelDatas.clear()
-                    modelDatas.addAll(clientsList)
-
-                    initialDataLoaded = true
-                    progressRepo.value = 1.0f
-                }
-            }
-        } catch (e: Exception) {
-            progressRepo.value = 0f
-        }
-    }
 
     override fun addData(data: BProto_ClientsDataBase) {
         modelDatas.add(data)
@@ -258,6 +230,8 @@ class BProto_ClientsDataBaseRepositoryImpl(
             return
         }
 
+        isUpdating = true
+
         try {
             checkConnectivity()
 
@@ -268,19 +242,27 @@ class BProto_ClientsDataBaseRepositoryImpl(
                 appDatabase.bProtoClientsDataBaseDao().insertAll(datasList)
             }
 
-            datas.forEach { data ->
-                try {
-                    BProto_ClientsDataBaseRepository.caReference.child(data.id.toString())
-                        .setValue(data)
-                } catch (e: Exception) {
-                    // Error handling
+            // Update Firebase after database update
+            withContext(Dispatchers.IO) {
+                datas.forEach { data ->
+                    try {
+                        BProto_ClientsDataBaseRepository.caReference.child(data.id.toString())
+                            .setValue(data)
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Error updating Firebase for client ${data.id}", e)
+                    }
                 }
             }
 
-            modelDatas.clear()
-            modelDatas.addAll(datas)
+            // Update modelDatas on the main thread
+            withContext(Dispatchers.Main) {
+                modelDatas.clear()
+                modelDatas.addAll(datas)
+            }
         } catch (e: Exception) {
+            Log.e(TAG, "Error updating data", e)
         } finally {
+            isUpdating = false
         }
     }
 }

@@ -140,7 +140,9 @@ private fun MapContent(
 
     val clientDataBaseSnapList = viewModel.bProto_ClientsDataBase
 
-    LaunchedEffect(clientDataBaseSnapList.toList(), clientEnCourDeVent, currentFilterMode) {
+    LaunchedEffect(clientDataBaseSnapList.toList(), clientEnCourDeVent, currentFilterMode,
+            viewModel.mapReloadTigger
+    ) {
         val existingMarkers = mapView.overlays.filterIsInstance<Marker>()
         existingMarkers.forEach { it.closeInfoWindow() }
 
@@ -243,7 +245,7 @@ private fun MapContent(
                 if (showMarkerDetails) {
                     marker.showInfoWindow()
                 }
-            } catch (e: Exception) {
+            } catch (_: Exception) {
             }
         }
 
@@ -349,7 +351,7 @@ private fun MapContent(
                                     actuelleEtat = client.actuelleEtat
                                 }
 
-                                viewModel.updateClient(updatedClient)
+                                viewModel.updateData(updatedClient)
                             }
 
                             showEditMarkerMode = false

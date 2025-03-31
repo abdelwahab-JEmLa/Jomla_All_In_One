@@ -1,10 +1,10 @@
 package Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel
 
-import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.BProto_ClientsDataBase.TypeDeSonMagasine
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.Repository.BProto_ClientsDataBaseRepository
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
 import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.Parent.AppSettingsSaverModel
+import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircleOutline
 import androidx.compose.runtime.getValue
@@ -22,49 +22,58 @@ import java.util.Date
 class ViewModel_App2FragID1(
     val mainRepositery: BProto_ClientsDataBaseRepository,
 ) : ViewModel() {
+    private val TAG = "ViewModel_App2FragID1"
     val bProto_ClientsDataBase = mainRepositery.modelDatas
 
-    fun updateClient(client: BProto_ClientsDataBase): Unit {
-        mainRepositery.updateData(client)
-    }
-
-    fun updateDataTiggerreRelode(client: BProto_ClientsDataBase): Unit {
-        viewModelScope.launch {
-            mainRepositery.updateDataTiggerreRelode(client)
-        }
-    }
-
     var auClickeCaUpdateClientPar by mutableStateOf(TypeDeSonMagasine.ATAYAT_MOUKASSARAT)
+    var mapReloadTigger by mutableStateOf(0)   //<--
+    //TODO(1): cree log debug suit pk le relod ce refait plusieur foits
 
-    fun onClickAddMarkerButton(
-        mapView: MapView,
-    ) {
+    fun updateData(client: BProto_ClientsDataBase): Unit {
+        viewModelScope.launch {
+            mainRepositery.updateData(client)
+        }
+        mapReloadTigger++
+    }
+
+    fun onClickAddMarkerButton(mapView: MapView) {
         val center = mapView.mapCenter
-        require(center.latitude != 0.0) { "Invalid latitude value" }
-
-        val newID = if (bProto_ClientsDataBase.isEmpty()) {
-            1L
-        } else {
-            bProto_ClientsDataBase.maxOf { it.id } + 1
-        }
-        val newnom = "ز.$newID"
-
-        val newClient = BProto_ClientsDataBase().apply {
-            nom = newnom
-            cUnClientTemporaire = true
-            typeDeSonMagasine = auClickeCaUpdateClientPar
-            latitude = center.latitude
-            longitude = center.longitude
-            title = newnom
-            snippet = "Client temporaire"
-            actuelleEtat = BProto_ClientsDataBase.DernierEtatAAffiche.CIBLE_PRIORITE_2
+        if (center.latitude == 0.0) {
+            Log.e(TAG, "Invalid latitude value")
+            return
         }
 
-        mainRepositery.addData(newClient)
+        try {
+            // Calculate new ID safely
+            val newID = if (bProto_ClientsDataBase.isEmpty()) {
+                1L
+            } else {
+                bProto_ClientsDataBase.maxOf { it.id } + 1
+            }
 
-        B_ClientsDataBase.refClientsDataBase
-            .child(newClient.id.toString())
-            .setValue(newClient)
+            val newnom = "ز.$newID"
+
+            val newClient = BProto_ClientsDataBase().apply {
+                id = newID
+                nom = newnom
+                cUnClientTemporaire = true
+                typeDeSonMagasine = auClickeCaUpdateClientPar
+                latitude = center.latitude
+                longitude = center.longitude
+                title = newnom
+                snippet = "Client temporaire"
+                actuelleEtat = BProto_ClientsDataBase.DernierEtatAAffiche.CIBLE_PRIORITE_2
+            }
+
+            Log.d(TAG, "Adding new client with ID: ${newClient.id}")
+
+            // Use viewModelScope to ensure proper threading
+            viewModelScope.launch {
+                mainRepositery.addData(newClient)
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error adding new marker", e)
+        }
     }
 
     fun updateLongAppSetting(
@@ -84,7 +93,8 @@ class ViewModel_App2FragID1(
                     .child(appSettingsSaverModel.id.toString())
                     .setValue(appSettingsSaverModel)
                     .await()
-            } catch (_: Exception) {
+            } catch (e: Exception) {
+                Log.e(TAG, "Error updating app setting", e)
             }
         }
     }

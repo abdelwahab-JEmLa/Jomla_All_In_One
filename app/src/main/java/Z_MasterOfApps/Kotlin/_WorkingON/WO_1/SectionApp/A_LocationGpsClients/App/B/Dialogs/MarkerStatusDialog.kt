@@ -136,7 +136,7 @@ fun MarkerStatusDialog(
                                 // Update the client's type mode
                                 relatedClients?.let { client ->
                                     client.clientTypeMode = clientTypeMode!!
-                                    viewModel.updateDataTiggerreRelode(client)
+                                    viewModel.updateData(client)
                                 }
                             }
                     ) {
@@ -206,11 +206,8 @@ fun MarkerStatusDialog(
                     ),
                     onClick = {
                         coroutineScope.launch {
-
                             relatedClients?.actuelleEtat = CLIENT_ABSENT
-
-                            viewModel.updateDataTiggerreRelode(relatedClients!!)
-
+                            viewModel.updateData(relatedClients!!)
                             onDismiss()
                         }
                     }
@@ -231,18 +228,14 @@ fun MarkerStatusDialog(
                     ),
                     onClick = {
                         coroutineScope.launch {
-
                             relatedClients?.actuelleEtat = AVEC_MARCHANDISE
-
-                            viewModel.updateDataTiggerreRelode(relatedClients!!)
-
+                            viewModel.updateData(relatedClients!!)
                             onDismiss()
                         }
                     }
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
-
 
                 val FERME =
                     BProto_ClientsDataBase.DernierEtatAAffiche.FERME
@@ -257,11 +250,8 @@ fun MarkerStatusDialog(
                     ),
                     onClick = {
                         coroutineScope.launch {
-
                             relatedClients?.actuelleEtat = FERME
-
-                            viewModel.updateDataTiggerreRelode(relatedClients!!)
-
+                            viewModel.updateData(relatedClients!!)
                             onDismiss()
                         }
                     }
@@ -269,8 +259,7 @@ fun MarkerStatusDialog(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                val Cible =
-                    BProto_ClientsDataBase.DernierEtatAAffiche.Cible
+                val Cible = BProto_ClientsDataBase.DernierEtatAAffiche.Cible
                 StatusButton(
                     text = Cible.nomArabe,
                     icon = Icons.Default.Person,
@@ -282,10 +271,8 @@ fun MarkerStatusDialog(
                     ),
                     onClick = {
                         coroutineScope.launch {
-
                             relatedClients?.actuelleEtat = Cible
-
-                            viewModel.updateDataTiggerreRelode(relatedClients!!)
+                            viewModel.updateData(relatedClients!!)
 
                             onDismiss()
                         }
@@ -309,7 +296,7 @@ fun MarkerStatusDialog(
 
                             relatedClients?.actuelleEtat = CIBLE_PRIORITE_2
 
-                            viewModel.updateDataTiggerreRelode(relatedClients!!)
+                            viewModel.updateData(relatedClients!!)
 
                             onDismiss()
                         }
@@ -334,7 +321,7 @@ fun MarkerStatusDialog(
 
                             relatedClients?.actuelleEtat = CIBLE_POUR_2
 
-                            viewModel.updateDataTiggerreRelode(relatedClients!!)
+                            viewModel.updateData(relatedClients!!)
 
                             onDismiss()
                         }
@@ -359,7 +346,7 @@ fun MarkerStatusDialog(
 
                             relatedClients?.actuelleEtat = A_EVITE
 
-                            viewModel.updateDataTiggerreRelode(relatedClients!!)
+                            viewModel.updateData(relatedClients!!)
 
                             onDismiss()
                         }
@@ -400,7 +387,7 @@ fun MarkerStatusDialog(
                                 numTelephone = editedPhone
                             }
 
-                            viewModel.updateDataTiggerreRelode(relatedClients!!)
+                            viewModel.updateData(relatedClients!!)
 
                             showEditDialog = false
                         }
