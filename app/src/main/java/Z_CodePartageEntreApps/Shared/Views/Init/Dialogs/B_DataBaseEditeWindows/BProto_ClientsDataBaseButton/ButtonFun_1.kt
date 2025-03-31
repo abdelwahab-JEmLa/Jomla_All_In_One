@@ -68,12 +68,72 @@ fun ButFun_1_populateB_ClientDataBaseParSonAncien(
     if (showConfirmationDialog) {
         AlertDialog(
             onDismissRequest = { showConfirmationDialog = false },
-            title = { Text("Confirmation") },
+            title = { Text(nameFunciotn) },
             text = {
                 Text(
                     text = """
                              $nameFunciotn
-                             
+                                 fun populateB_ClientDataBaseParSonAncien() {
+        viewModelScope.launch {
+            try {
+                // Get data from old database structure
+                val ancienDataList = getAncienDataBase()
+
+                if (ancienDataList.isEmpty()) {
+                    Log.d("ViewModel_BProto", "No ancien data found to migrate")
+                    return@launch
+                }
+
+                // Transform old data structure to new structure
+                val newDataList = ancienDataList.map { ancienData ->
+                    Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase(
+                        id = ancienData.id,
+                        nom = ancienData.nom,
+                        numTelephone = ancienData.statueDeBase.numTelephone,
+                        couleur = ancienData.statueDeBase.couleur,
+                        bonDuClientsSu = ancienData.statueDeBase.bonDuClientsSu,
+                        currentCreditBalance = ancienData.statueDeBase.currentCreditBalance,
+                        positionDonClientsList = ancienData.statueDeBase.positionDonClientsList,
+                        cUnClientTemporaire = ancienData.statueDeBase.cUnClientTemporaire,
+                        auFilterFAB = ancienData.statueDeBase.auFilterFAB,
+                        typeDeSonMagasine = when (ancienData.statueDeBase.typeDeSonMagasine) {
+                            B_ClientsDataBase.StatueDeBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT ->
+                                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT
+                            B_ClientsDataBase.StatueDeBase.TypeDeSonMagasine.AlIMENTATION_GENERALE ->
+                                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.TypeDeSonMagasine.AlIMENTATION_GENERALE
+                            else ->
+                                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT
+                        },
+                        clientTypeMode = when (ancienData.etatesMutable.clientTypeMode) {
+                            B_ClientsDataBase.EtatesMutable.ClientTypeMode.NEVEAU ->
+                                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.ClientTypeMode.NEVEAU
+                            B_ClientsDataBase.EtatesMutable.ClientTypeMode.ANCIEN ->
+                                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.ClientTypeMode.ANCIEN
+                            B_ClientsDataBase.EtatesMutable.ClientTypeMode.EVITE ->
+                                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.ClientTypeMode.EVITE
+                        },
+                        latitude = ancienData.gpsLocation.latitude,
+                        longitude = ancienData.gpsLocation.longitude,
+                        title = ancienData.gpsLocation.title,
+                        snippet = ancienData.gpsLocation.snippet,
+                        actuelleEtat = mapActuelleEtat(ancienData.gpsLocation.actuelleEtat)
+                    )
+                }
+
+                // Create a SnapshotStateList from the converted data
+                val snapshotList = androidx.compose.runtime.snapshots.SnapshotStateList<Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase>()
+                snapshotList.addAll(newDataList)
+
+                // Update repository with new data structure
+                mainRepo.updateMultiDatas(snapshotList)
+
+                Log.d("ViewModel_BProto", "Successfully migrated {newDataList.size} clients from ancien database")
+            } catch (e: Exception) {
+                Log.e("ViewModel_BProto", "Error migrating ancien database: {e.message}", e)
+            }
+        }
+    }
+
                     """.trimIndent(),
                     modifier = Modifier
                         .background(Color.Black.copy(alpha = 0.1f))
