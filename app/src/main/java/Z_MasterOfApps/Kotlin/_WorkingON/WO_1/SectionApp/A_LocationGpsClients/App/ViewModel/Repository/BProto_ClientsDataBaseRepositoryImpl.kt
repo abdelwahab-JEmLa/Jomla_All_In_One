@@ -6,6 +6,7 @@ import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.toMutableStateList
 import com.example.clientjetpack.Modules.AppDatabase
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.database.DataSnapshot
@@ -39,41 +40,108 @@ class BProto_ClientsDataBaseRepositoryImpl(
         onDataChangeListnerlatitudeEtlongitude()
     }
 
-    fun onDataChangeListnerlatitudeEtlongitude() {
-        BProto_ClientsDataBaseRepository.caReference.addValueEventListener(object : ValueEventListener {
+    private fun onDataChangeListnerlatitudeEtlongitude() {
+        BProto_ClientsDataBaseRepository.caReference.addValueEventListener(object :
+            ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 for (dataSnapshot in snapshot.children) {
                     try {
                         val clientData = dataSnapshot.getValue(BProto_ClientsDataBase::class.java)
                         clientData?.let { newData ->
                             // Find existing data in our local list
+                            // Find existing data in our local list
                             val existingIndex = modelDatas.indexOfFirst { it.id == newData.id }
                             if (existingIndex != -1) {
                                 val existingData = modelDatas[existingIndex]
 
-                                // Check if latitude or longitude has changed
-                                if (existingData.latitude != newData.latitude ||
-                                    existingData.longitude != newData.longitude) {
+                                // Use the new function to check if any client data has changed
+                                if (hasClientDataChanged(existingData, newData)) {
+                                    Log.d(TAG, "Data changed for client ${newData.id}")
 
-                                    Log.d(TAG, "Location changed for client ${newData.id}: " +
-                                            "lat: ${existingData.latitude} -> ${newData.latitude}, " +
-                                            "long: ${existingData.longitude} -> ${newData.longitude}")
-
-                                    // Update the local data
-                                    updateData(newData)
+                                    // Replace updateData with updateDataTiggerreRelode using repositoryScope
+                                    repositoryScope.launch {
+                                        updateDataTiggerreRelode(newData)
+                                    }
                                 }
                             }
                         }
                     } catch (e: Exception) {
-                        Log.e(TAG, "Error tracking location changes", e)
+                        Log.e(TAG, "Error tracking data changes", e)
                     }
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Log.e(TAG, "Location tracking cancelled: ${error.message}")
+                Log.e(TAG, "Data tracking cancelled: ${error.message}")
             }
         })
+    }
+
+    /**
+     * Compares two BProto_ClientsDataBase objects to check if any data has changed
+     * @param existingData The existing client data in the local database
+     * @param newData The new client data received from Firebase
+     * @return True if any field has changed, false if they are identical
+     */
+    private fun hasClientDataChanged(
+        existingData: BProto_ClientsDataBase,
+        newData: BProto_ClientsDataBase
+    ): Boolean {
+        return existingData.latitude != newData.latitude ||
+                existingData.longitude != newData.longitude ||
+                existingData.nom != newData.nom ||
+                existingData.numTelephone != newData.numTelephone ||
+                existingData.couleur != newData.couleur ||
+                existingData.bonDuClientsSu != newData.bonDuClientsSu ||
+                existingData.currentCreditBalance != newData.currentCreditBalance ||
+                existingData.positionDonClientsList != newData.positionDonClientsList ||
+                existingData.cUnClientTemporaire != newData.cUnClientTemporaire ||
+                existingData.auFilterFAB != newData.auFilterFAB ||
+                existingData.typeDeSonMagasine != newData.typeDeSonMagasine ||
+                existingData.clientTypeMode != newData.clientTypeMode ||
+                existingData.title != newData.title ||
+                existingData.snippet != newData.snippet ||
+                existingData.actuelleEtat != newData.actuelleEtat
+    }
+
+    fun updateDataTiggerreRelode(client: BProto_ClientsDataBase) {
+        // Create a new list instead of modifying while iterating
+        val currentList = modelDatas.toList()
+        val updatedClients = mutableStateListOf<BProto_ClientsDataBase>()
+
+        // Populate the new list with updated or existing clients
+        for (existingClient in currentList) {
+            if (existingClient.id == client.id) {
+                // Create a new client object with updated properties
+                val updatedClient = BProto_ClientsDataBase().apply {
+                    // Copy all properties from client
+                    id = client.id
+                    nom = client.nom
+                    numTelephone = client.numTelephone
+                    couleur = client.couleur
+                    bonDuClientsSu = client.bonDuClientsSu
+                    currentCreditBalance = client.currentCreditBalance
+                    positionDonClientsList = client.positionDonClientsList
+                    cUnClientTemporaire = client.cUnClientTemporaire
+                    auFilterFAB = client.auFilterFAB
+                    typeDeSonMagasine = client.typeDeSonMagasine
+                    clientTypeMode = client.clientTypeMode
+                    latitude = client.latitude
+                    longitude = client.longitude
+                    title = client.title
+                    snippet = client.snippet
+                    actuelleEtat = client.actuelleEtat
+                }
+                updatedClients.add(updatedClient)
+            } else {
+                updatedClients.add(existingClient)
+            }
+        }
+
+        // Use repositoryScope instead of viewModelScope
+        repositoryScope.launch {
+            updateDatas(updatedClients.toMutableStateList())
+        }
     }
 
     override fun deleteUnSeulData(data: BProto_ClientsDataBase) {
@@ -81,7 +149,10 @@ class BProto_ClientsDataBaseRepositoryImpl(
             // Remove from local model data
             val recordIndex = modelDatas.indexOfFirst { it.id == data.id }
             if (recordIndex != -1) {
-                Log.d(TAG, "deleteUnSeulData: Removing client ${data.id} at index $recordIndex from modelDatas")
+                Log.d(
+                    TAG,
+                    "deleteUnSeulData: Removing client ${data.id} at index $recordIndex from modelDatas"
+                )
                 modelDatas.removeAt(recordIndex)
             } else {
                 Log.w(TAG, "deleteUnSeulData: Client ${data.id} not found in modelDatas")
