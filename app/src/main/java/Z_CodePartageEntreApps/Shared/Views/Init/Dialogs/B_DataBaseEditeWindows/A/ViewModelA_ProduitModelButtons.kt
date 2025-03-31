@@ -16,6 +16,8 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.database
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
@@ -28,13 +30,23 @@ class ViewModelA_ProduitModelButtons(
 ) : ViewModel() {
     val a_ProduitModel = a_ProduitModelRepository.modelDatas
     var produitsAncienDataBaseMains: List<ProduitsAncienDataBaseMain> by mutableStateOf(emptyList())
-    private val backupTriggerRef = Firebase.database.getReference("Z_BakupksModels/A_ProduitModel/TiggersBakups")
-    private val backupBaseRef = Firebase.database.getReference("Z_BakupksModels/A_ProduitModel/Bakup")
+    private val backupTriggerRef = Firebase.database.getReference("Z_BackupsModels/A_ProduitModel/TiggersBakups")
+    private val backupBaseRef = Firebase.database.getReference("Z_BackupsModels/A_ProduitModel/Backup")
+
+    // Added StateFlow for backup state
+    private val _backupState = MutableStateFlow(false)
+    val backupState: StateFlow<Boolean> = _backupState
 
     init {
         viewModelScope.launch {
             setupBackupTriggerListener()
+            checkCurrentBackupState()
         }
+    }
+
+    // Added function to check the current backup state during initialization
+    private suspend fun checkCurrentBackupState() {
+        _backupState.value = !checkIfBackupNeededForToday()
     }
 
     private suspend fun implimentProduitsAncienDataBaseMains(): List<ProduitsAncienDataBaseMain> = withContext(Dispatchers.IO) {
@@ -66,6 +78,7 @@ class ViewModelA_ProduitModelButtons(
             try {
                 backupTriggerRef.setValue(triggerValue)
             } catch (e: Exception) {
+                Log.e(TAG, "Error toggling backup trigger: ${e.message}", e)
             }
         }
     }
@@ -79,6 +92,7 @@ class ViewModelA_ProduitModelButtons(
                         val shouldPerformBackup = checkIfBackupNeededForToday()
                         if (shouldPerformBackup) {
                             performBackup()
+                            _backupState.value = true // Update backup state after successful backup
                         }
                         backupTriggerRef.setValue(false)
                     }
@@ -86,6 +100,7 @@ class ViewModelA_ProduitModelButtons(
             }
 
             override fun onCancelled(error: DatabaseError) {
+                Log.e(TAG, "Backup trigger listener cancelled: ${error.message}")
             }
         })
     }
@@ -97,6 +112,7 @@ class ViewModelA_ProduitModelButtons(
             val snapshot = backupBaseRef.child(currentDate).get().await()
             return@withContext !snapshot.exists() || !snapshot.hasChildren()
         } catch (e: Exception) {
+            Log.e(TAG, "Error checking if backup needed: ${e.message}", e)
             return@withContext true
         }
     }
@@ -111,7 +127,9 @@ class ViewModelA_ProduitModelButtons(
                 produit.id.toString() to produitMap
             }.toMap()
             backupRef.setValue(dataToBackup).await()
+            Log.d(TAG, "Backup completed successfully for $currentDate")
         } catch (e: Exception) {
+            Log.e(TAG, "Error performing backup: ${e.message}", e)
         }
     }
 
