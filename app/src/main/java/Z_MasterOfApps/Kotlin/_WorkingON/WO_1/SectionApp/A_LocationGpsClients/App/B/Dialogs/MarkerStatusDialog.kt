@@ -1,7 +1,7 @@
 package Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs
 
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.BProto_ClientsDataBase
+import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.ViewModel_App2FragID1
 import android.util.Log
 import androidx.compose.foundation.background
@@ -128,10 +128,10 @@ fun MarkerStatusDialog(
                             .padding(end = 8.dp)
                             .clickable {
                                 clientTypeMode = when (clientTypeMode) {
-                                    BProto_ClientsDataBase.ClientTypeMode.ANCIEN -> BProto_ClientsDataBase.ClientTypeMode.NEVEAU
-                                    BProto_ClientsDataBase.ClientTypeMode.NEVEAU -> BProto_ClientsDataBase.ClientTypeMode.EVITE
-                                    BProto_ClientsDataBase.ClientTypeMode.EVITE -> BProto_ClientsDataBase.ClientTypeMode.ANCIEN
-                                    null -> BProto_ClientsDataBase.ClientTypeMode.NEVEAU
+                                    B_ClientDataBase.ClientTypeMode.ANCIEN -> B_ClientDataBase.ClientTypeMode.NEVEAU
+                                    B_ClientDataBase.ClientTypeMode.NEVEAU -> B_ClientDataBase.ClientTypeMode.EVITE
+                                    B_ClientDataBase.ClientTypeMode.EVITE -> B_ClientDataBase.ClientTypeMode.ANCIEN
+                                    null -> B_ClientDataBase.ClientTypeMode.NEVEAU
                                 }
 
                                 // Update the client's type mode
@@ -181,7 +181,7 @@ fun MarkerStatusDialog(
                     color = Color(
                         ContextCompat.getColor(
                             context,
-                            BProto_ClientsDataBase.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT.color
+                            B_ClientDataBase.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT.color
                         )
                     ),
                     onClick = {
@@ -195,7 +195,7 @@ fun MarkerStatusDialog(
                 )
 
                 val CLIENT_ABSENT =
-                    BProto_ClientsDataBase.DernierEtatAAffiche.CLIENT_ABSENT
+                    B_ClientDataBase.DernierEtatAAffiche.CLIENT_ABSENT
 
                 StatusButton(
                     text = CLIENT_ABSENT.nomArabe,
@@ -219,7 +219,7 @@ fun MarkerStatusDialog(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 val AVEC_MARCHANDISE =
-                    BProto_ClientsDataBase.DernierEtatAAffiche.AVEC_MARCHANDISE
+                    B_ClientDataBase.DernierEtatAAffiche.AVEC_MARCHANDISE
                 StatusButton(
                     text = AVEC_MARCHANDISE.nomArabe,
                     icon = Icons.Default.Person,
@@ -241,7 +241,7 @@ fun MarkerStatusDialog(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 val FERME =
-                    BProto_ClientsDataBase.DernierEtatAAffiche.FERME
+                    B_ClientDataBase.DernierEtatAAffiche.FERME
                 StatusButton(
                     text = FERME.nomArabe,
                     icon = Icons.Default.Person,
@@ -262,7 +262,7 @@ fun MarkerStatusDialog(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                val Cible = BProto_ClientsDataBase.DernierEtatAAffiche.Cible
+                val Cible = B_ClientDataBase.DernierEtatAAffiche.Cible
                 StatusButton(
                     text = Cible.nomArabe,
                     icon = Icons.Default.Person,
@@ -283,7 +283,7 @@ fun MarkerStatusDialog(
                 )
 
                 val CIBLE_PRIORITE_2 =
-                    BProto_ClientsDataBase.DernierEtatAAffiche.CIBLE_PRIORITE_2
+                    B_ClientDataBase.DernierEtatAAffiche.CIBLE_PRIORITE_2
 
                 StatusButton(
                     text = CIBLE_PRIORITE_2.nomArabe,
@@ -308,7 +308,7 @@ fun MarkerStatusDialog(
 
 
                 val CIBLE_POUR_2 =
-                    BProto_ClientsDataBase.DernierEtatAAffiche.CIBLE_POUR_2
+                    B_ClientDataBase.DernierEtatAAffiche.CIBLE_POUR_2
 
                 StatusButton(
                     text = CIBLE_POUR_2.nomArabe,
@@ -333,7 +333,7 @@ fun MarkerStatusDialog(
 
 
                 val A_EVITE =
-                    BProto_ClientsDataBase.DernierEtatAAffiche.A_EVITE
+                    B_ClientDataBase.DernierEtatAAffiche.A_EVITE
 
                 StatusButton(
                     text = A_EVITE.nomArabe,
@@ -446,7 +446,7 @@ fun MarkerStatusDialog(
                                 }
 
                             clientToDelete?.let { client ->
-                                // Find and delete the corresponding BProto_ClientsDataBase object
+                                // Find and delete the corresponding B_ClientDataBase object
                                 val relatedClient = viewModel.bProto_ClientsDataBase.find {
                                     it.id == client.id
                                 }

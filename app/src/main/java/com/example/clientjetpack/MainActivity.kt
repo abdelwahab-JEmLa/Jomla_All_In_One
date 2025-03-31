@@ -3,7 +3,7 @@ package com.example.clientjetpack
 import P0_MainScreen.Main.MainScreen
 import P6_AiGroupeForSupplier.GenerativeAiViewModel
 import Z_MasterOfApps.Kotlin.ViewModel.Init.B_Load.initializeFirebase
-import Z_MasterOfApps.Z.Android.Main.Utils.PermissionHandler
+import Z_MasterOfApps.Z.Android.A_MainActivityApp.Start.Modules.PermissionHandler
 import android.app.Application
 import android.content.Context
 import android.os.Build
@@ -21,7 +21,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.clientjetpack.Modules.AppDatabase
+import Z_MasterOfApps.Z.Android.A_MainActivityApp.Start.Modules.AppDatabase
+import Z_MasterOfApps.Z.Android.A_MainActivityApp.Start.appModule
 import com.example.clientjetpack.ui.theme.ClientJetPackTheme
 import com.google.firebase.FirebaseApp
 import org.koin.android.ext.koin.androidContext

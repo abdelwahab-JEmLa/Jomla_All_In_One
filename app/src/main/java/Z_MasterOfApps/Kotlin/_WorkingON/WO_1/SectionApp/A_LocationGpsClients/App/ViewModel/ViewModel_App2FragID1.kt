@@ -1,7 +1,7 @@
 package Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel
 
-import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.BProto_ClientsDataBase.TypeDeSonMagasine
-import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.Repository.BProto_ClientsDataBaseRepository
+import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
+import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.B_ClientDataBaseRepository
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
 import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.Parent.AppSettingsSaverModel
 import androidx.compose.material.icons.Icons
@@ -20,14 +20,14 @@ import org.osmdroid.views.MapView
 import java.util.Date
 
 class ViewModel_App2FragID1(
-    val mainRepositery: BProto_ClientsDataBaseRepository,
+    val mainRepositery: B_ClientDataBaseRepository,
 ) : ViewModel() {
     val bProto_ClientsDataBase = mainRepositery.modelDatas
 
-    var auClickeCaUpdateClientPar by mutableStateOf(TypeDeSonMagasine.ATAYAT_MOUKASSARAT)
+    var auClickeCaUpdateClientPar by mutableStateOf(B_ClientDataBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT)
     var mapReloadTigger by mutableIntStateOf(0)
 
-    fun updateData(client: BProto_ClientsDataBase): Unit {
+    fun updateData(client: B_ClientDataBase): Unit {
         viewModelScope.launch {
             mainRepositery.updateData(client)
         }
@@ -50,7 +50,7 @@ class ViewModel_App2FragID1(
 
             val newnom = "ز.$newID"
 
-            val newClient = BProto_ClientsDataBase().apply {
+            val newClient = B_ClientDataBase().apply {
                 id = newID
                 nom = newnom
                 cUnClientTemporaire = true
@@ -59,7 +59,7 @@ class ViewModel_App2FragID1(
                 longitude = center.longitude
                 title = newnom
                 snippet = "Client temporaire"
-                actuelleEtat = BProto_ClientsDataBase.DernierEtatAAffiche.CIBLE_PRIORITE_2
+                actuelleEtat = B_ClientDataBase.DernierEtatAAffiche.CIBLE_PRIORITE_2
             }
 
             viewModelScope.launch {
@@ -93,7 +93,7 @@ class ViewModel_App2FragID1(
         }
     }
 
-    fun deleteUnSeulData(data: BProto_ClientsDataBase) {
+    fun deleteUnSeulData(data: B_ClientDataBase) {
         mainRepositery.deleteUnSeulData(data)
     }
 

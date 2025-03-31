@@ -6,7 +6,7 @@ import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs.Utils.DEFAULT_LATITUDE
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs.Utils.DEFAULT_LONGITUDE
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs.Utils.getCurrentLocation
-import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.BProto_ClientsDataBase
+import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.ViewModel_App2FragID1
 import Z_MasterOfApps.Resources.XmlsFilesHandler.Companion.xmlResources
 import android.content.Context
@@ -153,33 +153,33 @@ private fun MapContent(
         val clientsToShow = when (currentFilterMode) {
             ViewModel_App2FragID1.VisbleClientsNow.showNonAbsentClientsOnly -> {
                 clientDataBaseSnapList.filter {
-                    it.actuelleEtat != BProto_ClientsDataBase.DernierEtatAAffiche.CLIENT_ABSENT
+                    it.actuelleEtat != B_ClientDataBase.DernierEtatAAffiche.CLIENT_ABSENT
                 }
             }
             ViewModel_App2FragID1.VisbleClientsNow.affichePourCollecteurCommendes -> {
                 clientDataBaseSnapList.filter {
-                    it.actuelleEtat == BProto_ClientsDataBase.DernierEtatAAffiche.Cible
-                            || it.actuelleEtat == BProto_ClientsDataBase.DernierEtatAAffiche.CIBLE_PRIORITE_2
-                            || it.actuelleEtat == BProto_ClientsDataBase.DernierEtatAAffiche.VENDU_A_LUI
-                            || it.actuelleEtat == BProto_ClientsDataBase.DernierEtatAAffiche.FERME
-                            || it.actuelleEtat == BProto_ClientsDataBase.DernierEtatAAffiche.A_EVITE
-                            || it.actuelleEtat == BProto_ClientsDataBase.DernierEtatAAffiche.AVEC_MARCHANDISE
-                            || it.actuelleEtat == BProto_ClientsDataBase.DernierEtatAAffiche.CLIENT_ABSENT
+                    it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.Cible
+                            || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.CIBLE_PRIORITE_2
+                            || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.VENDU_A_LUI
+                            || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.FERME
+                            || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.A_EVITE
+                            || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.AVEC_MARCHANDISE
+                            || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.CLIENT_ABSENT
                 }
             }
             ViewModel_App2FragID1.VisbleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 -> {
                 clientDataBaseSnapList.filter {
-                    it.actuelleEtat == BProto_ClientsDataBase.DernierEtatAAffiche.CIBLE_POUR_2
+                    it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.CIBLE_POUR_2
                 }
             }
             ViewModel_App2FragID1.VisbleClientsNow.showAtayClients -> {
                 clientDataBaseSnapList.filter {
-                    it.typeDeSonMagasine == BProto_ClientsDataBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT
+                    it.typeDeSonMagasine == B_ClientDataBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT
                 }
             }
             ViewModel_App2FragID1.VisbleClientsNow.showAlimentionlients -> {
                 clientDataBaseSnapList.filter {
-                    it.typeDeSonMagasine == BProto_ClientsDataBase.TypeDeSonMagasine.AlIMENTATION_GENERALE
+                    it.typeDeSonMagasine == B_ClientDataBase.TypeDeSonMagasine.AlIMENTATION_GENERALE
                 }
             }
             ViewModel_App2FragID1.VisbleClientsNow.showAll -> {
@@ -191,7 +191,7 @@ private fun MapContent(
             try {
                 val actuelleEtat =
                     if (client.id == clientEnCourDeVent)
-                        BProto_ClientsDataBase.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT
+                        B_ClientDataBase.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT
                     else client.actuelleEtat
 
                 val marker = Marker(mapView).apply {
@@ -331,7 +331,7 @@ private fun MapContent(
 
                             clientToUpdate?.let { client ->
                                 val centerPoint = mapView.mapCenter
-                                val updatedClient = BProto_ClientsDataBase().apply {
+                                val updatedClient = B_ClientDataBase().apply {
                                     id = client.id
                                     nom = client.nom
                                     numTelephone = client.numTelephone

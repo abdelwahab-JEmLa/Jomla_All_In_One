@@ -22,7 +22,7 @@ import com.example.clientjetpack.Models.DevicesTypeManager
 import com.example.clientjetpack.Models.PriceRecord
 import com.example.clientjetpack.Models.ProductDisplayController
 import com.example.clientjetpack.Models.UiState
-import com.example.clientjetpack.Modules.AppDatabase
+import Z_MasterOfApps.Z.Android.A_MainActivityApp.Start.Modules.AppDatabase
 import com.google.firebase.database.BuildConfig
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
