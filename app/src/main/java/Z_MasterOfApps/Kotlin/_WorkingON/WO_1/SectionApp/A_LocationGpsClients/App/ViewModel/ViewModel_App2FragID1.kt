@@ -8,10 +8,8 @@ import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.Parent.AppSettingsSaverModel
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircleOutline
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Firebase
@@ -26,46 +24,13 @@ class ViewModel_App2FragID1(
 ) : ViewModel() {
     val bProto_ClientsDataBase = mainRepositery.modelDatas
 
-    init {
-        mainRepositery.importDeFireBaseAuRoom(viewModelScope)
-    }
-
     fun updateClient(client: BProto_ClientsDataBase): Unit {
         mainRepositery.updateData(client)
     }
 
     fun updateDataTiggerreRelode(client: BProto_ClientsDataBase): Unit {
-        val currentList = bProto_ClientsDataBase.toList()
-        val updatedClients = mutableStateListOf<BProto_ClientsDataBase>()
-
-        for (existingClient in currentList) {
-            if (existingClient.id == client.id) {
-                val updatedClient = BProto_ClientsDataBase().apply {
-                    id = client.id
-                    nom = client.nom
-                    numTelephone = client.numTelephone
-                    couleur = client.couleur
-                    bonDuClientsSu = client.bonDuClientsSu
-                    currentCreditBalance = client.currentCreditBalance
-                    positionDonClientsList = client.positionDonClientsList
-                    cUnClientTemporaire = client.cUnClientTemporaire
-                    auFilterFAB = client.auFilterFAB
-                    typeDeSonMagasine = client.typeDeSonMagasine
-                    clientTypeMode = client.clientTypeMode
-                    latitude = client.latitude
-                    longitude = client.longitude
-                    title = client.title
-                    snippet = client.snippet
-                    actuelleEtat = client.actuelleEtat
-                }
-                updatedClients.add(updatedClient)
-            } else {
-                updatedClients.add(existingClient)
-            }
-        }
-
         viewModelScope.launch {
-            mainRepositery.updateDatas(updatedClients.toMutableStateList())
+            mainRepositery.updateDataTiggerreRelode(client)
         }
     }
 

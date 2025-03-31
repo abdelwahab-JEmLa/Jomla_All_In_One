@@ -49,12 +49,8 @@ class BProto_ClientsDataBaseRepositoryImpl(
                         clientData?.let { newData ->
                             val existingIndex = modelDatas.indexOfFirst { it.id == newData.id }
                             if (existingIndex != -1) {
-                                val existingData = modelDatas[existingIndex]
-
-                                if (hasClientDataChanged(existingData, newData)) {
-                                    repositoryScope.launch {
-                                        updateDataTiggerreRelode(newData)
-                                    }
+                                repositoryScope.launch {
+                                    updateDataTiggerreRelode(newData)
                                 }
                             }
                         }
@@ -70,28 +66,7 @@ class BProto_ClientsDataBaseRepositoryImpl(
         })
     }
 
-    private fun hasClientDataChanged(
-        existingData: BProto_ClientsDataBase,
-        newData: BProto_ClientsDataBase
-    ): Boolean {
-        return existingData.latitude != newData.latitude ||
-                existingData.longitude != newData.longitude ||
-                existingData.nom != newData.nom ||
-                existingData.numTelephone != newData.numTelephone ||
-                existingData.couleur != newData.couleur ||
-                existingData.bonDuClientsSu != newData.bonDuClientsSu ||
-                existingData.currentCreditBalance != newData.currentCreditBalance ||
-                existingData.positionDonClientsList != newData.positionDonClientsList ||
-                existingData.cUnClientTemporaire != newData.cUnClientTemporaire ||
-                existingData.auFilterFAB != newData.auFilterFAB ||
-                existingData.typeDeSonMagasine != newData.typeDeSonMagasine ||
-                existingData.clientTypeMode != newData.clientTypeMode ||
-                existingData.title != newData.title ||
-                existingData.snippet != newData.snippet ||
-                existingData.actuelleEtat != newData.actuelleEtat
-    }
-
-    fun updateDataTiggerreRelode(client: BProto_ClientsDataBase) {
+    override fun updateDataTiggerreRelode(client: BProto_ClientsDataBase) {
         val currentList = modelDatas.toList()
         val updatedClients = mutableStateListOf<BProto_ClientsDataBase>()
 

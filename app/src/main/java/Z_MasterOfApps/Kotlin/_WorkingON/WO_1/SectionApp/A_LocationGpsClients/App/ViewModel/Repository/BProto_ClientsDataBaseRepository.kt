@@ -24,4 +24,5 @@ interface BProto_ClientsDataBaseRepository {
     }
 
     fun deleteUnSeulData(data: BProto_ClientsDataBase)
+    fun updateDataTiggerreRelode(client: BProto_ClientsDataBase)
 }
