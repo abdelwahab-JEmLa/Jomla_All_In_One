@@ -5,7 +5,6 @@ import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.Repository.BProto_ClientsDataBaseRepository
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
 import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.Parent.AppSettingsSaverModel
-import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircleOutline
 import androidx.compose.runtime.getValue
@@ -28,14 +27,7 @@ class ViewModel_App2FragID1(
     val bProto_ClientsDataBase = mainRepositery.modelDatas
 
     init {
-        // Call importDeFireBaseAuRoom to ensure initial data is loaded
         mainRepositery.importDeFireBaseAuRoom(viewModelScope)
-        Log.d(
-            "TAG",
-            "ViewModel init: After importDeFireBaseAuRoom, client count is ${mainRepositery.modelDatas.size}"
-        )
-
-        Log.d("TAG", "Client states: ${mainRepositery.modelDatas.map { it.id to it.actuelleEtat }}")
     }
 
     fun updateClient(client: BProto_ClientsDataBase): Unit {
@@ -43,16 +35,12 @@ class ViewModel_App2FragID1(
     }
 
     fun updateDataTiggerreRelode(client: BProto_ClientsDataBase): Unit {
-        // Create a new list instead of modifying while iterating
         val currentList = bProto_ClientsDataBase.toList()
         val updatedClients = mutableStateListOf<BProto_ClientsDataBase>()
 
-        // Populate the new list with updated or existing clients
         for (existingClient in currentList) {
             if (existingClient.id == client.id) {
-                // Create a new client object with updated properties
                 val updatedClient = BProto_ClientsDataBase().apply {
-                    // Copy all properties from client
                     id = client.id
                     nom = client.nom
                     numTelephone = client.numTelephone
@@ -76,7 +64,6 @@ class ViewModel_App2FragID1(
             }
         }
 
-        // Update the repository with the completely new list
         viewModelScope.launch {
             mainRepositery.updateDatas(updatedClients.toMutableStateList())
         }
@@ -91,7 +78,7 @@ class ViewModel_App2FragID1(
         require(center.latitude != 0.0) { "Invalid latitude value" }
 
         val newID = if (bProto_ClientsDataBase.isEmpty()) {
-            1L // Start with 1 if the list is empty
+            1L
         } else {
             bProto_ClientsDataBase.maxOf { it.id } + 1
         }
@@ -99,11 +86,8 @@ class ViewModel_App2FragID1(
 
         val newClient = BProto_ClientsDataBase().apply {
             nom = newnom
-
-            // Keep the existing apply blocks
             cUnClientTemporaire = true
             typeDeSonMagasine = auClickeCaUpdateClientPar
-
             latitude = center.latitude
             longitude = center.longitude
             title = newnom
@@ -144,7 +128,7 @@ class ViewModel_App2FragID1(
         mainRepositery.deleteUnSeulData(data)
     }
 
-    enum class VisbleClientsNow(val icon: Any) {  // Changed from LottieJsonGetterR_Raw_Icons to Any
+    enum class VisbleClientsNow(val icon: Any) {
         showNonAbsentClientsOnly(LottieJsonGetterR_Raw_Icons.reacticonanimatedjsonurl),
         affichePourCollecteurCommendes(LottieJsonGetterR_Raw_Icons.afficheFenetre),
         showAtayClients(LottieJsonGetterR_Raw_Icons.atay),
