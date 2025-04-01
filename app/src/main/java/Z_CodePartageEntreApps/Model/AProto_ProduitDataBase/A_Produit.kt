@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 
 
 @Entity
-data class AProto_ProduitDataBase(
+data class A_Produit(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0,
 
@@ -22,7 +22,7 @@ data class AProto_ProduitDataBase(
     var imageGlidReloadTigger: Int = 0,
     var prePourCameraCapture: Boolean = true,
     var diponibilityEtate: Boolean = true,
-    var porbableNonDispo: Boolean = true,
+    var probablementNonDispo: Boolean = true,
     var enumVarNonDispoPourClients: NON_DISPO_POUR_CLIENTS = NON_DISPO_POUR_CLIENTS.DISPONIBLE_POUR_TOUT,
 
     // Section sonCategory
@@ -33,7 +33,7 @@ data class AProto_ProduitDataBase(
     var monPrixAchat: Double = 0.0,
     var monPrixVent: Double = 0.0,
 ) {
-    fun hasRelevantChanges(oldData: AProto_ProduitDataBase, newData: AProto_ProduitDataBase): Boolean {
+    fun hasRelevantChanges(oldData: A_Produit, newData: A_Produit): Boolean {
         return  oldData.nom != newData.nom ||  //<--
                 oldData.parentCategoryId != newData.parentCategoryId ||
                 oldData.indexInParentCategorie != newData.indexInParentCategorie ||

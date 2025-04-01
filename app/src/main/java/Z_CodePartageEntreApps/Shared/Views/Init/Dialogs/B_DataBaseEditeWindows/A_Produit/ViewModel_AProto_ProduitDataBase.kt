@@ -1,6 +1,6 @@
-package Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.AProto
+package Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.A_Produit
 
-import Z_CodePartageEntreApps.Model.AProto_ProduitDataBase.AProto_ProduitDataBase
+import Z_CodePartageEntreApps.Model.AProto_ProduitDataBase.A_Produit
 import Z_CodePartageEntreApps.Model.AProto_ProduitDataBase.Z.Repository.AProto_ProduitDataBaseRepository
 import Z_CodePartageEntreApps.Model.A_ProduitModel
 import Z_CodePartageEntreApps.Model._ModelAppsFather.Companion.ref_HeadOfModels
@@ -72,7 +72,7 @@ class ViewModel_AProto_ProduitDataBase(
 
                 _migrationProgress.value = 0.3f
 
-                // Transform old data structure to new AProto_ProduitDataBase structure
+                // Transform old data structure to new A_Produit structure
                 val newDataList = ancienDataList.mapIndexed { index, ancienData ->
                     try {
                         // Update progress during mapping (from 30% to 60%)
@@ -81,7 +81,7 @@ class ViewModel_AProto_ProduitDataBase(
                             _migrationProgress.value = 0.3f + (progressIncrement * index)
                         }
 
-                        val newItem = AProto_ProduitDataBase(
+                        val newItem = A_Produit(
                             id = ancienData.id,
                             nom = ancienData.nom,
                             emballageCartone = ancienData.statuesBase.characterProduit.emballageCartone,
@@ -92,8 +92,8 @@ class ViewModel_AProto_ProduitDataBase(
                             imageGlidReloadTigger = ancienData.statuesBase.imageGlidReloadTigger,
                             prePourCameraCapture = ancienData.statuesBase.prePourCameraCapture,
                             diponibilityEtate = ancienData.etatesMutable.diponibilityEtate,
-                            porbableNonDispo = ancienData.etatesMutable.porbableNonDispo,
-                            enumVarNonDispoPourClients = mapNonDispoPourClients(ancienData.etatesMutable.enumVarNonDispoPourClients),
+                            probablementNonDispo = ancienData.etatesMutable.porbableNonDispo,
+                            enumVarNonDispoPourClients = getDepuitenumVarNonDispoPourClients(ancienData.etatesMutable.nonDispoPourClientsString),
                             parentCategoryId = ancienData.parentCategoryId,
                             indexInParentCategorie = ancienData.indexInParentCategorie,
                             monPrixAchat = ancienData.statuesBase.infosCoutes.monPrixAchat,
@@ -102,7 +102,7 @@ class ViewModel_AProto_ProduitDataBase(
                         newItem
                     } catch (e: Exception) {
                         // Return a default item to maintain consistency
-                        AProto_ProduitDataBase(
+                        A_Produit(
                             id = ancienData.id,
                             nom = "Error: ${e.message}",
                             parentCategoryId = 0,
@@ -114,7 +114,7 @@ class ViewModel_AProto_ProduitDataBase(
                 _migrationProgress.value = 0.6f
 
                 // Create a SnapshotStateList from the converted data
-                val snapshotList = SnapshotStateList<AProto_ProduitDataBase>()
+                val snapshotList = SnapshotStateList<A_Produit>()
                 snapshotList.addAll(newDataList)
 
                 // Update repository with new data structure
@@ -133,29 +133,20 @@ class ViewModel_AProto_ProduitDataBase(
         }
     }
 
-    /**
-     * Maps the old enum to the new enum type
-     */
-    private fun mapNonDispoPourClients(oldEnum: A_ProduitModel.EtatesMutable.NON_DISPO_POUR_CLIENTS): AProto_ProduitDataBase.NON_DISPO_POUR_CLIENTS {
-        return when (oldEnum) {
-            A_ProduitModel.EtatesMutable.NON_DISPO_POUR_CLIENTS.DISPONIBLE_POUR_TOUT -> AProto_ProduitDataBase.NON_DISPO_POUR_CLIENTS.DISPONIBLE_POUR_TOUT
-            A_ProduitModel.EtatesMutable.NON_DISPO_POUR_CLIENTS.TOUT -> AProto_ProduitDataBase.NON_DISPO_POUR_CLIENTS.TOUT
-            A_ProduitModel.EtatesMutable.NON_DISPO_POUR_CLIENTS.NEVEAU -> AProto_ProduitDataBase.NON_DISPO_POUR_CLIENTS.NEVEAU
-            A_ProduitModel.EtatesMutable.NON_DISPO_POUR_CLIENTS.DEFINIE -> AProto_ProduitDataBase.NON_DISPO_POUR_CLIENTS.DEFINIE
+    private fun getDepuitenumVarNonDispoPourClients(nonDispoPourClientsString: String?): A_Produit.NON_DISPO_POUR_CLIENTS {
+        return when (nonDispoPourClientsString) {
+            "DISPONIBLE_POUR_TOUT" -> A_Produit.NON_DISPO_POUR_CLIENTS.DISPONIBLE_POUR_TOUT
+            "TOUT" -> A_Produit.NON_DISPO_POUR_CLIENTS.TOUT
+            "NEVEAU" -> A_Produit.NON_DISPO_POUR_CLIENTS.NEVEAU
+            "DEFINIE" -> A_Produit.NON_DISPO_POUR_CLIENTS.DEFINIE
+            else -> A_Produit.NON_DISPO_POUR_CLIENTS.DISPONIBLE_POUR_TOUT // Default value
         }
     }
-
-    /**
-     * Updates a single product category
-     */
-    fun updateData(categorieProduit: AProto_ProduitDataBase) {
+    fun updateData(categorieProduit: A_Produit) {
         AProto_ProduitDataBaseRepository.updateUnSeulData(categorieProduit)
     }
 
-    /**
-     * Updates multiple product categories at once
-     */
-    suspend fun updateMultiDatas(data: SnapshotStateList<AProto_ProduitDataBase>) {
+    suspend fun updateMultiDatas(data: SnapshotStateList<A_Produit>) {
         AProto_ProduitDataBaseRepository.updateMultiDatas(data)
     }
 }

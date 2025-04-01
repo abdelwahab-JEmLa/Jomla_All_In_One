@@ -1,6 +1,6 @@
-package Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.AProto
+package Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.A_Produit
 
-import Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.AProto.Z_ButtonsFunctions.ButtonFun_1_populateSonAncien
+import Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.A_Produit.Z_ButtonsFunctions.ButtonFun_1_populateSonAncien
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -19,7 +19,7 @@ import androidx.compose.ui.Modifier
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun AProto_ProduitDataBaseButtons(
+fun A_ProduitButtons(
     viewModel: ViewModel_AProto_ProduitDataBase = koinViewModel()
 ) {
     var displayeButtonsFunctionRelated by remember { mutableStateOf(false) }
@@ -33,8 +33,8 @@ fun AProto_ProduitDataBaseButtons(
     ) {
         Text(
             text = if (updateProgress > 0)
-                "AProto_ProduitDataBase (${(updateProgress * 100).toInt()}%)"
-            else "AProto_ProduitDataBase"
+                "A_Produit (${(updateProgress * 100).toInt()}%)"
+            else "A_Produit"
         )
     }
 

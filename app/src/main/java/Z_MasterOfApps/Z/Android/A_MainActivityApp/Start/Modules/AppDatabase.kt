@@ -1,6 +1,6 @@
 package Z_MasterOfApps.Z.Android.A_MainActivityApp.Start.Modules
 
-import Z_CodePartageEntreApps.Model.AProto_ProduitDataBase.AProto_ProduitDataBase
+import Z_CodePartageEntreApps.Model.AProto_ProduitDataBase.A_Produit
 import Z_CodePartageEntreApps.Model.AProto_ProduitDataBase.Z.Repository.Extension.AProto_ProduitDataBaseDao
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.Extension.B_ClientDataBaseDao
@@ -35,7 +35,7 @@ import java.util.Date
 
         B_ClientDataBase::class,
         I_CategorieProduits::class,
-        AProto_ProduitDataBase::class,
+        A_Produit::class,
     ],
     version = 1,
     exportSchema = false

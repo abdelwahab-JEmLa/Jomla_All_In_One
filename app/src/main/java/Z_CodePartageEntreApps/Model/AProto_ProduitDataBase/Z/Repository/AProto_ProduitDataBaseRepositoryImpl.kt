@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Model.AProto_ProduitDataBase.Z.Repository
 
-import Z_CodePartageEntreApps.Model.AProto_ProduitDataBase.AProto_ProduitDataBase
+import Z_CodePartageEntreApps.Model.AProto_ProduitDataBase.A_Produit
 import Z_CodePartageEntreApps.Model.AProto_ProduitDataBase.Z.Repository.Extension.FirebaseUtils_AProto_ProduitDataBase
 import Z_MasterOfApps.Z.Android.A_MainActivityApp.Start.Modules.AppDatabase
 import androidx.compose.runtime.mutableStateListOf
@@ -20,9 +20,9 @@ import java.util.concurrent.atomic.AtomicBoolean
 class AProto_ProduitDataBaseRepositoryImpl(
     private val appDatabase: AppDatabase
 ) : AProto_ProduitDataBaseRepository {
-    private val TAG = "AProto_ProduitDataBase"
+    private val TAG = "A_Produit"
 
-    override var modelDatas: SnapshotStateList<AProto_ProduitDataBase> = mutableStateListOf()
+    override var modelDatas: SnapshotStateList<A_Produit> = mutableStateListOf()
     override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
 
     // Use AtomicBoolean for thread safety
@@ -44,8 +44,8 @@ class AProto_ProduitDataBaseRepositoryImpl(
     private suspend fun initializeRepository() {
         try {
             FirebaseUtils_AProto_ProduitDataBase.initializeFirebaseOfflineCapability()
-            loadDepuitRoom() // Always load from Room first for faster UI response
-            checkDataConsistency() // Then check and update if necessary
+            loadDepuitRoom()
+            checkDataConsistency()
         } catch (e: Exception) {
             // Log error
         }
@@ -110,7 +110,7 @@ class AProto_ProduitDataBaseRepositoryImpl(
                     override fun onDataChange(snapshot: DataSnapshot) {
                         for (dataSnapshot in snapshot.children) {
                             try {
-                                val clientData = dataSnapshot.getValue(AProto_ProduitDataBase::class.java)
+                                val clientData = dataSnapshot.getValue(A_Produit::class.java)
                                 clientData?.let { newData ->
                                     val existingIndex = modelDatas.indexOfFirst { it.id == newData.id }
                                     if (existingIndex != -1) {
@@ -165,7 +165,7 @@ class AProto_ProduitDataBaseRepositoryImpl(
     }
 
 
-    override fun deleteUnSeulData(data: AProto_ProduitDataBase) {
+    override fun deleteUnSeulData(data: A_Produit) {
         try {
             repositoryScope.launch(Dispatchers.Main) {
                 val recordIndex = modelDatas.indexOfFirst { it.id == data.id }
@@ -199,11 +199,11 @@ class AProto_ProduitDataBaseRepositoryImpl(
                     val task = AProto_ProduitDataBaseRepository.caReference.get()
                     val snapshot = Tasks.await(task)
                     appDatabase.aProto_ProduitDataBaseDao().deleteAll()
-                    val clientsList = mutableListOf<AProto_ProduitDataBase>()
+                    val clientsList = mutableListOf<A_Produit>()
 
                     for (dataSnapshot in snapshot.children) {
                         try {
-                            val clientData = dataSnapshot.getValue(AProto_ProduitDataBase::class.java)
+                            val clientData = dataSnapshot.getValue(A_Produit::class.java)
                             clientData?.let {
                                 clientsList.add(it)
                             }
@@ -232,7 +232,7 @@ class AProto_ProduitDataBaseRepositoryImpl(
         }
     }
 
-    override fun addData(data: AProto_ProduitDataBase) {
+    override fun addData(data: A_Produit) {
         try {
             repositoryScope.launch(Dispatchers.Main) {
                 modelDatas.add(data)
@@ -251,7 +251,7 @@ class AProto_ProduitDataBaseRepositoryImpl(
         }
     }
 
-    override fun updateUnSeulData(data: AProto_ProduitDataBase?) {
+    override fun updateUnSeulData(data: A_Produit?) {
         if (data == null) {
             return
         }
@@ -273,7 +273,7 @@ class AProto_ProduitDataBaseRepositoryImpl(
         }
     }
 
-    private suspend fun firebaseUpdateData(data: AProto_ProduitDataBase) {
+    private suspend fun firebaseUpdateData(data: A_Produit) {
         try {
             AProto_ProduitDataBaseRepository.caReference.child(data.id.toString()).setValue(data).await()
         } catch (e: Exception) {
@@ -281,7 +281,7 @@ class AProto_ProduitDataBaseRepositoryImpl(
         }
     }
 
-    override suspend fun updateMultiDatas(datas: SnapshotStateList<AProto_ProduitDataBase>) {
+    override suspend fun updateMultiDatas(datas: SnapshotStateList<A_Produit>) {
         if (isUpdating.getAndSet(true)) {
             return
         }
