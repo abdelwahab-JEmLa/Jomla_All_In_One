@@ -1,7 +1,7 @@
 package Z_MasterOfApps.Z.Android.A_MainActivityApp.Start.Modules
 
-import Z_CodePartageEntreApps.Model.AProto_ProduitDataBase.A_Produit
-import Z_CodePartageEntreApps.Model.AProto_ProduitDataBase.Z.Repository.Extension.AProto_ProduitDataBaseDao
+import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
+import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.Extension.A_ProduitDao
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.Extension.B_ClientDataBaseDao
 import Z_CodePartageEntreApps.Model.I_CategorieProduits.A.Repository.Extension.I_CategorieProduitsDao
@@ -53,7 +53,7 @@ abstract class AppDatabase : RoomDatabase() {
 
     abstract fun b_ClientDataBaseDao(): B_ClientDataBaseDao
     abstract fun i_CategorieProduitsDao(): I_CategorieProduitsDao
-    abstract fun aProto_ProduitDataBaseDao(): AProto_ProduitDataBaseDao
+    abstract fun aProto_ProduitDataBaseDao(): A_ProduitDao
 
     object DatabaseModule {
         @Volatile

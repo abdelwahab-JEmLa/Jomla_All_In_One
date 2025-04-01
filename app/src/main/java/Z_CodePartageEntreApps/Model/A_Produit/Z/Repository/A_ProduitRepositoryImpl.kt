@@ -1,7 +1,7 @@
-package Z_CodePartageEntreApps.Model.AProto_ProduitDataBase.Z.Repository
+package Z_CodePartageEntreApps.Model.A_Produit.Z.Repository
 
-import Z_CodePartageEntreApps.Model.AProto_ProduitDataBase.A_Produit
-import Z_CodePartageEntreApps.Model.AProto_ProduitDataBase.Z.Repository.Extension.FirebaseUtils_AProto_ProduitDataBase
+import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
+import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.Extension.FirebaseUtils_A_Produit
 import Z_MasterOfApps.Z.Android.A_MainActivityApp.Start.Modules.AppDatabase
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -17,9 +17,9 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
 
-class AProto_ProduitDataBaseRepositoryImpl(
+class A_ProduitRepositoryImpl(
     private val appDatabase: AppDatabase
-) : AProto_ProduitDataBaseRepository {
+) : A_ProduitRepository {
     private val TAG = "A_Produit"
 
     override var modelDatas: SnapshotStateList<A_Produit> = mutableStateListOf()
@@ -43,7 +43,7 @@ class AProto_ProduitDataBaseRepositoryImpl(
 
     private suspend fun initializeRepository() {
         try {
-            FirebaseUtils_AProto_ProduitDataBase.initializeFirebaseOfflineCapability()
+            FirebaseUtils_A_Produit.initializeFirebaseOfflineCapability()
             loadDepuitRoom()
             checkDataConsistency()
         } catch (e: Exception) {
@@ -77,7 +77,7 @@ class AProto_ProduitDataBaseRepositoryImpl(
                 appDatabase.aProto_ProduitDataBaseDao().getCount()
             }
             val firebaseSnapshot = withContext(Dispatchers.IO) {
-                val task = AProto_ProduitDataBaseRepository.caReference.get()
+                val task = A_ProduitRepository.caReference.get()
                 Tasks.await(task)
             }
             val firebaseCount = firebaseSnapshot.childrenCount.toInt()
@@ -145,7 +145,7 @@ class AProto_ProduitDataBaseRepositoryImpl(
 
                 // Set flag before adding listener
                 isListenerActive.set(true)
-                AProto_ProduitDataBaseRepository.caReference.addValueEventListener(valueEventListener!!)
+                A_ProduitRepository.caReference.addValueEventListener(valueEventListener!!)
             }
         }
     }
@@ -154,7 +154,7 @@ class AProto_ProduitDataBaseRepositoryImpl(
         synchronized(listenerLock) {
             valueEventListener?.let {
                 try {
-                    AProto_ProduitDataBaseRepository.caReference.removeEventListener(it)
+                    A_ProduitRepository.caReference.removeEventListener(it)
                 } catch (e: Exception) {
                     // Log error but continue
                 }
@@ -176,7 +176,7 @@ class AProto_ProduitDataBaseRepositoryImpl(
 
             repositoryScope.launch(Dispatchers.IO) {
                 try {
-                    AProto_ProduitDataBaseRepository.caReference.child(data.id.toString()).removeValue().await()
+                    A_ProduitRepository.caReference.child(data.id.toString()).removeValue().await()
                     appDatabase.aProto_ProduitDataBaseDao().delete(data)
                 } catch (e: Exception) {
                     // Log error
@@ -196,7 +196,7 @@ class AProto_ProduitDataBaseRepositoryImpl(
 
             viewModelScope.launch(Dispatchers.IO) {
                 try {
-                    val task = AProto_ProduitDataBaseRepository.caReference.get()
+                    val task = A_ProduitRepository.caReference.get()
                     val snapshot = Tasks.await(task)
                     appDatabase.aProto_ProduitDataBaseDao().deleteAll()
                     val clientsList = mutableListOf<A_Produit>()
@@ -240,7 +240,7 @@ class AProto_ProduitDataBaseRepositoryImpl(
 
             repositoryScope.launch(Dispatchers.IO) {
                 try {
-                    AProto_ProduitDataBaseRepository.caReference.child(data.id.toString()).setValue(data).await()
+                    A_ProduitRepository.caReference.child(data.id.toString()).setValue(data).await()
                     appDatabase.aProto_ProduitDataBaseDao().insert(data)
                 } catch (e: Exception) {
                     // Log error
@@ -275,7 +275,7 @@ class AProto_ProduitDataBaseRepositoryImpl(
 
     private suspend fun firebaseUpdateData(data: A_Produit) {
         try {
-            AProto_ProduitDataBaseRepository.caReference.child(data.id.toString()).setValue(data).await()
+            A_ProduitRepository.caReference.child(data.id.toString()).setValue(data).await()
         } catch (e: Exception) {
             // Log error
         }
@@ -307,7 +307,7 @@ class AProto_ProduitDataBaseRepositoryImpl(
                     // Remove listener before batch updates
                     synchronized(listenerLock) {
                         valueEventListener?.let {
-                            AProto_ProduitDataBaseRepository.caReference.removeEventListener(it)
+                            A_ProduitRepository.caReference.removeEventListener(it)
                         }
                         valueEventListener = null
                         isListenerActive.set(false)
@@ -324,7 +324,7 @@ class AProto_ProduitDataBaseRepositoryImpl(
                         // Only restore if not already set by another thread
                         if (!isListenerActive.get() && tempListener != null) {
                             valueEventListener = tempListener
-                            AProto_ProduitDataBaseRepository.caReference.addValueEventListener(tempListener)
+                            A_ProduitRepository.caReference.addValueEventListener(tempListener)
                             isListenerActive.set(true)
                         }
                     }
@@ -345,7 +345,7 @@ class AProto_ProduitDataBaseRepositoryImpl(
 
     private fun batchFireBaseSet(datas: List<A_Produit>): Unit {
         try {
-            val reference = AProto_ProduitDataBaseRepository.caReference
+            val reference = A_ProduitRepository.caReference
             val batchUpdates = HashMap<String, Any>()
 
             // Prepare all updates in a single map

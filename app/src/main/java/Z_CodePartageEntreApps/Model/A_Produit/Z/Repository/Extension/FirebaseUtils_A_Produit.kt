@@ -1,9 +1,9 @@
-package Z_CodePartageEntreApps.Model.AProto_ProduitDataBase.Z.Repository.Extension
+package Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.Extension
 
-import Z_CodePartageEntreApps.Model.AProto_ProduitDataBase.Z.Repository.AProto_ProduitDataBaseRepository
+import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
 import com.google.firebase.database.FirebaseDatabase
 
-object FirebaseUtils_AProto_ProduitDataBase {
+object FirebaseUtils_A_Produit {
     private var initialized = false
     private val initLock = Any()
 
@@ -15,7 +15,7 @@ object FirebaseUtils_AProto_ProduitDataBase {
                     FirebaseDatabase.getInstance().setPersistenceEnabled(true)
 
                     // Keep synchronized for the specific reference we're using
-                    AProto_ProduitDataBaseRepository.caReference.keepSynced(true)
+                    A_ProduitRepository.caReference.keepSynced(true)
 
                     initialized = true
                 } catch (e: Exception) {

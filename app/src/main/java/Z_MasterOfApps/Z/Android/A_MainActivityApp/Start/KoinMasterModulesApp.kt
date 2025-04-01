@@ -1,7 +1,7 @@
 package Z_MasterOfApps.Z.Android.A_MainActivityApp.Start
 
-import Z_CodePartageEntreApps.Model.AProto_ProduitDataBase.Z.Repository.AProto_ProduitDataBaseRepository
-import Z_CodePartageEntreApps.Model.AProto_ProduitDataBase.Z.Repository.AProto_ProduitDataBaseRepositoryImpl
+import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
+import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepositoryImpl
 import Z_CodePartageEntreApps.Model.A_ProduitModelNewProto.Repository.A_ProduitModelRepository
 import Z_CodePartageEntreApps.Model.A_ProduitModelNewProto.Repository.A_ProduitModelRepositoryImpl
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.B_ClientDataBaseRepository
@@ -34,7 +34,7 @@ val repositoryModule = module {
 
     // Singleton: une seule instance pour toute l'application
     single<A_ProduitModelRepository> { A_ProduitModelRepositoryImpl() }
-    single<AProto_ProduitDataBaseRepository> { AProto_ProduitDataBaseRepositoryImpl(get()) }
+    single<A_ProduitRepository> { A_ProduitRepositoryImpl(get()) }
 
     single<B_ClientsDataBaseRepository> { B_ClientsDataBaseRepositoryImpl() }
 

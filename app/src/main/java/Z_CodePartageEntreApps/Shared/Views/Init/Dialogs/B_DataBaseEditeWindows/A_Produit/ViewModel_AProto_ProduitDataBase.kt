@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.A_Produit
 
-import Z_CodePartageEntreApps.Model.AProto_ProduitDataBase.A_Produit
-import Z_CodePartageEntreApps.Model.AProto_ProduitDataBase.Z.Repository.AProto_ProduitDataBaseRepository
+import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
+import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
 import Z_CodePartageEntreApps.Model.A_ProduitModel
 import Z_CodePartageEntreApps.Model._ModelAppsFather.Companion.ref_HeadOfModels
 import android.annotation.SuppressLint
@@ -16,7 +16,7 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
 class ViewModel_AProto_ProduitDataBase(
-    private val AProto_ProduitDataBaseRepository: AProto_ProduitDataBaseRepository
+    private val A_ProduitRepository: A_ProduitRepository
 ) : ViewModel() {
     val TAG = "ViewModel_AProto_ProduitDataBase"
 
@@ -121,7 +121,7 @@ class ViewModel_AProto_ProduitDataBase(
                 try {
                     // Update progress to 80% before database write
                     _migrationProgress.value = 0.8f
-                    AProto_ProduitDataBaseRepository.updateMultiDatas(snapshotList)
+                    A_ProduitRepository.updateMultiDatas(snapshotList)
                 } catch (e: Exception) {
                     throw e
                 }
@@ -143,10 +143,10 @@ class ViewModel_AProto_ProduitDataBase(
         }
     }
     fun updateData(categorieProduit: A_Produit) {
-        AProto_ProduitDataBaseRepository.updateUnSeulData(categorieProduit)
+        A_ProduitRepository.updateUnSeulData(categorieProduit)
     }
 
     suspend fun updateMultiDatas(data: SnapshotStateList<A_Produit>) {
-        AProto_ProduitDataBaseRepository.updateMultiDatas(data)
+        A_ProduitRepository.updateMultiDatas(data)
     }
 }

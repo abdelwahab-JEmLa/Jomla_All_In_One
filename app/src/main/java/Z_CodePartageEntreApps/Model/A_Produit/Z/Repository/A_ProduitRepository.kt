@@ -1,12 +1,12 @@
-package Z_CodePartageEntreApps.Model.AProto_ProduitDataBase.Z.Repository
+package Z_CodePartageEntreApps.Model.A_Produit.Z.Repository
 
-import Z_CodePartageEntreApps.Model.AProto_ProduitDataBase.A_Produit
+import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.firebase.Firebase
 import com.google.firebase.database.database
 import kotlinx.coroutines.flow.MutableStateFlow
 
-interface AProto_ProduitDataBaseRepository {
+interface A_ProduitRepository {
     var modelDatas: SnapshotStateList<A_Produit>
     val progressRepo: MutableStateFlow<Float>
         get() = MutableStateFlow(0f)

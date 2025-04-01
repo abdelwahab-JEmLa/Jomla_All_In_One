@@ -1,6 +1,6 @@
-package Z_CodePartageEntreApps.Model.AProto_ProduitDataBase.Z.Repository.Extension
+package Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.Extension
 
-import Z_CodePartageEntreApps.Model.AProto_ProduitDataBase.A_Produit
+import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -8,7 +8,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 
 @Dao
-interface AProto_ProduitDataBaseDao{
+interface A_ProduitDao{
     @Query("SELECT * FROM A_Produit ")
     suspend fun getAll(): MutableList<A_Produit>
 

@@ -1,6 +1,7 @@
 package Views.P1._ArticlesStartFacade
 
-import Z_CodePartageEntreApps.Model.A_ProduitModelNewProto.Repository.A_ProduitModelRepository
+import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
+import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import androidx.paging.PagingSource
@@ -8,12 +9,13 @@ import androidx.paging.PagingState
 import com.example.clientjetpack.Models.UiState
 import org.koin.core.context.GlobalContext
 
+
 class ArticlePagingSource(
     private val articles: List<ArticlesBasesStatsTable>,
     private val filterText: String,
     private val currentClient: B_ClientsDataBase?,
     private val uiState: UiState,
-    private val a_ProduitModelRepository: A_ProduitModelRepository = GlobalContext.get().get()
+    private val a_ProduitRepository: A_ProduitRepository = GlobalContext.get().get()
 ) : PagingSource<Int, ArticlesBasesStatsTable>() {
     private val pageSize = 10
     private val cachedFilteredArticles = mutableMapOf<Int, List<ArticlesBasesStatsTable>>()
@@ -31,19 +33,19 @@ class ArticlePagingSource(
         return if (filterText.isEmpty()) {
             articles.filter { article ->
                 // Find the corresponding product model
-                val productModel = a_ProduitModelRepository.modelDatas
+                val productModel = a_ProduitRepository.modelDatas
                     .find { it.id.toInt() == article.idArticle }
 
                 val isTemporaryClient = currentClient?.etatesMutable?.clientTypeMode ==
                         B_ClientsDataBase.EtatesMutable.ClientTypeMode.NEVEAU
 
                 // Check if the product is completely unavailable for all clients
-                val isProductUnavailableForAll = productModel?.etatesMutable?.nonDispoPourClientsString ==
-                        "TOUT"
+                val isProductUnavailableForAll = productModel?.enumVarNonDispoPourClients ==
+                        A_Produit.NON_DISPO_POUR_CLIENTS.TOUT
 
                 // Check if the product is unavailable specifically for temporary clients
-                val isProductUnavailableForTemporary = productModel?.etatesMutable?.nonDispoPourClientsString ==
-                        "NEVEAU"
+                val isProductUnavailableForTemporary = productModel?.enumVarNonDispoPourClients ==
+                        A_Produit.NON_DISPO_POUR_CLIENTS.NEVEAU
 
                 // Common filtering conditions
                 !isProductUnavailableForAll &&

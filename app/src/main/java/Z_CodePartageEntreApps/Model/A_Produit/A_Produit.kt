@@ -1,9 +1,8 @@
-package Z_CodePartageEntreApps.Model.AProto_ProduitDataBase
+package Z_CodePartageEntreApps.Model.A_Produit
 
 import androidx.compose.ui.graphics.Color
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-
 
 @Entity
 data class A_Produit(
