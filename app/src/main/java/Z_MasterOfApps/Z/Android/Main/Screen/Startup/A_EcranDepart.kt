@@ -1,10 +1,10 @@
 package Z_MasterOfApps.Z.Android.Main.Screen.Startup
 
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_MasterOfApps.Z.Android.Main.Screen.Startup.B.Dialogs.A_OptionsControlsButtons
-import Z_MasterOfApps.Z.Android.Main.Screen.Startup.B.Dialogs.A_OptionsDialog.A_OptionsDialog
 import Z_MasterOfApps.Z.Android.Main.Screen.NavigationItems
 import Z_MasterOfApps.Z.Android.Main.Screen.Screen
+import Z_MasterOfApps.Z.Android.Main.Screen.Startup.B.Dialogs.A_OptionsControlsButtons
+import Z_MasterOfApps.Z.Android.Main.Screen.Startup.B.Dialogs.A_OptionsDialog.A_OptionsDialog
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -42,7 +42,6 @@ internal fun A_StartupScreen(
     onNavigate: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-
     val isManagerPhone =
         viewModelInitApp._paramatersAppsViewModelModel.cLeTelephoneDuGerant ?: false
     val items = remember(isManagerPhone) { NavigationItems.getItems(isManagerPhone) }
