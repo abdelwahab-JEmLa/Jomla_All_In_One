@@ -23,7 +23,7 @@ class K_TempTravailleRepositoryImpl :
 
     init {
         Z_FirebaseUtils.initializeFirebaseOfflineCapability()
-      //  startDatabaseListener()
+       startDatabaseListener()
         progressRepo.value = 1.0f
 
     }
