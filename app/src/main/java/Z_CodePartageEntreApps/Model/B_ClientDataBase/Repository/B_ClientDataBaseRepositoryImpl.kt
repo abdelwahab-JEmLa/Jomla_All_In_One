@@ -1,7 +1,6 @@
 package Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository
 
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
-import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.Extension.FirebaseUtils_B_ClientDataBase
 import Z_MasterOfApps.Z.Android.A_MainActivityApp.Start.Modules.AppDatabase
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -19,7 +18,8 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 class B_ClientDataBaseRepositoryImpl(
     private val appDatabase: AppDatabase
-) : B_ClientDataBaseRepository {
+) : B_ClientDataBaseRepository {    //<--
+//TODO(1): cree log e pour decouvert pk modelDatas ne se load pas depuit firebase au room
     private val TAG = "B_ClientDataBase"
 
     override var modelDatas: SnapshotStateList<B_ClientDataBase> = mutableStateListOf()
@@ -43,7 +43,6 @@ class B_ClientDataBaseRepositoryImpl(
 
     private suspend fun initializeRepository() {
         try {
-            FirebaseUtils_B_ClientDataBase.initializeFirebaseOfflineCapability()
             loadDepuitRoom() // Always load from Room first for faster UI response
             checkDataConsistency() // Then check and update if necessary
         } catch (e: Exception) {

@@ -27,7 +27,6 @@ class P_BonsCommandGrossistRepositoryImpl(
     var initialDataLoaded = false
 
     init {
-        FirebaseUtilsP_BonsCommandGrossist.initializeFirebaseOfflineCapability()
 
         // Monitor the progress of soldArticlesTabelleRepository
         CoroutineScope(Dispatchers.Main).launch {

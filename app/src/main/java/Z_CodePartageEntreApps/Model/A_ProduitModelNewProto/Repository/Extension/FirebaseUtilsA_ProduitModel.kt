@@ -10,13 +10,6 @@ import com.google.firebase.database.ValueEventListener
 object FirebaseUtilsA_ProduitModelNewProto {
     private const val DEBOUNCE_INTERVAL = 500L
 
-    fun initializeFirebaseOfflineCapability() {
-        try {
-            A_ProduitModelRepository.caReference.keepSynced(true)
-        } catch (e: Exception) {
-            // Silently handle exception
-        }
-    }
 
     fun startDatabaseListener(
         repository: A_ProduitModelRepositoryImpl,

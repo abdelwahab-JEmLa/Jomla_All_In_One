@@ -1,7 +1,6 @@
 package Z_CodePartageEntreApps.Model.A_Produit.Z.Repository
 
 import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
-import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.Extension.FirebaseUtils_A_Produit
 import Z_MasterOfApps.Z.Android.A_MainActivityApp.Start.Modules.AppDatabase
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -46,7 +45,6 @@ class A_ProduitRepositoryImpl(
 
     private suspend fun initializeRepository() {
         try {
-            FirebaseUtils_A_Produit.initializeFirebaseOfflineCapability()
             loadDepuitRoom()
             checkDataConsistency()
         } catch (e: Exception) {

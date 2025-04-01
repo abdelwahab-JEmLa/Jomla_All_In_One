@@ -23,13 +23,6 @@ object FirebaseUtilsSoldArticlesTabelle {
     private var lastConnectivityCheck = 0L
     private var lastConnectivityState = false
 
-    fun initializeFirebaseOfflineCapability() {
-        try {
-            SoldArticlesTabelleRepository.caReference.keepSynced(true)
-        } catch (e: Exception) {
-            println("Firebase initialization error: ${e.message}")
-        }
-    }
 
     /**
      * Sanitize Firebase key to avoid invalid characters

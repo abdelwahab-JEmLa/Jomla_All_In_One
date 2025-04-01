@@ -24,7 +24,6 @@ class B_ClientsDataBaseRepositoryImpl(
     var initialDataLoaded = false
 
     init {
-        FirebaseUtilsB_ClientsDataBaseNewProto.initializeFirebaseOfflineCapability()
       //  startDatabaseListener()
         progressRepo.value = 1.0f
 

@@ -26,6 +26,7 @@ object FromAncienDataBase {
     private var colorsArticlesListener: ValueEventListener? = null
     private val lastKnownColorValues = mutableMapOf<Long, D_CouleursEtGoutesProduitsInfos>()
 
+
     fun setupRealtimeListeners(viewModel: ViewModelInitApp) {
         setupJetPackExportListener()
         setupColorsArticlesListener(viewModel)

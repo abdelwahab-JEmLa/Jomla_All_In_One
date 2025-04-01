@@ -27,19 +27,6 @@ object Z_FirebaseUtils {
     /**
      * Initialize Firebase offline capability
      */
-    fun initializeFirebaseOfflineCapability() {
-        try {
-            // Enable disk persistence
-            Firebase.database.setPersistenceEnabled(true)
-            // Set cache size
-            Firebase.database.setPersistenceCacheSizeBytes(CACHE_SIZE_BYTES)
-            // Keep the reference synced
-            K_TempTravailleRepository.caReference.keepSynced(true)
-        } catch (e: Exception) {
-            // Log error or handle exception
-            println("Firebase initialization error: ${e.message}")
-        }
-    }
 
     /**
      * Sanitize Firebase key to avoid invalid characters

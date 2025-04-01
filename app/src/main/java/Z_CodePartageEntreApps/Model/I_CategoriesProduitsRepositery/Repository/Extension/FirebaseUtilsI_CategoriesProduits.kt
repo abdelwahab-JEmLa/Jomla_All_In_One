@@ -25,13 +25,6 @@ object FirebaseUtilsI_CategoriesProduits {
     /**
      * Initialize Firebase offline capability
      */
-    fun initializeFirebaseOfflineCapability() {
-        try {
-            I_CategoriesProduitsNewProtoRepository.caReference.keepSynced(true)
-        } catch (e: Exception) {
-            // Silent catch
-        }
-    }
     /**
      * Sanitize Firebase key to avoid invalid characters
      */

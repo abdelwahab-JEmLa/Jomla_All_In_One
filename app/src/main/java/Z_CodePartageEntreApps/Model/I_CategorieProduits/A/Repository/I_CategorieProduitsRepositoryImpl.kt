@@ -1,6 +1,5 @@
 package Z_CodePartageEntreApps.Model.I_CategorieProduits.A.Repository
 
-import Z_CodePartageEntreApps.Model.I_CategorieProduits.A.Repository.Extension.FirebaseUtils_I_CategorieProduits
 import Z_CodePartageEntreApps.Model.I_CategorieProduits.I_CategorieProduits
 import Z_MasterOfApps.Z.Android.A_MainActivityApp.Start.Modules.AppDatabase
 import androidx.compose.runtime.mutableStateListOf
@@ -43,7 +42,6 @@ class I_CategorieProduitsRepositoryImpl(
 
     private suspend fun initializeRepository() {
         try {
-            FirebaseUtils_I_CategorieProduits.initializeFirebaseOfflineCapability()
             loadDepuitRoom() // Always load from Room first for faster UI response
             checkDataConsistency() // Then check and update if necessary
         } catch (e: Exception) {
@@ -114,14 +112,7 @@ class I_CategorieProduitsRepositoryImpl(
                                 clientData?.let { newData ->
                                     val existingIndex = modelDatas.indexOfFirst { it.id == newData.id }
                                     if (existingIndex != -1) {
-                                        val existingData = modelDatas[existingIndex]
-                                        if (newData.hasRelevantChanges(existingData, newData)) {
-                                            repositoryScope.launch {
-                                                updateUnSeulData(newData)
-                                            }
-                                        } else {
-                                            // No relevant changes
-                                        }
+
                                     } else {
                                         // New client data not in our list
                                         repositoryScope.launch(Dispatchers.Main) {

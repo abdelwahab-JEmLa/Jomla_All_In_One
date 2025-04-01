@@ -49,7 +49,6 @@ class SoldArticlesTabelleRepositoryImpl :
             // Use Dispatchers.IO for network operations
             CoroutineScope(Dispatchers.IO).launch {
                 try {
-                    FirebaseUtilsSoldArticlesTabelle.initializeFirebaseOfflineCapability()
                     isFirebaseInitialized = true
                     // Switch to main thread for UI updates
                     CoroutineScope(Dispatchers.Main).launch {

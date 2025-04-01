@@ -11,12 +11,6 @@ import com.google.firebase.database.ValueEventListener
 object FirebaseUtilsI_CategoriesProduitsNewProto {
     private const val DEBOUNCE_INTERVAL = 500L
 
-    fun initializeFirebaseOfflineCapability() {
-        try {
-            I_CategoriesProduitsNewProtoRepository.caReference.keepSynced(true)
-        } catch (e: Exception) {
-        }
-    }
 
     fun sanitizeFirebaseKey(key: String): String {
         return key.replace(Regex("[/.#$\\[\\]]"), "_")

@@ -18,7 +18,6 @@ class C_GrossistsDataBaseRepositoryImpl : C_GrossistsDataBaseRepository {
     internal var lastUpdateTimestamp = 0L
 
     init {
-        FirebaseUtilsC_GrossistsDataBase.initializeFirebaseOfflineCapability()
         startDatabaseListener()
     }
 

@@ -21,12 +21,6 @@ object FirebaseUtilsC_GrossistsDataBase {
     private var lastConnectivityCheck = 0L
     private var lastConnectivityState = false
 
-    fun initializeFirebaseOfflineCapability() {
-        try {
-            C_GrossistsDataBaseRepository.caReference.keepSynced(true)
-        } catch (e: Exception) {
-        }
-    }
 
     /**
      * Sanitize Firebase key to avoid invalid characters

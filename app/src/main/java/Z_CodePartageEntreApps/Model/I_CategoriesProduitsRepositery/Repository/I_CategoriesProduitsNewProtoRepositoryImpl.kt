@@ -24,7 +24,6 @@ class I_CategoriesProduitsNewProtoRepositoryImpl(
     var initialDataLoaded = false
 
     init {
-        FirebaseUtilsI_CategoriesProduitsNewProto.initializeFirebaseOfflineCapability()
         startDatabaseListener {
         }
     }

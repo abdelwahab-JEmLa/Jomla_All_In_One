@@ -25,13 +25,6 @@ object FirebaseUtilsP_BonsCommandGrossist {
     /**
      * Initialize Firebase offline capability
      */
-    fun initializeFirebaseOfflineCapability() {
-        try {
-            P_BonsCommandGrossistRepository.caReference.keepSynced(true)
-        } catch (e: Exception) {
-            // Silent catch
-        }
-    }
     /**
      * Sanitize Firebase key to avoid invalid characters
      */

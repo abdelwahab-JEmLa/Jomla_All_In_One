@@ -4,8 +4,6 @@ import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.I_CategoriesRepository
 import Z_CodePartageEntreApps.Model._ModelAppsFather
-import Z_MasterOfApps.Kotlin.ViewModel.Init.A_FirebaseListeners.FromAncienDataBase
-import Z_MasterOfApps.Kotlin.ViewModel.Init.B_Load.loadData
 import Z_MasterOfApps.Kotlin.ViewModel.Partage.Functions.FunctionsPartageEntreFragment
 import Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_1.id4_DeplaceProduitsVerGrossist.ViewModel.Frag_4A1_ExtVM
 import Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_2.id1_GerantDefinirePosition.ViewModel.Extension.Frag2_A1_ExtVM
@@ -72,8 +70,8 @@ class ViewModelInitApp(
                     loadingProgress = progress
                     if (progress >= 1.0f && isLoading) {
                         // Data is fully loaded, proceed with other initialization
-                        loadData(viewModel)
-                        FromAncienDataBase.setupRealtimeListeners(viewModel)
+                   //     loadData(viewModel)
+                   //     FromAncienDataBase.setupRealtimeListeners(viewModel)
                         isLoading = false
                     }
                 }
