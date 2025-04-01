@@ -55,11 +55,11 @@ class A_ProduitRepositoryImpl(
         try {
             progressRepo.value = 0.2f
             withContext(Dispatchers.IO) {
-                val clientsList = appDatabase.a_ProduiteDao().getAll()
+                val dataList = appDatabase.a_ProduiteDao().getAll()
                 withContext(Dispatchers.Main) {
                     modelDatas.clear()
-                    if (clientsList.isNotEmpty()) {
-                        modelDatas.addAll(clientsList)
+                    if (dataList.isNotEmpty()) {
+                        modelDatas.addAll(dataList)
                     }
                     initialDataLoaded = true
                     progressRepo.value = 1.0f
@@ -209,23 +209,23 @@ class A_ProduitRepositoryImpl(
                     val task = A_ProduitRepository.caReference.get()
                     val snapshot = Tasks.await(task)
                     appDatabase.a_ProduiteDao().deleteAll()
-                    val clientsList = mutableListOf<A_Produit>()
+                    val dataList = mutableListOf<A_Produit>()
 
                     for (dataSnapshot in snapshot.children) {
                         try {
-                            val clientData = dataSnapshot.getValue(A_Produit::class.java)
-                            clientData?.let {
-                                clientsList.add(it)
+                            val data = dataSnapshot.getValue(A_Produit::class.java)
+                            data?.let {
+                                dataList.add(it)
                             }
                         } catch (e: Exception) {
                             // Log error
                         }
                     }
 
-                    if (clientsList.isNotEmpty()) {
-                        appDatabase.a_ProduiteDao().insertAll(clientsList)
+                    if (dataList.isNotEmpty()) {
+                        appDatabase.a_ProduiteDao().insertAll(dataList)
                         withContext(Dispatchers.Main) {
-                            modelDatas.addAll(clientsList)
+                            modelDatas.addAll(dataList)
                         }
                     }
 

@@ -7,6 +7,7 @@ import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBase
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.clientjetpack.Models.UiState
+import kotlinx.coroutines.flow.first
 import org.koin.core.context.GlobalContext
 
 
@@ -19,7 +20,6 @@ class ArticlePagingSource(
 ) : PagingSource<Int, ArticlesBasesStatsTable>() {
     private val pageSize = 10
     private val cachedFilteredArticles = mutableMapOf<Int, List<ArticlesBasesStatsTable>>()
-
 
     override fun getRefreshKey(state: PagingState<Int, ArticlesBasesStatsTable>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
@@ -64,6 +64,17 @@ class ArticlePagingSource(
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ArticlesBasesStatsTable> {
         val page = params.key ?: 0
+
+        // Wait until progressRepo reaches 1.0 (data fully loaded)
+        val progress = a_ProduitRepository.progressRepo.first()
+        if (progress < 1.0f) {
+            // Return empty page while waiting for data to load
+            return LoadResult.Page(
+                data = emptyList(),
+                prevKey = null,
+                nextKey = null
+            )
+        }
 
         return try {
             val filteredArticles = cachedFilteredArticles.getOrPut(page) {
