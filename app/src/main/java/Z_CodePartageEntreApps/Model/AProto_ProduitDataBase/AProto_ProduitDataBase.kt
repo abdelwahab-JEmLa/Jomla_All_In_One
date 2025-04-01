@@ -1,8 +1,9 @@
-package Z_CodePartageEntreApps.Model.A_ProduitDataBase
+package Z_CodePartageEntreApps.Model.AProto_ProduitDataBase
 
 import androidx.compose.ui.graphics.Color
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+
 
 @Entity
 data class AProto_ProduitDataBase(
@@ -32,25 +33,17 @@ data class AProto_ProduitDataBase(
     // Section InfosCoutes
     var monPrixAchat: Double = 0.0,
     var monPrixVent: Double = 0.0,
-    ) {
-
+) {
+    fun hasRelevantChanges(oldData: AProto_ProduitDataBase, newData: AProto_ProduitDataBase): Boolean {
+        return  oldData.nom != newData.nom ||  //<--
+                oldData.parentCategoryId != newData.parentCategoryId ||
+                oldData.indexInParentCategorie != newData.indexInParentCategorie ||
+                oldData.isVisible != newData.isVisible
+    }
     enum class NON_DISPO_POUR_CLIENTS(val color: Color) {
         DISPONIBLE_POUR_TOUT(Color(0xFF786C69)),
         TOUT(Color(0xFFF44336)),
         NEVEAU(Color(0xFFFF9800)),
         DEFINIE(Color(0xFF2196F3));
-
-        companion object {
-            fun fromNullable(value: NON_DISPO_POUR_CLIENTS?): String {
-                return when (value) {
-                    null -> "Disponible"
-                    TOUT -> "Tout"
-                    NEVEAU -> "Neveau"
-                    DEFINIE -> "Définie"
-                    DISPONIBLE_POUR_TOUT -> "DISPONIBLE_POUR_TOUT"
-                }
-            }
-        }
     }
 }
-
