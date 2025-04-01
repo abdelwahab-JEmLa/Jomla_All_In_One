@@ -2,6 +2,8 @@ package Z_MasterOfApps.Z.Android.A_MainActivityApp.Start.Modules
 
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.Extension.B_ClientDataBaseDao
+import Z_CodePartageEntreApps.Model.I_CategorieProduits.A.Repository.Extension.I_CategorieProduitsDao
+import Z_CodePartageEntreApps.Model.I_CategorieProduits.I_CategorieProduits
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.SoldArticlesTabelle
@@ -28,6 +30,7 @@ import java.util.Date
         DiviseurDeDisplayProductForEachClient::class,
 
         B_ClientDataBase::class,
+        I_CategorieProduits::class,
     ],
     version = 1,
     exportSchema = false
@@ -44,6 +47,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun diviseurDeDisplayProductForEachClientDao(): DiviseurDeDisplayProductForEachClientDao
 
     abstract fun b_ClientDataBaseDao(): B_ClientDataBaseDao
+    abstract fun i_CategorieProduitsDao(): I_CategorieProduitsDao
 
     object DatabaseModule {
         @Volatile

@@ -9,6 +9,8 @@ import Z_CodePartageEntreApps.Model.B_ClientsDataBaseRepo.Repository.B_ClientsDa
 import Z_CodePartageEntreApps.Model.CategoriesRepositoryImpl
 import Z_CodePartageEntreApps.Model.H_GroupesCategoriesRepository
 import Z_CodePartageEntreApps.Model.H_GroupesCategoriesRepositoryImpl
+import Z_CodePartageEntreApps.Model.I_CategorieProduits.A.Repository.I_CategorieProduitsRepository
+import Z_CodePartageEntreApps.Model.I_CategorieProduits.A.Repository.I_CategorieProduitsRepositoryImpl
 import Z_CodePartageEntreApps.Model.I_CategoriesRepository
 import Z_CodePartageEntreApps.Model.J_AppInstalleDonTelephoneRepository
 import Z_CodePartageEntreApps.Model.J_AppInstalleDonTelephoneRepositoryImpl
@@ -33,6 +35,8 @@ val repositoryModule = module {
     single<B_ClientsDataBaseRepository> { B_ClientsDataBaseRepositoryImpl() }
 
     single<I_CategoriesRepository> { CategoriesRepositoryImpl() }
+    single<I_CategorieProduitsRepository> { I_CategorieProduitsRepositoryImpl(get()) }
+
     single<H_GroupesCategoriesRepository> { H_GroupesCategoriesRepositoryImpl() }
     single<J_AppInstalleDonTelephoneRepository> { J_AppInstalleDonTelephoneRepositoryImpl() }
     single<K_TempTravailleRepository> { K_TempTravailleRepositoryImpl() }
