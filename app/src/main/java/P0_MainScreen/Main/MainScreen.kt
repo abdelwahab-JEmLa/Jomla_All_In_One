@@ -94,18 +94,17 @@ fun MainScreen(
     var lockHost by remember { mutableStateOf(false) }
     val targetCategoryId = remember { mutableStateOf<Long?>(null) }
 
-// In MainScreen.kt, replace the LaunchedEffect block with:
     LaunchedEffect(productDisplayController.clientWindowsDisplayedProductId) {
         showProductDisplay = productDisplayController.clientWindowsDisplayedProductId != null
 
         // Only navigate if needed, and don't force back to start every time
         if (productDisplayController.clientWindowsDisplayedProductId == null
             && productDisplayController.isHostPhone
-            && currentRoute != Screen.A_ClientsLocationGps.route
+            && currentRoute != Screen.EditDatabaseWithCreateNewArticles.route
             && navController.currentDestination != null) {
 
-            // Navigate without popping the entire back stack
-            navController.navigate(Screen.A_ClientsLocationGps.route) {
+            // Navigate to FragmentStartupScreen instead of A_ClientsLocationGps
+            navController.navigate(Screen.EditDatabaseWithCreateNewArticles.route) {
                 // Only pop up to start if explicitly returning to home
                 // launchSingleTop = true
             }
@@ -238,7 +237,6 @@ fun MainScreen(
                 if (isHostPhone) {
                     RecordAfficheurFAB()
                 }
-
 
                 // Show additional loading indicator if needed for other UI states
                 if (uiState.isLoading) {
