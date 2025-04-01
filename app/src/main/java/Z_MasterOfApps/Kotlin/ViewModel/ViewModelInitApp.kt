@@ -1,6 +1,6 @@
 package Z_MasterOfApps.Kotlin.ViewModel
 
-import Z_CodePartageEntreApps.Model.A_ProduitModelNewProto.Repository.A_ProduitModelRepository
+import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.I_CategoriesRepository
 import Z_CodePartageEntreApps.Model._ModelAppsFather
@@ -26,7 +26,7 @@ import kotlinx.coroutines.tasks.await
 
 @SuppressLint("SuspiciousIndentation")
 class ViewModelInitApp(
-    val produitModelRepository: A_ProduitModelRepository ,
+    val produitModelRepository: A_ProduitRepository,
     val i_CategoriesRepository: I_CategoriesRepository
 ) : ViewModel() {
     var _paramatersAppsViewModelModel by mutableStateOf(ParamatersAppsModel())

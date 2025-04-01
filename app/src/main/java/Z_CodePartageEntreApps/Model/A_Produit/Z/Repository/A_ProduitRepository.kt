@@ -16,7 +16,9 @@ interface A_ProduitRepository {
     suspend fun updateMultiDatas(datas: SnapshotStateList<A_Produit>)
 
     companion object {
-        val caReference = Firebase.database.getReference("A_ProduitDataBase")
+        val headRef = Firebase.database.getReference("A_ProduitDataBase")
+        val sonDataBaseRef = headRef.child("DataBase")
+        val iDsDatasFlowUpdateRef = headRef.child("IDsDatasFlowUpdate")
     }
 
     fun deleteUnSeulData(data: A_Produit)

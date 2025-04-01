@@ -2,8 +2,6 @@ package Z_MasterOfApps.Z.Android.A_MainActivityApp.Start
 
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepositoryImpl
-import Z_CodePartageEntreApps.Model.A_ProduitModelNewProto.Repository.A_ProduitModelRepository
-import Z_CodePartageEntreApps.Model.A_ProduitModelNewProto.Repository.A_ProduitModelRepositoryImpl
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.B_ClientDataBaseRepository
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.B_ClientDataBaseRepositoryImpl
 import Z_CodePartageEntreApps.Model.B_ClientsDataBaseRepo.Repository.B_ClientsDataBaseRepository
@@ -32,8 +30,6 @@ import org.koin.dsl.module
 val repositoryModule = module {
     single<B_ClientDataBaseRepository> { B_ClientDataBaseRepositoryImpl(get()) }
 
-    // Singleton: une seule instance pour toute l'application
-    single<A_ProduitModelRepository> { A_ProduitModelRepositoryImpl() }
     single<A_ProduitRepository> { A_ProduitRepositoryImpl(get()) }
 
     single<B_ClientsDataBaseRepository> { B_ClientsDataBaseRepositoryImpl() }

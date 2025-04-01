@@ -5,7 +5,7 @@ import Views.P1.Ui.ArticlesGrid.ImageDisplayer1
 import Views.P1.Ui.ArticlesGrid.checkImageExists
 import Views.P1.Ui.ArticlesGrid.countColors
 import Views.P1.Ui.ArticlesGrid.getColorIdForIndex
-import Z_CodePartageEntreApps.Model.A_ProduitModel
+import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
@@ -41,7 +41,7 @@ fun ArticleItem(
     uiState: UiState,
     isFirstVisible: Boolean = false,
     currentClient: B_ClientsDataBase?,
-    produitDepuitNewDATABASE: A_ProduitModel?,
+    produitDepuitNewDATABASE: A_Produit?,
     lockHost: Boolean, viewModelInitApp: ViewModelInitApp
 ) {
     val colorCount = countColors(article)

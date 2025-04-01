@@ -181,7 +181,7 @@ fun ImageDisplayer1(
         }
 
         produitDepuitNewDATABASE?.let { produit ->
-            if (produit.etatesMutable.porbableNonDispo) {
+            if (produit.probablementNonDispo) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()

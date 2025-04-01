@@ -4,7 +4,7 @@ import P0_MainScreen.Ui.Objects.LoadingOverlay
 import Views.P1.Ui.ArticlesGrid.ArticleGridWithScrollbar
 import Views.P1.Ui.Objects.SearchFilterPB
 import Views.P1._ArticlesStartFacade.FloatingActionButtonGroup.FloatingActionButtonGroup
-import Z_CodePartageEntreApps.Model.A_ProduitModelNewProto.Repository.A_ProduitModelRepository
+import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Kotlin._WorkingON.WO_.WifiUpdateClientDisplayerStats
@@ -190,7 +190,7 @@ fun MainUi(
     )
 
     Box(modifier = Modifier.fillMaxSize()) {
-        val a_ProduitModelRepository = koinInject<A_ProduitModelRepository>()
+        val a_ProduitModelRepository = koinInject<A_ProduitRepository>()
 
         Column(
             modifier = Modifier

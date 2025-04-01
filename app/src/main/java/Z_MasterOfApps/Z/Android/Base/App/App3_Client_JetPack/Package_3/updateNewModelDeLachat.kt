@@ -1,18 +1,9 @@
 package Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Package_3
 
-import Z_CodePartageEntreApps.Model.A_ProduitModel
-import Z_CodePartageEntreApps.Model.A_ProduitModel.ClientBonVentModel
-import Z_CodePartageEntreApps.Model.A_ProduitModel.GrossistBonCommandes
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
-import Z_CodePartageEntreApps.Model._ModelAppsFather
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.SoldArticlesTabelle
-import Z_MasterOfApps.Z_AppsFather.Kotlin._4.Modules.LogUtils.LogUtils
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.launch
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 fun updateNewModelDeLachat(
     quantity: Int,
@@ -21,7 +12,7 @@ fun updateNewModelDeLachat(
     colorDetails: ColorsArticlesTabelle,
     viewModelInitApp: ViewModelInitApp
 ) {
-    val produitsMainDataBase = viewModelInitApp.produitsMainDataBaseFromRepositeryPrototype
+  /*  val produitsMainDataBase = viewModelInitApp.produitsMainDataBaseFromRepositeryPrototype
 
     try {
         if (currentSale == null || currentClient == null) {
@@ -150,5 +141,5 @@ fun createNewProduct(
         )
     }.also {
         viewModelInitApp._modelAppsFather.produitsMainDataBase.add(it)
-    }
+    }      */
 }

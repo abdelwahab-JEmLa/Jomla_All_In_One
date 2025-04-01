@@ -1,5 +1,6 @@
 package P0_MainScreen.Main
 
+import P0_MainScreen.Main.Windows.RecordAfficheurFAB
 import P0_MainScreen.Modules.HandleFullscreenMode
 import P0_MainScreen.Ui.Main.AppNavHost.AppNavHost
 import P0_MainScreen.Ui.Main.AppNavHost.NavigationBarWithFab
@@ -8,9 +9,8 @@ import P0_MainScreen.Ui.Main.AppNavHost.Screen
 import P0_MainScreen.Ui.Objects.ConnexionCard
 import Views.FragId4_EStorePresentationToClient.FragmentDisplayeInfoProductToClient7
 import Views.FragId4_EStorePresentationToClient.Modules.SearchArticle
-import Z_CodePartageEntreApps.Model.A_ProduitModelNewProto.Repository.A_ProduitModelRepository
+import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import P0_MainScreen.Main.Windows.RecordAfficheurFAB
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -50,7 +50,7 @@ fun MainScreen(
     viewModelInitApp: ViewModelInitApp = koinViewModel(),
     xmlResources: List<Pair<String, Int>>?=null,
 ) {
-    val a_ProduitModelRepository = koinInject<A_ProduitModelRepository>()
+    val a_ProduitModelRepository = koinInject<A_ProduitRepository>()
 
     // Track the repository progress
     val repositoryProgress by a_ProduitModelRepository.progressRepo.collectAsState()
