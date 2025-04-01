@@ -313,11 +313,9 @@ class AProto_ProduitDataBaseRepositoryImpl(
                         isListenerActive.set(false)
                     }
 
-                    // Update each record individually outside synchronized block
-                    for (data in datas) {
-                        AProto_ProduitDataBaseRepository.caReference.child(data.id.toString())
-                            .setValue(data).await()
-                    }
+                    // Use the batch update method instead of individual updates
+                    batchFireBaseSet(datasList)
+
                 } catch (e: Exception) {
                     // Log error
                 } finally {
@@ -342,6 +340,29 @@ class AProto_ProduitDataBaseRepositoryImpl(
             // Log error
         } finally {
             isUpdating.set(false)
+        }
+    }
+
+    private fun batchFireBaseSet(datas: List<A_Produit>): Unit {
+        try {
+            val reference = AProto_ProduitDataBaseRepository.caReference
+            val batchUpdates = HashMap<String, Any>()
+
+            // Prepare all updates in a single map
+            for (data in datas) {
+                batchUpdates[data.id.toString()] = data
+            }
+
+            // Apply all updates in a single operation
+            reference.updateChildren(batchUpdates)
+                .addOnSuccessListener {
+                    // Success handling can be added here if needed
+                }
+                .addOnFailureListener { exception ->
+                    // Error handling - could log the exception
+                }
+        } catch (e: Exception) {
+            // Log error but continue
         }
     }
 
