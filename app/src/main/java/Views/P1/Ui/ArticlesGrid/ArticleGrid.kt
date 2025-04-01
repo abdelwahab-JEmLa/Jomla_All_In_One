@@ -44,8 +44,7 @@ import kotlin.collections.component2
 import kotlin.collections.set
 
 private const val TAG = "ArticleGridDebug"
-
-@Composable
+ @Composable
 fun ArticleGridWithScrollbar(
     uiState: UiState,
     gridColumns: Int,
