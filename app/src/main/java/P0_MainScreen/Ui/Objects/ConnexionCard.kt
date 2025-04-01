@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -25,7 +24,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.clientjetpack.Models.ProductDisplayController
@@ -42,6 +40,9 @@ fun ConnexionCard(
     var isCollapsed by remember { mutableStateOf(true) }
     var messageText by remember { mutableStateOf("") }
     val isHostEnabled = Build.MODEL.lowercase().contains("note")
+
+    // Get the error color outside of the Canvas
+    val errorColor = MaterialTheme.colorScheme.error
 
     Card(
         modifier = Modifier
@@ -103,30 +104,35 @@ fun ConnexionCard(
                 }
             }
         } else {
-            Column(
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 16.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
             ) {
-                LinearProgressIndicator(
+                // Store the color outside the Canvas and use it inside
+                androidx.compose.foundation.Canvas(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(4.dp),
-                    color = MaterialTheme.colorScheme.primary,
-                    trackColor = MaterialTheme.colorScheme.surfaceVariant
+                        .padding(horizontal = 8.dp)
+                        .height(8.dp)
+                        .weight(0.1f),
+                    onDraw = {
+                        drawCircle(
+                            color = errorColor, // Use the captured color here
+                            radius = size.minDimension / 2
+                        )
+                    }
                 )
                 Text(
                     text = "Connexion",
                     style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.rotate(90f)
+                    modifier = Modifier.weight(0.9f)
                 )
             }
         }
     }
 }
-
 
 @Composable
 private fun ConnectionStatus(productDisplayController: ProductDisplayController) {
