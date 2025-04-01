@@ -5,7 +5,6 @@ import Z_CodePartageEntreApps.Model.AProto_ProduitDataBase.Z.Repository.AProto_P
 import Z_CodePartageEntreApps.Model.A_ProduitModel
 import Z_CodePartageEntreApps.Model._ModelAppsFather.Companion.ref_HeadOfModels
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -35,37 +34,22 @@ class ViewModel_AProto_ProduitDataBase(
     private suspend fun getAncienDataBase(): List<A_ProduitModel> =
         withContext(Dispatchers.IO) {
             return@withContext try {
-                Log.d(TAG, "Starting retrieval from old database at path: ${sonAncienReference.path}")
                 val snapshot = sonAncienReference.get().await()
 
                 if (!snapshot.exists()) {
-                    Log.e(TAG, "Error: Old database reference doesn't exist at path: ${sonAncienReference.path}")
                     return@withContext emptyList()
                 }
 
-                Log.d(TAG, "Successfully fetched data snapshot with ${snapshot.childrenCount} items")
-
                 val result = snapshot.children.mapNotNull {
                     try {
-                        val item = it.getValue(A_ProduitModel::class.java)
-                        if (item == null) {
-                            Log.w(TAG, "Warning: Failed to parse item with key: ${it.key}")
-                        } else {
-                            Log.v(TAG, "Successfully parsed item: ${item.id} - ${item.nom}")
-                        }
-                        item
+                        it.getValue(A_ProduitModel::class.java)
                     } catch (e: Exception) {
-                        Log.e(TAG, "Error parsing item with key ${it.key}: ${e.message}", e)
                         null
                     }
                 }
 
-                Log.d(TAG, "Successfully parsed ${result.size}/${snapshot.childrenCount} items from old database")
                 result
             } catch (e: Exception) {
-                Log.e(TAG, "Error retrieving ancien produits: ${e.message}", e)
-                Log.e(TAG, "Database path attempted: ${sonAncienReference.path}")
-                Log.e(TAG, "Stack trace:", e)
                 emptyList()
             }
         }
@@ -73,30 +57,22 @@ class ViewModel_AProto_ProduitDataBase(
     /**
      * Migrates data from the old database structure to the new one
      */
-    /**
-     * Migrates data from the old database structure to the new one
-     */
     fun populateModelearSonAncien() {
-        Log.d(TAG, "Starting migration from old database structure to new one")
         viewModelScope.launch {
             try {
                 _migrationProgress.value = 0.1f
-                Log.d(TAG, "Migration progress: 10% - Starting data retrieval")
 
                 // Get data from old database structure
                 val ancienDataList = getAncienDataBase()
 
                 if (ancienDataList.isEmpty()) {
-                    Log.d(TAG, "No ancien data found to migrate. Either database is empty or there was an error retrieving data")
                     _migrationProgress.value = 0f
                     return@launch
                 }
 
-                Log.d(TAG, "Migration progress: 30% - Retrieved ${ancienDataList.size} items from old database")
                 _migrationProgress.value = 0.3f
 
                 // Transform old data structure to new AProto_ProduitDataBase structure
-                Log.d(TAG, "Starting data transformation from old to new structure")
                 val newDataList = ancienDataList.mapIndexed { index, ancienData ->
                     try {
                         // Update progress during mapping (from 30% to 60%)
@@ -123,10 +99,8 @@ class ViewModel_AProto_ProduitDataBase(
                             monPrixAchat = ancienData.statuesBase.infosCoutes.monPrixAchat,
                             monPrixVent = ancienData.statuesBase.infosCoutes.monPrixVent
                         )
-                        Log.v(TAG, "Transformed item ${index+1}/${ancienDataList.size}: ${newItem.id} - ${newItem.nom}")
                         newItem
                     } catch (e: Exception) {
-                        Log.e(TAG, "Error transforming item ${ancienData.id}: ${e.message}", e)
                         // Return a default item to maintain consistency
                         AProto_ProduitDataBase(
                             id = ancienData.id,
@@ -137,32 +111,23 @@ class ViewModel_AProto_ProduitDataBase(
                     }
                 }
 
-                Log.d(TAG, "Migration progress: 60% - Transformed ${newDataList.size} items to new structure")
                 _migrationProgress.value = 0.6f
 
                 // Create a SnapshotStateList from the converted data
                 val snapshotList = SnapshotStateList<AProto_ProduitDataBase>()
                 snapshotList.addAll(newDataList)
-                Log.d(TAG, "Created SnapshotStateList with ${snapshotList.size} items")
 
                 // Update repository with new data structure
-                Log.d(TAG, "Starting repository update with transformed data")
                 try {
                     // Update progress to 80% before database write
                     _migrationProgress.value = 0.8f
                     AProto_ProduitDataBaseRepository.updateMultiDatas(snapshotList)
-                    Log.d(TAG, "Repository update successful")
                 } catch (e: Exception) {
-                    Log.e(TAG, "Error updating repository: ${e.message}", e)
                     throw e
                 }
 
                 _migrationProgress.value = 1.0f
-                Log.d(TAG, "Migration progress: 100% - Migration complete")
-                Log.d(TAG, "Successfully migrated ${newDataList.size} category products from ancien database")
             } catch (e: Exception) {
-                Log.e(TAG, "Error migrating ancien database: ${e.message}", e)
-                Log.e(TAG, "Stack trace:", e)
                 _migrationProgress.value = 0f
             }
         }
@@ -184,7 +149,6 @@ class ViewModel_AProto_ProduitDataBase(
      * Updates a single product category
      */
     fun updateData(categorieProduit: AProto_ProduitDataBase) {
-        Log.d(TAG, "Updating single product category: ${categorieProduit.id} - ${categorieProduit.nom}")
         AProto_ProduitDataBaseRepository.updateUnSeulData(categorieProduit)
     }
 
@@ -192,7 +156,6 @@ class ViewModel_AProto_ProduitDataBase(
      * Updates multiple product categories at once
      */
     suspend fun updateMultiDatas(data: SnapshotStateList<AProto_ProduitDataBase>) {
-        Log.d(TAG, "Updating multiple product categories: ${data.size} items")
         AProto_ProduitDataBaseRepository.updateMultiDatas(data)
     }
 }
