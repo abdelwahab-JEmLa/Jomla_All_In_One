@@ -1,10 +1,11 @@
 package com.example.clientjetpack.ViewModel
 
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
-import Z_CodePartageEntreApps.Model.CategoriesRepositoryImpl
-import Z_CodePartageEntreApps.Model.I_CategoriesRepository
+import Z_CodePartageEntreApps.Model.I_CategorieProduits.A.Repository.I_CategorieProduitsRepository
+import Z_CodePartageEntreApps.Model.I_CategorieProduits.A.Repository.I_CategorieProduitsRepositoryImpl
 import Z_MasterOfApps.Kotlin._WorkingON.WO_.ConnectionManager
 import Z_MasterOfApps.Kotlin._WorkingON.WO_.WifiUpdateClientDisplayerStats
+import Z_MasterOfApps.Z.Android.A_MainActivityApp.Start.Modules.AppDatabase
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.SoldArticlesTabelle
@@ -22,7 +23,6 @@ import com.example.clientjetpack.Models.DevicesTypeManager
 import com.example.clientjetpack.Models.PriceRecord
 import com.example.clientjetpack.Models.ProductDisplayController
 import com.example.clientjetpack.Models.UiState
-import Z_MasterOfApps.Z.Android.A_MainActivityApp.Start.Modules.AppDatabase
 import com.google.firebase.database.BuildConfig
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -44,7 +44,6 @@ import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 
-
 open class HeadViewModel(
     context: Context,
     val database: AppDatabase,
@@ -60,7 +59,7 @@ open class HeadViewModel(
 
     open val uiState = _uiState.asStateFlow()
 
-    val categoriesRepository: I_CategoriesRepository = CategoriesRepositoryImpl()
+    val categoriesRepository: I_CategorieProduitsRepository = I_CategorieProduitsRepositoryImpl(database)
 
 
     private val connectionManager = ConnectionManager(
@@ -1084,15 +1083,15 @@ open class HeadViewModel(
 
     private suspend fun categorieChangeposisio(): MutableList<CategoriesTabelle> {
         try {
-            val categories = categoriesRepository.modelDatas
+            val categories = database.i_CategorieProduitsDao().getAll()
 
             // If no existing categories, create new ones from repository
             val newCategories = categories.map { category ->
                 CategoriesTabelle(
                     idCategorieInCategoriesTabele = category.id,
-                    nomCategorieInCategoriesTabele = category.infosDeBase.nom,
-                    idClassementCategorieInCategoriesTabele = category.statuesMutable.indexDonsParentList.toInt(),
-                    displayedHeader = category.statuesMutable.afficheSonHeader,
+                    nomCategorieInCategoriesTabele = category.nom,
+                    idClassementCategorieInCategoriesTabele = category.indexDonsParentList.toInt(),
+                    displayedHeader = category.afficheSonHeader,
                 )
             }.toMutableList()
 

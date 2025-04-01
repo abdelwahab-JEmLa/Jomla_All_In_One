@@ -16,7 +16,7 @@ class A_ProduitModelRepositoryImpl(
     override var modelDatas: SnapshotStateList<A_ProduitModel> = mutableStateListOf()
     override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
 
-    val connectivityMonitor = ConnectivityMonitorNewProto(CoroutineScope(Dispatchers.Default))
+    private val connectivityMonitor = ConnectivityMonitorNewProto(CoroutineScope(Dispatchers.Default))
 
     private var listener: ValueEventListener? = null
     internal var isUpdating = false
@@ -25,7 +25,7 @@ class A_ProduitModelRepositoryImpl(
 
     init {
         FirebaseUtilsA_ProduitModelNewProto.initializeFirebaseOfflineCapability()
-   //     startDatabaseListener()
+        startDatabaseListener()
         progressRepo.value = 1.0f
 
     }
