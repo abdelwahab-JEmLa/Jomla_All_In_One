@@ -100,7 +100,7 @@ fun ButtonFun_1_populateSonAncien(
                 TextButton(onClick = {
                     coroutineScope.launch {
                         viewModel.populateModelearSonAncien()
-
+                        showConfirmationDialog = false
                     }
                 }) {
                     Text("Confirm")
