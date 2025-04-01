@@ -55,7 +55,7 @@ class A_ProduitRepositoryImpl(
         try {
             progressRepo.value = 0.2f
             withContext(Dispatchers.IO) {
-                val clientsList = appDatabase.aProto_ProduitDataBaseDao().getAll()
+                val clientsList = appDatabase.a_ProduiteDao().getAll()
                 withContext(Dispatchers.Main) {
                     modelDatas.clear()
                     if (clientsList.isNotEmpty()) {
@@ -74,7 +74,7 @@ class A_ProduitRepositoryImpl(
     private suspend fun checkDataConsistency() {
         try {
             val roomCount = withContext(Dispatchers.IO) {
-                appDatabase.aProto_ProduitDataBaseDao().getCount()
+                appDatabase.a_ProduiteDao().getCount()
             }
             val firebaseSnapshot = withContext(Dispatchers.IO) {
                 val task = A_ProduitRepository.caReference.get()
@@ -128,7 +128,7 @@ class A_ProduitRepositoryImpl(
                                             modelDatas.add(newData)
                                         }
                                         repositoryScope.launch {
-                                            appDatabase.aProto_ProduitDataBaseDao().insert(newData)
+                                            appDatabase.a_ProduiteDao().insert(newData)
                                         }
                                     }
                                 }
@@ -140,27 +140,37 @@ class A_ProduitRepositoryImpl(
 
                     override fun onCancelled(error: DatabaseError) {
                         // Log error
+                        isListenerActive.set(false)  // Reset flag on cancellation
                     }
                 }
 
                 // Set flag before adding listener
                 isListenerActive.set(true)
-                A_ProduitRepository.caReference.addValueEventListener(valueEventListener!!)
+                try {
+                    A_ProduitRepository.caReference.addValueEventListener(valueEventListener!!)
+                } catch (e: Exception) {
+                    // If adding the listener fails, reset the flag
+                    isListenerActive.set(false)
+                    valueEventListener = null
+                    // Log error
+                }
             }
         }
     }
 
     private fun removeDataChangeListener() {
         synchronized(listenerLock) {
-            valueEventListener?.let {
+            if (isListenerActive.get() && valueEventListener != null) {
                 try {
-                    A_ProduitRepository.caReference.removeEventListener(it)
+                    A_ProduitRepository.caReference.removeEventListener(valueEventListener!!)
                 } catch (e: Exception) {
                     // Log error but continue
+                } finally {
+                    // Always reset these values, even if an exception occurs
+                    valueEventListener = null
+                    isListenerActive.set(false)
                 }
             }
-            valueEventListener = null
-            isListenerActive.set(false)
         }
     }
 
@@ -177,7 +187,7 @@ class A_ProduitRepositoryImpl(
             repositoryScope.launch(Dispatchers.IO) {
                 try {
                     A_ProduitRepository.caReference.child(data.id.toString()).removeValue().await()
-                    appDatabase.aProto_ProduitDataBaseDao().delete(data)
+                    appDatabase.a_ProduiteDao().delete(data)
                 } catch (e: Exception) {
                     // Log error
                 }
@@ -198,7 +208,7 @@ class A_ProduitRepositoryImpl(
                 try {
                     val task = A_ProduitRepository.caReference.get()
                     val snapshot = Tasks.await(task)
-                    appDatabase.aProto_ProduitDataBaseDao().deleteAll()
+                    appDatabase.a_ProduiteDao().deleteAll()
                     val clientsList = mutableListOf<A_Produit>()
 
                     for (dataSnapshot in snapshot.children) {
@@ -213,7 +223,7 @@ class A_ProduitRepositoryImpl(
                     }
 
                     if (clientsList.isNotEmpty()) {
-                        appDatabase.aProto_ProduitDataBaseDao().insertAll(clientsList)
+                        appDatabase.a_ProduiteDao().insertAll(clientsList)
                         withContext(Dispatchers.Main) {
                             modelDatas.addAll(clientsList)
                         }
@@ -241,7 +251,7 @@ class A_ProduitRepositoryImpl(
             repositoryScope.launch(Dispatchers.IO) {
                 try {
                     A_ProduitRepository.caReference.child(data.id.toString()).setValue(data).await()
-                    appDatabase.aProto_ProduitDataBaseDao().insert(data)
+                    appDatabase.a_ProduiteDao().insert(data)
                 } catch (e: Exception) {
                     // Log error
                 }
@@ -266,7 +276,7 @@ class A_ProduitRepositoryImpl(
         repositoryScope.launch(Dispatchers.IO) {
             try {
                 firebaseUpdateData(data)
-                appDatabase.aProto_ProduitDataBaseDao().insert(data)
+                appDatabase.a_ProduiteDao().insert(data)
             } catch (e: Exception) {
                 // Log error
             }
@@ -292,8 +302,8 @@ class A_ProduitRepositoryImpl(
             // First, handle Room database update
             withContext(Dispatchers.IO) {
                 try {
-                    appDatabase.aProto_ProduitDataBaseDao().deleteAll()
-                    appDatabase.aProto_ProduitDataBaseDao().insertAll(datasList)
+                    appDatabase.a_ProduiteDao().deleteAll()
+                    appDatabase.a_ProduiteDao().insertAll(datasList)
                 } catch (e: Exception) {
                     // Log error but continue with Firebase updates
                 }

@@ -53,7 +53,7 @@ abstract class AppDatabase : RoomDatabase() {
 
     abstract fun b_ClientDataBaseDao(): B_ClientDataBaseDao
     abstract fun i_CategorieProduitsDao(): I_CategorieProduitsDao
-    abstract fun aProto_ProduitDataBaseDao(): A_ProduitDao
+    abstract fun a_ProduiteDao(): A_ProduitDao
 
     object DatabaseModule {
         @Volatile
@@ -66,6 +66,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "app_database"
                 )
+                    .fallbackToDestructiveMigration()
                     .build()
                 INSTANCE = instance
                 instance
