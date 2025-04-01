@@ -2,6 +2,8 @@ package Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows
 
 import Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.A.A_ProduitModelButtons
 import Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.A.ViewModelA_ProduitModelButtons
+import Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.AProto.AProto_ProduitDataBaseButtons
+import Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.AProto.ViewModel_AProto_ProduitDataBase
 import Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.BProto_ClientsDataBaseButton.BProto_ClientsDataBaseButton
 import Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.BProto_ClientsDataBaseButton.ViewModel_BProto_ClientsDataBase
 import Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.I_CategorieProduits.I_CategorieProduitsButtons
@@ -30,6 +32,7 @@ val dataBaseEditeWindowsModules = module {
     viewModel { ViewModelA_ProduitModelButtons(get()) }
     viewModel { ViewModel_BProto_ClientsDataBase(get()) }
     viewModel { ViewModel_I_CategorieProduits(get()) }
+    viewModel { ViewModel_AProto_ProduitDataBase(get()) }
 }
 
 // Load the module when the composable is first used
@@ -67,6 +70,7 @@ fun DataBaseEditeWindows(onDissmis: () -> Unit) {
                     BProto_ClientsDataBaseButton()
 
                     I_CategorieProduitsButtons()
+                    AProto_ProduitDataBaseButtons()
                 }
             }
         }

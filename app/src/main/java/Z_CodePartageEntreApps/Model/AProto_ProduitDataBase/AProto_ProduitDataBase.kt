@@ -28,7 +28,6 @@ data class AProto_ProduitDataBase(
     // Section sonCategory
     var parentCategoryId: Long = 0L,
     var indexInParentCategorie: Int = 0,
-    var coloursEtGoutsIds: List<Long> = emptyList(),
 
     // Section InfosCoutes
     var monPrixAchat: Double = 0.0,

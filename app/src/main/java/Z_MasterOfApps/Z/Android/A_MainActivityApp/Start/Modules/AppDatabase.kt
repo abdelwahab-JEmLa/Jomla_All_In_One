@@ -19,6 +19,8 @@ import androidx.room.TypeConverters
 import com.example.Models.DiviseurDeDisplayProductForEachClient
 import com.example.clientjetpack.Models.AppSettingsSaverModel
 import com.example.clientjetpack.Models.DevicesTypeManager
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import java.util.Date
 
 @Database(
@@ -38,7 +40,7 @@ import java.util.Date
     version = 1,
     exportSchema = false
 )
-@TypeConverters(DateConverter::class)
+@TypeConverters(DateConverter::class, ListLongConverter::class)
 abstract class AppDatabase : RoomDatabase() {
     // All DAOs
     abstract fun articlesBasesStatsModelDao(): ArticlesBasesStatsModelDao
@@ -72,6 +74,20 @@ abstract class AppDatabase : RoomDatabase() {
     }
 }
 
+class ListLongConverter {
+    @TypeConverter
+    fun fromListLong(value: List<Long>): String {
+        val gson = Gson()
+        return gson.toJson(value)
+    }
+
+    @TypeConverter
+    fun toListLong(value: String): List<Long> {
+        val gson = Gson()
+        val listType = object : TypeToken<List<Long>>() {}.type
+        return gson.fromJson(value, listType)
+    }
+}
 // First, let's properly set up the DateConverter
 class DateConverter {
     @TypeConverter
