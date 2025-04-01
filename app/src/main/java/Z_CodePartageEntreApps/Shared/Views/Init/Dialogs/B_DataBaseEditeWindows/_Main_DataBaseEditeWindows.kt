@@ -4,6 +4,8 @@ import Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.A
 import Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.A.ViewModelA_ProduitModelButtons
 import Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.BProto_ClientsDataBaseButton.BProto_ClientsDataBaseButton
 import Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.BProto_ClientsDataBaseButton.ViewModel_BProto_ClientsDataBase
+import Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.I_CategorieProduits.I_CategorieProduitsButtons
+import Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.I_CategorieProduits.ViewModel_I_CategorieProduits
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,6 +29,7 @@ import org.koin.dsl.module
 val dataBaseEditeWindowsModules = module {
     viewModel { ViewModelA_ProduitModelButtons(get()) }
     viewModel { ViewModel_BProto_ClientsDataBase(get()) }
+    viewModel { ViewModel_I_CategorieProduits(get()) }
 }
 
 // Load the module when the composable is first used
@@ -61,8 +64,9 @@ fun DataBaseEditeWindows(onDissmis: () -> Unit) {
 
                     A_ProduitModelButtons()
 
-
                     BProto_ClientsDataBaseButton()
+
+                    I_CategorieProduitsButtons()
                 }
             }
         }

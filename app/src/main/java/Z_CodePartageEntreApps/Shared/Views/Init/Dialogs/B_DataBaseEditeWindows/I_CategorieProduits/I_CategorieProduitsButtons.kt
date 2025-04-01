@@ -1,5 +1,6 @@
-package Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.BProto_ClientsDataBaseButton
+package Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.I_CategorieProduits
 
+import Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.I_CategorieProduits.Z_ButtonsFunctions.ButtonFun_1_populateB_ClientDataBaseParSonAncien
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -18,8 +19,8 @@ import androidx.compose.ui.Modifier
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun BProto_ClientsDataBaseButton(
-    viewModel: ViewModel_BProto_ClientsDataBase = koinViewModel()
+fun I_CategorieProduitsButtons(
+    viewModel: ViewModel_I_CategorieProduits = koinViewModel()
 ) {
     var displayeButtonsFunctionRelated by remember { mutableStateOf(false) }
     var updateProgress by remember { mutableStateOf(0f) }
@@ -32,8 +33,8 @@ fun BProto_ClientsDataBaseButton(
     ) {
         Text(
             text = if (updateProgress > 0)
-                "B_ClientDataBase (${(updateProgress * 100).toInt()}%)"
-            else "B_ClientDataBase"
+                "I_CategorieProduits (${(updateProgress * 100).toInt()}%)"
+            else "I_CategorieProduits"
         )
     }
 
@@ -44,7 +45,7 @@ fun BProto_ClientsDataBaseButton(
     ) {
         LazyColumn {
             item {
-                ButFun_1_populateB_ClientDataBaseParSonAncien(
+                ButtonFun_1_populateB_ClientDataBaseParSonAncien(
                     viewModel = viewModel,
                     onProgressUpdate = { progress ->
                         updateProgress = progress

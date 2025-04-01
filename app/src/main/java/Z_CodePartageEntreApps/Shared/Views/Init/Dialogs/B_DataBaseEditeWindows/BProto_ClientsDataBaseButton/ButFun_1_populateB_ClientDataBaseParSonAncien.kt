@@ -73,7 +73,7 @@ fun ButFun_1_populateB_ClientDataBaseParSonAncien(
                 Text(
                     text = """
                              $nameFunciotn
-                                 fun populateB_ClientDataBaseParSonAncien() {
+                                 fun populateModelearSonAncien() {
         viewModelScope.launch {
             try {
                 // Get data from old database structure

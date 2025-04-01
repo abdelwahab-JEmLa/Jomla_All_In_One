@@ -125,7 +125,7 @@ fun ButtonFun_1(
 
                             if (diponibilityState == "Non Dispo") {
                                 // Logging using Android Log
-                                Log.i(TAG, "Unavailable Product - ID: ${produit.id}")
+                                Log.i(Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.I_CategorieProduits.Z_ButtonsFunctions.TAG, "Unavailable Product - ID: ${produit.id}")
 
                                 produit.etatesMutable.nonDispoPourClients =
                                     A_ProduitModel.EtatesMutable.NON_DISPO_POUR_CLIENTS.TOUT
@@ -138,7 +138,7 @@ fun ButtonFun_1(
 
                         if (updatedProductsList.isNotEmpty()) {
                             // Log the total number of updated products
-                            Log.i(TAG, "Total Unavailable Products Updated: ${updatedProductsList.size}")
+                            Log.i(Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.I_CategorieProduits.Z_ButtonsFunctions.TAG, "Total Unavailable Products Updated: ${updatedProductsList.size}")
                             viewModel.updateMultiDatas(updatedProductsList)
                         }
 
