@@ -1,4 +1,4 @@
-package com.example.clientjetpack.Models
+package Z_CodePartageEntreApps.Model.Z.Archive
 
 import androidx.room.PrimaryKey
 

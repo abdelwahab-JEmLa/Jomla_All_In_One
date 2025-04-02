@@ -1,4 +1,4 @@
-package Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.App
+package Z_CodePartageEntreApps.Model.Z.Archive
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

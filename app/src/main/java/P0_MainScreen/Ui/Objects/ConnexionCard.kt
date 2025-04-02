@@ -26,7 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.clientjetpack.Models.ProductDisplayController
+import Z_CodePartageEntreApps.Model.Z.Archive.ProductDisplayController
 import com.example.clientjetpack.ViewModel.HeadViewModel
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)

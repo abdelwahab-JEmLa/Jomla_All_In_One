@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.SecureFlagPolicy
-import com.example.clientjetpack.Models.ProductDisplayController
+import Z_CodePartageEntreApps.Model.Z.Archive.ProductDisplayController
 
 @Composable
 fun A_FragmentMain_id4(

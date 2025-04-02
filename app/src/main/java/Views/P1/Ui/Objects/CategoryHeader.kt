@@ -1,5 +1,5 @@
 package Views.P1.Ui.Objects
-import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.App.CategoriesTabelle
+import Z_CodePartageEntreApps.Model.Z.Archive.CategoriesTabelle
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row

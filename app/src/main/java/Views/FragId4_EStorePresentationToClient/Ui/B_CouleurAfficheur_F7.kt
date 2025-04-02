@@ -39,7 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.example.clientjetpack.Models.ColorArrangement
+import Z_CodePartageEntreApps.Model.Z.Archive.ColorArrangement
 import com.example.clientjetpack.R
 
 @OptIn(ExperimentalGlideComposeApi::class)

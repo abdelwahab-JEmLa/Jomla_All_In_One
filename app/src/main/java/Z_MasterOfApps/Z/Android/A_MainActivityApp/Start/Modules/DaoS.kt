@@ -3,7 +3,7 @@ package Z_MasterOfApps.Z.Android.A_MainActivityApp.Start.Modules
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.SoldArticlesTabelle
-import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.App.CategoriesTabelle
+import Z_CodePartageEntreApps.Model.Z.Archive.CategoriesTabelle
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -11,9 +11,9 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
-import com.example.Models.DiviseurDeDisplayProductForEachClient
-import com.example.clientjetpack.Models.AppSettingsSaverModel
-import com.example.clientjetpack.Models.DevicesTypeManager
+import Z_CodePartageEntreApps.Model.Z.Archive.DiviseurDeDisplayProductForEachClient
+import Z_CodePartageEntreApps.Model.Z.Archive.AppSettingsSaverModel
+import Z_CodePartageEntreApps.Model.Z.Archive.DevicesTypeManager
 
 @Dao
 interface DiviseurDeDisplayProductForEachClientDao {

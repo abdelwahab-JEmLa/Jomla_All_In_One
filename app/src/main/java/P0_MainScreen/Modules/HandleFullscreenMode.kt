@@ -9,7 +9,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import com.example.clientjetpack.Models.ProductDisplayController
+import Z_CodePartageEntreApps.Model.Z.Archive.ProductDisplayController
 
 @Composable
 fun HandleFullscreenMode(productDisplayController: ProductDisplayController) {

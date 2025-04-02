@@ -1,12 +1,15 @@
 package com.example.clientjetpack.Models
 
 import Z_CodePartageEntreApps.Model.A_ProduitModel
+import Z_CodePartageEntreApps.Model.Z.Archive.AppSettingsSaverModel
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.SoldArticlesTabelle
-import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.App.CategoriesTabelle
-import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.App.SuppliersTabelle
-import com.example.Models.DiviseurDeDisplayProductForEachClient
+import Z_CodePartageEntreApps.Model.Z.Archive.CategoriesTabelle
+import Z_CodePartageEntreApps.Model.Z.Archive.DevicesTypeManager
+import Z_CodePartageEntreApps.Model.Z.Archive.ProductDisplayController
+import Z_CodePartageEntreApps.Model.Z.Archive.SuppliersTabelle
+import Z_CodePartageEntreApps.Model.Z.Archive.DiviseurDeDisplayProductForEachClient
 
 data class UiState(
 

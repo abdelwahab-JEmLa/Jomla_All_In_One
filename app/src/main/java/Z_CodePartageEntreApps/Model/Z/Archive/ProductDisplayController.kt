@@ -1,4 +1,4 @@
-package com.example.clientjetpack.Models
+package Z_CodePartageEntreApps.Model.Z.Archive
 
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName

@@ -6,6 +6,10 @@ import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.Extension.B_ClientDataBaseDao
 import Z_CodePartageEntreApps.Model.I_CategorieProduits.A.Repository.Extension.I_CategorieProduitsDao
 import Z_CodePartageEntreApps.Model.I_CategorieProduits.I_CategorieProduits
+import Z_CodePartageEntreApps.Model.Z.Archive.AppSettingsSaverModel
+import Z_CodePartageEntreApps.Model.Z.Archive.CategoriesTabelle
+import Z_CodePartageEntreApps.Model.Z.Archive.DevicesTypeManager
+import Z_CodePartageEntreApps.Model.Z.Archive.DiviseurDeDisplayProductForEachClient
 import Z_MasterOfApps.Z.Android.A_MainActivityApp.Start.Modules.AppSettingsSaverModelDao
 import Z_MasterOfApps.Z.Android.A_MainActivityApp.Start.Modules.ArticlesBasesStatsModelDao
 import Z_MasterOfApps.Z.Android.A_MainActivityApp.Start.Modules.CategoriesModelDao
@@ -16,16 +20,12 @@ import Z_MasterOfApps.Z.Android.A_MainActivityApp.Start.Modules.SoldArticlesTabe
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.SoldArticlesTabelle
-import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.App.CategoriesTabelle
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
-import com.example.Models.DiviseurDeDisplayProductForEachClient
-import com.example.clientjetpack.Models.AppSettingsSaverModel
-import com.example.clientjetpack.Models.DevicesTypeManager
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.util.Date
