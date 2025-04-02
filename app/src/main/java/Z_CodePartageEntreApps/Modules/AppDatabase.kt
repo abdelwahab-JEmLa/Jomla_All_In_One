@@ -1,4 +1,4 @@
-package Z_MasterOfApps.Z.Android.A_MainActivityApp.Start.Modules
+package Z_CodePartageEntreApps.Modules
 
 import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.Extension.A_ProduitDao
@@ -6,6 +6,13 @@ import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.Extension.B_ClientDataBaseDao
 import Z_CodePartageEntreApps.Model.I_CategorieProduits.A.Repository.Extension.I_CategorieProduitsDao
 import Z_CodePartageEntreApps.Model.I_CategorieProduits.I_CategorieProduits
+import Z_MasterOfApps.Z.Android.A_MainActivityApp.Start.Modules.AppSettingsSaverModelDao
+import Z_MasterOfApps.Z.Android.A_MainActivityApp.Start.Modules.ArticlesBasesStatsModelDao
+import Z_MasterOfApps.Z.Android.A_MainActivityApp.Start.Modules.CategoriesModelDao
+import Z_MasterOfApps.Z.Android.A_MainActivityApp.Start.Modules.ColorsArticlesDao
+import Z_MasterOfApps.Z.Android.A_MainActivityApp.Start.Modules.DevicesTypeManagerDao
+import Z_MasterOfApps.Z.Android.A_MainActivityApp.Start.Modules.DiviseurDeDisplayProductForEachClientDao
+import Z_MasterOfApps.Z.Android.A_MainActivityApp.Start.Modules.SoldArticlesTabelleDao
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.SoldArticlesTabelle

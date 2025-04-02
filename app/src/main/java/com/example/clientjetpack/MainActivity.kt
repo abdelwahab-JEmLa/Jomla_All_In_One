@@ -21,8 +21,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import Z_MasterOfApps.Z.Android.A_MainActivityApp.Start.Modules.AppDatabase
-import Z_MasterOfApps.Z.Android.A_MainActivityApp.Start.appModule
+import Z_CodePartageEntreApps.Modules.AppDatabase
+import Z_CodePartageEntreApps.Modules.appModule
 import com.example.clientjetpack.ui.theme.ClientJetPackTheme
 import com.google.firebase.FirebaseApp
 import org.koin.android.ext.koin.androidContext

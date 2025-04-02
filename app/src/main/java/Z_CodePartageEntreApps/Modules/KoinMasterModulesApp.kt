@@ -1,4 +1,4 @@
-package Z_MasterOfApps.Z.Android.A_MainActivityApp.Start
+package Z_CodePartageEntreApps.Modules
 
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepositoryImpl
@@ -19,7 +19,6 @@ import Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.K_TempT
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Kotlin._WorkingON.WO_.ConnectionManager
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.ViewModel_App2FragID1
-import Z_MasterOfApps.Z.Android.A_MainActivityApp.Start.Modules.AppDatabase
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
 import android.content.Context
 import com.example.clientjetpack.ViewModel.HeadViewModel
@@ -50,7 +49,9 @@ val viewModelModule = module {
     viewModel { ViewModelInitApp(
         get(),get()
     ) }
-    viewModel { (context: Context) -> HeadViewModel(get(), AppDatabase.DatabaseModule.getDatabase(get())) }
+    viewModel { (context: Context) -> HeadViewModel(get(),
+        AppDatabase.DatabaseModule.getDatabase(get())
+    ) }
     viewModel { Windows__ViewModel(get()) }
     viewModel { ViewModel_App2FragID1(get()) }
 }
