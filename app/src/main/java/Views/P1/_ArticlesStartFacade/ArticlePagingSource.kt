@@ -10,7 +10,6 @@ import com.example.clientjetpack.Models.UiState
 import kotlinx.coroutines.flow.first
 import org.koin.core.context.GlobalContext
 
-
 class ArticlePagingSource(
     private val articles: List<ArticlesBasesStatsTable>,
     private val filterText: String,

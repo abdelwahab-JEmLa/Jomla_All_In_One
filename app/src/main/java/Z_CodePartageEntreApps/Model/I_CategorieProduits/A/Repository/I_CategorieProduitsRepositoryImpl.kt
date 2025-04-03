@@ -2,6 +2,7 @@ package Z_CodePartageEntreApps.Model.I_CategorieProduits.A.Repository
 
 import Z_CodePartageEntreApps.Model.I_CategorieProduits.I_CategorieProduits
 import Z_CodePartageEntreApps.Modules.AppDatabase
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.android.gms.tasks.Tasks
@@ -35,6 +36,7 @@ class I_CategorieProduitsRepositoryImpl(
     private val listenerLock = Any()
 
     init {
+        Log.d(TAG, "Repository initialization started")
         repositoryScope.launch {
             initializeRepository()
         }
@@ -42,22 +44,30 @@ class I_CategorieProduitsRepositoryImpl(
 
     private suspend fun initializeRepository() {
         try {
+            Log.d(TAG, "Starting repository initialization")
             loadDepuitRoom() // Always load from Room first for faster UI response
             checkDataConsistency() // Then check and update if necessary
+            Log.d(TAG, "Repository initialization completed successfully")
         } catch (e: Exception) {
-            // Log error
+            Log.e(TAG, "Failed to initialize repository: ${e.message}", e)
         }
     }
 
     private suspend fun loadDepuitRoom() {
         try {
+            Log.d(TAG, "Loading data from Room database")
             progressRepo.value = 0.2f
             withContext(Dispatchers.IO) {
                 val clientsList = appDatabase.i_CategorieProduitsDao().getAll()
+                Log.d(TAG, "Room data loaded: ${clientsList.size} records found")
+
                 withContext(Dispatchers.Main) {
                     modelDatas.clear()
                     if (clientsList.isNotEmpty()) {
                         modelDatas.addAll(clientsList)
+                        Log.d(TAG, "Added ${clientsList.size} categories to modelDatas")
+                    } else {
+                        Log.w(TAG, "No category data found in Room database")
                     }
                     initialDataLoaded = true
                     progressRepo.value = 1.0f
@@ -65,23 +75,33 @@ class I_CategorieProduitsRepositoryImpl(
             }
         } catch (e: Exception) {
             progressRepo.value = 0f
-            // Log error
+            Log.e(TAG, "Error loading data from Room: ${e.message}", e)
         }
     }
 
     private suspend fun checkDataConsistency() {
         try {
+            Log.d(TAG, "Checking data consistency between Room and Firebase")
             val roomCount = withContext(Dispatchers.IO) {
-                appDatabase.i_CategorieProduitsDao().getCount()
+                val count = appDatabase.i_CategorieProduitsDao().getCount()
+                Log.d(TAG, "Room database category count: $count")
+                count
             }
+
             val firebaseSnapshot = withContext(Dispatchers.IO) {
+                Log.d(TAG, "Fetching data from Firebase for comparison")
                 val task = I_CategorieProduitsRepository.caReference.get()
                 Tasks.await(task)
             }
+
             val firebaseCount = firebaseSnapshot.childrenCount.toInt()
+            Log.d(TAG, "Firebase category count: $firebaseCount")
 
             if (roomCount != firebaseCount || roomCount == 0) {
+                Log.w(TAG, "Data inconsistency detected: Room=$roomCount, Firebase=$firebaseCount - Syncing from Firebase")
                 importDeFireBaseAuRoom(repositoryScope)
+            } else {
+                Log.d(TAG, "Data consistency verified between Room and Firebase")
             }
 
             // Set up listener after data consistency check
@@ -89,54 +109,76 @@ class I_CategorieProduitsRepositoryImpl(
                 setUpDataChangeListener()
             }
         } catch (e: Exception) {
+            Log.e(TAG, "Error checking data consistency: ${e.message}", e)
             // Set up listener even if consistency check fails
             withContext(Dispatchers.Main) {
                 setUpDataChangeListener()
+                Log.d(TAG, "Setting up data change listener despite consistency check failure")
             }
-            // Log error
         }
     }
 
     private fun setUpDataChangeListener() {
         synchronized(listenerLock) {
+            Log.d(TAG, "Setting up Firebase data change listener")
             // Always remove existing listener first
             removeDataChangeListener()
 
             // Only proceed if no active listener
             if (!isListenerActive.get()) {
+                Log.d(TAG, "Creating new ValueEventListener")
                 valueEventListener = object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
+                        Log.d(TAG, "Firebase data change detected, processing ${snapshot.childrenCount} records")
                         for (dataSnapshot in snapshot.children) {
                             try {
                                 val clientData = dataSnapshot.getValue(I_CategorieProduits::class.java)
-                                clientData?.let { newData ->
-                                    val existingIndex = modelDatas.indexOfFirst { it.id == newData.id }
-                                    if (existingIndex != -1) {
+                                if (clientData == null) {
+                                    Log.w(TAG, "Null data received for key: ${dataSnapshot.key}")
+                                    continue
+                                }
 
-                                    } else {
-                                        // New client data not in our list
-                                        repositoryScope.launch(Dispatchers.Main) {
-                                            modelDatas.add(newData)
-                                        }
-                                        repositoryScope.launch {
-                                            appDatabase.i_CategorieProduitsDao().insert(newData)
+                                Log.d(TAG, "Processing category ID: ${clientData.id}, Name: ${clientData.nom}")
+                                val existingIndex = modelDatas.indexOfFirst { it.id == clientData.id }
+
+                                if (existingIndex != -1) {
+                                    Log.d(TAG, "Category already exists in modelDatas at index $existingIndex")
+                                } else {
+                                    // New client data not in our list
+                                    Log.d(TAG, "New category detected, adding to modelDatas: ID=${clientData.id}")
+
+                                    repositoryScope.launch(Dispatchers.Main) {
+                                        modelDatas.add(clientData)
+                                        Log.d(TAG, "Added to modelDatas: ID=${clientData.id}")
+                                    }
+
+                                    repositoryScope.launch {
+                                        try {
+                                            Log.d(TAG, "Inserting new category into Room: ID=${clientData.id}")
+                                            appDatabase.i_CategorieProduitsDao().insert(clientData)
+                                            Log.d(TAG, "Successfully inserted into Room: ID=${clientData.id}")
+                                        } catch (e: Exception) {
+                                            Log.e(TAG, "Failed to insert category into Room: ID=${clientData.id}, Error: ${e.message}", e)
                                         }
                                     }
                                 }
                             } catch (e: Exception) {
-                                // Log error
+                                Log.e(TAG, "Error processing Firebase data snapshot: ${e.message}", e)
                             }
                         }
                     }
 
                     override fun onCancelled(error: DatabaseError) {
-                        // Log error
+                        Log.e(TAG, "Firebase data change listener cancelled: ${error.message}", error.toException())
                     }
                 }
 
                 // Set flag before adding listener
                 isListenerActive.set(true)
                 I_CategorieProduitsRepository.caReference.addValueEventListener(valueEventListener!!)
+                Log.d(TAG, "Firebase data change listener successfully registered")
+            } else {
+                Log.w(TAG, "Data change listener already active, not creating a new one")
             }
         }
     }
@@ -145,9 +187,11 @@ class I_CategorieProduitsRepositoryImpl(
         synchronized(listenerLock) {
             valueEventListener?.let {
                 try {
+                    Log.d(TAG, "Removing Firebase data change listener")
                     I_CategorieProduitsRepository.caReference.removeEventListener(it)
+                    Log.d(TAG, "Firebase data change listener successfully removed")
                 } catch (e: Exception) {
-                    // Log error but continue
+                    Log.e(TAG, "Error removing Firebase data change listener: ${e.message}", e)
                 }
             }
             valueEventListener = null
@@ -158,68 +202,110 @@ class I_CategorieProduitsRepositoryImpl(
 
     override fun deleteUnSeulData(data: I_CategorieProduits) {
         try {
+            Log.d(TAG, "Deleting category: ID=${data.id}, Name=${data.nom}")
+
             repositoryScope.launch(Dispatchers.Main) {
                 val recordIndex = modelDatas.indexOfFirst { it.id == data.id }
                 if (recordIndex != -1) {
                     modelDatas.removeAt(recordIndex)
+                    Log.d(TAG, "Removed category from modelDatas: ID=${data.id}")
+                } else {
+                    Log.w(TAG, "Category not found in modelDatas for deletion: ID=${data.id}")
                 }
             }
 
             repositoryScope.launch(Dispatchers.IO) {
                 try {
+                    Log.d(TAG, "Removing category from Firebase: ID=${data.id}")
                     I_CategorieProduitsRepository.caReference.child(data.id.toString()).removeValue().await()
+                    Log.d(TAG, "Successfully removed from Firebase: ID=${data.id}")
+
+                    Log.d(TAG, "Deleting category from Room: ID=${data.id}")
                     appDatabase.i_CategorieProduitsDao().delete(data)
+                    Log.d(TAG, "Successfully deleted from Room: ID=${data.id}")
                 } catch (e: Exception) {
-                    // Log error
+                    Log.e(TAG, "Error deleting category data: ID=${data.id}, Error: ${e.message}", e)
                 }
             }
         } catch (e: Exception) {
-            // Log error
+            Log.e(TAG, "Exception in deleteUnSeulData: ${e.message}", e)
         }
     }
 
     private fun importDeFireBaseAuRoom(viewModelScope: CoroutineScope) {
         try {
+            Log.d(TAG, "Starting import from Firebase to Room")
             progressRepo.value = 0f
             viewModelScope.launch(Dispatchers.Main) {
                 modelDatas.clear()
+                Log.d(TAG, "Cleared modelDatas for fresh import")
             }
 
             viewModelScope.launch(Dispatchers.IO) {
                 try {
+                    Log.d(TAG, "Fetching all categories from Firebase")
                     val task = I_CategorieProduitsRepository.caReference.get()
                     val snapshot = Tasks.await(task)
+                    Log.d(TAG, "Retrieved ${snapshot.childrenCount} categories from Firebase")
+
+                    Log.d(TAG, "Deleting all categories from Room database")
                     appDatabase.i_CategorieProduitsDao().deleteAll()
+                    Log.d(TAG, "Successfully deleted all categories from Room")
+
                     val clientsList = mutableListOf<I_CategorieProduits>()
 
                     for (dataSnapshot in snapshot.children) {
                         try {
                             val clientData = dataSnapshot.getValue(I_CategorieProduits::class.java)
-                            clientData?.let {
-                                clientsList.add(it)
+                            if (clientData == null) {
+                                Log.w(TAG, "Null data received for key: ${dataSnapshot.key}")
+                                continue
                             }
+
+                            Log.d(TAG, "Processing category from Firebase: ID=${clientData.id}, Name=${clientData.nom}")
+                            clientsList.add(clientData)
                         } catch (e: Exception) {
-                            // Log error
+                            Log.e(TAG, "Error converting Firebase data: Key=${dataSnapshot.key}, Error: ${e.message}", e)
                         }
                     }
 
                     if (clientsList.isNotEmpty()) {
-                        appDatabase.i_CategorieProduitsDao().insertAll(clientsList)
+                        Log.d(TAG, "Inserting ${clientsList.size} categories into Room database")
+                        try {
+                            appDatabase.i_CategorieProduitsDao().insertAll(clientsList)
+                            Log.d(TAG, "Successfully inserted ${clientsList.size} categories into Room")
+                        } catch (e: Exception) {
+                            Log.e(TAG, "Batch insert failed, attempting individual inserts", e)
+                            // Try individual inserts if batch fails
+                            clientsList.forEachIndexed { index, category ->
+                                try {
+                                    appDatabase.i_CategorieProduitsDao().insert(category)
+                                    Log.d(TAG, "Individual insert success: ${index+1}/${clientsList.size}, ID=${category.id}")
+                                } catch (e2: Exception) {
+                                    Log.e(TAG, "Failed to insert category: ID=${category.id}, Error: ${e2.message}", e2)
+                                }
+                            }
+                        }
+
                         withContext(Dispatchers.Main) {
                             modelDatas.addAll(clientsList)
+                            Log.d(TAG, "Added ${clientsList.size} categories to modelDatas")
                         }
+                    } else {
+                        Log.w(TAG, "No categories found in Firebase to import")
                     }
 
                     initialDataLoaded = true
                     progressRepo.value = 1.0f
+                    Log.d(TAG, "Import from Firebase to Room completed successfully")
                 } catch (e: Exception) {
-                    // Log error and ensure progress is reset
+                    Log.e(TAG, "Failed to import from Firebase to Room: ${e.message}", e)
                     progressRepo.value = 0f
                 }
             }
         } catch (e: Exception) {
             progressRepo.value = 0f
-            // Log error
+            Log.e(TAG, "Exception in importDeFireBaseAuRoom: ${e.message}", e)
         }
     }
 

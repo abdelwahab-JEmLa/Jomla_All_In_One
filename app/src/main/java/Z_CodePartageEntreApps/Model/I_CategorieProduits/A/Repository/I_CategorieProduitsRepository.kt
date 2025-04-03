@@ -1,8 +1,9 @@
 package Z_CodePartageEntreApps.Model.I_CategorieProduits.A.Repository
 
 import Z_CodePartageEntreApps.Model.I_CategorieProduits.I_CategorieProduits
-import Z_CodePartageEntreApps.Model._ModelAppsFather.Companion.firebaseDatabase
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import com.google.firebase.Firebase
+import com.google.firebase.database.database
 import kotlinx.coroutines.flow.MutableStateFlow
 
 interface I_CategorieProduitsRepository {
@@ -16,7 +17,9 @@ interface I_CategorieProduitsRepository {
     suspend fun updateMultiDatas(datas: SnapshotStateList<I_CategorieProduits>)
 
     companion object {
-        val caReference = firebaseDatabase.getReference("I_CategorieProduits")
+        private val sonHeadRef = Firebase.database.getReference("I_CategorieProduits")
+        val caReference = sonHeadRef.child("DataBase")
+        val iDsDatasFlowUpdateRef = sonHeadRef.child("IDsDatasFlowUpdate")
     }
 
     fun deleteUnSeulData(data: I_CategorieProduits)
