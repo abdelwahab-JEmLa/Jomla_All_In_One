@@ -1,6 +1,6 @@
 package P6_AiGroupeForSupplier
 
-import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.SoldArticlesTabelle
+import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
 import android.graphics.Bitmap
 import android.util.Log
 import androidx.lifecycle.ViewModel

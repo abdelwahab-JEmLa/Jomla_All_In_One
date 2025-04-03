@@ -3,7 +3,7 @@ package Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Package_4
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model._ModelAppsFather.Companion.updateProduit
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
+import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 
 fun deleteColore(
     viewModelInitApp: ViewModelInitApp,

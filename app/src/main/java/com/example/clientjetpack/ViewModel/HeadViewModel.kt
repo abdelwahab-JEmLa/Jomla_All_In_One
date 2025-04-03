@@ -6,9 +6,9 @@ import Z_CodePartageEntreApps.Model.I_CategorieProduits.A.Repository.I_Categorie
 import Z_MasterOfApps.Kotlin._WorkingON.WO_.ConnectionManager
 import Z_MasterOfApps.Kotlin._WorkingON.WO_.WifiUpdateClientDisplayerStats
 import Z_CodePartageEntreApps.Modules.AppDatabase
-import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
-import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle
-import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.SoldArticlesTabelle
+import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
+import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
+import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.CategoriesTabelle
 import android.content.Context
 import android.os.Build

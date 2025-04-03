@@ -1,4 +1,4 @@
-package Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models
+package Z_CodePartageEntreApps.Model.Z.Archive
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

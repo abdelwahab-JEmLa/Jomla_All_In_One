@@ -8,7 +8,7 @@ import Views.P1._ArticlesStartFacade.ArticlePagingSource
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
+import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.Z.Archive.CategoriesTabelle
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -46,19 +46,19 @@ import kotlin.collections.set
 private const val TAG = "ArticleGridDebug"
  @Composable
 fun ArticleGridWithScrollbar(
-    uiState: UiState,
-    gridColumns: Int,
-    filterText: String,
-    showFilter: Boolean,
-    gridState: LazyStaggeredGridState,
-    viewModel: HeadViewModel,
-    reloadTrigger: Int,
-    modifier: Modifier = Modifier,
-    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
-    currentClient: B_ClientsDataBase?,
-    viewModelInitApp: ViewModelInitApp,
-    a_ProduitModelRepository: A_ProduitRepository,
-    targetCategoryId: MutableState<Long?> = mutableStateOf(null), lockHost: Boolean
+     uiState: UiState,
+     gridColumns: Int,
+     filterText: String,
+     showFilter: Boolean,
+     gridState: LazyStaggeredGridState,
+     viewModel: HeadViewModel,
+     reloadTrigger: Int,
+     modifier: Modifier = Modifier,
+     onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
+     currentClient: B_ClientsDataBase?,
+     viewModelInitApp: ViewModelInitApp,
+     a_ProduitModelRepository: A_ProduitRepository,
+     targetCategoryId: MutableState<Long?> = mutableStateOf(null), lockHost: Boolean
 ) {
     Box(modifier = modifier) {
         // Scrollbar first (will be on the left)

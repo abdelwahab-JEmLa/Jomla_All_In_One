@@ -1,9 +1,12 @@
-package Z_MasterOfApps.Z.Android.A_MainActivityApp.Start.Modules
+package Z_CodePartageEntreApps.Modules
 
-import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ArticlesBasesStatsTable
-import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.ColorsArticlesTabelle
-import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Models.SoldArticlesTabelle
+import Z_CodePartageEntreApps.Model.Z.Archive.AppSettingsSaverModel
+import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.Z.Archive.CategoriesTabelle
+import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
+import Z_CodePartageEntreApps.Model.Z.Archive.DevicesTypeManager
+import Z_CodePartageEntreApps.Model.Z.Archive.DiviseurDeDisplayProductForEachClient
+import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -11,9 +14,6 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
-import Z_CodePartageEntreApps.Model.Z.Archive.DiviseurDeDisplayProductForEachClient
-import Z_CodePartageEntreApps.Model.Z.Archive.AppSettingsSaverModel
-import Z_CodePartageEntreApps.Model.Z.Archive.DevicesTypeManager
 
 @Dao
 interface DiviseurDeDisplayProductForEachClientDao {
