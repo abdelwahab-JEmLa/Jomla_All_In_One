@@ -12,8 +12,6 @@ import org.koin.core.annotation.KoinExperimentalAPI
 @Composable
 fun MainScreenPreview_APP2() {
     MaterialTheme {
-        // Ensure Koin modules are loaded
-        loadComposAPP2Modules()
 
         KoinAndroidContext {
            // MainScreen_APP2_ID_2()

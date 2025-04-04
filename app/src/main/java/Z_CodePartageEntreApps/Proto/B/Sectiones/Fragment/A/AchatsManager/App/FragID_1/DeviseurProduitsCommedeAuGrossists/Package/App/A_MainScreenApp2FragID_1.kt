@@ -1,5 +1,6 @@
 package Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.FragID_1.DeviseurProduitsCommedeAuGrossists.Package.App
 
+import Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.ViewModel.ViewModelFragment_APP2_ID_2
 import Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App._1.Shared.Views.LoadingContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,12 +13,26 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import org.koin.androidx.compose.koinViewModel
+import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.context.loadKoinModules
+import org.koin.dsl.module
+
+val composeModules = module {
+    viewModel { ViewModelFragment_APP2_FragID_1(get(),get(),get(),get()) }
+    viewModel { ViewModelFragment_APP2_ID_2(get(),get(),get(),get()) }
+}
+
+// Load the module when the composable is first used
+fun loadComposAPP2Modules() {
+    loadKoinModules(composeModules)
+}
 
 @Composable
 fun A_MainScreenApp2FragID_1(
     modifier: Modifier = Modifier,
     viewModel: ViewModelFragment_APP2_FragID_1 = koinViewModel(),
 ) {
+
     // Collect the UI state from the ViewModel
     val uiState by viewModel.uiStateFlow.collectAsState()
 

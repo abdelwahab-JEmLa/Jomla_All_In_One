@@ -8,6 +8,7 @@ import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.appManagerModules
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.appModule
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.isManagerApp
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
+import Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.FragID_1.DeviseurProduitsCommedeAuGrossists.Package.App.composeModules
 import Z_MasterOfApps.Z.Android.A_MainActivityApp.Start.Modules.PermissionHandler
 import android.app.Application
 import android.content.Context
@@ -61,8 +62,12 @@ class MyApplication : Application() {
             // Conditionally load app-specific modules
             if (isManagerApp(this@MyApplication)) {
                 modules(appManagerModules)
+                // Add this line to include modules needed for A_MainScreenApp2FragID_1
+                modules(composeModules)
             } else {
                 modules(appClientModules)
+                // If you need these modules in the client app as well, add this line
+                modules(composeModules)
             }
         }
     }
