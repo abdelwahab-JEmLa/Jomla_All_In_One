@@ -7,7 +7,6 @@ import org.koin.dsl.module
 
 val composeModules = module {
     viewModel {ViewModelFragment_APP2_ID_2(get(),get(),get(),get()) }
-
 }
 
 // Load the module when the composable is first used
