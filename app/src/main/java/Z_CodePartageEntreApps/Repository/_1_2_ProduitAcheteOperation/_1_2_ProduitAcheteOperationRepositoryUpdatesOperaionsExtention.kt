@@ -1,8 +1,8 @@
 package Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation
 
 
-import Z_CodePartageEntreApps.Model._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
+import Z_CodePartageEntreApps.Model._1_2_ProduitAcheteOperation
 import android.util.Log
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.firebase.database.ValueEventListener
@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 class _1_2_ProduitAcheteOperationRepositoryUpdatesOperaionsExtention {
     private val TAG =
-        _1_2_ProduitAcheteOperationRepository.TAG
+        _1_2_ProduitAcheteOperation_Repository.TAG
 
     fun updateUnSeulData(
         data: _1_2_ProduitAcheteOperation,
@@ -56,7 +56,7 @@ class _1_2_ProduitAcheteOperationRepositoryUpdatesOperaionsExtention {
 
             repositoryScope.launch(Dispatchers.IO) {
                 try {
-                    _1_2_ProduitAcheteOperationRepository.sonDataBaseRef.child(data.vid.toString()).removeValue().await()
+                    _1_2_ProduitAcheteOperation_Repository.sonDataBaseRef.child(data.vid.toString()).removeValue().await()
                     appDatabase._1_2_ProduitAcheteOperationDao().delete(data)
                 } catch (e: Exception) {
                     Log.e(TAG, "Error deleting data: ${e.message}")
@@ -80,8 +80,9 @@ class _1_2_ProduitAcheteOperationRepositoryUpdatesOperaionsExtention {
 
             repositoryScope.launch(Dispatchers.IO) {
                 try {
-                    _1_2_ProduitAcheteOperationRepository.sonDataBaseRef.child(data.vid.toString()).setValue(data).await()
-                    appDatabase._1_2_ProduitAcheteOperationDao().insert(data)
+                    val insertedId = appDatabase._1_2_ProduitAcheteOperationDao().add(data)
+                    val updatedData = data.copy(vid = insertedId)
+                    firebaseUpdateData(updatedData)
                 } catch (e: Exception) {
                     Log.e(TAG, "Error adding data: ${e.message}")
                 }
@@ -93,7 +94,7 @@ class _1_2_ProduitAcheteOperationRepositoryUpdatesOperaionsExtention {
 
     private suspend fun firebaseUpdateData(data: _1_2_ProduitAcheteOperation) {
         try {
-            _1_2_ProduitAcheteOperationRepository.sonDataBaseRef.child(data.vid.toString()).setValue(data).await()
+            _1_2_ProduitAcheteOperation_Repository.sonDataBaseRef.child(data.vid.toString()).setValue(data).await()
         } catch (e: Exception) {
             Log.e(TAG, "Error updating Firebase data: ${e.message}")
         }
@@ -134,7 +135,7 @@ class _1_2_ProduitAcheteOperationRepositoryUpdatesOperaionsExtention {
                 try {
                     synchronized(listenerLock) {
                         valueEventListener?.let {
-                            _1_2_ProduitAcheteOperationRepository.sonDataBaseRef.removeEventListener(
+                            _1_2_ProduitAcheteOperation_Repository.sonDataBaseRef.removeEventListener(
                                 it
                             )
                         }
@@ -143,7 +144,7 @@ class _1_2_ProduitAcheteOperationRepositoryUpdatesOperaionsExtention {
 
                     synchronized(flowListenerLock) {
                         flowValueEventListener?.let {
-                            _1_2_ProduitAcheteOperationRepository.sonDataBaseRef.removeEventListener(
+                            _1_2_ProduitAcheteOperation_Repository.sonDataBaseRef.removeEventListener(
                                 it
                             )
                         }
@@ -157,7 +158,7 @@ class _1_2_ProduitAcheteOperationRepositoryUpdatesOperaionsExtention {
                 } finally {
                     synchronized(listenerLock) {
                         if (!isListenerActive.get() && tempListener != null) {
-                            _1_2_ProduitAcheteOperationRepository.sonDataBaseRef.addValueEventListener(
+                            _1_2_ProduitAcheteOperation_Repository.sonDataBaseRef.addValueEventListener(
                                 tempListener
                             )
                             isListenerActive.set(true)
@@ -166,7 +167,7 @@ class _1_2_ProduitAcheteOperationRepositoryUpdatesOperaionsExtention {
 
                     synchronized(flowListenerLock) {
                         if (!isFlowListenerActive.get() && tempFlowListener != null) {
-                            _1_2_ProduitAcheteOperationRepository.sonDataBaseRef.addValueEventListener(
+                            _1_2_ProduitAcheteOperation_Repository.sonDataBaseRef.addValueEventListener(
                                 tempFlowListener
                             )
                             isFlowListenerActive.set(true)
@@ -189,7 +190,7 @@ class _1_2_ProduitAcheteOperationRepositoryUpdatesOperaionsExtention {
     private fun batchFireBaseSet(datas: List<_1_2_ProduitAcheteOperation>) {
         try {
             val reference =
-                _1_2_ProduitAcheteOperationRepository.sonDataBaseRef
+                _1_2_ProduitAcheteOperation_Repository.sonDataBaseRef
             val batchUpdates = HashMap<String, Any>()
 
             for (data in datas) {

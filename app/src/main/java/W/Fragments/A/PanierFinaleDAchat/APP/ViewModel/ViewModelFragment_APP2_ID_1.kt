@@ -4,10 +4,10 @@ import Z_CodePartageEntreApps.Model._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Model._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.Model._1_3_BonAchat
 import Z_CodePartageEntreApps.Model._1_4_PeriodeVent
-import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperationRepository
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperationRepositoryImpl
-import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperationRepository
+import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperationRepositoryImpl
+import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchatRepositoryImpl
 import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat_Repository
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVentRepositoryImpl
@@ -37,8 +37,8 @@ data class UiState_APP2_ID_1(
 )
 
 class ViewModelFragment_APP2_ID_1(
-    val _1_1_CouleurAcheteOperationRepository: _1_1_CouleurAcheteOperationRepository,
-    val _1_2_ProduitAcheteOperationRepository: _1_2_ProduitAcheteOperationRepository,
+    val _1_1_CouleurAcheteOperation_Repository: _1_1_CouleurAcheteOperation_Repository,
+    val _1_2_ProduitAcheteOperation_Repository: _1_2_ProduitAcheteOperation_Repository,
     val _1_3_BonAchat_Repository: _1_3_BonAchat_Repository,
     val _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository
 ) : ViewModel() {
@@ -52,16 +52,16 @@ class ViewModelFragment_APP2_ID_1(
     init {
         viewModelScope.launch {
             initializerViewModel.waitForDataInitialization(
-                _1_1_CouleurAcheteOperationRepository,
-                _1_2_ProduitAcheteOperationRepository,
+                _1_1_CouleurAcheteOperation_Repository,
+                _1_2_ProduitAcheteOperation_Repository,
                 _1_3_BonAchat_Repository,
                 _1_4_PeriodeVent_Repository,
                 _uiStateFlow,
                 viewModelScope,
                 {
                     checkInitializationComplete(
-                        _1_1_CouleurAcheteOperationRepository,
-                        _1_2_ProduitAcheteOperationRepository,
+                        _1_1_CouleurAcheteOperation_Repository,
+                        _1_2_ProduitAcheteOperation_Repository,
                         _1_3_BonAchat_Repository,
                         _1_4_PeriodeVent_Repository,
                         _uiStateFlow
@@ -70,8 +70,23 @@ class ViewModelFragment_APP2_ID_1(
             )
         }
     }
-   
-    
+
+    fun addData_1_1_CouleurAcheteOperation_Repository(newData: _1_1_CouleurAcheteOperation): Unit {
+
+        val maxVid_1_2_ProduitAcheteOperationList = _uiStateFlow.value._1_2_ProduitAcheteOperationList.maxOfOrNull { it.vid } ?: 0
+        newData.parent_1_2_ProduitAcheteOperationID= maxVid_1_2_ProduitAcheteOperationList
+
+        _1_1_CouleurAcheteOperation_Repository.addData(newData)
+    }
+
+    fun addData_1_2_ProduitAcheteOperation_Repository(newData: _1_2_ProduitAcheteOperation): Unit {
+        val maxVid_1_2_ProduitAcheteOperationList =
+            _uiStateFlow.value._1_3_BonAchatList.maxOfOrNull { it.vid } ?: 0
+
+        newData.parent_1_3_BonAchat= maxVid_1_2_ProduitAcheteOperationList
+
+        _1_2_ProduitAcheteOperation_Repository.addData(newData)
+    }
 
     fun addData_1_3_BonAchat_Repository(newData: _1_3_BonAchat): Unit {
         _1_3_BonAchat_Repository.addData(newData)
@@ -79,14 +94,14 @@ class ViewModelFragment_APP2_ID_1(
 
     // Add this to checkInitializationComplete method in InintializeViewModel_APP2_ID_1
     fun checkInitializationComplete(
-        _1_1_CouleurAcheteOperationRepository: _1_1_CouleurAcheteOperationRepository,
-        _1_2_ProduitAcheteOperationRepository: _1_2_ProduitAcheteOperationRepository,
+        _1_1_CouleurAcheteOperation_Repository: _1_1_CouleurAcheteOperation_Repository,
+        _1_2_ProduitAcheteOperation_Repository: _1_2_ProduitAcheteOperation_Repository,
         _1_3_BonAchat_Repository: _1_3_BonAchat_Repository,
         _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository,
         uiStateFlow: MutableStateFlow<UiState_APP2_ID_1>,
     ) {
-        val progress1 = _1_1_CouleurAcheteOperationRepository.progressRepo.value
-        val progress2 = _1_2_ProduitAcheteOperationRepository.progressRepo.value
+        val progress1 = _1_1_CouleurAcheteOperation_Repository.progressRepo.value
+        val progress2 = _1_2_ProduitAcheteOperation_Repository.progressRepo.value
         val progress3 = _1_3_BonAchat_Repository.progressRepo.value
         val progress4 = _1_4_PeriodeVent_Repository.progressRepo.value
 
@@ -105,11 +120,11 @@ class ViewModelFragment_APP2_ID_1(
     override fun onCleared() {
         super.onCleared()
         val repoImpl1 =
-            _1_1_CouleurAcheteOperationRepository as? _1_1_CouleurAcheteOperationRepositoryImpl
+            _1_1_CouleurAcheteOperation_Repository as? _1_1_CouleurAcheteOperationRepositoryImpl
         repoImpl1?.cleanup()
 
         val repoImpl2 =
-            _1_2_ProduitAcheteOperationRepository as? _1_2_ProduitAcheteOperationRepositoryImpl
+            _1_2_ProduitAcheteOperation_Repository as? _1_2_ProduitAcheteOperationRepositoryImpl
         repoImpl2?.cleanup()
 
         val repoImpl3 = _1_3_BonAchat_Repository as? _1_3_BonAchatRepositoryImpl

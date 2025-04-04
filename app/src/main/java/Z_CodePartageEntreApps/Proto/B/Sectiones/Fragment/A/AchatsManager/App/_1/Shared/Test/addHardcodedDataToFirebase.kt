@@ -5,8 +5,8 @@ import Z_CodePartageEntreApps.Model._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.Model._1_3_BonAchat
 import Z_CodePartageEntreApps.Model._1_4_PeriodeVent
 import Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.B.DataBaseManager.App.A.CategoryReorderAndSelection.Package.Windows.TAG
-import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperationRepository
-import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperationRepository
+import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
+import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat_Repository
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
 import android.util.Log
@@ -15,8 +15,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 suspend fun addHardcodedDataToFirebase(
-    _1_1_CouleurAcheteOperationRepository: _1_1_CouleurAcheteOperationRepository,
-    _1_2_ProduitAcheteOperationRepository: _1_2_ProduitAcheteOperationRepository,
+    _1_1_CouleurAcheteOperation_Repository: _1_1_CouleurAcheteOperation_Repository,
+    _1_2_ProduitAcheteOperation_Repository: _1_2_ProduitAcheteOperation_Repository,
     _1_3_BonAchat_Repository: _1_3_BonAchat_Repository,
     _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository,
     active: Boolean = false
@@ -290,7 +290,7 @@ suspend fun addHardcodedDataToFirebase(
             withContext(Dispatchers.IO) {
                 val snapListProduit = mutableStateListOf<_1_2_ProduitAcheteOperation>()
                 snapListProduit.addAll(produitTestData)
-                _1_2_ProduitAcheteOperationRepository.updateMultiDatas(snapListProduit)
+                _1_2_ProduitAcheteOperation_Repository.updateMultiDatas(snapListProduit)
                 Log.d(
                     TAG,
                     "Added ${produitTestData.size} hardcoded ProduitAcheteOperation items to repository"
@@ -301,7 +301,7 @@ suspend fun addHardcodedDataToFirebase(
             withContext(Dispatchers.IO) {
                 val snapListCouleur = mutableStateListOf<_1_1_CouleurAcheteOperation>()
                 snapListCouleur.addAll(couleurTestData)
-                _1_1_CouleurAcheteOperationRepository.updateMultiDatas(snapListCouleur)
+                _1_1_CouleurAcheteOperation_Repository.updateMultiDatas(snapListCouleur)
                 Log.d(
                     TAG,
                     "Added ${couleurTestData.size} hardcoded CouleurAcheteOperation items to repository"

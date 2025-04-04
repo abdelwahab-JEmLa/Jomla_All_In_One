@@ -6,9 +6,9 @@ import Views.P1.Ui.Objects.SearchFilterPB
 import Views.P1._ArticlesStartFacade.FloatingActionButtonGroup.FloatingActionButtonGroup
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
+import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Kotlin._WorkingON.WO_.WifiUpdateClientDisplayerStats
-import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -217,7 +217,8 @@ fun MainUi(
                         gridState = gridState,
                         viewModel = viewModel,
                         reloadTrigger = reloadTrigger,
-                        onClickToOpenWindos = onClickToOpenWindos, currentClient = currentClient
+                        onClickToOpenWindos = onClickToOpenWindos,
+                        currentClient = currentClient
                         , viewModelInitApp =viewModelInitApp ,
                         targetCategoryId =targetCategoryId ,
                         a_ProduitModelRepository=a_ProduitModelRepository, lockHost = lockHost

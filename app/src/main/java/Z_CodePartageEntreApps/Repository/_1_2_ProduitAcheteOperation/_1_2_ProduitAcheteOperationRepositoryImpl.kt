@@ -20,8 +20,8 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 class _1_2_ProduitAcheteOperationRepositoryImpl(
     private val appDatabase: AppDatabase
-) : _1_2_ProduitAcheteOperationRepository {
-    private val TAG = _1_2_ProduitAcheteOperationRepository.TAG
+) : _1_2_ProduitAcheteOperation_Repository {
+    private val TAG = _1_2_ProduitAcheteOperation_Repository.TAG
 
     override var modelDatasSnapList: SnapshotStateList<_1_2_ProduitAcheteOperation> =
         mutableStateListOf()
@@ -120,7 +120,7 @@ class _1_2_ProduitAcheteOperationRepositoryImpl(
 
             val firebaseSnapshot = try {
                 withContext(Dispatchers.IO) {
-                    val task = _1_2_ProduitAcheteOperationRepository.sonDataBaseRef.get()
+                    val task = _1_2_ProduitAcheteOperation_Repository.sonDataBaseRef.get()
                     Tasks.await(task)
                 }
             } catch (e: Exception) {
@@ -191,7 +191,7 @@ class _1_2_ProduitAcheteOperationRepositoryImpl(
                     }
                 }
 
-                _1_2_ProduitAcheteOperationRepository.sonDataBaseRef.addValueEventListener(flowValueEventListener!!)
+                _1_2_ProduitAcheteOperation_Repository.sonDataBaseRef.addValueEventListener(flowValueEventListener!!)
                 isFlowListenerActive.set(true)
             }
         }
@@ -201,7 +201,7 @@ class _1_2_ProduitAcheteOperationRepositoryImpl(
         synchronized(flowListenerLock) {
             if (isFlowListenerActive.get() && flowValueEventListener != null) {
                 try {
-                    _1_2_ProduitAcheteOperationRepository.sonDataBaseRef.removeEventListener(flowValueEventListener!!)
+                    _1_2_ProduitAcheteOperation_Repository.sonDataBaseRef.removeEventListener(flowValueEventListener!!)
                 } catch (e: Exception) {
                     Log.e(TAG, "Error removing flow listener: ${e.message}")
                 } finally {
@@ -221,7 +221,7 @@ class _1_2_ProduitAcheteOperationRepositoryImpl(
 
             viewModelScope.launch(Dispatchers.IO) {
                 try {
-                    val task = _1_2_ProduitAcheteOperationRepository.sonDataBaseRef.get()
+                    val task = _1_2_ProduitAcheteOperation_Repository.sonDataBaseRef.get()
                     val snapshot = Tasks.await(task)
 
                     try {
@@ -272,7 +272,7 @@ class _1_2_ProduitAcheteOperationRepositoryImpl(
         synchronized(listenerLock) {
             if (isListenerActive.get() && valueEventListener != null) {
                 try {
-                    _1_2_ProduitAcheteOperationRepository.sonDataBaseRef.removeEventListener(valueEventListener!!)
+                    _1_2_ProduitAcheteOperation_Repository.sonDataBaseRef.removeEventListener(valueEventListener!!)
                 } catch (e: Exception) {
                     Log.e(TAG, "Error removing data listener: ${e.message}")
                 } finally {

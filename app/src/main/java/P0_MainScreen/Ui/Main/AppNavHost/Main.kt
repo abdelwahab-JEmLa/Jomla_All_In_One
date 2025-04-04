@@ -5,11 +5,13 @@ import P5_DialogeClientsEditer.ClientSelectionDialog
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.A_VendeurAfficheurInfosProduit_FragmentMainId3
 import Views.P1._ArticlesStartFacade.FragmentStartupScreen
 import Views.Package_4.SoldCartScreen.SoldCartScreen
+import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
+import Z_CodePartageEntreApps.Model._1_1_CouleurAcheteOperation
+import Z_CodePartageEntreApps.Model._1_2_ProduitAcheteOperation
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Kotlin._WorkingON.WO_.WifiUpdateClientDisplayerStats
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.A_id1_ClientsLocationGps
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.MainScreen_Windows
-import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -85,6 +87,8 @@ fun AppNavHost(
     targetCategoryId: MutableState<Long?> = mutableStateOf(null), lockHost: Boolean
 ) {
     val uiState by headViewModel.uiState.collectAsState()
+    val viewmodelfragmentApp2Id1 = viewModelInitApp.viewModelFragment_APP2_ID_1
+    val uiStateviewModelFragment_APP2_ID_1 by viewmodelfragmentApp2Id1.uiStateFlow.collectAsState()
 
     // Get current client from settings
     val currentClientId = uiState.appSettingsSaverModel
@@ -152,6 +156,29 @@ fun AppNavHost(
                             onToggleNavBar = onToggleNavBar,
                             reloadTrigger = reloadTrigger,
                             onClickToOpenWindos = { articleDataBaseOn, indexColor ->
+                                val couleurId = when (indexColor) {
+                                    0 ->  articleDataBaseOn.idcolor1
+                                    1 ->  articleDataBaseOn.idcolor2
+                                    2 ->  articleDataBaseOn.idcolor3
+                                    3 ->  articleDataBaseOn.idcolor4
+                                    else -> {0}
+                                }
+
+                                viewmodelfragmentApp2Id1.
+                                addData_1_1_CouleurAcheteOperation_Repository(
+                                    _1_1_CouleurAcheteOperation(
+                                        couleurId= couleurId,
+                                        totaleQuantity = 1
+                                    )
+                                )
+
+                                viewmodelfragmentApp2Id1
+                                    .addData_1_2_ProduitAcheteOperation_Repository(
+                                    _1_2_ProduitAcheteOperation(
+                                        produitAcheterID= articleDataBaseOn.idArticle.toLong(),
+                                        )
+                                )
+
                                 relatedArticleBaseStats = articleDataBaseOn
                                 pendingIndexColor = indexColor
 

@@ -1,13 +1,13 @@
 package Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation.Dao
 
-import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperationRepository
+import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperationRepositoryImpl
 import android.util.Log
 
 class _1_2_ProduitAcheteOperationRepositoryLogOperationsExtention(
     private val repositoryImpl: _1_2_ProduitAcheteOperationRepositoryImpl
 ) {
-    private val TAG = _1_2_ProduitAcheteOperationRepository.TAG
+    private val TAG = _1_2_ProduitAcheteOperation_Repository.TAG
 
     fun log(
         dataCount: Int,
@@ -17,7 +17,7 @@ class _1_2_ProduitAcheteOperationRepositoryLogOperationsExtention(
         isListenerActive: Boolean,
         isFlowListenerActive: Boolean
     ) {
-        Log.d(TAG, "_1_2_ProduitAcheteOperationRepository status: ")
+        Log.d(TAG, "_1_2_ProduitAcheteOperation_Repository status: ")
         Log.d(TAG, "- Data count: $dataCount")
         Log.d(TAG, "- Initial data loaded: $initialDataLoaded")
         Log.d(TAG, "- Progress value: $progressValue")

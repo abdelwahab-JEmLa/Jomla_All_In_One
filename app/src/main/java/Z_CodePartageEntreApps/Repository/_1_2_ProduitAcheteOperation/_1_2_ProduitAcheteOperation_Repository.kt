@@ -6,7 +6,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.database.database
 import kotlinx.coroutines.flow.MutableStateFlow
 
-interface _1_2_ProduitAcheteOperationRepository {
+interface _1_2_ProduitAcheteOperation_Repository {
     var modelDatasSnapList: SnapshotStateList<_1_2_ProduitAcheteOperation>
     val progressRepo: MutableStateFlow<Float>
         get() = MutableStateFlow(0f)

@@ -20,8 +20,8 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 class _1_1_CouleurAcheteOperationRepositoryImpl(
     private val appDatabase: AppDatabase
-) : _1_1_CouleurAcheteOperationRepository {
-    private val TAG = _1_1_CouleurAcheteOperationRepository.TAG
+) : _1_1_CouleurAcheteOperation_Repository {
+    private val TAG = _1_1_CouleurAcheteOperation_Repository.TAG
 
     override var modelDatasSnapList: SnapshotStateList<_1_1_CouleurAcheteOperation> =
         mutableStateListOf()
@@ -130,7 +130,7 @@ class _1_1_CouleurAcheteOperationRepositoryImpl(
 
             val firebaseSnapshot = try {
                 withContext(Dispatchers.IO) {
-                    val task = _1_1_CouleurAcheteOperationRepository.sonDataBaseRef.get()
+                    val task = _1_1_CouleurAcheteOperation_Repository.sonDataBaseRef.get()
                     Tasks.await(task)
                 }
             } catch (e: Exception) {
@@ -201,7 +201,7 @@ class _1_1_CouleurAcheteOperationRepositoryImpl(
                     }
                 }
 
-                _1_1_CouleurAcheteOperationRepository.sonDataBaseRef.addValueEventListener(flowValueEventListener!!)
+                _1_1_CouleurAcheteOperation_Repository.sonDataBaseRef.addValueEventListener(flowValueEventListener!!)
                 isFlowListenerActive.set(true)
             }
         }
@@ -211,7 +211,7 @@ class _1_1_CouleurAcheteOperationRepositoryImpl(
         synchronized(flowListenerLock) {
             if (isFlowListenerActive.get() && flowValueEventListener != null) {
                 try {
-                    _1_1_CouleurAcheteOperationRepository.sonDataBaseRef.removeEventListener(flowValueEventListener!!)
+                    _1_1_CouleurAcheteOperation_Repository.sonDataBaseRef.removeEventListener(flowValueEventListener!!)
                 } catch (e: Exception) {
                     Log.e(TAG, "Error removing flow listener: ${e.message}")
                 } finally {
@@ -231,7 +231,7 @@ class _1_1_CouleurAcheteOperationRepositoryImpl(
 
             viewModelScope.launch(Dispatchers.IO) {
                 try {
-                    val task = _1_1_CouleurAcheteOperationRepository.sonDataBaseRef.get()
+                    val task = _1_1_CouleurAcheteOperation_Repository.sonDataBaseRef.get()
                     val snapshot = Tasks.await(task)
 
                     try {
@@ -282,7 +282,7 @@ class _1_1_CouleurAcheteOperationRepositoryImpl(
         synchronized(listenerLock) {
             if (isListenerActive.get() && valueEventListener != null) {
                 try {
-                    _1_1_CouleurAcheteOperationRepository.sonDataBaseRef.removeEventListener(valueEventListener!!)
+                    _1_1_CouleurAcheteOperation_Repository.sonDataBaseRef.removeEventListener(valueEventListener!!)
                 } catch (e: Exception) {
                     Log.e(TAG, "Error removing data listener: ${e.message}")
                 } finally {
@@ -304,7 +304,7 @@ class _1_1_CouleurAcheteOperationRepositoryImpl(
 
             repositoryScope.launch(Dispatchers.IO) {
                 try {
-                    _1_1_CouleurAcheteOperationRepository.sonDataBaseRef.child(data.vid.toString()).removeValue().await()
+                    _1_1_CouleurAcheteOperation_Repository.sonDataBaseRef.child(data.vid.toString()).removeValue().await()
                     appDatabase._1_1_CouleurAcheteOperationDao().delete(data)
                 } catch (e: Exception) {
                     Log.e(TAG, "Error deleting data: ${e.message}")
@@ -323,7 +323,7 @@ class _1_1_CouleurAcheteOperationRepositoryImpl(
 
             repositoryScope.launch(Dispatchers.IO) {
                 try {
-                    _1_1_CouleurAcheteOperationRepository.sonDataBaseRef.child(data.vid.toString()).setValue(data).await()
+                    _1_1_CouleurAcheteOperation_Repository.sonDataBaseRef.child(data.vid.toString()).setValue(data).await()
                     appDatabase._1_1_CouleurAcheteOperationDao().insert(data)
                 } catch (e: Exception) {
                     Log.e(TAG, "Error adding data: ${e.message}")
@@ -336,7 +336,7 @@ class _1_1_CouleurAcheteOperationRepositoryImpl(
 
     private suspend fun firebaseUpdateData(data: _1_1_CouleurAcheteOperation) {
         try {
-            _1_1_CouleurAcheteOperationRepository.sonDataBaseRef.child(data.vid.toString()).setValue(data).await()
+            _1_1_CouleurAcheteOperation_Repository.sonDataBaseRef.child(data.vid.toString()).setValue(data).await()
         } catch (e: Exception) {
             Log.e(TAG, "Error updating Firebase data: ${e.message}")
         }
@@ -366,7 +366,7 @@ class _1_1_CouleurAcheteOperationRepositoryImpl(
                 try {
                     synchronized(listenerLock) {
                         valueEventListener?.let {
-                            _1_1_CouleurAcheteOperationRepository.sonDataBaseRef.removeEventListener(
+                            _1_1_CouleurAcheteOperation_Repository.sonDataBaseRef.removeEventListener(
                                 it
                             )
                         }
@@ -376,7 +376,7 @@ class _1_1_CouleurAcheteOperationRepositoryImpl(
 
                     synchronized(flowListenerLock) {
                         flowValueEventListener?.let {
-                            _1_1_CouleurAcheteOperationRepository.sonDataBaseRef.removeEventListener(
+                            _1_1_CouleurAcheteOperation_Repository.sonDataBaseRef.removeEventListener(
                                 it
                             )
                         }
@@ -392,7 +392,7 @@ class _1_1_CouleurAcheteOperationRepositoryImpl(
                     synchronized(listenerLock) {
                         if (!isListenerActive.get() && tempListener != null) {
                             valueEventListener = tempListener
-                            _1_1_CouleurAcheteOperationRepository.sonDataBaseRef.addValueEventListener(
+                            _1_1_CouleurAcheteOperation_Repository.sonDataBaseRef.addValueEventListener(
                                 tempListener
                             )
                             isListenerActive.set(true)
@@ -402,7 +402,7 @@ class _1_1_CouleurAcheteOperationRepositoryImpl(
                     synchronized(flowListenerLock) {
                         if (!isFlowListenerActive.get() && tempFlowListener != null) {
                             flowValueEventListener = tempFlowListener
-                            _1_1_CouleurAcheteOperationRepository.sonDataBaseRef.addValueEventListener(
+                            _1_1_CouleurAcheteOperation_Repository.sonDataBaseRef.addValueEventListener(
                                 tempFlowListener
                             )
                             isFlowListenerActive.set(true)
@@ -424,7 +424,7 @@ class _1_1_CouleurAcheteOperationRepositoryImpl(
 
     private fun batchFireBaseSet(datas: List<_1_1_CouleurAcheteOperation>) {
         try {
-            val reference = _1_1_CouleurAcheteOperationRepository.sonDataBaseRef
+            val reference = _1_1_CouleurAcheteOperation_Repository.sonDataBaseRef
             val batchUpdates = HashMap<String, Any>()
 
             for (data in datas) {
@@ -455,7 +455,7 @@ class _1_1_CouleurAcheteOperationRepositoryImpl(
     }
 
     fun log() {
-        Log.d(TAG, "_1_1_CouleurAcheteOperationRepository status: ")
+        Log.d(TAG, "_1_1_CouleurAcheteOperation_Repository status: ")
         Log.d(TAG, "- Data count: ${modelDatasSnapList.size}")
         Log.d(TAG, "- Initial data loaded: $initialDataLoaded")
         Log.d(TAG, "- Progress value: ${progressRepo.value}")
