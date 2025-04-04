@@ -1,4 +1,4 @@
-package W.Fragments.A.PanierFinaleDAchat.APP
+package W.Fragments.A.PanierFinaleDAchat.APP.View
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

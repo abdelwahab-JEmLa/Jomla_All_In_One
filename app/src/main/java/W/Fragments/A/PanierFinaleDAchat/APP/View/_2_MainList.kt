@@ -1,4 +1,4 @@
-package W.Fragments.A.PanierFinaleDAchat.APP
+package W.Fragments.A.PanierFinaleDAchat.APP.View
 
 import W.Fragments.A.PanierFinaleDAchat.APP.ViewModel.UiState
 import androidx.compose.foundation.layout.Arrangement

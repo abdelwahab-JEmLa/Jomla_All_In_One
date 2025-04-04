@@ -1,4 +1,4 @@
-package W.Fragments.A.PanierFinaleDAchat.APP
+package W.Fragments.A.PanierFinaleDAchat.APP.View
 
 import W.Fragments.A.PanierFinaleDAchat.APP.ViewModel.ViewModelFragment_APP2_FragID_1
 import Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.ViewModel.ViewModelFragment_APP2_ID_2
@@ -21,7 +21,6 @@ fun A_MainScreenApp2FragID_1(
     modifier: Modifier = Modifier,
     viewModel: ViewModelFragment_APP2_FragID_1 = koinViewModel(),
 ) {
-    // Collect the UI state from the ViewModel
     val uiState by viewModel.uiStateFlow.collectAsState()
         Box(
         ) {

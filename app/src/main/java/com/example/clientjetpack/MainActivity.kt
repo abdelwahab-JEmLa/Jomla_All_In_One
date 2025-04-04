@@ -8,7 +8,7 @@ import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.appManagerModules
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.appModule
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.isManagerApp
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import W.Fragments.A.PanierFinaleDAchat.APP.composeModules
+import W.Fragments.A.PanierFinaleDAchat.APP.View.composeModules
 import Z_MasterOfApps.Z.Android.A_MainActivityApp.Start.Modules.PermissionHandler
 import android.app.Application
 import android.content.Context

@@ -4,7 +4,7 @@ import Views.Package_4.SoldCartScreen.Views.CartSummaryCard
 import Views.Package_4.SoldCartScreen.Views.OrderSuccessMessage
 import Views.Package_4.SoldCartScreen.Views.getTotalQuantity
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
-import W.Fragments.A.PanierFinaleDAchat.APP.A_MainScreenApp2FragID_1
+import W.Fragments.A.PanierFinaleDAchat.APP.View.A_MainScreenApp2FragID_1
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn

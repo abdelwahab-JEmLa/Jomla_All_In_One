@@ -1,4 +1,4 @@
-package W.Fragments.A.PanierFinaleDAchat.APP
+package W.Fragments.A.PanierFinaleDAchat.APP.View
 
 import Z_CodePartageEntreApps.Model._1_1_CouleurAcheteOperation
 import androidx.compose.foundation.layout.Row
