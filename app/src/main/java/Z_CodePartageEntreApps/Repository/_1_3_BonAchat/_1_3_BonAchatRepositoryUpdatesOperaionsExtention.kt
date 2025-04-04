@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Repository._1_3_BonAchat
 
-import Z_CodePartageEntreApps.Model._1_3_BonAchat
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
+import Z_CodePartageEntreApps.Model._1_3_BonAchat
 import android.util.Log
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.firebase.database.ValueEventListener
@@ -16,6 +16,7 @@ class _1_3_BonAchatRepositoryUpdatesOperaionsExtention(
     private val repositoryImpl: _1_3_BonAchatRepositoryImpl
 ) {
     private val TAG = _1_3_BonAchat_Repository.TAG
+    private val logOperations = _1_3_BonAchatRepositoryLogOperationsExtention(repositoryImpl)
 
     fun updateUnSeulData(
         data: _1_3_BonAchat,
@@ -74,6 +75,9 @@ class _1_3_BonAchatRepositoryUpdatesOperaionsExtention(
         modelDatasSnapList: SnapshotStateList<_1_3_BonAchat>
     ) {
         try {
+            // Log the data addition
+            logOperations.logDataAdd(data)
+
             repositoryScope.launch(Dispatchers.Main) {
                 modelDatasSnapList.add(data)
             }

@@ -2,12 +2,14 @@ package Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.Ap
 
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import Z_CodePartageEntreApps.Model._1_3_BonAchat
+import Z_CodePartageEntreApps.Windows.B.Windows.UI.LoadingContent
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.ViewModel_App2FragID1
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -76,6 +78,7 @@ fun MarkerStatusDialog(
     var clientTypeMode = relatedClients?.clientTypeMode
 
     val uiStateviewModelFragment_APP2_ID_1 by viewModelInitApp.viewModelFragment_APP2_ID_1.uiStateFlow.collectAsState()
+    val isDataLoading = uiStateviewModelFragment_APP2_ID_1.isDataLoading
 
     if (selectedMarker == null) return
 
@@ -91,287 +94,304 @@ fun MarkerStatusDialog(
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            Column(
-                modifier = Modifier.padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Row(
+            if (isDataLoading) {
+                // Show loading content when data is loading
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
                 ) {
-                    // Delete Icon
-                    Card(
+                    LoadingContent(
+                        message = "Loading client data...",
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
+            } else {
+                // Show the normal content when data is loaded
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Row(
                         modifier = Modifier
-                            .background(color = Color.Red)
-                            .clickable {
-                                showDeleteConfirmationDialog = true
-                            }
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = "Delete client",
-                        )
+                        // Delete Icon
+                        Card(
+                            modifier = Modifier
+                                .background(color = Color.Red)
+                                .clickable {
+                                    showDeleteConfirmationDialog = true
+                                }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Delete client",
+                            )
+                        }
+                        // Location Edit Icon
+                        Card(
+                            modifier = Modifier
+                                .padding(end = 8.dp)
+                                .clickable {
+                                    onClickToEditeMarquerPosition(selectedMarker.id.toLong())
+                                    onDismiss()
+                                }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.LocationOn,
+                                contentDescription = "Edit location"
+                            )
+                        }
+                        // Client Type Mode Toggle
+                        Card(
+                            modifier = Modifier
+                                .padding(end = 8.dp)
+                                .clickable {
+                                    clientTypeMode = when (clientTypeMode) {
+                                        B_ClientDataBase.ClientTypeMode.ANCIEN -> B_ClientDataBase.ClientTypeMode.NEVEAU
+                                        B_ClientDataBase.ClientTypeMode.NEVEAU -> B_ClientDataBase.ClientTypeMode.EVITE
+                                        B_ClientDataBase.ClientTypeMode.EVITE -> B_ClientDataBase.ClientTypeMode.ANCIEN
+                                        null -> B_ClientDataBase.ClientTypeMode.NEVEAU
+                                    }
+
+                                    // Update the client's type mode
+                                    relatedClients?.let { client ->
+                                        client.clientTypeMode = clientTypeMode!!
+                                        viewModel.updateData(client)
+                                    }
+                                }
+                        ) {
+                            clientTypeMode?.let {
+                                Icon(
+                                    imageVector = it.icon,
+                                    contentDescription = "Toggle Client Type",
+                                    tint = it.color
+                                )
+                            }
+                        }
                     }
-                    // Location Edit Icon
+
                     Card(
                         modifier = Modifier
-                            .padding(end = 8.dp)
-                            .clickable {
-                                onClickToEditeMarquerPosition(selectedMarker.id.toLong())
+                            .clickable { showEditDialog = true }
+                            .fillMaxWidth()
+                    ) {
+                        Column {
+                            Text(
+                                text = selectedMarker.title ?: "Client",
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold
+                            )
+
+                            if (!relatedClients?.numTelephone.isNullOrEmpty()) {
+                                Text(
+                                    text = relatedClients?.numTelephone ?: "",
+                                    modifier = Modifier.clickable { showPhoneDialog = true },
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        }
+                    }
+
+
+                    // Status buttons remain the same
+                    StatusButton(
+                        text = "Mode Commande",
+                        icon = Icons.Default.ShoppingCart,
+                        color = Color(
+                            ContextCompat.getColor(
+                                context,
+                                B_ClientDataBase.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT.color
+                            )
+                        ),
+                        onClick = {
+                            coroutineScope.launch {
+                                viewModel.updateLongAppSetting(selectedMarker.id.toLong())
+
+                                val newData = _1_3_BonAchat(
+                                    vid = uiStateviewModelFragment_APP2_ID_1._1_3_BonAchatList.maxOfOrNull { it.vid } ?: 1,
+                                    clientAchteurID = relatedClients?.id!!,
+                                    parent_1_4_PeriodeVentVid = uiStateviewModelFragment_APP2_ID_1._1_4_PeriodeVentList.maxOf { it.vid },
+                                    heurDebutInString = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
+                                )
+
+                                viewModelInitApp.viewModelFragment_APP2_ID_1.addData_1_3_BonAchat_Repository(newData)
+
+                                onUpdateLongAppSetting()
+
                                 onDismiss()
                             }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.LocationOn,
-                            contentDescription = "Edit location"
-                        )
-                    }
-                    // Client Type Mode Toggle
-                    Card(
-                        modifier = Modifier
-                            .padding(end = 8.dp)
-                            .clickable {
-                                clientTypeMode = when (clientTypeMode) {
-                                    B_ClientDataBase.ClientTypeMode.ANCIEN -> B_ClientDataBase.ClientTypeMode.NEVEAU
-                                    B_ClientDataBase.ClientTypeMode.NEVEAU -> B_ClientDataBase.ClientTypeMode.EVITE
-                                    B_ClientDataBase.ClientTypeMode.EVITE -> B_ClientDataBase.ClientTypeMode.ANCIEN
-                                    null -> B_ClientDataBase.ClientTypeMode.NEVEAU
-                                }
+                        }
+                    )
 
-                                // Update the client's type mode
-                                relatedClients?.let { client ->
-                                    client.clientTypeMode = clientTypeMode!!
-                                    viewModel.updateData(client)
-                                }
+                    val CLIENT_ABSENT =
+                        B_ClientDataBase.DernierEtatAAffiche.CLIENT_ABSENT
+
+                    StatusButton(
+                        text = CLIENT_ABSENT.nomArabe,
+                        icon = Icons.Default.Person,
+                        color = Color(
+                            ContextCompat.getColor(
+                                context,
+                                CLIENT_ABSENT.color
+                            )
+                        ),
+                        onClick = {
+                            coroutineScope.launch {
+                                Log.d("MarkerStatusDialog", "Setting client ${selectedMarker?.id} to state: CLIENT_ABSENT")
+                                relatedClients?.actuelleEtat = CLIENT_ABSENT
+                                viewModel.updateData(relatedClients!!)
+                                onDismiss()
                             }
-                    ) {
-                        clientTypeMode?.let {
-                            Icon(
-                                imageVector = it.icon,
-                                contentDescription = "Toggle Client Type",
-                                tint = it.color
-                            )
                         }
-                    }
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    val AVEC_MARCHANDISE =
+                        B_ClientDataBase.DernierEtatAAffiche.AVEC_MARCHANDISE
+                    StatusButton(
+                        text = AVEC_MARCHANDISE.nomArabe,
+                        icon = Icons.Default.Person,
+                        color = Color(
+                            ContextCompat.getColor(
+                                context,
+                                AVEC_MARCHANDISE.color
+                            )
+                        ),
+                        onClick = {
+                            coroutineScope.launch {
+                                relatedClients?.actuelleEtat = AVEC_MARCHANDISE
+                                viewModel.updateData(relatedClients!!)
+                                onDismiss()
+                            }
+                        }
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    val FERME =
+                        B_ClientDataBase.DernierEtatAAffiche.FERME
+                    StatusButton(
+                        text = FERME.nomArabe,
+                        icon = Icons.Default.Person,
+                        color = Color(
+                            ContextCompat.getColor(
+                                context,
+                                FERME.color
+                            )
+                        ),
+                        onClick = {
+                            coroutineScope.launch {
+                                relatedClients?.actuelleEtat = FERME
+                                viewModel.updateData(relatedClients!!)
+                                onDismiss()
+                            }
+                        }
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    val Cible = B_ClientDataBase.DernierEtatAAffiche.Cible
+                    StatusButton(
+                        text = Cible.nomArabe,
+                        icon = Icons.Default.Person,
+                        color = Color(
+                            ContextCompat.getColor(
+                                context,
+                                Cible.color
+                            )
+                        ),
+                        onClick = {
+                            coroutineScope.launch {
+                                relatedClients?.actuelleEtat = Cible
+                                viewModel.updateData(relatedClients!!)
+
+                                onDismiss()
+                            }
+                        }
+                    )
+
+                    val CIBLE_PRIORITE_2 =
+                        B_ClientDataBase.DernierEtatAAffiche.CIBLE_PRIORITE_2
+
+                    StatusButton(
+                        text = CIBLE_PRIORITE_2.nomArabe,
+                        icon = Icons.Default.Person,
+                        color = Color(
+                            ContextCompat.getColor(
+                                context,
+                                CIBLE_PRIORITE_2.color
+                            )
+                        ),
+                        onClick = {
+                            coroutineScope.launch {
+
+                                relatedClients?.actuelleEtat = CIBLE_PRIORITE_2
+
+                                viewModel.updateData(relatedClients!!)
+
+                                onDismiss()
+                            }
+                        }
+                    )
+
+
+                    val CIBLE_POUR_2 =
+                        B_ClientDataBase.DernierEtatAAffiche.CIBLE_POUR_2
+
+                    StatusButton(
+                        text = CIBLE_POUR_2.nomArabe,
+                        icon = Icons.Default.Person,
+                        color = Color(
+                            ContextCompat.getColor(
+                                context,
+                                CIBLE_POUR_2.color
+                            )
+                        ),
+                        onClick = {
+                            coroutineScope.launch {
+
+                                relatedClients?.actuelleEtat = CIBLE_POUR_2
+
+                                viewModel.updateData(relatedClients!!)
+
+                                onDismiss()
+                            }
+                        }
+                    )
+
+
+                    val A_EVITE =
+                        B_ClientDataBase.DernierEtatAAffiche.A_EVITE
+
+                    StatusButton(
+                        text = A_EVITE.nomArabe,
+                        icon = Icons.Default.Person,
+                        color = Color(
+                            ContextCompat.getColor(
+                                context,
+                                A_EVITE.color
+                            )
+                        ),
+                        onClick = {
+                            coroutineScope.launch {
+
+                                relatedClients?.actuelleEtat = A_EVITE
+
+                                viewModel.updateData(relatedClients!!)
+
+                                onDismiss()
+                            }
+                        }
+                    )
                 }
-
-                Card(
-                    modifier = Modifier
-                        .clickable { showEditDialog = true }
-                        .fillMaxWidth()
-                ) {
-                    Column {
-                        Text(
-                            text = selectedMarker.title ?: "Client",
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold
-                        )
-
-                        if (!relatedClients?.numTelephone.isNullOrEmpty()) {
-                            Text(
-                                text = relatedClients?.numTelephone ?: "",
-                                modifier = Modifier.clickable { showPhoneDialog = true },
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                        }
-                    }
-                }
-
-
-                // Status buttons remain the same
-                StatusButton(
-                    text = "Mode Commande",
-                    icon = Icons.Default.ShoppingCart,
-                    color = Color(
-                        ContextCompat.getColor(
-                            context,
-                            B_ClientDataBase.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT.color
-                        )
-                    ),
-                    onClick = {
-                        coroutineScope.launch {
-                            viewModel.updateLongAppSetting(selectedMarker.id.toLong())
-
-                            val newData = _1_3_BonAchat(
-                                clientAchteurID = relatedClients?.id!!,
-                                parent_1_4_PeriodeVentVid = uiStateviewModelFragment_APP2_ID_1._1_4_PeriodeVentList.maxOf { it.vid },
-                                heurDebutInString = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
-                            )
-
-                            viewModelInitApp.viewModelFragment_APP2_ID_1.addData_1_3_BonAchat_Repository(newData)
-
-                            onUpdateLongAppSetting()
-
-                            onDismiss()
-                        }
-                    }
-                )
-
-                val CLIENT_ABSENT =
-                    B_ClientDataBase.DernierEtatAAffiche.CLIENT_ABSENT
-
-                StatusButton(
-                    text = CLIENT_ABSENT.nomArabe,
-                    icon = Icons.Default.Person,
-                    color = Color(
-                        ContextCompat.getColor(
-                            context,
-                            CLIENT_ABSENT.color
-                        )
-                    ),
-                    onClick = {
-                        coroutineScope.launch {
-                            Log.d("MarkerStatusDialog", "Setting client ${selectedMarker?.id} to state: CLIENT_ABSENT")
-                            relatedClients?.actuelleEtat = CLIENT_ABSENT
-                            viewModel.updateData(relatedClients!!)
-                            onDismiss()
-                        }
-                    }
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                val AVEC_MARCHANDISE =
-                    B_ClientDataBase.DernierEtatAAffiche.AVEC_MARCHANDISE
-                StatusButton(
-                    text = AVEC_MARCHANDISE.nomArabe,
-                    icon = Icons.Default.Person,
-                    color = Color(
-                        ContextCompat.getColor(
-                            context,
-                            AVEC_MARCHANDISE.color
-                        )
-                    ),
-                    onClick = {
-                        coroutineScope.launch {
-                            relatedClients?.actuelleEtat = AVEC_MARCHANDISE
-                            viewModel.updateData(relatedClients!!)
-                            onDismiss()
-                        }
-                    }
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                val FERME =
-                    B_ClientDataBase.DernierEtatAAffiche.FERME
-                StatusButton(
-                    text = FERME.nomArabe,
-                    icon = Icons.Default.Person,
-                    color = Color(
-                        ContextCompat.getColor(
-                            context,
-                            FERME.color
-                        )
-                    ),
-                    onClick = {
-                        coroutineScope.launch {
-                            relatedClients?.actuelleEtat = FERME
-                            viewModel.updateData(relatedClients!!)
-                            onDismiss()
-                        }
-                    }
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                val Cible = B_ClientDataBase.DernierEtatAAffiche.Cible
-                StatusButton(
-                    text = Cible.nomArabe,
-                    icon = Icons.Default.Person,
-                    color = Color(
-                        ContextCompat.getColor(
-                            context,
-                            Cible.color
-                        )
-                    ),
-                    onClick = {
-                        coroutineScope.launch {
-                            relatedClients?.actuelleEtat = Cible
-                            viewModel.updateData(relatedClients!!)
-
-                            onDismiss()
-                        }
-                    }
-                )
-
-                val CIBLE_PRIORITE_2 =
-                    B_ClientDataBase.DernierEtatAAffiche.CIBLE_PRIORITE_2
-
-                StatusButton(
-                    text = CIBLE_PRIORITE_2.nomArabe,
-                    icon = Icons.Default.Person,
-                    color = Color(
-                        ContextCompat.getColor(
-                            context,
-                            CIBLE_PRIORITE_2.color
-                        )
-                    ),
-                    onClick = {
-                        coroutineScope.launch {
-
-                            relatedClients?.actuelleEtat = CIBLE_PRIORITE_2
-
-                            viewModel.updateData(relatedClients!!)
-
-                            onDismiss()
-                        }
-                    }
-                )
-
-
-                val CIBLE_POUR_2 =
-                    B_ClientDataBase.DernierEtatAAffiche.CIBLE_POUR_2
-
-                StatusButton(
-                    text = CIBLE_POUR_2.nomArabe,
-                    icon = Icons.Default.Person,
-                    color = Color(
-                        ContextCompat.getColor(
-                            context,
-                            CIBLE_POUR_2.color
-                        )
-                    ),
-                    onClick = {
-                        coroutineScope.launch {
-
-                            relatedClients?.actuelleEtat = CIBLE_POUR_2
-
-                            viewModel.updateData(relatedClients!!)
-
-                            onDismiss()
-                        }
-                    }
-                )
-
-
-                val A_EVITE =
-                    B_ClientDataBase.DernierEtatAAffiche.A_EVITE
-
-                StatusButton(
-                    text = A_EVITE.nomArabe,
-                    icon = Icons.Default.Person,
-                    color = Color(
-                        ContextCompat.getColor(
-                            context,
-                            A_EVITE.color
-                        )
-                    ),
-                    onClick = {
-                        coroutineScope.launch {
-
-                            relatedClients?.actuelleEtat = A_EVITE
-
-                            viewModel.updateData(relatedClients!!)
-
-                            onDismiss()
-                        }
-                    }
-                )
             }
         }
     }
@@ -445,7 +465,7 @@ fun MarkerStatusDialog(
         )
     }
 
-// New delete confirmation dialog
+    // New delete confirmation dialog
     if (showDeleteConfirmationDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteConfirmationDialog = false },

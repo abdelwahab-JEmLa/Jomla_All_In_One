@@ -25,4 +25,14 @@ class _1_3_BonAchatRepositoryLogOperationsExtention(
             "- Listeners active: isListenerActive=$isListenerActive, isFlowListenerActive=$isFlowListenerActive"
         )
     }
+
+    // New method to log data additions
+    fun logDataAdd(data: Z_CodePartageEntreApps.Model._1_3_BonAchat) {
+        Log.d(TAG, "Data added to repository:")
+        Log.d(TAG, "- ID (vid): ${data.vid}")
+        Log.d(TAG, "- Timestamp: ${System.currentTimeMillis()}")
+        // Log additional fields from the data model as needed
+        // For example, if your _1_3_BonAchat class has fields like name, amount, etc.
+        // You can log them here
+    }
 }

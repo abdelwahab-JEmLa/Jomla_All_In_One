@@ -12,6 +12,7 @@ import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchatRepositoryIm
 import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat_Repository
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVentRepositoryImpl
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
@@ -57,35 +58,48 @@ class ViewModelFragment_APP2_ID_1(
                 _1_4_PeriodeVent_Repository,
                 _uiStateFlow,
                 viewModelScope,
-                { checkInitializationComplete() },
+                {
+                    checkInitializationComplete(
+                        _1_1_CouleurAcheteOperationRepository,
+                        _1_2_ProduitAcheteOperationRepository,
+                        _1_3_BonAchat_Repository,
+                        _1_4_PeriodeVent_Repository,
+                        _uiStateFlow
+                    )
+                }
             )
         }
-
-        // Add hardcoded data only if repository is empty
-        viewModelScope.launch {
-            if (_1_1_CouleurAcheteOperationRepository.modelDatasSnapList.isEmpty()) {
-                Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App._1.Shared.Test.addHardcodedDataToFirebase(
-                    _1_1_CouleurAcheteOperationRepository,
-                    _1_2_ProduitAcheteOperationRepository,
-                    _1_3_BonAchat_Repository,
-                    _1_4_PeriodeVent_Repository,
-                )
-            }
-        }
     }
+   
+    
 
     fun addData_1_3_BonAchat_Repository(newData: _1_3_BonAchat): Unit {
         _1_3_BonAchat_Repository.addData(newData)
     }
 
-    private fun checkInitializationComplete() {
-        initializerViewModel.checkInitializationComplete(
-            _1_1_CouleurAcheteOperationRepository,
-            _1_2_ProduitAcheteOperationRepository,
-            _1_3_BonAchat_Repository,
-            _1_4_PeriodeVent_Repository,
-            _uiStateFlow,
-        )
+    // Add this to checkInitializationComplete method in InintializeViewModel_APP2_ID_1
+    fun checkInitializationComplete(
+        _1_1_CouleurAcheteOperationRepository: _1_1_CouleurAcheteOperationRepository,
+        _1_2_ProduitAcheteOperationRepository: _1_2_ProduitAcheteOperationRepository,
+        _1_3_BonAchat_Repository: _1_3_BonAchat_Repository,
+        _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository,
+        uiStateFlow: MutableStateFlow<UiState_APP2_ID_1>,
+    ) {
+        val progress1 = _1_1_CouleurAcheteOperationRepository.progressRepo.value
+        val progress2 = _1_2_ProduitAcheteOperationRepository.progressRepo.value
+        val progress3 = _1_3_BonAchat_Repository.progressRepo.value
+        val progress4 = _1_4_PeriodeVent_Repository.progressRepo.value
+
+        Log.d(TAG, "Progress values: $progress1, $progress2, $progress3, $progress4, isInitialized: ${uiStateFlow.value.isInitialized}")
+
+        if (progress1 >= 1.0f && progress2 >= 1.0f && progress3 >= 1.0f && progress4 >= 1.0f) {
+            if (!uiStateFlow.value.isInitialized) {
+                Log.d(TAG, "Setting initialization complete")
+                uiStateFlow.value = uiStateFlow.value.copy(
+                    isInitialized = true
+                )
+            }
+        }
     }
 
     override fun onCleared() {
