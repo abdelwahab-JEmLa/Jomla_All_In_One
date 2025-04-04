@@ -7,10 +7,12 @@ import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.B_ClientDataBase
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.B_ClientDataBaseRepositoryImpl
 import Z_CodePartageEntreApps.Model.C_GrossistsDataBaseRepository.C_GrossistsDataBaseRepository
 import Z_CodePartageEntreApps.Model.C_GrossistsDataBaseRepository.C_GrossistsDataBaseRepositoryImpl
+import Z_CodePartageEntreApps.Model.CategoriesRepositoryImpl
 import Z_CodePartageEntreApps.Model.H_GroupesCategoriesRepository
 import Z_CodePartageEntreApps.Model.H_GroupesCategoriesRepositoryImpl
 import Z_CodePartageEntreApps.Model.I_CategorieProduits.Z.Repository.I_CategorieProduitsRepository
 import Z_CodePartageEntreApps.Model.I_CategorieProduits.Z.Repository.I_CategorieProduitsRepositoryImpl
+import Z_CodePartageEntreApps.Model.I_CategoriesRepository
 import Z_CodePartageEntreApps.Model.J_AppInstalleDonTelephoneRepository
 import Z_CodePartageEntreApps.Model.J_AppInstalleDonTelephoneRepositoryImpl
 import Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.K_TempTravailleRepository
@@ -42,6 +44,7 @@ val commonRepositoriesModule = module {
     single<B_ClientDataBaseRepository> { B_ClientDataBaseRepositoryImpl(get()) }
     single<B_ClientDataBaseRepository> { B_ClientDataBaseRepositoryImpl(get()) }
     single<A_ProduitRepository> { A_ProduitRepositoryImpl(get()) }
+    single<I_CategoriesRepository> { CategoriesRepositoryImpl() }
     single<I_CategorieProduitsRepository> { I_CategorieProduitsRepositoryImpl(get()) }
     single<K_TempTravailleRepository> { K_TempTravailleRepositoryImpl() }
     single<H_GroupesCategoriesRepository> { H_GroupesCategoriesRepositoryImpl() }

@@ -1,5 +1,3 @@
-@file:JvmName("GlideDisplayImageBykeyIdKt")
-
 package Z_CodePartageEntreApps.View
 
 import Z_CodePartageEntreApps.Model.A_Produit.A_Produit

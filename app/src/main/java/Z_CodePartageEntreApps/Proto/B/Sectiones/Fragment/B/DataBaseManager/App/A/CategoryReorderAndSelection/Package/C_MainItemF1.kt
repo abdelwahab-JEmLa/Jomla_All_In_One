@@ -1,8 +1,8 @@
 package Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.B.DataBaseManager.App.A.CategoryReorderAndSelection.Package
 
-import Z_CodePartageEntreApps.View.GlideDisplayImageBykeyId
 import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
 import Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.B.DataBaseManager.App.A.CategoryReorderAndSelection.Package.ViewModel.ViewModel_A4FragID1
+import Z_CodePartageEntreApps.View.GlideDisplayImageByNewProduitModel
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -66,7 +66,7 @@ fun C_MainItemF1(
                 .height(imageHeight)
                 .clickable { onClickOnMain() }
         ) {
-            GlideDisplayImageBykeyId(
+            GlideDisplayImageByNewProduitModel(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(imageHeight),
