@@ -1,5 +1,6 @@
 package W.Fragments.A.PanierFinaleDAchat.APP
 
+import W.Fragments.A.PanierFinaleDAchat.APP.ViewModel.ViewModelFragment_APP2_FragID_1
 import Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.ViewModel.ViewModelFragment_APP2_ID_2
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable

@@ -1,4 +1,4 @@
-package W.Fragments.A.PanierFinaleDAchat.APP
+package W.Fragments.A.PanierFinaleDAchat.APP.ViewModel
 
 import Z_CodePartageEntreApps.Model._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Model._1_2_ProduitAcheteOperation

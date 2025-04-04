@@ -1,5 +1,6 @@
 package W.Fragments.A.PanierFinaleDAchat.APP
 
+import W.Fragments.A.PanierFinaleDAchat.APP.ViewModel.UiState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
