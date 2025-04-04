@@ -181,6 +181,7 @@ fun MarkerStatusDialog(
                     }
                 }
 
+
                 // Status buttons remain the same
                 StatusButton(
                     text = "Mode Commande",
