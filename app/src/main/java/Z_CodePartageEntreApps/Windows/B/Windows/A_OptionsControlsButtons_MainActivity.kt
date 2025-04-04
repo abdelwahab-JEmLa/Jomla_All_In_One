@@ -15,9 +15,9 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -98,30 +98,29 @@ fun A_OptionsControlsButtons_Main(
 
                                 // Create and add a new PeriodeVent with vid=1, today's date, and empty end date
                                 val newPeriodeVent = Z_CodePartageEntreApps.Model._1_4_PeriodeVent(
-                                    vid = 1L,
+                                    vid = if (uiState._1_4_PeriodeVentList.isEmpty()) 1L else {
+                                        val maxVid = uiState._1_4_PeriodeVentList.maxOfOrNull { it.vid } ?: 0L
+                                        if (maxVid < 400L) maxVid + 1L else maxVid + 1L
+                                    },
                                     startDateInString = today,
                                     endDateInString = ""
                                 )
 
-                               viewModel.addData_1_4_PeriodeVent(newPeriodeVent)
+                                viewModel.addData_1_4_PeriodeVent(newPeriodeVent)
 
                             },
                             modifier = Modifier.size(40.dp),
                             containerColor = if (isFilterActive) Color(0xFF2196F3) else Color(0xFF4CAF50)
                         ) {
-                            Icon(        //<--
-                                //TODO(1): regle au fun
-                                Icons.Filled.FilterList,    //<--
-                                //TODO(1): regle au fun
-                                contentDescription = "Toggle Last Period Filter"    //<--
-                                //TODO(1): regle au fun
+                            Icon(
+                                Icons.Filled.Add,
+                                contentDescription = "Add New Period"
                             )
                         }
 
                         if (showLabels) {
                             Text(
-                                if (isFilterActive) "Clear Filter" else "Last Period",      //<--
-                                //TODO(1): regle au fun
+                                "Add New Period",
                                 modifier = Modifier
                                     .background(if (isFilterActive) Color(0xFF2196F3) else Color(0xFF4CAF50))
                                     .padding(4.dp),
