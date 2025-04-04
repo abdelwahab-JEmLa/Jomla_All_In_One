@@ -16,9 +16,8 @@ val appClientModules = module {
             context = context,
         )
     }
-    viewModel { ViewModelInitApp(
-        get(),get()
-    ) }
+
+
     viewModel { (context: Context) -> HeadViewModel(get(),
         AppDatabase.DatabaseModule.getDatabase(get())
     ) }
