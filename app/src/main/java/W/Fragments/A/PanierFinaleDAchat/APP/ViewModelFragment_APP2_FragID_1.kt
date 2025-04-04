@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.FragID_1.DeviseurProduitsCommedeAuGrossists.Package.App
+package W.Fragments.A.PanierFinaleDAchat.APP
 
 import Z_CodePartageEntreApps.Model._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Model._1_2_ProduitAcheteOperation
