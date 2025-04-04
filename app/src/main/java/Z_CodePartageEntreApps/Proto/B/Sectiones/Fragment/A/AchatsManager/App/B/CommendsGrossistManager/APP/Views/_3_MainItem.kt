@@ -78,7 +78,7 @@ fun MainItem_APP2_ID_2(
                                     } &&
                                             uiState._1_2_ProduitAcheteOperationList
                                                 .filter { it.vid in opetaionsAcceptedListVID }
-                                                .any { it.parent_1_3_BonAchat == bonAchat.id }
+                                                .any { it.parent_1_3_BonAchat == bonAchat.vid }
                                 }
                                 .map { it.clientAchteurID }
                                 .distinct(),

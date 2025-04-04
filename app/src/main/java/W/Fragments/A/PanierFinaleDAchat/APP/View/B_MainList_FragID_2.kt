@@ -1,6 +1,6 @@
 package W.Fragments.A.PanierFinaleDAchat.APP.View
 
-import W.Fragments.A.PanierFinaleDAchat.APP.ViewModel.UiState
+import W.Fragments.A.PanierFinaleDAchat.APP.ViewModel.UiState_APP2_ID_1
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,19 +13,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun MainList(
+fun B_MainList_FragID_2(
     modifier: Modifier = Modifier,
-    uiState: UiState
+    uiState: UiState_APP2_ID_1
 ) {
-    // Get the last period in the list
-    val lastPeriod = uiState._1_4_PeriodeVentList.last()
-
-    // Filter BonAchat list if filtering is active and we have a lastPeriod
-    val filteredBonAchatList = if (uiState.isFilteringActive) {
-        uiState._1_3_BonAchatList.filter { it.parent_1_4_PeriodeVent == lastPeriod.id }
-    } else {
-        uiState._1_3_BonAchatList
-    }
+    val filteredBonAchatList =
+        uiState._1_3_BonAchatList.filter { it.vid == uiState.bonAchetOnCourseMntID }
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
@@ -40,15 +33,15 @@ fun MainList(
             item(span = { GridItemSpan(2) }) {
                 Header_FragID_7(
                     modifier = Modifier.fillMaxWidth(),
-                    id = bonAchat.id,
-                    startDateInString = lastPeriod.startDateInString ,
+                    id = bonAchat.vid,
+                    startDateInString = "" ,
                     clientAchteurID = bonAchat.clientAchteurID
                 )
             }
 
             // Get products for this bonAchat
             val relatedProducts = uiState._1_2_ProduitAcheteOperationList.filter {
-                it.parent_1_3_BonAchat == bonAchat.id
+                it.parent_1_3_BonAchat == bonAchat.vid
             }
 
             // Add items for each product

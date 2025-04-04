@@ -9,15 +9,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
-class InintializeViewModel {
-    private val TAG = "InintializeViewModel" // Tag for logging
+class InintializeViewModel_APP2_ID_1 {
+    private val TAG = "InintializeViewModel"
 
     suspend fun waitForDataInitialization(
         _1_1_CouleurAcheteOperationRepository: _1_1_CouleurAcheteOperationRepository,
         _1_2_ProduitAcheteOperationRepository: _1_2_ProduitAcheteOperationRepository,
         _1_3_BonAchatRepository: _1_3_BonAchatRepository,
         _1_4_PeriodeVentRepository: _1_4_PeriodeVentRepository,
-        uiStateFlow: MutableStateFlow<UiState>,
+        uiStateFlow: MutableStateFlow<UiState_APP2_ID_1>,
         viewModelScope: CoroutineScope,
         checkInitializationComplete: () -> Unit,
     ) {
@@ -108,7 +108,7 @@ class InintializeViewModel {
         _1_2_ProduitAcheteOperationRepository: _1_2_ProduitAcheteOperationRepository,
         _1_3_BonAchatRepository: _1_3_BonAchatRepository,
         _1_4_PeriodeVentRepository: _1_4_PeriodeVentRepository,
-        uiStateFlow: MutableStateFlow<UiState>
+        uiStateFlow: MutableStateFlow<UiState_APP2_ID_1>
     ) {
         val progress1 = _1_1_CouleurAcheteOperationRepository.progressRepo.value
         val progress2 = _1_2_ProduitAcheteOperationRepository.progressRepo.value
@@ -125,8 +125,7 @@ class InintializeViewModel {
         _1_2_ProduitAcheteOperationRepository: _1_2_ProduitAcheteOperationRepository,
         _1_3_BonAchatRepository: _1_3_BonAchatRepository,
         _1_4_PeriodeVentRepository: _1_4_PeriodeVentRepository,
-        uiStateFlow: MutableStateFlow<UiState>,
-        updateFilteredListIfNeeded: () -> Unit
+        uiStateFlow: MutableStateFlow<UiState_APP2_ID_1>,
     ) {
         val progress1 = _1_1_CouleurAcheteOperationRepository.progressRepo.value
         val progress2 = _1_2_ProduitAcheteOperationRepository.progressRepo.value
@@ -139,11 +138,10 @@ class InintializeViewModel {
                     isInitialized = true
                 )
             }
-            updateFilteredListIfNeeded()
         }
     }
 
-     fun handleError(message: String, exception: Exception, uiStateFlow: MutableStateFlow<UiState>) {
+     fun handleError(message: String, exception: Exception, uiStateFlow: MutableStateFlow<UiState_APP2_ID_1>) {
         Log.e(TAG, "$message: ${exception.message}")
         uiStateFlow.value = uiStateFlow.value.copy(
             errorMessage = "$message: ${exception.message}"

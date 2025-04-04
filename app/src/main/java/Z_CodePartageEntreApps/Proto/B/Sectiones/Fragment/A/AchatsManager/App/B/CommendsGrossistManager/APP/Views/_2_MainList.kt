@@ -19,13 +19,13 @@ fun MainList_APP2_ID_2(
 ) {
     val filteredBonAchatList =
         uiState._1_3_BonAchatList.filter { bonAchat ->
-            bonAchat.parent_1_4_PeriodeVent == uiState._1_4_PeriodeVentList.lastOrNull()!!.id
+            bonAchat.parent_1_4_PeriodeVent == uiState._1_4_PeriodeVentList.lastOrNull()!!.vid
         }
 
     // Group products by product ID
     val groupedProducts = uiState._1_2_ProduitAcheteOperationList
         .filter { produit ->
-            filteredBonAchatList.any { bonAchat -> bonAchat.id == produit.parent_1_3_BonAchat }
+            filteredBonAchatList.any { bonAchat -> bonAchat.vid == produit.parent_1_3_BonAchat }
         }
         .groupBy { it.produitAcheterID }
 

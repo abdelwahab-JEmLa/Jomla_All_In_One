@@ -24,7 +24,7 @@ class _1_3_BonAchatRepositoryUpdatesOperaionsExtention(
         modelDatasSnapList: SnapshotStateList<_1_3_BonAchat>
     ) {
         repositoryScope.launch(Dispatchers.Main) {
-            val recordIndex = modelDatasSnapList.indexOfFirst { it.id == data.id }
+            val recordIndex = modelDatasSnapList.indexOfFirst { it.vid == data.vid }
             if (recordIndex != -1) {
                 modelDatasSnapList[recordIndex] = data
             }
@@ -48,7 +48,7 @@ class _1_3_BonAchatRepositoryUpdatesOperaionsExtention(
     ) {
         try {
             repositoryScope.launch(Dispatchers.Main) {
-                val recordIndex = modelDatasSnapList.indexOfFirst { it.id == data.id }
+                val recordIndex = modelDatasSnapList.indexOfFirst { it.vid == data.vid }
                 if (recordIndex != -1) {
                     modelDatasSnapList.removeAt(recordIndex)
                 }
@@ -56,7 +56,7 @@ class _1_3_BonAchatRepositoryUpdatesOperaionsExtention(
 
             repositoryScope.launch(Dispatchers.IO) {
                 try {
-                    _1_3_BonAchatRepository.sonDataBaseRef.child(data.id.toString()).removeValue().await()
+                    _1_3_BonAchatRepository.sonDataBaseRef.child(data.vid.toString()).removeValue().await()
                     appDatabase._1_3_BonAchatDao().delete(data)
                 } catch (e: Exception) {
                     Log.e(TAG, "Error deleting data: ${e.message}")
@@ -80,7 +80,7 @@ class _1_3_BonAchatRepositoryUpdatesOperaionsExtention(
 
             repositoryScope.launch(Dispatchers.IO) {
                 try {
-                    _1_3_BonAchatRepository.sonDataBaseRef.child(data.id.toString()).setValue(data).await()
+                    _1_3_BonAchatRepository.sonDataBaseRef.child(data.vid.toString()).setValue(data).await()
                     appDatabase._1_3_BonAchatDao().insert(data)
                 } catch (e: Exception) {
                     Log.e(TAG, "Error adding data: ${e.message}")
@@ -93,7 +93,7 @@ class _1_3_BonAchatRepositoryUpdatesOperaionsExtention(
 
     private suspend fun firebaseUpdateData(data: _1_3_BonAchat) {
         try {
-            _1_3_BonAchatRepository.sonDataBaseRef.child(data.id.toString()).setValue(data).await()
+            _1_3_BonAchatRepository.sonDataBaseRef.child(data.vid.toString()).setValue(data).await()
         } catch (e: Exception) {
             Log.e(TAG, "Error updating Firebase data: ${e.message}")
         }
@@ -192,7 +192,7 @@ class _1_3_BonAchatRepositoryUpdatesOperaionsExtention(
             val batchUpdates = HashMap<String, Any>()
 
             for (data in datas) {
-                batchUpdates[data.id.toString()] = data
+                batchUpdates[data.vid.toString()] = data
             }
 
             reference.updateChildren(batchUpdates)

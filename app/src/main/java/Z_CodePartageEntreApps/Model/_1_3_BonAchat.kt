@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "_1_3_BonAchat")
 data class _1_3_BonAchat(
     @PrimaryKey(autoGenerate = true)
-    var id: Long = 0L,
+    var vid: Long = 0L,
     var clientAchteurID: Long = 0L,
     // Section Related Parents Foreign Key IDs
     var parent_1_4_PeriodeVent: Long = 0L,

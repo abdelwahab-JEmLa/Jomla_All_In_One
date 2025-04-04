@@ -25,22 +25,22 @@ suspend fun addHardcodedDataToFirebase(
         // Create _1_4_PeriodeVent test data first (top-level entity)
         val periodeVentTestData = listOf(
             _1_4_PeriodeVent(
-                id = 601L,
+                vid = 601L,
                 startDateInString = "2025-01-01",
                 endDateInString = "2025-01-31"
             ),
             _1_4_PeriodeVent(
-                id = 602L,
+                vid = 602L,
                 startDateInString = "2025-02-01",
                 endDateInString = "2025-02-28"
             ),
             _1_4_PeriodeVent(
-                id = 603L,
+                vid = 603L,
                 startDateInString = "2025-03-01",
                 endDateInString = "2025-03-31"
             ),
             _1_4_PeriodeVent(
-                id = 604L,
+                vid = 604L,
                 startDateInString = "2025-04-01",
                 endDateInString = "2025-04-30"
             )
@@ -50,49 +50,49 @@ suspend fun addHardcodedDataToFirebase(
         val bonAchatTestData = listOf(
             // Original entries
             _1_3_BonAchat(
-                id = 501L,
+                vid = 501L,
                 clientAchteurID = 301L,
                 parent_1_4_PeriodeVent = 601L,
                 heurDebutInString = "08:00",
                 heurFinInString = "17:00"
             ),
             _1_3_BonAchat(
-                id = 502L,
+                vid = 502L,
                 clientAchteurID = 302L,
                 parent_1_4_PeriodeVent = 602L,
                 heurDebutInString = "09:00",
                 heurFinInString = "18:00"
             ),
             _1_3_BonAchat(
-                id = 503L,
+                vid = 503L,
                 clientAchteurID = 303L,
                 parent_1_4_PeriodeVent = 602L,
                 heurDebutInString = "10:00",
                 heurFinInString = "19:00"
             ),
             _1_3_BonAchat(
-                id = 504L,
+                vid = 504L,
                 clientAchteurID = 304L,
                 parent_1_4_PeriodeVent = 603L,
                 heurDebutInString = "08:30",
                 heurFinInString = "16:30"
             ),
             _1_3_BonAchat(
-                id = 505L,
+                vid = 505L,
                 clientAchteurID = 305L,
                 parent_1_4_PeriodeVent = 604L,
                 heurDebutInString = "09:30",
                 heurFinInString = "17:30"
             ),
             _1_3_BonAchat(
-                id = 506L,
+                vid = 506L,
                 clientAchteurID = 306L,
                 parent_1_4_PeriodeVent = 604L,
                 heurDebutInString = "07:00",
                 heurFinInString = "15:00"
             ),
             _1_3_BonAchat(
-                id = 507L,
+                vid = 507L,
                 clientAchteurID = 307L,
                 parent_1_4_PeriodeVent = 604L,
                 heurDebutInString = "11:00",
