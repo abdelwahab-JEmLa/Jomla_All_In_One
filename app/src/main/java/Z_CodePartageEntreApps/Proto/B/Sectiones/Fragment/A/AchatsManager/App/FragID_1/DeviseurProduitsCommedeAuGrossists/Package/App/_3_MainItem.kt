@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.A.DeviseurProduitsCommedeAuGrossists.Package.App
+package Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.FragID_1.DeviseurProduitsCommedeAuGrossists.Package.App
 
 import Z_CodePartageEntreApps.Model._1_1_CouleurAcheteOperation
 import androidx.compose.foundation.layout.Column

@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.A.DeviseurProduitsCommedeAuGrossists.Package.App
+package Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.FragID_1.DeviseurProduitsCommedeAuGrossists.Package.App
 
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.Components.LabelsButton
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.Components.MenuButton
@@ -37,7 +37,7 @@ const val TAG = "ControlButton"
 
 @Composable
 fun A_OptionsControlsButtons_FragId_7(
-    viewModel: ViewModelFragment_ID_7 = koinViewModel(),
+    viewModel: ViewModelFragment_APP2_FragID_1 = koinViewModel(),
 ) {
     var showMenu by remember { mutableStateOf(false) }
     var showLabels by remember { mutableStateOf(true) }

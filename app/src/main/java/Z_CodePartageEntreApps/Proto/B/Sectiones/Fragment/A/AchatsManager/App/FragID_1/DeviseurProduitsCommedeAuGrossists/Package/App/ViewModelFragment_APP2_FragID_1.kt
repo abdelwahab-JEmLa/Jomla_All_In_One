@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.A.DeviseurProduitsCommedeAuGrossists.Package.App
+package Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.FragID_1.DeviseurProduitsCommedeAuGrossists.Package.App
 
 import Z_CodePartageEntreApps.Model._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Model._1_2_ProduitAcheteOperation
@@ -6,12 +6,12 @@ import Z_CodePartageEntreApps.Model._1_3_BonAchat
 import Z_CodePartageEntreApps.Model._1_4_PeriodeVent
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperationRepository
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperationRepositoryImpl
+import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperationRepository
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperationRepositoryImpl
 import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchatRepository
 import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchatRepositoryImpl
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVentRepository
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVentRepositoryImpl
-import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperationRepository
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -37,13 +37,13 @@ data class UiState(
     var isInitialized: Boolean = false
 )
 
-class ViewModelFragment_ID_7(
+class ViewModelFragment_APP2_FragID_1(
     val _1_1_CouleurAcheteOperationRepository: _1_1_CouleurAcheteOperationRepository,
     val _1_2_ProduitAcheteOperationRepository: _1_2_ProduitAcheteOperationRepository,
     val _1_3_BonAchatRepository: _1_3_BonAchatRepository,
     val _1_4_PeriodeVentRepository: _1_4_PeriodeVentRepository
 ) : ViewModel() {
-    private val TAG = "ViewModelFragment_ID_7" // Tag for logging
+    private val TAG = "ViewModelFragment_APP2_FragID_1" // Tag for logging
 
     private val _uiStateFlow = MutableStateFlow(UiState())
     val uiStateFlow: StateFlow<UiState> = _uiStateFlow.asStateFlow()

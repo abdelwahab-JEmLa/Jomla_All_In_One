@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.A.DeviseurProduitsCommedeAuGrossists.Package.App
+package Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.FragID_1.DeviseurProduitsCommedeAuGrossists.Package.App
 
 import Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App._1.Shared.Views.LoadingContent
 import androidx.compose.foundation.layout.Box
@@ -14,9 +14,9 @@ import androidx.compose.ui.Modifier
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun MainScreen(
+fun A_MainScreenApp2FragID_1(
     modifier: Modifier = Modifier,
-    viewModel: ViewModelFragment_ID_7 = koinViewModel(),
+    viewModel: ViewModelFragment_APP2_FragID_1 = koinViewModel(),
 ) {
     // Collect the UI state from the ViewModel
     val uiState by viewModel.uiStateFlow.collectAsState()
