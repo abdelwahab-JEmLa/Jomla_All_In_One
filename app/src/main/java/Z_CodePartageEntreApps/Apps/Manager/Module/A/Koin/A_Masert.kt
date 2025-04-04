@@ -42,7 +42,6 @@ val commonRepositoriesModule = module {
     single<_1_4_PeriodeVentRepository> { _1_4_PeriodeVentRepositoryImpl(get()) }
 
     single<B_ClientDataBaseRepository> { B_ClientDataBaseRepositoryImpl(get()) }
-    single<B_ClientDataBaseRepository> { B_ClientDataBaseRepositoryImpl(get()) }
     single<A_ProduitRepository> { A_ProduitRepositoryImpl(get()) }
     single<I_CategoriesRepository> { CategoriesRepositoryImpl() }
     single<I_CategorieProduitsRepository> { I_CategorieProduitsRepositoryImpl(get()) }
