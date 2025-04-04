@@ -25,8 +25,9 @@ import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_Produi
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperationRepositoryImpl
 import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchatRepository
 import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchatRepositoryImpl
-import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVentRepository
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVentRepositoryImpl
+import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
+import Z_CodePartageEntreApps.Windows.B.Windows.ViewModel.ViewModelFragment_StartUpScreen
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.content.Context
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -39,7 +40,7 @@ val commonRepositoriesModule = module {
     single<_1_1_CouleurAcheteOperationRepository> { _1_1_CouleurAcheteOperationRepositoryImpl(get()) }
     single<_1_2_ProduitAcheteOperationRepository> { _1_2_ProduitAcheteOperationRepositoryImpl(get()) }
     single<_1_3_BonAchatRepository> { _1_3_BonAchatRepositoryImpl(get()) }
-    single<_1_4_PeriodeVentRepository> { _1_4_PeriodeVentRepositoryImpl(get()) }
+    single<_1_4_PeriodeVent_Repository> { _1_4_PeriodeVentRepositoryImpl(get()) }
 
     single<B_ClientDataBaseRepository> { B_ClientDataBaseRepositoryImpl(get()) }
     single<A_ProduitRepository> { A_ProduitRepositoryImpl(get()) }
@@ -51,9 +52,15 @@ val commonRepositoriesModule = module {
     single<SoldArticlesTabelleRepository> { SoldArticlesTabelleRepositoryImpl() }
     single<C_GrossistsDataBaseRepository> { C_GrossistsDataBaseRepositoryImpl() }
 
+
     viewModel { ViewModelInitApp(
         get(),get()
     ) }
+    viewModel { ViewModelFragment_StartUpScreen(
+        get(),get(),
+        get(),get()
+    ) }
+
 }
 
 // Function to determine the application type

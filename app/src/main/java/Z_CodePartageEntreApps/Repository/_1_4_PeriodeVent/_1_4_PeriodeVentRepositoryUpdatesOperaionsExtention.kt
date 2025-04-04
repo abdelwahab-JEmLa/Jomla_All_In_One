@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 class _1_4_PeriodeVentRepositoryUpdatesOperaionsExtention(
     private val repositoryImpl: _1_4_PeriodeVentRepositoryImpl
 ) {
-    private val TAG = _1_4_PeriodeVentRepository.TAG
+    private val TAG = _1_4_PeriodeVent_Repository.TAG
 
     fun updateUnSeulData(
         data: _1_4_PeriodeVent,
@@ -56,7 +56,7 @@ class _1_4_PeriodeVentRepositoryUpdatesOperaionsExtention(
 
             repositoryScope.launch(Dispatchers.IO) {
                 try {
-                    _1_4_PeriodeVentRepository.sonDataBaseRef.child(data.vid.toString()).removeValue().await()
+                    _1_4_PeriodeVent_Repository.sonDataBaseRef.child(data.vid.toString()).removeValue().await()
                     appDatabase._1_4_PeriodeVentDao().delete(data)
                 } catch (e: Exception) {
                     Log.e(TAG, "Error deleting data: ${e.message}")
@@ -80,7 +80,7 @@ class _1_4_PeriodeVentRepositoryUpdatesOperaionsExtention(
 
             repositoryScope.launch(Dispatchers.IO) {
                 try {
-                    _1_4_PeriodeVentRepository.sonDataBaseRef.child(data.vid.toString()).setValue(data).await()
+                    _1_4_PeriodeVent_Repository.sonDataBaseRef.child(data.vid.toString()).setValue(data).await()
                     appDatabase._1_4_PeriodeVentDao().insert(data)
                 } catch (e: Exception) {
                     Log.e(TAG, "Error adding data: ${e.message}")
@@ -93,7 +93,7 @@ class _1_4_PeriodeVentRepositoryUpdatesOperaionsExtention(
 
     private suspend fun firebaseUpdateData(data: _1_4_PeriodeVent) {
         try {
-            _1_4_PeriodeVentRepository.sonDataBaseRef.child(data.vid.toString()).setValue(data).await()
+            _1_4_PeriodeVent_Repository.sonDataBaseRef.child(data.vid.toString()).setValue(data).await()
         } catch (e: Exception) {
             Log.e(TAG, "Error updating Firebase data: ${e.message}")
         }
@@ -134,7 +134,7 @@ class _1_4_PeriodeVentRepositoryUpdatesOperaionsExtention(
                 try {
                     synchronized(listenerLock) {
                         valueEventListener?.let {
-                            _1_4_PeriodeVentRepository.sonDataBaseRef.removeEventListener(
+                            _1_4_PeriodeVent_Repository.sonDataBaseRef.removeEventListener(
                                 it
                             )
                         }
@@ -143,7 +143,7 @@ class _1_4_PeriodeVentRepositoryUpdatesOperaionsExtention(
 
                     synchronized(flowListenerLock) {
                         flowValueEventListener?.let {
-                            _1_4_PeriodeVentRepository.sonDataBaseRef.removeEventListener(
+                            _1_4_PeriodeVent_Repository.sonDataBaseRef.removeEventListener(
                                 it
                             )
                         }
@@ -157,7 +157,7 @@ class _1_4_PeriodeVentRepositoryUpdatesOperaionsExtention(
                 } finally {
                     synchronized(listenerLock) {
                         if (!isListenerActive.get() && tempListener != null) {
-                            _1_4_PeriodeVentRepository.sonDataBaseRef.addValueEventListener(
+                            _1_4_PeriodeVent_Repository.sonDataBaseRef.addValueEventListener(
                                 tempListener
                             )
                             isListenerActive.set(true)
@@ -166,7 +166,7 @@ class _1_4_PeriodeVentRepositoryUpdatesOperaionsExtention(
 
                     synchronized(flowListenerLock) {
                         if (!isFlowListenerActive.get() && tempFlowListener != null) {
-                            _1_4_PeriodeVentRepository.sonDataBaseRef.addValueEventListener(
+                            _1_4_PeriodeVent_Repository.sonDataBaseRef.addValueEventListener(
                                 tempFlowListener
                             )
                             isFlowListenerActive.set(true)
@@ -188,7 +188,7 @@ class _1_4_PeriodeVentRepositoryUpdatesOperaionsExtention(
 
     private fun batchFireBaseSet(datas: List<_1_4_PeriodeVent>) {
         try {
-            val reference = _1_4_PeriodeVentRepository.sonDataBaseRef
+            val reference = _1_4_PeriodeVent_Repository.sonDataBaseRef
             val batchUpdates = HashMap<String, Any>()
 
             for (data in datas) {

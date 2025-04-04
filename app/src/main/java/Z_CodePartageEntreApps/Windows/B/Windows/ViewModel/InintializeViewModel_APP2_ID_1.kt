@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.ViewModel
+package Z_CodePartageEntreApps.Windows.B.Windows.ViewModel
 
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperationRepository
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperationRepository
@@ -9,7 +9,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
-class InintializeViewModel_APP2_ID_2 {
+class InintializeViewModel_StartUpScreen {
     private val TAG = "InintializeViewModel"
 
     suspend fun waitForDataInitialization(
@@ -17,7 +17,7 @@ class InintializeViewModel_APP2_ID_2 {
         _1_2_ProduitAcheteOperationRepository: _1_2_ProduitAcheteOperationRepository,
         _1_3_BonAchatRepository: _1_3_BonAchatRepository,
         _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository,
-        uiStateFlow: MutableStateFlow<UiState_APP2_ID_2>,
+        uiStateFlow: MutableStateFlow<UiState_StartUpScreen>,
         viewModelScope: CoroutineScope,
         checkInitializationComplete: () -> Unit,
     ) {
@@ -103,12 +103,12 @@ class InintializeViewModel_APP2_ID_2 {
         }
     }
 
-    fun updateDataLoadingState(
+    private fun updateDataLoadingState(
         _1_1_CouleurAcheteOperationRepository: _1_1_CouleurAcheteOperationRepository,
         _1_2_ProduitAcheteOperationRepository: _1_2_ProduitAcheteOperationRepository,
         _1_3_BonAchatRepository: _1_3_BonAchatRepository,
         _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository,
-        uiStateFlow: MutableStateFlow<UiState_APP2_ID_2>
+        uiStateFlow: MutableStateFlow<UiState_StartUpScreen>
     ) {
         val progress1 = _1_1_CouleurAcheteOperationRepository.progressRepo.value
         val progress2 = _1_2_ProduitAcheteOperationRepository.progressRepo.value
@@ -125,7 +125,7 @@ class InintializeViewModel_APP2_ID_2 {
         _1_2_ProduitAcheteOperationRepository: _1_2_ProduitAcheteOperationRepository,
         _1_3_BonAchatRepository: _1_3_BonAchatRepository,
         _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository,
-        uiStateFlow: MutableStateFlow<UiState_APP2_ID_2>,
+        uiStateFlow: MutableStateFlow<UiState_StartUpScreen>,
     ) {
         val progress1 = _1_1_CouleurAcheteOperationRepository.progressRepo.value
         val progress2 = _1_2_ProduitAcheteOperationRepository.progressRepo.value
@@ -141,7 +141,7 @@ class InintializeViewModel_APP2_ID_2 {
         }
     }
 
-     fun handleError(message: String, exception: Exception, uiStateFlow: MutableStateFlow<UiState_APP2_ID_2>) {
+     fun handleError(message: String, exception: Exception, uiStateFlow: MutableStateFlow<UiState_StartUpScreen>) {
         Log.e(TAG, "$message: ${exception.message}")
         uiStateFlow.value = uiStateFlow.value.copy(
             errorMessage = "$message: ${exception.message}"

@@ -5,7 +5,7 @@ import android.util.Log
 class _1_4_PeriodeVentRepositoryLogOperationsExtention(
     private val repositoryImpl: _1_4_PeriodeVentRepositoryImpl
 ) {
-    private val TAG = _1_4_PeriodeVentRepository.TAG
+    private val TAG = _1_4_PeriodeVent_Repository.TAG
 
     fun log(
         dataCount: Int,
@@ -15,7 +15,7 @@ class _1_4_PeriodeVentRepositoryLogOperationsExtention(
         isListenerActive: Boolean,
         isFlowListenerActive: Boolean
     ) {
-        Log.d(TAG, "_1_4_PeriodeVentRepository status: ")
+        Log.d(TAG, "_1_4_PeriodeVent_Repository status: ")
         Log.d(TAG, "- Data count: $dataCount")
         Log.d(TAG, "- Initial data loaded: $initialDataLoaded")
         Log.d(TAG, "- Progress value: $progressValue")

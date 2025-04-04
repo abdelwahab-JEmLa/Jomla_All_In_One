@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.ViewModel
+package Z_CodePartageEntreApps.Windows.B.Windows.ViewModel
 
 import Z_CodePartageEntreApps.Model._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Model._1_2_ProduitAcheteOperation
@@ -21,35 +21,37 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-data class UiState_APP2_ID_2(
+data class UiState_StartUpScreen(
     var _1_1_CouleurAcheteOperationList: SnapshotStateList<_1_1_CouleurAcheteOperation> = mutableStateListOf(),
     var _1_2_ProduitAcheteOperationList: SnapshotStateList<_1_2_ProduitAcheteOperation> = mutableStateListOf(),
     var _1_3_BonAchatList: SnapshotStateList<_1_3_BonAchat> = mutableStateListOf(),
     var _1_4_PeriodeVentList: SnapshotStateList<_1_4_PeriodeVent> = mutableStateListOf(),
 
+    var bonAchetOnCourseMntID: Long = 1,
+    var isFilteringActive: Boolean = false,
     var errorMessage: String? = null,
     var syncInProgress: Boolean = false,
     var isDataLoading: Boolean = true,
     var isInitialized: Boolean = false
 )
 
-class ViewModelFragment_APP2_ID_2(
-    val _1_1_CouleurAcheteOperation_Repository: _1_1_CouleurAcheteOperationRepository,
+class ViewModelFragment_StartUpScreen(
+    val _1_1_CouleurAcheteOperationRepository: _1_1_CouleurAcheteOperationRepository,
     val _1_2_ProduitAcheteOperationRepository: _1_2_ProduitAcheteOperationRepository,
     val _1_3_BonAchatRepository: _1_3_BonAchatRepository,
     val _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository
 ) : ViewModel() {
-    private val TAG = "ViewModelFragment_APP2_ID_2"
+    private val TAG = "ViewModelFragment_StartUpScreen"
 
-    private val _uiStateFlow = MutableStateFlow(UiState_APP2_ID_2())
-    val uiStateFlow: StateFlow<UiState_APP2_ID_2> = _uiStateFlow.asStateFlow()
+    private val _uiStateFlow = MutableStateFlow(UiState_StartUpScreen())
+    val uiStateFlow: StateFlow<UiState_StartUpScreen> = _uiStateFlow.asStateFlow()
 
-    private val initializerViewModel = InintializeViewModel_APP2_ID_2()
+    private val initializerViewModel = InintializeViewModel_StartUpScreen()
 
     init {
         viewModelScope.launch {
             initializerViewModel.waitForDataInitialization(
-                _1_1_CouleurAcheteOperation_Repository,
+                _1_1_CouleurAcheteOperationRepository,
                 _1_2_ProduitAcheteOperationRepository,
                 _1_3_BonAchatRepository,
                 _1_4_PeriodeVent_Repository,
@@ -61,9 +63,9 @@ class ViewModelFragment_APP2_ID_2(
 
         // Add hardcoded data only if repository is empty
         viewModelScope.launch {
-            if (_1_1_CouleurAcheteOperation_Repository.modelDatasSnapList.isEmpty()) {
+            if (_1_1_CouleurAcheteOperationRepository.modelDatasSnapList.isEmpty()) {
                 Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App._1.Shared.Test.addHardcodedDataToFirebase(
-                    _1_1_CouleurAcheteOperation_Repository,
+                    _1_1_CouleurAcheteOperationRepository,
                     _1_2_ProduitAcheteOperationRepository,
                     _1_3_BonAchatRepository,
                     _1_4_PeriodeVent_Repository,
@@ -72,25 +74,32 @@ class ViewModelFragment_APP2_ID_2(
         }
     }
 
+    fun addData_1_4_PeriodeVent(newPeriodeVent: _1_4_PeriodeVent): Unit {
+        viewModelScope.launch {
+            _1_4_PeriodeVent_Repository.addData(newPeriodeVent)
+        }
+    }
+
+    fun updateUneSeulData_1_4_PeriodeVent_Repository(data: _1_4_PeriodeVent) {
+        viewModelScope.launch {
+            _1_4_PeriodeVent_Repository.updateUnSeulData(data)
+        }
+    }
+
     private fun checkInitializationComplete() {
         initializerViewModel.checkInitializationComplete(
-            _1_1_CouleurAcheteOperation_Repository,
+            _1_1_CouleurAcheteOperationRepository,
             _1_2_ProduitAcheteOperationRepository,
             _1_3_BonAchatRepository,
             _1_4_PeriodeVent_Repository,
             _uiStateFlow,
         )
     }
-    fun updateUneSeulData_1_4_PeriodeVent_Repository(data: _1_1_CouleurAcheteOperation) {
-        viewModelScope.launch {
-                _1_1_CouleurAcheteOperation_Repository.updateUnSeulData(data)
-        }
-    }
 
     override fun onCleared() {
         super.onCleared()
         val repoImpl1 =
-            _1_1_CouleurAcheteOperation_Repository as? _1_1_CouleurAcheteOperationRepositoryImpl
+            _1_1_CouleurAcheteOperationRepository as? _1_1_CouleurAcheteOperationRepositoryImpl
         repoImpl1?.cleanup()
 
         val repoImpl2 =

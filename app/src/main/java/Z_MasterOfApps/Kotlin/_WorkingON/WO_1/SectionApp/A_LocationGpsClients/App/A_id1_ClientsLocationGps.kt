@@ -1,12 +1,13 @@
 package Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App
 
+import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
+import Z_CodePartageEntreApps.Windows.B.Windows.A_OptionsControlsButtons_Main
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs.A.A_GlobalOptionsControlsFloatingActionButtons_FragId1
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs.MarkerStatusDialog
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs.Utils.DEFAULT_LATITUDE
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs.Utils.DEFAULT_LONGITUDE
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs.Utils.getCurrentLocation
-import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.ViewModel_App2FragID1
 import Z_MasterOfApps.Resources.XmlsFilesHandler.Companion.xmlResources
 import android.content.Context
@@ -264,6 +265,8 @@ private fun MapContent(
                 .background(Color.Red, CircleShape)
                 .align(Alignment.Center)
         )
+
+        A_OptionsControlsButtons_Main()
 
         if (viewModelInitApp._paramatersAppsViewModelModel.fabsVisibility) {
             A_GlobalOptionsControlsFloatingActionButtons_FragId1(

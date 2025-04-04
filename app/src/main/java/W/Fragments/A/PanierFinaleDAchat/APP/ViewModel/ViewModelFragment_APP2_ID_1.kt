@@ -10,7 +10,7 @@ import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_Produi
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperationRepositoryImpl
 import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchatRepository
 import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchatRepositoryImpl
-import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVentRepository
+import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVentRepositoryImpl
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -39,7 +39,7 @@ class ViewModelFragment_APP2_ID_1(
     val _1_1_CouleurAcheteOperationRepository: _1_1_CouleurAcheteOperationRepository,
     val _1_2_ProduitAcheteOperationRepository: _1_2_ProduitAcheteOperationRepository,
     val _1_3_BonAchatRepository: _1_3_BonAchatRepository,
-    val _1_4_PeriodeVentRepository: _1_4_PeriodeVentRepository
+    val _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository
 ) : ViewModel() {
     private val TAG = "ViewModelFragment_APP2_ID_2"
 
@@ -54,7 +54,7 @@ class ViewModelFragment_APP2_ID_1(
                 _1_1_CouleurAcheteOperationRepository,
                 _1_2_ProduitAcheteOperationRepository,
                 _1_3_BonAchatRepository,
-                _1_4_PeriodeVentRepository,
+                _1_4_PeriodeVent_Repository,
                 _uiStateFlow,
                 viewModelScope,
                 { checkInitializationComplete() },
@@ -68,7 +68,7 @@ class ViewModelFragment_APP2_ID_1(
                     _1_1_CouleurAcheteOperationRepository,
                     _1_2_ProduitAcheteOperationRepository,
                     _1_3_BonAchatRepository,
-                    _1_4_PeriodeVentRepository,
+                    _1_4_PeriodeVent_Repository,
                 )
             }
         }
@@ -79,7 +79,7 @@ class ViewModelFragment_APP2_ID_1(
             _1_1_CouleurAcheteOperationRepository,
             _1_2_ProduitAcheteOperationRepository,
             _1_3_BonAchatRepository,
-            _1_4_PeriodeVentRepository,
+            _1_4_PeriodeVent_Repository,
             _uiStateFlow,
         )
     }
@@ -97,7 +97,7 @@ class ViewModelFragment_APP2_ID_1(
         val repoImpl3 = _1_3_BonAchatRepository as? _1_3_BonAchatRepositoryImpl
         repoImpl3?.cleanup()
 
-        val repoImpl4 = _1_4_PeriodeVentRepository as? _1_4_PeriodeVentRepositoryImpl
+        val repoImpl4 = _1_4_PeriodeVent_Repository as? _1_4_PeriodeVentRepositoryImpl
         repoImpl4?.cleanup()
     }
 }

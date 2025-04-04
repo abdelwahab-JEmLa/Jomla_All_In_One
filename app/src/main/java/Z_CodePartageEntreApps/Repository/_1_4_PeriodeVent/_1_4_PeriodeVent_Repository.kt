@@ -6,7 +6,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.database.database
 import kotlinx.coroutines.flow.MutableStateFlow
 
-interface _1_4_PeriodeVentRepository {
+interface _1_4_PeriodeVent_Repository {
     var modelDatasSnapList: SnapshotStateList<_1_4_PeriodeVent>
     val progressRepo: MutableStateFlow<Float>
         get() = MutableStateFlow(0f)

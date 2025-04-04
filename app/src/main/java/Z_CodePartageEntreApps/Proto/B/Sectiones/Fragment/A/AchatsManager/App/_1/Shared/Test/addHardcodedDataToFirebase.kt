@@ -8,7 +8,7 @@ import Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.B.DataBaseManager.App.A
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperationRepository
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperationRepository
 import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchatRepository
-import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVentRepository
+import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import kotlinx.coroutines.Dispatchers
@@ -18,7 +18,7 @@ suspend fun addHardcodedDataToFirebase(
     _1_1_CouleurAcheteOperationRepository: _1_1_CouleurAcheteOperationRepository,
     _1_2_ProduitAcheteOperationRepository: _1_2_ProduitAcheteOperationRepository,
     _1_3_BonAchatRepository: _1_3_BonAchatRepository,
-    _1_4_PeriodeVentRepository: _1_4_PeriodeVentRepository,
+    _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository,
     active: Boolean = false
 ) {
     try {
@@ -268,7 +268,7 @@ suspend fun addHardcodedDataToFirebase(
             withContext(Dispatchers.IO) {
                 val snapListPeriodeVent = mutableStateListOf<_1_4_PeriodeVent>()
                 snapListPeriodeVent.addAll(periodeVentTestData)
-                _1_4_PeriodeVentRepository.updateMultiDatas(snapListPeriodeVent)
+                _1_4_PeriodeVent_Repository.updateMultiDatas(snapListPeriodeVent)
                 Log.d(
                     TAG,
                     "Added ${periodeVentTestData.size} hardcoded PeriodeVent items to repository"
