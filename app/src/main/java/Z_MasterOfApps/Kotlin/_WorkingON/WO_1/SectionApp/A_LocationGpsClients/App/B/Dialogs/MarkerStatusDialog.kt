@@ -1,7 +1,7 @@
 package Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs
 
-import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
+import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.ViewModel_App2FragID1
 import android.util.Log
 import androidx.compose.foundation.background
@@ -187,6 +187,7 @@ fun MarkerStatusDialog(
                     onClick = {
                         coroutineScope.launch {
                             viewModel.updateLongAppSetting(selectedMarker.id.toLong())
+
                             onUpdateLongAppSetting()
 
                             onDismiss()
