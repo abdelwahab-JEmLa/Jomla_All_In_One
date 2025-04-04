@@ -103,7 +103,7 @@ class InintializeViewModel_APP2_ID_1 {
         }
     }
 
-    fun updateDataLoadingState(
+    private fun updateDataLoadingState(
         _1_1_CouleurAcheteOperationRepository: _1_1_CouleurAcheteOperationRepository,
         _1_2_ProduitAcheteOperationRepository: _1_2_ProduitAcheteOperationRepository,
         _1_3_BonAchatRepository: _1_3_BonAchatRepository,

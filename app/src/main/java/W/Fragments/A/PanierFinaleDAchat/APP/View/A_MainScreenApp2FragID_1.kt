@@ -22,8 +22,7 @@ fun A_MainScreenApp2FragID_1(
     viewModel: ViewModelFragment_APP2_ID_1 = koinViewModel(),
 ) {
     val uiState by viewModel.uiStateFlow.collectAsState()
-        Box(
-        ) {
-            B_MainList_FragID_2(uiState = uiState)
-        }
+    Box {
+        B_MainList_FragID_2(uiState = uiState)
+    }
 }

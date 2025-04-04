@@ -84,9 +84,6 @@ class ViewModelFragment_APP2_ID_1(
         )
     }
 
-
-
-
     override fun onCleared() {
         super.onCleared()
         val repoImpl1 =
