@@ -5,7 +5,7 @@ import Z_CodePartageEntreApps.Model.I_CategorieProduits.A.Repository.I_Categorie
 import Z_CodePartageEntreApps.Model.I_CategorieProduits.A.Repository.I_CategorieProduitsRepositoryImpl
 import Z_MasterOfApps.Kotlin._WorkingON.WO_.ConnectionManager
 import Z_MasterOfApps.Kotlin._WorkingON.WO_.WifiUpdateClientDisplayerStats
-import Z_CodePartageEntreApps.Modules.AppDatabase
+import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
@@ -1083,7 +1083,7 @@ open class HeadViewModel(
 
     private suspend fun categorieChangeposisio(): MutableList<CategoriesTabelle> {
         try {
-            val categories = database.i_CategorieProduitsDao().getAll()
+            val categories = database.I_CategorieProduitsDao().getAll()
 
             // If no existing categories, create new ones from repository
             val newCategories = categories.map { category ->

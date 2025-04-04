@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Model.C_GrossistsDataBaseRepository
 
 import Z_CodePartageEntreApps.Model.C_GrossistsDataBase
-import Z_CodePartageEntreApps.Model._ModelAppsFather.Companion.firebaseDatabase
+import Z_CodePartageEntreApps.Model.Z.Archive._ModelAppsFather.Companion.firebaseDatabase
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

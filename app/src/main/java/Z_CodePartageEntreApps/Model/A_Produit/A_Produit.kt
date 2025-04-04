@@ -32,14 +32,8 @@ data class A_Produit(
     var monPrixAchat: Double = 0.0,
     var monPrixVent: Double = 0.0,
 ) {
-    fun hasRelevantChanges(oldData: A_Produit, newData: A_Produit): Boolean {
-        return  oldData.nom != newData.nom ||  //<--
-                oldData.parentCategoryId != newData.parentCategoryId ||
-                oldData.indexInParentCategorie != newData.indexInParentCategorie ||
-                oldData.isVisible != newData.isVisible
-    }
     enum class NON_DISPO_POUR_CLIENTS(val color: Color) {
-        DISPONIBLE_POUR_TOUT(Color(0xFF786C69)),
+        DISPONIBLE_POUR_TOUT(Color(0xFF4CAF50)),
         TOUT(Color(0xFFF44336)),
         NEVEAU(Color(0xFFFF9800)),
         DEFINIE(Color(0xFF2196F3));

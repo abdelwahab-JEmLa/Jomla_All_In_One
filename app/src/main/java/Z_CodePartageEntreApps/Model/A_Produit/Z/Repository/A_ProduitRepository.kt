@@ -12,7 +12,7 @@ interface A_ProduitRepository {
         get() = MutableStateFlow(0f)
 
     fun addData(data: A_Produit)
-    fun updateUnSeulData(data: A_Produit? = null)
+    fun updateUnSeulData(data: A_Produit)
     suspend fun updateMultiDatas(datas: SnapshotStateList<A_Produit>)
 
     companion object {

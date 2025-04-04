@@ -1,7 +1,7 @@
 package Z_MasterOfApps.Z.Android.Packages._1.GerantAfficheurGrossistCommend.App.NH_5.ID5_VerificationProduitAcGrossist.ViewModel.Extension.Z_OnClick.MainItem.Actions
 
 import Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_3.id5_VerificationProduitAcGrossist.ViewModel.Extension.ViewModelExtension_App1_F5
-import Z_CodePartageEntreApps.Model._ModelAppsFather.Companion.update_AllProduits
+import Z_CodePartageEntreApps.Model.Z.Archive._ModelAppsFather.Companion.update_AllProduits
 import Z_CodePartageEntreApps.Model.A_ProduitModel
 
 fun ViewModelExtension_App1_F5.includeProduit(clickeProduct: A_ProduitModel) {

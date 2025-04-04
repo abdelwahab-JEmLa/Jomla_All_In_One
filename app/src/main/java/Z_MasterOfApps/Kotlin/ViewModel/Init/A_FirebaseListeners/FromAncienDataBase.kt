@@ -3,7 +3,7 @@ package Z_MasterOfApps.Kotlin.ViewModel.Init.A_FirebaseListeners
 import Z_CodePartageEntreApps.Model.A_ProduitModel
 import Z_CodePartageEntreApps.Model.C_GrossistsDataBase
 import Z_CodePartageEntreApps.Model.D_CouleursEtGoutesProduitsInfos
-import Z_CodePartageEntreApps.Model._ModelAppsFather
+import Z_CodePartageEntreApps.Model.Z.Archive._ModelAppsFather
 import Z_MasterOfApps.Kotlin.ViewModel.Init.A_FirebaseListeners.CurrentModels.setupCurrentModels
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.TabelleSuppliersSA

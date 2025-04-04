@@ -1,6 +1,6 @@
 package Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs.A
 
-import Z_CodePartageEntreApps.Model._ModelAppsFather
+import Z_CodePartageEntreApps.Model.Z.Archive._ModelAppsFather
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.location.Location
 import androidx.compose.foundation.layout.Arrangement

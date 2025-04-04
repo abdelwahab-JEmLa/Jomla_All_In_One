@@ -1,8 +1,8 @@
 package Z_CodePartageEntreApps.Model.A_ProduitModelNewProto.Repository
 
 import Z_CodePartageEntreApps.Model.A_ProduitModel
-import Z_CodePartageEntreApps.Model._ModelAppsFather.Companion.firebaseDatabase
-import Z_CodePartageEntreApps.Model._ModelAppsFather.Companion.ref_HeadOfModels
+import Z_CodePartageEntreApps.Model.Z.Archive._ModelAppsFather.Companion.firebaseDatabase
+import Z_CodePartageEntreApps.Model.Z.Archive._ModelAppsFather.Companion.ref_HeadOfModels
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

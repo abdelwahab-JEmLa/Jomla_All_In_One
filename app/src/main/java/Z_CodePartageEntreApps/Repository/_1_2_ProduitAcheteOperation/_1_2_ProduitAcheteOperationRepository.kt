@@ -1,0 +1,28 @@
+package Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation
+
+import Z_CodePartageEntreApps.Model._1_2_ProduitAcheteOperation
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import com.google.firebase.Firebase
+import com.google.firebase.database.database
+import kotlinx.coroutines.flow.MutableStateFlow
+
+interface _1_2_ProduitAcheteOperationRepository {
+    var modelDatasSnapList: SnapshotStateList<_1_2_ProduitAcheteOperation>
+    val progressRepo: MutableStateFlow<Float>
+        get() = MutableStateFlow(0f)
+
+    suspend fun ensureDataIsInitialized()
+
+    fun addData(data: _1_2_ProduitAcheteOperation)
+    fun updateUnSeulData(data: _1_2_ProduitAcheteOperation)
+    suspend fun updateMultiDatas(datas: SnapshotStateList<_1_2_ProduitAcheteOperation>)
+    fun deleteUnSeulData(data: _1_2_ProduitAcheteOperation)
+
+    companion object {
+        const val TAG = "_1_2_ProduitAcheteOperation"
+
+        val sonDataBaseRef = Firebase.database
+            .getReference("00_DataPrototype-04-02")
+            .child("_1_2_")
+    }
+}

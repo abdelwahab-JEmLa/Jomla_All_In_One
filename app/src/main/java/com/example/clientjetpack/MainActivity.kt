@@ -2,7 +2,12 @@ package com.example.clientjetpack
 
 import P0_MainScreen.Main.MainScreen
 import P6_AiGroupeForSupplier.GenerativeAiViewModel
-import Z_MasterOfApps.Kotlin.ViewModel.Init.B_Load.initializeFirebase
+import Z_MasterOfApps.A.MainActivity.Start.Module.A.Koin.appClientModules
+import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.appManagerModules
+
+import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.appModule
+import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.isManagerApp
+import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_MasterOfApps.Z.Android.A_MainActivityApp.Start.Modules.PermissionHandler
 import android.app.Application
 import android.content.Context
@@ -21,10 +26,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import Z_CodePartageEntreApps.Modules.AppDatabase
-import Z_CodePartageEntreApps.Modules.appModule
 import com.example.clientjetpack.ui.theme.ClientJetPackTheme
-import com.google.firebase.FirebaseApp
+import com.google.firebase.database.FirebaseDatabase
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.androidx.compose.KoinAndroidContext
@@ -33,35 +36,37 @@ import org.koin.core.context.startKoin
 
 private const val TAG = "MainActivity"
 
-class MyApplication : Application() {
-    lateinit var database: AppDatabase
-        private set
 
+class MyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
-        initializeComponents()
-    }
 
-    private fun initializeComponents() {
-        runCatching {
-            AppDatabase.DatabaseModule.getDatabase(this).also { database = it }
-            FirebaseApp.initializeApp(this)?.let(::initializeFirebase)
-                ?: throw IllegalStateException("Firebase initialization failed")
-
-            // Initialize Koin
-            // Start Koin
-            startKoin {
-                // Log Koin into Android logger with default settings
-                androidLogger()
-                // Declare Android context
-                androidContext(this@MyApplication)
-                // Declare modules
-                modules(appModule)
+        // Configure Firebase FIRST before any other Firebase operations
+        try {
+            // Get reference to database ONCE and configure it
+            FirebaseDatabase.getInstance().apply {
+                setPersistenceEnabled(true)
+                setPersistenceCacheSizeBytes(100L * 1024L * 1024L) // 100MB
             }
-        }.onFailure {
-            Log.e(TAG, "Error initializing components", it)
+        } catch (e: Exception) {
+            Log.e("Firebase", "Initialization error: ${e.message}")
+        }
+
+        // Initialize Koin with the appropriate modules
+        startKoin {
+            androidLogger()
+            androidContext(this@MyApplication)
+            modules(appModule)
+
+            // Conditionally load app-specific modules
+            if (isManagerApp(this@MyApplication)) {
+                modules(appManagerModules)
+            } else {
+                modules(appClientModules)
+            }
         }
     }
+
 }
 
 data class AppViewModels(
@@ -83,7 +88,7 @@ class ViewModelFactory(
 }
 
 class MainActivity : ComponentActivity() {
-    private val database by lazy { (application as MyApplication).database }
+    private val database by lazy { AppDatabase.DatabaseModule.getDatabase(this) }
     private val permissionHandler by lazy { PermissionHandler(this) }
     private val viewModelFactory by lazy { ViewModelFactory(applicationContext, database) }
 

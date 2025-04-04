@@ -1,9 +1,9 @@
 package Z_MasterOfApps.Z_AppsFather.Kotlin.Partage.Views
 
 import Z_CodePartageEntreApps.Model.A_ProduitModel
-import Z_CodePartageEntreApps.Model._ModelAppsFather
-import Z_CodePartageEntreApps.Model._ModelAppsFather.Companion.imagesProduitsFireBaseStorageRef
-import Z_CodePartageEntreApps.Model._ModelAppsFather.Companion.imagesProduitsLocalExternalStorageBasePath
+import Z_CodePartageEntreApps.Model.Z.Archive._ModelAppsFather
+import Z_CodePartageEntreApps.Model.Z.Archive._ModelAppsFather.Companion.imagesProduitsFireBaseStorageRef
+import Z_CodePartageEntreApps.Model.Z.Archive._ModelAppsFather.Companion.imagesProduitsLocalExternalStorageBasePath
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.Manifest
 import android.content.pm.PackageManager

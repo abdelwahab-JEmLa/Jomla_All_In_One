@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Model
 
-import Z_CodePartageEntreApps.Model._ModelAppsFather.Companion.firebaseDatabase
+import Z_CodePartageEntreApps.Model.Z.Archive._ModelAppsFather.Companion.firebaseDatabase
 import android.content.res.Resources
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf

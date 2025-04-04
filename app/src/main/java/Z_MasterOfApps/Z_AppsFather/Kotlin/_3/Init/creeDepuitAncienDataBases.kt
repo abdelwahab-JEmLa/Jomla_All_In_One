@@ -1,8 +1,8 @@
 package Z_MasterOfApps.Z_AppsFather.Kotlin._3.Init
 
 import Z_CodePartageEntreApps.Model.A_ProduitModel
-import Z_CodePartageEntreApps.Model._ModelAppsFather
-import Z_CodePartageEntreApps.Model._ModelAppsFather.Companion.UpdateFireBase
+import Z_CodePartageEntreApps.Model.Z.Archive._ModelAppsFather
+import Z_CodePartageEntreApps.Model.Z.Archive._ModelAppsFather.Companion.UpdateFireBase
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z_AppsFather.Kotlin._3.Init.Z.GetAncienDataBasesMain.GetAncienDataBasesMain
 import android.util.Log

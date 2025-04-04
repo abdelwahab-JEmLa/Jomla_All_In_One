@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Model.I_CategoriesProduitsRepositery.Repository
 
 import Z_CodePartageEntreApps.Model.I_CategoriesProduits
-import Z_CodePartageEntreApps.Model._ModelAppsFather.Companion.ref_HeadOfModels
+import Z_CodePartageEntreApps.Model.Z.Archive._ModelAppsFather.Companion.ref_HeadOfModels
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

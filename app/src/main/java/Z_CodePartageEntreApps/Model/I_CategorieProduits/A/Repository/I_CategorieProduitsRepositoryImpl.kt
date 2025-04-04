@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Model.I_CategorieProduits.A.Repository
 
+import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Model.I_CategorieProduits.I_CategorieProduits
-import Z_CodePartageEntreApps.Modules.AppDatabase
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -58,7 +58,7 @@ class I_CategorieProduitsRepositoryImpl(
             Log.d(TAG, "Loading data from Room database")
             progressRepo.value = 0.2f
             withContext(Dispatchers.IO) {
-                val clientsList = appDatabase.i_CategorieProduitsDao().getAll()
+                val clientsList = appDatabase.I_CategorieProduitsDao().getAll()
                 Log.d(TAG, "Room data loaded: ${clientsList.size} records found")
 
                 withContext(Dispatchers.Main) {
@@ -83,7 +83,7 @@ class I_CategorieProduitsRepositoryImpl(
         try {
             Log.d(TAG, "Checking data consistency between Room and Firebase")
             val roomCount = withContext(Dispatchers.IO) {
-                val count = appDatabase.i_CategorieProduitsDao().getCount()
+                val count = appDatabase.I_CategorieProduitsDao().getCount()
                 Log.d(TAG, "Room database category count: $count")
                 count
             }
@@ -155,7 +155,7 @@ class I_CategorieProduitsRepositoryImpl(
                                     repositoryScope.launch {
                                         try {
                                             Log.d(TAG, "Inserting new category into Room: ID=${clientData.id}")
-                                            appDatabase.i_CategorieProduitsDao().insert(clientData)
+                                            appDatabase.I_CategorieProduitsDao().insert(clientData)
                                             Log.d(TAG, "Successfully inserted into Room: ID=${clientData.id}")
                                         } catch (e: Exception) {
                                             Log.e(TAG, "Failed to insert category into Room: ID=${clientData.id}, Error: ${e.message}", e)
@@ -221,7 +221,7 @@ class I_CategorieProduitsRepositoryImpl(
                     Log.d(TAG, "Successfully removed from Firebase: ID=${data.id}")
 
                     Log.d(TAG, "Deleting category from Room: ID=${data.id}")
-                    appDatabase.i_CategorieProduitsDao().delete(data)
+                    appDatabase.I_CategorieProduitsDao().delete(data)
                     Log.d(TAG, "Successfully deleted from Room: ID=${data.id}")
                 } catch (e: Exception) {
                     Log.e(TAG, "Error deleting category data: ID=${data.id}, Error: ${e.message}", e)
@@ -249,7 +249,7 @@ class I_CategorieProduitsRepositoryImpl(
                     Log.d(TAG, "Retrieved ${snapshot.childrenCount} categories from Firebase")
 
                     Log.d(TAG, "Deleting all categories from Room database")
-                    appDatabase.i_CategorieProduitsDao().deleteAll()
+                    appDatabase.I_CategorieProduitsDao().deleteAll()
                     Log.d(TAG, "Successfully deleted all categories from Room")
 
                     val clientsList = mutableListOf<I_CategorieProduits>()
@@ -272,14 +272,14 @@ class I_CategorieProduitsRepositoryImpl(
                     if (clientsList.isNotEmpty()) {
                         Log.d(TAG, "Inserting ${clientsList.size} categories into Room database")
                         try {
-                            appDatabase.i_CategorieProduitsDao().insertAll(clientsList)
+                            appDatabase.I_CategorieProduitsDao().insertAll(clientsList)
                             Log.d(TAG, "Successfully inserted ${clientsList.size} categories into Room")
                         } catch (e: Exception) {
                             Log.e(TAG, "Batch insert failed, attempting individual inserts", e)
                             // Try individual inserts if batch fails
                             clientsList.forEachIndexed { index, category ->
                                 try {
-                                    appDatabase.i_CategorieProduitsDao().insert(category)
+                                    appDatabase.I_CategorieProduitsDao().insert(category)
                                     Log.d(TAG, "Individual insert success: ${index+1}/${clientsList.size}, ID=${category.id}")
                                 } catch (e2: Exception) {
                                     Log.e(TAG, "Failed to insert category: ID=${category.id}, Error: ${e2.message}", e2)
@@ -318,7 +318,7 @@ class I_CategorieProduitsRepositoryImpl(
             repositoryScope.launch(Dispatchers.IO) {
                 try {
                     I_CategorieProduitsRepository.caReference.child(data.id.toString()).setValue(data).await()
-                    appDatabase.i_CategorieProduitsDao().insert(data)
+                    appDatabase.I_CategorieProduitsDao().insert(data)
                 } catch (e: Exception) {
                     // Log error
                 }
@@ -343,7 +343,7 @@ class I_CategorieProduitsRepositoryImpl(
         repositoryScope.launch(Dispatchers.IO) {
             try {
                 firebaseUpdateData(data)
-                appDatabase.i_CategorieProduitsDao().insert(data)
+                appDatabase.I_CategorieProduitsDao().insert(data)
             } catch (e: Exception) {
                 // Log error
             }
@@ -369,8 +369,8 @@ class I_CategorieProduitsRepositoryImpl(
             // First, handle Room database update
             withContext(Dispatchers.IO) {
                 try {
-                    appDatabase.i_CategorieProduitsDao().deleteAll()
-                    appDatabase.i_CategorieProduitsDao().insertAll(datasList)
+                    appDatabase.I_CategorieProduitsDao().deleteAll()
+                    appDatabase.I_CategorieProduitsDao().insertAll(datasList)
                 } catch (e: Exception) {
                     // Log error but continue with Firebase updates
                 }
