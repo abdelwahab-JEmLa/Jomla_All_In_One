@@ -27,8 +27,8 @@ data class UiState_APP2_ID_1(
     var _1_3_BonAchatList: SnapshotStateList<_1_3_BonAchat> = mutableStateListOf(),
     var _1_4_PeriodeVentList: SnapshotStateList<_1_4_PeriodeVent> = mutableStateListOf(),
 
-    var bonAchetOnCourseMntID: Long = 505,
-    var isFilteringActive: Boolean = true,
+    var bonAchetOnCourseMntID: Long = 1,
+    var isFilteringActive: Boolean = false,
     var errorMessage: String? = null,
     var syncInProgress: Boolean = false,
     var isDataLoading: Boolean = true,

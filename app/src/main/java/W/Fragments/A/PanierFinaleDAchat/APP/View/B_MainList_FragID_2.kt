@@ -52,8 +52,8 @@ fun B_MainList_FragID_2(
                     idproduit = produit.vid,
                     _1_1_CouleurAcheteOperation = uiState._1_1_CouleurAcheteOperationList
                         .filter {
-                        it.parent_1_2_ProduitAcheteOperationID == produit.vid
-                    }
+                            it.parent_1_2_ProduitAcheteOperationID == produit.vid
+                        }
                 )
             }
         }
