@@ -5,7 +5,7 @@ import android.util.Log
 class _1_3_BonAchatRepositoryLogOperationsExtention(
     private val repositoryImpl: _1_3_BonAchatRepositoryImpl
 ) {
-    private val TAG = _1_3_BonAchatRepository.TAG
+    private val TAG = _1_3_BonAchat_Repository.TAG
 
     fun log(
         dataCount: Int,
@@ -15,7 +15,7 @@ class _1_3_BonAchatRepositoryLogOperationsExtention(
         isListenerActive: Boolean,
         isFlowListenerActive: Boolean
     ) {
-        Log.d(TAG, "_1_3_BonAchatRepository status: ")
+        Log.d(TAG, "_1_3_BonAchat_Repository status: ")
         Log.d(TAG, "- Data count: $dataCount")
         Log.d(TAG, "- Initial data loaded: $initialDataLoaded")
         Log.d(TAG, "- Progress value: $progressValue")

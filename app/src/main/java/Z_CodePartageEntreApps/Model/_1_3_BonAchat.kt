@@ -9,12 +9,20 @@ data class _1_3_BonAchat(
     var vid: Long = 0L,
     var clientAchteurID: Long = 0L,
     // Section Related Parents Foreign Key IDs
-    var parent_1_4_PeriodeVent: Long = 0L,
+    var parent_1_4_PeriodeVentVid: Long = 0L,
 
     // Section InfosDeBase
     var heurDebutInString: String = "00:00",
     var heurFinInString: String = "00:00",
 
     // Section StatuesMutable
+    var etateActuellementEst: EtateActuellementEst =
+        EtateActuellementEst.ENTRE_MAIS_PAS_CONFIRME,
 
-)
+    ) {
+    enum class EtateActuellementEst {
+        ENTRE_MAIS_PAS_CONFIRME,
+        CONFIRME,
+        NA_PAS_COMMANDE,
+    }
+}

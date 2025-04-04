@@ -1,5 +1,6 @@
 package Z_MasterOfApps.Kotlin.ViewModel
 
+import W.Fragments.A.PanierFinaleDAchat.APP.ViewModel.ViewModelFragment_APP2_ID_1
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.I_CategoriesRepository
@@ -25,7 +26,8 @@ import kotlinx.coroutines.tasks.await
 @SuppressLint("SuspiciousIndentation")
 class ViewModelInitApp(
     val produitModelRepository: A_ProduitRepository,
-    val i_CategoriesRepository: I_CategoriesRepository
+    val i_CategoriesRepository: I_CategoriesRepository,
+    val viewModelFragment_APP2_ID_1: ViewModelFragment_APP2_ID_1
 ) : ViewModel() {
     var _paramatersAppsViewModelModel by mutableStateOf(ParamatersAppsModel())
     var _modelAppsFather by mutableStateOf(_ModelAppsFather())

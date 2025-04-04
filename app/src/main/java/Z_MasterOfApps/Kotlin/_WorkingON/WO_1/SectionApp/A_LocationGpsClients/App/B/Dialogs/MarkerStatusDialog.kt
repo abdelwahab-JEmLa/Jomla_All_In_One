@@ -1,6 +1,7 @@
 package Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs
 
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
+import Z_CodePartageEntreApps.Model._1_3_BonAchat
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.ViewModel_App2FragID1
 import android.util.Log
@@ -29,6 +30,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,6 +48,9 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.launch
 import org.osmdroid.views.overlay.Marker
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun MarkerStatusDialog(
@@ -69,6 +74,8 @@ fun MarkerStatusDialog(
         it.id == (selectedMarker?.id?.toLong() ?: 0)
     }
     var clientTypeMode = relatedClients?.clientTypeMode
+
+    val uiStateviewModelFragment_APP2_ID_1 by viewModelInitApp.viewModelFragment_APP2_ID_1.uiStateFlow.collectAsState()
 
     if (selectedMarker == null) return
 
@@ -187,6 +194,14 @@ fun MarkerStatusDialog(
                     onClick = {
                         coroutineScope.launch {
                             viewModel.updateLongAppSetting(selectedMarker.id.toLong())
+
+                            val newData = _1_3_BonAchat(
+                                clientAchteurID = relatedClients?.id!!,
+                                parent_1_4_PeriodeVentVid = uiStateviewModelFragment_APP2_ID_1._1_4_PeriodeVentList.maxOf { it.vid },
+                                heurDebutInString = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
+                            )
+
+                            viewModelInitApp.viewModelFragment_APP2_ID_1.addData_1_3_BonAchat_Repository(newData)
 
                             onUpdateLongAppSetting()
 

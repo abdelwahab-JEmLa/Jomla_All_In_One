@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 class _1_3_BonAchatRepositoryUpdatesOperaionsExtention(
     private val repositoryImpl: _1_3_BonAchatRepositoryImpl
 ) {
-    private val TAG = _1_3_BonAchatRepository.TAG
+    private val TAG = _1_3_BonAchat_Repository.TAG
 
     fun updateUnSeulData(
         data: _1_3_BonAchat,
@@ -56,7 +56,7 @@ class _1_3_BonAchatRepositoryUpdatesOperaionsExtention(
 
             repositoryScope.launch(Dispatchers.IO) {
                 try {
-                    _1_3_BonAchatRepository.sonDataBaseRef.child(data.vid.toString()).removeValue().await()
+                    _1_3_BonAchat_Repository.sonDataBaseRef.child(data.vid.toString()).removeValue().await()
                     appDatabase._1_3_BonAchatDao().delete(data)
                 } catch (e: Exception) {
                     Log.e(TAG, "Error deleting data: ${e.message}")
@@ -80,7 +80,7 @@ class _1_3_BonAchatRepositoryUpdatesOperaionsExtention(
 
             repositoryScope.launch(Dispatchers.IO) {
                 try {
-                    _1_3_BonAchatRepository.sonDataBaseRef.child(data.vid.toString()).setValue(data).await()
+                    _1_3_BonAchat_Repository.sonDataBaseRef.child(data.vid.toString()).setValue(data).await()
                     appDatabase._1_3_BonAchatDao().insert(data)
                 } catch (e: Exception) {
                     Log.e(TAG, "Error adding data: ${e.message}")
@@ -93,7 +93,7 @@ class _1_3_BonAchatRepositoryUpdatesOperaionsExtention(
 
     private suspend fun firebaseUpdateData(data: _1_3_BonAchat) {
         try {
-            _1_3_BonAchatRepository.sonDataBaseRef.child(data.vid.toString()).setValue(data).await()
+            _1_3_BonAchat_Repository.sonDataBaseRef.child(data.vid.toString()).setValue(data).await()
         } catch (e: Exception) {
             Log.e(TAG, "Error updating Firebase data: ${e.message}")
         }
@@ -134,7 +134,7 @@ class _1_3_BonAchatRepositoryUpdatesOperaionsExtention(
                 try {
                     synchronized(listenerLock) {
                         valueEventListener?.let {
-                            _1_3_BonAchatRepository.sonDataBaseRef.removeEventListener(
+                            _1_3_BonAchat_Repository.sonDataBaseRef.removeEventListener(
                                 it
                             )
                         }
@@ -143,7 +143,7 @@ class _1_3_BonAchatRepositoryUpdatesOperaionsExtention(
 
                     synchronized(flowListenerLock) {
                         flowValueEventListener?.let {
-                            _1_3_BonAchatRepository.sonDataBaseRef.removeEventListener(
+                            _1_3_BonAchat_Repository.sonDataBaseRef.removeEventListener(
                                 it
                             )
                         }
@@ -157,7 +157,7 @@ class _1_3_BonAchatRepositoryUpdatesOperaionsExtention(
                 } finally {
                     synchronized(listenerLock) {
                         if (!isListenerActive.get() && tempListener != null) {
-                            _1_3_BonAchatRepository.sonDataBaseRef.addValueEventListener(
+                            _1_3_BonAchat_Repository.sonDataBaseRef.addValueEventListener(
                                 tempListener
                             )
                             isListenerActive.set(true)
@@ -166,7 +166,7 @@ class _1_3_BonAchatRepositoryUpdatesOperaionsExtention(
 
                     synchronized(flowListenerLock) {
                         if (!isFlowListenerActive.get() && tempFlowListener != null) {
-                            _1_3_BonAchatRepository.sonDataBaseRef.addValueEventListener(
+                            _1_3_BonAchat_Repository.sonDataBaseRef.addValueEventListener(
                                 tempFlowListener
                             )
                             isFlowListenerActive.set(true)
@@ -188,7 +188,7 @@ class _1_3_BonAchatRepositoryUpdatesOperaionsExtention(
 
     private fun batchFireBaseSet(datas: List<_1_3_BonAchat>) {
         try {
-            val reference = _1_3_BonAchatRepository.sonDataBaseRef
+            val reference = _1_3_BonAchat_Repository.sonDataBaseRef
             val batchUpdates = HashMap<String, Any>()
 
             for (data in datas) {

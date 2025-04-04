@@ -19,7 +19,7 @@ fun MainList_APP2_ID_2(
 ) {
     val filteredBonAchatList =
         uiState._1_3_BonAchatList.filter { bonAchat ->
-            bonAchat.parent_1_4_PeriodeVent == uiState._1_4_PeriodeVentList.lastOrNull()!!.vid
+            bonAchat.parent_1_4_PeriodeVentVid == uiState._1_4_PeriodeVentList.lastOrNull()!!.vid
         }
 
     // Group products by product ID

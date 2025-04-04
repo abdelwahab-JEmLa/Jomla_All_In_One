@@ -8,8 +8,8 @@ import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_Couleu
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperationRepositoryImpl
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperationRepository
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperationRepositoryImpl
-import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchatRepository
 import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchatRepositoryImpl
+import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat_Repository
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVentRepositoryImpl
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
 import androidx.compose.runtime.mutableStateListOf
@@ -38,7 +38,7 @@ data class UiState_StartUpScreen(
 class ViewModelFragment_StartUpScreen(
     val _1_1_CouleurAcheteOperationRepository: _1_1_CouleurAcheteOperationRepository,
     val _1_2_ProduitAcheteOperationRepository: _1_2_ProduitAcheteOperationRepository,
-    val _1_3_BonAchatRepository: _1_3_BonAchatRepository,
+    val _1_3_BonAchat_Repository: _1_3_BonAchat_Repository,
     val _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository
 ) : ViewModel() {
     private val TAG = "ViewModelFragment_StartUpScreen"
@@ -53,7 +53,7 @@ class ViewModelFragment_StartUpScreen(
             initializerViewModel.waitForDataInitialization(
                 _1_1_CouleurAcheteOperationRepository,
                 _1_2_ProduitAcheteOperationRepository,
-                _1_3_BonAchatRepository,
+                _1_3_BonAchat_Repository,
                 _1_4_PeriodeVent_Repository,
                 _uiStateFlow,
                 viewModelScope,
@@ -67,7 +67,7 @@ class ViewModelFragment_StartUpScreen(
                 Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App._1.Shared.Test.addHardcodedDataToFirebase(
                     _1_1_CouleurAcheteOperationRepository,
                     _1_2_ProduitAcheteOperationRepository,
-                    _1_3_BonAchatRepository,
+                    _1_3_BonAchat_Repository,
                     _1_4_PeriodeVent_Repository,
                 )
             }
@@ -90,7 +90,7 @@ class ViewModelFragment_StartUpScreen(
         initializerViewModel.checkInitializationComplete(
             _1_1_CouleurAcheteOperationRepository,
             _1_2_ProduitAcheteOperationRepository,
-            _1_3_BonAchatRepository,
+            _1_3_BonAchat_Repository,
             _1_4_PeriodeVent_Repository,
             _uiStateFlow,
         )
@@ -106,7 +106,7 @@ class ViewModelFragment_StartUpScreen(
             _1_2_ProduitAcheteOperationRepository as? _1_2_ProduitAcheteOperationRepositoryImpl
         repoImpl2?.cleanup()
 
-        val repoImpl3 = _1_3_BonAchatRepository as? _1_3_BonAchatRepositoryImpl
+        val repoImpl3 = _1_3_BonAchat_Repository as? _1_3_BonAchatRepositoryImpl
         repoImpl3?.cleanup()
 
         val repoImpl4 = _1_4_PeriodeVent_Repository as? _1_4_PeriodeVentRepositoryImpl

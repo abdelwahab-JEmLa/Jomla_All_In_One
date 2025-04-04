@@ -7,7 +7,7 @@ import Z_CodePartageEntreApps.Model._1_4_PeriodeVent
 import Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.B.DataBaseManager.App.A.CategoryReorderAndSelection.Package.Windows.TAG
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperationRepository
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperationRepository
-import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchatRepository
+import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat_Repository
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
@@ -17,7 +17,7 @@ import kotlinx.coroutines.withContext
 suspend fun addHardcodedDataToFirebase(
     _1_1_CouleurAcheteOperationRepository: _1_1_CouleurAcheteOperationRepository,
     _1_2_ProduitAcheteOperationRepository: _1_2_ProduitAcheteOperationRepository,
-    _1_3_BonAchatRepository: _1_3_BonAchatRepository,
+    _1_3_BonAchat_Repository: _1_3_BonAchat_Repository,
     _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository,
     active: Boolean = false
 ) {
@@ -52,49 +52,49 @@ suspend fun addHardcodedDataToFirebase(
             _1_3_BonAchat(
                 vid = 501L,
                 clientAchteurID = 301L,
-                parent_1_4_PeriodeVent = 601L,
+                parent_1_4_PeriodeVentVid = 601L,
                 heurDebutInString = "08:00",
                 heurFinInString = "17:00"
             ),
             _1_3_BonAchat(
                 vid = 502L,
                 clientAchteurID = 302L,
-                parent_1_4_PeriodeVent = 602L,
+                parent_1_4_PeriodeVentVid = 602L,
                 heurDebutInString = "09:00",
                 heurFinInString = "18:00"
             ),
             _1_3_BonAchat(
                 vid = 503L,
                 clientAchteurID = 303L,
-                parent_1_4_PeriodeVent = 602L,
+                parent_1_4_PeriodeVentVid = 602L,
                 heurDebutInString = "10:00",
                 heurFinInString = "19:00"
             ),
             _1_3_BonAchat(
                 vid = 504L,
                 clientAchteurID = 304L,
-                parent_1_4_PeriodeVent = 603L,
+                parent_1_4_PeriodeVentVid = 603L,
                 heurDebutInString = "08:30",
                 heurFinInString = "16:30"
             ),
             _1_3_BonAchat(
                 vid = 505L,
                 clientAchteurID = 305L,
-                parent_1_4_PeriodeVent = 604L,
+                parent_1_4_PeriodeVentVid = 604L,
                 heurDebutInString = "09:30",
                 heurFinInString = "17:30"
             ),
             _1_3_BonAchat(
                 vid = 506L,
                 clientAchteurID = 306L,
-                parent_1_4_PeriodeVent = 604L,
+                parent_1_4_PeriodeVentVid = 604L,
                 heurDebutInString = "07:00",
                 heurFinInString = "15:00"
             ),
             _1_3_BonAchat(
                 vid = 507L,
                 clientAchteurID = 307L,
-                parent_1_4_PeriodeVent = 604L,
+                parent_1_4_PeriodeVentVid = 604L,
                 heurDebutInString = "11:00",
                 heurFinInString = "20:00"
             )
@@ -279,7 +279,7 @@ suspend fun addHardcodedDataToFirebase(
             withContext(Dispatchers.IO) {
                 val snapListBonAchat = mutableStateListOf<_1_3_BonAchat>()
                 snapListBonAchat.addAll(bonAchatTestData)
-                _1_3_BonAchatRepository.updateMultiDatas(snapListBonAchat)
+                _1_3_BonAchat_Repository.updateMultiDatas(snapListBonAchat)
                 Log.d(
                     TAG,
                     "Added ${bonAchatTestData.size} hardcoded BonAchat items to repository"
