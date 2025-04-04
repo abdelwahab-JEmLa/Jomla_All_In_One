@@ -1,6 +1,6 @@
 package Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs.A
 
-import Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.DataBaseEditeWindows
+import Z_CodePartageEntreApps.Windows.A.B_DataBaseEdite.Windows.DataBaseEditeWindows
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs.Utils.A_ChangeIdColor
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs.Utils.AddMarkerButton

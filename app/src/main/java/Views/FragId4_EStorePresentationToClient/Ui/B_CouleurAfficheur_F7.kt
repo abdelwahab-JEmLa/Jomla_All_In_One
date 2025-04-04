@@ -3,7 +3,7 @@ package Views.FragId4_EStorePresentationToClient.Ui
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
-import Z_MasterOfApps.Z_AppsFather.Kotlin._4.Modules.GlideDisplayImageBykeyId
+import Z_CodePartageEntreApps.View.GlideDisplayImageBykeyId
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable

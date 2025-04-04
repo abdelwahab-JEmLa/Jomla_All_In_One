@@ -1,13 +1,11 @@
-package Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows
+package Z_CodePartageEntreApps.Windows.A.B_DataBaseEdite.Windows
 
-import Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.A.A_ProduitModelButtons
-import Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.A.ViewModelA_ProduitModelButtons
-import Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.A_Produit.A_ProduitButtons
-import Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.A_Produit.ViewModel_AProto_ProduitDataBase
-import Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.BProto_ClientsDataBaseButton.BProto_ClientsDataBaseButton
-import Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.BProto_ClientsDataBaseButton.ViewModel_BProto_ClientsDataBase
-import Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.I_CategorieProduits.I_CategorieProduitsButtons
-import Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.I_CategorieProduits.ViewModel_I_CategorieProduits
+import Z_CodePartageEntreApps.Windows.A.B_DataBaseEdite.Windows.A_Produit.A_ProduitButtons
+import Z_CodePartageEntreApps.Windows.A.B_DataBaseEdite.Windows.A_Produit.ViewModel_AProto_ProduitDataBase
+import Z_CodePartageEntreApps.Windows.A.B_DataBaseEdite.Windows.BProto_ClientsDataBaseButton.BProto_ClientsDataBaseButton
+import Z_CodePartageEntreApps.Windows.A.B_DataBaseEdite.Windows.BProto_ClientsDataBaseButton.ViewModel_BProto_ClientsDataBase
+import Z_CodePartageEntreApps.Windows.A.B_DataBaseEdite.Windows.I_CategorieProduits.I_CategorieProduitsButtons
+import Z_CodePartageEntreApps.Windows.A.B_DataBaseEdite.Windows.I_CategorieProduits.ViewModel_I_CategorieProduits
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,7 +27,6 @@ import org.koin.core.context.loadKoinModules
 import org.koin.dsl.module
 
 val dataBaseEditeWindowsModules = module {
-    viewModel { ViewModelA_ProduitModelButtons(get()) }
     viewModel { ViewModel_BProto_ClientsDataBase(get()) }
     viewModel { ViewModel_I_CategorieProduits(get()) }
     viewModel { ViewModel_AProto_ProduitDataBase(get()) }
@@ -65,7 +62,6 @@ fun DataBaseEditeWindows(onDissmis: () -> Unit) {
                     // Specific actions for the dialog
                     HorizontalDivider(thickness = 4.dp)
 
-                    A_ProduitModelButtons()
 
                     BProto_ClientsDataBaseButton()
 

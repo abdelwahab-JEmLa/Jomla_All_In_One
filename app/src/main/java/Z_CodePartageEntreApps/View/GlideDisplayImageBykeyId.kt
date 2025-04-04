@@ -1,4 +1,4 @@
-package Z_MasterOfApps.Z_AppsFather.Kotlin._4.Modules
+package Z_CodePartageEntreApps.View
 
 import Z_CodePartageEntreApps.Model.A_ProduitModel
 import Z_CodePartageEntreApps.Model._ModelAppsFather.Companion.imagesProduitsLocalExternalStorageBasePath

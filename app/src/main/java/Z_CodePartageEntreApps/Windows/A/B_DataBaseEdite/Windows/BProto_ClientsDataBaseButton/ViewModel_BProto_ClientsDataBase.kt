@@ -1,8 +1,8 @@
-package Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.BProto_ClientsDataBaseButton
+package Z_CodePartageEntreApps.Windows.A.B_DataBaseEdite.Windows.BProto_ClientsDataBaseButton
 
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.B_ClientDataBaseRepository
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
-import Z_CodePartageEntreApps.Model._ModelAppsFather.Companion.ref_HeadOfModels
+import Z_CodePartageEntreApps.Model.Z.Archive._ModelAppsFather.Companion.ref_HeadOfModels
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

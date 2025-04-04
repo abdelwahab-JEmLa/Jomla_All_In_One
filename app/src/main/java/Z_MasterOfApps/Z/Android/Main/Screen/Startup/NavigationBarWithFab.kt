@@ -2,7 +2,7 @@ package Z_MasterOfApps.Z.Android.Main.Screen.Startup
 
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Main.Screen.Screen
-import Z_MasterOfApps.Z_AppsFather.Kotlin._4.Modules.GlideDisplayImageBykeyId
+import Z_CodePartageEntreApps.View.GlideDisplayImageBykeyId
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

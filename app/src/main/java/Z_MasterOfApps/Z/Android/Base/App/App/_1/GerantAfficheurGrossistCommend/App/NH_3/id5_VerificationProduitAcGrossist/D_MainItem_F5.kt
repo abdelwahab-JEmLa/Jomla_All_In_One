@@ -1,7 +1,7 @@
 package Z_MasterOfApps.Z.Android.Packages._1.GerantAfficheurGrossistCommend.App.NH_5.ID5_VerificationProduitAcGrossist
 
 import Z_CodePartageEntreApps.Model.A_ProduitModel
-import Z_MasterOfApps.Z_AppsFather.Kotlin._4.Modules.GlideDisplayImageBykeyId
+import Z_CodePartageEntreApps.View.GlideDisplayImageBykeyId
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box

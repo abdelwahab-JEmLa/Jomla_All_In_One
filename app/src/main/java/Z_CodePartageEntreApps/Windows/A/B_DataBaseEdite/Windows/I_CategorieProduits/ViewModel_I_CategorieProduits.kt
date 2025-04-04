@@ -1,9 +1,9 @@
-package Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.I_CategorieProduits
+package Z_CodePartageEntreApps.Windows.A.B_DataBaseEdite.Windows.I_CategorieProduits
 
-import Z_CodePartageEntreApps.Model.I_CategorieProduits.A.Repository.I_CategorieProduitsRepository
 import Z_CodePartageEntreApps.Model.I_CategorieProduits.I_CategorieProduits
-import Z_CodePartageEntreApps.Model.I_CategoriesProduits
-import Z_CodePartageEntreApps.Model._ModelAppsFather.Companion.ref_HeadOfModels
+import Z_CodePartageEntreApps.Model.I_CategorieProduits.Z.Repository.I_CategorieProduitsRepository
+import Z_CodePartageEntreApps.Model.Z.Archive.ApreAlleAuSql.I_CategoriesProduitsAncien
+import Z_CodePartageEntreApps.Model.Z.Archive._ModelAppsFather.Companion.ref_HeadOfModels
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -32,7 +32,7 @@ class ViewModel_I_CategorieProduits(
      * Retrieves data from the old database structure
      */
     @SuppressLint("RestrictedApi")
-    private suspend fun getAncienDataBase(): List<I_CategoriesProduits> =
+    private suspend fun getAncienDataBase(): List<I_CategoriesProduitsAncien> =
         withContext(Dispatchers.IO) {
             return@withContext try {
                 Log.d(TAG, "Starting retrieval from old database at path: ${sonAncienReference.path}")
@@ -47,7 +47,7 @@ class ViewModel_I_CategorieProduits(
 
                 val result = snapshot.children.mapNotNull {
                     try {
-                        val item = it.getValue(I_CategoriesProduits::class.java)
+                        val item = it.getValue(I_CategoriesProduitsAncien::class.java)
                         if (item == null) {
                             Log.w(TAG, "Warning: Failed to parse item with key: ${it.key}")
                         } else {

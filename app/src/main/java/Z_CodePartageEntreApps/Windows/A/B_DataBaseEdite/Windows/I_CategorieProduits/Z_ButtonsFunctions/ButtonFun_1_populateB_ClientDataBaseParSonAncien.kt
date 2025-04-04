@@ -1,6 +1,6 @@
-package Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.I_CategorieProduits.Z_ButtonsFunctions
+package Z_CodePartageEntreApps.Windows.A.B_DataBaseEdite.Windows.I_CategorieProduits.Z_ButtonsFunctions
 
-import Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.I_CategorieProduits.ViewModel_I_CategorieProduits
+import Z_CodePartageEntreApps.Windows.A.B_DataBaseEdite.Windows.I_CategorieProduits.ViewModel_I_CategorieProduits
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

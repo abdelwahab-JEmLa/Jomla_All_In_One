@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.BProto_ClientsDataBaseButton
+package Z_CodePartageEntreApps.Windows.A.B_DataBaseEdite.Windows.BProto_ClientsDataBaseButton
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

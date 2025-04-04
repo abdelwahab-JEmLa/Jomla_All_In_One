@@ -1,9 +1,9 @@
-package Z_CodePartageEntreApps.Shared.Views.Init.Dialogs.B_DataBaseEditeWindows.A_Produit
+package Z_CodePartageEntreApps.Windows.A.B_DataBaseEdite.Windows.A_Produit
 
 import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
-import Z_CodePartageEntreApps.Model.A_ProduitModel
-import Z_CodePartageEntreApps.Model._ModelAppsFather.Companion.ref_HeadOfModels
+import Z_CodePartageEntreApps.Model.Z.Archive.A_ProduitAncienModelStructure
+import Z_CodePartageEntreApps.Model.Z.Archive._ModelAppsFather.Companion.ref_HeadOfModels
 import android.annotation.SuppressLint
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
@@ -25,13 +25,13 @@ class ViewModel_AProto_ProduitDataBase(
     val migrationProgress = _migrationProgress.asStateFlow()
 
     // References to the old database structure
-    private val sonAncienReference = ref_HeadOfModels.child("A_ProduitModel")
+    private val sonAncienReference = ref_HeadOfModels.child("A_Produit")
 
     /**
      * Retrieves data from the old database structure
      */
     @SuppressLint("RestrictedApi")
-    private suspend fun getAncienDataBase(): List<A_ProduitModel> =
+    private suspend fun getAncienDataBase(): List<A_ProduitAncienModelStructure> =
         withContext(Dispatchers.IO) {
             return@withContext try {
                 val snapshot = sonAncienReference.get().await()
@@ -42,7 +42,7 @@ class ViewModel_AProto_ProduitDataBase(
 
                 val result = snapshot.children.mapNotNull {
                     try {
-                        it.getValue(A_ProduitModel::class.java)
+                        it.getValue(A_ProduitAncienModelStructure::class.java)
                     } catch (e: Exception) {
                         null
                     }

@@ -8,7 +8,7 @@ import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Package_3._DisplayeProductInfosToSeller
-import Z_MasterOfApps.Z_AppsFather.Kotlin._4.Modules.GlideDisplayImageBykeyId
+import Z_CodePartageEntreApps.View.GlideDisplayImageBykeyId
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
