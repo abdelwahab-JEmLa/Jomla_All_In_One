@@ -213,9 +213,12 @@ fun MarkerStatusDialog(
                         onClick = {
                             coroutineScope.launch {
                                 viewModel.updateLongAppSetting(selectedMarker.id.toLong())
+                                val maxVid = uiStateviewModelFragment_APP2_ID_1._1_3_BonAchatList.maxOfOrNull { it.vid } ?: 0
+                                Log.d("MarkerStatusDialog", "Current max vid: $maxVid, list size: ${uiStateviewModelFragment_APP2_ID_1._1_3_BonAchatList.size}")
+                                val newVid = maxVid + 1
 
                                 val newData = _1_3_BonAchat(
-                                    vid = uiStateviewModelFragment_APP2_ID_1._1_3_BonAchatList.maxOfOrNull { it.vid } ?: 1,
+                                    vid = newVid,
                                     clientAchteurID = relatedClients?.id!!,
                                     parent_1_4_PeriodeVentVid = uiStateviewModelFragment_APP2_ID_1._1_4_PeriodeVentList.maxOf { it.vid },
                                     heurDebutInString = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
