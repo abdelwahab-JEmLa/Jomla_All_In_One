@@ -3,16 +3,16 @@ package Z_CodePartageEntreApps.Model
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "_1_4_PeriodeVent")
-data class _1_4_PeriodeVent(
+@Entity
+data class _1_5_Vendeur(
     @PrimaryKey(autoGenerate = true)
     var vid: Long = 0L,
 
     // Section InfosDeBase
-    var vendeur_ParentVID : Long = 0L,
+    var deviceModelNom: String = "",
+    var nom: String = "",
 
-    var startDateInString: String = "2025-01-01",
-    var endDateInString: String = "2025-01-01",
+
 
     // Section StatuesMutable
 

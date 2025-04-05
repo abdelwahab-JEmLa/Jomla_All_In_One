@@ -4,6 +4,7 @@ import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_Couleu
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat_Repository
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
+import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur_Repository
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,6 +18,7 @@ class InintializeViewModel_APP2_ID_1 {
         _1_2_ProduitAcheteOperation_Repository: _1_2_ProduitAcheteOperation_Repository,
         _1_3_BonAchat_Repository: _1_3_BonAchat_Repository,
         _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository,
+        _1_5_Vendeur_Repository: _1_5_Vendeur_Repository,
         uiStateFlow: MutableStateFlow<UiState_APP2_ID_1>,
         viewModelScope: CoroutineScope,
         checkInitializationComplete: () -> Unit,
@@ -30,6 +32,7 @@ class InintializeViewModel_APP2_ID_1 {
                         _1_2_ProduitAcheteOperation_Repository,
                         _1_3_BonAchat_Repository,
                         _1_4_PeriodeVent_Repository,
+                        _1_5_Vendeur_Repository,
                         uiStateFlow
                     )
                     uiStateFlow.value = uiStateFlow.value.copy(
@@ -41,11 +44,12 @@ class InintializeViewModel_APP2_ID_1 {
 
             val job2 = viewModelScope.launch {
                 _1_2_ProduitAcheteOperation_Repository.progressRepo.collect { progress ->
-                    updateDataLoadingState(
+                     updateDataLoadingState(
                         _1_1_CouleurAcheteOperation_Repository,
                         _1_2_ProduitAcheteOperation_Repository,
                         _1_3_BonAchat_Repository,
                         _1_4_PeriodeVent_Repository,
+                        _1_5_Vendeur_Repository,
                         uiStateFlow
                     )
                     uiStateFlow.value = uiStateFlow.value.copy(
@@ -57,11 +61,12 @@ class InintializeViewModel_APP2_ID_1 {
 
             val job3 = viewModelScope.launch {
                 _1_3_BonAchat_Repository.progressRepo.collect { progress ->
-                    updateDataLoadingState(
+                     updateDataLoadingState(
                         _1_1_CouleurAcheteOperation_Repository,
                         _1_2_ProduitAcheteOperation_Repository,
                         _1_3_BonAchat_Repository,
                         _1_4_PeriodeVent_Repository,
+                        _1_5_Vendeur_Repository,
                         uiStateFlow
                     )
                     uiStateFlow.value = uiStateFlow.value.copy(
@@ -71,17 +76,34 @@ class InintializeViewModel_APP2_ID_1 {
                 }
             }
 
-            val job4 = viewModelScope.launch {
+            val job5 = viewModelScope.launch {
                 _1_4_PeriodeVent_Repository.progressRepo.collect { progress ->
-                    updateDataLoadingState(
+                     updateDataLoadingState(
                         _1_1_CouleurAcheteOperation_Repository,
                         _1_2_ProduitAcheteOperation_Repository,
                         _1_3_BonAchat_Repository,
                         _1_4_PeriodeVent_Repository,
+                        _1_5_Vendeur_Repository,
                         uiStateFlow
                     )
                     uiStateFlow.value = uiStateFlow.value.copy(
                         _1_4_PeriodeVentList = _1_4_PeriodeVent_Repository.modelDatasSnapList
+                    )
+                    checkInitializationComplete()
+                }
+            }
+            val job4 = viewModelScope.launch {
+                _1_4_PeriodeVent_Repository.progressRepo.collect { progress ->
+                     updateDataLoadingState(
+                        _1_1_CouleurAcheteOperation_Repository,
+                        _1_2_ProduitAcheteOperation_Repository,
+                        _1_3_BonAchat_Repository,
+                        _1_4_PeriodeVent_Repository,
+                        _1_5_Vendeur_Repository,
+                        uiStateFlow
+                    )
+                    uiStateFlow.value = uiStateFlow.value.copy(
+                        _1_5_VendeurList = _1_5_Vendeur_Repository.modelDatasSnapList
                     )
                     checkInitializationComplete()
                 }
@@ -92,6 +114,7 @@ class InintializeViewModel_APP2_ID_1 {
             job2.join()
             job3.join()
             job4.join()
+            job5.join()
         } catch (e: Exception) {
             uiStateFlow.value = uiStateFlow.value.copy(
                 isDataLoading = false
@@ -108,38 +131,24 @@ class InintializeViewModel_APP2_ID_1 {
         _1_2_ProduitAcheteOperation_Repository: _1_2_ProduitAcheteOperation_Repository,
         _1_3_BonAchat_Repository: _1_3_BonAchat_Repository,
         _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository,
+        _1_5_Vendeur_Repository: _1_5_Vendeur_Repository,
         uiStateFlow: MutableStateFlow<UiState_APP2_ID_1>
     ) {
         val progress1 = _1_1_CouleurAcheteOperation_Repository.progressRepo.value
         val progress2 = _1_2_ProduitAcheteOperation_Repository.progressRepo.value
         val progress3 = _1_3_BonAchat_Repository.progressRepo.value
         val progress4 = _1_4_PeriodeVent_Repository.progressRepo.value
+        val progress5 = _1_5_Vendeur_Repository.progressRepo.value
 
         uiStateFlow.value = uiStateFlow.value.copy(
-            isDataLoading = progress1 < 1.0f || progress2 < 1.0f || progress3 < 1.0f || progress4 < 1.0f
+            isDataLoading = progress1 < 1.0f || progress2 < 1.0f || progress3 < 1.0f
+                    ||
+                    progress4 < 1.0f
+                    ||  progress5 < 1.0f
         )
     }
 
-    fun checkInitializationComplete(
-        _1_1_CouleurAcheteOperation_Repository: _1_1_CouleurAcheteOperation_Repository,
-        _1_2_ProduitAcheteOperation_Repository: _1_2_ProduitAcheteOperation_Repository,
-        _1_3_BonAchat_Repository: _1_3_BonAchat_Repository,
-        _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository,
-        uiStateFlow: MutableStateFlow<UiState_APP2_ID_1>,
-    ) {
-        val progress1 = _1_1_CouleurAcheteOperation_Repository.progressRepo.value
-        val progress2 = _1_2_ProduitAcheteOperation_Repository.progressRepo.value
-        val progress3 = _1_3_BonAchat_Repository.progressRepo.value
-        val progress4 = _1_4_PeriodeVent_Repository.progressRepo.value
 
-        if (progress1 >= 1.0f && progress2 >= 1.0f && progress3 >= 1.0f && progress4 >= 1.0f) {
-            if (!uiStateFlow.value.isInitialized) {
-                uiStateFlow.value = uiStateFlow.value.copy(
-                    isInitialized = true
-                )
-            }
-        }
-    }
 
      fun handleError(message: String, exception: Exception, uiStateFlow: MutableStateFlow<UiState_APP2_ID_1>) {
         Log.e(TAG, "$message: ${exception.message}")

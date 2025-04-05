@@ -7,7 +7,6 @@ import Views.P1._ArticlesStartFacade.FragmentStartupScreen
 import Views.Package_4.SoldCartScreen.SoldCartScreen
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model._1_1_CouleurAcheteOperation
-import Z_CodePartageEntreApps.Model._1_2_ProduitAcheteOperation
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Kotlin._WorkingON.WO_.WifiUpdateClientDisplayerStats
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.A_id1_ClientsLocationGps
@@ -69,8 +68,6 @@ private fun allerAuFragment(navController: NavHostController) {
 object ScreensApp2 {
     val A_ClientsLocationGps = Screen.A_ClientsLocationGps
 }
-
-
 
 @Composable
 fun AppNavHost(
@@ -156,6 +153,7 @@ fun AppNavHost(
                             onToggleNavBar = onToggleNavBar,
                             reloadTrigger = reloadTrigger,
                             onClickToOpenWindos = { articleDataBaseOn, indexColor ->
+
                                 val couleurId = when (indexColor) {
                                     0 ->  articleDataBaseOn.idcolor1
                                     1 ->  articleDataBaseOn.idcolor2
@@ -164,20 +162,27 @@ fun AppNavHost(
                                     else -> {0}
                                 }
 
+                                val vid = uiStateviewModelFragment_APP2_ID_1
+                                    ._1_2_ProduitAcheteOperationList.maxOfOrNull { it.vid } ?: 0
+
+                                val vendeur_ParentVID =  uiStateviewModelFragment_APP2_ID_1
+                                    ._1_5_VendeurList.find { it.deviceModelNom==android.os.Build.MODEL }?.vid
+
+                                val periodeVentDateInString_ParentVID =  uiStateviewModelFragment_APP2_ID_1
+                                    ._1_4_PeriodeVentList.maxOfOrNull { it.vid } ?: 0
+
                                 viewmodelfragmentApp2Id1.
-                                addData_1_1_CouleurAcheteOperation_Repository(
+                                upsert(
                                     _1_1_CouleurAcheteOperation(
-                                        couleurId= couleurId,
+                                        vendeur_ParentVID=vendeur_ParentVID!!,
+                                        periodeVentDateInString_ParentVID= periodeVentDateInString_ParentVID,
+                                        produitId_ParentVID= articleDataBaseOn.idArticle.toLong(),
+                                        couleurId_ParentVID = couleurId,
                                         totaleQuantity = 1
                                     )
                                 )
 
-                                viewmodelfragmentApp2Id1
-                                    .addData_1_2_ProduitAcheteOperation_Repository(
-                                    _1_2_ProduitAcheteOperation(
-                                        produitAcheterID= articleDataBaseOn.idArticle.toLong(),
-                                        )
-                                )
+
 
                                 relatedArticleBaseStats = articleDataBaseOn
                                 pendingIndexColor = indexColor

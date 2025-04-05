@@ -4,6 +4,7 @@ import Z_CodePartageEntreApps.Model._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Model._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.Model._1_3_BonAchat
 import Z_CodePartageEntreApps.Model._1_4_PeriodeVent
+import Z_CodePartageEntreApps.Model._1_5_Vendeur
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperationRepositoryImpl
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperationRepositoryImpl
@@ -12,6 +13,7 @@ import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchatRepositoryIm
 import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat_Repository
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVentRepositoryImpl
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
+import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur_Repository
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -27,6 +29,7 @@ data class UiState_APP2_ID_1(
     var _1_2_ProduitAcheteOperationList: SnapshotStateList<_1_2_ProduitAcheteOperation> = mutableStateListOf(),
     var _1_3_BonAchatList: SnapshotStateList<_1_3_BonAchat> = mutableStateListOf(),
     var _1_4_PeriodeVentList: SnapshotStateList<_1_4_PeriodeVent> = mutableStateListOf(),
+    var _1_5_VendeurList: SnapshotStateList<_1_5_Vendeur> = mutableStateListOf(),
 
     var bonAchetOnCourseMntID: Long = 1,
     var isFilteringActive: Boolean = false,
@@ -40,7 +43,8 @@ class ViewModelFragment_APP2_ID_1(
     val _1_1_CouleurAcheteOperation_Repository: _1_1_CouleurAcheteOperation_Repository,
     val _1_2_ProduitAcheteOperation_Repository: _1_2_ProduitAcheteOperation_Repository,
     val _1_3_BonAchat_Repository: _1_3_BonAchat_Repository,
-    val _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository
+    val _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository ,
+    val _1_5_Vendeur_Repository: _1_5_Vendeur_Repository
 ) : ViewModel() {
     private val TAG = "ViewModelFragment_APP2_ID_2"
 
@@ -56,6 +60,7 @@ class ViewModelFragment_APP2_ID_1(
                 _1_2_ProduitAcheteOperation_Repository,
                 _1_3_BonAchat_Repository,
                 _1_4_PeriodeVent_Repository,
+                _1_5_Vendeur_Repository,
                 _uiStateFlow,
                 viewModelScope,
                 {
@@ -64,6 +69,7 @@ class ViewModelFragment_APP2_ID_1(
                         _1_2_ProduitAcheteOperation_Repository,
                         _1_3_BonAchat_Repository,
                         _1_4_PeriodeVent_Repository,
+                        _1_5_Vendeur_Repository,
                         _uiStateFlow
                     )
                 }
@@ -71,12 +77,22 @@ class ViewModelFragment_APP2_ID_1(
         }
     }
 
-    fun addData_1_1_CouleurAcheteOperation_Repository(newData: _1_1_CouleurAcheteOperation): Unit {
+    fun upsert(newData: _1_1_CouleurAcheteOperation): Unit {
+        // Check if an item with the same parent references already exists
+        val existingItem = _uiStateFlow.value._1_1_CouleurAcheteOperationList.find {
+            it.vendeur_ParentVID == newData.vendeur_ParentVID &&
+                    it.periodeVentDateInString_ParentVID == newData.periodeVentDateInString_ParentVID &&
+                    it.produitId_ParentVID == newData.produitId_ParentVID &&
+                    it.couleurId_ParentVID == newData.couleurId_ParentVID &&
+                    it.etateActuellementEst == newData.etateActuellementEst
+        }
 
-        val maxVid_1_2_ProduitAcheteOperationList = _uiStateFlow.value._1_2_ProduitAcheteOperationList.maxOfOrNull { it.vid } ?: 0
-        newData.parent_1_2_ProduitAcheteOperationID= maxVid_1_2_ProduitAcheteOperationList
-
-        _1_1_CouleurAcheteOperation_Repository.addData(newData)
+        if (existingItem != null) {
+            _1_1_CouleurAcheteOperation_Repository.updateUnSeulData(existingItem)
+        } else {
+            // Otherwise add as a new item
+            _1_1_CouleurAcheteOperation_Repository.addData(newData)
+        }
     }
 
     fun addData_1_2_ProduitAcheteOperation_Repository(newData: _1_2_ProduitAcheteOperation): Unit {
@@ -98,16 +114,21 @@ class ViewModelFragment_APP2_ID_1(
         _1_2_ProduitAcheteOperation_Repository: _1_2_ProduitAcheteOperation_Repository,
         _1_3_BonAchat_Repository: _1_3_BonAchat_Repository,
         _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository,
+        _1_5_Vendeur_Repository: _1_5_Vendeur_Repository,
+
         uiStateFlow: MutableStateFlow<UiState_APP2_ID_1>,
     ) {
         val progress1 = _1_1_CouleurAcheteOperation_Repository.progressRepo.value
         val progress2 = _1_2_ProduitAcheteOperation_Repository.progressRepo.value
         val progress3 = _1_3_BonAchat_Repository.progressRepo.value
         val progress4 = _1_4_PeriodeVent_Repository.progressRepo.value
+        val progress5 = _1_5_Vendeur_Repository.progressRepo.value
 
-        Log.d(TAG, "Progress values: $progress1, $progress2, $progress3, $progress4, isInitialized: ${uiStateFlow.value.isInitialized}")
 
-        if (progress1 >= 1.0f && progress2 >= 1.0f && progress3 >= 1.0f && progress4 >= 1.0f) {
+        if (progress1 >= 1.0f && progress2 >= 1.0f && progress3 >= 1.0f
+            && progress4 >= 1.0f
+            && progress5 >= 1.0f
+            ) {
             if (!uiStateFlow.value.isInitialized) {
                 Log.d(TAG, "Setting initialization complete")
                 uiStateFlow.value = uiStateFlow.value.copy(
