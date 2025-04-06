@@ -127,24 +127,23 @@ fun AppNavHost(
                 app2(
                     viewModelInitApp, clientEnCourDeVent,
                     navController,
-                    {
-                        headViewModel.viewModelScope.launch {
+                ) {
+                    headViewModel.viewModelScope.launch {
 
-                            headViewModel._uiState.update { currentState ->
-                                currentState.copy(soldArticlesModel = emptyList())
-                            }
-
-                            // Clear the database in a coroutine
-                            headViewModel.database.soldArticlesModelDao().deleteAll()
-
-                            // Clear Firebase references
-                            val database = Firebase.database
-                            database.getReference("K_GroupeurBonCommendToSupplierRef").removeValue()
-                            database.getReference("O_SoldArticlesTabelle").removeValue()
-
+                        headViewModel._uiState.update { currentState ->
+                            currentState.copy(soldArticlesModel = emptyList())
                         }
-                    },
-                )
+
+                        // Clear the database in a coroutine
+                        headViewModel.database.soldArticlesModelDao().deleteAll()
+
+                        // Clear Firebase references
+                        val database = Firebase.database
+                        database.getReference("K_GroupeurBonCommendToSupplierRef").removeValue()
+                        database.getReference("O_SoldArticlesTabelle").removeValue()
+
+                    }
+                }
 
                 composable(Screen.EditDatabaseWithCreateNewArticles.route) {
                     Box(modifier = Modifier.fillMaxSize()) {
@@ -162,9 +161,6 @@ fun AppNavHost(
                                     else -> {0}
                                 }
 
-                                val vid = uiStateviewModelFragment_APP2_ID_1
-                                    ._1_2_ProduitAcheteOperationList.maxOfOrNull { it.vid } ?: 0
-
                                 val vendeur_ParentVID =  uiStateviewModelFragment_APP2_ID_1
                                     ._1_5_VendeurList.find { it.deviceModelNom==android.os.Build.MODEL }?.vid
 
@@ -181,8 +177,6 @@ fun AppNavHost(
                                         totaleQuantity = 1
                                     )
                                 )
-
-
 
                                 relatedArticleBaseStats = articleDataBaseOn
                                 pendingIndexColor = indexColor

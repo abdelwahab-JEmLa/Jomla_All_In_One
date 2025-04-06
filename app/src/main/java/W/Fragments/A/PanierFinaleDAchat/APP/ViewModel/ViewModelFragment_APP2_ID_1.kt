@@ -43,8 +43,8 @@ class ViewModelFragment_APP2_ID_1(
     val _1_1_CouleurAcheteOperation_Repository: _1_1_CouleurAcheteOperation_Repository,
     val _1_2_ProduitAcheteOperation_Repository: _1_2_ProduitAcheteOperation_Repository,
     val _1_3_BonAchat_Repository: _1_3_BonAchat_Repository,
-    val _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository ,
-    val _1_5_Vendeur_Repository: _1_5_Vendeur_Repository
+    val _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository,
+    private val _1_5_Vendeur_Repository: _1_5_Vendeur_Repository
 ) : ViewModel() {
     private val TAG = "ViewModelFragment_APP2_ID_2"
 
