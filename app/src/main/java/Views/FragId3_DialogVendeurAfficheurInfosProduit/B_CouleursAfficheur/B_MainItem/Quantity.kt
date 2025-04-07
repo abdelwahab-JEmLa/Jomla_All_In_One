@@ -23,12 +23,12 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun QuantityButton(
+    viewModelInitApp: ViewModelInitApp,
     composKeyID: String,
     quantity: Int,
     isSelected: Boolean,
     onClick: () -> Unit,
     currentSale: SoldArticlesTabelle?,
-    viewModelInitApp: ViewModelInitApp,
     currentClient: B_ClientsDataBase?,
     colorDetails: ColorsArticlesTabelle,
     composMainKeyModel: _1_1_CouleurAcheteOperation
@@ -38,7 +38,8 @@ fun QuantityButton(
 
     Button(
         onClick = {
-
+            viewmodelfragmentApp2Id1
+                .updateUnSeulData_1_1_CouleurAcheteOperation_Repository(composMainKeyModel)
 //
 //            val colorAcMemeProduitQuiMemeBonIdCeBonAMemePeriedID = uiStateviewModelFragment_APP2_ID_1
 //                ._1_1_CouleurAcheteOperationList

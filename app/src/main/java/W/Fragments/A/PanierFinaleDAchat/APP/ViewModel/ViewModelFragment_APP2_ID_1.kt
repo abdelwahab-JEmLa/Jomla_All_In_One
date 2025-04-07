@@ -156,4 +156,8 @@ class ViewModelFragment_APP2_ID_1(
         val repoImpl4 = _1_4_PeriodeVent_Repository as? _1_4_PeriodeVentRepositoryImpl
         repoImpl4?.cleanup()
     }
+
+    fun updateUnSeulData_1_1_CouleurAcheteOperation_Repository(composMainKeyModel: _1_1_CouleurAcheteOperation) {
+              _1_1_CouleurAcheteOperation_Repository.updateUnSeulData(composMainKeyModel)
+    }
 }
