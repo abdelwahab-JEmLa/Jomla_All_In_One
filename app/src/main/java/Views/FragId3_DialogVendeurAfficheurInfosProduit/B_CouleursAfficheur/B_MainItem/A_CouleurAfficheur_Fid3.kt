@@ -6,6 +6,7 @@ import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
 import Z_CodePartageEntreApps.Model._1_1_CouleurAcheteOperation
+import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
 import Z_CodePartageEntreApps.View.GlideDisplayImageBykeyId
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Kotlin._WorkingON.WO_.WifiUpdateClientDisplayerStats
@@ -31,6 +32,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -47,6 +49,7 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.clientjetpack.R
 import com.example.clientjetpack.ViewModel.HeadViewModel
+import org.koin.compose.koinInject
 
 @Composable
 fun B_CouleurAfficheur(
@@ -62,9 +65,37 @@ fun B_CouleurAfficheur(
     viewModelInitApp: ViewModelInitApp,
     currentClient: B_ClientsDataBase?,
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
-    composMainKeyModel: _1_1_CouleurAcheteOperation,
+    compose_1_4_PeriodeVentVid: Long,
+) {
+    var compose_1_1_CouleurAcheteOperationVid by remember { mutableLongStateOf(0L) }
 
-    ) {
+    val _1_1_CouleurAcheteOperation_Repository =
+        koinInject<_1_1_CouleurAcheteOperation_Repository>()
+    val couleurActuelleId = color.idColore
+    
+
+    LaunchedEffect(Unit) {
+        val existing_1_1_CouleurAcheteOperation =
+            _1_1_CouleurAcheteOperation_Repository.modelDatasSnapList.find {
+                it.couleurId_ParentVID == couleurActuelleId
+                        && it.produitId_ParentVID == compose_1_4_PeriodeVentVid
+            }
+
+        compose_1_1_CouleurAcheteOperationVid = if (existing_1_1_CouleurAcheteOperation != null) {
+            existing_1_1_CouleurAcheteOperation.vid
+        } else {
+            val newVid = _1_1_CouleurAcheteOperation_Repository
+                .modelDatasSnapList.maxOfOrNull { it.vid }?.plus(1) ?: 1
+            _1_1_CouleurAcheteOperation_Repository.addData(
+                _1_1_CouleurAcheteOperation(
+                    vid = newVid,
+
+                    )
+            )
+            newVid
+        }
+    }
+
     var showDialog by remember { mutableStateOf(false) }
     var isSelected by remember { mutableStateOf(false) }
 
@@ -222,7 +253,7 @@ fun B_CouleurAfficheur(
                 indexColoreAcheter = index,
                 colorsArticlesTabelleModele = colorsArticlesTabelleModele,
                 color = color,
-                composMainKeyModel = composMainKeyModel
+                compose_1_1_CouleurAcheteOperationVid=compose_1_1_CouleurAcheteOperationVid,
             )
         }
     }
@@ -232,7 +263,7 @@ fun B_CouleurAfficheur(
 @Composable
 private fun QuantityBadge(
     quantity: Int,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Surface(
         modifier = modifier,
@@ -253,7 +284,7 @@ private fun QuantityBadge(
 @Composable
 private fun ColorInfoSection(
     colorData: ColorsArticlesTabelle,
-    onColorClick: () -> Unit
+    onColorClick: () -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -284,7 +315,7 @@ private fun ColorInfoSection(
 @Composable
 fun ColorIcon(
     iconColore: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Surface(
         modifier = Modifier

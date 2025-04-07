@@ -12,20 +12,24 @@ data class _1_4_PeriodeVent(
     var vid: Long = 0L,
 
     // Section InfosDeBase
-    var vendeur_ParentVID : Long = 0L,
-    var startDateInString: String = SimpleDateFormat(
-        "yyyy-MM-dd",
-        Locale.getDefault()).format(Date()),
+    var vendeur_ParentVID: Long = 0L,
+    var startDateInString: String = getMainValeKey(),
     var endDateInString: String = "",
 
     // Section StatuesMutable
 
-)  {
+) {
     fun mainKeyVal(): String {
         return startDateInString
     }
 
-    fun mainKeyVal(): String {
-        return startDateInString
+    companion object {
+        private fun getMainValeKey(): String {
+            return SimpleDateFormat(
+                "yyyy-MM-dd",
+                Locale.getDefault()
+            ).format(Date())
+        }
+
     }
 }

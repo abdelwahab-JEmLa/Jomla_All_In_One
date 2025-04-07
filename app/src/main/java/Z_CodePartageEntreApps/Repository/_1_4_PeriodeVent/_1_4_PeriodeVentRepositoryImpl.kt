@@ -70,7 +70,7 @@ class _1_4_PeriodeVentRepositoryImpl(
 
 
     override fun getByMainVAl(): Long {
-        return   modelDatasSnapList.last().vid
+        return modelDatasSnapList.last().vid
     }
 
     override fun updateUnSeulData(data: _1_4_PeriodeVent) {

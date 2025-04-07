@@ -10,9 +10,7 @@ data class _1_5_Vendeur(
 
     // Section InfosDeBase
     var deviceModelNom: String = "",
-    var nom: String = "",
-
-
+    var nom: String = "Manager Vendor",
 
     // Section StatuesMutable
 

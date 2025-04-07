@@ -2,7 +2,7 @@ package Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_M
 
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
-import Z_CodePartageEntreApps.Model._1_1_CouleurAcheteOperation
+import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.koin.compose.koinInject
 
 @Composable
 fun QuantityButton(
@@ -25,13 +26,25 @@ fun QuantityButton(
     onClick: () -> Unit,
     currentSale: SoldArticlesTabelle?,
     currentClient: B_ClientsDataBase?,
-    composMainKeyModel: _1_1_CouleurAcheteOperation
+    compose_1_1_CouleurAcheteOperationVid: Long,
 ) {
-    val viewmodelfragmentApp2Id1 = viewModelInitApp.viewModelFragment_APP2_ID_1
+    val _1_1_CouleurAcheteOperation_Repository =
+        koinInject<_1_1_CouleurAcheteOperation_Repository>()
+
     Button(
         onClick = {
-            viewmodelfragmentApp2Id1
-                .upsert_1_1_CouleurAcheteOperation(composMainKeyModel)
+            val data = _1_1_CouleurAcheteOperation_Repository.modelDatasSnapList.find {
+                it.vid == compose_1_1_CouleurAcheteOperationVid
+            }
+
+            data?.apply {
+                totaleQuantity=quantity
+            }?.let {
+                _1_1_CouleurAcheteOperation_Repository.updateUnSeulData(
+                    it
+                )
+            }
+
             onClick()
         },
         modifier = Modifier

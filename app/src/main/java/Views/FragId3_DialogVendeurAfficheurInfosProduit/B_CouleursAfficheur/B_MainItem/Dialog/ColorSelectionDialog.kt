@@ -4,7 +4,6 @@ import Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_Ma
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
-import Z_CodePartageEntreApps.Model._1_1_CouleurAcheteOperation
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -42,7 +41,7 @@ fun ColorSelectionDialog(
     indexColoreAcheter: Int,
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
     color: ColorsArticlesTabelle,
-    composMainKeyModel: _1_1_CouleurAcheteOperation
+    compose_1_1_CouleurAcheteOperationVid: Long,
 ) {
     Dialog(onDismissRequest = onDismiss) {
         Card(
@@ -92,7 +91,7 @@ fun ColorSelectionDialog(
                     indexColoreAcheter = indexColoreAcheter,
                     colorsArticlesTabelleModele = colorsArticlesTabelleModele,
                     color = color,
-                    composMainKeyModel = composMainKeyModel
+                    compose_1_1_CouleurAcheteOperationVid= compose_1_1_CouleurAcheteOperationVid,
                 )
             }
         }
@@ -109,8 +108,9 @@ private fun QuantityGrid(
     indexColoreAcheter: Int,
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
     color: ColorsArticlesTabelle,
-    composMainKeyModel: _1_1_CouleurAcheteOperation
+    compose_1_1_CouleurAcheteOperationVid: Long,
 ) {
+
     val quantities = remember {
         listOf(
             0,
@@ -156,13 +156,10 @@ private fun QuantityGrid(
                 onClick = {
                     onQuantitySelected(quantity)
                 },
-                composMainKeyModel = composMainKeyModel
-                    .apply {
-                    totaleQuantity = quantity
-                },
                 currentSale = currentSale,
                 viewModelInitApp = viewModelInitApp,
                 currentClient = currentClient,
+                compose_1_1_CouleurAcheteOperationVid=compose_1_1_CouleurAcheteOperationVid,
             )
         }
     }

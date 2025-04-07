@@ -5,7 +5,12 @@ import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
-import Z_CodePartageEntreApps.Model._1_1_CouleurAcheteOperation
+import Z_CodePartageEntreApps.Model._1_2_ProduitAcheteOperation
+import Z_CodePartageEntreApps.Model._1_3_BonAchat
+import Z_CodePartageEntreApps.Model._1_4_PeriodeVent
+import Z_CodePartageEntreApps.Model._1_5_Vendeur
+import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
+import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat_Repository
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur_Repository
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
@@ -30,6 +35,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import org.koin.compose.koinInject
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun A_MainListFragId3(
@@ -44,19 +52,95 @@ fun A_MainListFragId3(
 ) {
     var colorsListToDisplay by remember { mutableStateOf(emptyList<ColorsArticlesTabelle>()) }
 
-    // LaunchedEffect to handle all suspend functions
-    LaunchedEffect(key1 = Unit) {
-        // Process color list
-        colorsListToDisplay = listOf(
-            stats.idcolor1,
-            stats.idcolor2,
-            stats.idcolor3,
-            stats.idcolor4
-        ).mapNotNull { colorId ->
-            if (colorId != 0L) {
-                colorsArticlesTabelleModel.find { it.idColore == colorId }
-            } else null
+
+    val deviceModelNom = Build.MODEL
+    val currentClientId = currentClient?.id ?: 1
+
+    val vendeurRepo = koinInject<_1_5_Vendeur_Repository>()
+    var compose_1_5_VendeurId by remember { mutableStateOf(0L) }
+    
+    val _1_4_PeriodeVent_Repository = koinInject<_1_4_PeriodeVent_Repository>()
+    var compose_1_4_PeriodeVentVid by remember { mutableStateOf(0L) }
+
+    val _1_3_BonAchat_Repository = koinInject<_1_3_BonAchat_Repository>()
+    val currenteDateInString = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+    var compose_1_3_BonAchatVid by remember { mutableStateOf(0L) }
+
+    val _1_2_ProduitAcheteOperation_Repository = koinInject<_1_2_ProduitAcheteOperation_Repository>()
+    val produitActuelle = currentSale.idArticle
+    var compose_1_2_ProduitAcheteOperationVid by remember { mutableStateOf(0L) }
+
+    LaunchedEffect(Unit) {
+        // Get or create vendor
+        val existingVendor = vendeurRepo
+            .modelDatasSnapList.find { it.deviceModelNom == deviceModelNom }
+        compose_1_5_VendeurId = if (existingVendor != null) {
+            existingVendor.vid
+        } else {
+            val newVid = vendeurRepo.modelDatasSnapList.maxOfOrNull { it.vid }?.plus(1) ?: 1
+            vendeurRepo.addData(_1_5_Vendeur(vid = newVid, deviceModelNom = deviceModelNom))
+            newVid
         }
+
+        val existing_1_4_PeriodeVent = _1_4_PeriodeVent_Repository.modelDatasSnapList
+            .find {
+            it.endDateInString == ""
+        }
+        compose_1_4_PeriodeVentVid = if (existing_1_4_PeriodeVent != null) {
+            existing_1_4_PeriodeVent.vid
+        } else {
+            val newVid = _1_4_PeriodeVent_Repository
+                .modelDatasSnapList.maxOfOrNull { it.vid }?.plus(1) ?: 1
+            _1_4_PeriodeVent_Repository.addData(
+                _1_4_PeriodeVent(
+                    vid = newVid,
+                    startDateInString = currenteDateInString
+                )
+            )
+
+            newVid
+        }
+
+        val existing_1_3_BonAchat = _1_3_BonAchat_Repository.modelDatasSnapList.find {
+            it.clientAchteurID == currentClientId
+                    && it.parent_1_4_PeriodeVentVid == compose_1_3_BonAchatVid
+        }
+        compose_1_3_BonAchatVid = if (existing_1_3_BonAchat != null) {
+            existing_1_3_BonAchat.vid
+        } else {
+            val newVid = _1_3_BonAchat_Repository
+                .modelDatasSnapList.maxOfOrNull { it.vid }?.plus(1) ?: 1
+            _1_3_BonAchat_Repository.addData(
+                _1_3_BonAchat(
+                    vid = newVid,
+                    clientAchteurID = currentClientId
+                )
+            )
+            newVid
+        }
+        
+        val existing_1_2_ProduitAcheteOperation = _1_2_ProduitAcheteOperation_Repository.modelDatasSnapList.find {
+            it.produitAcheterID == produitActuelle
+                    && it.parent_1_3_BonAchat == compose_1_3_BonAchatVid
+        }
+        compose_1_2_ProduitAcheteOperationVid = if (existing_1_2_ProduitAcheteOperation != null) {
+            existing_1_2_ProduitAcheteOperation.vid
+        } else {
+            val newVid = _1_2_ProduitAcheteOperation_Repository
+                .modelDatasSnapList.maxOfOrNull { it.vid }?.plus(1) ?: 1
+            _1_2_ProduitAcheteOperation_Repository.add(
+                _1_2_ProduitAcheteOperation(
+                    vid = newVid,
+                    produitAcheterID = produitActuelle
+                )
+            )
+            newVid
+        }
+
+        // Process color list
+        colorsListToDisplay = listOf(stats.idcolor1, stats.idcolor2, stats.idcolor3, stats.idcolor4)
+            .filter { it != 0L }
+            .mapNotNull { colorId -> colorsArticlesTabelleModel.find { it.idColore == colorId } }
     }
 
     Column(
@@ -72,10 +156,7 @@ fun A_MainListFragId3(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(2.dp),
             ) {
-                val estimatedHeight = minOf(
-                    (400.dp + 2.dp) * colorsListToDisplay.size,
-                    3500.dp
-                )
+                val estimatedHeight = minOf((400.dp + 2.dp) * colorsListToDisplay.size, 3500.dp)
 
                 Column(
                     modifier = Modifier
@@ -92,14 +173,6 @@ fun A_MainListFragId3(
                                 .clip(MaterialTheme.shapes.medium)
                         ) {
                             B_CouleurAfficheur(
-                                composMainKeyModel = _1_1_CouleurAcheteOperation(
-                                    vendeur_ParentVID = koinInject<_1_5_Vendeur_Repository>()
-                                        .getIdParNomModel(Build.MODEL),
-                                    periodeVentDateInString_ParentVID = koinInject<_1_4_PeriodeVent_Repository>()
-                                        .getByMainVAl(),
-                                    produitId_ParentVID = currentSale.idArticle,
-                                    couleurId_ParentVID = color.idColore
-                                ),
                                 modifier = Modifier,
                                 currentSale = currentSale,
                                 article = stats,
@@ -108,10 +181,14 @@ fun A_MainListFragId3(
                                 reloadTrigger = reloadTrigger,
                                 viewModel = viewModel,
                                 height = 350.dp,
-                                updateColorToBeMain = { /* Empty lambda since we removed ranking logic */ },
+                                updateColorToBeMain = { },
                                 viewModelInitApp = viewModelInitApp,
                                 currentClient = currentClient,
                                 colorsArticlesTabelleModele = colorsArticlesTabelleModele,
+                                compose_1_4_PeriodeVentVid=compose_1_4_PeriodeVentVid,
+                                compose_1_3_BonAchatVid=compose_1_3_BonAchatVid,
+                                compose_1_2_ProduitAcheteOperationVid=compose_1_2_ProduitAcheteOperationVid,
+                                compose_1_5_VendeurId=compose_1_5_VendeurId,
                             )
                         }
                     }

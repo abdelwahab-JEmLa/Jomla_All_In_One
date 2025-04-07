@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Repository._1_3_BonAchat
 
-import Z_CodePartageEntreApps.Model._1_3_BonAchat
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
+import Z_CodePartageEntreApps.Model._1_3_BonAchat
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -63,6 +63,7 @@ class _1_3_BonAchatRepositoryImpl(
             Log.e(TAG, "Error ensuring data initialization: ${e.message}")
         }
     }
+
     override fun updateUnSeulData(data: _1_3_BonAchat) {
         updatesOperations.updateUnSeulData(data, repositoryScope, appDatabase, modelDatasSnapList)
     }
@@ -70,7 +71,9 @@ class _1_3_BonAchatRepositoryImpl(
     private suspend fun initialize_1_3_BonAchatRepository() {
         try {
             loadDepuitRoom()
-            checkDataConsistency()
+                checkDataConsistency()
+
+
             if (TAG.isNotEmpty()) {
                 log()
             }
@@ -78,6 +81,7 @@ class _1_3_BonAchatRepositoryImpl(
             Log.e(TAG, "Error initializing repository: ${e.message}")
         }
     }
+
 
     private suspend fun loadDepuitRoom() {
         try {
