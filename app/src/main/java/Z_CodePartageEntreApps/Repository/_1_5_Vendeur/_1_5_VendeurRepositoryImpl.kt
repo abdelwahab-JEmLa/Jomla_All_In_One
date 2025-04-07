@@ -4,6 +4,7 @@ import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Model._1_5_Vendeur
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur.Extension.Log._1_5_VendeurRepositoryLogOperationsExtention
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur.Extension.Update._1_5_VendeurRepositoryUpdatesOperaionsExtention
+import android.os.Build
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -48,6 +49,7 @@ class _1_5_VendeurRepositoryImpl(
             initialize_1_5_VendeurRepository()
         }
     }
+    
     override suspend fun ensureDataIsInitialized() {
         try {
             if (!initialDataLoaded) {
@@ -83,11 +85,39 @@ class _1_5_VendeurRepositoryImpl(
         try {
             loadDepuitRoom()
             checkDataConsistency()
+            ajouteMainDataSiNonDispo(Build.MODEL)
+            
             if (TAG.isNotEmpty()) {
                 log()
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error initializing repository: ${e.message}")
+        }
+    }
+
+    private fun ajouteMainDataSiNonDispo(currentDeviceModel: String) {
+        try {
+            // Check if a Vendeur with the current device model already exists
+            val existingVendor = modelDatasSnapList.find { it.deviceModelNom == currentDeviceModel }
+
+            if (existingVendor == null) {
+                // Create a new Vendeur for the current device
+                val newVendor = currentDeviceModel.let {
+                    _1_5_Vendeur(
+                        deviceModelNom = it,
+                        nom = "Default Vendor"  // Default name, can be updated later
+                    )
+                }
+
+                // Add the new vendor to the repository
+                addData(newVendor)
+
+                Log.d(TAG, "Added new vendor for device model: $currentDeviceModel")
+            } else {
+                Log.d(TAG, "Vendor for device model $currentDeviceModel already exists")
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in ajouteMainDataSiNonDispo: ${e.message}")
         }
     }
 

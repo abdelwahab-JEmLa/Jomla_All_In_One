@@ -15,6 +15,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import java.util.concurrent.atomic.AtomicBoolean
 
 class _1_4_PeriodeVentRepositoryImpl(
@@ -46,6 +49,7 @@ class _1_4_PeriodeVentRepositoryImpl(
             initialize_1_4_PeriodeVentRepository()
         }
     }
+
     override suspend fun ensureDataIsInitialized() {
         try {
             if (!initialDataLoaded) {
@@ -64,9 +68,6 @@ class _1_4_PeriodeVentRepositoryImpl(
         }
     }
 
-    override fun getIdParMainIDs() {
-        TODO("Not yet implemented")
-    }
 
     override fun getByMainVAl(): Long {
         return   modelDatasSnapList.last().vid
@@ -80,6 +81,10 @@ class _1_4_PeriodeVentRepositoryImpl(
         try {
             loadDepuitRoom()
             checkDataConsistency()
+            ajouteMainDataSiNonDispo(
+                SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+            )
+
             if (TAG.isNotEmpty()) {
                 log()
             }
@@ -87,7 +92,26 @@ class _1_4_PeriodeVentRepositoryImpl(
             Log.e(TAG, "Error initializing repository: ${e.message}")
         }
     }
+    private fun ajouteMainDataSiNonDispo(mainValKey: String) {
+        try {
+            // Check if a PeriodeVent with the current date already exists
+            val existingPeriode = modelDatasSnapList.find { it.mainKeyVal() == mainValKey }
 
+            if (existingPeriode == null) {
+                // Create a new PeriodeVent for the current date
+                val newPeriode = _1_4_PeriodeVent()
+
+                // Add the new period to the repository
+                addData(newPeriode)
+
+                Log.d(TAG, "Added new period for date: $mainValKey")
+            } else {
+                Log.d(TAG, "Period for date $mainValKey already exists")
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in ajouteMainDataSiNonDispo: ${e.message}")
+        }
+    }
     private suspend fun loadDepuitRoom() {
         try {
             progressRepo.value = 0.2f
