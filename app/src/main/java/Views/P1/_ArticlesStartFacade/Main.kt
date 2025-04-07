@@ -48,7 +48,7 @@ fun FragmentStartupScreen(
     viewModel: HeadViewModel,
     onToggleNavBar: () -> Unit,
     reloadTrigger: Int,
-    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
+    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit, // Removed @Composable annotation
     onClickToOpenClientsW: () -> Unit,
     isFabVisible: Boolean,
     onClickDonne: () -> Unit,
@@ -66,6 +66,7 @@ fun FragmentStartupScreen(
     var filterText by remember { mutableStateOf("") }
     val gridState = rememberLazyStaggeredGridState()
     val uiState by viewModel.uiState.collectAsState()
+
     MainUi(
         uiState = uiState,
         gridColumns = gridColumns,
@@ -77,21 +78,22 @@ fun FragmentStartupScreen(
         onToggleNavBar = onToggleNavBar,
         viewModel = viewModel,
         reloadTrigger = reloadTrigger,
-        onClickToOpenWindos = onClickToOpenWindos,
+        onClickToOpenWindos = onClickToOpenWindos,  // Now compatible with non-Composable function
         onClickToOpenClientsW = onClickToOpenClientsW,
         isFabVisible = isFabVisible,
         onClickDonne = {
             filterText=""
-            onClickDonne() },
+            onClickDonne()
+        },
         onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi,
-        scrollTiger, onToggleLockHost = onToggleLockHost,
-        onToggleLockExpandedPricex = onToggleLockExpandedPricex, currentClient = currentClient,
+        scrollTiger = scrollTiger,
+        onToggleLockHost = onToggleLockHost,
+        onToggleLockExpandedPricex = onToggleLockExpandedPricex,
+        currentClient = currentClient,
         viewModelInitApp = viewModelInitApp,
-        targetCategoryId = targetCategoryId, lockHost = lockHost
-
+        targetCategoryId = targetCategoryId,
+        lockHost = lockHost
     )
-
-
 }
 
 @Composable

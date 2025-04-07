@@ -19,7 +19,6 @@ import org.koin.dsl.module
 val composeModules = module {
     viewModel { ViewModelFragment_APP2_ID_1(get(), get(), get()
         , get()
-        , get()
     ) }
     viewModel { ViewModelFragment_APP2_ID_2(get(), get(), get(), get()) }
 }

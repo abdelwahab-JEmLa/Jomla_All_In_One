@@ -7,10 +7,12 @@ import Views.P1._ArticlesStartFacade.FragmentStartupScreen
 import Views.Package_4.SoldCartScreen.SoldCartScreen
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model._1_1_CouleurAcheteOperation
+import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur_Repository
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Kotlin._WorkingON.WO_.WifiUpdateClientDisplayerStats
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.A_id1_ClientsLocationGps
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.MainScreen_Windows
+import android.os.Build
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -37,6 +39,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.database.database
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 
 fun NavGraphBuilder.app2(
     viewModelInitApp: ViewModelInitApp,
@@ -81,7 +84,8 @@ fun AppNavHost(
     viewModelInitApp: ViewModelInitApp,
     onClear: () -> Unit,
     headViewModel: HeadViewModel,
-    targetCategoryId: MutableState<Long?> = mutableStateOf(null), lockHost: Boolean
+    targetCategoryId: MutableState<Long?> = mutableStateOf(null),
+    lockHost: Boolean
 ) {
     val uiState by headViewModel.uiState.collectAsState()
     val viewmodelfragmentApp2Id1 = viewModelInitApp.viewModelFragment_APP2_ID_1
@@ -110,7 +114,6 @@ fun AppNavHost(
     // Calculate the bottom padding to ensure content doesn't get hidden by the navigation bar
     val bottomNavHeight = 80.dp
     val bottomPadding = 8.dp // Additional padding for the navigation bar
-
 
     Surface(
         modifier = modifier
@@ -147,34 +150,32 @@ fun AppNavHost(
                 }
 
                 composable(Screen.EditDatabaseWithCreateNewArticles.route) {
+                    // Inject the repository in a @Composable context
+                    val vendeurRepository = koinInject<_1_5_Vendeur_Repository>()
+
                     Box(modifier = Modifier.fillMaxSize()) {
                         FragmentStartupScreen(
                             viewModel = headViewModel,
                             onToggleNavBar = onToggleNavBar,
                             reloadTrigger = reloadTrigger,
                             onClickToOpenWindos = { articleDataBaseOn, indexColor ->
-
                                 val couleurId = when (indexColor) {
-                                    0 ->  articleDataBaseOn.idcolor1
-                                    1 ->  articleDataBaseOn.idcolor2
-                                    2 ->  articleDataBaseOn.idcolor3
-                                    3 ->  articleDataBaseOn.idcolor4
-                                    else -> {0}
+                                    0 -> articleDataBaseOn.idcolor1
+                                    1 -> articleDataBaseOn.idcolor2
+                                    2 -> articleDataBaseOn.idcolor3
+                                    3 -> articleDataBaseOn.idcolor4
+                                    else -> 0
                                 }
 
-                                val periodeVentDateInString_ParentVID =  uiStateviewModelFragment_APP2_ID_1
+                                val periodeVentDateInString_ParentVID = uiStateviewModelFragment_APP2_ID_1
                                     ._1_4_PeriodeVentList.maxOfOrNull { it.vid } ?: 0
 
-                                viewmodelfragmentApp2Id1.
-                                upsert_1_1_CouleurAcheteOperation(
+                                // Use the injected repository here instead of koinInject in a non-composable context
+                                viewmodelfragmentApp2Id1.upsert_1_1_CouleurAcheteOperation(
                                     _1_1_CouleurAcheteOperation(
-                                        vendeur_ParentVID= uiStateviewModelFragment_APP2_ID_1
-                                            ._1_5_VendeurList.find {
-                                                it.deviceModelNom == android.os.Build.MODEL
-                                            }?.vid !!
-                                        ,
-                                        periodeVentDateInString_ParentVID= periodeVentDateInString_ParentVID,
-                                        produitId_ParentVID= articleDataBaseOn.idArticle.toLong(),
+                                        vendeur_ParentVID = vendeurRepository.getIdParNomModel(Build.MODEL),
+                                        periodeVentDateInString_ParentVID = periodeVentDateInString_ParentVID,
+                                        produitId_ParentVID = articleDataBaseOn.idArticle.toLong(),
                                         couleurId_ParentVID = couleurId,
                                         totaleQuantity = 1
                                     )
@@ -204,12 +205,15 @@ fun AppNavHost(
                             isFabVisible = isFabVisible,
                             onClickDonne = onClickDonne,
                             onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi,
-                            scrollTiger = scrollTiger, onToggleLockHost = onToggleLockHost,
+                            scrollTiger = scrollTiger,
+                            onToggleLockHost = onToggleLockHost,
                             onToggleLockExpandedPricex = {
                                 lockExpandedPrices = !lockExpandedPrices
                             },
-                            currentClient = currentClient, viewModelInitApp = viewModelInitApp,
-                            targetCategoryId=targetCategoryId, lockHost = lockHost
+                            currentClient = currentClient,
+                            viewModelInitApp = viewModelInitApp,
+                            targetCategoryId = targetCategoryId,
+                            lockHost = lockHost
                         )
 
                         if (uiState.isLoading) {
@@ -220,6 +224,7 @@ fun AppNavHost(
                         }
                     }
                 }
+
                 composable(Screen.SoldCart.route) {
                     // Increment navigation count when entering SoldCart
                     LaunchedEffect(Unit) {
@@ -234,7 +239,8 @@ fun AppNavHost(
                             onConfirmOrder = {
                                 headViewModel
                                     .updateLongAppSetting("clientBuyerNowId", 0)
-                            }, viewModelInitApp = viewModelInitApp
+                            },
+                            viewModelInitApp = viewModelInitApp
                         )
                     }
                 }
@@ -271,7 +277,6 @@ fun AppNavHost(
                     onDismiss = {
                         showClientSelection = false
                         showClientSelectionWithoutCondition = false
-
                     }
                 )
             }
@@ -285,10 +290,11 @@ fun AppNavHost(
                         headViewModel.clearCurrentSale()
                         opnerSaleWindows = false
                         headViewModel.sendOrderToClientDisplayer(
-                            WifiUpdateClientDisplayerStats.DISMISS_PRODUCT_INFO.prefix    //-->
+                            WifiUpdateClientDisplayerStats.DISMISS_PRODUCT_INFO.prefix
                         )
                     },
-                    reloadTrigger = reloadTrigger, lockExpandedPrices = lockExpandedPrices,
+                    reloadTrigger = reloadTrigger,
+                    lockExpandedPrices = lockExpandedPrices,
                     onToggleLockExpandedPricex = { lockExpandedPrices = !lockExpandedPrices },
                     viewModelInitApp = viewModelInitApp,
                     currentClient = currentClient,

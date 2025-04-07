@@ -66,8 +66,13 @@ class _1_5_VendeurRepositoryImpl(
         }
     }
 
-    override fun getIdParNomModel(nomModel: String):Long {
-        return      modelDatasSnapList.find { it.deviceModelNom==nomModel }?.vid !!
+    override fun getIdParNomModel(nomModel: String): Long {
+        val vendor = modelDatasSnapList.find { it.deviceModelNom == nomModel }
+        if (vendor == null) {
+            Log.e(TAG, "Vendor not found for model: $nomModel. Available models: ${modelDatasSnapList.map { it.deviceModelNom }}")
+            return -1L
+        }
+        return vendor.vid
     }
 
     override fun updateUnSeulData(data: _1_5_Vendeur) {
