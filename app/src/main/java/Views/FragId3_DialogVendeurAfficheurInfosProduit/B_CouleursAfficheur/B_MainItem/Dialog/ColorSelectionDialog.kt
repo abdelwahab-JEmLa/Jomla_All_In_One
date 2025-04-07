@@ -2,9 +2,10 @@ package Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_M
 
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem.QuantityButton
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
-import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
+import Z_CodePartageEntreApps.Model._1_1_CouleurAcheteOperation
+import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,7 +41,7 @@ fun ColorSelectionDialog(
     currentClient: B_ClientsDataBase?,
     indexColoreAcheter: Int,
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
-    color: ColorsArticlesTabelle
+    color: ColorsArticlesTabelle, composMainKeyModel: _1_1_CouleurAcheteOperation
 ) {
     Dialog(onDismissRequest = onDismiss) {
         Card(
@@ -89,12 +90,13 @@ fun ColorSelectionDialog(
                     currentClient = currentClient,
                     indexColoreAcheter = indexColoreAcheter,
                     colorsArticlesTabelleModele = colorsArticlesTabelleModele,
-                    color = color
+                    color = color, composMainKeyModel = composMainKeyModel
                 )
             }
         }
     }
 }
+
 @Composable
 private fun QuantityGrid(
     currentQuantity: Int,
@@ -104,7 +106,8 @@ private fun QuantityGrid(
     currentClient: B_ClientsDataBase?,
     indexColoreAcheter: Int,
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
-    color: ColorsArticlesTabelle
+    color: ColorsArticlesTabelle,
+    composMainKeyModel: _1_1_CouleurAcheteOperation
 ) {
     val quantities = remember {
         listOf(
@@ -152,9 +155,15 @@ private fun QuantityGrid(
                     onQuantitySelected(quantity)
 
                 },
-                currentSale,
-                viewModelInitApp,
-                currentClient, color
+                composMainKeyModel=composMainKeyModel.apply {
+                    totaleQuantity=quantity
+                },
+                currentSale = currentSale,
+                viewModelInitApp = viewModelInitApp,
+                currentClient=currentClient,
+                color=color ,
+
+
             )
         }
     }

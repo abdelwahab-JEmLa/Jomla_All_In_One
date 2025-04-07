@@ -1,11 +1,15 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur
 
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem.B_CouleurAfficheur
+import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
-import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
+import Z_CodePartageEntreApps.Model._1_1_CouleurAcheteOperation
+import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
+import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur_Repository
+import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,20 +32,30 @@ import com.example.clientjetpack.ViewModel.HeadViewModel
 
 @Composable
 fun A_MainListFragId3(
+    appDatabase: AppDatabase,
+    viewModel: HeadViewModel,
     currentSale: SoldArticlesTabelle,
     stats: ArticlesBasesStatsTable,
     colorsArticlesTabelleModel: List<ColorsArticlesTabelle>,
-    viewModel: HeadViewModel,
     reloadTrigger: Int,
     viewModelInitApp: ViewModelInitApp,
     currentClient: B_ClientsDataBase?,
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
+    _1_5_Vendeur_Repository: _1_5_Vendeur_Repository,
+    _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository
 ) {
+    var composMainKeyModel by remember { mutableStateOf(_1_1_CouleurAcheteOperation(
+        vendeur_ParentVID= _1_5_Vendeur_Repository.getIdParNomModel(android.os.Build.MODEL) ,
+        periodeVentDateInString_ParentVID=_1_4_PeriodeVent_Repository.modelDatasSnapList.last().vid ,
+        produitId_ParentVID=currentSale.idArticle
+    )) }
+
     var colorsListToDisplay by remember { mutableStateOf(emptyList<ColorsArticlesTabelle>()) }
 
-    // Initialize colors list on first composition
-    LaunchedEffect(Unit) {
-        // Get all valid colors
+    // LaunchedEffect to handle all suspend functions
+    LaunchedEffect(key1 = Unit) {
+
+        // Process color list
         colorsListToDisplay = listOf(
             stats.idcolor1,
             stats.idcolor2,
@@ -69,7 +83,7 @@ fun A_MainListFragId3(
             ) {
                 val estimatedHeight = minOf(
                     (400.dp + 2.dp) * colorsListToDisplay.size,
-                    3500.dp //
+                    3500.dp
                 )
 
                 Column(
@@ -87,6 +101,12 @@ fun A_MainListFragId3(
                                 .clip(MaterialTheme.shapes.medium)
                         ) {
                             B_CouleurAfficheur(
+                                composMainKeyModel= _1_1_CouleurAcheteOperation(
+                                    vendeur_ParentVID= _1_5_Vendeur_Repository.getIdParNomModel(android.os.Build.MODEL) ,
+                                    periodeVentDateInString_ParentVID=_1_4_PeriodeVent_Repository.modelDatasSnapList.last().vid ,
+                                    produitId_ParentVID=currentSale.idArticle ,
+                                    couleurId_ParentVID = color.idColore
+                                ),
                                 modifier = Modifier,
                                 currentSale = currentSale,
                                 article = stats,
@@ -98,7 +118,8 @@ fun A_MainListFragId3(
                                 updateColorToBeMain = { /* Empty lambda since we removed ranking logic */ },
                                 viewModelInitApp = viewModelInitApp,
                                 currentClient = currentClient,
-                                colorsArticlesTabelleModele = colorsArticlesTabelleModele
+                                colorsArticlesTabelleModele = colorsArticlesTabelleModele,
+                                composMainKeyModel = _
                             )
                         }
                     }

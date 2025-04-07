@@ -65,6 +65,11 @@ class _1_5_VendeurRepositoryImpl(
             Log.e(TAG, "Error ensuring data initialization: ${e.message}")
         }
     }
+
+    override fun getIdParNomModel(nomModel: String):Long {
+        return      modelDatasSnapList.find { it.deviceModelNom==nomModel }?.vid !!
+    }
+
     override fun updateUnSeulData(data: _1_5_Vendeur) {
         updatesOperations.updateUnSeulData(data, repositoryScope, appDatabase, modelDatasSnapList)
     }

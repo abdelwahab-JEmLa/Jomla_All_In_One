@@ -31,7 +31,8 @@ data class UiState_APP2_ID_1(
     var _1_4_PeriodeVentList: SnapshotStateList<_1_4_PeriodeVent> = mutableStateListOf(),
     var _1_5_VendeurList: SnapshotStateList<_1_5_Vendeur> = mutableStateListOf(),
 
-    var bonAchetOnCourseMntID: Long = 1,
+    var vendeurActuelleId: Long =1,
+
     var isFilteringActive: Boolean = false,
     var errorMessage: String? = null,
     var syncInProgress: Boolean = false,
@@ -44,7 +45,7 @@ class ViewModelFragment_APP2_ID_1(
     val _1_2_ProduitAcheteOperation_Repository: _1_2_ProduitAcheteOperation_Repository,
     val _1_3_BonAchat_Repository: _1_3_BonAchat_Repository,
     val _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository,
-    private val _1_5_Vendeur_Repository: _1_5_Vendeur_Repository
+     val _1_5_Vendeur_Repository: _1_5_Vendeur_Repository
 ) : ViewModel() {
     private val TAG = "ViewModelFragment_APP2_ID_2"
 
@@ -54,6 +55,7 @@ class ViewModelFragment_APP2_ID_1(
     private val initializerViewModel = InintializeViewModel_APP2_ID_1()
 
     init {
+
         viewModelScope.launch {
             initializerViewModel.waitForDataInitialization(
                 _1_1_CouleurAcheteOperation_Repository,

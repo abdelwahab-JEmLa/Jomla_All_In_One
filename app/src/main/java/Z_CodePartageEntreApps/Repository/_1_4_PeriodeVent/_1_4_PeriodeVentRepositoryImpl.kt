@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Repository._1_4_PeriodeVent
 
-import Z_CodePartageEntreApps.Model._1_4_PeriodeVent
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
+import Z_CodePartageEntreApps.Model._1_4_PeriodeVent
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -63,6 +63,10 @@ class _1_4_PeriodeVentRepositoryImpl(
             Log.e(TAG, "Error ensuring data initialization: ${e.message}")
         }
     }
+
+    override fun getIdParMainIDs() {
+    }
+
     override fun updateUnSeulData(data: _1_4_PeriodeVent) {
         updatesOperations.updateUnSeulData(data, repositoryScope, appDatabase, modelDatasSnapList)
     }

@@ -13,6 +13,8 @@ interface _1_5_Vendeur_Repository{
 
     suspend fun ensureDataIsInitialized()
 
+    fun getIdParNomModel(nomModel:String): Long
+
     fun addData(data: _1_5_Vendeur)
     fun updateUnSeulData(data: _1_5_Vendeur)
     suspend fun updateMultiDatas(datas: SnapshotStateList<_1_5_Vendeur>)

@@ -12,6 +12,7 @@ interface _1_4_PeriodeVent_Repository {
         get() = MutableStateFlow(0f)
 
     suspend fun ensureDataIsInitialized()
+     fun getIdParMainIDs()
 
     fun addData(data: _1_4_PeriodeVent)
     fun updateUnSeulData(data: _1_4_PeriodeVent)

@@ -23,49 +23,50 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun QuantityButton(
+    composKeyID: String,
     quantity: Int,
     isSelected: Boolean,
     onClick: () -> Unit,
     currentSale: SoldArticlesTabelle?,
     viewModelInitApp: ViewModelInitApp,
     currentClient: B_ClientsDataBase?,
-    colorDetails: ColorsArticlesTabelle
+    colorDetails: ColorsArticlesTabelle,
+    composMainKeyModel: _1_1_CouleurAcheteOperation
 ) {
-
     val viewmodelfragmentApp2Id1 = viewModelInitApp.viewModelFragment_APP2_ID_1
     val uiStateviewModelFragment_APP2_ID_1 by viewmodelfragmentApp2Id1.uiStateFlow.collectAsState()
 
     Button(
         onClick = {
-            
-            
-            val colorAcMemeProduitQuiMemeBonIdCeBonAMemePeriedID = uiStateviewModelFragment_APP2_ID_1
-                ._1_1_CouleurAcheteOperationList
-                .find {
-                    it.couleurId == colorDetails.idColore &&
-                            it.parent_1_2_ProduitAcheteOperationID == currentSale?.idArticle
-                    
-                }
 
-            val couleurId = colorDetails.idColore
-
-            if (colorAcMemeProduitQuiMemeBonIdCeBonAMemePeriedID != null) {
-                // Update existing color entry
-                val updatedColor = colorAcMemeProduitQuiMemeBonIdCeBonAMemePeriedID.copy(
-                    totaleQuantity = quantity,
-                    etateActuellementEst = _1_1_CouleurAcheteOperation.EtateActuellementEst.CHOISI_UNE_QUANTITY
-                )
-                viewmodelfragmentApp2Id1._1_1_CouleurAcheteOperation_Repository.updateUnSeulData(updatedColor)
-            } else {
-                // Add new color entry
-                val newColorAchete = _1_1_CouleurAcheteOperation(
-                    couleurId = couleurId,
-                    parent_1_2_ProduitAcheteOperationID = currentSale?.idArticle ?: 0,
-                    totaleQuantity = quantity,
-                    etateActuellementEst = _1_1_CouleurAcheteOperation.EtateActuellementEst.CHOISI_UNE_QUANTITY
-                )
-                viewmodelfragmentApp2Id1.upsert(newColorAchete)
-            }
+//
+//            val colorAcMemeProduitQuiMemeBonIdCeBonAMemePeriedID = uiStateviewModelFragment_APP2_ID_1
+//                ._1_1_CouleurAcheteOperationList
+//                .find {
+//                    it.couleurId == colorDetails.idColore &&
+//                            it.parent_1_2_ProduitAcheteOperationID == currentSale?.idArticle
+//
+//                }
+//
+//            val couleurId = colorDetails.idColore
+//
+//            if (colorAcMemeProduitQuiMemeBonIdCeBonAMemePeriedID != null) {
+//                // Update existing color entry
+//                val updatedColor = colorAcMemeProduitQuiMemeBonIdCeBonAMemePeriedID.copy(
+//                    totaleQuantity = quantity,
+//                    etateActuellementEst = _1_1_CouleurAcheteOperation.EtateActuellementEst.CHOISI_UNE_QUANTITY
+//                )
+//                viewmodelfragmentApp2Id1._1_1_CouleurAcheteOperation_Repository.updateUnSeulData(updatedColor)
+//            } else {
+//                // Add new color entry
+//                val newColorAchete = _1_1_CouleurAcheteOperation(
+//                    couleurId_ParentVID = couleurId,
+//                    parent_1_2_ProduitAcheteOperationID = currentSale?.idArticle ?: 0,
+//                    totaleQuantity = quantity,
+//                    etateActuellementEst = _1_1_CouleurAcheteOperation.EtateActuellementEst.CHOISI_UNE_QUANTITY
+//                )
+//                viewmodelfragmentApp2Id1.upsert(newColorAchete)
+//            }
 
 
 

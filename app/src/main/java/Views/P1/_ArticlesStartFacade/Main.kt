@@ -45,6 +45,7 @@ import org.koin.compose.koinInject
 
 @Composable
 fun FragmentStartupScreen(
+    vendeurActuelleId: Long,
     viewModel: HeadViewModel,
     onToggleNavBar: () -> Unit,
     reloadTrigger: Int,
@@ -52,10 +53,14 @@ fun FragmentStartupScreen(
     onClickToOpenClientsW: () -> Unit,
     isFabVisible: Boolean,
     onClickDonne: () -> Unit,
-    onClickToDisplayeConexionWifi: () -> Unit, scrollTiger: Int, onToggleLockHost: () -> Unit,
-    onToggleLockExpandedPricex: () -> Unit, currentClient: B_ClientsDataBase?,
+    onClickToDisplayeConexionWifi: () -> Unit,
+    scrollTiger: Int,
+    onToggleLockHost: () -> Unit,
+    onToggleLockExpandedPricex: () -> Unit,
+    currentClient: B_ClientsDataBase?,
     viewModelInitApp: ViewModelInitApp,
-    targetCategoryId: MutableState<Long?> = mutableStateOf(null), lockHost: Boolean
+    targetCategoryId: MutableState<Long?> = mutableStateOf(null),
+    lockHost: Boolean
 ) {
     var gridColumns by remember { mutableStateOf(2) }
     var showFilter by remember { mutableStateOf(false) }
@@ -63,6 +68,7 @@ fun FragmentStartupScreen(
     val gridState = rememberLazyStaggeredGridState()
     val uiState by viewModel.uiState.collectAsState()
     MainUi(
+        vendeurActuelleId=vendeurActuelleId,
         uiState = uiState,
         gridColumns = gridColumns,
         filterText = filterText,
@@ -92,6 +98,7 @@ fun FragmentStartupScreen(
 
 @Composable
 fun MainUi(
+    vendeurActuelleId: Long,
     uiState: UiState,
     gridColumns: Int,
     filterText: String,
@@ -112,7 +119,8 @@ fun MainUi(
     onToggleLockExpandedPricex: () -> Unit,
     currentClient: B_ClientsDataBase?,
     viewModelInitApp: ViewModelInitApp,
-    targetCategoryId: MutableState<Long?> = mutableStateOf(null), lockHost: Boolean
+    targetCategoryId: MutableState<Long?> = mutableStateOf(null),
+    lockHost: Boolean
 ) {
     val scope = rememberCoroutineScope()
     val tag = if (uiState.productDisplayController.isHostPhone) "📱 ServerScreen" else "📱 ClientScreen"
