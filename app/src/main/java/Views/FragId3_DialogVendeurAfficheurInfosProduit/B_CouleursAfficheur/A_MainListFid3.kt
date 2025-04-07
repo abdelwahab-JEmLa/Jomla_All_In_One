@@ -51,24 +51,24 @@ fun A_MainListFragId3(
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
 ) {
     var colorsListToDisplay by remember { mutableStateOf(emptyList<ColorsArticlesTabelle>()) }
+    var compose_1_5_VendeurId by remember { mutableStateOf(0L) }
+    var compose_1_4_PeriodeVentVid by remember { mutableStateOf(0L) }
+    var compose_1_3_BonAchatVid by remember { mutableStateOf(0L) }
+    var compose_1_2_ProduitAcheteOperationVid by remember { mutableStateOf(0L) }
 
 
     val deviceModelNom = Build.MODEL
     val currentClientId = currentClient?.id ?: 1
 
     val vendeurRepo = koinInject<_1_5_Vendeur_Repository>()
-    var compose_1_5_VendeurId by remember { mutableStateOf(0L) }
-    
+
     val _1_4_PeriodeVent_Repository = koinInject<_1_4_PeriodeVent_Repository>()
-    var compose_1_4_PeriodeVentVid by remember { mutableStateOf(0L) }
 
     val _1_3_BonAchat_Repository = koinInject<_1_3_BonAchat_Repository>()
     val currenteDateInString = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-    var compose_1_3_BonAchatVid by remember { mutableStateOf(0L) }
 
     val _1_2_ProduitAcheteOperation_Repository = koinInject<_1_2_ProduitAcheteOperation_Repository>()
     val produitActuelle = currentSale.idArticle
-    var compose_1_2_ProduitAcheteOperationVid by remember { mutableStateOf(0L) }
 
     LaunchedEffect(Unit) {
         // Get or create vendor
@@ -97,7 +97,6 @@ fun A_MainListFragId3(
                     startDateInString = currenteDateInString
                 )
             )
-
             newVid
         }
 
@@ -118,7 +117,7 @@ fun A_MainListFragId3(
             )
             newVid
         }
-        
+
         val existing_1_2_ProduitAcheteOperation = _1_2_ProduitAcheteOperation_Repository.modelDatasSnapList.find {
             it.produitAcheterID == produitActuelle
                     && it.parent_1_3_BonAchat == compose_1_3_BonAchatVid
@@ -186,9 +185,6 @@ fun A_MainListFragId3(
                                 currentClient = currentClient,
                                 colorsArticlesTabelleModele = colorsArticlesTabelleModele,
                                 compose_1_4_PeriodeVentVid=compose_1_4_PeriodeVentVid,
-                                compose_1_3_BonAchatVid=compose_1_3_BonAchatVid,
-                                compose_1_2_ProduitAcheteOperationVid=compose_1_2_ProduitAcheteOperationVid,
-                                compose_1_5_VendeurId=compose_1_5_VendeurId,
                             )
                         }
                     }
