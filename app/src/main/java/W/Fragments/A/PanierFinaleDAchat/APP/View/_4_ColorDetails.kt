@@ -1,5 +1,5 @@
 package W.Fragments.A.PanierFinaleDAchat.APP.View
-
+   /*
 import Z_CodePartageEntreApps.Model._1_1_CouleurAcheteOperation
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -40,3 +40,4 @@ fun _4_ColorDetails(colorDetails: List<_1_1_CouleurAcheteOperation>) {
         }
     }
 }
+             */

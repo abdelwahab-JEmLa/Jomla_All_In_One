@@ -31,7 +31,6 @@ data class UiState_APP2_ID_1(
     var _1_4_PeriodeVentList: SnapshotStateList<_1_4_PeriodeVent> = mutableStateListOf(),
     var _1_5_VendeurList: SnapshotStateList<_1_5_Vendeur> = mutableStateListOf(),
 
-    var vendeurActuelleId: Long =1,
 
     var isFilteringActive: Boolean = false,
     var errorMessage: String? = null,
@@ -79,10 +78,10 @@ class ViewModelFragment_APP2_ID_1(
         }
     }
 
-    fun upsert(newData: _1_1_CouleurAcheteOperation): Unit {
+    fun upsert_1_1_CouleurAcheteOperation(newData: _1_1_CouleurAcheteOperation): Unit {
         // Check if an item with the same parent references already exists
         val existingItem = _uiStateFlow.value._1_1_CouleurAcheteOperationList.find {
-            it.vendeur_ParentVID == newData.vendeur_ParentVID &&
+                    it.vendeur_ParentVID == newData.vendeur_ParentVID &&
                     it.periodeVentDateInString_ParentVID == newData.periodeVentDateInString_ParentVID &&
                     it.produitId_ParentVID == newData.produitId_ParentVID &&
                     it.couleurId_ParentVID == newData.couleurId_ParentVID &&
@@ -97,14 +96,6 @@ class ViewModelFragment_APP2_ID_1(
         }
     }
 
-    fun addData_1_2_ProduitAcheteOperation_Repository(newData: _1_2_ProduitAcheteOperation): Unit {
-        val maxVid_1_2_ProduitAcheteOperationList =
-            _uiStateFlow.value._1_3_BonAchatList.maxOfOrNull { it.vid } ?: 0
-
-        newData.parent_1_3_BonAchat= maxVid_1_2_ProduitAcheteOperationList
-
-        _1_2_ProduitAcheteOperation_Repository.addData(newData)
-    }
 
     fun addData_1_3_BonAchat_Repository(newData: _1_3_BonAchat): Unit {
         _1_3_BonAchat_Repository.addData(newData)
@@ -157,7 +148,6 @@ class ViewModelFragment_APP2_ID_1(
         repoImpl4?.cleanup()
     }
 
-    fun updateUnSeulData_1_1_CouleurAcheteOperation_Repository(composMainKeyModel: _1_1_CouleurAcheteOperation) {
-              _1_1_CouleurAcheteOperation_Repository.updateUnSeulData(composMainKeyModel)
-    }
+
+
 }

@@ -13,7 +13,8 @@ interface _1_2_ProduitAcheteOperation_Repository {
 
     suspend fun ensureDataIsInitialized()
 
-    fun addData(data: _1_2_ProduitAcheteOperation)
+    suspend fun add(produitAcheteOperation: _1_2_ProduitAcheteOperation): Long
+
     fun updateUnSeulData(data: _1_2_ProduitAcheteOperation)
     suspend fun updateMultiDatas(datas: SnapshotStateList<_1_2_ProduitAcheteOperation>)
     fun deleteUnSeulData(data: _1_2_ProduitAcheteOperation)

@@ -111,11 +111,6 @@ fun AppNavHost(
     val bottomNavHeight = 80.dp
     val bottomPadding = 8.dp // Additional padding for the navigation bar
 
-    LaunchedEffect(Unit) {
-        uiStateviewModelFragment_APP2_ID_1.vendeurActuelleId=
-            uiStateviewModelFragment_APP2_ID_1
-                ._1_5_VendeurList.find { it.deviceModelNom==android.os.Build.MODEL }?.vid!!
-    }
 
     Surface(
         modifier = modifier
@@ -167,14 +162,17 @@ fun AppNavHost(
                                     else -> {0}
                                 }
 
-
                                 val periodeVentDateInString_ParentVID =  uiStateviewModelFragment_APP2_ID_1
                                     ._1_4_PeriodeVentList.maxOfOrNull { it.vid } ?: 0
 
                                 viewmodelfragmentApp2Id1.
-                                upsert(
+                                upsert_1_1_CouleurAcheteOperation(
                                     _1_1_CouleurAcheteOperation(
-                                        vendeur_ParentVID=uiStateviewModelFragment_APP2_ID_1.vendeurActuelleId,
+                                        vendeur_ParentVID= uiStateviewModelFragment_APP2_ID_1
+                                            ._1_5_VendeurList.find {
+                                                it.deviceModelNom == android.os.Build.MODEL
+                                            }?.vid !!
+                                        ,
                                         periodeVentDateInString_ParentVID= periodeVentDateInString_ParentVID,
                                         produitId_ParentVID= articleDataBaseOn.idArticle.toLong(),
                                         couleurId_ParentVID = couleurId,

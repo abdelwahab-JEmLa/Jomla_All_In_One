@@ -41,7 +41,8 @@ fun ColorSelectionDialog(
     currentClient: B_ClientsDataBase?,
     indexColoreAcheter: Int,
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
-    color: ColorsArticlesTabelle, composMainKeyModel: _1_1_CouleurAcheteOperation
+    color: ColorsArticlesTabelle,
+    composMainKeyModel: _1_1_CouleurAcheteOperation
 ) {
     Dialog(onDismissRequest = onDismiss) {
         Card(
@@ -90,7 +91,8 @@ fun ColorSelectionDialog(
                     currentClient = currentClient,
                     indexColoreAcheter = indexColoreAcheter,
                     colorsArticlesTabelleModele = colorsArticlesTabelleModele,
-                    color = color, composMainKeyModel = composMainKeyModel
+                    color = color,
+                    composMainKeyModel = composMainKeyModel
                 )
             }
         }
@@ -153,17 +155,14 @@ private fun QuantityGrid(
                 isSelected = quantity == currentQuantity,
                 onClick = {
                     onQuantitySelected(quantity)
-
                 },
-                composMainKeyModel=composMainKeyModel.apply {
-                    totaleQuantity=quantity
+                composMainKeyModel = composMainKeyModel
+                    .apply {
+                    totaleQuantity = quantity
                 },
                 currentSale = currentSale,
                 viewModelInitApp = viewModelInitApp,
-                currentClient=currentClient,
-                color=color ,
-
-
+                currentClient = currentClient,
             )
         }
     }

@@ -11,9 +11,9 @@ import androidx.room.Query
 interface _1_2_ProduitAcheteOperationDao {
     @Query("SELECT * FROM _1_2_ProduitAcheteOperation")
     suspend fun getAll(): MutableList<_1_2_ProduitAcheteOperation>
-    // In _1_2_ProduitAcheteOperationDao.kt
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun add(_1_2_ProduitAcheteOperation: _1_2_ProduitAcheteOperation): Long
+    suspend fun add(produitAcheteOperation: _1_2_ProduitAcheteOperation): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(item: _1_2_ProduitAcheteOperation)

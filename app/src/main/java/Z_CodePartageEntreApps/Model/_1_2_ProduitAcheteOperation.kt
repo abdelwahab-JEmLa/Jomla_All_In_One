@@ -3,7 +3,7 @@ package Z_CodePartageEntreApps.Model
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "_1_2_ProduitAcheteOperation")
+@Entity
 data class _1_2_ProduitAcheteOperation(
     @PrimaryKey(autoGenerate = true)
     var vid: Long = 0L,

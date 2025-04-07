@@ -1,7 +1,6 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur
 
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem.B_CouleurAfficheur
-import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
@@ -10,6 +9,7 @@ import Z_CodePartageEntreApps.Model._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur_Repository
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
+import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,10 +29,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.example.clientjetpack.ViewModel.HeadViewModel
+import org.koin.compose.koinInject
 
 @Composable
 fun A_MainListFragId3(
-    appDatabase: AppDatabase,
     viewModel: HeadViewModel,
     currentSale: SoldArticlesTabelle,
     stats: ArticlesBasesStatsTable,
@@ -41,20 +41,11 @@ fun A_MainListFragId3(
     viewModelInitApp: ViewModelInitApp,
     currentClient: B_ClientsDataBase?,
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
-    _1_5_Vendeur_Repository: _1_5_Vendeur_Repository,
-    _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository
 ) {
-    var composMainKeyModel by remember { mutableStateOf(_1_1_CouleurAcheteOperation(
-        vendeur_ParentVID= _1_5_Vendeur_Repository.getIdParNomModel(android.os.Build.MODEL) ,
-        periodeVentDateInString_ParentVID=_1_4_PeriodeVent_Repository.modelDatasSnapList.last().vid ,
-        produitId_ParentVID=currentSale.idArticle
-    )) }
-
     var colorsListToDisplay by remember { mutableStateOf(emptyList<ColorsArticlesTabelle>()) }
 
     // LaunchedEffect to handle all suspend functions
     LaunchedEffect(key1 = Unit) {
-
         // Process color list
         colorsListToDisplay = listOf(
             stats.idcolor1,
@@ -101,10 +92,12 @@ fun A_MainListFragId3(
                                 .clip(MaterialTheme.shapes.medium)
                         ) {
                             B_CouleurAfficheur(
-                                composMainKeyModel= _1_1_CouleurAcheteOperation(
-                                    vendeur_ParentVID= _1_5_Vendeur_Repository.getIdParNomModel(android.os.Build.MODEL) ,
-                                    periodeVentDateInString_ParentVID=_1_4_PeriodeVent_Repository.modelDatasSnapList.last().vid ,
-                                    produitId_ParentVID=currentSale.idArticle ,
+                                composMainKeyModel = _1_1_CouleurAcheteOperation(
+                                    vendeur_ParentVID = koinInject<_1_5_Vendeur_Repository>()
+                                        .getIdParNomModel(Build.MODEL),
+                                    periodeVentDateInString_ParentVID = koinInject<_1_4_PeriodeVent_Repository>()
+                                        .getByMainVAl(),
+                                    produitId_ParentVID = currentSale.idArticle,
                                     couleurId_ParentVID = color.idColore
                                 ),
                                 modifier = Modifier,
@@ -119,7 +112,6 @@ fun A_MainListFragId3(
                                 viewModelInitApp = viewModelInitApp,
                                 currentClient = currentClient,
                                 colorsArticlesTabelleModele = colorsArticlesTabelleModele,
-                                composMainKeyModel = _
                             )
                         }
                     }

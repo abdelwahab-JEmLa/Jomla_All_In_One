@@ -45,7 +45,6 @@ import org.koin.compose.koinInject
 
 @Composable
 fun FragmentStartupScreen(
-    vendeurActuelleId: Long,
     viewModel: HeadViewModel,
     onToggleNavBar: () -> Unit,
     reloadTrigger: Int,
@@ -68,7 +67,6 @@ fun FragmentStartupScreen(
     val gridState = rememberLazyStaggeredGridState()
     val uiState by viewModel.uiState.collectAsState()
     MainUi(
-        vendeurActuelleId=vendeurActuelleId,
         uiState = uiState,
         gridColumns = gridColumns,
         filterText = filterText,
@@ -98,7 +96,6 @@ fun FragmentStartupScreen(
 
 @Composable
 fun MainUi(
-    vendeurActuelleId: Long,
     uiState: UiState,
     gridColumns: Int,
     filterText: String,

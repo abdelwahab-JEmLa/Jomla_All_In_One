@@ -65,7 +65,7 @@ fun MainItem(
                         modifier = Modifier.padding(vertical = 2.dp)
                     )
 
-                    _4_ColorDetails(_1_1_CouleurAcheteOperation)
+                 //   _4_ColorDetails(_1_1_CouleurAcheteOperation)
                 }
             }
         }

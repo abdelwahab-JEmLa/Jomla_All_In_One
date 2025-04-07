@@ -18,6 +18,7 @@ interface _1_4_PeriodeVent_Repository {
     fun updateUnSeulData(data: _1_4_PeriodeVent)
     suspend fun updateMultiDatas(datas: SnapshotStateList<_1_4_PeriodeVent>)
     fun deleteUnSeulData(data: _1_4_PeriodeVent)
+    fun getByMainVAl(): Long
 
     companion object {
         const val TAG = "_1_4_PeriodeVent"

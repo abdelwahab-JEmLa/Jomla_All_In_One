@@ -4,7 +4,6 @@ import Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.C
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -37,13 +36,6 @@ fun MainList_APP2_ID_2(
         contentPadding = PaddingValues(8.dp)
     ) {
         items(groupedProducts.entries.toList()) { (productId, productsList) ->
-            MainItem_APP2_ID_2(
-                modifier = Modifier.fillMaxWidth(),
-                idproduit = productId,
-
-                uiState=uiState,
-                opetaionsAcceptedListVID= productsList.map { it.vid }
-            )
         }
     }
 }

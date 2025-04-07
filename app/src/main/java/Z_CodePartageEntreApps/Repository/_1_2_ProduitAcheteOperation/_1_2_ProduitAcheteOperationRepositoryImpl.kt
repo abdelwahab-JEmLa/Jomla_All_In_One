@@ -1,8 +1,8 @@
 package Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation
 
+import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Model._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation.Dao._1_2_ProduitAcheteOperationRepositoryLogOperationsExtention
-import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -15,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -48,6 +49,7 @@ class _1_2_ProduitAcheteOperationRepositoryImpl(
             initialize_1_2_ProduitAcheteOperationRepository()
         }
     }
+
     override suspend fun ensureDataIsInitialized() {
         try {
             if (!initialDataLoaded) {
@@ -65,6 +67,35 @@ class _1_2_ProduitAcheteOperationRepositoryImpl(
             Log.e(TAG, "Error ensuring data initialization: ${e.message}")
         }
     }
+
+    // Implementing the required interface method
+    override suspend fun add(produitAcheteOperation: _1_2_ProduitAcheteOperation): Long {
+        return withContext(Dispatchers.IO) {
+            try {
+                val insertedId = appDatabase._1_2_ProduitAcheteOperationDao().add(produitAcheteOperation)
+                val updatedData = produitAcheteOperation.copy(vid = insertedId)
+
+                withContext(Dispatchers.Main) {
+                    modelDatasSnapList.add(updatedData)
+                }
+
+                try {
+                    _1_2_ProduitAcheteOperation_Repository.sonDataBaseRef
+                        .child(insertedId.toString())
+                        .setValue(updatedData)
+                        .await()
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error updating Firebase after add: ${e.message}")
+                }
+
+                insertedId
+            } catch (e: Exception) {
+                Log.e(TAG, "Error in add method: ${e.message}")
+                -1L
+            }
+        }
+    }
+
     override fun updateUnSeulData(data: _1_2_ProduitAcheteOperation) {
         updatesOperations.updateUnSeulData(data, repositoryScope, appDatabase, modelDatasSnapList)
     }
@@ -287,7 +318,7 @@ class _1_2_ProduitAcheteOperationRepositoryImpl(
         updatesOperations.deleteUnSeulData(data, repositoryScope, appDatabase, modelDatasSnapList)
     }
 
-    override fun addData(data: _1_2_ProduitAcheteOperation) {
+    fun addData(data: _1_2_ProduitAcheteOperation) {
         updatesOperations.addData(data, repositoryScope, appDatabase, modelDatasSnapList)
     }
 

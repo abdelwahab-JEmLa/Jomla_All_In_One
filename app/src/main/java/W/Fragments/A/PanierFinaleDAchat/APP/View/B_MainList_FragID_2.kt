@@ -1,22 +1,14 @@
 package W.Fragments.A.PanierFinaleDAchat.APP.View
 
 import W.Fragments.A.PanierFinaleDAchat.APP.ViewModel.UiState_APP2_ID_1
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 
 @Composable
 fun B_MainList_FragID_2(
     modifier: Modifier = Modifier,
     uiState: UiState_APP2_ID_1
-) {
+) {             /*
     val filteredBonAchatList =
         uiState._1_3_BonAchatList.filter { it.vid == uiState.bonAchetOnCourseMntID }
 
@@ -57,5 +49,5 @@ fun B_MainList_FragID_2(
                 )
             }
         }
-    }
+ */
 }

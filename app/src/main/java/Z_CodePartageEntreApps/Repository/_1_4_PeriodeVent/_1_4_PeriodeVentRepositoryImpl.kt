@@ -65,6 +65,11 @@ class _1_4_PeriodeVentRepositoryImpl(
     }
 
     override fun getIdParMainIDs() {
+        TODO("Not yet implemented")
+    }
+
+    override fun getByMainVAl(): Long {
+        return   modelDatasSnapList.last().vid
     }
 
     override fun updateUnSeulData(data: _1_4_PeriodeVent) {

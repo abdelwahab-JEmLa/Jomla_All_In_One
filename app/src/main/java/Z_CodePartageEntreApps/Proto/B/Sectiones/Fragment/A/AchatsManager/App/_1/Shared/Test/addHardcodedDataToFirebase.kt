@@ -1,18 +1,9 @@
 package Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App._1.Shared.Test
 
-import Z_CodePartageEntreApps.Model._1_1_CouleurAcheteOperation
-import Z_CodePartageEntreApps.Model._1_2_ProduitAcheteOperation
-import Z_CodePartageEntreApps.Model._1_3_BonAchat
-import Z_CodePartageEntreApps.Model._1_4_PeriodeVent
-import Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.B.DataBaseManager.App.A.CategoryReorderAndSelection.Package.Windows.TAG
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat_Repository
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
-import android.util.Log
-import androidx.compose.runtime.mutableStateListOf
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 suspend fun addHardcodedDataToFirebase(
     _1_1_CouleurAcheteOperation_Repository: _1_1_CouleurAcheteOperation_Repository,
@@ -20,7 +11,7 @@ suspend fun addHardcodedDataToFirebase(
     _1_3_BonAchat_Repository: _1_3_BonAchat_Repository,
     _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository,
     active: Boolean = false
-) {
+) {     /*
     try {
         // Create _1_4_PeriodeVent test data first (top-level entity)
         val periodeVentTestData = listOf(
@@ -311,5 +302,5 @@ suspend fun addHardcodedDataToFirebase(
     } catch (e: Exception) {
     } finally {
 
-    }
+ */
 }
