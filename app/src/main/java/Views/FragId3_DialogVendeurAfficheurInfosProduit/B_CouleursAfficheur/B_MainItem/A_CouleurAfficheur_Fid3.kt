@@ -89,6 +89,7 @@ fun B_CouleurAfficheur(
             _1_1_CouleurAcheteOperation_Repository.addData(
                 _1_1_CouleurAcheteOperation(
                     vid = newVid,
+                    couleurId_ParentVID = couleurActuelleId,
                     parentProduitAchateOperationVID = parentCompose_1_2_ProduitAcheteOperationVid
                     )
             )
