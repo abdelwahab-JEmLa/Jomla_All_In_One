@@ -1,0 +1,145 @@
+package Z_CodePartageEntreApps.Repository._0_0_HeadOfRepository
+
+import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepository.Extension.Log._0_0_HeadOfRepositoryLogOperationsExtension
+import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
+import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
+import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat_Repository
+import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
+import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur_Repository
+import _0_0_HeadOfRepository
+import android.util.Log
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
+class _0_0_HeadOfRepositorys_RepositoryImpl(
+    private val appDatabase: AppDatabase,
+    private val _1_1_Repository: _1_1_CouleurAcheteOperation_Repository,
+    private val _1_2_Repository: _1_2_ProduitAcheteOperation_Repository,
+    private val _1_3_Repository: _1_3_BonAchat_Repository,
+    private val _1_4_Repository: _1_4_PeriodeVent_Repository,
+    private val _1_5_Repository: _1_5_Vendeur_Repository
+) : _0_0_HeadOfRepositorys_Repository {
+    private val TAG = _0_0_HeadOfRepositorys_Repository.TAG
+
+    override var modelDatasSnapList: SnapshotStateList<_0_0_HeadOfRepository> = mutableStateListOf()
+    override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
+
+    private val repositoryScope = CoroutineScope(Dispatchers.IO)
+    private var initialDataLoaded = false
+    private var lastUpdateTimestamp: Long = 0L
+    private var isListenerActive = false
+    private var isFlowListenerActive = false
+
+    private val logOperations = _0_0_HeadOfRepositoryLogOperationsExtension(this)
+
+    init {
+        repositoryScope.launch {
+            initialize_0_0_HeadOfRepositoryRepository()
+            startProgressTracking()
+        }
+    }
+
+    override suspend fun ensureDataIsInitialized() {
+        try {
+            if (!initialDataLoaded) {
+                withContext(Dispatchers.IO) {
+                    // Wait until data is loaded
+                    while (!initialDataLoaded) {
+                        delay(100)
+                        if (progressRepo.value >= 1.0f) {
+                            initialDataLoaded = true
+                        }
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error ensuring data initialization: ${e.message}")
+        }
+    }
+
+    private suspend fun initialize_0_0_HeadOfRepositoryRepository() {
+        try {
+            // Initialize all child repositories
+            _1_1_Repository.ensureDataIsInitialized()
+            _1_2_Repository.ensureDataIsInitialized()
+            _1_3_Repository.ensureDataIsInitialized()
+            _1_4_Repository.ensureDataIsInitialized()
+            _1_5_Repository.ensureDataIsInitialized()
+
+            collectRepositorys()
+
+            if (TAG.isNotEmpty()) {
+                log()
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error initializing repository: ${e.message}")
+        }
+    }
+
+    private suspend fun collectRepositorys() {
+        try {
+            progressRepo.value = 0.2f
+            withContext(Dispatchers.IO) {
+                // Create a repository head with all repositories
+                val headRepository = _0_0_HeadOfRepository(
+                    _1_1_CouleurAcheteOperation_Repository = _1_1_Repository,
+                    _1_2_ProduitAcheteOperation_Repository = _1_2_Repository,
+                    _1_3_BonAchat_Repository = _1_3_Repository,
+                    _1_4_PeriodeVent_Repository = _1_4_Repository,
+                    _1_5_Vendeur_Repository = _1_5_Repository
+                )
+
+                // Add to the list
+                modelDatasSnapList.add(headRepository)
+                progressRepo.value = 1.0f
+                initialDataLoaded = true
+                lastUpdateTimestamp = System.currentTimeMillis()
+            }
+        } catch (e: Exception) {
+            progressRepo.value = 0f
+            Log.e(TAG, "Error collecting repositories: ${e.message}")
+        }
+    }
+
+    private suspend fun startProgressTracking() {
+        isFlowListenerActive = true
+        try {
+            // Combine all progress flows
+            combine(
+                _1_1_Repository.progressRepo,
+                _1_2_Repository.progressRepo,
+                _1_3_Repository.progressRepo,
+                _1_4_Repository.progressRepo,
+                _1_5_Repository.progressRepo
+            ) { progress1, progress2, progress3, progress4, progress5 ->
+                // Calculate the average progress
+                (progress1 + progress2 + progress3 + progress4 + progress5) / 5f
+            }.collect { combinedProgress ->
+                progressRepo.value = combinedProgress
+                log()
+            }
+        } catch (e: Exception) {
+            isFlowListenerActive = false
+            Log.e(TAG, "Error tracking progress: ${e.message}")
+        }
+    }
+
+    fun log() {
+        logOperations.log(
+            dataCount = modelDatasSnapList.size,
+            initialDataLoaded = initialDataLoaded,
+            progressValue = progressRepo.value,
+            lastUpdateTimestamp = lastUpdateTimestamp,
+            isListenerActive = isListenerActive,
+            isFlowListenerActive = isFlowListenerActive
+        )
+    }
+}
