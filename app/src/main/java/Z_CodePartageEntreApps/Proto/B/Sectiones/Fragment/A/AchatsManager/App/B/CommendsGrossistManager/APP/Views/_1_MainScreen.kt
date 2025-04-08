@@ -21,8 +21,6 @@ fun MainScreen_APP2_ID_2(
     _0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository = koinInject(),
 ) {
     val progressValue by _0_0_HeadOfRepositorys_Repository.progressRepo.collectAsState()
-    val isLoading = progressValue < 1.0f
-    // Collect the UI state from the ViewModel
     val _0_HeadOfRepositorys_Repository_Model = _0_0_HeadOfRepositorys_Repository
         .repositorys_Model
     val composeKeyVID = _0_HeadOfRepositorys_Repository_Model
@@ -38,7 +36,7 @@ fun MainScreen_APP2_ID_2(
             modifier = Modifier.weight(1f),
         ) {
             // Show loading indicator while data is being loaded
-            if (isLoading ) {     
+            if (progressValue < 1.0f) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
