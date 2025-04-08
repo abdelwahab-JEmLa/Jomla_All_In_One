@@ -1,25 +1,34 @@
 package Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.Views
 
-import Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.ViewModel.UiState_APP2_ID_2
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
 fun MainList_APP2_ID_2(
+    composeKeyVID: MutableStateFlow<Long>,
     modifier: Modifier = Modifier,
-    uiState: UiState_APP2_ID_2
-) {       /*
-    val filteredBonAchatList =
-        uiState._1_3_BonAchatList.filter { bonAchat ->
-            bonAchat.parent_1_4_PeriodeVentVid == uiState._1_4_PeriodeVentList.lastOrNull()!!.vid
-        }
+    _0_HeadOfRepositorys_Repository_Model: _0_0_HeadOfRepositorys_Model,
+) {
+    // Collect the current value of the MutableStateFlow
+    val currentVID by composeKeyVID.collectAsState()
 
     // Group products by product ID
-    val groupedProducts = uiState._1_2_ProduitAcheteOperationList
-        .filter { produit ->
-            filteredBonAchatList.any { bonAchat -> bonAchat.vid == produit.parent_1_3_BonAchat }
+    val produitBonAchatIDs = _0_HeadOfRepositorys_Repository_Model
+        ._1_2_ProduitAcheteOperation_Repository
+        .modelDatasSnapList
+        .filter { produitOpe ->
+            produitOpe.parent_1_3_BonAchat == currentVID
         }
-        .groupBy { it.produitAcheterID }
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
@@ -28,7 +37,11 @@ fun MainList_APP2_ID_2(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(8.dp)
     ) {
-        items(groupedProducts.entries.toList()) { (productId, productsList) ->
+        items(produitBonAchatIDs.size) { index ->
+            MainItem_APP2_ID_2(
+                composeKeyVID = produitBonAchatIDs[index].vid,
+                _0_HeadOfRepositorys_Repository_Model = _0_HeadOfRepositorys_Repository_Model
+            )
         }
-    }       */
+    }
 }

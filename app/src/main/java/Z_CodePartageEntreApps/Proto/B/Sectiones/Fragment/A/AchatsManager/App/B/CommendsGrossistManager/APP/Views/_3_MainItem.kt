@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.Views
- /*
-import Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.ViewModel.UiState_APP2_ID_2
+
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,10 +18,10 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun MainItem_APP2_ID_2(
     modifier: Modifier = Modifier,
-    uiState: UiState_APP2_ID_2,
-    idproduit: Long,
-    opetaionsAcceptedListVID: List<Long>,
+    composeKeyVID: Long,
+    _0_HeadOfRepositorys_Repository_Model: _0_0_HeadOfRepositorys_Model,
 ) {
+
     Card(
         modifier = modifier
             .padding(vertical = 2.dp, horizontal = 4.dp)
@@ -45,43 +45,29 @@ fun MainItem_APP2_ID_2(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "idproduit ($idproduit)",
+                    text = "idproduit (${composeKeyVID})",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.weight(1f)
                 )
             }
             // Group products by product ID
-            val groupedCouleurs = uiState._1_1_CouleurAcheteOperationList
-                .filter { couleur ->
-                    opetaionsAcceptedListVID.any { it == couleur.parent_1_2_ProduitAcheteOperationID }
-                }
-                .groupBy { it.couleurId }
+            val couleursAcheteOperationsVIDs =
+                _0_HeadOfRepositorys_Repository_Model._1_1_CouleurAcheteOperation_Repository
+                    .modelDatasSnapList
+                    .filter { it.parentProduitAchateOperationVID == composeKeyVID }
+                    .map { it.vid }
 
             // Only render colors section if there are colors to display
-            if (groupedCouleurs.isNotEmpty()) {
+            if (couleursAcheteOperationsVIDs.isNotEmpty()) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 4.dp)
                 ) {
-                    groupedCouleurs.forEach{(couleurtId, couleurstList) ->
+                    couleursAcheteOperationsVIDs.forEach { couleurVId ->
                         ColorDetails_APP2_ID_2(
-                            couleurtId=couleurtId,
-                            totaleQuantityDesCouleurs=couleurstList.sumOf { it.totaleQuantity },
-                            clientsAchteurDeCeProduit = uiState._1_3_BonAchatList
-                                .filter { bonAchat ->
-                                    opetaionsAcceptedListVID.any { vidOp ->
-                                        uiState._1_1_CouleurAcheteOperationList
-                                            .filter { couleur -> couleur.couleurId == couleurtId }
-                                            .any { couleur -> couleur.parent_1_2_ProduitAcheteOperationID == vidOp }
-                                    } &&
-                                            uiState._1_2_ProduitAcheteOperationList
-                                                .filter { it.vid in opetaionsAcceptedListVID }
-                                                .any { it.parent_1_3_BonAchat == bonAchat.vid }
-                                }
-                                .map { it.clientAchteurID }
-                                .distinct(),
+                            composeKeyVID = couleurVId,
                         )
                     }
                 }
@@ -89,4 +75,3 @@ fun MainItem_APP2_ID_2(
         }
     }
 }
-       */

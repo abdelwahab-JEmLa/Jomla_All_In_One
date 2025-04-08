@@ -8,14 +8,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun ColorDetails_APP2_ID_2(
-    couleurtId: Long,
-    totaleQuantityDesCouleurs: Int,
-    clientsAchteurDeCeProduit: List<Long> = emptyList(),
+    composeKeyVID: Long,
 ) {
     Row(
         modifier = Modifier
@@ -24,28 +21,10 @@ fun ColorDetails_APP2_ID_2(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "couleurId (${couleurtId})",
+            text = "couleurId (${composeKeyVID})",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.weight(1f)
         )
-
-        Text(
-            text = "$totaleQuantityDesCouleurs",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.End
-        )
-
-        // Display client count if available
-        if (clientsAchteurDeCeProduit.isNotEmpty()) {
-            Text(
-                text = "(${clientsAchteurDeCeProduit.size} clients)",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.End,
-                modifier = Modifier.padding(start = 4.dp)
-            )
-        }
     }
 }
