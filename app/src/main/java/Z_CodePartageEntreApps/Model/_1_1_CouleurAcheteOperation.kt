@@ -22,7 +22,6 @@ data class _1_1_CouleurAcheteOperation(
     ) {
     enum class EtateActuellementEst {
         AFFICHE_MAIS_PAS_CONFIRME,
-        QUANTITY_CHOSI_MAIS_PAS_DE_CONFIRMATION_PRODUIT,
         SUPPRIME_AU_PREMIER_PICK,
         SUPP_AU_PANIER_FINALE
     }
