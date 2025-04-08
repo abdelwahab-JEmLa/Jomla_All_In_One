@@ -109,12 +109,14 @@ fun MainUi(
     val isLoading = progress1 < 1.0f || progress2 < 1.0f || progress3 < 1.0f ||
             progress4 < 1.0f || progress5 < 1.0f
 
-    var parentCompose_1_5_VendeurId by remember { mutableLongStateOf(0) }
-    var parentCompose_1_4_PeriodeVentVid by remember { mutableLongStateOf(0) }
-    var parentCompose_1_3_BonAchatVid by remember { mutableLongStateOf(0) }
-    var parentCompose_1_2_ProduitAcheteOperationVid by remember { mutableLongStateOf(0) }
+    var parentCompose_1_5_VendeurId by remember { mutableLongStateOf(0L) }
+    var parentCompose_1_4_PeriodeVentVid by remember { mutableLongStateOf(0L) }
+    var parentCompose_1_3_BonAchatVid by remember { mutableLongStateOf(0L) }
+    var parentCompose_1_2_ProduitAcheteOperationVid by remember { mutableLongStateOf(0L) }
 
-    LaunchedEffect(Unit) {
+// Use key1 = currentSale.idArticle to ensure this runs when the current sale changes
+    LaunchedEffect(key1 = currentSale.idArticle) {
+        // Initialize all IDs in sequence to ensure proper dependency chain
 
         val deviceModelNom = Build.MODEL
         val existingVendor = viewModelInitApp._1_5_Vendeur_Repository
@@ -165,7 +167,7 @@ fun MainUi(
             viewModelInitApp._1_3_BonAchat_Repository.addData(
                 _1_3_BonAchat(
                     vid = newVid,
-                    clientAcheteurID = currentClientId ,
+                    clientAcheteurID = currentClientId,
                     parent_1_4_PeriodeVentVid=parentCompose_1_4_PeriodeVentVid
                 )
             )
@@ -191,6 +193,8 @@ fun MainUi(
             )
             newVid
         }
+
+        // Add debug log to verify the value is correctly set
     }
 
     var showConfirmDialog by remember { mutableStateOf(false) }
@@ -244,6 +248,9 @@ fun MainUi(
                             }
 
                             item {
+                                // Add this debug log before passing the value
+                                android.util.Log.d("DEBUG_VID", "Passing to A_MainListFragId3: $parentCompose_1_2_ProduitAcheteOperationVid")
+
                                 A_MainListFragId3(
                                     currentSale = currentSale,
                                     stats = stats,
@@ -253,7 +260,7 @@ fun MainUi(
                                     viewModelInitApp = viewModelInitApp,
                                     currentClient = currentClient,
                                     colorsArticlesTabelleModele = colorsArticlesTabelleModele,
-                                    parentCompose_1_2_ProduitAcheteOperationVid=parentCompose_1_2_ProduitAcheteOperationVid,
+                                    parentCompose_1_2_ProduitAcheteOperationVid = parentCompose_1_2_ProduitAcheteOperationVid,
                                 )
                             }
 

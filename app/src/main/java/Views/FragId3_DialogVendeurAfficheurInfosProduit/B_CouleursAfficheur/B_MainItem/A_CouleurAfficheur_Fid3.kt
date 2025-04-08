@@ -67,14 +67,18 @@ fun B_CouleurAfficheur(
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
     parentCompose_1_2_ProduitAcheteOperationVid: Long,
 ) {
+
     var compose_1_1_CouleurAcheteOperationVid by remember { mutableLongStateOf(0L) }
-
-    val _1_1_CouleurAcheteOperation_Repository =
-        koinInject<_1_1_CouleurAcheteOperation_Repository>()
+    val _1_1_CouleurAcheteOperation_Repository = koinInject<_1_1_CouleurAcheteOperation_Repository>()
     val couleurActuelleId = color.idColore
-    
 
-    LaunchedEffect(Unit) {
+    // Make LaunchedEffect depend on parentCompose_1_2_ProduitAcheteOperationVid
+    LaunchedEffect(key1 = Unit, key2 = parentCompose_1_2_ProduitAcheteOperationVid) {
+        // Skip if parentCompose_1_2_ProduitAcheteOperationVid is not set yet
+        if (parentCompose_1_2_ProduitAcheteOperationVid <= 0) {
+            return@LaunchedEffect
+        }
+
         val existing_1_1_CouleurAcheteOperation =
             _1_1_CouleurAcheteOperation_Repository.modelDatasSnapList.find {
                 it.couleurId_ParentVID == couleurActuelleId
@@ -91,10 +95,11 @@ fun B_CouleurAfficheur(
                     vid = newVid,
                     couleurId_ParentVID = couleurActuelleId,
                     parentProduitAchateOperationVID = parentCompose_1_2_ProduitAcheteOperationVid
-                    )
+                )
             )
             newVid
         }
+
     }
 
     var showDialog by remember { mutableStateOf(false) }
