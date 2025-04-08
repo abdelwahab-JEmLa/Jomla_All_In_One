@@ -98,7 +98,7 @@ fun MainUi(
     lockExpandedPrices: Boolean,
     onToggleLockExpandedPricex: () -> Unit,
     currentClient: B_ClientsDataBase?,
-    colorsArticlesTabelleModele: List<ColorsArticlesTabelle>
+    colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
 ) {
     // Check loading status from all repositories
     val progress1 by viewModelInitApp._1_1_CouleurAcheteOperation_Repository.progressRepo.collectAsState()
@@ -107,8 +107,8 @@ fun MainUi(
     val progress4 by viewModelInitApp._1_4_PeriodeVent_Repository.progressRepo.collectAsState()
     val progress5 by viewModelInitApp._1_5_Vendeur_Repository.progressRepo.collectAsState()
 
-    val isLoading = progress1 < 1.0f || progress2 < 1.0f || progress3 < 1.0f ||
-            progress4 < 1.0f || progress5 < 1.0f
+    val isLoading =
+        progress1 < 1.0f || progress2 < 1.0f || progress3 < 1.0f || progress4 < 1.0f || progress5 < 1.0f
 
     var parentCompose_1_5_VendeurId by remember { mutableLongStateOf(0L) }
     var parentCompose_1_4_PeriodeVentVid by remember { mutableLongStateOf(0L) }
@@ -117,80 +117,86 @@ fun MainUi(
 
     LaunchedEffect(key1 = currentSale.idArticle) {
         val deviceModelNom = Build.MODEL
-        val existingVendor = viewModelInitApp._1_5_Vendeur_Repository
-            .modelDatasSnapList.find { it.deviceModelNom == deviceModelNom }
+        val existingVendor =
+            viewModelInitApp._1_5_Vendeur_Repository.modelDatasSnapList.find { it.deviceModelNom == deviceModelNom }
         parentCompose_1_5_VendeurId = if (existingVendor != null) {
             existingVendor.vid
         } else {
-            val newVid = viewModelInitApp._1_5_Vendeur_Repository.modelDatasSnapList.maxOfOrNull { it.vid }?.plus(1) ?: 1
+            val newVid =
+                viewModelInitApp._1_5_Vendeur_Repository.modelDatasSnapList.maxOfOrNull { it.vid }
+                    ?.plus(1) ?: 1
             viewModelInitApp._1_5_Vendeur_Repository.addData(
                 _1_5_Vendeur(
-                    vid = newVid,
-                    deviceModelNom = deviceModelNom
+                    vid = newVid, deviceModelNom = deviceModelNom
                 )
             )
             newVid
         }
 
-        val currenteDateInString = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-        val existing_1_4_PeriodeVent = viewModelInitApp._1_4_PeriodeVent_Repository.modelDatasSnapList
-            .find {
-                it.endDateInString == ""
-            }
+        val currenteDateInString =
+            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+        val existing_1_4_PeriodeVent =
+            viewModelInitApp._1_4_PeriodeVent_Repository.modelDatasSnapList.find {
+                    it.endDateInString == ""
+                }
         parentCompose_1_4_PeriodeVentVid = if (existing_1_4_PeriodeVent != null) {
             existing_1_4_PeriodeVent.vid
         } else {
-            val newVid = viewModelInitApp._1_4_PeriodeVent_Repository
-                .modelDatasSnapList.maxOfOrNull { it.vid }?.plus(1) ?: 1
+            val newVid =
+                viewModelInitApp._1_4_PeriodeVent_Repository.modelDatasSnapList.maxOfOrNull { it.vid }
+                    ?.plus(1) ?: 1
             viewModelInitApp._1_4_PeriodeVent_Repository.addData(
                 _1_4_PeriodeVent(
                     vid = newVid,
                     startDateInString = currenteDateInString,
-                    vendeur_ParentVID=parentCompose_1_5_VendeurId
+                    vendeur_ParentVID = parentCompose_1_5_VendeurId
                 )
             )
             newVid
         }
 
         val currentClientId = currentClient?.id ?: 1
-        val existing_1_3_BonAchat = viewModelInitApp._1_3_BonAchat_Repository.modelDatasSnapList.find {
-            it.clientAcheteurID == currentClientId
-                    && it.parent_1_4_PeriodeVentVid == parentCompose_1_4_PeriodeVentVid
-        }
+        val existing_1_3_BonAchat =
+            viewModelInitApp._1_3_BonAchat_Repository.modelDatasSnapList.find {
+                it.clientAcheteurID == currentClientId && it.parent_1_4_PeriodeVentVid == parentCompose_1_4_PeriodeVentVid
+            }
         parentCompose_1_3_BonAchatVid = if (existing_1_3_BonAchat != null) {
             existing_1_3_BonAchat.vid
         } else {
-            val newVid = viewModelInitApp._1_3_BonAchat_Repository
-                .modelDatasSnapList.maxOfOrNull { it.vid }?.plus(1) ?: 1
+            val newVid =
+                viewModelInitApp._1_3_BonAchat_Repository.modelDatasSnapList.maxOfOrNull { it.vid }
+                    ?.plus(1) ?: 1
             viewModelInitApp._1_3_BonAchat_Repository.addData(
                 _1_3_BonAchat(
                     vid = newVid,
                     clientAcheteurID = currentClientId,
-                    parent_1_4_PeriodeVentVid=parentCompose_1_4_PeriodeVentVid
+                    parent_1_4_PeriodeVentVid = parentCompose_1_4_PeriodeVentVid
                 )
             )
             newVid
         }
 
         val produitActuelle = currentSale.idArticle
-        val existing_1_2_ProduitAcheteOperation = viewModelInitApp._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList.find {
-            it.produitAcheterID == produitActuelle
-                    && it.parent_1_3_BonAchat == parentCompose_1_3_BonAchatVid
-        }
-        parentCompose_1_2_ProduitAcheteOperationVid = if (existing_1_2_ProduitAcheteOperation != null) {
-            existing_1_2_ProduitAcheteOperation.vid
-        } else {
-            val newVid = viewModelInitApp._1_2_ProduitAcheteOperation_Repository
-                .modelDatasSnapList.maxOfOrNull { it.vid }?.plus(1) ?: 1
-            viewModelInitApp._1_2_ProduitAcheteOperation_Repository.add(
-                _1_2_ProduitAcheteOperation(
-                    vid = newVid,
-                    produitAcheterID = produitActuelle,
-                    parent_1_3_BonAchat = parentCompose_1_3_BonAchatVid
+        val existing_1_2_ProduitAcheteOperation =
+            viewModelInitApp._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList.find {
+                it.produitAcheterID == produitActuelle && it.parent_1_3_BonAchat == parentCompose_1_3_BonAchatVid
+            }
+        parentCompose_1_2_ProduitAcheteOperationVid =
+            if (existing_1_2_ProduitAcheteOperation != null) {
+                existing_1_2_ProduitAcheteOperation.vid
+            } else {
+                val newVid =
+                    viewModelInitApp._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList.maxOfOrNull { it.vid }
+                        ?.plus(1) ?: 1
+                viewModelInitApp._1_2_ProduitAcheteOperation_Repository.add(
+                    _1_2_ProduitAcheteOperation(
+                        vid = newVid,
+                        produitAcheterID = produitActuelle,
+                        parent_1_3_BonAchat = parentCompose_1_3_BonAchatVid
+                    )
                 )
-            )
-            newVid
-        }
+                newVid
+            }
 
         // Add debug log to verify the value is correctly set
     }
@@ -198,24 +204,19 @@ fun MainUi(
     var showConfirmDialog by remember { mutableStateOf(false) }
     showConfirmDialog = ConfirmExitDialog(
         viewModelInitApp,
-        parentCompose_1_2_ProduitAcheteOperationVid=parentCompose_1_2_ProduitAcheteOperationVid,
+        parentCompose_1_2_ProduitAcheteOperationVid = parentCompose_1_2_ProduitAcheteOperationVid,
         showConfirmDialog = showConfirmDialog,
         viewModel = viewModel,
     ) {
         onDismiss()
-        _DisplayeProductInfosToSeller(viewModelInitApp)
-            .onClickOnMain(
-                viewModelInitApp,
-                currentSale,
-                currentClient
+        _DisplayeProductInfosToSeller(viewModelInitApp).onClickOnMain(
+                viewModelInitApp, currentSale, currentClient
             )
     }
 
     Dialog(
-        onDismissRequest = { showConfirmDialog = true },
-        properties = DialogProperties(
-            usePlatformDefaultWidth = false,
-            decorFitsSystemWindows = true
+        onDismissRequest = { showConfirmDialog = true }, properties = DialogProperties(
+            usePlatformDefaultWidth = false, decorFitsSystemWindows = true
         )
     ) {
         Surface(
@@ -229,8 +230,7 @@ fun MainUi(
                 // Show loading indicator when data is still loading
                 if (isLoading) {
                     Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
+                        modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
                     ) {
                         CircularProgressIndicator()
                     }
@@ -243,14 +243,16 @@ fun MainUi(
                         articlesBaseStats?.let { stats ->
                             item {
                                 ProductNameSection3(
-                                    stats,
-                                    onToggleLockExpandedPricex
+                                    stats, onToggleLockExpandedPricex
                                 )
                             }
 
                             item {
                                 // Add this debug log before passing the value
-                                android.util.Log.d("DEBUG_VID", "Passing to A_MainListFragId3: $parentCompose_1_2_ProduitAcheteOperationVid")
+                                android.util.Log.d(
+                                    "DEBUG_VID",
+                                    "Passing to A_MainListFragId3: $parentCompose_1_2_ProduitAcheteOperationVid"
+                                )
 
                                 A_MainListFragId3(
                                     currentSale = currentSale,
@@ -286,20 +288,36 @@ fun MainUi(
                         tonalElevation = 3.dp
                     ) {
                         ActionsButtonRow(
+                            parentCompose_1_2_ProduitAcheteOperationVid = parentCompose_1_2_ProduitAcheteOperationVid,
                             modifier = Modifier.padding(8.dp),
-                            currentSale=currentSale,
-                            currentClient=currentClient,
+                            currentSale = currentSale,
+                            currentClient = currentClient,
                             onConfirm = {
                                 viewModel.saveSaleTransactionToSoldAriclesList()
                                 onDismiss()
                             },
                             onDismiss = onDismiss,
-                            viewModel=viewModel,
-                            viewModelInitApp=viewModelInitApp
+                            viewModel = viewModel,
+                            viewModelInitApp = viewModelInitApp
                         )
                     }
                 }
             }
         }
     }
+
 }
+
+fun updateState(
+    viewModelInitApp: ViewModelInitApp,
+    parentCompose_1_2_ProduitAcheteOperationVid: Long,
+    neveauEtateActuellementEst: _1_2_ProduitAcheteOperation.EtateActuellementEst,
+) {
+    val rep = viewModelInitApp._1_2_ProduitAcheteOperation_Repository
+    rep.modelDatasSnapList.find {
+            it.vid == parentCompose_1_2_ProduitAcheteOperationVid
+        }?.apply {
+            etateActuellementEst = neveauEtateActuellementEst
+        }?.let { rep.updateUnSeulData(it) }
+}
+

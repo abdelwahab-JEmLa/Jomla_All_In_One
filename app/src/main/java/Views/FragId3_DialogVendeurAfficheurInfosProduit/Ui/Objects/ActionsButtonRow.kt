@@ -1,7 +1,9 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit.Ui.Objects
+import Views.FragId3_DialogVendeurAfficheurInfosProduit.updateState
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
-import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
+import Z_CodePartageEntreApps.Model._1_2_ProduitAcheteOperation
+import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Package_3._DisplayeProductInfosToSeller
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -35,7 +37,8 @@ import com.example.clientjetpack.ViewModel.HeadViewModel
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModelInitApp: ViewModelInitApp
+    viewModelInitApp: ViewModelInitApp,
+    parentCompose_1_2_ProduitAcheteOperationVid: Long
 ) {
     Row(
         modifier = modifier
@@ -45,6 +48,12 @@ import com.example.clientjetpack.ViewModel.HeadViewModel
     ) {
         OutlinedButton(
             onClick = {
+                updateState(
+                    viewModelInitApp,
+                    parentCompose_1_2_ProduitAcheteOperationVid,
+                    _1_2_ProduitAcheteOperation.EtateActuellementEst.SUPPRIME_AU_PREMIER_PICK
+                )
+
                 viewModel.deleteSoldArticle(currentSale.vid)
                 onDismiss()
                 _DisplayeProductInfosToSeller(viewModelInitApp)
@@ -69,7 +78,15 @@ import com.example.clientjetpack.ViewModel.HeadViewModel
         }
 
         FilledTonalButton(
-            onClick = onConfirm,
+            onClick = {
+                updateState(
+                    viewModelInitApp,
+                    parentCompose_1_2_ProduitAcheteOperationVid,
+                    _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME
+                )
+
+                onConfirm()
+                      },
             modifier = Modifier.weight(1f)
         ) {
             Icon(
@@ -82,3 +99,5 @@ import com.example.clientjetpack.ViewModel.HeadViewModel
         }
     }
 }
+
+

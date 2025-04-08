@@ -1,4 +1,5 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit.Ui.Objects
+import Views.FragId3_DialogVendeurAfficheurInfosProduit.updateState
 import Z_CodePartageEntreApps.Model._1_2_ProduitAcheteOperation
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Arrangement
@@ -49,15 +50,12 @@ import com.example.clientjetpack.ViewModel.HeadViewModel
             confirmButton = {
                 FilledTonalButton(
                     onClick = {
-                        val rep =
-                            viewModelInitApp._1_2_ProduitAcheteOperation_Repository
-                        rep.modelDatasSnapList
-                            .find {
-                                it.vid == parentCompose_1_2_ProduitAcheteOperationVid }
-                            ?.apply {
-                                etateActuellementEst =
-                                    _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME                            }
-                            ?.let { rep.updateUnSeulData(it) }
+                        updateState(
+                            viewModelInitApp,
+                            parentCompose_1_2_ProduitAcheteOperationVid,
+                            _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME
+                        )
+
 
                         viewModel.saveSaleTransactionToSoldAriclesList()
                         onDismiss()
@@ -69,15 +67,11 @@ import com.example.clientjetpack.ViewModel.HeadViewModel
             dismissButton = {
                 OutlinedButton(
                     onClick = {
-                        val rep =
-                            viewModelInitApp._1_2_ProduitAcheteOperation_Repository
-                        rep.modelDatasSnapList
-                            .find {
-                                it.vid == parentCompose_1_2_ProduitAcheteOperationVid }
-                            ?.apply {
-                                etateActuellementEst =
-                                    _1_2_ProduitAcheteOperation.EtateActuellementEst.SUPPRIME_AU_PREMIER_PICK                            }
-                            ?.let { rep.updateUnSeulData(it) }
+                        updateState(
+                            viewModelInitApp,
+                            parentCompose_1_2_ProduitAcheteOperationVid,
+                            _1_2_ProduitAcheteOperation.EtateActuellementEst.SUPPRIME_AU_PREMIER_PICK
+                        )
 
                         onDismiss()
 
