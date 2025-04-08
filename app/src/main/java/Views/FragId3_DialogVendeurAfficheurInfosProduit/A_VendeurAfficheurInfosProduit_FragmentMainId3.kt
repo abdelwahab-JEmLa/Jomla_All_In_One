@@ -13,6 +13,7 @@ import Z_CodePartageEntreApps.Model._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.Model._1_3_BonAchat
 import Z_CodePartageEntreApps.Model._1_4_PeriodeVent
 import Z_CodePartageEntreApps.Model._1_5_Vendeur
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Package_3._DisplayeProductInfosToSeller
 import android.os.Build
@@ -39,6 +40,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.clientjetpack.Models.UiState
 import com.example.clientjetpack.ViewModel.HeadViewModel
+import org.koin.compose.koinInject
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -62,6 +64,7 @@ fun A_VendeurAfficheurInfosProduit_FragmentMainId3(
     var isDetailsVisible by remember { mutableStateOf(true) }
     LaunchedEffect(Unit) { isDetailsVisible = true }
 
+
     currentSale?.let {
         MainUi(
             viewModelInitApp = viewModelInitApp,
@@ -77,7 +80,7 @@ fun A_VendeurAfficheurInfosProduit_FragmentMainId3(
             lockExpandedPrices = lockExpandedPrices,
             onToggleLockExpandedPricex = onToggleLockExpandedPricex,
             currentClient = currentClient,
-            colorsArticlesTabelleModele = viewModel._uiState.value.colorsArticlesTabelleModel
+            colorsArticlesTabelleModele = viewModel._uiState.value.colorsArticlesTabelleModel,
         )
     }
 }
@@ -98,16 +101,11 @@ fun MainUi(
     onToggleLockExpandedPricex: () -> Unit,
     currentClient: B_ClientsDataBase?,
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
+    _0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository= koinInject()
 ) {
-    // Check loading status from all repositories
-    val progress1 by viewModelInitApp._1_1_CouleurAcheteOperation_Repository.progressRepo.collectAsState()
-    val progress2 by viewModelInitApp._1_2_ProduitAcheteOperation_Repository.progressRepo.collectAsState()
-    val progress3 by viewModelInitApp._1_3_BonAchat_Repository.progressRepo.collectAsState()
-    val progress4 by viewModelInitApp._1_4_PeriodeVent_Repository.progressRepo.collectAsState()
-    val progress5 by viewModelInitApp._1_5_Vendeur_Repository.progressRepo.collectAsState()
-
-    val isLoading =
-        progress1 < 1.0f || progress2 < 1.0f || progress3 < 1.0f || progress4 < 1.0f || progress5 < 1.0f
+    // Fixed access to progress value
+    val progressValue by _0_0_HeadOfRepositorys_Repository.progressRepo.collectAsState()
+    val isLoading = progressValue < 1.0f
 
     var parentCompose_1_5_VendeurId by remember { mutableLongStateOf(0L) }
     var parentCompose_1_4_PeriodeVentVid by remember { mutableLongStateOf(0L) }
@@ -119,92 +117,106 @@ fun MainUi(
     ) {
         val deviceModelNom = Build.MODEL
         val existingVendor =
-            viewModelInitApp._1_5_Vendeur_Repository.modelDatasSnapList.find { it.deviceModelNom == deviceModelNom }
+            _0_0_HeadOfRepositorys_Repository.repositorys_Model.firstOrNull { it._1_5_Vendeur_Repository.modelDatasSnapList.any { vendeur -> vendeur.deviceModelNom == deviceModelNom } }
+                ?.let { repo ->
+                    repo._1_5_Vendeur_Repository.modelDatasSnapList.find { it.deviceModelNom == deviceModelNom }
+                }
+
         parentCompose_1_5_VendeurId = if (existingVendor != null) {
             existingVendor.vid
         } else {
             val newVid =
-                viewModelInitApp._1_5_Vendeur_Repository.modelDatasSnapList.maxOfOrNull { it.vid }
+                _0_0_HeadOfRepositorys_Repository.repositorys_Model.firstOrNull()
+                    ?._1_5_Vendeur_Repository?.modelDatasSnapList?.maxOfOrNull { it.vid }
                     ?.plus(1) ?: 1
-            viewModelInitApp._1_5_Vendeur_Repository.addData(
-                _1_5_Vendeur(
-                    vid = newVid, deviceModelNom = deviceModelNom
+            _0_0_HeadOfRepositorys_Repository.repositorys_Model.firstOrNull()
+                ?._1_5_Vendeur_Repository?.addData(
+                    _1_5_Vendeur(
+                        vid = newVid, deviceModelNom = deviceModelNom
+                    )
                 )
-            )
             newVid
         }
 
         val currenteDateInString =
             SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
         val existing_1_4_PeriodeVent =
-            viewModelInitApp._1_4_PeriodeVent_Repository.modelDatasSnapList.find {
+            _0_0_HeadOfRepositorys_Repository.repositorys_Model.firstOrNull()
+                ?._1_4_PeriodeVent_Repository?.modelDatasSnapList?.find {
                     it.endDateInString == ""
                 }
         parentCompose_1_4_PeriodeVentVid = if (existing_1_4_PeriodeVent != null) {
             existing_1_4_PeriodeVent.vid
         } else {
             val newVid =
-                viewModelInitApp._1_4_PeriodeVent_Repository.modelDatasSnapList.maxOfOrNull { it.vid }
+                _0_0_HeadOfRepositorys_Repository.repositorys_Model.firstOrNull()
+                    ?._1_4_PeriodeVent_Repository?.modelDatasSnapList?.maxOfOrNull { it.vid }
                     ?.plus(1) ?: 1
-            viewModelInitApp._1_4_PeriodeVent_Repository.addData(
-                _1_4_PeriodeVent(
-                    vid = newVid,
-                    startDateInString = currenteDateInString,
-                    vendeur_ParentVID = parentCompose_1_5_VendeurId
+            _0_0_HeadOfRepositorys_Repository.repositorys_Model.firstOrNull()
+                ?._1_4_PeriodeVent_Repository?.addData(
+                    _1_4_PeriodeVent(
+                        vid = newVid,
+                        startDateInString = currenteDateInString,
+                        vendeur_ParentVID = parentCompose_1_5_VendeurId
+                    )
                 )
-            )
             newVid
         }
 
         val currentClientId = currentClient?.id ?: 1
         val existing_1_3_BonAchat =
-            viewModelInitApp._1_3_BonAchat_Repository.modelDatasSnapList.find {
-                it.clientAcheteurID == currentClientId && it.parent_1_4_PeriodeVentVid == parentCompose_1_4_PeriodeVentVid
-            }
+            _0_0_HeadOfRepositorys_Repository.repositorys_Model.firstOrNull()
+                ?._1_3_BonAchat_Repository?.modelDatasSnapList?.find {
+                    it.clientAcheteurID == currentClientId && it.parent_1_4_PeriodeVentVid == parentCompose_1_4_PeriodeVentVid
+                }
         parentCompose_1_3_BonAchatVid = if (existing_1_3_BonAchat != null) {
             existing_1_3_BonAchat.vid
         } else {
             val newVid =
-                viewModelInitApp._1_3_BonAchat_Repository.modelDatasSnapList.maxOfOrNull { it.vid }
+                _0_0_HeadOfRepositorys_Repository.repositorys_Model.firstOrNull()
+                    ?._1_3_BonAchat_Repository?.modelDatasSnapList?.maxOfOrNull { it.vid }
                     ?.plus(1) ?: 1
-            viewModelInitApp._1_3_BonAchat_Repository.addData(
-                _1_3_BonAchat(
-                    vid = newVid,
-                    clientAcheteurID = currentClientId,
-                    parent_1_4_PeriodeVentVid = parentCompose_1_4_PeriodeVentVid
+            _0_0_HeadOfRepositorys_Repository.repositorys_Model.firstOrNull()
+                ?._1_3_BonAchat_Repository?.addData(
+                    _1_3_BonAchat(
+                        vid = newVid,
+                        clientAcheteurID = currentClientId,
+                        parent_1_4_PeriodeVentVid = parentCompose_1_4_PeriodeVentVid
+                    )
                 )
-            )
             newVid
         }
 
         val produitActuelle = currentSale.idArticle
         val existing_1_2_ProduitAcheteOperation =
-            viewModelInitApp._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList.find {
-                it.produitAcheterID == produitActuelle && it.parent_1_3_BonAchat == parentCompose_1_3_BonAchatVid
-            }
+            _0_0_HeadOfRepositorys_Repository.repositorys_Model.firstOrNull()
+                ?._1_2_ProduitAcheteOperation_Repository?.modelDatasSnapList?.find {
+                    it.produitAcheterID == produitActuelle && it.parent_1_3_BonAchat == parentCompose_1_3_BonAchatVid
+                }
         parentCompose_1_2_ProduitAcheteOperationVid =
             if (existing_1_2_ProduitAcheteOperation != null) {
-                viewModelInitApp._1_2_ProduitAcheteOperation_Repository.updateUnSeulData(
-                    existing_1_2_ProduitAcheteOperation.apply {
-                        etateActuellementEst= _1_2_ProduitAcheteOperation.EtateActuellementEst.PRESENTATION
-                    }
-                )
+                _0_0_HeadOfRepositorys_Repository.repositorys_Model.firstOrNull()
+                    ?._1_2_ProduitAcheteOperation_Repository?.updateUnSeulData(
+                        existing_1_2_ProduitAcheteOperation.apply {
+                            etateActuellementEst = _1_2_ProduitAcheteOperation.EtateActuellementEst.PRESENTATION
+                        }
+                    )
                 existing_1_2_ProduitAcheteOperation.vid
             } else {
                 val newVid =
-                    viewModelInitApp._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList.maxOfOrNull { it.vid }
+                    _0_0_HeadOfRepositorys_Repository.repositorys_Model.firstOrNull()
+                        ?._1_2_ProduitAcheteOperation_Repository?.modelDatasSnapList?.maxOfOrNull { it.vid }
                         ?.plus(1) ?: 1
-                viewModelInitApp._1_2_ProduitAcheteOperation_Repository.add(
-                    _1_2_ProduitAcheteOperation(
-                        vid = newVid,
-                        produitAcheterID = produitActuelle,
-                        parent_1_3_BonAchat = parentCompose_1_3_BonAchatVid
+                _0_0_HeadOfRepositorys_Repository.repositorys_Model.firstOrNull()
+                    ?._1_2_ProduitAcheteOperation_Repository?.add(
+                        _1_2_ProduitAcheteOperation(
+                            vid = newVid,
+                            produitAcheterID = produitActuelle,
+                            parent_1_3_BonAchat = parentCompose_1_3_BonAchatVid
+                        )
                     )
-                )
                 newVid
             }
-
-        // Add debug log to verify the value is correctly set
     }
 
     var showConfirmDialog by remember { mutableStateOf(false) }
@@ -216,8 +228,8 @@ fun MainUi(
     ) {
         onDismiss()
         _DisplayeProductInfosToSeller(viewModelInitApp).onClickOnMain(
-                viewModelInitApp, currentSale, currentClient
-            )
+            viewModelInitApp, currentSale, currentClient
+        )
     }
 
     Dialog(
@@ -311,7 +323,6 @@ fun MainUi(
             }
         }
     }
-
 }
 
 fun updateState(
@@ -321,9 +332,8 @@ fun updateState(
 ) {
     val rep = viewModelInitApp._1_2_ProduitAcheteOperation_Repository
     rep.modelDatasSnapList.find {
-            it.vid == parentCompose_1_2_ProduitAcheteOperationVid
-        }?.apply {
-            etateActuellementEst = neveauEtateActuellementEst
-        }?.let { rep.updateUnSeulData(it) }
+        it.vid == parentCompose_1_2_ProduitAcheteOperationVid
+    }?.apply {
+        etateActuellementEst = neveauEtateActuellementEst
+    }?.let { rep.updateUnSeulData(it) }
 }
-

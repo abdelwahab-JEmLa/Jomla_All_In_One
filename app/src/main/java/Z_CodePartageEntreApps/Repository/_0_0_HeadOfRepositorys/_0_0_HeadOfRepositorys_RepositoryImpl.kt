@@ -26,7 +26,7 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
 ) : _0_0_HeadOfRepositorys_Repository {
     private val TAG = _0_0_HeadOfRepositorys_Repository.TAG
 
-    override var modelDatasSnapList: SnapshotStateList<_0_0_HeadOfRepositorys_Model> = mutableStateListOf()
+    override var repositorys_Model: SnapshotStateList<_0_0_HeadOfRepositorys_Model> = mutableStateListOf()
     override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
 
     private val repositoryScope = CoroutineScope(Dispatchers.IO)
@@ -95,7 +95,7 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                 )
 
                 // Add to the list
-                modelDatasSnapList.add(headRepository)
+                repositorys_Model.add(headRepository)
                 progressRepo.value = 1.0f
                 initialDataLoaded = true
                 lastUpdateTimestamp = System.currentTimeMillis()
@@ -131,7 +131,7 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
 
     fun log() {
         logOperations.log(
-            dataCount = modelDatasSnapList.size,
+            dataCount = repositorys_Model.size,
             initialDataLoaded = initialDataLoaded,
             progressValue = progressRepo.value,
             lastUpdateTimestamp = lastUpdateTimestamp,
