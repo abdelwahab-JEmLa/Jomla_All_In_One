@@ -52,10 +52,10 @@ fun A_MainListFragId3(
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
 ) {
     var colorsListToDisplay by remember { mutableStateOf(emptyList<ColorsArticlesTabelle>()) }
-    var compose_1_5_VendeurId by remember { mutableLongStateOf(0) }
-    var compose_1_4_PeriodeVentVid by remember { mutableLongStateOf(0) }
-    var compose_1_3_BonAchatVid by remember { mutableLongStateOf(0) }
-    var compose_1_2_ProduitAcheteOperationVid by remember { mutableLongStateOf(0) }
+    var parentCompose_1_5_VendeurId by remember { mutableLongStateOf(0) }
+    var parentCompose_1_4_PeriodeVentVid by remember { mutableLongStateOf(0) }
+    var parentCompose_1_3_BonAchatVid by remember { mutableLongStateOf(0) }
+    var parentCompose_1_2_ProduitAcheteOperationVid by remember { mutableLongStateOf(0) }
 
     val deviceModelNom = Build.MODEL
     val currentClientId = currentClient?.id ?: 1
@@ -74,11 +74,14 @@ fun A_MainListFragId3(
         // Get or create vendor
         val existingVendor = vendeurRepo
             .modelDatasSnapList.find { it.deviceModelNom == deviceModelNom }
-        compose_1_5_VendeurId = if (existingVendor != null) {
+        parentCompose_1_5_VendeurId = if (existingVendor != null) {
             existingVendor.vid
         } else {
             val newVid = vendeurRepo.modelDatasSnapList.maxOfOrNull { it.vid }?.plus(1) ?: 1
-            vendeurRepo.addData(_1_5_Vendeur(vid = newVid, deviceModelNom = deviceModelNom))
+            vendeurRepo.addData(_1_5_Vendeur(
+                vid = newVid,
+                deviceModelNom = deviceModelNom
+            ))
             newVid
         }
 
@@ -86,7 +89,7 @@ fun A_MainListFragId3(
             .find {
             it.endDateInString == ""
         }
-        compose_1_4_PeriodeVentVid = if (existing_1_4_PeriodeVent != null) {
+        parentCompose_1_4_PeriodeVentVid = if (existing_1_4_PeriodeVent != null) {
             existing_1_4_PeriodeVent.vid
         } else {
             val newVid = _1_4_PeriodeVent_Repository
@@ -94,7 +97,8 @@ fun A_MainListFragId3(
             _1_4_PeriodeVent_Repository.addData(
                 _1_4_PeriodeVent(
                     vid = newVid,
-                    startDateInString = currenteDateInString
+                    startDateInString = currenteDateInString,
+                    vendeur_ParentVID=parentCompose_1_5_VendeurId
                 )
             )
             newVid
@@ -102,9 +106,9 @@ fun A_MainListFragId3(
 
         val existing_1_3_BonAchat = _1_3_BonAchat_Repository.modelDatasSnapList.find {
             it.clientAchteurID == currentClientId
-                    && it.parent_1_4_PeriodeVentVid == compose_1_3_BonAchatVid
+                    && it.parent_1_4_PeriodeVentVid == parentCompose_1_3_BonAchatVid
         }
-        compose_1_3_BonAchatVid = if (existing_1_3_BonAchat != null) {
+        parentCompose_1_3_BonAchatVid = if (existing_1_3_BonAchat != null) {
             existing_1_3_BonAchat.vid
         } else {
             val newVid = _1_3_BonAchat_Repository
@@ -112,7 +116,8 @@ fun A_MainListFragId3(
             _1_3_BonAchat_Repository.addData(
                 _1_3_BonAchat(
                     vid = newVid,
-                    clientAchteurID = currentClientId
+                    clientAchteurID = currentClientId ,
+                    parentCompose_1_4_PeriodeVentVid
                 )
             )
             newVid
@@ -120,9 +125,9 @@ fun A_MainListFragId3(
 
         val existing_1_2_ProduitAcheteOperation = _1_2_ProduitAcheteOperation_Repository.modelDatasSnapList.find {
             it.produitAcheterID == produitActuelle
-                    && it.parent_1_3_BonAchat == compose_1_3_BonAchatVid
+                    && it.parent_1_3_BonAchat == parentCompose_1_3_BonAchatVid
         }
-        compose_1_2_ProduitAcheteOperationVid = if (existing_1_2_ProduitAcheteOperation != null) {
+        parentCompose_1_2_ProduitAcheteOperationVid = if (existing_1_2_ProduitAcheteOperation != null) {
             existing_1_2_ProduitAcheteOperation.vid
         } else {
             val newVid = _1_2_ProduitAcheteOperation_Repository
@@ -130,7 +135,8 @@ fun A_MainListFragId3(
             _1_2_ProduitAcheteOperation_Repository.add(
                 _1_2_ProduitAcheteOperation(
                     vid = newVid,
-                    produitAcheterID = produitActuelle
+                    produitAcheterID = produitActuelle,
+                    parentCompose_1_3_BonAchatVid
                 )
             )
             newVid
@@ -184,7 +190,7 @@ fun A_MainListFragId3(
                                 viewModelInitApp = viewModelInitApp,
                                 currentClient = currentClient,
                                 colorsArticlesTabelleModele = colorsArticlesTabelleModele,
-                                compose_1_4_PeriodeVentVid=compose_1_4_PeriodeVentVid,
+                                parentCompose_1_4_PeriodeVentVid=parentCompose_1_4_PeriodeVentVid,
                             )
                         }
                     }

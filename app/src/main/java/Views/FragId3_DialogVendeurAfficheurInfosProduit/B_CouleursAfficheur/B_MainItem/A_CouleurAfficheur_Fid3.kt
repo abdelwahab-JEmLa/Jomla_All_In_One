@@ -65,7 +65,7 @@ fun B_CouleurAfficheur(
     viewModelInitApp: ViewModelInitApp,
     currentClient: B_ClientsDataBase?,
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
-    compose_1_4_PeriodeVentVid: Long,
+    parentCompose_1_4_PeriodeVentVid: Long,
 ) {
     var compose_1_1_CouleurAcheteOperationVid by remember { mutableLongStateOf(0L) }
 
@@ -78,7 +78,7 @@ fun B_CouleurAfficheur(
         val existing_1_1_CouleurAcheteOperation =
             _1_1_CouleurAcheteOperation_Repository.modelDatasSnapList.find {
                 it.couleurId_ParentVID == couleurActuelleId
-                        && it.produitId_ParentVID == compose_1_4_PeriodeVentVid
+                        && it.produitId_ParentVID == parentCompose_1_4_PeriodeVentVid
             }
 
         compose_1_1_CouleurAcheteOperationVid = if (existing_1_1_CouleurAcheteOperation != null) {
@@ -89,7 +89,7 @@ fun B_CouleurAfficheur(
             _1_1_CouleurAcheteOperation_Repository.addData(
                 _1_1_CouleurAcheteOperation(
                     vid = newVid,
-
+                    vendeur_ParentVID = parentCompose_1_4_PeriodeVentVid
                     )
             )
             newVid
