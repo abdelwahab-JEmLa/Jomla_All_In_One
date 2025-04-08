@@ -9,8 +9,13 @@ import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
+import Z_CodePartageEntreApps.Model._1_2_ProduitAcheteOperation
+import Z_CodePartageEntreApps.Model._1_3_BonAchat
+import Z_CodePartageEntreApps.Model._1_4_PeriodeVent
+import Z_CodePartageEntreApps.Model._1_5_Vendeur
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Package_3._DisplayeProductInfosToSeller
+import android.os.Build
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -32,6 +38,9 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.clientjetpack.Models.UiState
 import com.example.clientjetpack.ViewModel.HeadViewModel
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun A_VendeurAfficheurInfosProduit_FragmentMainId3(
@@ -90,7 +99,88 @@ fun MainUi(
     currentClient: B_ClientsDataBase?,
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>
 ) {
+    var parentCompose_1_5_VendeurId by remember { mutableLongStateOf(0) }
+    var parentCompose_1_4_PeriodeVentVid by remember { mutableLongStateOf(0) }
+    var parentCompose_1_3_BonAchatVid by remember { mutableLongStateOf(0) }
+    var parentCompose_1_2_ProduitAcheteOperationVid by remember { mutableLongStateOf(0) }
 
+    LaunchedEffect(Unit) {
+        val deviceModelNom = Build.MODEL
+        val existingVendor = viewModelInitApp._1_5_Vendeur_Repository
+            .modelDatasSnapList.find { it.deviceModelNom == deviceModelNom }
+        parentCompose_1_5_VendeurId = if (existingVendor != null) {
+            existingVendor.vid
+        } else {
+            val newVid = viewModelInitApp._1_5_Vendeur_Repository.modelDatasSnapList.maxOfOrNull { it.vid }?.plus(1) ?: 1
+            viewModelInitApp._1_5_Vendeur_Repository.addData(
+                _1_5_Vendeur(
+                    vid = newVid,
+                    deviceModelNom = deviceModelNom
+                )
+            )
+            newVid
+        }
+
+        val currenteDateInString = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+        val existing_1_4_PeriodeVent = viewModelInitApp._1_4_PeriodeVent_Repository.modelDatasSnapList
+            .find {
+                it.endDateInString == ""
+            }
+        parentCompose_1_4_PeriodeVentVid = if (existing_1_4_PeriodeVent != null) {
+            existing_1_4_PeriodeVent.vid
+        } else {
+            val newVid = viewModelInitApp._1_4_PeriodeVent_Repository
+                .modelDatasSnapList.maxOfOrNull { it.vid }?.plus(1) ?: 1
+            viewModelInitApp._1_4_PeriodeVent_Repository.addData(
+                _1_4_PeriodeVent(
+                    vid = newVid,
+                    startDateInString = currenteDateInString,
+                    vendeur_ParentVID=parentCompose_1_5_VendeurId
+                )
+            )
+            newVid
+        }
+
+        val currentClientId = currentClient?.id ?: 1
+        val existing_1_3_BonAchat = viewModelInitApp._1_3_BonAchat_Repository.modelDatasSnapList.find {
+            it.clientAcheteurID == currentClientId
+                    && it.parent_1_4_PeriodeVentVid == parentCompose_1_4_PeriodeVentVid
+        }
+        parentCompose_1_3_BonAchatVid = if (existing_1_3_BonAchat != null) {
+            existing_1_3_BonAchat.vid
+        } else {
+            val newVid = viewModelInitApp._1_3_BonAchat_Repository
+                .modelDatasSnapList.maxOfOrNull { it.vid }?.plus(1) ?: 1
+            viewModelInitApp._1_3_BonAchat_Repository.addData(
+                _1_3_BonAchat(
+                    vid = newVid,
+                    clientAcheteurID = currentClientId ,
+                    parent_1_4_PeriodeVentVid=parentCompose_1_4_PeriodeVentVid
+                )
+            )
+            newVid
+        }
+
+        val produitActuelle = currentSale.idArticle
+        val existing_1_2_ProduitAcheteOperation = viewModelInitApp._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList.find {
+            it.produitAcheterID == produitActuelle
+                    && it.parent_1_3_BonAchat == parentCompose_1_3_BonAchatVid
+        }
+        parentCompose_1_2_ProduitAcheteOperationVid = if (existing_1_2_ProduitAcheteOperation != null) {
+            existing_1_2_ProduitAcheteOperation.vid
+        } else {
+            val newVid = viewModelInitApp._1_2_ProduitAcheteOperation_Repository
+                .modelDatasSnapList.maxOfOrNull { it.vid }?.plus(1) ?: 1
+            viewModelInitApp._1_2_ProduitAcheteOperation_Repository.add(
+                _1_2_ProduitAcheteOperation(
+                    vid = newVid,
+                    produitAcheterID = produitActuelle,
+                    parent_1_3_BonAchat = parentCompose_1_3_BonAchatVid
+                )
+            )
+            newVid
+        }
+    }
 
     var showConfirmDialog by remember { mutableStateOf(false) }
     showConfirmDialog = confirmExitDialog(
@@ -112,6 +202,7 @@ fun MainUi(
             decorFitsSystemWindows = true
         )
     ) {
+
         Surface(
             modifier = modifier
                 .fillMaxSize()
@@ -143,7 +234,9 @@ fun MainUi(
                                 viewModelInitApp = viewModelInitApp,
                                 currentClient = currentClient,
                                 colorsArticlesTabelleModele = colorsArticlesTabelleModele,
-                            )
+                                parentCompose_1_2_ProduitAcheteOperationVid=parentCompose_1_2_ProduitAcheteOperationVid,
+
+                                )
                         }
 
                         item {

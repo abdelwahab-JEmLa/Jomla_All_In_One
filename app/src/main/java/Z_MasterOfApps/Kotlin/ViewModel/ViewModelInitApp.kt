@@ -5,6 +5,11 @@ import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.I_CategoriesRepository
 import Z_CodePartageEntreApps.Model.Z.Archive._ModelAppsFather
+import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
+import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
+import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat_Repository
+import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
+import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur_Repository
 import Z_MasterOfApps.Kotlin.ViewModel.Partage.Functions.FunctionsPartageEntreFragment
 import Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_1.id4_DeplaceProduitsVerGrossist.ViewModel.Frag_4A1_ExtVM
 import Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_2.id1_GerantDefinirePosition.ViewModel.Extension.Frag2_A1_ExtVM
@@ -27,7 +32,12 @@ import kotlinx.coroutines.tasks.await
 class ViewModelInitApp(
     val produitModelRepository: A_ProduitRepository,
     val i_CategoriesRepository: I_CategoriesRepository,
-    val viewModelFragment_APP2_ID_1: ViewModelFragment_APP2_ID_1
+    val viewModelFragment_APP2_ID_1: ViewModelFragment_APP2_ID_1,
+    val _1_1_CouleurAcheteOperation_Repository: _1_1_CouleurAcheteOperation_Repository,
+    val _1_2_ProduitAcheteOperation_Repository: _1_2_ProduitAcheteOperation_Repository,
+    val _1_3_BonAchat_Repository: _1_3_BonAchat_Repository,
+    val _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository,
+    val _1_5_Vendeur_Repository: _1_5_Vendeur_Repository
 ) : ViewModel() {
     var _paramatersAppsViewModelModel by mutableStateOf(ParamatersAppsModel())
     var _modelAppsFather by mutableStateOf(_ModelAppsFather())

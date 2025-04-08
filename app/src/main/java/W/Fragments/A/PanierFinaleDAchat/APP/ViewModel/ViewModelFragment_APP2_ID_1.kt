@@ -12,6 +12,7 @@ import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchatRepositoryIm
 import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat_Repository
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVentRepositoryImpl
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
+import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur_Repository
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -40,7 +41,8 @@ class ViewModelFragment_APP2_ID_1(
     val _1_1_CouleurAcheteOperation_Repository: _1_1_CouleurAcheteOperation_Repository,
     val _1_2_ProduitAcheteOperation_Repository: _1_2_ProduitAcheteOperation_Repository,
     val _1_3_BonAchat_Repository: _1_3_BonAchat_Repository,
-    val _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository
+    val _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository ,
+    val _1_5_Vendeur_Repository: _1_5_Vendeur_Repository
 ) : ViewModel() {
     private val TAG = "ViewModelFragment_APP2_ID_2"
 

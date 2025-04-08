@@ -56,7 +56,14 @@ val commonRepositoriesModule = module {
     single<C_GrossistsDataBaseRepository> { C_GrossistsDataBaseRepositoryImpl() }
 
     viewModel { ViewModelFragment_StartUpScreen(get(),get(),get(),get()) }
-    viewModel { ViewModelInitApp(get(),get(),get()) }
+    viewModel { ViewModelInitApp(get(),get()
+        ,get()
+        ,get()
+        ,get()
+        ,get()
+        ,get()
+        ,get()
+    ) }
 
 }
 
