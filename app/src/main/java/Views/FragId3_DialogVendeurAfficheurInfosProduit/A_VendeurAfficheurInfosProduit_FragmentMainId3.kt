@@ -82,7 +82,6 @@ fun A_VendeurAfficheurInfosProduit_FragmentMainId3(
     }
 }
 
-
 @Composable
 fun MainUi(
     viewModelInitApp: ViewModelInitApp,
