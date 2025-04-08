@@ -17,10 +17,7 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val composeModules = module {
-    viewModel { ViewModelFragment_APP2_ID_1(get(), get(), get()
-        , get()
-        , get()
-    ) }
+    viewModel { ViewModelFragment_APP2_ID_1(get(), get(), get(), get(), get()) }
     viewModel { ViewModelFragment_APP2_ID_2(get(), get(), get(), get()) }
 }
 
@@ -29,7 +26,9 @@ fun A_MainScreenApp2FragID_1(
     modifier: Modifier = Modifier,
     viewModel: ViewModelFragment_APP2_ID_1 = koinViewModel(),
 ) {
-    val uiState by viewModel.uiStateFlow.collectAsState()
+    // Get repository progress states in a simpler way
+    val isLoading by viewModel.isDataLoading.collectAsState(initial = true)
+
 
     Column(
         modifier = modifier.fillMaxSize()
@@ -37,26 +36,30 @@ fun A_MainScreenApp2FragID_1(
         Box(
             modifier = Modifier.weight(1f),
         ) {
-            // Show loading indicator while data is being loaded
-            if (uiState.isDataLoading && !uiState.isInitialized) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    LoadingContent(message = "Loading data...")
-                }
-            } else if (uiState._1_4_PeriodeVentList.isEmpty()) {
-                    // Show a message when no periods are available
+            when {
+                // Show loading indicator while data is being loaded
+                isLoading -> {
                     Box(
-                        modifier = modifier.fillMaxSize(),
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        LoadingContent(message = "Loading data...")
+                    }
+                }
+                // Show message when no periods are available
+                viewModel._1_4_PeriodeVent_Repository.modelDatasSnapList.isEmpty() -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
                         Text("No sales periods available")
                     }
-                    return
-            } else {
-                // Data is loaded, show the main content
-                B_MainList_FragID_2(uiState = uiState)
+                }
+                // Show main content when data is loaded
+                else -> {
+                    // Pass the relevant data to B_MainList_FragID_2
+                    B_MainList_FragID_2()
+                }
             }
         }
     }

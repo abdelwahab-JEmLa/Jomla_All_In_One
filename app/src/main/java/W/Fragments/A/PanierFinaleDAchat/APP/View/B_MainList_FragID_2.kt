@@ -1,13 +1,11 @@
 package W.Fragments.A.PanierFinaleDAchat.APP.View
 
-import W.Fragments.A.PanierFinaleDAchat.APP.ViewModel.UiState_APP2_ID_1
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
 fun B_MainList_FragID_2(
     modifier: Modifier = Modifier,
-    uiState: UiState_APP2_ID_1
 ) {             /*
     val filteredBonAchatList =
         uiState._1_3_BonAchatList.filter { it.vid == uiState.bonAchetOnCourseMntID }
