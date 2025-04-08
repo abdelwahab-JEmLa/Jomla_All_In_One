@@ -27,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -51,11 +52,10 @@ fun A_MainListFragId3(
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
 ) {
     var colorsListToDisplay by remember { mutableStateOf(emptyList<ColorsArticlesTabelle>()) }
-    var compose_1_5_VendeurId by remember { mutableStateOf(0L) }
-    var compose_1_4_PeriodeVentVid by remember { mutableStateOf(0L) }
-    var compose_1_3_BonAchatVid by remember { mutableStateOf(0L) }
-    var compose_1_2_ProduitAcheteOperationVid by remember { mutableStateOf(0L) }
-
+    var compose_1_5_VendeurId by remember { mutableLongStateOf(0) }
+    var compose_1_4_PeriodeVentVid by remember { mutableLongStateOf(0) }
+    var compose_1_3_BonAchatVid by remember { mutableLongStateOf(0) }
+    var compose_1_2_ProduitAcheteOperationVid by remember { mutableLongStateOf(0) }
 
     val deviceModelNom = Build.MODEL
     val currentClientId = currentClient?.id ?: 1

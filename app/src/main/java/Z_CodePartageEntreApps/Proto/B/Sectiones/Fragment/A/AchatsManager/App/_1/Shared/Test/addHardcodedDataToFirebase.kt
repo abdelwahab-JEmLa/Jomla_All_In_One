@@ -98,7 +98,7 @@ suspend fun addHardcodedDataToFirebase(
                 vid = 201L,
                 produitAcheterID = 1001L,
                 parent_1_3_BonAchat = 501L,
-                etateActuellementEst = _1_2_ProduitAcheteOperation.EtateActuellementEst.CHOISI_UNE_QUANTITY
+                etateActuellementEst = _1_2_ProduitAcheteOperation.EtateActuellementEst.NON_CONFIRME_JUST_AFFICHE
             ),
             _1_2_ProduitAcheteOperation(
                 vid = 202L,
@@ -116,7 +116,7 @@ suspend fun addHardcodedDataToFirebase(
                 vid = 204L,
                 produitAcheterID = 1004L,
                 parent_1_3_BonAchat = 502L,
-                etateActuellementEst = _1_2_ProduitAcheteOperation.EtateActuellementEst.CHOISI_UNE_QUANTITY
+                etateActuellementEst = _1_2_ProduitAcheteOperation.EtateActuellementEst.NON_CONFIRME_JUST_AFFICHE
             ),
             _1_2_ProduitAcheteOperation(
                 vid = 205L,
@@ -146,7 +146,7 @@ suspend fun addHardcodedDataToFirebase(
                 vid = 209L,
                 produitAcheterID = 1009L,
                 parent_1_3_BonAchat = 506L,
-                etateActuellementEst = _1_2_ProduitAcheteOperation.EtateActuellementEst.CHOISI_UNE_QUANTITY
+                etateActuellementEst = _1_2_ProduitAcheteOperation.EtateActuellementEst.NON_CONFIRME_JUST_AFFICHE
             ),
             _1_2_ProduitAcheteOperation(
                 vid = 210L,
@@ -158,7 +158,7 @@ suspend fun addHardcodedDataToFirebase(
                 vid = 250L,
                 produitAcheterID = 1050L,
                 parent_1_3_BonAchat = 501L,
-                etateActuellementEst = _1_2_ProduitAcheteOperation.EtateActuellementEst.CHOISI_UNE_QUANTITY
+                etateActuellementEst = _1_2_ProduitAcheteOperation.EtateActuellementEst.NON_CONFIRME_JUST_AFFICHE
             )
         )
 
@@ -201,7 +201,7 @@ suspend fun addHardcodedDataToFirebase(
                 couleurId = 106L,
                 parent_1_2_ProduitAcheteOperationID = 204L,
                 totaleQuantity = 45,
-                etateActuellementEst = _1_1_CouleurAcheteOperation.EtateActuellementEst.CHOISI_UNE_QUANTITY
+                etateActuellementEst = _1_1_CouleurAcheteOperation.EtateActuellementEst.NON_CONFIRME_JUST_AFFICHE
             ),
             _1_1_CouleurAcheteOperation(
                 vid = 7L,
@@ -236,7 +236,7 @@ suspend fun addHardcodedDataToFirebase(
                 couleurId = 111L,
                 parent_1_2_ProduitAcheteOperationID = 209L,
                 totaleQuantity = 70,
-                etateActuellementEst = _1_1_CouleurAcheteOperation.EtateActuellementEst.CHOISI_UNE_QUANTITY
+                etateActuellementEst = _1_1_CouleurAcheteOperation.EtateActuellementEst.NON_CONFIRME_JUST_AFFICHE
             ),
             _1_1_CouleurAcheteOperation(
                 vid = 12L,

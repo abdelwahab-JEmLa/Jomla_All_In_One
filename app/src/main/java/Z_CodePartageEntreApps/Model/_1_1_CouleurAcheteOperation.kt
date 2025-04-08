@@ -19,11 +19,11 @@ data class _1_1_CouleurAcheteOperation(
 
     // Section StatuesMutable
     var etateActuellementEst: EtateActuellementEst =
-        EtateActuellementEst.CHOISI_UNE_QUANTITY,
+        EtateActuellementEst.AFFICHE_MAIS_PAS_CONFIRME,
 
     ) {
     enum class EtateActuellementEst {
-        CHOISI_UNE_QUANTITY,
+        AFFICHE_MAIS_PAS_CONFIRME,
         CONFIRME,
         SUPPRIME_AU_PREMIER_PICK,
         SUPP_AU_PANIER_FINALE

@@ -28,6 +28,7 @@ class _1_5_VendeurRepositoryImpl(
     override var modelDatasSnapList: SnapshotStateList<_1_5_Vendeur> =
         mutableStateListOf()
     override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
+    override val active_1_5_VendeurId = MutableStateFlow( 0L)
 
     private val isUpdating = AtomicBoolean(false)
     private val isListenerActive = AtomicBoolean(false)
@@ -85,7 +86,7 @@ class _1_5_VendeurRepositoryImpl(
         try {
             loadDepuitRoom()
             checkDataConsistency()
-            ajouteMainDataSiNonDispo(Build.MODEL)
+            ajouteMainDataSiNonDispo()
             
             if (TAG.isNotEmpty()) {
                 log()
@@ -95,27 +96,21 @@ class _1_5_VendeurRepositoryImpl(
         }
     }
 
-    private fun ajouteMainDataSiNonDispo(currentDeviceModel: String) {
+    private fun ajouteMainDataSiNonDispo() {
         try {
-            // Check if a Vendeur with the current device model already exists
-            val existingVendor = modelDatasSnapList.find { it.deviceModelNom == currentDeviceModel }
+            val deviceModelNom = Build.MODEL
 
-            if (existingVendor == null) {
-                // Create a new Vendeur for the current device
-                val newVendor = currentDeviceModel.let {
-                    _1_5_Vendeur(
-                        deviceModelNom = it,
-                        nom = "Default Vendor"  // Default name, can be updated later
-                    )
-                }
+            // Get or create vendor
+            val existingVendor = modelDatasSnapList.find { it.deviceModelNom == deviceModelNom }
 
-                // Add the new vendor to the repository
-                addData(newVendor)
-
-                Log.d(TAG, "Added new vendor for device model: $currentDeviceModel")
+            if (existingVendor != null) {
+                active_1_5_VendeurId.value = existingVendor.vid
             } else {
-                Log.d(TAG, "Vendor for device model $currentDeviceModel already exists")
+                val newVid = modelDatasSnapList.maxOfOrNull { it.vid }?.plus(1) ?: 1
+                addData(_1_5_Vendeur(vid = newVid, deviceModelNom = deviceModelNom))
+                active_1_5_VendeurId.value = newVid
             }
+
         } catch (e: Exception) {
             Log.e(TAG, "Error in ajouteMainDataSiNonDispo: ${e.message}")
         }
