@@ -7,20 +7,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
 fun MainList_APP2_ID_2(
-    composeKeyVID: MutableStateFlow<Long>,
+    composeKeyVID: State<Long>,
     modifier: Modifier = Modifier,
     _0_HeadOfRepositorys_Repository_Model: _0_0_HeadOfRepositorys_Model,
 ) {
     // Collect the current value of the MutableStateFlow
-    val currentVID by composeKeyVID.collectAsState()
+    val currentVID by composeKeyVID
 
     // Group products by product ID
     val produitBonAchatIDs = _0_HeadOfRepositorys_Repository_Model

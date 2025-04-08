@@ -66,13 +66,12 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
             _1_4_Repository.ensureDataIsInitialized()
             _1_5_Repository.ensureDataIsInitialized()
 
-            // Then add essential data
-            checkADD_1_5_Repository()
-            checkADD_1_4_PeriodeVent()
-            checkADD_1_3_BonAchat()
-
             // Start tracking progress afterward
-            startProgressTracking()
+            startProgressTracking() {
+                checkADD_1_5_Repository()
+                checkADD_1_4_PeriodeVent()
+                checkADD_1_3_BonAchat()
+            }
         }
     }
 

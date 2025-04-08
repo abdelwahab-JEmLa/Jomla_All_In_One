@@ -27,7 +27,7 @@ fun MainScreen_APP2_ID_2(
         .repositorys_Model
     val composeKeyVID = _0_HeadOfRepositorys_Repository_Model
         ._1_3_BonAchat_Repository
-        .activeId
+        .activeId .collectAsState()
 
     // Properly collect the StateFlow value
 
@@ -38,7 +38,7 @@ fun MainScreen_APP2_ID_2(
             modifier = Modifier.weight(1f),
         ) {
             // Show loading indicator while data is being loaded
-            if (isLoading ) {
+            if (isLoading ) {     
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
