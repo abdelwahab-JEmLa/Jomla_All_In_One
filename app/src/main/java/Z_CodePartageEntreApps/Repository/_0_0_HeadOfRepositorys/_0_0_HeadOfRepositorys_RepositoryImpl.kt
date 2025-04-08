@@ -3,6 +3,7 @@ package Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys
 import Z_CodePartageEntreApps.Model._1_3_BonAchat
 import Z_CodePartageEntreApps.Model._1_4_PeriodeVent
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.Extension.Log._0_0_HeadOfRepositoryLogOperationsExtension
+import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperationRepositoryImpl
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat_Repository
@@ -15,6 +16,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -26,7 +28,7 @@ import java.util.Locale
  * way inject
  *
  *     ,_0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository = koinInject()
-*/
+ */
 class _0_0_HeadOfRepositorys_RepositoryImpl(
     private val _1_1_Repository: _1_1_CouleurAcheteOperation_Repository,
     private val _1_2_Repository: _1_2_ProduitAcheteOperation_Repository,
@@ -56,90 +58,133 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
 
     init {
         repositoryScope.launch {
+            // First, initialize all repositories
             initialize_0_0_HeadOfRepositoryRepository()
-            startProgressTracking() {
+
+            // Then explicitly create the necessary initial data, regardless of progress
+            createInitialData()
+
+            // Finally start tracking progress
+            startProgressTracking()
+        }
+    }
+
+    private suspend fun createInitialData() {
+        withContext(Dispatchers.IO) {
+            try {
+                // Ensure we create data in the correct order (parent repositories first)
                 checkADD_1_5_Repository()
+                delay(100) // Give a small delay to ensure Firebase operations complete
+
                 checkADD_1_4_PeriodeVent()
+                delay(100)
+
                 checkADD_1_3_BonAchat()
+
+                Log.d(TAG, "Initial data creation completed successfully")
+            } catch (e: Exception) {
+                Log.e(TAG, "Error creating initial data: ${e.message}")
             }
         }
     }
-    
+
     private fun checkADD_1_5_Repository() {
-        // Implement the checkADD_1_4_PeriodeVent functionality directly since the reference is not working
-        val modelDatasSnapList = _1_5_Repository.modelDatasSnapList
-        val existingVendor = modelDatasSnapList.find { it.deviceModelNom == Build.MODEL }
+        try {
+            // Implement the checkADD_1_5_Repository functionality
+            val modelDatasSnapList = _1_5_Repository.modelDatasSnapList
+            val existingVendor = modelDatasSnapList.find { it.deviceModelNom == Build.MODEL }
 
-        val newVendorPair = if (existingVendor != null) {
-            Pair(existingVendor, existingVendor.vid)
-        } else {
-            val newVid = modelDatasSnapList.maxOfOrNull { it.vid }?.plus(1) ?: 1L
-            val newVendor = _1_5_Vendeur(
-                vid = newVid,
-                deviceModelNom = Build.MODEL,
-                nom = "Manager Vendor"
-            )
-            Pair(newVendor, newVid)
-        }
+            val newVendorPair = if (existingVendor != null) {
+                Pair(existingVendor, existingVendor.vid)
+            } else {
+                val newVid = modelDatasSnapList.maxOfOrNull { it.vid }?.plus(1) ?: 1L
+                val newVendor = _1_5_Vendeur(
+                    vid = newVid,
+                    deviceModelNom = Build.MODEL,
+                    nom = "Manager Vendor"
+                )
+                Pair(newVendor, newVid)
+            }
 
-        // Check if the vendor exists and add if not
-        if (!modelDatasSnapList.any { it.vid == newVendorPair.second }) {
-            _1_5_Repository.addData(newVendorPair.first)
-            _1_5_Repository.activeId.value = newVendorPair.second
+            // Check if the vendor exists and add if not
+            if (!modelDatasSnapList.any { it.vid == newVendorPair.second }) {
+                _1_5_Repository.addData(newVendorPair.first)
+                _1_5_Repository.activeId.value = newVendorPair.second
+                Log.d(TAG, "Added new vendor with VID: ${newVendorPair.second}")
+            } else {
+                _1_5_Repository.activeId.value = newVendorPair.second
+                Log.d(TAG, "Using existing vendor with VID: ${newVendorPair.second}")
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in checkADD_1_5_Repository: ${e.message}")
         }
     }
 
     private fun checkADD_1_4_PeriodeVent() {
-        // Get the model data list from the repository
-        val modelDatasSnapList = _1_4_Repository.modelDatasSnapList
+        try {
+            // Get the model data list from the repository
+            val modelDatasSnapList = _1_4_Repository.modelDatasSnapList
 
-        // Find an existing active period (where endDateInString is empty)
-        val existingPeriod = modelDatasSnapList.find { it.endDateInString == "" }
+            // Find an existing active period (where endDateInString is empty)
+            val existingPeriod = modelDatasSnapList.find { it.endDateInString == "" }
 
-        val newPeriodPair = if (existingPeriod != null) {
-            Pair(existingPeriod, existingPeriod.vid)
-        } else {
-            val newVid = modelDatasSnapList.maxOfOrNull { it.vid }?.plus(1) ?: 1L
-            val newPeriod = _1_4_PeriodeVent(
-                vid = newVid,
-                vendeur_ParentVID = _1_5_Repository.activeId.value
-            )
-            Pair(newPeriod, newVid)
-        }
+            val newPeriodPair = if (existingPeriod != null) {
+                Pair(existingPeriod, existingPeriod.vid)
+            } else {
+                val newVid = modelDatasSnapList.maxOfOrNull { it.vid }?.plus(1) ?: 1L
+                val newPeriod = _1_4_PeriodeVent(
+                    vid = newVid,
+                    vendeur_ParentVID = _1_5_Repository.activeId.value
+                )
+                Pair(newPeriod, newVid)
+            }
 
-        // Check if the period exists and add if not
-        if (!modelDatasSnapList.any { it.vid == newPeriodPair.second }) {
-            _1_4_Repository.addData(newPeriodPair.first)
-            _1_4_Repository.activeId.value = newPeriodPair.second
-
+            // Check if the period exists and add if not
+            if (!modelDatasSnapList.any { it.vid == newPeriodPair.second }) {
+                _1_4_Repository.addData(newPeriodPair.first)
+                _1_4_Repository.activeId.value = newPeriodPair.second
+                Log.d(TAG, "Added new period with VID: ${newPeriodPair.second}")
+            } else {
+                _1_4_Repository.activeId.value = newPeriodPair.second
+                Log.d(TAG, "Using existing period with VID: ${newPeriodPair.second}")
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in checkADD_1_4_PeriodeVent: ${e.message}")
         }
     }
 
     private fun checkADD_1_3_BonAchat() {
-        // Get the model data list from the repository
-        val modelDatasSnapList = _1_3_Repository.modelDatasSnapList
+        try {
+            // Get the model data list from the repository
+            val modelDatasSnapList = _1_3_Repository.modelDatasSnapList
 
-        val currentTime = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
-        val existingBonAchat = modelDatasSnapList
-            .find { it.heurDebutInString == currentTime }
+            val currentTime = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
+            val existingBonAchat = modelDatasSnapList
+                .find { it.heurDebutInString == currentTime }
 
-        val newBonAchatPair = if (existingBonAchat != null) {
-            Pair(existingBonAchat, existingBonAchat.vid)
-        } else {
-            val newVid = modelDatasSnapList.maxOfOrNull { it.vid }?.plus(1) ?: 1L
-            val newBonAchat = _1_3_BonAchat(
-                vid = newVid,
-                clientAcheteurID = _1_5_Repository.activeId.value ,
-                parent_1_3_BonAchatVid =_1_4_Repository.activeId.value
-            )
-            Pair(newBonAchat, newVid)
+            val newBonAchatPair = if (existingBonAchat != null) {
+                Pair(existingBonAchat, existingBonAchat.vid)
+            } else {
+                val newVid = modelDatasSnapList.maxOfOrNull { it.vid }?.plus(1) ?: 1L
+                val newBonAchat = _1_3_BonAchat(
+                    vid = newVid,
+                    clientAcheteurID = _1_5_Repository.activeId.value,
+                    parent_1_3_BonAchatVid = _1_4_Repository.activeId.value
+                )
+                Pair(newBonAchat, newVid)
+            }
 
-        }
-
-        // Check if the bon achat exists and add if not
-        if (!modelDatasSnapList.any { it.vid == newBonAchatPair.second }) {
-            _1_3_Repository.addData(newBonAchatPair.first)
-            _1_3_Repository.activeId.value = newBonAchatPair.second
+            // Check if the bon achat exists and add if not
+            if (!modelDatasSnapList.any { it.vid == newBonAchatPair.second }) {
+                _1_3_Repository.addData(newBonAchatPair.first)
+                _1_3_Repository.activeId.value = newBonAchatPair.second
+                Log.d(TAG, "Added new bon achat with VID: ${newBonAchatPair.second}")
+            } else {
+                _1_3_Repository.activeId.value = newBonAchatPair.second
+                Log.d(TAG, "Using existing bon achat with VID: ${newBonAchatPair.second}")
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in checkADD_1_3_BonAchat: ${e.message}")
         }
     }
 
@@ -148,41 +193,83 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
             if (!initialDataLoaded) {
                 withContext(Dispatchers.IO) {
                     // Wait until data is loaded
-                    while (!initialDataLoaded) {
+                    var timeoutCounter = 0
+                    val maxTimeout = 50 // 5 seconds max wait (50 * 100ms)
+
+                    while (!initialDataLoaded && timeoutCounter < maxTimeout) {
                         delay(100)
-                        if (progressRepo.value >= 1.0f) {
+                        timeoutCounter++
+
+                        if (progressRepo.value >= 0.95f) {
+                            // Check if any required data is missing and create it
+                            if (_1_5_Repository.modelDatasSnapList.isEmpty()) {
+                                checkADD_1_5_Repository()
+                            }
+
+                            if (_1_4_Repository.modelDatasSnapList.isEmpty()) {
+                                checkADD_1_4_PeriodeVent()
+                            }
+
+                            if (_1_3_Repository.modelDatasSnapList.isEmpty()) {
+                                checkADD_1_3_BonAchat()
+                            }
+
                             initialDataLoaded = true
+                            progressRepo.value = 1.0f
                         }
+                    }
+
+                    if (!initialDataLoaded) {
+                        Log.w(TAG, "Data initialization timed out, forcing initialization")
+                        createInitialData()
+                        initialDataLoaded = true
+                        progressRepo.value = 1.0f
                     }
                 }
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error ensuring data initialization: ${e.message}")
+            // Even if there's an error, try to create initial data
+            createInitialData()
+            initialDataLoaded = true
+            progressRepo.value = 1.0f
         }
     }
 
     private suspend fun initialize_0_0_HeadOfRepositoryRepository() {
         try {
-            // Initialize all child repositories
-            _1_1_Repository.ensureDataIsInitialized()
-            _1_2_Repository.ensureDataIsInitialized()
-            _1_3_Repository.ensureDataIsInitialized()
-            _1_4_Repository.ensureDataIsInitialized()
-            _1_5_Repository.ensureDataIsInitialized()
+            progressRepo.value = 0.1f
+            Log.d(TAG, "Starting repository initialization")
 
+            // Initialize all child repositories in parallel for better performance
+            val initJobs = listOf(
+                repositoryScope.launch { _1_1_Repository.ensureDataIsInitialized() },
+                repositoryScope.launch { _1_2_Repository.ensureDataIsInitialized() },
+                repositoryScope.launch { _1_3_Repository.ensureDataIsInitialized() },
+                repositoryScope.launch { _1_4_Repository.ensureDataIsInitialized() },
+                repositoryScope.launch { _1_5_Repository.ensureDataIsInitialized() }
+            )
+
+            // Wait for all initialization to complete
+            initJobs.forEach { it.join() }
+
+            progressRepo.value = 0.5f
             collectRepositorys()
 
             if (TAG.isNotEmpty()) {
                 log()
             }
+
+            Log.d(TAG, "Repository initialization completed")
         } catch (e: Exception) {
-            Log.e(TAG, "Error initializing repository: ${e.message}")
+            progressRepo.value = 0.1f
+            Log.e(TAG, "Error initializing repository: ${e.message}", e)
         }
     }
 
     private suspend fun collectRepositorys() {
         try {
-            progressRepo.value = 0.2f
+            progressRepo.value = 0.6f
             withContext(Dispatchers.IO) {
                 // Create a repository head with all repositories
                 repositorys_Model = _0_0_HeadOfRepositorys_Model(
@@ -194,17 +281,16 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                 )
 
                 // Update progress
-                progressRepo.value = 1.0f
-                initialDataLoaded = true
+                progressRepo.value = 0.8f
                 lastUpdateTimestamp = System.currentTimeMillis()
             }
         } catch (e: Exception) {
-            progressRepo.value = 0f
+            progressRepo.value = 0.5f
             Log.e(TAG, "Error collecting repositories: ${e.message}")
         }
     }
 
-    private suspend fun startProgressTracking(onComplete: () -> Unit = {}) {
+    private suspend fun startProgressTracking() {
         isFlowListenerActive = true
         try {
             // Combine all progress flows
@@ -215,24 +301,74 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                 _1_4_Repository.progressRepo,
                 _1_5_Repository.progressRepo
             ) { progress1, progress2, progress3, progress4, progress5 ->
+                // Log detailed progress for each repository
+                logOperations.logRepositoryProgress(
+                    repository = "_1_1_CouleurAcheteOperation",
+                    progress = progress1,
+                    initialDataLoaded = _1_1_Repository is _1_1_CouleurAcheteOperationRepositoryImpl &&
+                            (_1_1_Repository as? _1_1_CouleurAcheteOperationRepositoryImpl)?.initialDataLoaded ?: false,
+                    dataCount = _1_1_Repository.modelDatasSnapList.size
+                )
+
+                logOperations.logRepositoryProgress(
+                    repository = "_1_2_ProduitAcheteOperation",
+                    progress = progress2,
+                    dataCount = _1_2_Repository.modelDatasSnapList.size
+                )
+
+                logOperations.logRepositoryProgress(
+                    repository = "_1_3_BonAchat",
+                    progress = progress3,
+                    dataCount = _1_3_Repository.modelDatasSnapList.size
+                )
+
+                logOperations.logRepositoryProgress(
+                    repository = "_1_4_PeriodeVent",
+                    progress = progress4,
+                    dataCount = _1_4_Repository.modelDatasSnapList.size
+                )
+
+                logOperations.logRepositoryProgress(
+                    repository = "_1_5_Vendeur",
+                    progress = progress5,
+                    dataCount = _1_5_Repository.modelDatasSnapList.size
+                )
+
                 // Calculate the average progress
-                (progress1 + progress2 + progress3 + progress4 + progress5) / 5f
-            }.collect { combinedProgress ->
+                val combinedProgress = (progress1 + progress2 + progress3 + progress4 + progress5) / 5f
+
+                // Log the combined progress and possible reasons if not complete
+                if (combinedProgress < 1.0f) {
+                    Log.d(TAG, "Combined progress: ${String.format("%.2f", combinedProgress * 100)}%")
+                    Log.d(TAG, "Possible reasons for incomplete progress:")
+
+                    if (progress1 < 1.0f) Log.d(TAG, "- _1_1_Repository incomplete: ${progress1}")
+                    if (progress2 < 1.0f) Log.d(TAG, "- _1_2_Repository incomplete: ${progress2}")
+                    if (progress3 < 1.0f) Log.d(TAG, "- _1_3_Repository incomplete: ${progress3}")
+                    if (progress4 < 1.0f) Log.d(TAG, "- _1_4_Repository incomplete: ${progress4}")
+                    if (progress5 < 1.0f) Log.d(TAG, "- _1_5_Repository incomplete: ${progress5}")
+                }
+
+                combinedProgress
+            }.collectLatest { combinedProgress ->
                 progressRepo.value = combinedProgress
+                initialDataLoaded = combinedProgress >= 0.95f
                 log()
 
-                // Check if loading is complete (progress = 1.0f)
-                if (combinedProgress >= 1.0f) {
-                    onComplete()
+                // Update timestamp when progress completes
+                if (combinedProgress >= 1.0f && !initialDataLoaded) {
+                    initialDataLoaded = true
+                    lastUpdateTimestamp = System.currentTimeMillis()
+                    Log.d(TAG, "Repository initialization complete at ${SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date())}")
                 }
             }
         } catch (e: Exception) {
             isFlowListenerActive = false
             Log.e(TAG, "Error tracking progress: ${e.message}")
+            logOperations.logError("startProgressTracking", e)
         }
     }
 
-    
     fun log() {
         logOperations.log(
             dataCount = 1, // There's only one model in the repositorys_Model

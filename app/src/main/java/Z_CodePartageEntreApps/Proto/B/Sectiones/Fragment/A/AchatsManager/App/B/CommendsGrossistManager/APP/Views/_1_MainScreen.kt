@@ -37,7 +37,8 @@ fun MainScreen_APP2_ID_2(
             modifier = Modifier.weight(1f),
         ) {
             // Show loading indicator while data is being loaded
-            if (progress > 0f) {
+            if (progress > 0f) {         //<--
+            //TODO(1): pk icic ca rest on loading
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center

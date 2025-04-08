@@ -12,6 +12,7 @@ class _0_0_HeadOfRepositoryLogOperationsExtension(
 ) {
     private val TAG = _0_0_HeadOfRepositorys_Repository.TAG
 
+
     fun log(
         dataCount: Int,
         initialDataLoaded: Boolean = false,
@@ -41,9 +42,33 @@ class _0_0_HeadOfRepositoryLogOperationsExtension(
 
     fun logRepositoryProgress(
         repository: String,
-        progress: Float
+        progress: Float,
+        initialDataLoaded: Boolean = false,
+        dataCount: Int = 0,
+        isListenerActive: Boolean = false,
+        isUpdating: Boolean = false
     ) {
-        Log.d(TAG, "Repository '$repository' progress: ${String.format("%.2f", progress * 100)}%")
+        Log.d(TAG, "=== Repository '$repository' Details ===")
+        Log.d(TAG, "- Progress: ${String.format("%.2f", progress * 100)}%")
+        Log.d(TAG, "- Initial data loaded: $initialDataLoaded")
+        Log.d(TAG, "- Data count: $dataCount")
+        Log.d(TAG, "- Listener active: $isListenerActive")
+        Log.d(TAG, "- Currently updating: $isUpdating")
+
+        // Identify potential issues preventing progress completion
+        if (progress < 1.0f) {
+            Log.d(TAG, "- Progress incomplete reasons:")
+            if (!initialDataLoaded) {
+                Log.d(TAG, "  * Initial data not yet loaded")
+            }
+            if (isUpdating) {
+                Log.d(TAG, "  * Repository currently performing updates")
+            }
+            if (dataCount == 0) {
+                Log.d(TAG, "  * No data available in repository")
+            }
+        }
+        Log.d(TAG, "----------------------------------------")
     }
 
     fun logError(
