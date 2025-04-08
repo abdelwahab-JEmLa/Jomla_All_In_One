@@ -105,8 +105,8 @@ fun A_MainListFragId3(
         }
 
         val existing_1_3_BonAchat = _1_3_BonAchat_Repository.modelDatasSnapList.find {
-            it.clientAchteurID == currentClientId
-                    && it.parent_1_4_PeriodeVentVid == parentCompose_1_3_BonAchatVid
+            it.clientAcheteurID == currentClientId
+                    && it.parent_1_4_PeriodeVentVid == parentCompose_1_4_PeriodeVentVid
         }
         parentCompose_1_3_BonAchatVid = if (existing_1_3_BonAchat != null) {
             existing_1_3_BonAchat.vid
@@ -116,8 +116,8 @@ fun A_MainListFragId3(
             _1_3_BonAchat_Repository.addData(
                 _1_3_BonAchat(
                     vid = newVid,
-                    clientAchteurID = currentClientId ,
-                    parentCompose_1_4_PeriodeVentVid
+                    clientAcheteurID = currentClientId ,
+                    parent_1_4_PeriodeVentVid=parentCompose_1_4_PeriodeVentVid
                 )
             )
             newVid
@@ -136,7 +136,7 @@ fun A_MainListFragId3(
                 _1_2_ProduitAcheteOperation(
                     vid = newVid,
                     produitAcheterID = produitActuelle,
-                    parentCompose_1_3_BonAchatVid
+                    parent_1_3_BonAchat = parentCompose_1_3_BonAchatVid
                 )
             )
             newVid

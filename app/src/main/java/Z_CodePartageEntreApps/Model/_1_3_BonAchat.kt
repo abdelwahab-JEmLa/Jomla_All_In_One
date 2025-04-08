@@ -2,21 +2,22 @@ package Z_CodePartageEntreApps.Model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
-@Entity(tableName = "_1_3_BonAchat")
+@Entity
 data class _1_3_BonAchat(
     @PrimaryKey(autoGenerate = true)
     var vid: Long = 0L,
-    var clientAchteurID: Long = 0L,
+
     // Section Related Parents Foreign Key IDs
     var parent_1_4_PeriodeVentVid: Long = 0L,
-
-    var vendeur_ParentVID: Long = 0L,
-    var periodeVentDateInString_ParentVID: Long = 0L,
+    var clientAcheteurID: Long = 0L,
 
     // Section InfosDeBase
-    var heurDebutInString: String = "00:00",
-    var heurFinInString: String = "00:00",
+    var heurDebutInString: String = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date()),
+    var heurFinInString: String = "Non Defini",
 
     // Section StatuesMutable
     var etateActuellementEst: EtateActuellementEst =
@@ -29,12 +30,5 @@ data class _1_3_BonAchat(
         NA_PAS_COMMANDE,
     }
 
-    fun mainKeyVal(): Any {
-        return vendeur_ParentVID
-    }
-
-    companion object {
-
-    }
 
 }

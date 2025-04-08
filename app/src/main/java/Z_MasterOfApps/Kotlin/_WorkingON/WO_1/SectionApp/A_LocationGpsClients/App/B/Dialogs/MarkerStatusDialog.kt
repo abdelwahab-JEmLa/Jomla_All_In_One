@@ -219,7 +219,7 @@ fun MarkerStatusDialog(
 
                                 val newData = _1_3_BonAchat(
                                     vid = newVid,
-                                    clientAchteurID = relatedClients?.id!!,
+                                    clientAcheteurID = relatedClients?.id!!,
                                     parent_1_4_PeriodeVentVid = uiStateviewModelFragment_APP2_ID_1._1_4_PeriodeVentList.maxOf { it.vid },
                                     heurDebutInString = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
                                 )

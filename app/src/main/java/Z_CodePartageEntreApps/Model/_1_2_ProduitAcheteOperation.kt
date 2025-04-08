@@ -11,10 +11,6 @@ data class _1_2_ProduitAcheteOperation(
     // Section Related Parents Foreign Key IDs
     var parent_1_3_BonAchat: Long = 0L,
 
-    var vendeur_ParentVID : Long = 0L,
-    var periodeVentDateInString_ParentVID : Long = 0L,
-    var produitId_ParentVID : Long = 0L,
-
     // Section InfosDeBase
 
     // Section StatuesMutable

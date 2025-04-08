@@ -6,7 +6,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-@Entity(tableName = "_1_4_PeriodeVent")
+@Entity
 data class _1_4_PeriodeVent(
     @PrimaryKey(autoGenerate = true)
     var vid: Long = 0L,

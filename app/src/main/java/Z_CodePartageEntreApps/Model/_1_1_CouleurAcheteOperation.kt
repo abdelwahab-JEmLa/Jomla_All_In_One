@@ -7,13 +7,11 @@ import androidx.room.PrimaryKey
 data class _1_1_CouleurAcheteOperation(
     @PrimaryKey(autoGenerate = true)
     var vid: Long = 0L,
-    
+
     // Section Related Parents Foreign Key IDs
-    var vendeur_ParentVID : Long = 0L,
-    var periodeVentDateInString_ParentVID : Long = 0L,
-    var produitId_ParentVID : Long = 0L,
     var couleurId_ParentVID : Long = 0L,
-    
+    var produitId_ParentVID : Long = 0L,
+
     // Section InfosDeBase
     var totaleQuantity: Int = 1,
 
