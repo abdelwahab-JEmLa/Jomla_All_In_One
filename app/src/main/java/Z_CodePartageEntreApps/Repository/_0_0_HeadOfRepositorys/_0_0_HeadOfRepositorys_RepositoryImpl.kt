@@ -22,6 +22,11 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+/**
+ * way inject
+ *
+ *     ,_0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository = koinInject()
+*/
 class _0_0_HeadOfRepositorys_RepositoryImpl(
     private val _1_1_Repository: _1_1_CouleurAcheteOperation_Repository,
     private val _1_2_Repository: _1_2_ProduitAcheteOperation_Repository,
