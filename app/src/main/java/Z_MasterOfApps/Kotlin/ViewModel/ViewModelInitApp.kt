@@ -28,6 +28,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
+
 @SuppressLint("SuspiciousIndentation")
 class ViewModelInitApp(
     val produitModelRepository: A_ProduitRepository,
@@ -43,8 +44,6 @@ class ViewModelInitApp(
     var _modelAppsFather by mutableStateOf(_ModelAppsFather())
 
 
-    val produitsMainDataBaseFromRepositeryPrototype get() = produitModelRepository.modelDatas
-
     val modelAppsFather: _ModelAppsFather get() = _modelAppsFather
     val produitsMainDataBase = _modelAppsFather.produitsMainDataBase
     val viewModel = this@ViewModelInitApp
@@ -53,6 +52,7 @@ class ViewModelInitApp(
 
     var isLoading by mutableStateOf(false)
     var loadingProgress by mutableFloatStateOf(0f)
+
 
     val functionsPartageEntreFragment = FunctionsPartageEntreFragment(this@ViewModelInitApp)
     val extentionStartup = Startup_Extension(this@ViewModelInitApp)

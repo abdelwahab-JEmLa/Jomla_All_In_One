@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -98,6 +99,16 @@ fun MainUi(
     currentClient: B_ClientsDataBase?,
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>
 ) {
+    // Check loading status from all repositories
+    val progress1 by viewModelInitApp._1_1_CouleurAcheteOperation_Repository.progressRepo.collectAsState()
+    val progress2 by viewModelInitApp._1_2_ProduitAcheteOperation_Repository.progressRepo.collectAsState()
+    val progress3 by viewModelInitApp._1_3_BonAchat_Repository.progressRepo.collectAsState()
+    val progress4 by viewModelInitApp._1_4_PeriodeVent_Repository.progressRepo.collectAsState()
+    val progress5 by viewModelInitApp._1_5_Vendeur_Repository.progressRepo.collectAsState()
+
+    val isLoading = progress1 < 1.0f || progress2 < 1.0f || progress3 < 1.0f ||
+            progress4 < 1.0f || progress5 < 1.0f
+
     var parentCompose_1_5_VendeurId by remember { mutableLongStateOf(0) }
     var parentCompose_1_4_PeriodeVentVid by remember { mutableLongStateOf(0) }
     var parentCompose_1_3_BonAchatVid by remember { mutableLongStateOf(0) }
@@ -184,7 +195,7 @@ fun MainUi(
     var showConfirmDialog by remember { mutableStateOf(false) }
     showConfirmDialog = confirmExitDialog(
         viewModelInitApp, showConfirmDialog, viewModel,
-                 ) {
+    ) {
         onDismiss()
         _DisplayeProductInfosToSeller(viewModelInitApp)
             .onClickOnMain(
@@ -201,7 +212,6 @@ fun MainUi(
             decorFitsSystemWindows = true
         )
     ) {
-
         Surface(
             modifier = modifier
                 .fillMaxSize()
@@ -210,70 +220,77 @@ fun MainUi(
             tonalElevation = 2.dp
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(bottom = 80.dp)
-                ) {
-                    articlesBaseStats?.let { stats ->
-                        item {
-                            ProductNameSection3(
-                                stats,
-                                onToggleLockExpandedPricex
-                            )
-                        }
-
-                        item {
-                            A_MainListFragId3(
-                                currentSale = currentSale,
-                                stats = stats,
-                                colorsArticlesTabelleModel = colorsArticlesTabelleModel,
-                                viewModel = viewModel,
-                                reloadTrigger = reloadTrigger,
-                                viewModelInitApp = viewModelInitApp,
-                                currentClient = currentClient,
-                                colorsArticlesTabelleModele = colorsArticlesTabelleModele,
-                                parentCompose_1_2_ProduitAcheteOperationVid=parentCompose_1_2_ProduitAcheteOperationVid,
-
+                // Show loading indicator when data is still loading
+                if (isLoading) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(bottom = 80.dp)
+                    ) {
+                        articlesBaseStats?.let { stats ->
+                            item {
+                                ProductNameSection3(
+                                    stats,
+                                    onToggleLockExpandedPricex
                                 )
-                        }
+                            }
 
-                        item {
-                            Details(
-                                isDetailsVisible = isDetailsVisible,
-                                article = stats,
-                                uiState = uiState,
-                                viewModel = viewModel,
-                                lockExpandedPrices = lockExpandedPrices,
-                                onToggleLockExpandedPricex = onToggleLockExpandedPricex
-                            )
+                            item {
+                                A_MainListFragId3(
+                                    currentSale = currentSale,
+                                    stats = stats,
+                                    colorsArticlesTabelleModel = colorsArticlesTabelleModel,
+                                    viewModel = viewModel,
+                                    reloadTrigger = reloadTrigger,
+                                    viewModelInitApp = viewModelInitApp,
+                                    currentClient = currentClient,
+                                    colorsArticlesTabelleModele = colorsArticlesTabelleModele,
+                                    parentCompose_1_2_ProduitAcheteOperationVid=parentCompose_1_2_ProduitAcheteOperationVid,
+                                )
+                            }
+
+                            item {
+                                Details(
+                                    isDetailsVisible = isDetailsVisible,
+                                    article = stats,
+                                    uiState = uiState,
+                                    viewModel = viewModel,
+                                    lockExpandedPrices = lockExpandedPrices,
+                                    onToggleLockExpandedPricex = onToggleLockExpandedPricex
+                                )
+                            }
                         }
                     }
-                }
 
-                Surface(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .fillMaxWidth(),
-                    color = MaterialTheme.colorScheme.surface,
-                    tonalElevation = 3.dp
-                ) {
-                    ActionsButtonRow(
-                        modifier = Modifier.padding(8.dp),
-                        currentSale=currentSale,
-                        currentClient=currentClient,
-                        onConfirm = {
-                            viewModel.saveSaleTransactionToSoldAriclesList()
-                            onDismiss()
-                        },
-                        onDismiss = onDismiss ,
-                        viewModel=viewModel,
-                        viewModelInitApp=viewModelInitApp
-                    )
+                    Surface(
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .fillMaxWidth(),
+                        color = MaterialTheme.colorScheme.surface,
+                        tonalElevation = 3.dp
+                    ) {
+                        ActionsButtonRow(
+                            modifier = Modifier.padding(8.dp),
+                            currentSale=currentSale,
+                            currentClient=currentClient,
+                            onConfirm = {
+                                viewModel.saveSaleTransactionToSoldAriclesList()
+                                onDismiss()
+                            },
+                            onDismiss = onDismiss,
+                            viewModel=viewModel,
+                            viewModelInitApp=viewModelInitApp
+                        )
+                    }
                 }
             }
         }
     }
 }
-
-
