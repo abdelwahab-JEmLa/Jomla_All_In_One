@@ -27,7 +27,6 @@ class _1_5_VendeurRepositoryImpl(
     override var modelDatasSnapList: SnapshotStateList<_1_5_Vendeur> =
         mutableStateListOf()
     override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
-    override val active_1_5_VendeurId = MutableStateFlow(0L)
 
     private val isUpdating = AtomicBoolean(false)
     private val isListenerActive = AtomicBoolean(false)
@@ -81,6 +80,8 @@ class _1_5_VendeurRepositoryImpl(
         updatesOperations.updateUnSeulData(data, repositoryScope, appDatabase, modelDatasSnapList)
     }
 
+    override val active_1_5_VendeurId = MutableStateFlow(0L)
+
     private suspend fun initialize_1_5_VendeurRepository() {
         try {
             loadDepuitRoom()
@@ -89,7 +90,9 @@ class _1_5_VendeurRepositoryImpl(
             val newVendor = checkADD(modelDatasSnapList)
             if (!modelDatasSnapList.any { it.vid == newVendor.second }) {
                 addData(newVendor.first)
+                active_1_5_VendeurId.value= newVendor.second
             }
+
 
             if (TAG.isNotEmpty()) {
                 log()
