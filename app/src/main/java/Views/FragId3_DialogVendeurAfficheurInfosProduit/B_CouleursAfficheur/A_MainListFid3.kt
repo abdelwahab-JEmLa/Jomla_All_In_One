@@ -190,7 +190,7 @@ fun A_MainListFragId3(
                                 viewModelInitApp = viewModelInitApp,
                                 currentClient = currentClient,
                                 colorsArticlesTabelleModele = colorsArticlesTabelleModele,
-                                parentCompose_1_4_PeriodeVentVid=parentCompose_1_4_PeriodeVentVid,
+                                parentCompose_1_2_ProduitAcheteOperationVid=parentCompose_1_2_ProduitAcheteOperationVid,
                             )
                         }
                     }
