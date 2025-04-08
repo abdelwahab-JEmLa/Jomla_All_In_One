@@ -16,11 +16,11 @@ data class _1_2_ProduitAcheteOperation(
     // Section StatuesMutable
 
     var etateActuellementEst: EtateActuellementEst =
-        EtateActuellementEst.CHOISI_UNE_QUANTITY,
+        EtateActuellementEst.PRESENTATION,
 
     ) {
     enum class EtateActuellementEst {
-        CHOISI_UNE_QUANTITY,
+        PRESENTATION,
         CONFIRME,
         SUPPRIME_AU_PREMIER_PICK,
         SUPP_AU_PANIER_FINALE

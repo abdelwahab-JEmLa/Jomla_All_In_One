@@ -1,4 +1,5 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit.Ui.Objects
+import Z_CodePartageEntreApps.Model._1_2_ProduitAcheteOperation
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -21,11 +22,12 @@ import com.example.clientjetpack.R
 import com.example.clientjetpack.ViewModel.HeadViewModel
 
 @Composable
- fun confirmExitDialog(
+ fun ConfirmExitDialog(
     viewModelInitApp: ViewModelInitApp,
     showConfirmDialog: Boolean,
     viewModel: HeadViewModel,
-    onDismiss: () -> Unit
+    parentCompose_1_2_ProduitAcheteOperationVid: Long,
+    onDismiss: () -> Unit,
 ): Boolean {
     var showConfirmDialog1 = showConfirmDialog
     if (showConfirmDialog1) {
@@ -47,6 +49,16 @@ import com.example.clientjetpack.ViewModel.HeadViewModel
             confirmButton = {
                 FilledTonalButton(
                     onClick = {
+                        val rep =
+                            viewModelInitApp._1_2_ProduitAcheteOperation_Repository
+                        rep.modelDatasSnapList
+                            .find {
+                                it.vid == parentCompose_1_2_ProduitAcheteOperationVid }
+                            ?.apply {
+                                etateActuellementEst =
+                                    _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME                            }
+                            ?.let { rep.updateUnSeulData(it) }
+
                         viewModel.saveSaleTransactionToSoldAriclesList()
                         onDismiss()
                     }
@@ -56,9 +68,19 @@ import com.example.clientjetpack.ViewModel.HeadViewModel
             },
             dismissButton = {
                 OutlinedButton(
-
                     onClick = {
+                        val rep =
+                            viewModelInitApp._1_2_ProduitAcheteOperation_Repository
+                        rep.modelDatasSnapList
+                            .find {
+                                it.vid == parentCompose_1_2_ProduitAcheteOperationVid }
+                            ?.apply {
+                                etateActuellementEst =
+                                    _1_2_ProduitAcheteOperation.EtateActuellementEst.SUPPRIME_AU_PREMIER_PICK                            }
+                            ?.let { rep.updateUnSeulData(it) }
+
                         onDismiss()
+
                     }
                 ) {
                     Row(

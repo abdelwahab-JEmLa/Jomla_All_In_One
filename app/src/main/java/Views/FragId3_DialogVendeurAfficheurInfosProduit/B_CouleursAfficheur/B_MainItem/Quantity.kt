@@ -1,8 +1,8 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem
 
+
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
-import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.koin.compose.koinInject
 
 @Composable
 fun QuantityButton(
@@ -28,52 +27,29 @@ fun QuantityButton(
     currentClient: B_ClientsDataBase?,
     compose_1_1_CouleurAcheteOperationVid: Long,
 ) {
-    val _1_1_CouleurAcheteOperation_Repository =
-        koinInject<_1_1_CouleurAcheteOperation_Repository>()
 
     Button(
         onClick = {
-            val data = _1_1_CouleurAcheteOperation_Repository.modelDatasSnapList.find {
-                it.vid == compose_1_1_CouleurAcheteOperationVid
-            }
-
-            data?.apply {
-                totaleQuantity=quantity
-            }?.let {
-                _1_1_CouleurAcheteOperation_Repository.updateUnSeulData(
-                    it
-                )
-            }
-
+            val couleuracheteoperationRepository =
+                viewModelInitApp._1_1_CouleurAcheteOperation_Repository
+            couleuracheteoperationRepository.modelDatasSnapList.find { it.vid == compose_1_1_CouleurAcheteOperationVid }?.apply {
+                totaleQuantity = quantity
+            }?.let { couleuracheteoperationRepository.updateUnSeulData(it) }
             onClick()
         },
-        modifier = Modifier
-            .fillMaxWidth()
-            .aspectRatio(1f),
+        modifier = Modifier.fillMaxWidth().aspectRatio(1f),
         shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = if (isSelected)
-                MaterialTheme.colorScheme.primary
-            else
-                MaterialTheme.colorScheme.primaryContainer
+            containerColor = if (isSelected) MaterialTheme.colorScheme.primary
+            else MaterialTheme.colorScheme.primaryContainer
         )
     ) {
         Text(
             text = quantity.toString(),
             fontSize = 15.sp,
             fontWeight = FontWeight.Bold,
-            color = if (isSelected)
-                MaterialTheme.colorScheme.onPrimary
-            else
-                MaterialTheme.colorScheme.onPrimaryContainer
+            color = if (isSelected) MaterialTheme.colorScheme.onPrimary
+            else MaterialTheme.colorScheme.onPrimaryContainer
         )
     }
 }
-
-
-
-
-
-
-
-

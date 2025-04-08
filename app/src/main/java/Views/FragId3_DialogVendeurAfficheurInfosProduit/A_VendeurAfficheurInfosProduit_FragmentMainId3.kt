@@ -3,8 +3,8 @@ package Views.FragId3_DialogVendeurAfficheurInfosProduit
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.A_MainListFragId3
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.C_PrixInfosProduit.Details
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.Ui.Objects.ActionsButtonRow
+import Views.FragId3_DialogVendeurAfficheurInfosProduit.Ui.Objects.ConfirmExitDialog
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.Ui.Objects.ProductNameSection3
-import Views.FragId3_DialogVendeurAfficheurInfosProduit.Ui.Objects.confirmExitDialog
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
@@ -116,8 +116,6 @@ fun MainUi(
     var parentCompose_1_2_ProduitAcheteOperationVid by remember { mutableLongStateOf(0L) }
 
     LaunchedEffect(key1 = currentSale.idArticle) {
-        // Initialize all IDs in sequence to ensure proper dependency chain
-
         val deviceModelNom = Build.MODEL
         val existingVendor = viewModelInitApp._1_5_Vendeur_Repository
             .modelDatasSnapList.find { it.deviceModelNom == deviceModelNom }
@@ -198,8 +196,11 @@ fun MainUi(
     }
 
     var showConfirmDialog by remember { mutableStateOf(false) }
-    showConfirmDialog = confirmExitDialog(
-        viewModelInitApp, showConfirmDialog, viewModel,
+    showConfirmDialog = ConfirmExitDialog(
+        viewModelInitApp,
+        parentCompose_1_2_ProduitAcheteOperationVid=parentCompose_1_2_ProduitAcheteOperationVid,
+        showConfirmDialog = showConfirmDialog,
+        viewModel = viewModel,
     ) {
         onDismiss()
         _DisplayeProductInfosToSeller(viewModelInitApp)
