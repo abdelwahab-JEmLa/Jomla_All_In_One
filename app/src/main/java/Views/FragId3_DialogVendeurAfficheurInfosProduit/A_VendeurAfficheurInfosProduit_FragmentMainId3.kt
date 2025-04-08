@@ -103,7 +103,6 @@ fun MainUi(
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
     _0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository= koinInject()
 ) {
-    // Fixed access to progress value
     val progressValue by _0_0_HeadOfRepositorys_Repository.progressRepo.collectAsState()
     val isLoading = progressValue < 1.0f
 
