@@ -3,7 +3,7 @@ package Z_CodePartageEntreApps.Repository._1_5_Vendeur
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur.Extension.Log._1_5_VendeurRepositoryLogOperationsExtention
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur.Extension.Update._1_5_VendeurRepositoryUpdatesOperaionsExtention
-import android.os.Build
+import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur.Companion.checkADD
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -85,7 +85,12 @@ class _1_5_VendeurRepositoryImpl(
         try {
             loadDepuitRoom()
             checkDataConsistency()
-            ajoutDataSiNonDispo()
+
+            val newVendor = checkADD(modelDatasSnapList)
+            if (!modelDatasSnapList.any { it.vid == newVendor.second }) {
+                addData(newVendor.first)
+            }
+
             if (TAG.isNotEmpty()) {
                 log()
             }
@@ -94,23 +99,6 @@ class _1_5_VendeurRepositoryImpl(
         }
     }
 
-    fun ajoutDataSiNonDispo() {
-        val deviceModelNom = Build.MODEL
-        val existingVendor = modelDatasSnapList.find { it.deviceModelNom == deviceModelNom }
-
-        active_1_5_VendeurId.value = if (existingVendor != null) {
-            existingVendor.vid
-        } else {
-            val newVid = modelDatasSnapList.maxOfOrNull { it.vid }?.plus(1) ?: 1
-            addData(
-                _1_5_Vendeur(
-                    vid = newVid,
-                    deviceModelNom = deviceModelNom
-                )
-            )
-            newVid
-        }
-    }
 
     private suspend fun loadDepuitRoom() {
         try {

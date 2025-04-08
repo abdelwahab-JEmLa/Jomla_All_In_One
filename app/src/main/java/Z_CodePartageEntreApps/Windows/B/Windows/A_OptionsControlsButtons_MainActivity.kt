@@ -51,7 +51,7 @@ fun A_OptionsControlsButtons_Main(
     var offsetX by remember { mutableFloatStateOf(0f) }
     var offsetY by remember { mutableFloatStateOf(0f) }
 
-    // Collect UI state to check if filtering is active
+    // Collect UI state to checkADD if filtering is active
     val uiState by viewModel.uiStateFlow.collectAsState()
     val isFilterActive = uiState.isFilteringActive
 

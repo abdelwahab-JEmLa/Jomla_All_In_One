@@ -70,7 +70,7 @@ object FirebaseUtilsP_BonsCommandGrossist {
                         // Set flag that initial data loading is complete
                         repository.initialDataLoaded = true
 
-                        // Now that data is loaded, check if we need to initialize
+                        // Now that data is loaded, checkADD if we need to initialize
                         repository.checkAndInitializeIfNeeded(repository.soldArticlesTabelleRepository)
                         return
                     }
@@ -95,7 +95,7 @@ object FirebaseUtilsP_BonsCommandGrossist {
                     // Set flag that initial data loading is complete
                     repository.initialDataLoaded = true
 
-                    // Now that data is loaded, check if we need to initialize
+                    // Now that data is loaded, checkADD if we need to initialize
                     repository.checkAndInitializeIfNeeded(repository.soldArticlesTabelleRepository)
 
                 } catch (e: Exception) {
@@ -125,7 +125,7 @@ object FirebaseUtilsP_BonsCommandGrossist {
     fun checkConnectivityAndSync(repository: P_BonsCommandGrossistRepositoryImpl) {
         val currentTime = System.currentTimeMillis()
 
-        // Only check every CONNECTIVITY_CHECK_INTERVAL milliseconds
+        // Only checkADD every CONNECTIVITY_CHECK_INTERVAL milliseconds
         if (currentTime - lastConnectivityCheck < CONNECTIVITY_CHECK_INTERVAL) return
 
         lastConnectivityCheck = currentTime

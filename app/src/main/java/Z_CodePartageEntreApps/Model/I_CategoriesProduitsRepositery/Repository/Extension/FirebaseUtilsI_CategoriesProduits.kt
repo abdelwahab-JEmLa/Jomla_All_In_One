@@ -121,7 +121,7 @@ object FirebaseUtilsI_CategoriesProduits {
     fun checkConnectivityAndSync(repository: I_CategoriesProduitsNewProtoRepositoryImpl) {
         val currentTime = System.currentTimeMillis()
 
-        // Only check every CONNECTIVITY_CHECK_INTERVAL milliseconds
+        // Only checkADD every CONNECTIVITY_CHECK_INTERVAL milliseconds
         if (currentTime - lastConnectivityCheck < CONNECTIVITY_CHECK_INTERVAL) return
 
         lastConnectivityCheck = currentTime

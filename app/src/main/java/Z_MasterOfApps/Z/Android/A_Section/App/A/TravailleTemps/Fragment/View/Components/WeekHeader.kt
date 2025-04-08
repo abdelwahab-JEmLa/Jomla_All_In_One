@@ -47,7 +47,7 @@ fun WeekHeader(
     weekInfo: WeekInfo,
     viewModel: Windows__ViewModel
 ) {
-    // Get all records for this specific week and check if all are paid
+    // Get all records for this specific week and checkADD if all are paid
     val weekRecords = viewModel.dateList.filter { record ->
         val dateString = record.infosDeBase.dateInString
         val parts = dateString.split("/")

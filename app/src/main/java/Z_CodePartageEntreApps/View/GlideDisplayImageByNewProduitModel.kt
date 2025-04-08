@@ -58,7 +58,7 @@ fun GlideDisplayImageByNewProduitModel(
         mutableStateOf(keyImageId == "null" )
     }
 
-    // Function to check if file exists and is valid
+    // Function to checkADD if file exists and is valid
     suspend fun findValidImageFile(basePath: String): File? {
         return withContext(Dispatchers.IO) {
             val extensions = listOf("jpg", "jpeg", "png", "webp")

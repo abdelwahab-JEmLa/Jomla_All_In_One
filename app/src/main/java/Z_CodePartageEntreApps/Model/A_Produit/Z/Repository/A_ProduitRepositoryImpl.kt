@@ -87,12 +87,12 @@ class A_ProduitRepositoryImpl(
                 importDeFireBaseAuRoom(repositoryScope)
             }
 
-            // Set up listener after data consistency check
+            // Set up listener after data consistency checkADD
             withContext(Dispatchers.Main) {
                 setUpFlowDataListener()
             }
         } catch (e: Exception) {
-            // Set up listener even if consistency check fails
+            // Set up listener even if consistency checkADD fails
             withContext(Dispatchers.Main) {
                 setUpFlowDataListener()
             }

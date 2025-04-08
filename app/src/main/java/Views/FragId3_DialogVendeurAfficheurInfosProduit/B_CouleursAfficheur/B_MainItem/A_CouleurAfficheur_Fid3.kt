@@ -139,7 +139,7 @@ fun B_CouleurAfficheur(
     )
 
     LaunchedEffect(key1 = currentSale?.idArticle) {
-        // Updated condition to check for any color position with quantity
+        // Updated condition to checkADD for any color position with quantity
         if (hasQuantity) {
             _DisplayeProductInfosToSeller(viewModelInitApp)
                 .onClickComposeQuantityButton(

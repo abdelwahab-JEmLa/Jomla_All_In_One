@@ -59,7 +59,7 @@ class ConnectivityMonitorNewProto(private val scope: CoroutineScope) {
     suspend fun checkConnectivity(): Boolean {
         val currentTime = System.currentTimeMillis()
 
-        // Early return with cached state if within check interval
+        // Early return with cached state if within checkADD interval
         if (currentTime - lastCheckTime < CHECK_INTERVAL && lastNotifiedState != null) {
             return isOnline
         }

@@ -114,6 +114,7 @@ fun MainUi(
     LaunchedEffect(
         key1 = currentSale.idArticle
     ) {
+
         val currenteDateInString =
             SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
         val existing_1_4_PeriodeVent =
