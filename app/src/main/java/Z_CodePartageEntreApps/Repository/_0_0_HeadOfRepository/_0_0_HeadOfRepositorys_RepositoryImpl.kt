@@ -1,6 +1,5 @@
 package Z_CodePartageEntreApps.Repository._0_0_HeadOfRepository
 
-import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepository.Extension.Log._0_0_HeadOfRepositoryLogOperationsExtension
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
@@ -20,7 +19,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class _0_0_HeadOfRepositorys_RepositoryImpl(
-    private val appDatabase: AppDatabase,
     private val _1_1_Repository: _1_1_CouleurAcheteOperation_Repository,
     private val _1_2_Repository: _1_2_ProduitAcheteOperation_Repository,
     private val _1_3_Repository: _1_3_BonAchat_Repository,
@@ -47,7 +45,7 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
         }
     }
 
-    override suspend fun ensureDataIsInitialized() {
+     suspend fun ensureDataIsInitialized() {
         try {
             if (!initialDataLoaded) {
                 withContext(Dispatchers.IO) {

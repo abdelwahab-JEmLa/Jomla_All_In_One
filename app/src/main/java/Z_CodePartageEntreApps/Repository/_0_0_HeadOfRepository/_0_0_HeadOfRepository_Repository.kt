@@ -10,13 +10,8 @@ interface _0_0_HeadOfRepositorys_Repository {
     var modelDatasSnapList: SnapshotStateList<_0_0_HeadOfRepository>
 
     val progressRepo: MutableStateFlow<Float>
-        get() {
-            // This will be implemented in the implementation class to calculate
-            // the combined progress from all repositories
-            return MutableStateFlow(0f)
-        }
+        get() { return MutableStateFlow(0f)}
 
-    suspend fun ensureDataIsInitialized()
 
     companion object {
         const val TAG = "_0_0_HeadOfRepositorys"
