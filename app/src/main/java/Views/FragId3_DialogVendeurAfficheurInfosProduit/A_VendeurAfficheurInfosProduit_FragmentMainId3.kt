@@ -114,7 +114,6 @@ fun MainUi(
     var parentCompose_1_3_BonAchatVid by remember { mutableLongStateOf(0L) }
     var parentCompose_1_2_ProduitAcheteOperationVid by remember { mutableLongStateOf(0L) }
 
-// Use key1 = currentSale.idArticle to ensure this runs when the current sale changes
     LaunchedEffect(key1 = currentSale.idArticle) {
         // Initialize all IDs in sequence to ensure proper dependency chain
 
