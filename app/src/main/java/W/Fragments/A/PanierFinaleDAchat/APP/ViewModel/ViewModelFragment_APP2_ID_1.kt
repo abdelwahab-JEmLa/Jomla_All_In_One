@@ -71,30 +71,6 @@ class ViewModelFragment_APP2_ID_1(
         }
     }
 
-    fun upsert_1_1_CouleurAcheteOperation(
-        compose_1_1_CouleurAcheteOperationVid: Long,
-        compose_1_2_ProduitAcheteOperationVid: Long,
-        compose_1_3_BonAchatVid: Long,
-        compose_1_4_PeriodeVentVid: Long,
-        compose_1_5_VendeurId: Long
-    ): Unit {
-        // Check if an item with the same parent references already exists
-        val existingItem = _uiStateFlow.value._1_1_CouleurAcheteOperationList.find {
-            it.vendeur_ParentVID == compose_1_5_VendeurId &&
-                    it.periodeVentDateInString_ParentVID == newData.periodeVentDateInString_ParentVID &&
-                    it.produitId_ParentVID == newData.produitId_ParentVID &&
-                    it.couleurId_ParentVID == newData.couleurId_ParentVID &&
-                    it.etateActuellementEst == newData.etateActuellementEst
-        }
-
-        if (existingItem != null) {
-            _1_1_CouleurAcheteOperation_Repository.updateUnSeulData(existingItem)
-        } else {
-            // Otherwise add as a new item
-            _1_1_CouleurAcheteOperation_Repository.addData(newData)
-        }
-    }
-
     fun addData_1_3_BonAchat_Repository(newData: _1_3_BonAchat): Unit {
         _1_3_BonAchat_Repository.addData(newData)
     }

@@ -104,13 +104,13 @@ suspend fun addHardcodedDataToFirebase(
                 vid = 202L,
                 produitAcheterID = 1002L,
                 parent_1_3_BonAchat = 501L,
-                etateActuellementEst = _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME
+                etateActuellementEst = _1_2_ProduitAcheteOperation.EtateActuellementEst.QUANTITY_CHOSI_MAIS_PAS_DE_CONFIRMATION_PRODUIT
             ),
             _1_2_ProduitAcheteOperation(
                 vid = 203L,
                 produitAcheterID = 1003L,
                 parent_1_3_BonAchat = 502L,
-                etateActuellementEst = _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME
+                etateActuellementEst = _1_2_ProduitAcheteOperation.EtateActuellementEst.QUANTITY_CHOSI_MAIS_PAS_DE_CONFIRMATION_PRODUIT
             ),
             _1_2_ProduitAcheteOperation(
                 vid = 204L,
@@ -122,7 +122,7 @@ suspend fun addHardcodedDataToFirebase(
                 vid = 205L,
                 produitAcheterID = 1005L,
                 parent_1_3_BonAchat = 503L,
-                etateActuellementEst = _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME
+                etateActuellementEst = _1_2_ProduitAcheteOperation.EtateActuellementEst.QUANTITY_CHOSI_MAIS_PAS_DE_CONFIRMATION_PRODUIT
             ),
             _1_2_ProduitAcheteOperation(
                 vid = 206L,
@@ -134,7 +134,7 @@ suspend fun addHardcodedDataToFirebase(
                 vid = 207L,
                 produitAcheterID = 1007L,
                 parent_1_3_BonAchat = 504L,
-                etateActuellementEst = _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME
+                etateActuellementEst = _1_2_ProduitAcheteOperation.EtateActuellementEst.QUANTITY_CHOSI_MAIS_PAS_DE_CONFIRMATION_PRODUIT
             ),
             _1_2_ProduitAcheteOperation(
                 vid = 208L,
@@ -152,7 +152,7 @@ suspend fun addHardcodedDataToFirebase(
                 vid = 210L,
                 produitAcheterID = 1010L,
                 parent_1_3_BonAchat = 507L,
-                etateActuellementEst = _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME
+                etateActuellementEst = _1_2_ProduitAcheteOperation.EtateActuellementEst.QUANTITY_CHOSI_MAIS_PAS_DE_CONFIRMATION_PRODUIT
             ),
             _1_2_ProduitAcheteOperation(
                 vid = 250L,
@@ -194,7 +194,7 @@ suspend fun addHardcodedDataToFirebase(
                 couleurId = 105L,
                 parent_1_2_ProduitAcheteOperationID = 204L,
                 totaleQuantity = 35,
-                etateActuellementEst = _1_1_CouleurAcheteOperation.EtateActuellementEst.CONFIRME
+                etateActuellementEst = _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOSI_MAIS_PAS_DE_CONFIRMATION_PRODUIT
             ),
             _1_1_CouleurAcheteOperation(
                 vid = 6L,
@@ -208,7 +208,7 @@ suspend fun addHardcodedDataToFirebase(
                 couleurId = 107L,
                 parent_1_2_ProduitAcheteOperationID = 205L,
                 totaleQuantity = 60,
-                etateActuellementEst = _1_1_CouleurAcheteOperation.EtateActuellementEst.CONFIRME
+                etateActuellementEst = _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOSI_MAIS_PAS_DE_CONFIRMATION_PRODUIT
             ),
             _1_1_CouleurAcheteOperation(
                 vid = 8L,
@@ -222,7 +222,7 @@ suspend fun addHardcodedDataToFirebase(
                 couleurId = 109L,
                 parent_1_2_ProduitAcheteOperationID = 207L,
                 totaleQuantity = 55,
-                etateActuellementEst = _1_1_CouleurAcheteOperation.EtateActuellementEst.CONFIRME
+                etateActuellementEst = _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOSI_MAIS_PAS_DE_CONFIRMATION_PRODUIT
             ),
             _1_1_CouleurAcheteOperation(
                 vid = 10L,
@@ -243,14 +243,14 @@ suspend fun addHardcodedDataToFirebase(
                 couleurId = 112L,
                 parent_1_2_ProduitAcheteOperationID = 210L,
                 totaleQuantity = 65,
-                etateActuellementEst = _1_1_CouleurAcheteOperation.EtateActuellementEst.CONFIRME
+                etateActuellementEst = _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOSI_MAIS_PAS_DE_CONFIRMATION_PRODUIT
             ),
             _1_1_CouleurAcheteOperation(
                 vid = 15L,
                 couleurId = 120L,
                 parent_1_2_ProduitAcheteOperationID = 250L,
                 totaleQuantity = 65,
-                etateActuellementEst = _1_1_CouleurAcheteOperation.EtateActuellementEst.CONFIRME
+                etateActuellementEst = _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOSI_MAIS_PAS_DE_CONFIRMATION_PRODUIT
             )
         )
         if (active) {

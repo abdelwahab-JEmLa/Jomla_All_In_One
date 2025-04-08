@@ -2,6 +2,7 @@ package Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_M
 
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
+import Z_CodePartageEntreApps.Model._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.aspectRatio
@@ -39,6 +40,8 @@ fun QuantityButton(
 
             data?.apply {
                 totaleQuantity=quantity
+                etateActuellementEst= _1_1_CouleurAcheteOperation.EtateActuellementEst
+                    .QUANTITY_CHOSI_MAIS_PAS_DE_CONFIRMATION_PRODUIT
             }?.let {
                 _1_1_CouleurAcheteOperation_Repository.updateUnSeulData(
                     it

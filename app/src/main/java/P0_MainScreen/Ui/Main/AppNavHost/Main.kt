@@ -6,13 +6,10 @@ import Views.FragId3_DialogVendeurAfficheurInfosProduit.A_VendeurAfficheurInfosP
 import Views.P1._ArticlesStartFacade.FragmentStartupScreen
 import Views.Package_4.SoldCartScreen.SoldCartScreen
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
-import Z_CodePartageEntreApps.Model._1_1_CouleurAcheteOperation
-import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur_Repository
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Kotlin._WorkingON.WO_.WifiUpdateClientDisplayerStats
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.A_id1_ClientsLocationGps
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.MainScreen_Windows
-import android.os.Build
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -39,7 +36,6 @@ import com.google.firebase.Firebase
 import com.google.firebase.database.database
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.koin.compose.koinInject
 
 fun NavGraphBuilder.app2(
     viewModelInitApp: ViewModelInitApp,
@@ -88,9 +84,6 @@ fun AppNavHost(
     lockHost: Boolean
 ) {
     val uiState by headViewModel.uiState.collectAsState()
-    val viewmodelfragmentApp2Id1 = viewModelInitApp.viewModelFragment_APP2_ID_1
-    val uiStateviewModelFragment_APP2_ID_1 by viewmodelfragmentApp2Id1.uiStateFlow.collectAsState()
-
     // Get current client from settings
     val currentClientId = uiState.appSettingsSaverModel
         .find { it.name == "clientBuyerNowId" }?.valueLong ?: 0
@@ -150,8 +143,6 @@ fun AppNavHost(
                 }
 
                 composable(Screen.EditDatabaseWithCreateNewArticles.route) {
-                    // Inject the repository in a @Composable context
-                    val vendeurRepository = koinInject<_1_5_Vendeur_Repository>()
 
                     Box(modifier = Modifier.fillMaxSize()) {
                         FragmentStartupScreen(
@@ -159,28 +150,6 @@ fun AppNavHost(
                             onToggleNavBar = onToggleNavBar,
                             reloadTrigger = reloadTrigger,
                             onClickToOpenWindos = { articleDataBaseOn, indexColor ->
-                                val couleurId = when (indexColor) {
-                                    0 -> articleDataBaseOn.idcolor1
-                                    1 -> articleDataBaseOn.idcolor2
-                                    2 -> articleDataBaseOn.idcolor3
-                                    3 -> articleDataBaseOn.idcolor4
-                                    else -> 0
-                                }
-
-                                val periodeVentDateInString_ParentVID = uiStateviewModelFragment_APP2_ID_1
-                                    ._1_4_PeriodeVentList.maxOfOrNull { it.vid } ?: 0
-
-                                // Use the injected repository here instead of koinInject in a non-composable context
-                                viewmodelfragmentApp2Id1.upsert_1_1_CouleurAcheteOperation(
-                                    _1_1_CouleurAcheteOperation(
-                                        vendeur_ParentVID = vendeurRepository.getIdParNomModel(Build.MODEL),
-                                        periodeVentDateInString_ParentVID = periodeVentDateInString_ParentVID,
-                                        produitId_ParentVID = articleDataBaseOn.idArticle.toLong(),
-                                        couleurId_ParentVID = couleurId,
-                                        totaleQuantity = 1
-                                    )
-                                )
-
                                 relatedArticleBaseStats = articleDataBaseOn
                                 pendingIndexColor = indexColor
 
