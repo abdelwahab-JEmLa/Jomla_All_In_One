@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation
 
-import Z_CodePartageEntreApps.Model._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
+import Z_CodePartageEntreApps.Model._1_1_CouleurAcheteOperation
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -91,6 +91,7 @@ class _1_1_CouleurAcheteOperationRepositoryImpl(
         }
     }
 
+    // In each XxxRepositoryImpl class
     private suspend fun loadDepuitRoom() {
         try {
             progressRepo.value = 0.2f
@@ -107,7 +108,7 @@ class _1_1_CouleurAcheteOperationRepositoryImpl(
                     if (dataList.isNotEmpty()) {
                         modelDatasSnapList.addAll(dataList)
                     }
-                    initialDataLoaded = true
+                    initialDataLoaded = true  // Make sure this is set
                     progressRepo.value = 1.0f
                 }
             }

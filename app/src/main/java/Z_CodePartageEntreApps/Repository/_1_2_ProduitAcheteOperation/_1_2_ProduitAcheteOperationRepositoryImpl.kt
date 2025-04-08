@@ -128,6 +128,7 @@ class _1_2_ProduitAcheteOperationRepositoryImpl(
                     if (dataList.isNotEmpty()) {
                         modelDatasSnapList.addAll(dataList)
                     }
+
                     initialDataLoaded = true
                     progressRepo.value = 1.0f
                 }

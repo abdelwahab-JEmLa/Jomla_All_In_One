@@ -3,7 +3,6 @@ package Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys
 import Z_CodePartageEntreApps.Model._1_3_BonAchat
 import Z_CodePartageEntreApps.Model._1_4_PeriodeVent
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.Extension.Log._0_0_HeadOfRepositoryLogOperationsExtension
-import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperationRepositoryImpl
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat_Repository
@@ -16,7 +15,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -56,15 +54,24 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
 
     private val logOperations = _0_0_HeadOfRepositoryLogOperationsExtension(this)
 
+    // In the head repository's init block
     init {
         repositoryScope.launch {
-            // First, initialize all repositories
             initialize_0_0_HeadOfRepositoryRepository()
 
-            // Then explicitly create the necessary initial data, regardless of progress
-            createInitialData()
+            // Ensure all child repositories are initialized
+            _1_1_Repository.ensureDataIsInitialized()
+            _1_2_Repository.ensureDataIsInitialized()
+            _1_3_Repository.ensureDataIsInitialized()
+            _1_4_Repository.ensureDataIsInitialized()
+            _1_5_Repository.ensureDataIsInitialized()
 
-            // Finally start tracking progress
+            // Then add essential data
+            checkADD_1_5_Repository()
+            checkADD_1_4_PeriodeVent()
+            checkADD_1_3_BonAchat()
+
+            // Start tracking progress afterward
             startProgressTracking()
         }
     }
@@ -290,8 +297,10 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
         }
     }
 
-    private suspend fun startProgressTracking() {
+    private suspend fun startProgressTracking(onComplete: () -> Unit = {}) {
         isFlowListenerActive = true
+        var hasCompletedOnce = false
+
         try {
             // Combine all progress flows
             combine(
@@ -301,39 +310,6 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                 _1_4_Repository.progressRepo,
                 _1_5_Repository.progressRepo
             ) { progress1, progress2, progress3, progress4, progress5 ->
-                // Log detailed progress for each repository
-                logOperations.logRepositoryProgress(
-                    repository = "_1_1_CouleurAcheteOperation",
-                    progress = progress1,
-                    initialDataLoaded = _1_1_Repository is _1_1_CouleurAcheteOperationRepositoryImpl &&
-                            (_1_1_Repository as? _1_1_CouleurAcheteOperationRepositoryImpl)?.initialDataLoaded ?: false,
-                    dataCount = _1_1_Repository.modelDatasSnapList.size
-                )
-
-                logOperations.logRepositoryProgress(
-                    repository = "_1_2_ProduitAcheteOperation",
-                    progress = progress2,
-                    dataCount = _1_2_Repository.modelDatasSnapList.size
-                )
-
-                logOperations.logRepositoryProgress(
-                    repository = "_1_3_BonAchat",
-                    progress = progress3,
-                    dataCount = _1_3_Repository.modelDatasSnapList.size
-                )
-
-                logOperations.logRepositoryProgress(
-                    repository = "_1_4_PeriodeVent",
-                    progress = progress4,
-                    dataCount = _1_4_Repository.modelDatasSnapList.size
-                )
-
-                logOperations.logRepositoryProgress(
-                    repository = "_1_5_Vendeur",
-                    progress = progress5,
-                    dataCount = _1_5_Repository.modelDatasSnapList.size
-                )
-
                 // Calculate the average progress
                 val combinedProgress = (progress1 + progress2 + progress3 + progress4 + progress5) / 5f
 
@@ -350,16 +326,16 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                 }
 
                 combinedProgress
-            }.collectLatest { combinedProgress ->
+            }.collect { combinedProgress ->
                 progressRepo.value = combinedProgress
-                initialDataLoaded = combinedProgress >= 0.95f
                 log()
 
-                // Update timestamp when progress completes
-                if (combinedProgress >= 1.0f && !initialDataLoaded) {
-                    initialDataLoaded = true
-                    lastUpdateTimestamp = System.currentTimeMillis()
-                    Log.d(TAG, "Repository initialization complete at ${SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date())}")
+                // Check if loading is complete (progress = 1.0f)
+                if (combinedProgress >= 1.0f && !hasCompletedOnce) {
+                    hasCompletedOnce = true
+                    onComplete()
+                    // Optional: If you want to stop collecting after completion
+                    // isFlowListenerActive = false
                 }
             }
         } catch (e: Exception) {
