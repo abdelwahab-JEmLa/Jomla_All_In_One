@@ -1,7 +1,7 @@
-package Z_CodePartageEntreApps.Repository._0_0_HeadOfRepository.Extension.Log
+package Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.Extension.Log
 
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepository._0_0_HeadOfRepositorys_Repository
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepository._0_0_HeadOfRepositorys_RepositoryImpl
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_RepositoryImpl
 import android.util.Log
 import java.text.SimpleDateFormat
 import java.util.Date

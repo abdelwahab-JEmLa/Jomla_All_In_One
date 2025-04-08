@@ -1,12 +1,13 @@
+package Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys
+
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat_Repository
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur_Repository
 
-data class _0_0_HeadOfRepository(
+data class _0_0_HeadOfRepositorys_Model(
     val _1_1_CouleurAcheteOperation_Repository: _1_1_CouleurAcheteOperation_Repository,
-    // Add other repositories
     val _1_2_ProduitAcheteOperation_Repository: _1_2_ProduitAcheteOperation_Repository,
     val _1_3_BonAchat_Repository: _1_3_BonAchat_Repository,
     val _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository,

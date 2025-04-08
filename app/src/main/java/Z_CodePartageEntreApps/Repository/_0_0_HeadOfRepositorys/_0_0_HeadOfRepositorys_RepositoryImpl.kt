@@ -1,12 +1,11 @@
-package Z_CodePartageEntreApps.Repository._0_0_HeadOfRepository
+package Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys
 
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepository.Extension.Log._0_0_HeadOfRepositoryLogOperationsExtension
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.Extension.Log._0_0_HeadOfRepositoryLogOperationsExtension
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat_Repository
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur_Repository
-import _0_0_HeadOfRepository
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -27,7 +26,7 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
 ) : _0_0_HeadOfRepositorys_Repository {
     private val TAG = _0_0_HeadOfRepositorys_Repository.TAG
 
-    override var modelDatasSnapList: SnapshotStateList<_0_0_HeadOfRepository> = mutableStateListOf()
+    override var modelDatasSnapList: SnapshotStateList<_0_0_HeadOfRepositorys_Model> = mutableStateListOf()
     override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
 
     private val repositoryScope = CoroutineScope(Dispatchers.IO)
@@ -87,7 +86,7 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
             progressRepo.value = 0.2f
             withContext(Dispatchers.IO) {
                 // Create a repository head with all repositories
-                val headRepository = _0_0_HeadOfRepository(
+                val headRepository = _0_0_HeadOfRepositorys_Model(
                     _1_1_CouleurAcheteOperation_Repository = _1_1_Repository,
                     _1_2_ProduitAcheteOperation_Repository = _1_2_Repository,
                     _1_3_BonAchat_Repository = _1_3_Repository,
