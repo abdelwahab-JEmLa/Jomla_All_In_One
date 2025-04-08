@@ -115,6 +115,7 @@ fun MainUi(
     var parentCompose_1_2_ProduitAcheteOperationVid by remember { mutableLongStateOf(0) }
 
     LaunchedEffect(Unit) {
+
         val deviceModelNom = Build.MODEL
         val existingVendor = viewModelInitApp._1_5_Vendeur_Repository
             .modelDatasSnapList.find { it.deviceModelNom == deviceModelNom }

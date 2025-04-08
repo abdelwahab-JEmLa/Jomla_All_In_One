@@ -1102,6 +1102,7 @@ open class HeadViewModel(
 
     init {
         viewModelScope.launch {
+
             if(database.articlesBasesStatsModelDao().getAll().size==0)
             {
                 importFromFirebase()

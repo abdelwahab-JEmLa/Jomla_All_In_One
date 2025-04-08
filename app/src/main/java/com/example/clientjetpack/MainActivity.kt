@@ -2,13 +2,13 @@ package com.example.clientjetpack
 
 import P0_MainScreen.Main.MainScreen
 import P6_AiGroupeForSupplier.GenerativeAiViewModel
-import Z_MasterOfApps.A.MainActivity.Start.Module.A.Koin.appClientModules
+import W.Fragments.A.PanierFinaleDAchat.APP.View.composeModules
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.appManagerModules
-
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.appModule
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.isManagerApp
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import W.Fragments.A.PanierFinaleDAchat.APP.View.composeModules
+import Z_CodePartageEntreApps.Model.Z.Archive._ModelAppsFather.Companion.firebaseDatabase
+import Z_MasterOfApps.A.MainActivity.Start.Module.A.Koin.appClientModules
 import Z_MasterOfApps.Z.Android.A_MainActivityApp.Start.Modules.PermissionHandler
 import android.app.Application
 import android.content.Context
@@ -28,7 +28,9 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.clientjetpack.ui.theme.ClientJetPackTheme
+import com.google.firebase.Firebase
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.database
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.androidx.compose.KoinAndroidContext
@@ -52,6 +54,7 @@ class MyApplication : Application() {
         } catch (e: Exception) {
             Log.e("Firebase", "Initialization error: ${e.message}")
         }
+
 
         // Initialize Koin with the appropriate modules
         startKoin {
@@ -118,6 +121,7 @@ class MainActivity : ComponentActivity() {
                     KoinAndroidContext {
                         Box(modifier = Modifier.fillMaxSize()) {
                             if (permissionsChecked) {
+
                                 MainScreen()
                             } else {}
                         }

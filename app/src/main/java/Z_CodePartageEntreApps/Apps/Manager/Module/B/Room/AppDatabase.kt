@@ -14,6 +14,7 @@ import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.DevicesTypeManager
 import Z_CodePartageEntreApps.Model.Z.Archive.DiviseurDeDisplayProductForEachClient
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
+import Z_CodePartageEntreApps.Model.Z.Archive._ModelAppsFather.Companion.firebaseDatabase
 import Z_CodePartageEntreApps.Model._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Model._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.Model._1_3_BonAchat
@@ -60,6 +61,7 @@ import java.util.Date
 
 @TypeConverters(DateConverter::class, ListLongConverter::class)
 abstract class AppDatabase : RoomDatabase() {
+
     // All DAOs
     abstract fun articlesBasesStatsModelDao(): ArticlesBasesStatsModelDao
     abstract fun categoriesModelDao(): CategoriesModelDao
@@ -82,10 +84,12 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun _1_5_VendeurDao(): _1_5_VendeurDao
 
     object DatabaseModule {
+
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
         fun getDatabase(context: Context): AppDatabase {
+
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
