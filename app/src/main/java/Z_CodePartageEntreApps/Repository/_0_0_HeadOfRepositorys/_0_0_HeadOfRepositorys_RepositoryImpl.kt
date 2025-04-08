@@ -124,8 +124,8 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
             val newVid = modelDatasSnapList.maxOfOrNull { it.vid }?.plus(1) ?: 1L
             val newBonAchat = _1_3_BonAchat(
                 vid = newVid,
-                // Set the active vendor as parent if needed
-                clientAcheteurID = _1_5_Repository.activeId.value
+                clientAcheteurID = _1_5_Repository.activeId.value ,
+                parent_1_3_BonAchatVid =_1_4_Repository.activeId.value
             )
             Pair(newBonAchat, newVid)
 
