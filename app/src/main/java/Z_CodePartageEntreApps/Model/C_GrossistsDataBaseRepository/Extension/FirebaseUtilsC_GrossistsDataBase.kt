@@ -108,7 +108,7 @@ object FirebaseUtilsC_GrossistsDataBase {
     fun checkConnectivityAndSync(repository: C_GrossistsDataBaseRepositoryImpl) {
         val currentTime = System.currentTimeMillis()
 
-        // Only checkADD every CONNECTIVITY_CHECK_INTERVAL milliseconds
+        // Only checkADD_1_4_PeriodeVent every CONNECTIVITY_CHECK_INTERVAL milliseconds
         if (currentTime - lastConnectivityCheck < CONNECTIVITY_CHECK_INTERVAL) return
 
         lastConnectivityCheck = currentTime

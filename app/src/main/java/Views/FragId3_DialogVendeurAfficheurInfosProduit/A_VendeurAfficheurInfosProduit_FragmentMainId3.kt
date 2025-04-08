@@ -106,6 +106,8 @@ fun MainUi(
     val isLoading = progressValue < 1.0f
 
     val parentCompose_1_5_VendeurId by _0_0_HeadOfRepositorys_Repository.repositorys_Model._1_5_Vendeur_Repository.active_1_5_VendeurId.collectAsState()
+    val parentCompose_1_5_VendeurId by _0_0_HeadOfRepositorys_Repository.repositorys_Model._1_5_Vendeur_Repository.active_1_5_VendeurId.collectAsState()
+    val parentCompose_1_5_VendeurId by _0_0_HeadOfRepositorys_Repository.repositorys_Model._1_5_Vendeur_Repository.active_1_5_VendeurId.collectAsState()
 
     var parentCompose_1_4_PeriodeVentVid by remember { mutableLongStateOf(0L) }
     var parentCompose_1_3_BonAchatVid by remember { mutableLongStateOf(0L) }
@@ -114,50 +116,6 @@ fun MainUi(
     LaunchedEffect(
         key1 = currentSale.idArticle
     ) {
-
-        val currenteDateInString =
-            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-        val existing_1_4_PeriodeVent =
-            _0_0_HeadOfRepositorys_Repository.repositorys_Model._1_4_PeriodeVent_Repository.modelDatasSnapList.find {
-                it.endDateInString == ""
-            }
-        parentCompose_1_4_PeriodeVentVid = if (existing_1_4_PeriodeVent != null) {
-            existing_1_4_PeriodeVent.vid
-        } else {
-            val newVid =
-                _0_0_HeadOfRepositorys_Repository.repositorys_Model._1_4_PeriodeVent_Repository?.modelDatasSnapList?.maxOfOrNull { it.vid }
-                    ?.plus(1) ?: 1
-            _0_0_HeadOfRepositorys_Repository.repositorys_Model._1_4_PeriodeVent_Repository?.addData(
-                _1_4_PeriodeVent(
-                    vid = newVid,
-                    startDateInString = currenteDateInString,
-                    vendeur_ParentVID = parentCompose_1_5_VendeurId
-                )
-            )
-            newVid
-        }
-
-        val currentClientId = currentClient?.id ?: 1
-        val existing_1_3_BonAchat =
-            _0_0_HeadOfRepositorys_Repository.repositorys_Model._1_3_BonAchat_Repository?.modelDatasSnapList?.find {
-                it.clientAcheteurID == currentClientId && it.parent_1_4_PeriodeVentVid == parentCompose_1_4_PeriodeVentVid
-            }
-        parentCompose_1_3_BonAchatVid = if (existing_1_3_BonAchat != null) {
-            existing_1_3_BonAchat.vid
-        } else {
-            val newVid =
-                _0_0_HeadOfRepositorys_Repository.repositorys_Model._1_3_BonAchat_Repository?.modelDatasSnapList?.maxOfOrNull { it.vid }
-                    ?.plus(1) ?: 1
-            _0_0_HeadOfRepositorys_Repository.repositorys_Model._1_3_BonAchat_Repository?.addData(
-                _1_3_BonAchat(
-                    vid = newVid,
-                    clientAcheteurID = currentClientId,
-                    parent_1_4_PeriodeVentVid = parentCompose_1_4_PeriodeVentVid
-                )
-            )
-            newVid
-        }
-
         val produitActuelle = currentSale.idArticle
         val existing_1_2_ProduitAcheteOperation =
             _0_0_HeadOfRepositorys_Repository.repositorys_Model._1_2_ProduitAcheteOperation_Repository?.modelDatasSnapList?.find {

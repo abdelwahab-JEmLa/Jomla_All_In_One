@@ -50,11 +50,11 @@ class ConnectivityMonitor(private val scope: CoroutineScope) {
         }
 
         return try {
-            Log.d(TAG, "Performing new connectivity checkADD")
+            Log.d(TAG, "Performing new connectivity checkADD_1_4_PeriodeVent")
 
             val result = withTimeoutOrNull(CHECK_TIMEOUT) {
                 try {
-                    // Using Google's DNS server to checkADD connectivity
+                    // Using Google's DNS server to checkADD_1_4_PeriodeVent connectivity
                     withContext(Dispatchers.IO) {
                         val socket = java.net.Socket()
                         val socketAddress = java.net.InetSocketAddress("8.8.8.8", 53)
@@ -69,7 +69,7 @@ class ConnectivityMonitor(private val scope: CoroutineScope) {
                         }
                     }
                 } catch (e: Exception) {
-                    Log.e(TAG, "Google connectivity checkADD failed", e)
+                    Log.e(TAG, "Google connectivity checkADD_1_4_PeriodeVent failed", e)
                     false
                 }
             } ?: false
@@ -83,11 +83,11 @@ class ConnectivityMonitor(private val scope: CoroutineScope) {
                 onConnectivityChanged?.invoke(result)
             }
 
-            Log.d(TAG, "Connectivity checkADD complete - Online: $result")
+            Log.d(TAG, "Connectivity checkADD_1_4_PeriodeVent complete - Online: $result")
             result
 
         } catch (e: Exception) {
-            Log.e(TAG, "Connectivity checkADD failed with exception", e)
+            Log.e(TAG, "Connectivity checkADD_1_4_PeriodeVent failed with exception", e)
             false
         }
     }

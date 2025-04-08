@@ -44,7 +44,7 @@ class B_ClientDataBaseRepositoryImpl(
     private suspend fun initializeRepository() {
         try {
             loadDepuitRoom() // Always load from Room first for faster UI response
-            checkDataConsistency() // Then checkADD and update if necessary
+            checkDataConsistency() // Then checkADD_1_4_PeriodeVent and update if necessary
         } catch (e: Exception) {
             // Log error
         }
@@ -85,12 +85,12 @@ class B_ClientDataBaseRepositoryImpl(
                 importDeFireBaseAuRoom(repositoryScope)
             }
 
-            // Set up listener after data consistency checkADD
+            // Set up listener after data consistency checkADD_1_4_PeriodeVent
             withContext(Dispatchers.Main) {
                 setUpDataChangeListener()
             }
         } catch (e: Exception) {
-            // Set up listener even if consistency checkADD fails
+            // Set up listener even if consistency checkADD_1_4_PeriodeVent fails
             withContext(Dispatchers.Main) {
                 setUpDataChangeListener()
             }

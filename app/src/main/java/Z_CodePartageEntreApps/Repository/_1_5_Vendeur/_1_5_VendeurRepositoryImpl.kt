@@ -87,11 +87,7 @@ class _1_5_VendeurRepositoryImpl(
             loadDepuitRoom()
             checkDataConsistency()
 
-            val newVendor = checkADD(modelDatasSnapList)
-            if (!modelDatasSnapList.any { it.vid == newVendor.second }) {
-                addData(newVendor.first)
-                active_1_5_VendeurId.value= newVendor.second
-            }
+
 
 
             if (TAG.isNotEmpty()) {
@@ -101,7 +97,6 @@ class _1_5_VendeurRepositoryImpl(
             Log.e(TAG, "Error initializing repository: ${e.message}")
         }
     }
-
 
     private suspend fun loadDepuitRoom() {
         try {

@@ -105,7 +105,7 @@ class ConnectionManager(
         }
     }
 
-    // Add a new function to checkADD if we should attempt reconnection
+    // Add a new function to checkADD_1_4_PeriodeVent if we should attempt reconnection
     private fun shouldAttemptReconnection(): Boolean {
         return !_connectionUiState.value.isConnected &&
                 retryCount < maxRetries &&

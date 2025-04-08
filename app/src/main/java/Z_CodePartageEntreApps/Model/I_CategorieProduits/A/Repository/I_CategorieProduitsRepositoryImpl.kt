@@ -46,7 +46,7 @@ class I_CategorieProduitsRepositoryImpl(
         try {
             Log.d(TAG, "Starting repository initialization")
             loadDepuitRoom() // Always load from Room first for faster UI response
-            checkDataConsistency() // Then checkADD and update if necessary
+            checkDataConsistency() // Then checkADD_1_4_PeriodeVent and update if necessary
             Log.d(TAG, "Repository initialization completed successfully")
         } catch (e: Exception) {
             Log.e(TAG, "Failed to initialize repository: ${e.message}", e)
@@ -104,16 +104,16 @@ class I_CategorieProduitsRepositoryImpl(
                 Log.d(TAG, "Data consistency verified between Room and Firebase")
             }
 
-            // Set up listener after data consistency checkADD
+            // Set up listener after data consistency checkADD_1_4_PeriodeVent
             withContext(Dispatchers.Main) {
                 setUpDataChangeListener()
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error checking data consistency: ${e.message}", e)
-            // Set up listener even if consistency checkADD fails
+            // Set up listener even if consistency checkADD_1_4_PeriodeVent fails
             withContext(Dispatchers.Main) {
                 setUpDataChangeListener()
-                Log.d(TAG, "Setting up data change listener despite consistency checkADD failure")
+                Log.d(TAG, "Setting up data change listener despite consistency checkADD_1_4_PeriodeVent failure")
             }
         }
     }
