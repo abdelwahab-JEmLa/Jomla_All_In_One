@@ -115,7 +115,9 @@ fun MainUi(
     var parentCompose_1_3_BonAchatVid by remember { mutableLongStateOf(0L) }
     var parentCompose_1_2_ProduitAcheteOperationVid by remember { mutableLongStateOf(0L) }
 
-    LaunchedEffect(key1 = currentSale.idArticle) {
+    LaunchedEffect(
+        key1 = currentSale.idArticle
+    ) {
         val deviceModelNom = Build.MODEL
         val existingVendor =
             viewModelInitApp._1_5_Vendeur_Repository.modelDatasSnapList.find { it.deviceModelNom == deviceModelNom }
@@ -183,6 +185,11 @@ fun MainUi(
             }
         parentCompose_1_2_ProduitAcheteOperationVid =
             if (existing_1_2_ProduitAcheteOperation != null) {
+                viewModelInitApp._1_2_ProduitAcheteOperation_Repository.updateUnSeulData(
+                    existing_1_2_ProduitAcheteOperation.apply {
+                        etateActuellementEst= _1_2_ProduitAcheteOperation.EtateActuellementEst.PRESENTATION
+                    }
+                )
                 existing_1_2_ProduitAcheteOperation.vid
             } else {
                 val newVid =
