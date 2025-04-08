@@ -2,7 +2,8 @@ package Z_CodePartageEntreApps.Repository._1_5_Vendeur
 
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Model._1_5_Vendeur
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.Extension.Log._1_5_VendeurRepositoryLogOperationsExtention
+import Z_CodePartageEntreApps.Repository._1_5_Vendeur.Extension.Log._1_5_VendeurRepositoryLogOperationsExtention
+import Z_CodePartageEntreApps.Repository._1_5_Vendeur.Extension.Update._1_5_VendeurRepositoryUpdatesOperaionsExtention
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -20,8 +21,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 class _1_5_VendeurRepositoryImpl(
     private val appDatabase: AppDatabase
-) : Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._1_5_Vendeur_Repository,
-    _1_5_Vendeur_Repository {
+) : _1_5_Vendeur_Repository {
     private val TAG = _1_5_Vendeur_Repository.TAG
 
     override var modelDatasSnapList: SnapshotStateList<_1_5_Vendeur> =

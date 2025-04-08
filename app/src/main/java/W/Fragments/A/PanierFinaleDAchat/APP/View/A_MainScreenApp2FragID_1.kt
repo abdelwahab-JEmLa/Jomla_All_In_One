@@ -2,15 +2,7 @@ package W.Fragments.A.PanierFinaleDAchat.APP.View
 
 import W.Fragments.A.PanierFinaleDAchat.APP.ViewModel.ViewModelFragment_APP2_ID_1
 import Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.ViewModel.ViewModelFragment_APP2_ID_2
-import Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App._1.Shared.Views.LoadingContent
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import org.koin.androidx.compose.koinViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -25,7 +17,7 @@ val composeModules = module {
 fun A_MainScreenApp2FragID_1(
     modifier: Modifier = Modifier,
     viewModel: ViewModelFragment_APP2_ID_1 = koinViewModel(),
-) {
+) {   /*
     // Get repository progress states in a simpler way
     val isLoading by viewModel.isDataLoading.collectAsState(initial = true)
 
@@ -62,5 +54,5 @@ fun A_MainScreenApp2FragID_1(
                 }
             }
         }
-    }
+    }        */
 }

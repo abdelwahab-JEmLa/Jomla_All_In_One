@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Repository._1_5_Vendeur.Extension.Log
 
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_VendeurRepositoryImpl
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._1_5_Vendeur_Repository
+import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur_Repository
 import android.util.Log
 
 class _1_5_VendeurRepositoryLogOperationsExtention(
