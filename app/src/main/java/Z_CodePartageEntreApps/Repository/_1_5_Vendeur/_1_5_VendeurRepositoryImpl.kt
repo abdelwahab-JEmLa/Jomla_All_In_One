@@ -4,7 +4,6 @@ import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Model._1_5_Vendeur
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur.Extension.Log._1_5_VendeurRepositoryLogOperationsExtention
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur.Extension.Update._1_5_VendeurRepositoryUpdatesOperaionsExtention
-import android.os.Build
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -86,8 +85,7 @@ class _1_5_VendeurRepositoryImpl(
         try {
             loadDepuitRoom()
             checkDataConsistency()
-            ajouteMainDataSiNonDispo()
-            
+
             if (TAG.isNotEmpty()) {
                 log()
             }
@@ -96,25 +94,6 @@ class _1_5_VendeurRepositoryImpl(
         }
     }
 
-    private fun ajouteMainDataSiNonDispo() {
-        try {
-            val deviceModelNom = Build.MODEL
-
-            // Get or create vendor
-            val existingVendor = modelDatasSnapList.find { it.deviceModelNom == deviceModelNom }
-
-            if (existingVendor != null) {
-                active_1_5_VendeurId.value = existingVendor.vid
-            } else {
-                val newVid = modelDatasSnapList.maxOfOrNull { it.vid }?.plus(1) ?: 1
-                addData(_1_5_Vendeur(vid = newVid, deviceModelNom = deviceModelNom))
-                active_1_5_VendeurId.value = newVid
-            }
-
-        } catch (e: Exception) {
-            Log.e(TAG, "Error in ajouteMainDataSiNonDispo: ${e.message}")
-        }
-    }
 
     private suspend fun loadDepuitRoom() {
         try {

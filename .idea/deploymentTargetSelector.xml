@@ -49,6 +49,9 @@
       <SelectionState runConfigName="MainScreenPreview_APP2">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
+      <SelectionState runConfigName="ClearAPP Lence">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
     </selectionStates>
   </component>
 </project>

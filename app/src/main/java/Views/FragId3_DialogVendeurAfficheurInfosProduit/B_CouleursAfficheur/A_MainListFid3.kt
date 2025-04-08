@@ -16,6 +16,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,6 +39,12 @@ fun A_MainListFragId3(
     parentCompose_1_2_ProduitAcheteOperationVid: Long,
 ) {
     var colorsListToDisplay by remember { mutableStateOf(emptyList<ColorsArticlesTabelle>()) }
+
+    LaunchedEffect(Unit) {
+        colorsListToDisplay = listOf(stats.idcolor1, stats.idcolor2, stats.idcolor3, stats.idcolor4)
+            .filter { it != 0L }
+            .mapNotNull { colorId -> colorsArticlesTabelleModel.find { it.idColore == colorId } }
+    }
 
     Column(
         modifier = Modifier

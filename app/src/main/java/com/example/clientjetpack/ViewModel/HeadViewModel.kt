@@ -1,27 +1,27 @@
 package com.example.clientjetpack.ViewModel
 
+import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.I_CategorieProduits.A.Repository.I_CategorieProduitsRepository
 import Z_CodePartageEntreApps.Model.I_CategorieProduits.A.Repository.I_CategorieProduitsRepositoryImpl
+import Z_CodePartageEntreApps.Model.Z.Archive.AppSettingsSaverModel
+import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesAcheteModele
+import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
+import Z_CodePartageEntreApps.Model.Z.Archive.CategoriesTabelle
+import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
+import Z_CodePartageEntreApps.Model.Z.Archive.DevicesTypeManager
+import Z_CodePartageEntreApps.Model.Z.Archive.DiviseurDeDisplayProductForEachClient
+import Z_CodePartageEntreApps.Model.Z.Archive.ProductDisplayController
+import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
 import Z_MasterOfApps.Kotlin._WorkingON.WO_.ConnectionManager
 import Z_MasterOfApps.Kotlin._WorkingON.WO_.WifiUpdateClientDisplayerStats
-import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
-import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
-import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
-import Z_CodePartageEntreApps.Model.Z.Archive.CategoriesTabelle
 import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import Z_CodePartageEntreApps.Model.Z.Archive.DiviseurDeDisplayProductForEachClient
-import Z_CodePartageEntreApps.Model.Z.Archive.AppSettingsSaverModel
-import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesAcheteModele
-import Z_CodePartageEntreApps.Model.Z.Archive.DevicesTypeManager
 import com.example.clientjetpack.Models.PriceRecord
-import Z_CodePartageEntreApps.Model.Z.Archive.ProductDisplayController
 import com.example.clientjetpack.Models.UiState
 import com.google.firebase.database.BuildConfig
 import com.google.firebase.database.DataSnapshot
@@ -67,10 +67,6 @@ open class HeadViewModel(
         onPayloadReceiveRaw = { payload -> handlePayload(payload) }
     )
 
-    init {
-        observeConnectionState()
-        setupMaxPriceObserver()
-    }
 
     private fun setupMaxPriceObserver() {
         viewModelScope.launch {
@@ -337,11 +333,7 @@ open class HeadViewModel(
         }
     }
 
-    init {
-        viewModelScope.launch {
-            loadDataOfUiStateFromRoom()
-        }
-    }
+
 
 
     val _currentSaleInWindows = MutableStateFlow<SoldArticlesTabelle?>(null)
@@ -917,49 +909,6 @@ open class HeadViewModel(
         }
     }
 
-    fun importFromFirebase() {
-        viewModelScope.launch {
-            try {
-
-                setLoading(true)
-                updateLoadingProgress(10f)
-
-                devicesTypeManagerInitialize(17f)
-
-                updateLoadingProgress(20f)
-
-                val categoriesSnapshot = refCategorieModel.get().await()
-                updateLoadingProgress(40f)
-
-                val categories = categoriesSnapshot.children.mapNotNull { snapshot ->
-                    snapshot.getValue(CategoriesTabelle::class.java)
-                }
-                database.categoriesModelDao().insertAll(categories)
-
-                createNewArrivaleCategoryIfNeeded(categories)
-                updateLoadingProgress(70f)
-
-                colorInitialize(80f)
-                clientsInitialize(82f)
-                soldArticlesTabelleIntia(85f)
-                diviseurDeDisplayProductForEachClientInit(85f)
-
-
-                val articlesSnapshot = refDBJetPackExport.get().await()
-                val articles = articlesSnapshot.children.mapNotNull { snapshot ->
-                    snapshot.getValue(ArticlesBasesStatsTable::class.java)
-                }
-                database.articlesBasesStatsModelDao().insertAll(articles)
-                updateLoadingProgress(100f)
-
-                loadDataOfUiStateFromRoom()
-            } catch (e: Exception) {
-                _uiState.update { it.copy(error = e.message) }
-            } finally {
-                setLoading(false)
-            }
-        }
-    }
 
     private suspend fun diviseurDeDisplayProductForEachClientInit(fl: Float) {
         val snapshot = diviseurDeDisplayProductForEachClientRef.get().await()
@@ -1106,6 +1055,61 @@ open class HeadViewModel(
             _uiState.update { it.copy(error = e.message) }
             return mutableListOf()
         }
+    }
+    fun importFromFirebase() {
+        viewModelScope.launch {
+            try {
+
+                setLoading(true)
+                updateLoadingProgress(10f)
+
+                devicesTypeManagerInitialize(17f)
+
+                updateLoadingProgress(20f)
+
+                val categoriesSnapshot = refCategorieModel.get().await()
+                updateLoadingProgress(40f)
+
+                val categories = categoriesSnapshot.children.mapNotNull { snapshot ->
+                    snapshot.getValue(CategoriesTabelle::class.java)
+                }
+                database.categoriesModelDao().insertAll(categories)
+
+                createNewArrivaleCategoryIfNeeded(categories)
+                updateLoadingProgress(70f)
+
+                colorInitialize(80f)
+                clientsInitialize(82f)
+                soldArticlesTabelleIntia(85f)
+                diviseurDeDisplayProductForEachClientInit(85f)
+
+
+                val articlesSnapshot = refDBJetPackExport.get().await()
+                val articles = articlesSnapshot.children.mapNotNull { snapshot ->
+                    snapshot.getValue(ArticlesBasesStatsTable::class.java)
+                }
+                database.articlesBasesStatsModelDao().insertAll(articles)
+                updateLoadingProgress(100f)
+
+                loadDataOfUiStateFromRoom()
+            } catch (e: Exception) {
+                _uiState.update { it.copy(error = e.message) }
+            } finally {
+                setLoading(false)
+            }
+        }
+    }
+
+    init {
+        viewModelScope.launch {
+            if(database.articlesBasesStatsModelDao().getAll().size==0)
+            {
+                importFromFirebase()
+            }
+            loadDataOfUiStateFromRoom()
+        }
+        observeConnectionState()
+        setupMaxPriceObserver()
     }
 
 }
