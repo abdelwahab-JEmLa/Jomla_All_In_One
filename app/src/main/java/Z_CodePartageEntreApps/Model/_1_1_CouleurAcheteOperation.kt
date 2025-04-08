@@ -15,14 +15,7 @@ data class _1_1_CouleurAcheteOperation(
     // Section InfosDeBase
     var totaleQuantity: Int = 1,
 
-    // Section StatuesMutable
-    var etateActuellementEst: EtateActuellementEst =
-        EtateActuellementEst.AFFICHE_MAIS_PAS_CONFIRME,
 
     ) {
-    enum class EtateActuellementEst {
-        AFFICHE_MAIS_PAS_CONFIRME,
-        SUPPRIME_AU_PREMIER_PICK,
-        SUPP_AU_PANIER_FINALE
-    }
+
 }
