@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Repository._1_5_Vendeur.Extension.DataBase
 
-import Z_CodePartageEntreApps.Model._1_5_Vendeur
+import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert

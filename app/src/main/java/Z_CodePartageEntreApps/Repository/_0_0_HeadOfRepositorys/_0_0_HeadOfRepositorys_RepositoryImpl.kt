@@ -7,8 +7,6 @@ import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat_Repository
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur_Repository
 import android.util.Log
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -26,7 +24,14 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
 ) : _0_0_HeadOfRepositorys_Repository {
     private val TAG = _0_0_HeadOfRepositorys_Repository.TAG
 
-    override var repositorys_Model: SnapshotStateList<_0_0_HeadOfRepositorys_Model> = mutableStateListOf()
+    override var repositorys_Model: _0_0_HeadOfRepositorys_Model = _0_0_HeadOfRepositorys_Model(
+        _1_1_Repository,
+        _1_2_Repository,
+        _1_3_Repository,
+        _1_4_Repository,
+        _1_5_Repository
+    )
+
     override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
 
     private val repositoryScope = CoroutineScope(Dispatchers.IO)
@@ -44,7 +49,7 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
         }
     }
 
-     suspend fun ensureDataIsInitialized() {
+    suspend fun ensureDataIsInitialized() {
         try {
             if (!initialDataLoaded) {
                 withContext(Dispatchers.IO) {
@@ -86,7 +91,7 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
             progressRepo.value = 0.2f
             withContext(Dispatchers.IO) {
                 // Create a repository head with all repositories
-                val headRepository = _0_0_HeadOfRepositorys_Model(
+                repositorys_Model = _0_0_HeadOfRepositorys_Model(
                     _1_1_CouleurAcheteOperation_Repository = _1_1_Repository,
                     _1_2_ProduitAcheteOperation_Repository = _1_2_Repository,
                     _1_3_BonAchat_Repository = _1_3_Repository,
@@ -94,8 +99,7 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                     _1_5_Vendeur_Repository = _1_5_Repository
                 )
 
-                // Add to the list
-                repositorys_Model.add(headRepository)
+                // Update progress
                 progressRepo.value = 1.0f
                 initialDataLoaded = true
                 lastUpdateTimestamp = System.currentTimeMillis()
@@ -131,7 +135,7 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
 
     fun log() {
         logOperations.log(
-            dataCount = repositorys_Model.size,
+            dataCount = 1, // There's only one model in the repositorys_Model
             initialDataLoaded = initialDataLoaded,
             progressValue = progressRepo.value,
             lastUpdateTimestamp = lastUpdateTimestamp,

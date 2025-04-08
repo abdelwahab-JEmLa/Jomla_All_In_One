@@ -1,9 +1,9 @@
 package Z_CodePartageEntreApps.Repository._1_5_Vendeur
 
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import Z_CodePartageEntreApps.Model._1_5_Vendeur
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur.Extension.Log._1_5_VendeurRepositoryLogOperationsExtention
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur.Extension.Update._1_5_VendeurRepositoryUpdatesOperaionsExtention
+import android.os.Build
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -20,14 +20,14 @@ import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
 
 class _1_5_VendeurRepositoryImpl(
-    private val appDatabase: AppDatabase
+    private val appDatabase: AppDatabase,
 ) : _1_5_Vendeur_Repository {
     private val TAG = _1_5_Vendeur_Repository.TAG
 
     override var modelDatasSnapList: SnapshotStateList<_1_5_Vendeur> =
         mutableStateListOf()
     override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
-    override val active_1_5_VendeurId = MutableStateFlow( 0L)
+    override val active_1_5_VendeurId = MutableStateFlow(0L)
 
     private val isUpdating = AtomicBoolean(false)
     private val isListenerActive = AtomicBoolean(false)
@@ -49,7 +49,7 @@ class _1_5_VendeurRepositoryImpl(
             initialize_1_5_VendeurRepository()
         }
     }
-    
+
     override suspend fun ensureDataIsInitialized() {
         try {
             if (!initialDataLoaded) {
@@ -85,7 +85,7 @@ class _1_5_VendeurRepositoryImpl(
         try {
             loadDepuitRoom()
             checkDataConsistency()
-
+            ajoutDataSiNonDispo()
             if (TAG.isNotEmpty()) {
                 log()
             }
@@ -94,6 +94,23 @@ class _1_5_VendeurRepositoryImpl(
         }
     }
 
+    fun ajoutDataSiNonDispo() {
+        val deviceModelNom = Build.MODEL
+        val existingVendor = modelDatasSnapList.find { it.deviceModelNom == deviceModelNom }
+
+        active_1_5_VendeurId.value = if (existingVendor != null) {
+            existingVendor.vid
+        } else {
+            val newVid = modelDatasSnapList.maxOfOrNull { it.vid }?.plus(1) ?: 1
+            addData(
+                _1_5_Vendeur(
+                    vid = newVid,
+                    deviceModelNom = deviceModelNom
+                )
+            )
+            newVid
+        }
+    }
 
     private suspend fun loadDepuitRoom() {
         try {

@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Model
+package Z_CodePartageEntreApps.Repository._1_5_Vendeur
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

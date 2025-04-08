@@ -1,12 +1,11 @@
 package Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys
 
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.firebase.Firebase
 import com.google.firebase.database.database
 import kotlinx.coroutines.flow.MutableStateFlow
 
 interface _0_0_HeadOfRepositorys_Repository {
-    var repositorys_Model: SnapshotStateList<_0_0_HeadOfRepositorys_Model>
+    var repositorys_Model: _0_0_HeadOfRepositorys_Model
 
     val progressRepo: MutableStateFlow<Float>
         get() { return MutableStateFlow(0f)}
