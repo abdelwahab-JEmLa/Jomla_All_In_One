@@ -7,9 +7,12 @@ import com.google.firebase.database.database
 import kotlinx.coroutines.flow.MutableStateFlow
 
 interface _1_4_PeriodeVent_Repository {
+
+
     var modelDatasSnapList: SnapshotStateList<_1_4_PeriodeVent>
     val progressRepo: MutableStateFlow<Float>
         get() = MutableStateFlow(0f)
+    val activeId: MutableStateFlow<Long>
 
     suspend fun ensureDataIsInitialized()
 
@@ -26,4 +29,5 @@ interface _1_4_PeriodeVent_Repository {
             .getReference("00_DataPrototype-04-02")
             .child("_1_4_")
     }
+
 }

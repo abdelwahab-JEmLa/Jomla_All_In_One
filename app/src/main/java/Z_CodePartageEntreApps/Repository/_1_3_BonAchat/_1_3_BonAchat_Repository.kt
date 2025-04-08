@@ -10,6 +10,7 @@ interface _1_3_BonAchat_Repository {
     var modelDatasSnapList: SnapshotStateList<_1_3_BonAchat>
     val progressRepo: MutableStateFlow<Float>
         get() = MutableStateFlow(0f)
+    val activeId: MutableStateFlow<Long>
 
     suspend fun ensureDataIsInitialized()
 
@@ -25,4 +26,5 @@ interface _1_3_BonAchat_Repository {
             .getReference("00_DataPrototype-04-02")
             .child("_1_3_")
     }
+
 }

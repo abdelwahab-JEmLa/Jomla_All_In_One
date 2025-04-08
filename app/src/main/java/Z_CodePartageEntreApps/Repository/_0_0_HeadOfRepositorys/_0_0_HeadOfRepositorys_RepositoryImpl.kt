@@ -80,7 +80,7 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
         // Check if the vendor exists and add if not
         if (!modelDatasSnapList.any { it.vid == newVendorPair.second }) {
             _1_5_Repository.addData(newVendorPair.first)
-            _1_5_Repository.active_1_5_VendeurId.value = newVendorPair.second
+            _1_5_Repository.activeId.value = newVendorPair.second
         }
     }
 
@@ -97,7 +97,7 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
             val newVid = modelDatasSnapList.maxOfOrNull { it.vid }?.plus(1) ?: 1L
             val newPeriod = _1_4_PeriodeVent(
                 vid = newVid,
-                vendeur_ParentVID = _1_5_Repository.active_1_5_VendeurId.value
+                vendeur_ParentVID = _1_5_Repository.activeId.value
             )
             Pair(newPeriod, newVid)
         }
@@ -105,6 +105,8 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
         // Check if the period exists and add if not
         if (!modelDatasSnapList.any { it.vid == newPeriodPair.second }) {
             _1_4_Repository.addData(newPeriodPair.first)
+            _1_4_Repository.activeId.value = newPeriodPair.second
+
         }
     }
 
@@ -123,15 +125,16 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
             val newBonAchat = _1_3_BonAchat(
                 vid = newVid,
                 // Set the active vendor as parent if needed
-                clientAcheteurID = _1_5_Repository.active_1_5_VendeurId.value
+                clientAcheteurID = _1_5_Repository.activeId.value
             )
             Pair(newBonAchat, newVid)
+
         }
 
         // Check if the bon achat exists and add if not
         if (!modelDatasSnapList.any { it.vid == newBonAchatPair.second }) {
             _1_3_Repository.addData(newBonAchatPair.first)
-            // Any additional setup needed for the new bon achat
+            _1_3_Repository.activeId.value = newBonAchatPair.second
         }
     }
 

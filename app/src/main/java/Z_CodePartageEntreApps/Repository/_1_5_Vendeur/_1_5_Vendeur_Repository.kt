@@ -8,10 +8,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 interface _1_5_Vendeur_Repository{
     var modelDatasSnapList: SnapshotStateList<_1_5_Vendeur>
 
-    val active_1_5_VendeurId: MutableStateFlow<Long>
 
     val progressRepo: MutableStateFlow<Float>
         get() = MutableStateFlow(0f)
+
+    val activeId: MutableStateFlow<Long>
+
 
     suspend fun ensureDataIsInitialized()
 

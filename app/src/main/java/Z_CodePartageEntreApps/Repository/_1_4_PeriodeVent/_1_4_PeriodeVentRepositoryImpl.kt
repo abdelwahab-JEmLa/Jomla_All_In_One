@@ -25,6 +25,7 @@ class _1_4_PeriodeVentRepositoryImpl(
     override var modelDatasSnapList: SnapshotStateList<_1_4_PeriodeVent> =
         mutableStateListOf()
     override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
+    override val activeId = MutableStateFlow(0L)
 
     private val isUpdating = AtomicBoolean(false)
     private val isListenerActive = AtomicBoolean(false)
@@ -86,6 +87,9 @@ class _1_4_PeriodeVentRepositoryImpl(
             Log.e(TAG, "Error initializing repository: ${e.message}")
         }
     }
+
+
+
     private suspend fun loadDepuitRoom() {
         try {
             progressRepo.value = 0.2f

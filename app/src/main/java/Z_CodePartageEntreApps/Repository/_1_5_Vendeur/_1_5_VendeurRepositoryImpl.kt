@@ -3,7 +3,6 @@ package Z_CodePartageEntreApps.Repository._1_5_Vendeur
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur.Extension.Log._1_5_VendeurRepositoryLogOperationsExtention
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur.Extension.Update._1_5_VendeurRepositoryUpdatesOperaionsExtention
-import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur.Companion.checkADD
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -27,6 +26,7 @@ class _1_5_VendeurRepositoryImpl(
     override var modelDatasSnapList: SnapshotStateList<_1_5_Vendeur> =
         mutableStateListOf()
     override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
+    override val activeId = MutableStateFlow(0L)
 
     private val isUpdating = AtomicBoolean(false)
     private val isListenerActive = AtomicBoolean(false)
@@ -80,14 +80,11 @@ class _1_5_VendeurRepositoryImpl(
         updatesOperations.updateUnSeulData(data, repositoryScope, appDatabase, modelDatasSnapList)
     }
 
-    override val active_1_5_VendeurId = MutableStateFlow(0L)
 
     private suspend fun initialize_1_5_VendeurRepository() {
         try {
             loadDepuitRoom()
             checkDataConsistency()
-
-
 
 
             if (TAG.isNotEmpty()) {

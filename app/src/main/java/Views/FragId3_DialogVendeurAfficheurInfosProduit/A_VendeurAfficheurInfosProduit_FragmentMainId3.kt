@@ -10,8 +10,6 @@ import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
 import Z_CodePartageEntreApps.Model._1_2_ProduitAcheteOperation
-import Z_CodePartageEntreApps.Model._1_3_BonAchat
-import Z_CodePartageEntreApps.Model._1_4_PeriodeVent
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Package_3._DisplayeProductInfosToSeller
@@ -39,9 +37,6 @@ import androidx.compose.ui.window.DialogProperties
 import com.example.clientjetpack.Models.UiState
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import org.koin.compose.koinInject
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 @Composable
 fun A_VendeurAfficheurInfosProduit_FragmentMainId3(
@@ -105,12 +100,11 @@ fun MainUi(
     val progressValue by _0_0_HeadOfRepositorys_Repository.progressRepo.collectAsState()
     val isLoading = progressValue < 1.0f
 
-    val parentCompose_1_5_VendeurId by _0_0_HeadOfRepositorys_Repository.repositorys_Model._1_5_Vendeur_Repository.active_1_5_VendeurId.collectAsState()
-    val parentCompose_1_5_VendeurId by _0_0_HeadOfRepositorys_Repository.repositorys_Model._1_5_Vendeur_Repository.active_1_5_VendeurId.collectAsState()
-    val parentCompose_1_5_VendeurId by _0_0_HeadOfRepositorys_Repository.repositorys_Model._1_5_Vendeur_Repository.active_1_5_VendeurId.collectAsState()
+    val repositorysModel = _0_0_HeadOfRepositorys_Repository.repositorys_Model
 
-    var parentCompose_1_4_PeriodeVentVid by remember { mutableLongStateOf(0L) }
-    var parentCompose_1_3_BonAchatVid by remember { mutableLongStateOf(0L) }
+    val parentCompose_1_3_BonAchatVid by repositorysModel._1_3_BonAchat_Repository.activeId.collectAsState()
+
+
     var parentCompose_1_2_ProduitAcheteOperationVid by remember { mutableLongStateOf(0L) }
 
     LaunchedEffect(
@@ -118,12 +112,12 @@ fun MainUi(
     ) {
         val produitActuelle = currentSale.idArticle
         val existing_1_2_ProduitAcheteOperation =
-            _0_0_HeadOfRepositorys_Repository.repositorys_Model._1_2_ProduitAcheteOperation_Repository?.modelDatasSnapList?.find {
+            repositorysModel._1_2_ProduitAcheteOperation_Repository?.modelDatasSnapList?.find {
                 it.produitAcheterID == produitActuelle && it.parent_1_3_BonAchat == parentCompose_1_3_BonAchatVid
             }
         parentCompose_1_2_ProduitAcheteOperationVid =
             if (existing_1_2_ProduitAcheteOperation != null) {
-                _0_0_HeadOfRepositorys_Repository.repositorys_Model._1_2_ProduitAcheteOperation_Repository?.updateUnSeulData(
+                repositorysModel._1_2_ProduitAcheteOperation_Repository?.updateUnSeulData(
                     existing_1_2_ProduitAcheteOperation.apply {
                         etateActuellementEst = _1_2_ProduitAcheteOperation.EtateActuellementEst.PRESENTATION
                     }
@@ -131,9 +125,9 @@ fun MainUi(
                 existing_1_2_ProduitAcheteOperation.vid
             } else {
                 val newVid =
-                    _0_0_HeadOfRepositorys_Repository.repositorys_Model._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList?.maxOfOrNull { it.vid }
+                    repositorysModel._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList?.maxOfOrNull { it.vid }
                         ?.plus(1) ?: 1
-                _0_0_HeadOfRepositorys_Repository.repositorys_Model._1_2_ProduitAcheteOperation_Repository.add(
+                repositorysModel._1_2_ProduitAcheteOperation_Repository.add(
                     _1_2_ProduitAcheteOperation(
                         vid = newVid,
                         produitAcheterID = produitActuelle,
