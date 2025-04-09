@@ -9,6 +9,7 @@ import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat_Repository
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur_Repository
+import Z_CodePartageEntreApps.Repository._2_2_ClientsDataBase._2_2_ClientsDataBase_Repository
 import android.os.Build
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
@@ -18,9 +19,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 /**
  * way inject
@@ -32,7 +30,8 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
     private val _1_2_Repository: _1_2_ProduitAcheteOperation_Repository,
     private val _1_3_Repository: _1_3_BonAchat_Repository,
     private val _1_4_Repository: _1_4_PeriodeVent_Repository,
-    private val _1_5_Repository: _1_5_Vendeur_Repository
+    private val _1_5_Repository: _1_5_Vendeur_Repository,
+    private val _2_2_Repository: _2_2_ClientsDataBase_Repository,
 ) : _0_0_HeadOfRepositorys_Repository {
     private val TAG = _0_0_HeadOfRepositorys_Repository.TAG
 
@@ -41,7 +40,8 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
         _1_2_Repository,
         _1_3_Repository,
         _1_4_Repository,
-        _1_5_Repository
+        _1_5_Repository,
+        _2_2_Repository,
     )
 
     override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
@@ -65,6 +65,7 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
             _1_3_Repository.ensureDataIsInitialized()
             _1_4_Repository.ensureDataIsInitialized()
             _1_5_Repository.ensureDataIsInitialized()
+            _2_2_Repository.ensureDataIsInitialized()
 
             // Start tracking progress afterward
             startProgressTracking() {
@@ -162,14 +163,13 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
 
     private fun checkADD_1_3_BonAchat() {
         try {
-            // Get the model data list from the repository
             val modelDatasSnapList = _1_3_Repository.modelDatasSnapList
 
-            val currentTime = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
+            // Fix the comparison by accessing the value property of the MutableStateFlow
             val existingBonAchat = modelDatasSnapList
                 .find {
-                    it.parent_1_3_BonAchatVid == _1_4_Repository.activeId
-                            && it.clientAcheteurID
+                    it.parent_1_3_BonAchatVid == _1_4_Repository.activeId.value
+                            && it.clientAcheteurID == _1_4_Repository.activeId.value
                 }
 
             val newBonAchatPair = if (existingBonAchat != null) {
@@ -179,7 +179,7 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                 val newBonAchat = _1_3_BonAchat(
                     vid = newVid,
                     clientAcheteurID = _1_5_Repository.activeId.value,
-                    parent_1_3_BonAchatVid = _1_4_Repository.activeId.value
+                    parent_1_3_BonAchatVid = _1_4_Repository.activeId.value,
                 )
                 Pair(newBonAchat, newVid)
             }
@@ -257,7 +257,8 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                 repositoryScope.launch { _1_2_Repository.ensureDataIsInitialized() },
                 repositoryScope.launch { _1_3_Repository.ensureDataIsInitialized() },
                 repositoryScope.launch { _1_4_Repository.ensureDataIsInitialized() },
-                repositoryScope.launch { _1_5_Repository.ensureDataIsInitialized() }
+                repositoryScope.launch { _1_5_Repository.ensureDataIsInitialized() },
+                repositoryScope.launch { _2_2_Repository.ensureDataIsInitialized() }
             )
 
             // Wait for all initialization to complete
@@ -287,7 +288,8 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                     _1_2_ProduitAcheteOperation_Repository = _1_2_Repository,
                     _1_3_BonAchat_Repository = _1_3_Repository,
                     _1_4_PeriodeVent_Repository = _1_4_Repository,
-                    _1_5_Vendeur_Repository = _1_5_Repository
+                    _1_5_Vendeur_Repository = _1_5_Repository ,
+                    _2_2_ClientsDataBase_Repository = _2_2_Repository ,
                 )
 
                 // Update progress
@@ -305,31 +307,43 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
         var hasCompletedOnce = false
 
         try {
-            // Combine all progress flows
-            combine(
+            // Use combine with a different syntax
+            val combinedFlow = combine(
                 _1_1_Repository.progressRepo,
                 _1_2_Repository.progressRepo,
                 _1_3_Repository.progressRepo,
                 _1_4_Repository.progressRepo,
-                _1_5_Repository.progressRepo
-            ) { progress1, progress2, progress3, progress4, progress5 ->
-                // Calculate the average progress
-                val combinedProgress = (progress1 + progress2 + progress3 + progress4 + progress5) / 5f
+                _1_5_Repository.progressRepo,
+                _2_2_Repository.progressRepo
+            ) { flowValues ->
+                // flowValues is an Array<Float> containing all the progress values
+                val combinedProgress = flowValues.sum() / flowValues.size.toFloat()
 
                 // Log the combined progress and possible reasons if not complete
                 if (combinedProgress < 1.0f) {
                     Log.d(TAG, "Combined progress: ${String.format("%.2f", combinedProgress * 100)}%")
                     Log.d(TAG, "Possible reasons for incomplete progress:")
 
-                    if (progress1 < 1.0f) Log.d(TAG, "- _1_1_Repository incomplete: ${progress1}")
-                    if (progress2 < 1.0f) Log.d(TAG, "- _1_2_Repository incomplete: ${progress2}")
-                    if (progress3 < 1.0f) Log.d(TAG, "- _1_3_Repository incomplete: ${progress3}")
-                    if (progress4 < 1.0f) Log.d(TAG, "- _1_4_Repository incomplete: ${progress4}")
-                    if (progress5 < 1.0f) Log.d(TAG, "- _1_5_Repository incomplete: ${progress5}")
+                    flowValues.forEachIndexed { index, progress ->
+                        if (progress < 1.0f) {
+                            val repoName = when(index) {
+                                0 -> "_1_1_Repository"
+                                1 -> "_1_2_Repository"
+                                2 -> "_1_3_Repository"
+                                3 -> "_1_4_Repository"
+                                4 -> "_1_5_Repository"
+                                5 -> "_2_2_Repository"
+                                else -> "Unknown"
+                            }
+                            Log.d(TAG, "- $repoName incomplete: $progress")
+                        }
+                    }
                 }
 
                 combinedProgress
-            }.collect { combinedProgress ->
+            }
+
+            combinedFlow.collect { combinedProgress ->
                 progressRepo.value = combinedProgress
                 log()
 
@@ -337,8 +351,6 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                 if (combinedProgress >= 1.0f && !hasCompletedOnce) {
                     hasCompletedOnce = true
                     onComplete()
-                    // Optional: If you want to stop collecting after completion
-                    // isFlowListenerActive = false
                 }
             }
         } catch (e: Exception) {

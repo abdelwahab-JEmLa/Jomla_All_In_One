@@ -14,7 +14,7 @@ interface _0_0_HeadOfRepositorys_Repository {
     companion object {
         const val TAG = "_0_0_HeadOfRepositorys"
 
-        val sonDataBaseRef = Firebase.database
+        val _0_0_HeadOfRepositorys_RepositoryRef = Firebase.database
             .getReference("00_DataPrototype-04-02")
     }
 }

@@ -47,6 +47,7 @@ val commonRepositoriesModule = module {
         get(),
         get(),
         get(),
+        get(),
     ) }
     single<_1_1_CouleurAcheteOperation_Repository> { _1_1_CouleurAcheteOperationRepositoryImpl(get()) }
     single<_1_2_ProduitAcheteOperation_Repository> { _1_2_ProduitAcheteOperationRepositoryImpl(get()) }

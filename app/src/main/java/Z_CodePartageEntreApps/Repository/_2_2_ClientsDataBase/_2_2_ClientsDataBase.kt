@@ -13,7 +13,7 @@ import com.google.firebase.database.IgnoreExtraProperties
 @Entity
 data class _2_2_ClientsDataBase(
     @PrimaryKey(autoGenerate = true)
-    var id: Long = 0L,
+    var vid: Long = 0L,
 
     var nom: String = "Non Defini",
 
