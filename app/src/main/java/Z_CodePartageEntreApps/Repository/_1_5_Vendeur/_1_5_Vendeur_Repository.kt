@@ -8,12 +8,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 interface _1_5_Vendeur_Repository{
     var modelDatasSnapList: SnapshotStateList<_1_5_Vendeur>
 
-
     val progressRepo: MutableStateFlow<Float>
         get() = MutableStateFlow(0f)
 
     val activeId: MutableStateFlow<Long>
 
+    fun addDataAndReturneItVID(data: _1_5_Vendeur, onAddSuccess: (Long) -> Unit)
 
     suspend fun ensureDataIsInitialized()
 
@@ -32,5 +32,4 @@ interface _1_5_Vendeur_Repository{
             .child("_1_5_")
     }
 
-    fun addDataAndReturneItVID(data: _1_5_Vendeur, onAddSuccess: (Long) -> Unit)
 }

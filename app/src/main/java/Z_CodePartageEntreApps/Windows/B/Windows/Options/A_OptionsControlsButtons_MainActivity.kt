@@ -135,18 +135,18 @@ fun A_OptionsControlsButtons_Main(
                         }
                         FloatingActionButton(
                             onClick = {
-
                                 repositorysModel
                                     ._1_4_PeriodeVent_Repository
                                     .addDataAndReturneItVID(
                                         _1_4_PeriodeVent(
                                             startDateInString = LocalDate.now()
                                                 .format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-                                            vendeur_ParentVID = repositorysModel.activeVidRepository_1_5
+                                            vendeur_ParentVID =
+                                                repositorysModel._1_5_Vendeur_Repository.modelDatasSnapList
+                                                    .last { it.nom== }
                                             )
-                                    ) { newVID ->
-                                        repositorysModel.activeVidRepository_1_4 = newVID
-                                    }
+                                    )
+
                             },
                             modifier = Modifier.size(40.dp),
                             containerColor = if (isFilterActive) Color(0xFF2196F3) else Color(

@@ -18,7 +18,7 @@ interface _1_4_PeriodeVent_Repository {
 
     fun addDataAndReturneItVID(
         data: _1_4_PeriodeVent,
-        onAddSuccess:(Long) -> Unit
+        onAddSuccess:(Long) -> Unit = {}
     )
 
     fun updateUnSeulData(data: _1_4_PeriodeVent)
