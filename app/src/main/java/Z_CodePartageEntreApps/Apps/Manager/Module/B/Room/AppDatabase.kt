@@ -18,12 +18,14 @@ import Z_CodePartageEntreApps.Model._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Model._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.Model._1_3_BonAchat
 import Z_CodePartageEntreApps.Model._1_4_PeriodeVent
-import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation.Z.Dao._1_1_CouleurAcheteOperationDao
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation.Dao._1_2_ProduitAcheteOperationDao
 import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchatDao
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVentDao
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur.Extension.DataBase._1_5_VendeurDao
+import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur
+import Z_CodePartageEntreApps.Repository._2_2_ClientsDataBase.Extension.DataBase._2_2_ClientsDataBaseDao
+import Z_CodePartageEntreApps.Repository._2_2_ClientsDataBase._2_2_ClientsDataBase
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
@@ -53,6 +55,7 @@ import java.util.Date
         _1_3_BonAchat::class,
         _1_4_PeriodeVent::class,
         _1_5_Vendeur::class,
+        _2_2_ClientsDataBase::class,
     ],
     version = 1,
     exportSchema = false
@@ -81,6 +84,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun _1_3_BonAchatDao(): _1_3_BonAchatDao
     abstract fun _1_4_PeriodeVentDao(): _1_4_PeriodeVentDao
     abstract fun _1_5_VendeurDao(): _1_5_VendeurDao
+
+    abstract fun _2_2_ClientsDataBaseDao(): _2_2_ClientsDataBaseDao
 
     object DatabaseModule {
 

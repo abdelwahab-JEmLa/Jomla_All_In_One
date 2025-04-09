@@ -132,7 +132,8 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
             val modelDatasSnapList = _1_4_Repository.modelDatasSnapList
 
             // Find an existing active period (where endDateInString is empty)
-            val existingPeriod = modelDatasSnapList.find { it.endDateInString == "" }
+            val existingPeriod = modelDatasSnapList.find {
+                it.endDateInString == "" }
 
             val newPeriodPair = if (existingPeriod != null) {
                 Pair(existingPeriod, existingPeriod.vid)
@@ -166,7 +167,10 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
 
             val currentTime = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
             val existingBonAchat = modelDatasSnapList
-                .find { it.heurDebutInString == currentTime }
+                .find {
+                    it.parent_1_3_BonAchatVid == _1_4_Repository.activeId
+                            && it.clientAcheteurID
+                }
 
             val newBonAchatPair = if (existingBonAchat != null) {
                 Pair(existingBonAchat, existingBonAchat.vid)

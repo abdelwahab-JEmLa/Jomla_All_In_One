@@ -27,7 +27,6 @@ fun MainScreen_APP2_ID_2(
         ._1_3_BonAchat_Repository
         .activeId .collectAsState()
 
-    // Properly collect the StateFlow value
 
     Column(
         modifier = modifier.fillMaxSize()
