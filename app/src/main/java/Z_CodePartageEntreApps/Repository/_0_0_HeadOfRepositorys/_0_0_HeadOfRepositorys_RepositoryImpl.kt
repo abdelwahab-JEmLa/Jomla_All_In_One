@@ -43,8 +43,8 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
         _1_4_Repository,
         _1_5_Repository,
         _2_2_Repository,
+        activeVID_1_3_BonAchat = 0L, // Initial value, will be updated later
     )
-
     override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
 
     private val repositoryScope = CoroutineScope(Dispatchers.IO)
@@ -289,8 +289,9 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                     _1_2_ProduitAcheteOperation_Repository = _1_2_Repository,
                     _1_3_BonAchat_Repository = _1_3_Repository,
                     _1_4_PeriodeVent_Repository = _1_4_Repository,
-                    _1_5_Vendeur_Repository = _1_5_Repository ,
-                    _2_2_ClientsDataBase_Repository = _2_2_Repository ,
+                    _1_5_Vendeur_Repository = _1_5_Repository,
+                    _2_2_ClientsDataBase_Repository = _2_2_Repository,
+                    activeVID_1_3_BonAchat = _1_3_Repository.activeId.value // Use the active ID from the BonAchat repository
                 )
 
                 // Update progress
