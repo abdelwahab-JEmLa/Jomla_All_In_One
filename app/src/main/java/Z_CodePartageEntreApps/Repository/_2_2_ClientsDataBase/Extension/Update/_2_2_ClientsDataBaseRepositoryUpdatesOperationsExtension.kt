@@ -14,7 +14,7 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
 
-class _2_2_ClientsDataBaseRepositoryUpdatesOperaionsExtension(
+class _2_2_ClientsDataBaseRepositoryUpdatesOperationsExtension(
     private val repositoryImpl: _2_2_ClientsDataBaseRepositoryImpl
 ) {
     private val TAG = _2_2_ClientsDataBase_Repository.TAG

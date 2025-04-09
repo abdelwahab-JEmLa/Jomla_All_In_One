@@ -1,8 +1,8 @@
 package Z_CodePartageEntreApps.Repository._2_2_ClientsDataBase
 
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import Z_CodePartageEntreApps.Repository._2_2_ClientsDataBase.Extension.Log._2_2_ClientsDataBaseRepositoryLogOperationsExtention
-import Z_CodePartageEntreApps.Repository._2_2_ClientsDataBase.Extension.Update._2_2_ClientsDataBaseRepositoryUpdatesOperaionsExtension
+import Z_CodePartageEntreApps.Repository._2_2_ClientsDataBase.Extension.Log._2_2_ClientsDataBaseRepositoryLogOperationsExtension
+import Z_CodePartageEntreApps.Repository._2_2_ClientsDataBase.Extension.Update._2_2_ClientsDataBaseRepositoryUpdatesOperationsExtension
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -40,8 +40,8 @@ class _2_2_ClientsDataBaseRepositoryImpl(
     private val listenerLock = Any()
     private val flowListenerLock = Any()
 
-    private val updatesOperations = _2_2_ClientsDataBaseRepositoryUpdatesOperaionsExtension(this)
-    private val logOperations = _2_2_ClientsDataBaseRepositoryLogOperationsExtention(this)
+    private val updatesOperations = _2_2_ClientsDataBaseRepositoryUpdatesOperationsExtension(this)
+    private val logOperations = _2_2_ClientsDataBaseRepositoryLogOperationsExtension(this)
 
     init {
         repositoryScope.launch {
@@ -67,14 +67,6 @@ class _2_2_ClientsDataBaseRepositoryImpl(
         }
     }
 
-    override fun getIdParNomModel(nomModel: String): Long {
-        val vendor = modelDatasSnapList.find { it.deviceModelNom == nomModel }
-        if (vendor == null) {
-            Log.e(TAG, "Vendor not found for model: $nomModel. Available models: ${modelDatasSnapList.map { it.deviceModelNom }}")
-            return -1L
-        }
-        return vendor.vid
-    }
 
     override fun updateUnSeulData(data: _2_2_ClientsDataBase) {
         updatesOperations.updateUnSeulData(data, repositoryScope, appDatabase, modelDatasSnapList)

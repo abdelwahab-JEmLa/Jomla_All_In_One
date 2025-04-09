@@ -17,7 +17,6 @@ interface _2_2_ClientsDataBase_Repository{
 
     suspend fun ensureDataIsInitialized()
 
-    fun getIdParNomModel(nomModel:String): Long
 
     fun addData(data: _2_2_ClientsDataBase)
     fun updateUnSeulData(data: _2_2_ClientsDataBase)
