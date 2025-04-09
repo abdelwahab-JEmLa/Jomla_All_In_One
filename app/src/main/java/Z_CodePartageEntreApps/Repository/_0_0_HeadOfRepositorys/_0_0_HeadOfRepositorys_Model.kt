@@ -16,5 +16,6 @@ class _0_0_HeadOfRepositorys_Model(
 
     val _2_2_ClientsDataBase_Repository: _2_2_ClientsDataBase_Repository,
     var activeVID_1_3_BonAchat: Long,
+    var activeVidRepository_1_4: Long=0,
 
     )

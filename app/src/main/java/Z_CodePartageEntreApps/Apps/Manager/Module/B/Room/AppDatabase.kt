@@ -25,7 +25,7 @@ import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVentDao
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur.Extension.DataBase._1_5_VendeurDao
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur
 import Z_CodePartageEntreApps.Repository._2_2_ClientsDataBase.Extension.DataBase._2_2_ClientsDataBaseDao
-import Z_CodePartageEntreApps.Repository._2_2_ClientsDataBase._2_2_ClientsDataBase
+import Z_CodePartageEntreApps.Model._2_2_ClientsDataBase
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room

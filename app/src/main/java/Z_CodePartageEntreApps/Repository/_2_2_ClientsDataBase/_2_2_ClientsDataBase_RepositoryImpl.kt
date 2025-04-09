@@ -1,6 +1,7 @@
 package Z_CodePartageEntreApps.Repository._2_2_ClientsDataBase
 
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
+import Z_CodePartageEntreApps.Model._2_2_ClientsDataBase
 import Z_CodePartageEntreApps.Repository._2_2_ClientsDataBase.Extension.Log._2_2_ClientsDataBaseRepositoryLogOperationsExtension
 import Z_CodePartageEntreApps.Repository._2_2_ClientsDataBase.Extension.Update._2_2_ClientsDataBaseRepositoryUpdatesOperationsExtension
 import android.util.Log

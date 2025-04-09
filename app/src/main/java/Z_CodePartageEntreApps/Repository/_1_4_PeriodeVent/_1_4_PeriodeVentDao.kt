@@ -16,6 +16,9 @@ interface _1_4_PeriodeVentDao {
     suspend fun insert(item: _1_4_PeriodeVent)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAvecRetureNewVid(item: _1_4_PeriodeVent): Long
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(items: List<_1_4_PeriodeVent>)
 
     @Delete

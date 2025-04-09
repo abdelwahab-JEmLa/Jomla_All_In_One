@@ -1,9 +1,9 @@
 package Z_CodePartageEntreApps.Repository._2_2_ClientsDataBase.Extension.Update
 
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import Z_CodePartageEntreApps.Repository._2_2_ClientsDataBase._2_2_ClientsDataBase
-import Z_CodePartageEntreApps.Repository._2_2_ClientsDataBase._2_2_ClientsDataBase_RepositoryImpl
+import Z_CodePartageEntreApps.Model._2_2_ClientsDataBase
 import Z_CodePartageEntreApps.Repository._2_2_ClientsDataBase._2_2_ClientsDataBase_Repository
+import Z_CodePartageEntreApps.Repository._2_2_ClientsDataBase._2_2_ClientsDataBase_RepositoryImpl
 import android.util.Log
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.firebase.database.ValueEventListener

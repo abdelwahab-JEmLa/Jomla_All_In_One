@@ -17,8 +17,16 @@ data class _1_4_PeriodeVent(
     var endDateInString: String = "",
 
     // Section StatuesMutable
+    var etateActuellementEst: EtateActuellementEst =
+        EtateActuellementEst.ENTRE_MAIS_PAS_CONFIRME,
 
-) {
+    ) {
+    enum class EtateActuellementEst {
+        ENTRE_MAIS_PAS_CONFIRME,
+        CONFIRME,
+        NA_PAS_COMMANDE,
+    }
+
     fun mainKeyVal(): String {
         return startDateInString
     }
@@ -30,7 +38,5 @@ data class _1_4_PeriodeVent(
                 Locale.getDefault()
             ).format(Date())
         }
-
-
     }
 }

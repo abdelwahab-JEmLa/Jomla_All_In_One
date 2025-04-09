@@ -7,8 +7,6 @@ import com.google.firebase.database.database
 import kotlinx.coroutines.flow.MutableStateFlow
 
 interface _1_4_PeriodeVent_Repository {
-
-
     var modelDatasSnapList: SnapshotStateList<_1_4_PeriodeVent>
     val progressRepo: MutableStateFlow<Float>
         get() = MutableStateFlow(0f)
@@ -17,6 +15,12 @@ interface _1_4_PeriodeVent_Repository {
     suspend fun ensureDataIsInitialized()
 
     fun addData(data: _1_4_PeriodeVent)
+
+    fun addDataAndReturneItVID(
+        data: _1_4_PeriodeVent,
+        onAddSuccess:(Long) -> Unit
+    )
+
     fun updateUnSeulData(data: _1_4_PeriodeVent)
     suspend fun updateMultiDatas(datas: SnapshotStateList<_1_4_PeriodeVent>)
     fun deleteUnSeulData(data: _1_4_PeriodeVent)

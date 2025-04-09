@@ -1,5 +1,7 @@
 package Z_CodePartageEntreApps.Windows.B.Windows
 
+import Z_CodePartageEntreApps.Model._1_4_PeriodeVent
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_CodePartageEntreApps.Windows.B.Windows.UI.LoadingContent
 import Z_CodePartageEntreApps.Windows.B.Windows.ViewModel.ViewModelFragment_StartUpScreen
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.Components.LabelsButton
@@ -36,6 +38,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.math.roundToInt
@@ -45,7 +48,9 @@ const val TAG = "A_OptionsControlsButtons_Main"
 @Composable
 fun A_OptionsControlsButtons_Main(
     viewModel: ViewModelFragment_StartUpScreen = koinViewModel(),
-) {
+    _0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository = koinInject(),
+
+    ) {
     var showMenu by remember { mutableStateOf(false) }
     var showLabels by remember { mutableStateOf(true) }
     var offsetX by remember { mutableFloatStateOf(0f) }
@@ -91,26 +96,23 @@ fun A_OptionsControlsButtons_Main(
                     ) {
                         FloatingActionButton(
                             onClick = {
-                                // Add a new PeriodeVent entry
-                                val currentDate = LocalDate.now()
-                                val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                                val today = currentDate.format(formatter)
-
-                                // Create and add a new PeriodeVent with vid=1, today's date, and empty end date
-                                val newPeriodeVent = Z_CodePartageEntreApps.Model._1_4_PeriodeVent(
-                                    vid = if (uiState._1_4_PeriodeVentList.isEmpty()) 1L else {
-                                        val maxVid = uiState._1_4_PeriodeVentList.maxOfOrNull { it.vid } ?: 0L
-                                        if (maxVid < 400L) maxVid + 1L else maxVid + 1L
-                                    },
-                                    startDateInString = today,
-                                    endDateInString = ""
-                                )
-
-                                viewModel.addData_1_4_PeriodeVent(newPeriodeVent)
-
+                                val repositorysModel =
+                                    _0_0_HeadOfRepositorys_Repository.repositorys_Model
+                                repositorysModel
+                                    ._1_4_PeriodeVent_Repository
+                                    .addDataAndReturneItVID(
+                                        _1_4_PeriodeVent(
+                                            startDateInString = LocalDate.now()
+                                                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                                        )
+                                    ) { newVID ->
+                                        repositorysModel.activeVidRepository_1_4 = newVID
+                                    }
                             },
                             modifier = Modifier.size(40.dp),
-                            containerColor = if (isFilterActive) Color(0xFF2196F3) else Color(0xFF4CAF50)
+                            containerColor = if (isFilterActive) Color(0xFF2196F3) else Color(
+                                0xFF4CAF50
+                            )
                         ) {
                             Icon(
                                 Icons.Filled.Add,
@@ -122,7 +124,11 @@ fun A_OptionsControlsButtons_Main(
                             Text(
                                 "Add New Period",
                                 modifier = Modifier
-                                    .background(if (isFilterActive) Color(0xFF2196F3) else Color(0xFF4CAF50))
+                                    .background(
+                                        if (isFilterActive) Color(0xFF2196F3) else Color(
+                                            0xFF4CAF50
+                                        )
+                                    )
                                     .padding(4.dp),
                                 color = Color.White
                             )
@@ -151,7 +157,7 @@ fun A_OptionsControlsButtons_Main(
 @Composable
 fun LabelsButton(
     showLabels: Boolean,
-    onShowLabelsChange: (Boolean) -> Unit
+    onShowLabelsChange: (Boolean) -> Unit,
 ) {
     ControlButton(
         onClick = { onShowLabelsChange(!showLabels) },
@@ -167,7 +173,7 @@ fun LabelsButton(
 fun MenuButton(
     showLabels: Boolean,
     showMenu: Boolean,
-    onShowMenuChange: (Boolean) -> Unit
+    onShowMenuChange: (Boolean) -> Unit,
 ) {
     ControlButton(
         onClick = { onShowMenuChange(!showMenu) },

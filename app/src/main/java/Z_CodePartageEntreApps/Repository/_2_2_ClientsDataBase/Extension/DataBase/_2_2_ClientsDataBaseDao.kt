@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Repository._2_2_ClientsDataBase.Extension.DataBase
 
-import Z_CodePartageEntreApps.Repository._2_2_ClientsDataBase._2_2_ClientsDataBase
+import Z_CodePartageEntreApps.Model._2_2_ClientsDataBase
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert

@@ -1,6 +1,7 @@
 package Z_CodePartageEntreApps.Repository._2_2_ClientsDataBase
 
 import Z_CodePartageEntreApps.Model.Z.Archive._ModelAppsFather.Companion.firebaseDatabase
+import Z_CodePartageEntreApps.Model._2_2_ClientsDataBase
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import kotlinx.coroutines.flow.MutableStateFlow
 

@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Repository._2_2_ClientsDataBase
+package Z_CodePartageEntreApps.Model
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add

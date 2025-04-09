@@ -1,6 +1,5 @@
 package Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys
 
-import Z_CodePartageEntreApps.Model._1_3_BonAchat
 import Z_CodePartageEntreApps.Model._1_4_PeriodeVent
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.Extension.Log._0_0_HeadOfRepositoryLogOperationsExtension
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
@@ -72,7 +71,6 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
             startProgressTracking() {
                 checkADD_1_5_Repository()
                 checkADD_1_4_PeriodeVent()
-                checkADD_1_3_BonAchat()
             }
         }
     }
@@ -87,7 +85,6 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                 checkADD_1_4_PeriodeVent()
                 delay(100)
 
-                checkADD_1_3_BonAchat()
 
                 Log.d(TAG, "Initial data creation completed successfully")
             } catch (e: Exception) {
@@ -148,54 +145,18 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                 Pair(newPeriod, newVid)
             }
 
+            repositorys_Model.activeVidRepository_1_4 = newPeriodPair.second
+
             // Check if the period exists and add if not
             if (!modelDatasSnapList.any { it.vid == newPeriodPair.second }) {
                 _1_4_Repository.addData(newPeriodPair.first)
                 _1_4_Repository.activeId.value = newPeriodPair.second
-                Log.d(TAG, "Added new period with VID: ${newPeriodPair.second}")
             } else {
                 _1_4_Repository.activeId.value = newPeriodPair.second
-                Log.d(TAG, "Using existing period with VID: ${newPeriodPair.second}")
             }
+
         } catch (e: Exception) {
             Log.e(TAG, "Error in checkADD_1_4_PeriodeVent: ${e.message}")
-        }
-    }
-
-    private fun checkADD_1_3_BonAchat() {
-        try {
-            val modelDatasSnapList = _1_3_Repository.modelDatasSnapList
-
-            // Fix the comparison by accessing the value property of the MutableStateFlow
-            val existingBonAchat = modelDatasSnapList
-                .find {
-                    it.parent_1_3_BonAchatVid == _1_4_Repository.activeId.value
-                            && it.clientAcheteurID == _1_4_Repository.activeId.value
-                }
-
-            val newBonAchatPair = if (existingBonAchat != null) {
-                Pair(existingBonAchat, existingBonAchat.vid)
-            } else {
-                val newVid = modelDatasSnapList.maxOfOrNull { it.vid }?.plus(1) ?: 1L
-                val newBonAchat = _1_3_BonAchat(
-                    vid = newVid,
-                    clientAcheteurID = _1_5_Repository.activeId.value,
-                    parent_1_3_BonAchatVid = _1_4_Repository.activeId.value,
-                )
-                Pair(newBonAchat, newVid)
-            }
-
-            // Check if the bon achat exists and add if not
-            if (!modelDatasSnapList.any { it.vid == newBonAchatPair.second }) {
-                _1_3_Repository.addData(newBonAchatPair.first)
-                _1_3_Repository.activeId.value = newBonAchatPair.second
-                Log.d(TAG, "Added new bon achat with VID: ${newBonAchatPair.second}")
-            } else {
-                _1_3_Repository.activeId.value = newBonAchatPair.second
-                Log.d(TAG, "Using existing bon achat with VID: ${newBonAchatPair.second}")
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error in checkADD_1_3_BonAchat: ${e.message}")
         }
     }
 
@@ -221,9 +182,7 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                                 checkADD_1_4_PeriodeVent()
                             }
 
-                            if (_1_3_Repository.modelDatasSnapList.isEmpty()) {
-                                checkADD_1_3_BonAchat()
-                            }
+
 
                             initialDataLoaded = true
                             progressRepo.value = 1.0f

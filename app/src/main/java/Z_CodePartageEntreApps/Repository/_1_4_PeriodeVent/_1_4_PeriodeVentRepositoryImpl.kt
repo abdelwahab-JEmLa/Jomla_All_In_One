@@ -14,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -299,6 +300,41 @@ class _1_4_PeriodeVentRepositoryImpl(
     override fun addData(data: _1_4_PeriodeVent) {
         updatesOperations.addData(data, repositoryScope, appDatabase, modelDatasSnapList)
     }
+
+    override fun addDataAndReturneItVID(
+        data: _1_4_PeriodeVent,
+        onAddSuccess: (Long) -> Unit
+    ) {
+        try {
+            // Create a copy of the data to work with
+            val dataToAdd = data.copy()
+
+            repositoryScope.launch(Dispatchers.IO) {
+                try {
+                    // Insert into Room and get the new vid
+                    val newVid = appDatabase._1_4_PeriodeVentDao().insertAvecRetureNewVid(dataToAdd)
+
+                    // Update the object with the new vid
+                    dataToAdd.vid = newVid
+
+                    withContext(Dispatchers.Main) {
+                        modelDatasSnapList.add(dataToAdd)
+                    }
+
+                    // Update Firebase with the new vid
+                    _1_4_PeriodeVent_Repository.sonDataBaseRef.child(newVid.toString()).setValue(dataToAdd).await()
+
+                    // Call the success callback with the new vid
+                    onAddSuccess(newVid)
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error adding data: ${e.message}")
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in addDataAndReturneItVID: ${e.message}")
+        }
+    }
+   
 
     override suspend fun updateMultiDatas(datas: SnapshotStateList<_1_4_PeriodeVent>) {
         updatesOperations.updateMultiDatas(
