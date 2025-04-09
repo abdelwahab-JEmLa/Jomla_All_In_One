@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
 
-class _2_2_ClientsDataBaseRepositoryImpl(
+class _2_2_ClientsDataBase_RepositoryImpl(
     private val appDatabase: AppDatabase,
 ) : _2_2_ClientsDataBase_Repository {
     private val TAG = _2_2_ClientsDataBase_Repository.TAG
