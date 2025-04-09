@@ -26,4 +26,6 @@ interface _1_2_ProduitAcheteOperation_Repository {
             .getReference("00_DataPrototype-04-02")
             .child("_1_2_")
     }
+
+    fun addDataAndReturneItVID(data: _1_2_ProduitAcheteOperation, onAddSuccess: (Long) -> Unit)
 }

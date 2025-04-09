@@ -111,6 +111,39 @@ class _1_2_ProduitAcheteOperationRepositoryImpl(
             Log.e(TAG, "Error initializing repository: ${e.message}")
         }
     }
+    override fun addDataAndReturneItVID(
+        data: _1_2_ProduitAcheteOperation,
+        onAddSuccess: (Long) -> Unit
+    ) {
+        try {
+            // Create a copy of the data to work with
+            val dataToAdd = data.copy()
+
+            repositoryScope.launch(Dispatchers.IO) {
+                try {
+                    // Insert into Room and get the new vid
+                    val newVid = appDatabase._1_2_ProduitAcheteOperationDao().insertAvecRetureNewVid(dataToAdd)
+
+                    // Update the object with the new vid
+                    dataToAdd.vid = newVid
+
+                    withContext(Dispatchers.Main) {
+                        modelDatasSnapList.add(dataToAdd)
+                    }
+
+                    // Update Firebase with the new vid
+                    _1_2_ProduitAcheteOperation_Repository.sonDataBaseRef.child(newVid.toString()).setValue(dataToAdd).await()
+
+                    // Call the success callback with the new vid
+                    onAddSuccess(newVid)
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error adding data: ${e.message}")
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in addDataAndReturneItVID: ${e.message}")
+        }
+    }
 
     private suspend fun loadDepuitRoom() {
         try {

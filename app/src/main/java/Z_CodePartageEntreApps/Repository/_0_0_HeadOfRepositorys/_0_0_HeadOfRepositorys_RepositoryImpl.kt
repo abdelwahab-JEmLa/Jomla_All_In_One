@@ -32,6 +32,7 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
 ) : _0_0_HeadOfRepositorys_Repository {
     private val TAG = _0_0_HeadOfRepositorys_Repository.TAG
 
+
     override var repositorys_Model: _0_0_HeadOfRepositorys_Model = _0_0_HeadOfRepositorys_Model(
         _1_1_Repository,
         _1_2_Repository,

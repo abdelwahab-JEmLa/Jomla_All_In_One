@@ -203,7 +203,6 @@ fun MarkerStatusDialog(
                     }
 
 
-                    // Status buttons remain the same
                     StatusButton(
                         text = "Mode Commande",
                         icon = Icons.Default.ShoppingCart,
@@ -218,19 +217,35 @@ fun MarkerStatusDialog(
                                 val repositorysModel =
                                     _0_0_HeadOfRepositorys_Repository.repositorys_Model
 
-                                val currentVendeur =
-                                    repositorysModel._1_5_Vendeur_Repository.modelDatasSnapList
-                                        .firstOrNull ()
+                                val currentVendeur = _0_0_HeadOfRepositorys_Repository.currentVendeur
+                                val activePeriod = _0_0_HeadOfRepositorys_Repository.activePeriod
 
-                                val activePeriod = if (currentVendeur != null) {
-                                    repositorysModel._1_4_PeriodeVent_Repository.modelDatasSnapList
-                                        .lastOrNull { it.vendeur_ParentVID == currentVendeur.vid }
-                                } else null
+// Log the current state to diagnose the issue
+                                Log.d("MarkerStatusDialog", "Current vendeur: $currentVendeur")
+                                Log.d("MarkerStatusDialog", "Active period: $activePeriod")
+                                Log.d("MarkerStatusDialog", "Periods available: ${_0_0_HeadOfRepositorys_Repository.repositorys_Model._1_4_PeriodeVent_Repository.modelDatasSnapList.size}")
 
+// Check if there's a valid period or create one if needed
+                                val parentVidPeriode = if (activePeriod != null) {
+                                    Log.d("MarkerStatusDialog", "Using existing period with VID: ${activePeriod.vid}")
+                                    activePeriod.vid
+                                } else {
+                                    Log.w("MarkerStatusDialog", "No active period found. This may be because currentVendeur is null or no matching period exists.")
+
+                                    // You could either:
+                                    // 1. Create a new period (if that's appropriate for your application)
+                                    // 2. Use a fallback period VID
+                                    // 3. Show an error message to the user
+
+                                    // For now, returning 0L but you should replace with appropriate logic
+                                    0L
+                                }
+
+// Then use this parentVidPeriode in your BonAchat creation:
                                 repositorysModel._1_3_BonAchat_Repository.addDataAndReturneItVID(
                                     _1_3_BonAchat(
-                                        clientAcheteurID = relatedClients?.id?: 0L,
-                                        parentVID_1_4_PeriodeVent = activePeriod?.vid ?: 0L,
+                                        clientAcheteurID = relatedClients?.id ?: 0L,
+                                        parentVID_1_4_PeriodeVent = parentVidPeriode
                                     )
                                 )
 
@@ -256,13 +271,11 @@ fun MarkerStatusDialog(
                                     ).format(Date())
                                 )
 
-
                                 viewModelInitApp.viewModelFragment_APP2_ID_1.addData_1_3_BonAchat_Repository(
                                     newData
                                 )
 
                                 onUpdateLongAppSetting()
-
                                 onDismiss()
                             }
                         }

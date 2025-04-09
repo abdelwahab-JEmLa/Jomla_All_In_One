@@ -9,6 +9,9 @@ import androidx.room.Query
 
 @Dao
 interface _1_2_ProduitAcheteOperationDao {
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAvecRetureNewVid(item: _1_2_ProduitAcheteOperation): Long
+
     @Query("SELECT * FROM _1_2_ProduitAcheteOperation")
     suspend fun getAll(): MutableList<_1_2_ProduitAcheteOperation>
 
