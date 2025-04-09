@@ -2,6 +2,7 @@ package Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.Ap
 
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import Z_CodePartageEntreApps.Model._1_3_BonAchat
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_CodePartageEntreApps.Windows.B.Windows.UI.LoadingContent
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.ViewModel_App2FragID1
@@ -49,6 +50,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 import org.osmdroid.views.overlay.Marker
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -63,6 +65,7 @@ fun MarkerStatusDialog(
     onUpdateLongAppSetting: () -> Unit = {},
     onClickToEditeMarquerPosition: (Long) -> Unit,
     onRemoveMark: (Marker?) -> Unit,
+    _0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository = koinInject()
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -212,6 +215,7 @@ fun MarkerStatusDialog(
                         ),
                         onClick = {
                             coroutineScope.launch {
+
                                 viewModel.updateLongAppSetting(selectedMarker.id.toLong())
                                 val maxVid = uiStateviewModelFragment_APP2_ID_1._1_3_BonAchatList.maxOfOrNull { it.vid } ?: 0
                                 Log.d("MarkerStatusDialog", "Current max vid: $maxVid, list size: ${uiStateviewModelFragment_APP2_ID_1._1_3_BonAchatList.size}")
@@ -223,6 +227,10 @@ fun MarkerStatusDialog(
                                    // parent_1_4_PeriodeVentVid = uiStateviewModelFragment_APP2_ID_1._1_4_PeriodeVentList.maxOf { it.vid },
                                     heurDebutInString = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
                                 )
+                                _0_0_HeadOfRepositorys_Repository.
+
+
+
 
                                 viewModelInitApp.viewModelFragment_APP2_ID_1.addData_1_3_BonAchat_Repository(newData)
 

@@ -23,7 +23,8 @@ import kotlinx.coroutines.withContext
 /**
  * way inject
  *
- *     ,_0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository = koinInject()
+ *     ,
+ *     _0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository = koinInject()
  */
 class _0_0_HeadOfRepositorys_RepositoryImpl(
     private val _1_1_Repository: _1_1_CouleurAcheteOperation_Repository,
