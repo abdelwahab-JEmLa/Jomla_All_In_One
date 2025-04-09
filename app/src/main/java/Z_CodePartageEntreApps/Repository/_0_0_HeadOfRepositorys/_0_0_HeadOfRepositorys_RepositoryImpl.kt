@@ -1,6 +1,5 @@
 package Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys
 
-import Z_CodePartageEntreApps.Model._1_4_PeriodeVent
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.Extension.Log._0_0_HeadOfRepositoryLogOperationsExtension
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
@@ -70,7 +69,6 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
             // Start tracking progress afterward
             startProgressTracking() {
                 checkADD_1_5_Repository()
-                checkADD_1_4_PeriodeVent()
             }
         }
     }
@@ -82,7 +80,6 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                 checkADD_1_5_Repository()
                 delay(100) // Give a small delay to ensure Firebase operations complete
 
-                checkADD_1_4_PeriodeVent()
                 delay(100)
 
 
@@ -125,40 +122,6 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
         }
     }
 
-    private fun checkADD_1_4_PeriodeVent() {
-        try {
-            // Get the model data list from the repository
-            val modelDatasSnapList = _1_4_Repository.modelDatasSnapList
-
-            // Find an existing active period (where endDateInString is empty)
-            val existingPeriod = modelDatasSnapList.find {
-                it.endDateInString == "" }
-
-            val newPeriodPair = if (existingPeriod != null) {
-                Pair(existingPeriod, existingPeriod.vid)
-            } else {
-                val newVid = modelDatasSnapList.maxOfOrNull { it.vid }?.plus(1) ?: 1L
-                val newPeriod = _1_4_PeriodeVent(
-                    vid = newVid,
-                    vendeur_ParentVID = _1_5_Repository.activeId.value
-                )
-                Pair(newPeriod, newVid)
-            }
-
-            repositorys_Model.activeVidRepository_1_4 = newPeriodPair.second
-
-            // Check if the period exists and add if not
-            if (!modelDatasSnapList.any { it.vid == newPeriodPair.second }) {
-                _1_4_Repository.addData(newPeriodPair.first)
-                _1_4_Repository.activeId.value = newPeriodPair.second
-            } else {
-                _1_4_Repository.activeId.value = newPeriodPair.second
-            }
-
-        } catch (e: Exception) {
-            Log.e(TAG, "Error in checkADD_1_4_PeriodeVent: ${e.message}")
-        }
-    }
 
     suspend fun ensureDataIsInitialized() {
         try {
@@ -178,9 +141,6 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                                 checkADD_1_5_Repository()
                             }
 
-                            if (_1_4_Repository.modelDatasSnapList.isEmpty()) {
-                                checkADD_1_4_PeriodeVent()
-                            }
 
 
 
