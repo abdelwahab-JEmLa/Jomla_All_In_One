@@ -102,8 +102,8 @@ fun MainUi(
 
     val repositorysModel = _0_0_HeadOfRepositorys_Repository.repositorys_Model
 
-    val parentCompose_1_3_BonAchatVid by repositorysModel._1_3_BonAchat_Repository.activeId.collectAsState()
-
+    val parentCompose_1_3_BonAchatVid =
+        _0_0_HeadOfRepositorys_Repository.activeVID_1_3_BonAchat
 
     var parentCompose_1_2_ProduitAcheteOperationVid by remember { mutableLongStateOf(0L) }
 
@@ -112,12 +112,13 @@ fun MainUi(
     ) {
         val produitActuelle = currentSale.idArticle
         val existing_1_2_ProduitAcheteOperation =
-            repositorysModel._1_2_ProduitAcheteOperation_Repository?.modelDatasSnapList?.find {
-                it.produitAcheterID == produitActuelle && it.parent_1_3_BonAchat == parentCompose_1_3_BonAchatVid
+            repositorysModel._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList.find {
+                it.produitAcheterID == produitActuelle
+                        && it.parent_1_3_BonAchat == parentCompose_1_3_BonAchatVid
             }
         parentCompose_1_2_ProduitAcheteOperationVid =
             if (existing_1_2_ProduitAcheteOperation != null) {
-                repositorysModel._1_2_ProduitAcheteOperation_Repository?.updateUnSeulData(
+                repositorysModel._1_2_ProduitAcheteOperation_Repository.updateUnSeulData(
                     existing_1_2_ProduitAcheteOperation.apply {
                         etateActuellementEst = _1_2_ProduitAcheteOperation.EtateActuellementEst.PRESENTATION
                     }
@@ -125,15 +126,19 @@ fun MainUi(
                 existing_1_2_ProduitAcheteOperation.vid
             } else {
                 val newVid =
-                    repositorysModel._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList?.maxOfOrNull { it.vid }
+                    repositorysModel._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList.maxOfOrNull { it.vid }
                         ?.plus(1) ?: 1
-                repositorysModel._1_2_ProduitAcheteOperation_Repository.add(
+                parentCompose_1_3_BonAchatVid?.let {
                     _1_2_ProduitAcheteOperation(
                         vid = newVid,
                         produitAcheterID = produitActuelle,
-                        parent_1_3_BonAchat = parentCompose_1_3_BonAchatVid
+                        parent_1_3_BonAchat = it
                     )
-                )
+                }?.let {
+                    repositorysModel._1_2_ProduitAcheteOperation_Repository.addDataAndReturneItVID(
+                        it
+                    )
+                }
                 newVid
             }
     }

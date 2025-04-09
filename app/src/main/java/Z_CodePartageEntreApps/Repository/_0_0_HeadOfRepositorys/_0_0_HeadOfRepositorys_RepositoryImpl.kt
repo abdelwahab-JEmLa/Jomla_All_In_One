@@ -32,7 +32,6 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
 ) : _0_0_HeadOfRepositorys_Repository {
     private val TAG = _0_0_HeadOfRepositorys_Repository.TAG
 
-
     override var repositorys_Model: _0_0_HeadOfRepositorys_Model = _0_0_HeadOfRepositorys_Model(
         _1_1_Repository,
         _1_2_Repository,
@@ -40,7 +39,6 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
         _1_4_Repository,
         _1_5_Repository,
         _2_2_Repository,
-        activeVID_1_3_BonAchat = 0L, // Initial value, will be updated later
     )
     override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
 
@@ -171,7 +169,6 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                     _1_4_PeriodeVent_Repository = _1_4_Repository,
                     _1_5_Vendeur_Repository = _1_5_Repository,
                     _2_2_ClientsDataBase_Repository = _2_2_Repository,
-                    activeVID_1_3_BonAchat = _1_3_Repository.activeId.value // Use the active ID from the BonAchat repository
                 )
 
                 // Update progress

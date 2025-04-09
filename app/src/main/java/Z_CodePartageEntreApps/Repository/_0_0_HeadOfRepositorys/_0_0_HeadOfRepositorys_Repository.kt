@@ -15,6 +15,11 @@ interface _0_0_HeadOfRepositorys_Repository {
             .find { it.vendeur_ParentVID == currentVendeur!!.vid }
     }
 
+    val activeVID_1_3_BonAchat get() =
+        repositorys_Model._1_3_BonAchat_Repository.modelDatasSnapList
+            .find { it.parentVID_1_4_PeriodeVent == activePeriod!!.vid }
+            ?.vid
+
     val progressRepo: MutableStateFlow<Float>
         get() { return MutableStateFlow(0f)}
 
