@@ -5,10 +5,8 @@ import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_Couleu
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat_Repository
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
-import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur_Repository
 import Z_CodePartageEntreApps.Repository._2_2_ClientsDataBase._2_2_ClientsDataBase_Repository
-import android.os.Build
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -68,7 +66,6 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
 
             // Start tracking progress afterward
             startProgressTracking() {
-                checkADD_1_5_Repository()
             }
         }
     }
@@ -77,7 +74,6 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
         withContext(Dispatchers.IO) {
             try {
                 // Ensure we create data in the correct order (parent repositories first)
-                checkADD_1_5_Repository()
                 delay(100) // Give a small delay to ensure Firebase operations complete
 
                 delay(100)
@@ -90,37 +86,6 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
         }
     }
 
-    private fun checkADD_1_5_Repository() {
-        try {
-            // Implement the checkADD_1_5_Repository functionality
-            val modelDatasSnapList = _1_5_Repository.modelDatasSnapList
-            val existingVendor = modelDatasSnapList.find { it.deviceModelNom == Build.MODEL }
-
-            val newVendorPair = if (existingVendor != null) {
-                Pair(existingVendor, existingVendor.vid)
-            } else {
-                val newVid = modelDatasSnapList.maxOfOrNull { it.vid }?.plus(1) ?: 1L
-                val newVendor = _1_5_Vendeur(
-                    vid = newVid,
-                    deviceModelNom = Build.MODEL,
-                    nom = "Manager Vendor"
-                )
-                Pair(newVendor, newVid)
-            }
-
-            // Check if the vendor exists and add if not
-            if (!modelDatasSnapList.any { it.vid == newVendorPair.second }) {
-                _1_5_Repository.addData(newVendorPair.first)
-                _1_5_Repository.activeId.value = newVendorPair.second
-                Log.d(TAG, "Added new vendor with VID: ${newVendorPair.second}")
-            } else {
-                _1_5_Repository.activeId.value = newVendorPair.second
-                Log.d(TAG, "Using existing vendor with VID: ${newVendorPair.second}")
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error in checkADD_1_5_Repository: ${e.message}")
-        }
-    }
 
 
     suspend fun ensureDataIsInitialized() {
@@ -137,11 +102,6 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
 
                         if (progressRepo.value >= 0.95f) {
                             // Check if any required data is missing and create it
-                            if (_1_5_Repository.modelDatasSnapList.isEmpty()) {
-                                checkADD_1_5_Repository()
-                            }
-
-
 
 
                             initialDataLoaded = true

@@ -15,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -46,6 +47,36 @@ class _1_5_VendeurRepositoryImpl(
     init {
         repositoryScope.launch {
             initialize_1_5_VendeurRepository()
+        }
+    }
+
+    override fun addDataAndReturneItVID(
+        data: _1_5_Vendeur,
+        onAddSuccess: (Long) -> Unit
+    ) {
+        try {
+            repositoryScope.launch(Dispatchers.IO) {
+                try {
+                    // Insert into Room and get the new vid
+                    val newVid = appDatabase._1_5_VendeurDao().insertAvecRetureNewVid(data)
+
+                    // Update the object with the new vid
+                    data.vid = newVid
+                    withContext(Dispatchers.Main) {
+                        modelDatasSnapList.add(data)
+                    }
+
+                    // Update Firebase with the new vid
+                    _1_5_Vendeur_Repository.sonDataBaseRef.child(newVid.toString()).setValue(data).await()
+
+                    // Call the success callback with the new vid
+                    onAddSuccess(newVid)
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error adding data: ${e.message}")
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in addDataAndReturneItVID: ${e.message}")
         }
     }
 

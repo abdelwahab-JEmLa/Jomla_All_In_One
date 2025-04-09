@@ -32,4 +32,5 @@ interface _1_5_Vendeur_Repository{
             .child("_1_5_")
     }
 
+    fun addDataAndReturneItVID(data: _1_5_Vendeur, onAddSuccess: (Long) -> Unit)
 }

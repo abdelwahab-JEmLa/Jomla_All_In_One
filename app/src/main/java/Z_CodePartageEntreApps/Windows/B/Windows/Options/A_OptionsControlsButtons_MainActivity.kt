@@ -1,11 +1,13 @@
-package Z_CodePartageEntreApps.Windows.B.Windows
+package Z_CodePartageEntreApps.Windows.B.Windows.Options
 
 import Z_CodePartageEntreApps.Model._1_4_PeriodeVent
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
+import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur
 import Z_CodePartageEntreApps.Windows.B.Windows.UI.LoadingContent
 import Z_CodePartageEntreApps.Windows.B.Windows.ViewModel.ViewModelFragment_StartUpScreen
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.Components.LabelsButton
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.ControlButton
+import android.os.Build
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -21,6 +23,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -89,6 +92,8 @@ fun A_OptionsControlsButtons_Main(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 if (showMenu) {
+                    val repositorysModel =
+                        _0_0_HeadOfRepositorys_Repository.repositorys_Model
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -96,15 +101,49 @@ fun A_OptionsControlsButtons_Main(
                     ) {
                         FloatingActionButton(
                             onClick = {
-                                val repositorysModel =
-                                    _0_0_HeadOfRepositorys_Repository.repositorys_Model
+                                repositorysModel
+                                    ._1_5_Vendeur_Repository
+                                    .addDataAndReturneItVID(
+                                        _1_5_Vendeur(
+                                            deviceModelNom = Build.MODEL,
+                                        )
+                                    ) { newVID ->
+                                        repositorysModel.activeVidRepository_1_5= newVID
+                                    }
+                            },
+                            modifier = Modifier.size(40.dp),
+                            containerColor =  Color(0xFF9C27B0)
+                        ) {
+                            Icon(
+                                Icons.Filled.PhoneAndroid,
+                                contentDescription = "Add New "
+                            )
+                        }
+
+                        if (showLabels) {
+                            Text(
+                                "Add New Period",
+                                modifier = Modifier
+                                    .background(
+                                        if (isFilterActive) Color(0xFF2196F3) else Color(
+                                            0xFF4CAF50
+                                        )
+                                    )
+                                    .padding(4.dp),
+                                color = Color.White
+                            )
+                        }
+                        FloatingActionButton(
+                            onClick = {
+
                                 repositorysModel
                                     ._1_4_PeriodeVent_Repository
                                     .addDataAndReturneItVID(
                                         _1_4_PeriodeVent(
                                             startDateInString = LocalDate.now()
                                                 .format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-                                        )
+                                            vendeur_ParentVID = repositorysModel.activeVidRepository_1_5
+                                            )
                                     ) { newVID ->
                                         repositorysModel.activeVidRepository_1_4 = newVID
                                     }
@@ -125,7 +164,7 @@ fun A_OptionsControlsButtons_Main(
                                 "Add New Period",
                                 modifier = Modifier
                                     .background(
-                                        if (isFilterActive) Color(0xFF2196F3) else Color(
+                                        if (isFilterActive) Color(0xFF009688) else Color(
                                             0xFF4CAF50
                                         )
                                     )
@@ -180,7 +219,7 @@ fun MenuButton(
         icon = if (showMenu) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
         contentDescription = if (showMenu) "Hide menu" else "Show menu",
         showLabels = showLabels,
-        labelText = if (showMenu) "Hide" else "Options",
+        labelText = if (showMenu) "Hide" else "Achats Optiones",
         containerColor = Color(0xFF3F51B5)
     )
 }

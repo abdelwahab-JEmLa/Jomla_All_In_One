@@ -1,7 +1,7 @@
 package Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App
 
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
-import Z_CodePartageEntreApps.Windows.B.Windows.A_OptionsControlsButtons_Main
+import Z_CodePartageEntreApps.Windows.B.Windows.Options.A_OptionsControlsButtons_Main
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs.A.A_GlobalOptionsControlsFloatingActionButtons_FragId1
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs.MarkerStatusDialog
