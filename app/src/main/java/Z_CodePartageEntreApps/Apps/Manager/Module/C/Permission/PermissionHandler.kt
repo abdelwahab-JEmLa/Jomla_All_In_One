@@ -1,4 +1,4 @@
-package Z_MasterOfApps.Z.Android.A_MainActivityApp.Start.Modules
+package Z_CodePartageEntreApps.Apps.Manager.Module.C.Permission
 
 /*
 import com.example.c_serveur.MainActivity

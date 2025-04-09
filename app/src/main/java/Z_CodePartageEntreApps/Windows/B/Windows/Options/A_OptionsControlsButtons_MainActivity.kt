@@ -103,13 +103,9 @@ fun A_OptionsControlsButtons_Main(
                             onClick = {
                                 repositorysModel
                                     ._1_5_Vendeur_Repository
-                                    .addDataAndReturneItVID(
-                                        _1_5_Vendeur(
-                                            deviceModelNom = Build.MODEL,
-                                        )
-                                    ) { newVID ->
-                                        repositorysModel.activeVidRepository_1_5= newVID
-                                    }
+                                    .addDataAndReturneItVID (
+                                        _1_5_Vendeur()
+                                    )
                             },
                             modifier = Modifier.size(40.dp),
                             containerColor =  Color(0xFF9C27B0)
@@ -143,10 +139,9 @@ fun A_OptionsControlsButtons_Main(
                                                 .format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                                             vendeur_ParentVID =
                                                 repositorysModel._1_5_Vendeur_Repository.modelDatasSnapList
-                                                    .last { it.nom== }
-                                            )
+                                                    .last{ it.deviceModelNom == Build.MODEL }.vid
+                                        )
                                     )
-
                             },
                             modifier = Modifier.size(40.dp),
                             containerColor = if (isFilterActive) Color(0xFF2196F3) else Color(

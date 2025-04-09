@@ -5,7 +5,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.database.database
 import kotlinx.coroutines.flow.MutableStateFlow
 
-interface _1_5_Vendeur_Repository{
+interface _1_5_Vendeur_Repository {
     var modelDatasSnapList: SnapshotStateList<_1_5_Vendeur>
 
     val progressRepo: MutableStateFlow<Float>
@@ -13,11 +13,14 @@ interface _1_5_Vendeur_Repository{
 
     val activeId: MutableStateFlow<Long>
 
-    fun addDataAndReturneItVID(data: _1_5_Vendeur, onAddSuccess: (Long) -> Unit)
+    fun addDataAndReturneItVID(
+        data: _1_5_Vendeur,
+        onAddSuccess: (Long) -> Unit = {},
+    )
 
     suspend fun ensureDataIsInitialized()
 
-    fun getIdParNomModel(nomModel:String): Long
+    fun getIdParNomModel(nomModel: String): Long
 
     fun addData(data: _1_5_Vendeur)
     fun updateUnSeulData(data: _1_5_Vendeur)

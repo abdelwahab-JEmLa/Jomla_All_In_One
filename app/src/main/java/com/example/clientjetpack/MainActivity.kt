@@ -7,9 +7,8 @@ import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.appManagerModules
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.appModule
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.isManagerApp
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import Z_CodePartageEntreApps.Model.Z.Archive._ModelAppsFather.Companion.firebaseDatabase
 import Z_MasterOfApps.A.MainActivity.Start.Module.A.Koin.appClientModules
-import Z_MasterOfApps.Z.Android.A_MainActivityApp.Start.Modules.PermissionHandler
+import Z_CodePartageEntreApps.Apps.Manager.Module.C.Permission.PermissionHandler
 import android.app.Application
 import android.content.Context
 import android.os.Build
@@ -28,9 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.clientjetpack.ui.theme.ClientJetPackTheme
-import com.google.firebase.Firebase
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.database
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.androidx.compose.KoinAndroidContext
