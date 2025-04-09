@@ -14,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -45,6 +46,39 @@ class _1_3_BonAchatRepositoryImpl(
     init {
         repositoryScope.launch {
             initialize_1_3_BonAchatRepository()
+        }
+    }
+    override fun addDataAndReturneItVID(
+        data: _1_3_BonAchat,
+        onAddSuccess: (Long) -> Unit
+    ) {
+        try {
+            // Create a copy of the data to work with
+            val dataToAdd = data.copy()
+
+            repositoryScope.launch(Dispatchers.IO) {
+                try {
+                    // Insert into Room and get the new vid
+                    val newVid = appDatabase._1_3_BonAchatDao().insertAvecRetureNewVid(dataToAdd)
+
+                    // Update the object with the new vid
+                    dataToAdd.vid = newVid
+
+                    withContext(Dispatchers.Main) {
+                        modelDatasSnapList.add(dataToAdd)
+                    }
+
+                    // Update Firebase with the new vid
+                    _1_3_BonAchat_Repository.sonDataBaseRef.child(newVid.toString()).setValue(dataToAdd).await()
+
+                    // Call the success callback with the new vid
+                    onAddSuccess(newVid)
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error adding data: ${e.message}")
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in addDataAndReturneItVID: ${e.message}")
         }
     }
     override suspend fun ensureDataIsInitialized() {

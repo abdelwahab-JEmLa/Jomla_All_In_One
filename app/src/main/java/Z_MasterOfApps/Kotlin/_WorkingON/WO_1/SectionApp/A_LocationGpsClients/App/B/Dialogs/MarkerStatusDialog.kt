@@ -215,6 +215,26 @@ fun MarkerStatusDialog(
                         ),
                         onClick = {
                             coroutineScope.launch {
+                                val repositorysModel =
+                                    _0_0_HeadOfRepositorys_Repository.repositorys_Model
+
+                                val currentVendeur =
+                                    repositorysModel._1_5_Vendeur_Repository.modelDatasSnapList
+                                        .firstOrNull ()
+
+                                val activePeriod = if (currentVendeur != null) {
+                                    repositorysModel._1_4_PeriodeVent_Repository.modelDatasSnapList
+                                        .lastOrNull { it.vendeur_ParentVID == currentVendeur.vid }
+                                } else null
+
+                                repositorysModel._1_3_BonAchat_Repository.addDataAndReturneItVID(
+                                    _1_3_BonAchat(
+                                        clientAcheteurID = relatedClients?.id?: 0L,
+                                        parentVID_1_4_PeriodeVent = activePeriod?.vid ?: 0L,
+                                    )
+                                )
+
+
                                 val selectedMarkerid = selectedMarker.id.toLong()
                                 viewModel.updateLongAppSetting(selectedMarkerid)
                                 val maxVid =
@@ -235,17 +255,6 @@ fun MarkerStatusDialog(
                                         Locale.getDefault()
                                     ).format(Date())
                                 )
-
-                                _0_0_HeadOfRepositorys_Repository
-                                    .repositorys_Model
-                                    ._1_3_BonAchat_Repository.addData(
-                                        _1_3_BonAchat(
-                                            vid = newVid,
-                                            clientAcheteurID = relatedClients.id,
-                                            parentVID_1_4_PeriodeVent = _0_0_HeadOfRepositorys_Repository
-                                                .repositorys_Model.activeVidRepository_1_4,
-                                        )
-                                    )
 
 
                                 viewModelInitApp.viewModelFragment_APP2_ID_1.addData_1_3_BonAchat_Repository(

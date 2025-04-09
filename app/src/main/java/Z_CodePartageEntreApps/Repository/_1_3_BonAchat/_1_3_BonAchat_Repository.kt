@@ -27,4 +27,5 @@ interface _1_3_BonAchat_Repository {
             .child("_1_3_")
     }
 
+    fun addDataAndReturneItVID(data: _1_3_BonAchat, onAddSuccess: (Long) -> Unit = {})
 }

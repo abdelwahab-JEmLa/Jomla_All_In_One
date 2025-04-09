@@ -1,6 +1,7 @@
 package Z_CodePartageEntreApps.Repository._1_3_BonAchat
 
 import Z_CodePartageEntreApps.Model._1_3_BonAchat
+import Z_CodePartageEntreApps.Model._1_4_PeriodeVent
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -9,6 +10,9 @@ import androidx.room.Query
 
 @Dao
 interface _1_3_BonAchatDao {
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAvecRetureNewVid(item: _1_3_BonAchat): Long
+
     @Query("SELECT * FROM _1_3_BonAchat")
     suspend fun getAll(): MutableList<_1_3_BonAchat>
 
