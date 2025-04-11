@@ -228,8 +228,8 @@ fun MarkerStatusDialog(
                                     )
                                 )
 
-                                val selectedMarkerid = selectedMarker.id.toLong()
-                                viewModel.updateLongAppSetting(selectedMarkerid)
+                                val selectedMarkedID = selectedMarker.id.toLong()
+                                viewModel.updateLongAppSetting(selectedMarkedID)
                                 val maxVid =
                                     uiStateviewModelFragment_APP2_ID_1._1_3_BonAchatList.maxOfOrNull { it.vid }
                                         ?: 0
