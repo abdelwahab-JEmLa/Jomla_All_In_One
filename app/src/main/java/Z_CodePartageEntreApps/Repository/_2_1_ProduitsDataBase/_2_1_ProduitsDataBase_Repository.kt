@@ -11,13 +11,13 @@ interface _2_1_ProduitsDataBase_Repository {
     val progressRepo: MutableStateFlow<Float>
         get() = MutableStateFlow(0f)
 
+
+    suspend fun ensureDataIsInitialized()
+
     fun addDataAndReturnItVID(
         data: _2_1_ProduitsDataBase,
         onAddSuccess: (Long) -> Unit = {},
     )
-
-    suspend fun ensureDataIsInitialized()
-
     fun addData(data: _2_1_ProduitsDataBase)
     fun updateUnSeulData(data: _2_1_ProduitsDataBase)
     suspend fun updateMultiDatas(datas: SnapshotStateList<_2_1_ProduitsDataBase>)
