@@ -4,6 +4,8 @@ import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
 import Z_CodePartageEntreApps.Model.Z.Archive.A_ProduitAncienModelStructure
 import Z_CodePartageEntreApps.Model.Z.Archive._ModelAppsFather.Companion.ref_HeadOfModels
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
+import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase
 import android.annotation.SuppressLint
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
@@ -16,10 +18,11 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
 class ViewModel_AProto_ProduitDataBase(
-    private val A_ProduitRepository: A_ProduitRepository
+    private val A_ProduitRepository: A_ProduitRepository,
+    _0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository,
 ) : ViewModel() {
     val TAG = "ViewModel_AProto_ProduitDataBase"
-
+    val _2_1_ProduitsDataBase_Repository =_0_0_HeadOfRepositorys_Repository.repositorys_Model._2_1_ProduitsDataBase_Repository
     // Progress tracking
     private val _migrationProgress = MutableStateFlow(0f)
     val migrationProgress = _migrationProgress.asStateFlow()
@@ -54,6 +57,9 @@ class ViewModel_AProto_ProduitDataBase(
             }
         }
 
+    /**
+     * Migrates data from the old database structure to the new one
+     */
     /**
      * Migrates data from the old database structure to the new one
      */
@@ -99,6 +105,7 @@ class ViewModel_AProto_ProduitDataBase(
                             monPrixAchat = ancienData.statuesBase.infosCoutes.monPrixAchat,
                             monPrixVent = ancienData.statuesBase.infosCoutes.monPrixVent
                         )
+
                         newItem
                     } catch (e: Exception) {
                         // Return a default item to maintain consistency
@@ -117,6 +124,14 @@ class ViewModel_AProto_ProduitDataBase(
                 val snapshotList = SnapshotStateList<A_Produit>()
                 snapshotList.addAll(newDataList)
 
+                val convertedData = snapshotList.map { produit ->
+                    convertAProduitToProduitsDataBase(produit)
+                }
+
+                // Update _2_1_ProduitsDataBase_Repository with the converted data
+                _2_1_ProduitsDataBase_Repository.modelDatasSnapList.clear()
+                _2_1_ProduitsDataBase_Repository.modelDatasSnapList.addAll(convertedData)
+
                 // Update repository with new data structure
                 try {
                     // Update progress to 80% before database write
@@ -133,6 +148,35 @@ class ViewModel_AProto_ProduitDataBase(
         }
     }
 
+    private fun convertAProduitToProduitsDataBase(produit: A_Produit): _2_1_ProduitsDataBase {
+        return _2_1_ProduitsDataBase(
+            vid = produit.id,
+            nom = produit.nom,
+            emballageCartone = produit.emballageCartone,
+            itsTempProduit = produit.itsTempProduit,
+            besoinToBeUpdated = produit.besoinToBeUpdated,
+            non_Trouve = produit.non_Trouve,
+            isVisible = produit.isVisible,
+            imageGlidReloadTigger = produit.imageGlidReloadTigger,
+            prePourCameraCapture = produit.prePourCameraCapture,
+            diponibilityEtate = produit.diponibilityEtate,
+            probablementNonDispo = produit.probablementNonDispo,
+            enumVarNonDispoPourClients = convertNonDispoPourClients(produit.enumVarNonDispoPourClients),
+            parentCategoryId = produit.parentCategoryId,
+            indexInParentCategorie = produit.indexInParentCategorie,
+            monPrixAchat = produit.monPrixAchat,
+            monPrixVent = produit.monPrixVent
+        )
+    }
+
+    private fun convertNonDispoPourClients(source: A_Produit.NON_DISPO_POUR_CLIENTS): _2_1_ProduitsDataBase.NON_DISPO_POUR_CLIENTS {
+        return when (source) {
+            A_Produit.NON_DISPO_POUR_CLIENTS.DISPONIBLE_POUR_TOUT -> _2_1_ProduitsDataBase.NON_DISPO_POUR_CLIENTS.DISPONIBLE_POUR_TOUT
+            A_Produit.NON_DISPO_POUR_CLIENTS.TOUT -> _2_1_ProduitsDataBase.NON_DISPO_POUR_CLIENTS.TOUT
+            A_Produit.NON_DISPO_POUR_CLIENTS.NEVEAU -> _2_1_ProduitsDataBase.NON_DISPO_POUR_CLIENTS.NEVEAU
+            A_Produit.NON_DISPO_POUR_CLIENTS.DEFINIE -> _2_1_ProduitsDataBase.NON_DISPO_POUR_CLIENTS.DEFINIE
+        }
+    }
     private fun getDepuitenumVarNonDispoPourClients(nonDispoPourClientsString: String?): A_Produit.NON_DISPO_POUR_CLIENTS {
         return when (nonDispoPourClientsString) {
             "DISPONIBLE_POUR_TOUT" -> A_Produit.NON_DISPO_POUR_CLIENTS.DISPONIBLE_POUR_TOUT
