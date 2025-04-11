@@ -83,7 +83,6 @@ val commonRepositoriesModule = module {
         ,get()
         ,get()
     ) }
-
 }
 
 // Function to determine the application type

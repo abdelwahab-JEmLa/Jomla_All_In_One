@@ -21,63 +21,64 @@ fun MainItem_APP2_ID_2(
     composeKeyVID: Long,
     _0_HeadOfRepositorys_Repository_Model: _0_0_HeadOfRepositorys_Model,
 ) {
-
-    Card(
-        modifier = modifier
-            .padding(vertical = 2.dp, horizontal = 4.dp)
-            .fillMaxWidth(),
-        shape = RoundedCornerShape(6.dp),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 2.dp
-        ),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        )
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
+    val relativeProduit = _0_HeadOfRepositorys_Repository_Model._2_1_ProduitsDataBase_Repository
+        .modelDatasSnapList.find { it.vid == composeKeyVID }
+        Card(
+            modifier = modifier
+                .padding(vertical = 2.dp, horizontal = 4.dp)
+                .fillMaxWidth(),
+            shape = RoundedCornerShape(6.dp),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 2.dp
+            ),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface
+            )
         ) {
-            // Product info row
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
             ) {
-                Text(
-                    text = "idproduit (${composeKeyVID})",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.weight(1f)
-                )
-                Text(
-                    text = "idproduit (${composeKeyVID})",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.weight(1f)
-                )
-            }
-            // Group products by product ID
-            val couleursAcheteOperationsVIDs =
-                _0_HeadOfRepositorys_Repository_Model._1_1_CouleurAcheteOperation_Repository
-                    .modelDatasSnapList
-                    .filter { it.parentProduitAchateOperationVID == composeKeyVID }
-                    .map { it.vid }
-
-            // Only render colors section if there are colors to display
-            if (couleursAcheteOperationsVIDs.isNotEmpty()) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 4.dp)
+                // Product info row
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    couleursAcheteOperationsVIDs.forEach { couleurVId ->
-                        ColorDetails_APP2_ID_2(
-                            composeKeyVID = couleurVId,
-                        )
+                    Text(
+                        text = "idproduit (${composeKeyVID})",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Text(
+                        text = "nom (${relativeProduit?.nom!!})",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+                // Group products by product ID
+                val couleursAcheteOperationsVIDs =
+                    _0_HeadOfRepositorys_Repository_Model._1_1_CouleurAcheteOperation_Repository
+                        .modelDatasSnapList
+                        .filter { it.parentProduitAchateOperationVID == composeKeyVID }
+                        .map { it.vid }
+
+                // Only render colors section if there are colors to display
+                if (couleursAcheteOperationsVIDs.isNotEmpty()) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 4.dp)
+                    ) {
+                        couleursAcheteOperationsVIDs.forEach { couleurVId ->
+                            ColorDetails_APP2_ID_2(
+                                composeKeyVID = couleurVId,
+                            )
+                        }
                     }
                 }
             }
         }
-    }
 }

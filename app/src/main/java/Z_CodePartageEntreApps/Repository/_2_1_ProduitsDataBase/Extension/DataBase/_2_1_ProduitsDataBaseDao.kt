@@ -10,6 +10,9 @@ import androidx.room.Query
 @Dao
 interface _2_1_ProduitsDataBaseDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAllAndReturnVids(items: List<_2_1_ProduitsDataBase>): List<Long>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAvecRetureNewVid(item: _2_1_ProduitsDataBase): Long
 
     @Query("SELECT * FROM _2_1_ProduitsDataBase")

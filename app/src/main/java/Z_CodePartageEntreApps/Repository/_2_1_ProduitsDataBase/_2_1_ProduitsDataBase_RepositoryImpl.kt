@@ -79,6 +79,45 @@ class _2_1_ProduitsDataBase_RepositoryImpl(
         }
     }
 
+    override fun addMultiDATAsEtReturnVIDsList(
+        dataList: List<_2_1_ProduitsDataBase>,
+        onAddSuccess: (List<Long>) -> Unit
+    ) {
+        try {
+            repositoryScope.launch(Dispatchers.IO) {
+                try {
+                    // Insert into Room and get the new vids
+                    val newVids = appDatabase._2_1_ProduitsDataBaseDao().insertAllAndReturnVids(dataList)
+
+                    // Update the objects with their new vids
+                    dataList.forEachIndexed { index, data ->
+                        data.vid = newVids[index]
+                    }
+
+                    // Update the UI list
+                    withContext(Dispatchers.Main) {
+                        modelDatasSnapList.addAll(dataList)
+                    }
+
+                    // Update Firebase with the new items
+                    val updates = mutableMapOf<String, Any>()
+                    dataList.forEach { data ->
+                        updates[data.vid.toString()] = data
+                    }
+
+                    _2_1_ProduitsDataBase_Repository.sonDataBaseRef.updateChildren(updates).await()
+
+                    // Call the success callback with the new vids
+                    onAddSuccess(newVids)
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error adding multiple data: ${e.message}")
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in addMultiDATAsEtReturnVIDsList: ${e.message}")
+        }
+    }
+
     override suspend fun ensureDataIsInitialized() {
         try {
             if (!initialDataLoaded) {

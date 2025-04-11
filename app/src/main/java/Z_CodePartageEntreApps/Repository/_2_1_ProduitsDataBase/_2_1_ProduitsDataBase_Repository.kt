@@ -16,6 +16,11 @@ interface _2_1_ProduitsDataBase_Repository {
         data: _2_1_ProduitsDataBase,
         onAddSuccess: (Long) -> Unit = {},
     )
+    fun addMultiDATAsEtReturnVIDsList(
+        dataList: List<_2_1_ProduitsDataBase>,
+        onAddSuccess: (List<Long>) -> Unit
+    )
+
     fun addData(data: _2_1_ProduitsDataBase)
     fun updateUnSeulData(data: _2_1_ProduitsDataBase)
     suspend fun updateMultiDatas(datas: SnapshotStateList<_2_1_ProduitsDataBase>)
@@ -28,4 +33,6 @@ interface _2_1_ProduitsDataBase_Repository {
             .child("_2_")
             .child("1_ProduitsDataBase")
     }
+
+
 }
