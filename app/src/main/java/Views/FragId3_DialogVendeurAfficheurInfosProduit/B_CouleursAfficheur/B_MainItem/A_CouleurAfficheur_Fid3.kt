@@ -66,46 +66,53 @@ fun B_CouleurAfficheur(
     currentClient: B_ClientsDataBase?,
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
     parentCompose_1_2_ProduitAcheteOperationVid: Long,
-    isVisibleInList: Boolean = true, // Simplified visibility tracking
 ) {
     // Using a simpler approach for visibility tracking
     var compose_1_1_CouleurAcheteOperationVid by remember { mutableLongStateOf(0L) }
     val _1_1_CouleurAcheteOperation_Repository = koinInject<_1_1_CouleurAcheteOperation_Repository>()
     val couleurActuelleId = color.idColore
 
-    // Use LaunchedEffect to ensure the color exists in the database when needed
-    LaunchedEffect(key1 = isVisibleInList, key2 = parentCompose_1_2_ProduitAcheteOperationVid) {
-        // Skip if parentCompose_1_2_ProduitAcheteOperationVid is not set yet
+    LaunchedEffect(key1 = parentCompose_1_2_ProduitAcheteOperationVid, key2 = couleurActuelleId) {
+        // Only proceed if we have a valid parent ID - this is critical
         if (parentCompose_1_2_ProduitAcheteOperationVid <= 0) {
             return@LaunchedEffect
         }
 
-        // Only proceed if the color is visible
-        if (isVisibleInList) {
-            val existing_1_1_CouleurAcheteOperation =
-                _1_1_CouleurAcheteOperation_Repository.modelDatasSnapList.find {
-                    it.couleurId_ParentVID == couleurActuelleId
-                            && it.parentProduitAchateOperationVID == parentCompose_1_2_ProduitAcheteOperationVid
-                }
-
-            compose_1_1_CouleurAcheteOperationVid = if (existing_1_1_CouleurAcheteOperation != null) {
-                existing_1_1_CouleurAcheteOperation.vid
-            } else {
-                val newVid = _1_1_CouleurAcheteOperation_Repository
-                    .modelDatasSnapList.maxOfOrNull { it.vid }?.plus(1) ?: 1
-                _1_1_CouleurAcheteOperation_Repository.addData(
-                    _1_1_CouleurAcheteOperation(
-                        vid = newVid,
-                        couleurId_ParentVID = couleurActuelleId,
-                        parentProduitAchateOperationVID = parentCompose_1_2_ProduitAcheteOperationVid
-                    )
-                )
-
-                newVid
+        // Check if the color operation already exists
+        val existing_1_1_CouleurAcheteOperation =
+            _1_1_CouleurAcheteOperation_Repository.modelDatasSnapList.find {
+                it.couleurId_ParentVID == couleurActuelleId &&
+                        it.parentProduitAchateOperationVID == parentCompose_1_2_ProduitAcheteOperationVid
             }
+
+        // Set the VID if it exists, otherwise create a new entry
+        compose_1_1_CouleurAcheteOperationVid = if (existing_1_1_CouleurAcheteOperation != null) {
+            existing_1_1_CouleurAcheteOperation.vid
+        } else {
+            // Create a new unique VID
+            val maxVid = _1_1_CouleurAcheteOperation_Repository.modelDatasSnapList
+                .maxOfOrNull { it.vid } ?: 0
+            val newVid = maxVid + 1
+
+            // Create and add the new entry
+            val newColorOp = _1_1_CouleurAcheteOperation(
+                vid = newVid,
+                couleurId_ParentVID = couleurActuelleId,
+                parentProduitAchateOperationVID = parentCompose_1_2_ProduitAcheteOperationVid
+            )
+
+            // Explicitly add the data and verify
+            _1_1_CouleurAcheteOperation_Repository.addData(newColorOp)
+
+            // Verify the data was added by checking immediately after adding
+            val wasAdded = _1_1_CouleurAcheteOperation_Repository.modelDatasSnapList
+                .any { it.vid == newVid }
+
+            newVid
         }
     }
 
+    // Rest of the code remains the same...
     var showDialog by remember { mutableStateOf(false) }
     var isSelected by remember { mutableStateOf(false) }
 
@@ -131,6 +138,7 @@ fun B_CouleurAfficheur(
                     (sale.color4IdPicked == color.idColore && sale.color4SoldQuantity > 0)
         } ?: false
     }
+
 
     // Track whether this color is currently selected as main
     val isMainColor = remember(color.idColore, currentSale) {
