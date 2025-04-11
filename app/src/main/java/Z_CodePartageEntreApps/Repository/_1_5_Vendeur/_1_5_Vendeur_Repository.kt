@@ -11,7 +11,6 @@ interface _1_5_Vendeur_Repository {
     val progressRepo: MutableStateFlow<Float>
         get() = MutableStateFlow(0f)
 
-    val activeId: MutableStateFlow<Long>
 
     fun addDataAndReturneItVID(
         data: _1_5_Vendeur,

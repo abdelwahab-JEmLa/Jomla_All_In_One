@@ -27,7 +27,6 @@ class _1_5_VendeurRepositoryImpl(
     override var modelDatasSnapList: SnapshotStateList<_1_5_Vendeur> =
         mutableStateListOf()
     override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
-    override val activeId = MutableStateFlow(0L)
 
     private val isUpdating = AtomicBoolean(false)
     private val isListenerActive = AtomicBoolean(false)

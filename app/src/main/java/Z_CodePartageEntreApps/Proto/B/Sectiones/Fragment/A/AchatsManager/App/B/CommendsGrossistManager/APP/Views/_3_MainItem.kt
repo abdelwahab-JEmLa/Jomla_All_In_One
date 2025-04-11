@@ -21,6 +21,7 @@ fun MainItem_APP2_ID_2(
     composeKeyVID: Long,
     _0_HeadOfRepositorys_Repository_Model: _0_0_HeadOfRepositorys_Model,
 ) {
+
     Card(
         modifier = modifier
             .padding(vertical = 2.dp, horizontal = 4.dp)
@@ -43,6 +44,12 @@ fun MainItem_APP2_ID_2(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                Text(
+                    text = "idproduit (${composeKeyVID})",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.weight(1f)
+                )
                 Text(
                     text = "idproduit (${composeKeyVID})",
                     style = MaterialTheme.typography.bodyMedium,

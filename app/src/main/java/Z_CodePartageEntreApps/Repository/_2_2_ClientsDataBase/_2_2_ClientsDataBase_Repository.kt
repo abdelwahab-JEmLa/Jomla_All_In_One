@@ -13,7 +13,6 @@ interface _2_2_ClientsDataBase_Repository{
 
     val activeId: MutableStateFlow<Long>
 
-
     suspend fun ensureDataIsInitialized()
 
 
