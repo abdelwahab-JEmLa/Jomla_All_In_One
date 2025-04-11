@@ -21,7 +21,6 @@ fun MainItem_APP2_ID_2(
     composeKeyVID: Long,
     _0_HeadOfRepositorys_Repository_Model: _0_0_HeadOfRepositorys_Model,
 ) {
-
     Card(
         modifier = modifier
             .padding(vertical = 2.dp, horizontal = 4.dp)
