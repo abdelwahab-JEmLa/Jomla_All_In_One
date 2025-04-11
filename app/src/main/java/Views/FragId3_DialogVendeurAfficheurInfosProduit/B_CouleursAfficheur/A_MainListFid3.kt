@@ -27,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import com.example.clientjetpack.ViewModel.HeadViewModel
 
@@ -47,6 +48,15 @@ fun A_MainListFragId3(
     // Use LazyListState instead of LazyGridState to avoid layout issues
     val listState = rememberLazyListState()
 
+    // Get screen height to calculate appropriate LazyColumn height
+    val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp.dp
+
+    // Calculate adaptive height based on content and screen size
+    val listHeight = remember {
+        minOf(maxOf(screenHeight * 0.8f, 400.dp), 600.dp)
+    }
+
     LaunchedEffect(Unit) {
         colorsListToDisplay = listOf(stats.idcolor1, stats.idcolor2, stats.idcolor3, stats.idcolor4)
             .filter { it != 0L }
@@ -57,6 +67,7 @@ fun A_MainListFragId3(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 2.dp, vertical = 2.dp)
+
     ) {
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -66,12 +77,13 @@ fun A_MainListFragId3(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(2.dp),
             ) {
-                // Back to using LazyColumn with fixed heights to avoid infinite height constraints
+                // Using LazyColumn with adaptive height based on content and screen size
                 LazyColumn(
                     state = listState,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(2.dp),
+                        .padding(2.dp)
+                        .height(listHeight),  // Using calculated adaptive height
                     verticalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
                     itemsIndexed(colorsListToDisplay) { index, color ->
