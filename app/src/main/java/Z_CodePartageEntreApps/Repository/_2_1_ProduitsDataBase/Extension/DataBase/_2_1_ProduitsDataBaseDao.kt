@@ -9,7 +9,6 @@ import androidx.room.Query
 
 @Dao
 interface _2_1_ProduitsDataBaseDao {
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAvecRetureNewVid(item: _2_1_ProduitsDataBase): Long
 
