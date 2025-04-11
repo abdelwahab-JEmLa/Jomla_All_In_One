@@ -12,8 +12,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -41,6 +43,8 @@ fun A_MainListFragId3(
     parentCompose_1_2_ProduitAcheteOperationVid: Long,
 ) {
     var colorsListToDisplay by remember { mutableStateOf(emptyList<ColorsArticlesTabelle>()) }
+    // Create a LazyGridState to be shared with child components
+    val gridState = rememberLazyGridState()
 
     LaunchedEffect(Unit) {
         colorsListToDisplay = listOf(stats.idcolor1, stats.idcolor2, stats.idcolor3, stats.idcolor4)
@@ -61,14 +65,17 @@ fun A_MainListFragId3(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(2.dp),
             ) {
-                // Replaced fixed Column with LazyColumn
-                LazyColumn(
+                // Replace LazyColumn with LazyVerticalGrid for better usage of LazyGridState
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(1),
+                    state = gridState,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(2.dp),
                     verticalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
-                    itemsIndexed(colorsListToDisplay) { index, color ->
+                    items(colorsListToDisplay) { color ->
+                        val index = colorsListToDisplay.indexOf(color)
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -84,7 +91,10 @@ fun A_MainListFragId3(
                                 reloadTrigger = reloadTrigger,
                                 viewModel = viewModel,
                                 height = 350.dp,
-                                updateColorToBeMain = { },
+                                updateColorToBeMain = { colorId ->
+                                    // Implementation for color selection
+                                    viewModel.updateColorSelection(colorId, 1)
+                                },
                                 viewModelInitApp = viewModelInitApp,
                                 currentClient = currentClient,
                                 colorsArticlesTabelleModele = colorsArticlesTabelleModele,

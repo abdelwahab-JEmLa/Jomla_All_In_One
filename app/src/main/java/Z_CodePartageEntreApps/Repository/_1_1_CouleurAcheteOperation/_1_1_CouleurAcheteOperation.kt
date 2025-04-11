@@ -13,9 +13,16 @@ data class _1_1_CouleurAcheteOperation(
     var parentProduitAchateOperationVID: Long? =null,
 
     // Section InfosDeBase
-    var totaleQuantity: Int = 1,
+    var totaleQuantity: Int = 0,
 
+    var etateActuellementEst: EtateActuellementEst =
+        EtateActuellementEst.VUE,
 
     ) {
-
+    enum class EtateActuellementEst {
+        VUE,
+        QUANTITY_CHOISI,
+        SUPPRIME_AU_PREMIER_PICK,
+        SUPP_AU_PANIER_FINALE
+    }
 }
