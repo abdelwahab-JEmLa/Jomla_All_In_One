@@ -107,7 +107,6 @@ fun A_MainListFragId3(
                                 article = stats,
                                 color = color,
                                 index = index,
-                                reloadTrigger = reloadTrigger,
                                 viewModel = viewModel,
                                 height = 350.dp,
                                 updateColorToBeMain = { colorId ->
@@ -118,7 +117,6 @@ fun A_MainListFragId3(
                                 currentClient = currentClient,
                                 colorsArticlesTabelleModele = colorsArticlesTabelleModele,
                                 parentCompose_1_2_ProduitAcheteOperationVid = parentCompose_1_2_ProduitAcheteOperationVid,
-                                isVisibleInList = isItemVisible.value
                             )
                         }
                     }

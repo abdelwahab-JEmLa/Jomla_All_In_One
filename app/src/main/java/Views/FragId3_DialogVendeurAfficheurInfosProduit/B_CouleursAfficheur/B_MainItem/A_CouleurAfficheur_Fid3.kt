@@ -58,7 +58,6 @@ fun B_CouleurAfficheur(
     article: ArticlesBasesStatsTable,
     color: ColorsArticlesTabelle,
     index: Int,
-    reloadTrigger: Int,
     viewModel: HeadViewModel,
     height: Dp,
     updateColorToBeMain: (Long) -> Unit,
@@ -104,10 +103,6 @@ fun B_CouleurAfficheur(
             // Explicitly add the data and verify
             _1_1_CouleurAcheteOperation_Repository.addData(newColorOp)
 
-            // Verify the data was added by checking immediately after adding
-            val wasAdded = _1_1_CouleurAcheteOperation_Repository.modelDatasSnapList
-                .any { it.vid == newVid }
-
             newVid
         }
     }
@@ -150,7 +145,6 @@ fun B_CouleurAfficheur(
     )
 
     LaunchedEffect(key1 = currentSale?.idArticle) {
-        // Updated condition to checkADD_1_4_PeriodeVent for any color position with quantity
         if (hasQuantity) {
             _DisplayeProductInfosToSeller(viewModelInitApp)
                 .onClickComposeQuantityButton(
