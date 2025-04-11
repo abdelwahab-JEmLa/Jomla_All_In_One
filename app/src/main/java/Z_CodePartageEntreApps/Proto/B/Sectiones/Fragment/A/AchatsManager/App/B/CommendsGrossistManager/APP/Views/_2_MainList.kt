@@ -7,25 +7,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun MainList_APP2_ID_2(
-    composeKeyVID: State<Long>,
+    composeKeyVID: Long?,
     modifier: Modifier = Modifier,
     _0_HeadOfRepositorys_Repository_Model: _0_0_HeadOfRepositorys_Model,
 ) {
-    val currentVID by composeKeyVID
-
-    // Group products by product ID
     val produitBonAchatIDs = _0_HeadOfRepositorys_Repository_Model
         ._1_2_ProduitAcheteOperation_Repository
         .modelDatasSnapList
         .filter { produitOpe ->
-            produitOpe.parent_1_3_BonAchat == currentVID
+            produitOpe.parent_1_3_BonAchat == composeKeyVID
         }
 
     LazyVerticalGrid(

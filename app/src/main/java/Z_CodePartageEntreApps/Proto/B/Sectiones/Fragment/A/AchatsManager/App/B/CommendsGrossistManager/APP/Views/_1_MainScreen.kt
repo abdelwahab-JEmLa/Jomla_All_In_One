@@ -24,10 +24,9 @@ fun MainScreen_APP2_ID_2(
     val _0_HeadOfRepositorys_Repository_Model = _0_0_HeadOfRepositorys_Repository
         .repositorys_Model
 
-    val composeKeyVID = _0_HeadOfRepositorys_Repository_Model
-        ._1_3_BonAchat_Repository
-        .activeId.collectAsState()
 
+    val composeKeyVID =
+        _0_0_HeadOfRepositorys_Repository.activeVID_1_3_BonAchat
 
     Column(
         modifier = modifier.fillMaxSize()
