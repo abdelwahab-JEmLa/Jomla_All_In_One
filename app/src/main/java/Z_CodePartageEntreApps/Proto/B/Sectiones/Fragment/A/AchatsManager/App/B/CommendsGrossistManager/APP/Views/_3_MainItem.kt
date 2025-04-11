@@ -67,7 +67,7 @@ fun MainItem_APP2_ID_2(
                         modifier = Modifier.fillMaxWidth()
                     )
                     Text(
-                        text = "nom (${relative_2_1_ProduitsDataBase?.nom ?: "N/A"})",
+                        text = relative_2_1_ProduitsDataBase?.nom ?: "N/A",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.fillMaxWidth()
