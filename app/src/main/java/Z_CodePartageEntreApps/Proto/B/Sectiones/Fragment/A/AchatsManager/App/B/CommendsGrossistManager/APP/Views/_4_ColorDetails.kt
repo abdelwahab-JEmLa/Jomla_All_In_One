@@ -45,9 +45,16 @@ fun ColorDetails_APP2_ID_2(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.fillMaxWidth()
             )
+
+            val couleurVID = if (relative_1_1_CouleurAcheteOperation?.couleurId_ParentVID
+                != 93L
+            ) {
+                relative_1_1_CouleurAcheteOperation?.couleurId_ParentVID
+            } else 1L
+
             A_GlideDisplayImageByKeyId_Proto_4_11(
-                produitVID=relative_2_1_ProduitsDataBase_vid,
-                couleurVID = relative_1_1_CouleurAcheteOperation?.couleurId_ParentVID ,
+                produitVID = relative_2_1_ProduitsDataBase_vid,
+                couleurVID = couleurVID,
                 size = 100.dp
             )
         }
