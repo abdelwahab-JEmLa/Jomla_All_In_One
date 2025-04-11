@@ -1,7 +1,6 @@
 package Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.Views
 
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
-import Z_CodePartageEntreApps.View.A_GlideDisplayImageByKeyId_Proto_4_11
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -120,7 +119,8 @@ fun MainItem_APP2_ID_2(
                             items(couleursAcheteOperationsVIDs) { couleurVId ->
                                 ColorDetails_APP2_ID_2(
                                     composeKeyVID = couleurVId,
-                                    _0_HeadOfRepositorys_Repository_Model = _0_HeadOfRepositorys_Repository_Model
+                                    _0_HeadOfRepositorys_Repository_Model = _0_HeadOfRepositorys_Repository_Model,
+                                    relative_2_1_ProduitsDataBase_vid=relative_2_1_ProduitsDataBase?.vid
                                 )
                             }
                         }

@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 fun ColorDetails_APP2_ID_2(
     composeKeyVID: Long,
     _0_HeadOfRepositorys_Repository_Model: _0_0_HeadOfRepositorys_Model,
+    relative_2_1_ProduitsDataBase_vid: Long?,
 ) {
     val relative_1_1_CouleurAcheteOperation = _0_HeadOfRepositorys_Repository_Model
         ._1_1_CouleurAcheteOperation_Repository
@@ -45,8 +46,8 @@ fun ColorDetails_APP2_ID_2(
                 modifier = Modifier.fillMaxWidth()
             )
             A_GlideDisplayImageByKeyId_Proto_4_11(
-                produitVID=relative_1_1_CouleurAcheteOperation?.parentProduitAchateOperationVID!! ,
-                couleurVID = relative_1_1_CouleurAcheteOperation.couleurId_ParentVID ,
+                produitVID=relative_2_1_ProduitsDataBase_vid,
+                couleurVID = relative_1_1_CouleurAcheteOperation?.couleurId_ParentVID ,
                 size = 100.dp
             )
         }
