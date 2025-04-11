@@ -53,7 +53,6 @@ fun MainItem_APP2_ID_2(
             Card (
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                // Adding a Row to properly lay out the Text components with weight
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
