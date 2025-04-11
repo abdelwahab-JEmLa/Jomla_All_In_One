@@ -19,12 +19,12 @@ fun MainItem_APP2_ID_2(
     composeKeyVID: Long,
     _0_HeadOfRepositorys_Repository_Model: _0_0_HeadOfRepositorys_Model,
 ) {
-    val relativeOperationAchatProduit = _0_HeadOfRepositorys_Repository_Model
+    val relative_1_2_ProduitAcheteOperation = _0_HeadOfRepositorys_Repository_Model
         ._1_2_ProduitAcheteOperation_Repository
         .modelDatasSnapList.find { it.vid == composeKeyVID }
 
-    val relativeProduit = _0_HeadOfRepositorys_Repository_Model._2_1_ProduitsDataBase_Repository
-        .modelDatasSnapList.find { it.vid == (relativeOperationAchatProduit
+    val relative_2_1_ProduitsDataBase = _0_HeadOfRepositorys_Repository_Model._2_1_ProduitsDataBase_Repository
+        .modelDatasSnapList.find { it.vid == (relative_1_2_ProduitAcheteOperation
             ?.produitAcheterID ?: 0) }
 
     Card(
@@ -61,13 +61,13 @@ fun MainItem_APP2_ID_2(
                         modifier = Modifier.fillMaxWidth()
                     )
                     Text(
-                        text = "id (${relativeProduit?.vid ?: "N/A"})",
+                        text = "id (${relative_2_1_ProduitsDataBase?.vid ?: "N/A"})",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.fillMaxWidth()
                     )
                     Text(
-                        text = "nom (${relativeProduit?.nom ?: "N/A"})",
+                        text = "nom (${relative_2_1_ProduitsDataBase?.nom ?: "N/A"})",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.fillMaxWidth()
@@ -91,6 +91,7 @@ fun MainItem_APP2_ID_2(
                     couleursAcheteOperationsVIDs.forEach { couleurVId ->
                         ColorDetails_APP2_ID_2(
                             composeKeyVID = couleurVId,
+                            _0_HeadOfRepositorys_Repository_Model
                         )
                     }
                 }
