@@ -1,8 +1,8 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem
 
-
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,6 +12,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -27,6 +28,13 @@ fun QuantityButton(
     currentClient: B_ClientsDataBase?,
     compose_1_1_CouleurAcheteOperationVid: Long,
 ) {
+    val _0_HeadOfRepositorys_Repository_Model = _0_0_HeadOfRepositorys_Repository
+
+        .repositorys_Model
+
+    val composeKeyVID = _0_HeadOfRepositorys_Repository_Model
+        ._1_3_BonAchat_Repository
+        .activeId.collectAsState()
 
     Button(
         onClick = {

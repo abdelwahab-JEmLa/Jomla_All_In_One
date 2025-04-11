@@ -18,7 +18,6 @@ fun MainList_APP2_ID_2(
     modifier: Modifier = Modifier,
     _0_HeadOfRepositorys_Repository_Model: _0_0_HeadOfRepositorys_Model,
 ) {
-    // Collect the current value of the MutableStateFlow
     val currentVID by composeKeyVID
 
     // Group products by product ID

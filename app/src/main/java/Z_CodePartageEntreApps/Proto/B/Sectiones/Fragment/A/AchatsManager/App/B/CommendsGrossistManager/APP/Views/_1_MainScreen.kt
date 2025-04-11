@@ -23,9 +23,10 @@ fun MainScreen_APP2_ID_2(
     val progressValue by _0_0_HeadOfRepositorys_Repository.progressRepo.collectAsState()
     val _0_HeadOfRepositorys_Repository_Model = _0_0_HeadOfRepositorys_Repository
         .repositorys_Model
+
     val composeKeyVID = _0_HeadOfRepositorys_Repository_Model
         ._1_3_BonAchat_Repository
-        .activeId .collectAsState()
+        .activeId.collectAsState()
 
 
     Column(
