@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 @Entity
 data class _2_1_ProduitsDataBase(
     @PrimaryKey(autoGenerate = true)
-    var id: Long = 0,
+    var vid: Long = 0,
 
     // Section InfosDeBase
     var nom: String = "",

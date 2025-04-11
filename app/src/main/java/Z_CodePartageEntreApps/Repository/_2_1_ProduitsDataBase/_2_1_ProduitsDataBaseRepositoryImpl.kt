@@ -97,14 +97,7 @@ class _2_1_ProduitsDataBaseRepositoryImpl(
         }
     }
 
-    override fun getIdParNomModel(nomModel: String): Long {
-        val vendor = modelDatasSnapList.find { it.deviceModelNom == nomModel }
-        if (vendor == null) {
-            Log.e(TAG, "Vendor not found for model: $nomModel. Available models: ${modelDatasSnapList.map { it.deviceModelNom }}")
-            return -1L
-        }
-        return vendor.vid
-    }
+
 
     override fun updateUnSeulData(data: _2_1_ProduitsDataBase) {
         updatesOperations.updateUnSeulData(data, repositoryScope, appDatabase, modelDatasSnapList)
