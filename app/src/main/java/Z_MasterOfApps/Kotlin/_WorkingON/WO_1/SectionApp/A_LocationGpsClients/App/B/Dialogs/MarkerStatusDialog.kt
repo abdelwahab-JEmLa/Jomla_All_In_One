@@ -217,31 +217,10 @@ fun MarkerStatusDialog(
                                 val repositorysModel =
                                     _0_0_HeadOfRepositorys_Repository.repositorys_Model
 
-                                val currentVendeur = _0_0_HeadOfRepositorys_Repository.currentVendeur
                                 val activePeriod = _0_0_HeadOfRepositorys_Repository.activePeriod
 
-// Log the current state to diagnose the issue
-                                Log.d("MarkerStatusDialog", "Current vendeur: $currentVendeur")
-                                Log.d("MarkerStatusDialog", "Active period: $activePeriod")
-                                Log.d("MarkerStatusDialog", "Periods available: ${_0_0_HeadOfRepositorys_Repository.repositorys_Model._1_4_PeriodeVent_Repository.modelDatasSnapList.size}")
+                                val parentVidPeriode = activePeriod?.vid ?: 0L
 
-// Check if there's a valid period or create one if needed
-                                val parentVidPeriode = if (activePeriod != null) {
-                                    Log.d("MarkerStatusDialog", "Using existing period with VID: ${activePeriod.vid}")
-                                    activePeriod.vid
-                                } else {
-                                    Log.w("MarkerStatusDialog", "No active period found. This may be because currentVendeur is null or no matching period exists.")
-
-                                    // You could either:
-                                    // 1. Create a new period (if that's appropriate for your application)
-                                    // 2. Use a fallback period VID
-                                    // 3. Show an error message to the user
-
-                                    // For now, returning 0L but you should replace with appropriate logic
-                                    0L
-                                }
-
-// Then use this parentVidPeriode in your BonAchat creation:
                                 repositorysModel._1_3_BonAchat_Repository.addDataAndReturneItVID(
                                     _1_3_BonAchat(
                                         clientAcheteurID = relatedClients?.id ?: 0L,
@@ -249,22 +228,17 @@ fun MarkerStatusDialog(
                                     )
                                 )
 
-
                                 val selectedMarkerid = selectedMarker.id.toLong()
                                 viewModel.updateLongAppSetting(selectedMarkerid)
                                 val maxVid =
                                     uiStateviewModelFragment_APP2_ID_1._1_3_BonAchatList.maxOfOrNull { it.vid }
                                         ?: 0
-                                Log.d(
-                                    "MarkerStatusDialog",
-                                    "Current max vid: $maxVid, list size: ${uiStateviewModelFragment_APP2_ID_1._1_3_BonAchatList.size}"
-                                )
+
                                 val newVid = maxVid + 1
 
                                 val newData = _1_3_BonAchat(
                                     vid = newVid,
                                     clientAcheteurID = relatedClients?.id!!,
-                                    // parent_1_4_PeriodeVentVid = uiStateviewModelFragment_APP2_ID_1._1_4_PeriodeVentList.maxOf { it.vid },
                                     heurDebutInString = SimpleDateFormat(
                                         "HH:mm",
                                         Locale.getDefault()
