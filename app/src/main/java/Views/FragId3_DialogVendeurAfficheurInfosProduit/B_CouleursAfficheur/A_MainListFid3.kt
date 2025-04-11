@@ -12,15 +12,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,8 +43,9 @@ fun A_MainListFragId3(
     parentCompose_1_2_ProduitAcheteOperationVid: Long,
 ) {
     var colorsListToDisplay by remember { mutableStateOf(emptyList<ColorsArticlesTabelle>()) }
-    // Create a LazyGridState to be shared with child components
-    val gridState = rememberLazyGridState()
+
+    // Use LazyListState instead of LazyGridState to avoid layout issues
+    val listState = rememberLazyListState()
 
     LaunchedEffect(Unit) {
         colorsListToDisplay = listOf(stats.idcolor1, stats.idcolor2, stats.idcolor3, stats.idcolor4)
@@ -65,17 +66,23 @@ fun A_MainListFragId3(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(2.dp),
             ) {
-                // Replace LazyColumn with LazyVerticalGrid for better usage of LazyGridState
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(1),
-                    state = gridState,
+                // Back to using LazyColumn with fixed heights to avoid infinite height constraints
+                LazyColumn(
+                    state = listState,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(2.dp),
                     verticalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
-                    items(colorsListToDisplay) { color ->
-                        val index = colorsListToDisplay.indexOf(color)
+                    itemsIndexed(colorsListToDisplay) { index, color ->
+                        // Calculate if the item is visible in the current viewport
+                        val isItemVisible = remember {
+                            derivedStateOf {
+                                val visibleItems = listState.layoutInfo.visibleItemsInfo
+                                visibleItems.any { it.index == index }
+                            }
+                        }
+
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -99,6 +106,7 @@ fun A_MainListFragId3(
                                 currentClient = currentClient,
                                 colorsArticlesTabelleModele = colorsArticlesTabelleModele,
                                 parentCompose_1_2_ProduitAcheteOperationVid = parentCompose_1_2_ProduitAcheteOperationVid,
+                                isVisibleInList = isItemVisible.value
                             )
                         }
                     }

@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
@@ -32,7 +31,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -68,31 +66,22 @@ fun B_CouleurAfficheur(
     currentClient: B_ClientsDataBase?,
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
     parentCompose_1_2_ProduitAcheteOperationVid: Long,
+    isVisibleInList: Boolean = true, // Simplified visibility tracking
 ) {
-    // Implement LazyGridState to track when a color is displayed and add it to database
-    val gridState = rememberLazyGridState()
+    // Using a simpler approach for visibility tracking
     var compose_1_1_CouleurAcheteOperationVid by remember { mutableLongStateOf(0L) }
     val _1_1_CouleurAcheteOperation_Repository = koinInject<_1_1_CouleurAcheteOperation_Repository>()
     val couleurActuelleId = color.idColore
 
-    // Keep track of if this item is visible
-    val isVisible by remember {
-        derivedStateOf {
-            val firstVisibleItem = gridState.firstVisibleItemIndex
-            val lastVisibleItem = firstVisibleItem + gridState.layoutInfo.visibleItemsInfo.size - 1
-            index in firstVisibleItem..lastVisibleItem
-        }
-    }
-
-    // When the color becomes visible, ensure it exists in the database
-    LaunchedEffect(key1 = isVisible, key2 = parentCompose_1_2_ProduitAcheteOperationVid) {
+    // Use LaunchedEffect to ensure the color exists in the database when needed
+    LaunchedEffect(key1 = isVisibleInList, key2 = parentCompose_1_2_ProduitAcheteOperationVid) {
         // Skip if parentCompose_1_2_ProduitAcheteOperationVid is not set yet
         if (parentCompose_1_2_ProduitAcheteOperationVid <= 0) {
             return@LaunchedEffect
         }
 
         // Only proceed if the color is visible
-        if (isVisible) {
+        if (isVisibleInList) {
             val existing_1_1_CouleurAcheteOperation =
                 _1_1_CouleurAcheteOperation_Repository.modelDatasSnapList.find {
                     it.couleurId_ParentVID == couleurActuelleId
@@ -279,7 +268,6 @@ fun B_CouleurAfficheur(
         }
     }
 }
-
 
 @Composable
 private fun QuantityBadge(
