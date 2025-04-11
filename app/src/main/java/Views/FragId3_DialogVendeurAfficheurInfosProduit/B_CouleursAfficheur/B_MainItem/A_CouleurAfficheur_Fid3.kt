@@ -112,7 +112,6 @@ fun B_CouleurAfficheur(
         }
     }
 
-    // Rest of the code remains the same...
     var showDialog by remember { mutableStateOf(false) }
     var isSelected by remember { mutableStateOf(false) }
 
