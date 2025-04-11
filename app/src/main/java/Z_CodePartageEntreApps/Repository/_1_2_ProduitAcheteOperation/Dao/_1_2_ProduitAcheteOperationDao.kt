@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation.Dao
 
-import Z_CodePartageEntreApps.Model._1_2_ProduitAcheteOperation
+import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert

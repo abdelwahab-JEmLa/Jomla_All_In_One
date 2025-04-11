@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation.Z.Dao
 
-import Z_CodePartageEntreApps.Model._1_1_CouleurAcheteOperation
+import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert

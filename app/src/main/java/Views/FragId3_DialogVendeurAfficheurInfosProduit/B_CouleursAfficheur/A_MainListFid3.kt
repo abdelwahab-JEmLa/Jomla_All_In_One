@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -59,16 +61,14 @@ fun A_MainListFragId3(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(2.dp),
             ) {
-                val estimatedHeight = minOf((400.dp + 2.dp) * colorsListToDisplay.size, 3500.dp)
-
-                Column(
+                // Replaced fixed Column with LazyColumn
+                LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(estimatedHeight)
                         .padding(2.dp),
                     verticalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
-                    colorsListToDisplay.forEachIndexed { index, color ->
+                    itemsIndexed(colorsListToDisplay) { index, color ->
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -88,7 +88,7 @@ fun A_MainListFragId3(
                                 viewModelInitApp = viewModelInitApp,
                                 currentClient = currentClient,
                                 colorsArticlesTabelleModele = colorsArticlesTabelleModele,
-                                parentCompose_1_2_ProduitAcheteOperationVid=parentCompose_1_2_ProduitAcheteOperationVid,
+                                parentCompose_1_2_ProduitAcheteOperationVid = parentCompose_1_2_ProduitAcheteOperationVid,
                             )
                         }
                     }
