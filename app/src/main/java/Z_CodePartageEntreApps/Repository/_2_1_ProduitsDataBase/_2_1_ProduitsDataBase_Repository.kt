@@ -11,7 +11,6 @@ interface _2_1_ProduitsDataBase_Repository {
     val progressRepo: MutableStateFlow<Float>
         get() = MutableStateFlow(0f)
 
-
     suspend fun ensureDataIsInitialized()
 
     fun addDataAndReturnItVID(

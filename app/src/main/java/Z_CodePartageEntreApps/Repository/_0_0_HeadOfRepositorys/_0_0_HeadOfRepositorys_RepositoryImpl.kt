@@ -6,6 +6,7 @@ import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_Produi
 import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat_Repository
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur_Repository
+import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase_Repository
 import Z_CodePartageEntreApps.Repository._2_2_ClientsDataBase._2_2_ClientsDataBase_Repository
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
@@ -28,6 +29,8 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
     private val _1_3_Repository: _1_3_BonAchat_Repository,
     private val _1_4_Repository: _1_4_PeriodeVent_Repository,
     private val _1_5_Repository: _1_5_Vendeur_Repository,
+
+    private val _2_1_Repository: _2_1_ProduitsDataBase_Repository,
     private val _2_2_Repository: _2_2_ClientsDataBase_Repository,
 ) : _0_0_HeadOfRepositorys_Repository {
     private val TAG = _0_0_HeadOfRepositorys_Repository.TAG
@@ -38,6 +41,8 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
         _1_3_Repository,
         _1_4_Repository,
         _1_5_Repository,
+
+        _2_1_Repository,
         _2_2_Repository,
     )
     override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
@@ -61,6 +66,8 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
             _1_3_Repository.ensureDataIsInitialized()
             _1_4_Repository.ensureDataIsInitialized()
             _1_5_Repository.ensureDataIsInitialized()
+
+            _2_1_Repository.ensureDataIsInitialized()
             _2_2_Repository.ensureDataIsInitialized()
 
             // Start tracking progress afterward
@@ -68,24 +75,6 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
             }
         }
     }
-
-    private suspend fun createInitialData() {
-        withContext(Dispatchers.IO) {
-            try {
-                // Ensure we create data in the correct order (parent repositories first)
-                delay(100) // Give a small delay to ensure Firebase operations complete
-
-                delay(100)
-
-
-                Log.d(TAG, "Initial data creation completed successfully")
-            } catch (e: Exception) {
-                Log.e(TAG, "Error creating initial data: ${e.message}")
-            }
-        }
-    }
-
-
 
     suspend fun ensureDataIsInitialized() {
         try {
@@ -110,7 +99,6 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
 
                     if (!initialDataLoaded) {
                         Log.w(TAG, "Data initialization timed out, forcing initialization")
-                        createInitialData()
                         initialDataLoaded = true
                         progressRepo.value = 1.0f
                     }
@@ -119,7 +107,6 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
         } catch (e: Exception) {
             Log.e(TAG, "Error ensuring data initialization: ${e.message}")
             // Even if there's an error, try to create initial data
-            createInitialData()
             initialDataLoaded = true
             progressRepo.value = 1.0f
         }
@@ -137,6 +124,8 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                 repositoryScope.launch { _1_3_Repository.ensureDataIsInitialized() },
                 repositoryScope.launch { _1_4_Repository.ensureDataIsInitialized() },
                 repositoryScope.launch { _1_5_Repository.ensureDataIsInitialized() },
+
+                repositoryScope.launch { _2_1_Repository.ensureDataIsInitialized() },
                 repositoryScope.launch { _2_2_Repository.ensureDataIsInitialized() }
             )
 
@@ -168,6 +157,8 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                     _1_3_BonAchat_Repository = _1_3_Repository,
                     _1_4_PeriodeVent_Repository = _1_4_Repository,
                     _1_5_Vendeur_Repository = _1_5_Repository,
+
+                    _2_1_ProduitsDataBase_Repository = _2_1_Repository,
                     _2_2_ClientsDataBase_Repository = _2_2_Repository,
                 )
 
@@ -193,6 +184,8 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                 _1_3_Repository.progressRepo,
                 _1_4_Repository.progressRepo,
                 _1_5_Repository.progressRepo,
+
+                _2_1_Repository.progressRepo,
                 _2_2_Repository.progressRepo
             ) { flowValues ->
                 // flowValues is an Array<Float> containing all the progress values
@@ -211,7 +204,9 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                                 2 -> "_1_3_Repository"
                                 3 -> "_1_4_Repository"
                                 4 -> "_1_5_Repository"
-                                5 -> "_2_2_Repository"
+
+                                5 -> "_2_1_Repository"
+                                6 -> "_2_2_Repository"
                                 else -> "Unknown"
                             }
                             Log.d(TAG, "- $repoName incomplete: $progress")
