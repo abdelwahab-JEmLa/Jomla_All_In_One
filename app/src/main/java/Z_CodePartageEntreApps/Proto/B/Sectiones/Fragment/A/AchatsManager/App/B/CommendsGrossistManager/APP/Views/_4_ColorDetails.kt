@@ -46,7 +46,8 @@ fun ColorDetails_APP2_ID_2(
             )
             A_GlideDisplayImageByKeyId_Proto_4_11(
                 produitVID=relative_1_1_CouleurAcheteOperation?.parentProduitAchateOperationVID!! ,
-                couleurVID = relative_1_1_CouleurAcheteOperation.couleurId_ParentVID
+                couleurVID = relative_1_1_CouleurAcheteOperation.couleurId_ParentVID ,
+                size = 100.dp
             )
         }
     }
