@@ -331,7 +331,7 @@ class _1_4_PeriodeVentRepositoryImpl(
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error in addDataAndReturneItVID: ${e.message}")
+            Log.e(TAG, "Error in addDataAndReturnItVID: ${e.message}")
         }
     }
    

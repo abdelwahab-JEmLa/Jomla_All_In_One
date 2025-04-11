@@ -75,7 +75,7 @@ class _1_5_VendeurRepositoryImpl(
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error in addDataAndReturneItVID: ${e.message}")
+            Log.e(TAG, "Error in addDataAndReturnItVID: ${e.message}")
         }
     }
 

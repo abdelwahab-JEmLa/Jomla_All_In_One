@@ -11,7 +11,7 @@ interface _2_1_ProduitsDataBase_Repository {
     val progressRepo: MutableStateFlow<Float>
         get() = MutableStateFlow(0f)
 
-    fun addDataAndReturneItVID(
+    fun addDataAndReturnItVID(
         data: _2_1_ProduitsDataBase,
         onAddSuccess: (Long) -> Unit = {},
     )
@@ -30,5 +30,4 @@ interface _2_1_ProduitsDataBase_Repository {
             .getReference("00_DataPrototype-04-02")
             .child("_2_1_")
     }
-
 }

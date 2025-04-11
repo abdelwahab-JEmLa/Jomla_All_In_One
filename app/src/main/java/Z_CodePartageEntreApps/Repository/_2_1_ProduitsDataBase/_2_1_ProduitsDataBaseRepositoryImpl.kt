@@ -49,7 +49,7 @@ class _2_1_ProduitsDataBaseRepositoryImpl(
         }
     }
 
-    override fun addDataAndReturneItVID(
+    override fun addDataAndReturnItVID(
         data: _2_1_ProduitsDataBase,
         onAddSuccess: (Long) -> Unit
     ) {
@@ -75,7 +75,7 @@ class _2_1_ProduitsDataBaseRepositoryImpl(
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error in addDataAndReturneItVID: ${e.message}")
+            Log.e(TAG, "Error in addDataAndReturnItVID: ${e.message}")
         }
     }
 

@@ -78,7 +78,7 @@ class _1_3_BonAchatRepositoryImpl(
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error in addDataAndReturneItVID: ${e.message}")
+            Log.e(TAG, "Error in addDataAndReturnItVID: ${e.message}")
         }
     }
     override suspend fun ensureDataIsInitialized() {

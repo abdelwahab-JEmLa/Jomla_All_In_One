@@ -140,7 +140,7 @@ class _1_2_ProduitAcheteOperationRepositoryImpl(
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error in addDataAndReturneItVID: ${e.message}")
+            Log.e(TAG, "Error in addDataAndReturnItVID: ${e.message}")
         }
     }
 
