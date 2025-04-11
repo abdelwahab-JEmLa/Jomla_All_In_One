@@ -55,7 +55,7 @@ fun MainItem_APP2_ID_2(
                         .padding(8.dp)
                 ) {
                     Text(
-                        text = "idOperationProduit (${composeKeyVID})",
+                        text = "OpVId (${composeKeyVID})",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.fillMaxWidth()
