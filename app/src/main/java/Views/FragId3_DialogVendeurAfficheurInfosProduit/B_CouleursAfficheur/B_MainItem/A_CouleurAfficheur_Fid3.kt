@@ -67,7 +67,6 @@ fun B_CouleurAfficheur(
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
     parentCompose_1_2_ProduitAcheteOperationVid: Long,
 ) {
-
     var compose_1_1_CouleurAcheteOperationVid by remember { mutableLongStateOf(0L) }
     val _1_1_CouleurAcheteOperation_Repository = koinInject<_1_1_CouleurAcheteOperation_Repository>()
     val couleurActuelleId = color.idColore
@@ -97,6 +96,7 @@ fun B_CouleurAfficheur(
                     parentProduitAchateOperationVID = parentCompose_1_2_ProduitAcheteOperationVid
                 )
             )
+
             newVid
         }
 
