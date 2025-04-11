@@ -2,7 +2,7 @@ package Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase.Extension.Update
 
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase
-import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBaseRepositoryImpl
+import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase_RepositoryImpl
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase_Repository
 import android.util.Log
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -15,7 +15,7 @@ import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
 
 class _2_1_ProduitsDataBaseRepositoryUpdatesOperationsExtension(
-    private val repositoryImpl: _2_1_ProduitsDataBaseRepositoryImpl
+    private val repositoryImpl: _2_1_ProduitsDataBase_RepositoryImpl
 ) {
     private val TAG = _2_1_ProduitsDataBase_Repository.TAG
 

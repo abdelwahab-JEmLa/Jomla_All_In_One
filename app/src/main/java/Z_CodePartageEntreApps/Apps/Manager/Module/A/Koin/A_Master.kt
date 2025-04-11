@@ -31,6 +31,8 @@ import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVentReposi
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_VendeurRepositoryImpl
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur_Repository
+import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase_Repository
+import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase_RepositoryImpl
 import Z_CodePartageEntreApps.Repository._2_2_ClientsDataBase._2_2_ClientsDataBase_Repository
 import Z_CodePartageEntreApps.Repository._2_2_ClientsDataBase._2_2_ClientsDataBase_RepositoryImpl
 import Z_CodePartageEntreApps.Windows.B.Windows.ViewModel.ViewModelFragment_StartUpScreen
@@ -50,13 +52,16 @@ val commonRepositoriesModule = module {
         get(),
         get(),
         get(),
+        get(),
     ) }
+
     single<_1_1_CouleurAcheteOperation_Repository> { _1_1_CouleurAcheteOperationRepositoryImpl(get()) }
     single<_1_2_ProduitAcheteOperation_Repository> { _1_2_ProduitAcheteOperationRepositoryImpl(get()) }
     single<_1_3_BonAchat_Repository> { _1_3_BonAchatRepositoryImpl(get()) }
     single<_1_4_PeriodeVent_Repository> { _1_4_PeriodeVentRepositoryImpl(get()) }
     single<_1_5_Vendeur_Repository> { _1_5_VendeurRepositoryImpl(get()) }
 
+    single<_2_1_ProduitsDataBase_Repository> { _2_1_ProduitsDataBase_RepositoryImpl(get()) }
     single<_2_2_ClientsDataBase_Repository> { _2_2_ClientsDataBase_RepositoryImpl(get()) }
 
     single<B_ClientDataBaseRepository> { B_ClientDataBaseRepositoryImpl(get()) }

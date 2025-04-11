@@ -1,11 +1,11 @@
 package Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase.Extension.Log
 
-import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBaseRepositoryImpl
+import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase_RepositoryImpl
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase_Repository
 import android.util.Log
 
 class _2_1_ProduitsDataBaseRepositoryLogOperationsExtension(
-    private val repositoryImpl: _2_1_ProduitsDataBaseRepositoryImpl
+    private val repositoryImpl: _2_1_ProduitsDataBase_RepositoryImpl
 ) {
     private val TAG = _2_1_ProduitsDataBase_Repository.TAG
 

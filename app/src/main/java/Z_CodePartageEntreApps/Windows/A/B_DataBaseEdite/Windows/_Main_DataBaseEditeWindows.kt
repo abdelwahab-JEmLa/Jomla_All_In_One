@@ -29,7 +29,10 @@ import org.koin.dsl.module
 val dataBaseEditeWindowsModules = module {
     viewModel { ViewModel_BProto_ClientsDataBase(get()) }
     viewModel { ViewModel_I_CategorieProduits(get()) }
-    viewModel { ViewModel_AProto_ProduitDataBase(get()) }
+    viewModel { ViewModel_AProto_ProduitDataBase(
+        get(),
+        get(),
+    ) }
 }
 
 // Load the module when the composable is first used
