@@ -1,6 +1,7 @@
 package Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.Views
 
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
+import Z_CodePartageEntreApps.View.A_GlideDisplayImageByKeyId_Proto_4_11
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -42,6 +43,10 @@ fun ColorDetails_APP2_ID_2(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.fillMaxWidth()
+            )
+            A_GlideDisplayImageByKeyId_Proto_4_11(
+                produitVID=relative_1_1_CouleurAcheteOperation?.parentProduitAchateOperationVID!! ,
+                couleurVID = relative_1_1_CouleurAcheteOperation.couleurId_ParentVID
             )
         }
     }
