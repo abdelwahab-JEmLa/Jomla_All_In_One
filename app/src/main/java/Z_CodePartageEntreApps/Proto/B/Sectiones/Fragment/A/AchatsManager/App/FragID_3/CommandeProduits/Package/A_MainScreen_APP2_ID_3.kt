@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -29,9 +30,10 @@ fun A_MainScreen_APP2_FragID3(
 ) {
     val models = viewModel._0_0_HeadOfRepositorys_Repository.repositorys_Model
 
-    Box(modifier = modifier
-        .fillMaxSize()
-        .padding(4.dp)
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(4.dp)
     ) {
         LazyColumn {
             items(
@@ -45,9 +47,10 @@ fun A_MainScreen_APP2_FragID3(
             { Produit ->
                 Card() {
                     Column {
-                        Text( models._2_1_ProduitsDataBase_Repository.modelDatasSnapList
-                            .find { it.vid==Produit.produitAcheterID }?.nom ?: "Produit inconnu"
-                            ,Modifier.padding(4.dp)
+                        Text(
+                            models._2_1_ProduitsDataBase_Repository.modelDatasSnapList
+                                .find { it.vid == Produit.produitAcheterID }?.nom
+                                ?: "Produit inconnu", Modifier.padding(4.dp)
                         )
 
                         // Instead of filtering by Produit.vid, we should filter by produitAcheterID
@@ -117,12 +120,15 @@ fun A_MainScreen_APP2_FragID3(
                                                 )
                                         )
                                         // Fixed - Safely handle potentially null client names
-                                        Column {
+                                        Column(Modifier.padding(3.dp)) {
+// Fix for the client lookup with proper fallback
                                             buyerIds.forEach { buyerId ->
                                                 // Get the client by ID and display name with a fallback
-                                                val clientName = models._3_ClientsDataBase_Repository.modelDatasSnapList
-                                                    .find { it.vid == buyerId }?.nom ?: "Client inconnu"
-
+                                                val clientName =
+                                                    models._3_ClientsDataBase_Repository.modelDatasSnapList
+                                                        .find { it.vid == buyerId }?.nom
+                                                        ?: "Client #$buyerId"
+                                                HorizontalDivider(Modifier.padding(3.dp))
                                                 Text(
                                                     text = clientName,
                                                     modifier = Modifier
@@ -130,7 +136,6 @@ fun A_MainScreen_APP2_FragID3(
                                                             color = Color.White.copy(alpha = 0.50f),
                                                             shape = RoundedCornerShape(4.dp)
                                                         )
-
                                                 )
                                             }
                                         }
