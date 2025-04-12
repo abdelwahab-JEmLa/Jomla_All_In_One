@@ -144,7 +144,6 @@ private fun Couleurs(
                         360.dp
                     )
 
-                    // TODO(1) FIXED: Center text with larger size and semi-transparent background
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
