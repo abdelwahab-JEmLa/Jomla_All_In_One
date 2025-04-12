@@ -80,10 +80,8 @@ fun A_MainScreen_APP2_ID_2(
         }
         .sumOf { it.totaleQuantity }
 
-    // Calculate total price
-    // For each product, find the price and multiply by quantities of its colors
+
     val totalPrice = produitsBonAchatIDs.sumOf { produitOpe ->
-        // Get the product price from the product database
         val productPrice = _0_HeadOfRepositorys_Repository_Model
             ._2_1_ProduitsDataBase_Repository
             .modelDatasSnapList
