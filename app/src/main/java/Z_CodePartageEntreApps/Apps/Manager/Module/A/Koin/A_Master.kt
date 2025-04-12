@@ -19,7 +19,6 @@ import Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.K_TempT
 import Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.K_TempTravailleRepositoryImpl
 import Z_CodePartageEntreApps.Model.O_SoldArticlesTabelle.Repository.SoldArticlesTabelleRepository
 import Z_CodePartageEntreApps.Model.O_SoldArticlesTabelle.Repository.SoldArticlesTabelleRepositoryImpl
-import Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.FragID_3.CommandeProduits.Package.ViewModelFragment_APP2_ID_3
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_RepositoryImpl
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperationRepositoryImpl
@@ -91,11 +90,8 @@ val commonRepositoriesModule = module {
         ,get()
         ,get()
     ) }
-    viewModel { ViewModelFragment_APP2_ID_3(
-        get()
-    ) }
-}
 
+}
 // Function to determine the application type
 fun isManagerApp(context: Context): Boolean {
     return context.packageName == "com.example.abdelwahabjemlajetpack.serveur"
