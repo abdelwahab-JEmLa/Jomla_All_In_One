@@ -40,10 +40,12 @@ fun A_GlideDisplayImageByKeyId_Proto_4_11(
     size: Dp? = null,
     onLoadComplete: () -> Unit = {},
     qualityImage: Int = 3,
+    onImageNeExistePas: @Composable () -> Unit = {}, // Changed to @Composable lambda
 ) {
     var imageFile by remember { mutableStateOf<File?>(null) }
     var isLoading by remember { mutableStateOf(true) }
     var imageFileName by remember { mutableStateOf("") }
+    var imageExists by remember { mutableStateOf(true) }
 
     // Use produitVID and couleurVID to form the keyImageId
     val keyImageId = if (produitVID == null || couleurVID == null) "null" else "${produitVID}_${couleurVID}"
@@ -76,19 +78,26 @@ fun A_GlideDisplayImageByKeyId_Proto_4_11(
                 if (!shouldUseDefaultImage && keyImageId != "null") {
                     val basePath = "$imagesProduitsLocalExternalStorageBasePath/$keyImageId"
                     val validFile = findValidImageFile(basePath)
-                    imageFile = validFile ?: File(defaultPath)
+
                     if (validFile == null) {
+                        imageExists = false
                         imageFileName = "logo.webp"
+                        imageFile = File(defaultPath)
+                    } else {
+                        imageExists = true
+                        imageFile = validFile
                     }
                 } else {
                     imageFile = File(defaultPath)
                     imageFileName = "logo.webp"
+                    imageExists = false
                 }
                 Log.d("GlideDisplay", "Final image path: ${imageFile?.absolutePath}")
             } catch (e: Exception) {
                 Log.e("GlideDisplay", "Error loading image file", e)
                 imageFile = File("$imagesProduitsLocalExternalStorageBasePath/logo.webp")
                 imageFileName = "logo.webp"
+                imageExists = false
             }
         }
     }
@@ -97,45 +106,56 @@ fun A_GlideDisplayImageByKeyId_Proto_4_11(
         modifier = modifier.then(size?.let { Modifier.size(it) } ?: Modifier.fillMaxSize()),
         contentAlignment = Alignment.Center
     ) {
-        GlideImage(
-            model = imageFile ?: File("$imagesProduitsLocalExternalStorageBasePath/logo.webp"),
-            contentDescription = "Product $keyImageId",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxSize()
-                .clip(RoundedCornerShape(8.dp))
-                .blur(if (isLoading) 10.dp else 0.dp)  // Apply blur effect during loading
-        ) { builder ->
-            builder
-                .downsample(com.bumptech.glide.load.resource.bitmap.DownsampleStrategy.AT_MOST)
-                .encodeQuality(qualityImage)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(true)
-                .listener(object : RequestListener<Drawable> {
-                    override fun onLoadFailed(
-                        e: GlideException?,
-                        model: Any?,
-                        target: Target<Drawable>,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        Log.e("GlideDisplay", "Load failed for $keyImageId", e)
-                        isLoading = false
-                        return false
-                    }
+        if (!imageExists) {
+            // Since onImageNeExistePas is now a @Composable lambda, we can call it directly here
+            onImageNeExistePas()
+        } else {
+            GlideImage(
+                model = imageFile ?: File("$imagesProduitsLocalExternalStorageBasePath/logo.webp"),
+                contentDescription = "Product $keyImageId",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(8.dp))
+                    .blur(if (isLoading) 10.dp else 0.dp)  // Apply blur effect during loading
+            ) { builder ->
+                builder
+                    .downsample(com.bumptech.glide.load.resource.bitmap.DownsampleStrategy.AT_MOST)
+                    .encodeQuality(qualityImage)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
+                    .listener(object : RequestListener<Drawable> {
+                        override fun onLoadFailed(
+                            e: GlideException?,
+                            model: Any?,
+                            target: Target<Drawable>,
+                            isFirstResource: Boolean
+                        ): Boolean {
+                            Log.e("GlideDisplay", "Load failed for $keyImageId", e)
+                            isLoading = false
+                            imageExists = false
+                            return false
+                        }
 
-                    override fun onResourceReady(
-                        resource: Drawable,
-                        model: Any,
-                        target: Target<Drawable>?,
-                        dataSource: DataSource,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        Log.d("GlideDisplay", "Load complete for $keyImageId")
-                        isLoading = false
-                        onLoadComplete()
-                        return false
-                    }
-                })
+                        override fun onResourceReady(
+                            resource: Drawable,
+                            model: Any,
+                            target: Target<Drawable>?,
+                            dataSource: DataSource,
+                            isFirstResource: Boolean
+                        ): Boolean {
+                            Log.d("GlideDisplay", "Load complete for $keyImageId")
+                            isLoading = false
+                            onLoadComplete()
+                            return false
+                        }
+                    })
+            }
+
+            // If loading failed, show the alternative content
+            if (!imageExists && !isLoading) {
+                onImageNeExistePas()
+            }
         }
     }
 }
