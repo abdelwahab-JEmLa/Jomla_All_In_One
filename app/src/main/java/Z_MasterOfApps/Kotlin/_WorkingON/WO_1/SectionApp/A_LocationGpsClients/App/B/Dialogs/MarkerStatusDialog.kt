@@ -202,7 +202,6 @@ fun MarkerStatusDialog(
                         }
                     }
 
-
                     StatusButton(
                         text = "Mode Commande",
                         icon = Icons.Default.ShoppingCart,
@@ -214,45 +213,50 @@ fun MarkerStatusDialog(
                         ),
                         onClick = {
                             coroutineScope.launch {
-                                
-                                val repositorysModel =
-                                    _0_0_HeadOfRepositorys_Repository.repositorys_Model
-
+                                val repositorysModel = _0_0_HeadOfRepositorys_Repository.repositorys_Model
                                 val activePeriod = _0_0_HeadOfRepositorys_Repository.activePeriod
-
                                 val parentVidPeriode = activePeriod?.vid ?: 0L
+                                val clientId = relatedClients?.id ?: 0L
 
-                                repositorysModel._1_3_BonAchat_Repository.addDataAndReturneItVID(
-                                    _1_3_BonAchat(
-                                        clientAcheteurID = relatedClients?.id ?: 0L,
-                                        parentVID_1_4_PeriodeVent = parentVidPeriode
-                                    )
-                                ) { newVid ->
-                                    // Update the MutableStateFlow with the new value
-                                    repositorysModel.activeId_1_3_BonAchat.value = newVid
+                                // Check if a BonAchat already exists for this client in the active period
+                                val existingBonAchat = uiStateviewModelFragment_APP2_ID_1._1_3_BonAchatList.find {
+                                    it.clientAcheteurID == clientId && it.parentVID_1_4_PeriodeVent == parentVidPeriode
                                 }
 
+                                if (existingBonAchat != null) {
+                                    // Update the existing BonAchat
+                                    val updatedBonAchat = existingBonAchat.copy(
+                                        etateActuellementEst = _1_3_BonAchat.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
+                                        heurDebutInString = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
+                                    )
+
+                                    // Use upsert to update the existing record
+                                    repositorysModel._1_3_BonAchat_Repository.upsertUneDataEtReturnVID(
+                                        updatedBonAchat
+                                    ) { vid ->
+                                        // Update the MutableStateFlow with the updated value
+                                        repositorysModel.activeId_1_3_BonAchat.value = vid
+                                    }
+                                } else {
+                                    // Create a new BonAchat if none exists
+                                    repositorysModel._1_3_BonAchat_Repository.addDataAndReturneItVID(
+                                        _1_3_BonAchat(
+                                            clientAcheteurID = clientId,
+                                            parentVID_1_4_PeriodeVent = parentVidPeriode,
+                                            etateActuellementEst = _1_3_BonAchat.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
+                                            heurDebutInString = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
+                                        )
+                                    ) { newVid ->
+                                        // Update the MutableStateFlow with the new value
+                                        repositorysModel.activeId_1_3_BonAchat.value = newVid
+                                    }
+                                }
+
+                                // Update the selected marker ID
                                 val selectedMarkedID = selectedMarker.id.toLong()
                                 viewModel.updateLongAppSetting(selectedMarkedID)
-                                val maxVid =
-                                    uiStateviewModelFragment_APP2_ID_1._1_3_BonAchatList.maxOfOrNull { it.vid }
-                                        ?: 0
 
-                                val newVid = maxVid + 1
-
-                                val newData = _1_3_BonAchat(
-                                    vid = newVid,
-                                    clientAcheteurID = relatedClients?.id!!,
-                                    heurDebutInString = SimpleDateFormat(
-                                        "HH:mm",
-                                        Locale.getDefault()
-                                    ).format(Date())
-                                )
-
-                                viewModelInitApp.viewModelFragment_APP2_ID_1.addData_1_3_BonAchat_Repository(
-                                    newData
-                                )
-
+                                // Finish and dismiss the dialog
                                 onUpdateLongAppSetting()
                                 onDismiss()
                             }

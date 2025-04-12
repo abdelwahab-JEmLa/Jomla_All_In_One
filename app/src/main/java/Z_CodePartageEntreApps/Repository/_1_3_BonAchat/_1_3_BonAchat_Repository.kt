@@ -28,4 +28,5 @@ interface _1_3_BonAchat_Repository {
     }
 
     fun addDataAndReturneItVID(data: _1_3_BonAchat, onAddSuccess: (Long) -> Unit = {})
+    fun upsertUneDataEtReturnVID(data: _1_3_BonAchat, onSuccess: (Long) -> Unit = {})
 }
