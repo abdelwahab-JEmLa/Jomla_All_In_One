@@ -111,7 +111,7 @@ fun A_MainScreen_APP2_ID_3(
 
             // Only show the order form if in ON_MODE_COMMEND_ACTUELLEMENT state
             if (isOrderMode) {
-                BonAchatInfos(
+                BonAchatInfos_FragID3(
                     relativeBonAchate?.clientAcheteurID,
                     _0_0_HeadOfRepositorys_Repository,
                     relativeBonAchate,
@@ -139,7 +139,7 @@ fun A_MainScreen_APP2_ID_3(
                             }
                         } else {
                             // Always show the list of items, regardless of order mode
-                            B_MainList_APP2_ID_2(
+                            B_MainList_APP2_ID_3(
                                 composeKeyVID = composeKeyVID,
                                 _0_HeadOfRepositorys_Repository_Model = _0_0_HeadOfRepositorys_Repository
                                     .repositorys_Model

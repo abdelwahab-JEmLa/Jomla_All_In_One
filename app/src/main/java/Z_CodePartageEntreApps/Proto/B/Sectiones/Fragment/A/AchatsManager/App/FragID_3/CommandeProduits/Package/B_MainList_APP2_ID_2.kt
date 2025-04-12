@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun B_MainList_APP2_ID_2(
+fun B_MainList_APP2_ID_3(
     composeKeyVID: Long?,
     modifier: Modifier = Modifier,
     _0_HeadOfRepositorys_Repository_Model: _0_0_HeadOfRepositorys_Model,
@@ -40,7 +40,7 @@ fun B_MainList_APP2_ID_2(
         contentPadding = PaddingValues(8.dp)
     ) {
         items(produitsBonAchatIDs) { produitItem ->
-            C_MainItem_APP2_ID_2(
+            C_MainItem_APP2_ID_3(
                 composeKeyVID = produitItem.vid,
                 _0_HeadOfRepositorys_Repository_Model = _0_HeadOfRepositorys_Repository_Model,
             )

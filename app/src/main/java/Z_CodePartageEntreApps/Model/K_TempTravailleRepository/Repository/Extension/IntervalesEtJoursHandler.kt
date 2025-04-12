@@ -5,7 +5,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 
 /**
  * Utility class for handling interval and day operations for K_TempTravaille
- * Contains BonAchatInfos functions from K_TempTravailleRepositoryImpl
+ * Contains BonAchatInfos_FragID3 functions from K_TempTravailleRepositoryImpl
  */
 object IntervalesEtJoursHandler {
 

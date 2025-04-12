@@ -14,7 +14,7 @@ import java.net.Socket
 
 /**
  * Utility class for Firebase operations related to K_TempTravaille
- * Contains BonAchatInfos functions from K_TempTravailleRepositoryImpl
+ * Contains BonAchatInfos_FragID3 functions from K_TempTravailleRepositoryImpl
  */
 object Z_FirebaseUtils {
     private val CACHE_SIZE_BYTES = 100L * 1024L * 1024L // 100MB
