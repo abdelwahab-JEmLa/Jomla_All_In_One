@@ -9,8 +9,8 @@ import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
-import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
+import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Package_3._DisplayeProductInfosToSeller
 import androidx.compose.foundation.layout.Box
@@ -48,6 +48,7 @@ fun A_VendeurAfficheurInfosProduit_FragmentMainId3(
     onToggleLockExpandedPricex: () -> Unit,
     viewModelInitApp: ViewModelInitApp,
     currentClient: B_ClientsDataBase?,
+    clickedCouleurIndex: Int,
 ) {
     val currentSale by viewModel.currentSaleInWindows.collectAsState()
     val articlesBaseStats = currentSale?.let { sale ->
@@ -74,6 +75,7 @@ fun A_VendeurAfficheurInfosProduit_FragmentMainId3(
             onToggleLockExpandedPricex = onToggleLockExpandedPricex,
             currentClient = currentClient,
             colorsArticlesTabelleModele = viewModel._uiState.value.colorsArticlesTabelleModel,
+            clickedCouleurIndex=clickedCouleurIndex,
         )
     }
 }
@@ -94,7 +96,8 @@ fun MainUi(
     onToggleLockExpandedPricex: () -> Unit,
     currentClient: B_ClientsDataBase?,
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
-    _0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository = koinInject()
+    _0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository = koinInject(),
+    clickedCouleurIndex: Int
 ) {
     // Fixed access to progress value
     val progressValue by _0_0_HeadOfRepositorys_Repository.progressRepo.collectAsState()
@@ -206,7 +209,9 @@ fun MainUi(
                                     currentClient = currentClient,
                                     colorsArticlesTabelleModele = colorsArticlesTabelleModele,
                                     parentCompose_1_2_ProduitAcheteOperationVid = parentCompose_1_2_ProduitAcheteOperationVid,
-                                )
+                                    clickedCouleurIndex=clickedCouleurIndex,
+
+                                    )
                             }
 
                             item {

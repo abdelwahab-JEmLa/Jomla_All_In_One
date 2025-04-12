@@ -42,6 +42,7 @@ fun A_MainListFragId3(
     currentClient: B_ClientsDataBase?,
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
     parentCompose_1_2_ProduitAcheteOperationVid: Long,
+    clickedCouleurIndex: Int,
 ) {
     var colorsListToDisplay by remember { mutableStateOf(emptyList<ColorsArticlesTabelle>()) }
 
@@ -117,7 +118,9 @@ fun A_MainListFragId3(
                                 currentClient = currentClient,
                                 colorsArticlesTabelleModele = colorsArticlesTabelleModele,
                                 parentCompose_1_2_ProduitAcheteOperationVid = parentCompose_1_2_ProduitAcheteOperationVid,
-                            )
+                                clickedCouleurIndex=clickedCouleurIndex,
+
+                                )
                         }
                     }
                 }

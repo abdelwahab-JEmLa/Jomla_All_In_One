@@ -267,6 +267,7 @@ fun AppNavHost(
                     onToggleLockExpandedPricex = { lockExpandedPrices = !lockExpandedPrices },
                     viewModelInitApp = viewModelInitApp,
                     currentClient = currentClient,
+                    clickedCouleurIndex=pendingIndexColor,
                 )
             }
         }

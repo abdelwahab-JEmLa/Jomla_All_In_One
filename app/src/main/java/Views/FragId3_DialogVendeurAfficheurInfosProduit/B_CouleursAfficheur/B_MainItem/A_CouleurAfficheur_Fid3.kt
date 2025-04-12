@@ -65,6 +65,7 @@ fun B_CouleurAfficheur(
     currentClient: B_ClientsDataBase?,
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
     parentCompose_1_2_ProduitAcheteOperationVid: Long,
+    clickedCouleurIndex: Int,
 ) {
     // Using a simpler approach for visibility tracking
     var compose_1_1_CouleurAcheteOperationVid by remember { mutableLongStateOf(0L) }
@@ -97,7 +98,8 @@ fun B_CouleurAfficheur(
             val newColorOp = _1_1_CouleurAcheteOperation(
                 vid = newVid,
                 couleurIndex_ParentVID = couleurActuelleIndex,
-                parentProduitAchateOperationVID = parentCompose_1_2_ProduitAcheteOperationVid
+                parentProduitAchateOperationVID = parentCompose_1_2_ProduitAcheteOperationVid,
+                totaleQuantity = if(clickedCouleurIndex.toLong() ==couleurActuelleIndex) 1 else 0
             )
 
             // Explicitly add the data and verify
