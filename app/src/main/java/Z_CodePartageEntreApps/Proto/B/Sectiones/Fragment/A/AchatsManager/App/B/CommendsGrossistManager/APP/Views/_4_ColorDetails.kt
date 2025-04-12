@@ -149,6 +149,26 @@ fun ColorDetails_APP2_ID_2(
                         )
                     }
                 )
+
+                relative_1_1_CouleurAcheteOperation?.totaleQuantity?.let { quantity ->
+                    if (quantity > 0) {
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .size(50.dp)
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
+                                .zIndex(2f),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = quantity.toString(),
+                                style = MaterialTheme.typography.headlineMedium,
+                                color = MaterialTheme.colorScheme.onPrimary,
+                            )
+                        }
+                    }
+                }
             }
         }
     }

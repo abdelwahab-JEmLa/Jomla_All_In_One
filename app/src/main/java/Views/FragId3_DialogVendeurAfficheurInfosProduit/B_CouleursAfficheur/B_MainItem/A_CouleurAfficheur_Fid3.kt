@@ -69,10 +69,14 @@ fun B_CouleurAfficheur(
 ) {
     // Using a simpler approach for visibility tracking
     var compose_1_1_CouleurAcheteOperationVid by remember { mutableLongStateOf(0L) }
-    val _1_1_CouleurAcheteOperation_Repository = koinInject<_1_1_CouleurAcheteOperation_Repository>()
+    val _1_1_CouleurAcheteOperation_Repository =
+        koinInject<_1_1_CouleurAcheteOperation_Repository>()
     val couleurActuelleIndex = index.toLong()
 
-    LaunchedEffect(key1 = parentCompose_1_2_ProduitAcheteOperationVid, key2 = couleurActuelleIndex) {
+    LaunchedEffect(
+        key1 = parentCompose_1_2_ProduitAcheteOperationVid,
+        key2 = couleurActuelleIndex
+    ) {
         // Only proceed if we have a valid parent ID - this is critical
         if (parentCompose_1_2_ProduitAcheteOperationVid <= 0) {
             return@LaunchedEffect
@@ -95,11 +99,15 @@ fun B_CouleurAfficheur(
             val newVid = maxVid + 1
 
             // Create and add the new entry
+            val clickedCouleur = clickedCouleurIndex.toLong() == couleurActuelleIndex
             val newColorOp = _1_1_CouleurAcheteOperation(
                 vid = newVid,
                 couleurIndex_ParentVID = couleurActuelleIndex,
                 parentProduitAchateOperationVID = parentCompose_1_2_ProduitAcheteOperationVid,
-                totaleQuantity = if(clickedCouleurIndex.toLong() ==couleurActuelleIndex) 1 else 0
+                totaleQuantity = if (clickedCouleur) 1 else 0,
+                etateActuellementEst = if (clickedCouleur)
+                    _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI else
+                    _1_1_CouleurAcheteOperation.EtateActuellementEst.VUE
             )
 
             // Explicitly add the data and verify
@@ -266,7 +274,7 @@ fun B_CouleurAfficheur(
                 indexColoreAcheter = index,
                 colorsArticlesTabelleModele = colorsArticlesTabelleModele,
                 color = color,
-                compose_1_1_CouleurAcheteOperationVid=compose_1_1_CouleurAcheteOperationVid,
+                compose_1_1_CouleurAcheteOperationVid = compose_1_1_CouleurAcheteOperationVid,
             )
         }
     }
