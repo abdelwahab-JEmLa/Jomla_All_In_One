@@ -41,7 +41,8 @@ fun A_MainScreen_APP2_FragID3(
             { Produit ->
                 Card() {
                     Column {
-                        Text("ProdID>${Produit.produitAcheterID}")
+                        Text( models._2_1_ProduitsDataBase_Repository.modelDatasSnapList
+                            .find { it.vid==Produit.vid }?.nom!!)
 
                         // Instead of filtering by Produit.vid, we should filter by produitAcheterID
                         val colorsForProduct =
@@ -113,7 +114,9 @@ fun A_MainScreen_APP2_FragID3(
                                         Column {
                                             buyerIds.forEach { buyerId ->
                                                 Text(
-                                                    "Achteurs>$buyerId",
+                                                    models._3_ClientsDataBase_Repository.modelDatasSnapList
+                                                        .find { it.vid == buyerId }?.nom!!
+                                                    ,
                                                     Modifier
                                                         .background(
                                                             color = Color.White.copy(alpha = 0.50f),
@@ -122,7 +125,6 @@ fun A_MainScreen_APP2_FragID3(
                                                 )
                                             }
                                         }
-
                                     }
                                 }
                             }
