@@ -15,7 +15,6 @@ interface _0_0_HeadOfRepositorys_Repository {
             .find { it.vendeur_ParentVID == currentVendeur!!.vid }
     }
 
-
     val progressRepo: MutableStateFlow<Float>
         get() { return MutableStateFlow(0f)}
 

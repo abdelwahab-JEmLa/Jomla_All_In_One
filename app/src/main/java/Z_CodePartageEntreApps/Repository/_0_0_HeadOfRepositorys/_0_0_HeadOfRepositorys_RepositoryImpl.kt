@@ -74,36 +74,12 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
             _2_1_Repository.ensureDataIsInitialized()
             _2_2_Repository.ensureDataIsInitialized()
 
-            // Initialize activeId_1_3_BonAchat based on the activePeriod
-            updateActiveBonAchat()
-
             // Start tracking progress afterward
             startProgressTracking() {
             }
         }
     }
 
-    // Function to update the active bon achat based on the active period
-    private suspend fun updateActiveBonAchat() {
-        try {
-            val period = activePeriod
-            if (period != null) {
-                val bonAchat = repositorys_Model._1_3_BonAchat_Repository.modelDatasSnapList
-                    .find { it.parentVID_1_4_PeriodeVent == period.vid }
-
-                if (bonAchat != null) {
-                    activeId_1_3_BonAchat.value = bonAchat.vid
-                    Log.d(TAG, "Active bon achat updated: ${bonAchat.vid}")
-                } else {
-                    Log.w(TAG, "No matching bon achat found for active period")
-                }
-            } else {
-                Log.w(TAG, "No active period found to set bon achat")
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error updating active bon achat: ${e.message}")
-        }
-    }
 
     suspend fun ensureDataIsInitialized() {
         try {

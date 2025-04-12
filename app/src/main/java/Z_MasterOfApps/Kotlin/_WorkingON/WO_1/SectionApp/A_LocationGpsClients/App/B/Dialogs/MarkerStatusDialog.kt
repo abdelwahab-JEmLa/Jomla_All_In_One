@@ -214,6 +214,7 @@ fun MarkerStatusDialog(
                         ),
                         onClick = {
                             coroutineScope.launch {
+                                
                                 val repositorysModel =
                                     _0_0_HeadOfRepositorys_Repository.repositorys_Model
 
@@ -226,7 +227,10 @@ fun MarkerStatusDialog(
                                         clientAcheteurID = relatedClients?.id ?: 0L,
                                         parentVID_1_4_PeriodeVent = parentVidPeriode
                                     )
-                                )
+                                ) { newVid ->
+                                    // Update the MutableStateFlow with the new value
+                                    repositorysModel.activeId_1_3_BonAchat.value = newVid
+                                }
 
                                 val selectedMarkedID = selectedMarker.id.toLong()
                                 viewModel.updateLongAppSetting(selectedMarkedID)
