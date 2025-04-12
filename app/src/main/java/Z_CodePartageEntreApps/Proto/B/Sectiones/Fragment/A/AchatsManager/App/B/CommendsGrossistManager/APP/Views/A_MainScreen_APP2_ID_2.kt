@@ -1,6 +1,7 @@
 package Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.Views
 
 import Views.Package_4.SoldCartScreen.Components.OrderSuccessMessage
+import Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.Views.Models._1_3_BonAchat
 import Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App._1.Shared.Views.LoadingContent
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
@@ -106,6 +107,9 @@ fun A_MainScreen_APP2_ID_2(
     val formatter = NumberFormat.getCurrencyInstance(Locale.FRANCE)
     val formattedTotalPrice = formatter.format(totalPrice).replace("€", "دج")
 
+    // Check if the BonAchat is in ON_MODE_COMMEND_ACTUELLEMENT state
+    val isOrderMode = relativeBonAchate?.etateActuellementEst == _1_3_BonAchat.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+
     Box(modifier = modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -116,49 +120,63 @@ fun A_MainScreen_APP2_ID_2(
             var showOrderSuccess by remember { mutableStateOf(false) }
             val scope = rememberCoroutineScope()
 
-            ElevatedCard(
-                modifier = Modifier.fillMaxWidth(),
-                elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp)
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+            // Only show the order form if in ON_MODE_COMMEND_ACTUELLEMENT state
+            if (isOrderMode) {
+                ElevatedCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp)
                 ) {
-                    Text(
-                        text = "العميل: ${relativeBonAchate?.clientAcheteurID ?: ""}",
-                        style = MaterialTheme.typography.titleMedium
-                    )
-
-                    // Order Summary
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         Text(
-                            text = "عدد المنتجات: $itemCount",
-                            style = MaterialTheme.typography.bodyLarge
+                            text = "العميل: ${relativeBonAchate?.clientAcheteurID ?: ""}",
+                            style = MaterialTheme.typography.titleMedium
                         )
-                        Text(
-                            text = "المجموع: $formattedTotalPrice",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    }
 
-                    Button(
-                        onClick = {
-                            showOrderSuccess = true
-                            scope.launch {
-                                // Delay to show success animation before navigating
-                                kotlinx.coroutines.delay(1500)
-                                showOrderSuccess = false
-                                onConfirmOrder()
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        enabled = itemCount > 0
-                    ) {
-                        Text("تأكيد الطلب")
+                        // Order Summary
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = "عدد المنتجات: $itemCount",
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                            Text(
+                                text = "المجموع: $formattedTotalPrice",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+
+                        Button(
+                            onClick = {
+                                showOrderSuccess = true
+                                scope.launch {
+                                    // Delay to show success animation before navigating
+                                    kotlinx.coroutines.delay(1500)
+                                    showOrderSuccess = false
+                                    relativeBonAchate?.apply {
+                                        etateActuellementEst = _1_3_BonAchat
+                                            .EtateActuellementEst
+                                            .A_COMMANDE_CONFIRME
+                                    }?.let {
+                                        _0_0_HeadOfRepositorys_Repository.repositorys_Model
+                                            ._1_3_BonAchat_Repository
+                                            .updateUnSeulData(
+                                                it
+                                            )
+                                    }
+                                    onConfirmOrder()
+                                }
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            enabled = itemCount > 0
+                        ) {
+                            Text("تأكيد الطلب")
+                        }
                     }
                 }
             }
@@ -189,6 +207,7 @@ fun A_MainScreen_APP2_ID_2(
                             LoadingContent(message = "Loading data...")
                         }
                     } else {
+                        // Always show the list of items, regardless of order mode
                         B_MainList_APP2_ID_2(
                             composeKeyVID = composeKeyVID,
                             _0_HeadOfRepositorys_Repository_Model = _0_0_HeadOfRepositorys_Repository

@@ -29,6 +29,6 @@ data class _1_3_BonAchat(
     enum class EtateActuellementEst(val color: Int, val nomArabe: String) {
         ON_MODE_COMMEND_ACTUELLEMENT(android.R.color.holo_green_light, ""),
         NON_DEFINI(android.R.color.white, "غير محدد"),
-        A_COMMANDE(android.R.color.holo_red_light, ""),
+        A_COMMANDE_CONFIRME(android.R.color.holo_red_light, ""),
     }
 }
