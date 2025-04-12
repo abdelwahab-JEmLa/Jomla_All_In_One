@@ -37,8 +37,9 @@ fun ColumnScope.BonAchatInfos(
     onConfirmOrder: () -> Unit,
     onShowOrderSuccessChange: (Boolean) -> Unit,
 ) {
+    val repositorysModel = _0_0_HeadOfRepositorys_Repository.repositorys_Model
     val relativeClientDataBase=
-    _0_0_HeadOfRepositorys_Repository.repositorys_Model._3_ClientsDataBase_Repository
+    repositorysModel._3_ClientsDataBase_Repository
         .modelDatasSnapList.find { it.vid== composeKeyVID}
 
     ElevatedCard(
@@ -82,12 +83,15 @@ fun ColumnScope.BonAchatInfos(
                                 .EtateActuellementEst
                                 .A_COMMANDE_CONFIRME
                         }?.let {
-                            _0_0_HeadOfRepositorys_Repository.repositorys_Model
+                            repositorysModel
                                 ._1_3_BonAchat_Repository
                                 .updateUnSeulData(
                                     it
                                 )
                         }
+
+                        repositorysModel.activeId_1_3_BonAchat.value=0L
+
                         onConfirmOrder()
                     }
                 },
