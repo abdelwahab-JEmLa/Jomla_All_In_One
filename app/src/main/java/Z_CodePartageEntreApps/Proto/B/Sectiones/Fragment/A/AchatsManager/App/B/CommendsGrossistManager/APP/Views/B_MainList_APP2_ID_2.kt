@@ -40,7 +40,7 @@ fun B_MainList_APP2_ID_2(
         contentPadding = PaddingValues(8.dp)
     ) {
         items(produitsBonAchatIDs) { produitItem ->
-            MainItem_APP2_ID_2(
+            C_MainItem_APP2_ID_2(
                 composeKeyVID = produitItem.vid,
                 _0_HeadOfRepositorys_Repository_Model = _0_HeadOfRepositorys_Repository_Model,
             )

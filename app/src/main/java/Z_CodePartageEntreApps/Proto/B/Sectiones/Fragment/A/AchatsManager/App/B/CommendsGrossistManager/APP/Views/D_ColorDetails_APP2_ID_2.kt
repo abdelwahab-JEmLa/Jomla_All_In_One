@@ -34,7 +34,7 @@ import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
 @Composable
-fun ColorDetails_APP2_ID_2(
+fun D_ColorDetails_APP2_ID_2(
     composeKeyVID: Long,
     _0_HeadOfRepositorys_Repository_Model: _0_0_HeadOfRepositorys_Model,
     relative_2_1_ProduitsDataBase_vid: Long?,

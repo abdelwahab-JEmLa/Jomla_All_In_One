@@ -24,7 +24,7 @@ import java.text.NumberFormat
 import java.util.Locale
 
 @Composable
-fun MainItem_APP2_ID_2(
+fun C_MainItem_APP2_ID_2(
     modifier: Modifier = Modifier,
     composeKeyVID: Long,
     _0_HeadOfRepositorys_Repository_Model: _0_0_HeadOfRepositorys_Model,
@@ -155,7 +155,7 @@ fun MainItem_APP2_ID_2(
                         LazyRow(
                         ) {
                             items(couleursAcheteOperationsVIDs) { couleurVId ->
-                                ColorDetails_APP2_ID_2(
+                                D_ColorDetails_APP2_ID_2(
                                     composeKeyVID = couleurVId,
                                     _0_HeadOfRepositorys_Repository_Model = _0_HeadOfRepositorys_Repository_Model,
                                     relative_2_1_ProduitsDataBase_vid = relative_2_1_ProduitsDataBase?.vid,
