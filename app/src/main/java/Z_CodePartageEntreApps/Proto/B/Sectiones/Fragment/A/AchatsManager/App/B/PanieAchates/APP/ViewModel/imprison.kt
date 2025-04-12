@@ -185,7 +185,5 @@ private fun prepareTexteToPrint(
     return Pair(texteImprimable, totaleBon)
 }
 
-/**
- * Helper function for rounding values
- */
+
 private fun round(value: Double): Double = kotlin.math.round(value * 10) / 10
