@@ -46,6 +46,13 @@ fun MainItem_APP2_ID_2(
         }
         .sumOf { it.totaleQuantity }
 
+    // Calculate total price based on quantity and selling price
+    val totalPrice = totalQuantity * (relative_2_1_ProduitsDataBase?.monPrixVent ?: 0.0)
+
+    // Format price with Euro symbol and proper formatting using NumberFormat
+    val formatter = java.text.NumberFormat.getCurrencyInstance(java.util.Locale.FRANCE)
+    val formattedPrice = formatter.format(totalPrice)
+
     Card(
         modifier = modifier
             .padding(vertical = 2.dp, horizontal = 4.dp)
@@ -79,7 +86,7 @@ fun MainItem_APP2_ID_2(
                             .padding(8.dp)
                     )
 
-                    // Added total quantity text with alpha background at the end
+                    // Box for both total quantity and price
                     Box(
                         modifier = Modifier
                             .align(Alignment.CenterEnd)
@@ -89,11 +96,29 @@ fun MainItem_APP2_ID_2(
                             )
                             .padding(horizontal = 8.dp, vertical = 4.dp)
                     ) {
-                        Text(
-                            text = "Total: $totalQuantity",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.primary
-                        )
+                        // Row to contain both texts side by side
+                        androidx.compose.foundation.layout.Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            // Total quantity text
+                            Text(
+                                text = "Total: $totalQuantity",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+
+                            // Added spacing between texts
+                            androidx.compose.foundation.layout.Spacer(
+                                modifier = Modifier.padding(horizontal = 4.dp)
+                            )
+
+                            // Price text with product selling price in Euro format
+                            Text(
+                                text = "× $formattedPrice",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.secondary
+                            )
+                        }
                     }
                 }
             }
