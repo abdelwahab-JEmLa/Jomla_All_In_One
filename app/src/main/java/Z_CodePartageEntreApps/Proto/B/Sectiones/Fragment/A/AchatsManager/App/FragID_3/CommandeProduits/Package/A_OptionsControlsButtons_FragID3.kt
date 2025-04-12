@@ -83,7 +83,6 @@ fun A_OptionsControlsButtons_FragID3(viewModel: ViewModelFragment_APP2_ID_3) {
                     ) {
                         FloatingActionButton(
                             onClick = {
-                                viewModel.groupeAchatsParIdCouleurEtAddAu_4_CouleurOperationCommand()
                             },
                             modifier = Modifier.size(40.dp),
                             containerColor = Color(0xFF9C27B0)
