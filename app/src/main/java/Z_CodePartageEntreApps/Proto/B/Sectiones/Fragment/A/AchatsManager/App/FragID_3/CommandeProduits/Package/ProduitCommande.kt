@@ -57,7 +57,7 @@ import androidx.compose.ui.unit.dp
                     .distinct()
             }
 
-            Couleurs(colorsForProduct, Produit, buyerIds, models)
+            Couleurs(Produit, colorsForProduct, buyerIds, models)
         }
     }
 }

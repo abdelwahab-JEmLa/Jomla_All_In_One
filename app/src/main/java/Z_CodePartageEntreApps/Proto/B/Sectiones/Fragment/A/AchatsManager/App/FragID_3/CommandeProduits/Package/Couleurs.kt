@@ -35,8 +35,8 @@ import org.koin.compose.koinInject
 
 @Composable
 fun Couleurs(
-    colorsForProduct: List<_1_1_CouleurAcheteOperation>,
     Produit: _1_2_ProduitAcheteOperation,
+    colorsForProduct: List<_1_1_CouleurAcheteOperation>,
     buyerIds: List<Long>,
     models: _0_0_HeadOfRepositorys_Model,
 ) {

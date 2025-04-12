@@ -7,7 +7,7 @@ import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
-import Z_CodePartageEntreApps.View.GlideDisplayImageBykeyId
+import Z_CodePartageEntreApps.View.A_GlideDisplayImageByKeyId_Proto_4_11
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Kotlin._WorkingON.WO_.WifiUpdateClientDisplayerStats
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Package_3._DisplayeProductInfosToSeller
@@ -39,11 +39,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -255,19 +257,23 @@ fun B_CouleurAfficheur(
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(8.dp))
                 ) {
-                    val articleproduitsMainDataBase =
-                        viewModelInitApp._modelAppsFather.produitsMainDataBase.find { it.id.toInt() == article.idArticle }
-                    GlideDisplayImageBykeyId(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(600.dp),
-                        imageGlidReloadTigger = 0,
-                        mainItem = articleproduitsMainDataBase,
+                    A_GlideDisplayImageByKeyId_Proto_4_11(
+                        produitVID = article.idArticle.toLong(),
+                        couleurVID = index.toLong() + 1,
                         size = 600.dp,
                         qualityImage = 100,
-                        colorIndex = index
+                        onImageNeExistePas = {
+                            Text(
+                                text = color.nameColore,
+                                fontSize = 55.sp ,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(40.dp)
+                                    .graphicsLayer(rotationZ = 45f)
+                            )
+                        }
                     )
-
                 }
 
                 color.let { colorData ->
