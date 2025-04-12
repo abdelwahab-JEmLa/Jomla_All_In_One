@@ -119,9 +119,7 @@ fun A_MainScreen_APP2_FragID3(
                                                     shape = RoundedCornerShape(4.dp)
                                                 )
                                         )
-                                        // Fixed - Safely handle potentially null client names
                                         Column(Modifier.padding(3.dp)) {
-// Fix for the client lookup with proper fallback
                                             buyerIds.forEach { buyerId ->
                                                 // Get the client by ID and display name with a fallback
                                                 val clientName =
