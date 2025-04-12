@@ -28,6 +28,8 @@ import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase.Extension.DataBase._2_1_ProduitsDataBaseDao
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase
 import Z_CodePartageEntreApps.Repository._3_ClientsDataBase.Extension.DataBase._3_ClientsDataBaseDao
+import Z_CodePartageEntreApps.Repository._4_CouleurOperationCommand.Extension.DataBase._4_CouleurOperationCommandDao
+import Z_CodePartageEntreApps.Repository._4_CouleurOperationCommand._4_CouleurOperationCommand
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
@@ -60,6 +62,7 @@ import java.util.Date
 
         _2_1_ProduitsDataBase::class,
         _3_ClientsDataBase::class,
+        _4_CouleurOperationCommand::class,
     ],
     version = 1,
     exportSchema = false
@@ -91,6 +94,7 @@ abstract class AppDatabase : RoomDatabase() {
 
     abstract fun _2_1_ProduitsDataBaseDao(): _2_1_ProduitsDataBaseDao
     abstract fun _3_ClientsDataBaseDao(): _3_ClientsDataBaseDao
+    abstract fun _4_CouleurOperationCommandDao(): _4_CouleurOperationCommandDao
 
     object DatabaseModule {
 
