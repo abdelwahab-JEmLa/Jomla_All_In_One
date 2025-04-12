@@ -37,45 +37,36 @@ class ViewModelFragment_APP2_ID_3(
     fun groupeAchatsParIdCouleurEtAddAu_4_CouleurOperationCommand() {
         _uiStateFlow.value = _uiStateFlow.value.copy(isDataLoading = true)
 
-        // Clear the UI state list
         _0_0_HeadOfRepositorys_Repository.repositorys_Model._4_CouleurOperationCommand_Repository.deleteAllEtRestartSequenceces()
         _uiStateFlow.value._4_CouleurOperationCommand.clear()
 
-        // Check if there's any data to process
         if (_1_1_CouleurAcheteOperation.isEmpty()) {
             _uiStateFlow.value = _uiStateFlow.value.copy(isDataLoading = false)
             return
         }
 
-        // Create a product ID mapping from _2_1_ProduitsDataBase for efficient lookups
         val produitIdMap = _2_1_ProduitsDataBase.associateBy { it.vid }
 
-        // Create a mapping from _1_2_ProduitAcheteOperation to _2_1_ProduitsDataBase product IDs
         val produitAcheteToRealProductMap = _1_2_ProduitAcheteOperation.associateBy(
             { it.vid },
             { it.produitAcheterID }
         )
 
-        // Group _1_1_CouleurAcheteOperation by both couleurIndex_ParentVID and produitVID
         val groupedByColorAndProduct = _1_1_CouleurAcheteOperation.groupBy { operation ->
-            // Find the corresponding product in _1_2_ProduitAcheteOperation
             val parentProduitAchateOperationVID = operation.parentProduitAchateOperationVID
 
-            // Get the actual product ID from the produitAcheteToRealProductMap
             val realProductID = if (parentProduitAchateOperationVID != null) {
                 produitAcheteToRealProductMap[parentProduitAchateOperationVID]
             } else {
                 null
             }
 
-            // Find the corresponding product in _2_1_ProduitsDataBase
             val validProduitVID = if (realProductID != null && produitIdMap.containsKey(realProductID)) {
                 realProductID
             } else {
                 parentProduitAchateOperationVID
             }
 
-            // Create the grouping key pair
             Pair(operation.couleurIndex_ParentVID, validProduitVID)
         }
 
