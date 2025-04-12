@@ -9,22 +9,33 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Print
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun ColumnScope.BonAchatInfos(
@@ -39,67 +50,115 @@ fun ColumnScope.BonAchatInfos(
     onShowOrderSuccessChange: (Boolean) -> Unit,
 ) {
     val repositorysModel = _0_0_HeadOfRepositorys_Repository.repositorys_Model
-    val relativeClientDataBase=
-    repositorysModel._3_ClientsDataBase_Repository
-        .modelDatasSnapList.find { it.vid== composeKeyVID}
+    val relativeClientDataBase =
+        repositorysModel._3_ClientsDataBase_Repository
+            .modelDatasSnapList.find { it.vid == relativeBonAchate?.clientAcheteurID }
+
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
 
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+        Box(
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Text(
-                text = "العميل: ${relativeClientDataBase?.nom ?: ""}",
-                style = MaterialTheme.typography.titleMedium
-            )
+            // Print button at the top end corner
+            IconButton(
+                onClick = {
+                    coroutineScope.launch {
+                        // Generate current date string
+                        val dateString = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                            .format(Date())
 
-            // Order Summary
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                        // Get all relevant articles
+                        val articles = generateArticlesList(
+                            repositorysModel,
+                            relativeBonAchate?.vid,
+                            formattedTotalPrice
+                        )
+
+                        // Get client's current credit balance
+                        val creditBalance = relativeClientDataBase?.currentCreditBalance ?: 0.0
+
+                        // Prepare text for printing
+                        val (texteImprimable, totalBon) = prepareTexteToPrint(
+                            nomClient = relativeClientDataBase?.nom ?: "Client",
+                            dateString = dateString,
+                            articles = articles,
+                            ancienCredits = creditBalance
+                        )
+
+                        // Launch print service
+                        imprimerDonnees(context, texteImprimable.toString(), totalBon)
+                    }
+                },
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(8.dp)
             ) {
-                Text(
-                    text = "عدد المنتجات: $itemCount",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Text(
-                    text = "المجموع: $formattedTotalPrice",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary
+                Icon(
+                    imageVector = Icons.Default.Print,
+                    contentDescription = "Imprimer bon",
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
 
-            Button(
-                onClick = {
-                    onShowOrderSuccessChange(true) // Use the callback instead of modifying local variable
-                    scope.launch {
-                        // Delay to show success animation before navigating
-                        delay(1500)
-                        onShowOrderSuccessChange(false) // Use the callback instead of modifying local variable
-                        relativeBonAchate?.apply {
-                            etateActuellementEst = _1_3_BonAchat
-                                .EtateActuellementEst
-                                .A_COMMANDE_CONFIRME
-                        }?.let {
-                            repositorysModel
-                                ._1_3_BonAchat_Repository
-                                .updateUnSeulData(
-                                    it
-                                )
-                        }
-
-                        repositorysModel.activeId_1_3_BonAchat.value=0L
-
-                        onConfirmOrder()
-                    }
-                },
-                modifier = Modifier.fillMaxWidth(),
-                enabled = itemCount > 0
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Text("تأكيد الطلب")
+                Text(
+                    text = "العميل: ${relativeClientDataBase?.nom ?: ""}",
+                    style = MaterialTheme.typography.titleMedium
+                )
+
+                // Order Summary
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "عدد المنتجات: $itemCount",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Text(
+                        text = "المجموع: $formattedTotalPrice",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+
+                Button(
+                    onClick = {
+                        onShowOrderSuccessChange(true)
+                        scope.launch {
+                            // Delay to show success animation before navigating
+                            delay(1500)
+                            onShowOrderSuccessChange(false)
+                            relativeBonAchate?.apply {
+                                etateActuellementEst = _1_3_BonAchat
+                                    .EtateActuellementEst
+                                    .A_COMMANDE_CONFIRME
+                            }?.let {
+                                repositorysModel
+                                    ._1_3_BonAchat_Repository
+                                    .updateUnSeulData(
+                                        it
+                                    )
+                            }
+
+                            repositorysModel.activeId_1_3_BonAchat.value = 0L
+
+                            onConfirmOrder()
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = itemCount > 0
+                ) {
+                    Text("تأكيد الطلب")
+                }
             }
         }
     }
