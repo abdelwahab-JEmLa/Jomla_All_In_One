@@ -24,7 +24,6 @@ data class ArticleImpression(
     val couleur: String? = null
 )
 
-
 fun printReceipt(
     context: Context,
     bonAchat: _1_3_BonAchat?,
@@ -51,48 +50,52 @@ fun printReceipt(
                         it.etateActuellementEst == Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME
             }
 
-        // Create a list of articles to print
-        val articles = mutableListOf<ArticleImpression>()
+        // Create a map to group articles by product name and sum quantities
+        val productMap = mutableMapOf<String, ArticleImpression>()
         var totalAmount = 0.0
 
-        // Process each product and its colors
+        // Process each product and sum quantities across its colors
         products.forEach { product ->
             // Get product details
             val productDetails = repositorysModel._2_1_ProduitsDataBase_Repository
                 .modelDatasSnapList
                 .find { it.vid == product.produitAcheterID }
 
-            // Get colors with quantity > 0
-            val colors = repositorysModel._1_1_CouleurAcheteOperation_Repository
+            val productName = productDetails?.nom ?: "Produit"
+            val productPrice = productDetails?.monPrixVent ?: 0.0
+
+            // Get colors with quantity > 0 and sum their quantities
+            val totalQuantity = repositorysModel._1_1_CouleurAcheteOperation_Repository
                 .modelDatasSnapList
                 .filter {
                     it.parentProduitAchateOperationVID == product.vid &&
                             it.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI &&
                             it.totaleQuantity > 0
                 }
+                .sumOf { it.totaleQuantity }
 
-            // Process each color
-            colors.forEach { color ->
+            // Skip products with no quantities
+            if (totalQuantity <= 0) return@forEach
 
-                // Calculate price and subtotal
-                val prixUnitaire = productDetails?.monPrixVent ?: 0.0
-                val quantite = color.totaleQuantity
-                val subtotal = prixUnitaire * quantite
-
-                totalAmount += subtotal
-
-                // Format article name with color
-                val nomArticleComplet =productDetails?.nom ?: "Produit"
-
-                articles.add(
-                    ArticleImpression(
-                        nomArticle = nomArticleComplet,
-                        quantite = quantite,
-                        prixUnitaire = prixUnitaire
-                    )
+            // If product already exists in map, update quantity; otherwise add new entry
+            productMap[productName]?.let { existingArticle ->
+                productMap[productName] = existingArticle.copy(
+                    quantite = existingArticle.quantite + totalQuantity
+                )
+            } ?: run {
+                productMap[productName] = ArticleImpression(
+                    nomArticle = productName,
+                    quantite = totalQuantity,
+                    prixUnitaire = productPrice
                 )
             }
         }
+
+        // Convert map to list of articles
+        val articles = productMap.values.toList()
+
+        // Calculate total amount after grouping
+        totalAmount = articles.sumOf { it.quantite * it.prixUnitaire }
 
         // Get client credit balance
         val creditBalance = client?.currentCreditBalance ?: 0.0
@@ -182,6 +185,5 @@ private fun prepareTexteToPrint(
 
     return Pair(texteImprimable, totaleBon)
 }
-
 
 private fun round(value: Double): Double = kotlin.math.round(value * 10) / 10
