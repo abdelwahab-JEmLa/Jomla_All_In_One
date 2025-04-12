@@ -51,11 +51,11 @@ fun MainItem_APP2_ID_2(
         .sumOf { it.totaleQuantity }
 
     // Calculate total price based on quantity and selling price
-    val totalPrice = totalQuantity * (relative_2_1_ProduitsDataBase?.monPrixVent ?: 0.0)
+    val price = relative_2_1_ProduitsDataBase?.monPrixVent ?: 0.0
 
     // Format price with Euro symbol and proper formatting using NumberFormat
     val formatter = NumberFormat.getCurrencyInstance(Locale.FRANCE)
-    val formattedPrice = formatter.format(totalPrice)
+    val formattedPrice = formatter.format(price)
 
     Card(
         modifier = modifier
