@@ -105,8 +105,9 @@ fun MainUi(
 
     val repositorysModel = _0_0_HeadOfRepositorys_Repository.repositorys_Model
 
-    val parentCompose_1_3_BonAchatVid =
-        _0_0_HeadOfRepositorys_Repository.activeVID_1_3_BonAchat
+    // Get the active BonAchat ID from the repository
+    val parentCompose_1_3_BonAchatVid by
+    _0_0_HeadOfRepositorys_Repository.repositorys_Model.activeId_1_3_BonAchat.collectAsState()
 
     var parentCompose_1_2_ProduitAcheteOperationVid by remember { mutableLongStateOf(0L) }
 
@@ -131,13 +132,13 @@ fun MainUi(
                 val newVid =
                     repositorysModel._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList.maxOfOrNull { it.vid }
                         ?.plus(1) ?: 1
-                parentCompose_1_3_BonAchatVid?.let {
-                    _1_2_ProduitAcheteOperation(
-                        vid = newVid,
-                        produitAcheterID = produitActuelle,
-                        parent_1_3_BonAchat = it
-                    )
-                }?.let {
+
+                // No need for null check since we're using 'by' to unwrap the State
+                _1_2_ProduitAcheteOperation(
+                    vid = newVid,
+                    produitAcheterID = produitActuelle,
+                    parent_1_3_BonAchat = parentCompose_1_3_BonAchatVid
+                ).let {
                     repositorysModel._1_2_ProduitAcheteOperation_Repository.addDataAndReturneItVID(
                         it
                     )

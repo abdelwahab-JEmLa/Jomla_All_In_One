@@ -11,10 +11,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -36,33 +34,28 @@ fun A_MainScreen_APP2_ID_2(
     val _0_HeadOfRepositorys_Repository_Model = _0_0_HeadOfRepositorys_Repository
         .repositorys_Model
 
-    var composeKeyVID by remember { mutableLongStateOf(
-        _0_0_HeadOfRepositorys_Repository.activeVID_1_3_BonAchat ?: 0L
-    ) }
+    val composeKeyVID by _0_0_HeadOfRepositorys_Repository.repositorys_Model.activeId_1_3_BonAchat.collectAsState()
 
-    LaunchedEffect(_0_0_HeadOfRepositorys_Repository.activeVID_1_3_BonAchat) {
-        _0_0_HeadOfRepositorys_Repository.activeVID_1_3_BonAchat?.let {
-            composeKeyVID = it
-        }
-    }
+    // Fix 1: Using the collected value directly, which is now a Long
     val relativeBonAchate = _0_HeadOfRepositorys_Repository_Model
         ._1_3_BonAchat_Repository
         .modelDatasSnapList.find { it.vid == composeKeyVID }
 
+    // Fix 2: Using the collected composeKeyVID value for comparison
     val produitsBonAchatIDs = _0_HeadOfRepositorys_Repository_Model
         ._1_2_ProduitAcheteOperation_Repository
         .modelDatasSnapList
         .filter { produitOpe ->
-            produitOpe.parent_1_3_BonAchat == composeKeyVID
-                    && produitOpe.etateActuellementEst == _1_2_ProduitAcheteOperation
+            produitOpe.parent_1_3_BonAchat == composeKeyVID &&
+                    produitOpe.etateActuellementEst == _1_2_ProduitAcheteOperation
                 .EtateActuellementEst
-                .CONFIRME
-                    && _0_HeadOfRepositorys_Repository_Model._1_1_CouleurAcheteOperation_Repository
-                .modelDatasSnapList
-                .any {
-                    it.parentProduitAchateOperationVID == produitOpe.vid &&
-                            it.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
-                }
+                .CONFIRME &&
+                    _0_HeadOfRepositorys_Repository_Model._1_1_CouleurAcheteOperation_Repository
+                        .modelDatasSnapList
+                        .any {
+                            it.parentProduitAchateOperationVID == produitOpe.vid &&
+                                    it.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
+                        }
         }
 
     // Calculate total items count
@@ -125,11 +118,7 @@ fun A_MainScreen_APP2_ID_2(
                     formattedTotalPrice,
                     showOrderSuccess,
                     scope,
-                    {
-                        onConfirmOrder()
-
-                        composeKeyVID=0L
-                    },
+                    onConfirmOrder,
                     onShowOrderSuccessChange = { showOrderSuccess = it }
                 )
 

@@ -13,12 +13,16 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+/**
+ * way inject
+ *
+ *     ,
+ *     _0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository = koinInject()
+ */
 class _0_0_HeadOfRepositorys_RepositoryImpl(
     private val _1_1_Repository: _1_1_CouleurAcheteOperation_Repository,
     private val _1_2_Repository: _1_2_ProduitAcheteOperation_Repository,
@@ -31,10 +35,14 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
 ) : _0_0_HeadOfRepositorys_Repository {
     private val TAG = _0_0_HeadOfRepositorys_Repository.TAG
 
+    // Create a MutableStateFlow for activeId_1_3_BonAchat
+    private val activeId_1_3_BonAchat = MutableStateFlow<Long>(-1L)
+
     override var repositorys_Model: _0_0_HeadOfRepositorys_Model = _0_0_HeadOfRepositorys_Model(
         _1_1_Repository,
         _1_2_Repository,
         _1_3_Repository,
+        activeId_1_3_BonAchat, // Add the missing MutableStateFlow<Long>
         _1_4_Repository,
         _1_5_Repository,
 
@@ -42,10 +50,6 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
         _2_2_Repository,
     )
     override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
-
-    // Implement the StateFlow for activeVID_1_3_BonAchat
-    private val _activeVID_1_3_BonAchatFlow = MutableStateFlow<Long?>(null)
-    override val activeVID_1_3_BonAchatFlow: StateFlow<Long?> = _activeVID_1_3_BonAchatFlow.asStateFlow()
 
     private val repositoryScope = CoroutineScope(Dispatchers.IO)
     private var initialDataLoaded = false
@@ -55,23 +59,6 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
 
     private val logOperations = _0_0_HeadOfRepositoryLogOperationsExtension(this)
 
-    // Update this method to also update the StateFlow
-    override val activeVID_1_3_BonAchat: Long?
-        get() {
-            val bonAchatVID = repositorys_Model._1_3_BonAchat_Repository.modelDatasSnapList
-                .find { it.parentVID_1_4_PeriodeVent == activePeriod?.vid }
-                ?.vid
-
-            // Update the StateFlow if the value changes
-            if (_activeVID_1_3_BonAchatFlow.value != bonAchatVID) {
-                repositoryScope.launch {
-                    _activeVID_1_3_BonAchatFlow.emit(bonAchatVID)
-                    Log.d(TAG, "Updated activeVID_1_3_BonAchatFlow to $bonAchatVID")
-                }
-            }
-
-            return bonAchatVID
-        }
     // In the head repository's init block
     init {
         repositoryScope.launch {
@@ -87,9 +74,34 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
             _2_1_Repository.ensureDataIsInitialized()
             _2_2_Repository.ensureDataIsInitialized()
 
+            // Initialize activeId_1_3_BonAchat based on the activePeriod
+            updateActiveBonAchat()
+
             // Start tracking progress afterward
             startProgressTracking() {
             }
+        }
+    }
+
+    // Function to update the active bon achat based on the active period
+    private suspend fun updateActiveBonAchat() {
+        try {
+            val period = activePeriod
+            if (period != null) {
+                val bonAchat = repositorys_Model._1_3_BonAchat_Repository.modelDatasSnapList
+                    .find { it.parentVID_1_4_PeriodeVent == period.vid }
+
+                if (bonAchat != null) {
+                    activeId_1_3_BonAchat.value = bonAchat.vid
+                    Log.d(TAG, "Active bon achat updated: ${bonAchat.vid}")
+                } else {
+                    Log.w(TAG, "No matching bon achat found for active period")
+                }
+            } else {
+                Log.w(TAG, "No active period found to set bon achat")
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error updating active bon achat: ${e.message}")
         }
     }
 
@@ -107,7 +119,6 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
 
                         if (progressRepo.value >= 0.95f) {
                             // Check if any required data is missing and create it
-
 
                             initialDataLoaded = true
                             progressRepo.value = 1.0f
@@ -172,6 +183,7 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                     _1_1_CouleurAcheteOperation_Repository = _1_1_Repository,
                     _1_2_ProduitAcheteOperation_Repository = _1_2_Repository,
                     _1_3_BonAchat_Repository = _1_3_Repository,
+                    activeId_1_3_BonAchat = activeId_1_3_BonAchat, // Include it here as well
                     _1_4_PeriodeVent_Repository = _1_4_Repository,
                     _1_5_Vendeur_Repository = _1_5_Repository,
 

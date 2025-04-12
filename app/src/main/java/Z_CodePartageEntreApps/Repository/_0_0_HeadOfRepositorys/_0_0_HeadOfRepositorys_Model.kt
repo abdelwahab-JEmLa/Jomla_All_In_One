@@ -7,11 +7,15 @@ import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repos
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur_Repository
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase_Repository
 import Z_CodePartageEntreApps.Repository._3_ClientsDataBase._3_ClientsDataBase_Repository
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class _0_0_HeadOfRepositorys_Model(
     val _1_1_CouleurAcheteOperation_Repository: _1_1_CouleurAcheteOperation_Repository,
     val _1_2_ProduitAcheteOperation_Repository: _1_2_ProduitAcheteOperation_Repository,
+
     val _1_3_BonAchat_Repository: _1_3_BonAchat_Repository,
+    val activeId_1_3_BonAchat: MutableStateFlow<Long>,
+
     val _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository,
     val _1_5_Vendeur_Repository: _1_5_Vendeur_Repository,
 
