@@ -44,34 +44,35 @@ fun A_MainScreen_APP2_FragID3(
                         Text("ProdID>${Produit.produitAcheterID}")
 
                         // Instead of filtering by Produit.vid, we should filter by produitAcheterID
-                        val colorsForProduct = models._1_1_CouleurAcheteOperation_Repository.modelDatasSnapList
-                            .filter {
-                                // Find the parent product vid that this color belongs to
-                                val parentProduct = models._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList
-                                    .firstOrNull { prod -> prod.vid == it.parentProduitAchateOperationVID }
+                        val colorsForProduct =
+                            models._1_1_CouleurAcheteOperation_Repository.modelDatasSnapList
+                                .filter {
+                                    // Find the parent product vid that this color belongs to
+                                    val parentProduct =
+                                        models._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList
+                                            .firstOrNull { prod -> prod.vid == it.parentProduitAchateOperationVID }
 
-                                // Check if this color belongs to a product with the same ID as our current product
-                                parentProduct?.produitAcheterID == Produit.produitAcheterID &&
-                                        it.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
-                            }
+                                    // Check if this color belongs to a product with the same ID as our current product
+                                    parentProduct?.produitAcheterID == Produit.produitAcheterID &&
+                                            it.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
+                                }
 
-// Calculate total qu
                         val buyerIds = remember {
                             // Find all BonAchat IDs associated with this product
-                            val bonAchatIds = models._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList
-                                .filter {
-                                    it.produitAcheterID == Produit.produitAcheterID &&
-                                            it.etateActuellementEst == _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME
-                                }
-                                .map { it.parent_1_3_BonAchat }
-                                .distinct()
+                            val bonAchatIds =
+                                models._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList
+                                    .filter {
+                                        it.produitAcheterID == Produit.produitAcheterID &&
+                                                it.etateActuellementEst == _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME
+                                    }
+                                    .map { it.parent_1_3_BonAchat }
+                                    .distinct()
 
                             // Get all client IDs from those BonAchat entries
                             models._1_3_BonAchat_Repository.modelDatasSnapList
                                 .filter { it.vid in bonAchatIds }
                                 .map { it.clientAcheteurID }
                                 .distinct()
-                                .joinToString(", ")
                         }
 
                         LazyRow {
@@ -96,7 +97,7 @@ fun A_MainScreen_APP2_FragID3(
                                     Column {
                                         A_GlideDisplayImageByKeyId_Proto_4_11(
                                             Produit.produitAcheterID,
-                                            Couleur.couleurIndex_ParentVID+1,
+                                            Couleur.couleurIndex_ParentVID + 1,
                                             100.dp
                                         )
                                         Text(
@@ -108,14 +109,20 @@ fun A_MainScreen_APP2_FragID3(
                                                     shape = RoundedCornerShape(4.dp)
                                                 )
                                         )
-                                        Text(
-                                            "Achteurs>$buyerIds",
-                                            Modifier
-                                                .background(
-                                                    color = Color.White.copy(alpha = 0.50f),
-                                                    shape = RoundedCornerShape(4.dp)
+                                        // Instead of LazyColumn for buyers
+                                        Column {
+                                            buyerIds.forEach { buyerId ->
+                                                Text(
+                                                    "Achteurs>$buyerId",
+                                                    Modifier
+                                                        .background(
+                                                            color = Color.White.copy(alpha = 0.50f),
+                                                            shape = RoundedCornerShape(4.dp)
+                                                        )
                                                 )
-                                        )
+                                            }
+                                        }
+
                                     }
                                 }
                             }
