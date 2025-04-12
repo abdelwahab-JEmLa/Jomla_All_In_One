@@ -23,7 +23,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -102,39 +101,40 @@ fun Couleurs(
                 modifier = Modifier.background(Color.Red)
             ) {
                 Column {
-                    A_GlideDisplayImageByKeyId_Proto_4_11(
-                        Produit.produitAcheterID,
-                        Couleur.couleurIndex_ParentVID + 1,
-                        360.dp,
-                        onImageNeExistePas = {
+                    Box {
+                        A_GlideDisplayImageByKeyId_Proto_4_11(
+                            Produit.produitAcheterID,
+                            Couleur.couleurIndex_ParentVID + 1,
+                            360.dp,
+                            onImageNeExistePas = {
+                                Text(
+                                    text = colorName ?: "Color name not available",
+                                    style = MaterialTheme.typography.headlineLarge,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 12.dp)
+                                        .graphicsLayer(rotationZ = 45f)  // Rotate 45 degrees
+                                )
+                            }
+                        )
+
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(
+                                    color = Color.White.copy(alpha = 0.70f),
+                                    shape = RoundedCornerShape(4.dp)
+                                ),
+                        ) {
                             Text(
-                                text = colorName ?: "Color name not available",
-                                style = MaterialTheme.typography.headlineLarge,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 12.dp)
-                                    .graphicsLayer(rotationZ = 45f)  // Rotate 45 degrees
+                                text = "Qua>$totaleQuantity",
+                                fontSize = 50.sp,
+                                fontWeight = FontWeight.Bold,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.padding(4.dp)
                             )
                         }
-                    )
-
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(
-                                color = Color.White.copy(alpha = 0.70f),
-                                shape = RoundedCornerShape(4.dp)
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "totaleQuantity>$totaleQuantity",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(4.dp)
-                        )
                     }
 
                     // Display buyers for this color

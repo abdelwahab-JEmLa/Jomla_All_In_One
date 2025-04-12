@@ -2,7 +2,7 @@ package Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.Fr
 
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,7 +22,7 @@ fun Acheteurs(
     colorsForProduct: List<_1_1_CouleurAcheteOperation>,
     Couleur: _1_1_CouleurAcheteOperation,
 ) {
-    Row(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
@@ -54,19 +54,20 @@ fun Acheteurs(
                 }
                 .sumOf { it.totaleQuantity }
 
+            if (clientColorQuantity > 0) {
+                Text(
+                    text = clientName,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
 
-            Text(
-                text = clientName,
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp
-            )
+                Spacer(modifier = Modifier.width(8.dp))
 
-            Spacer(modifier = Modifier.width(8.dp))
-
-            Text(
-                text = "Qté: $clientColorQuantity",
-                fontWeight = FontWeight.Bold
-            )
+                Text(
+                    text = "Qté: $clientColorQuantity",
+                    fontWeight = FontWeight.Bold
+                )
+            }
         }
 
         // Add a small spacing between client entries
