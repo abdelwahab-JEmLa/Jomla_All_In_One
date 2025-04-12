@@ -25,6 +25,7 @@ class _1_3_BonAchatRepositoryImpl(
 
     override var modelDatasSnapList: SnapshotStateList<_1_3_BonAchat> =
         mutableStateListOf()
+
     override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
     override val activeId = MutableStateFlow(0L)
 
