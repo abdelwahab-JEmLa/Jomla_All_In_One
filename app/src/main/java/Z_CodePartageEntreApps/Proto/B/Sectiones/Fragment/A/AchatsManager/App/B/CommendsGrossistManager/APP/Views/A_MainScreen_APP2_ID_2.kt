@@ -11,8 +11,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -34,9 +36,15 @@ fun A_MainScreen_APP2_ID_2(
     val _0_HeadOfRepositorys_Repository_Model = _0_0_HeadOfRepositorys_Repository
         .repositorys_Model
 
-    val composeKeyVID =
-        _0_0_HeadOfRepositorys_Repository.activeVID_1_3_BonAchat
+    var composeKeyVID by remember { mutableLongStateOf(
+        _0_0_HeadOfRepositorys_Repository.activeVID_1_3_BonAchat ?: 0L
+    ) }
 
+    LaunchedEffect(_0_0_HeadOfRepositorys_Repository.activeVID_1_3_BonAchat) {
+        _0_0_HeadOfRepositorys_Repository.activeVID_1_3_BonAchat?.let {
+            composeKeyVID = it
+        }
+    }
     val relativeBonAchate = _0_HeadOfRepositorys_Repository_Model
         ._1_3_BonAchat_Repository
         .modelDatasSnapList.find { it.vid == composeKeyVID }
@@ -56,7 +64,6 @@ fun A_MainScreen_APP2_ID_2(
                             it.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
                 }
         }
-
 
     // Calculate total items count
     val itemCount = _0_HeadOfRepositorys_Repository_Model
@@ -118,7 +125,11 @@ fun A_MainScreen_APP2_ID_2(
                     formattedTotalPrice,
                     showOrderSuccess,
                     scope,
-                    onConfirmOrder,
+                    {
+                        onConfirmOrder()
+
+                        composeKeyVID=0L
+                    },
                     onShowOrderSuccessChange = { showOrderSuccess = it }
                 )
 

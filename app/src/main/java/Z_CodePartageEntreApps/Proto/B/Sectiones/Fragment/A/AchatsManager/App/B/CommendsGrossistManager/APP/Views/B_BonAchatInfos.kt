@@ -35,7 +35,7 @@ fun ColumnScope.BonAchatInfos(
     showOrderSuccess: Boolean,
     scope: CoroutineScope,
     onConfirmOrder: () -> Unit,
-    onShowOrderSuccessChange: (Boolean) -> Unit, // Added parameter for state change
+    onShowOrderSuccessChange: (Boolean) -> Unit,
 ) {
     val relativeClientDataBase=
     _0_0_HeadOfRepositorys_Repository.repositorys_Model._3_ClientsDataBase_Repository

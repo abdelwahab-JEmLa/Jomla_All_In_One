@@ -13,16 +13,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-/**
- * way inject
- *
- *     ,
- *     _0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository = koinInject()
- */
 class _0_0_HeadOfRepositorys_RepositoryImpl(
     private val _1_1_Repository: _1_1_CouleurAcheteOperation_Repository,
     private val _1_2_Repository: _1_2_ProduitAcheteOperation_Repository,
@@ -47,6 +43,10 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
     )
     override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
 
+    // Implement the StateFlow for activeVID_1_3_BonAchat
+    private val _activeVID_1_3_BonAchatFlow = MutableStateFlow<Long?>(null)
+    override val activeVID_1_3_BonAchatFlow: StateFlow<Long?> = _activeVID_1_3_BonAchatFlow.asStateFlow()
+
     private val repositoryScope = CoroutineScope(Dispatchers.IO)
     private var initialDataLoaded = false
     private var lastUpdateTimestamp: Long = 0L
@@ -55,6 +55,23 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
 
     private val logOperations = _0_0_HeadOfRepositoryLogOperationsExtension(this)
 
+    // Update this method to also update the StateFlow
+    override val activeVID_1_3_BonAchat: Long?
+        get() {
+            val bonAchatVID = repositorys_Model._1_3_BonAchat_Repository.modelDatasSnapList
+                .find { it.parentVID_1_4_PeriodeVent == activePeriod?.vid }
+                ?.vid
+
+            // Update the StateFlow if the value changes
+            if (_activeVID_1_3_BonAchatFlow.value != bonAchatVID) {
+                repositoryScope.launch {
+                    _activeVID_1_3_BonAchatFlow.emit(bonAchatVID)
+                    Log.d(TAG, "Updated activeVID_1_3_BonAchatFlow to $bonAchatVID")
+                }
+            }
+
+            return bonAchatVID
+        }
     // In the head repository's init block
     init {
         repositoryScope.launch {
