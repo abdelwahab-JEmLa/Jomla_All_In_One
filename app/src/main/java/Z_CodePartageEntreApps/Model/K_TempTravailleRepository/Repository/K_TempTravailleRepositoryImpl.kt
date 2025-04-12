@@ -140,7 +140,7 @@ class K_TempTravailleRepositoryImpl :
     }
 
     override fun deleteIntevaleDeTemp(intervalId: String) {
-        // Use the extracted handler to perform the deletion
+        // Use the BonAchatInfos handler to perform the deletion
         val recordToUpdate = IntervalesEtJoursHandler.deleteIntervaleDeTemp(
             modelDatas = modelDatas,
             intervalId = intervalId
@@ -185,7 +185,7 @@ class K_TempTravailleRepositoryImpl :
         intervalId: String?,
         startTime: String?
     ) {
-        // Use the extracted handler to add a new interval
+        // Use the BonAchatInfos handler to add a new interval
         IntervalesEtJoursHandler.addNewInterval(
             modelDatas = modelDatas,
             recordId = recordId,
@@ -204,7 +204,7 @@ class K_TempTravailleRepositoryImpl :
         endTime: String?,
         typeTemp: K_TempTravaille.IntervalesDeTravaille.TypeTemp?
     ) {
-        // Use the extracted handler to update an existing interval
+        // Use the BonAchatInfos handler to update an existing interval
         IntervalesEtJoursHandler.updateExistingInterval(
             modelDatas = modelDatas,
             recordId = recordId,
@@ -396,7 +396,7 @@ class K_TempTravailleRepositoryImpl :
     }
 
     override fun ajoutJour(date: String) {
-        // Use the extracted handler to add a new day
+        // Use the BonAchatInfos handler to add a new day
         IntervalesEtJoursHandler.ajoutJour(
             modelDatas = modelDatas,
             date = date

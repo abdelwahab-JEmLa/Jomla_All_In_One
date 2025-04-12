@@ -1,28 +1,15 @@
 package Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.Views
 
-import Views.Package_4.SoldCartScreen.Components.OrderSuccessMessage
 import Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.Views.Models._1_3_BonAchat
 import Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App._1.Shared.Views.LoadingContent
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -33,7 +20,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import java.text.NumberFormat
 import java.util.Locale
@@ -124,75 +110,16 @@ fun A_MainScreen_APP2_ID_2(
 
             // Only show the order form if in ON_MODE_COMMEND_ACTUELLEMENT state
             if (isOrderMode) {
-                ElevatedCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp)
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        Text(
-                            text = "العميل: ${relativeBonAchate?.clientAcheteurID ?: ""}",
-                            style = MaterialTheme.typography.titleMedium
-                        )
-
-                        // Order Summary
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text = "عدد المنتجات: $itemCount",
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                            Text(
-                                text = "المجموع: $formattedTotalPrice",
-                                style = MaterialTheme.typography.titleMedium,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                        }
-
-                        Button(
-                            onClick = {
-                                showOrderSuccess = true
-                                scope.launch {
-                                    // Delay to show success animation before navigating
-                                    kotlinx.coroutines.delay(1500)
-                                    showOrderSuccess = false
-                                    relativeBonAchate?.apply {
-                                        etateActuellementEst = _1_3_BonAchat
-                                            .EtateActuellementEst
-                                            .A_COMMANDE_CONFIRME
-                                    }?.let {
-                                        _0_0_HeadOfRepositorys_Repository.repositorys_Model
-                                            ._1_3_BonAchat_Repository
-                                            .updateUnSeulData(
-                                                it
-                                            )
-                                    }
-                                    onConfirmOrder()
-                                }
-                            },
-                            modifier = Modifier.fillMaxWidth(),
-                            enabled = itemCount > 0
-                        ) {
-                            Text("تأكيد الطلب")
-                        }
-                    }
-                }
-
-
-                // Success Animation Overlay
-                AnimatedVisibility(
-                    visible = showOrderSuccess,
-                    enter = fadeIn() + slideInVertically(),
-                    exit = fadeOut() + slideOutVertically(),
-                    modifier = Modifier
-                        .padding(top = 16.dp)
-                ) {
-                    OrderSuccessMessage()
-                }
+                BonAchatInfos(
+                    relativeBonAchate,
+                    itemCount,
+                    formattedTotalPrice,
+                    showOrderSuccess,
+                    scope,
+                    _0_0_HeadOfRepositorys_Repository,
+                    onConfirmOrder,
+                    onShowOrderSuccessChange = { showOrderSuccess = it } // Pass the state change handler
+                )
 
                 Column(
                     modifier = modifier.fillMaxSize()
