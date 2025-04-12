@@ -34,20 +34,19 @@ fun A_MainScreen_APP2_ID_3(
         .repositorys_Model
 
     val progressValue by _0_0_HeadOfRepositorys_Repository.progressRepo.collectAsState()
-    val composeKeyVID by _0_0_HeadOfRepositorys_Repository.repositorys_Model
+    val activeId_1_3_BonAchat by _0_0_HeadOfRepositorys_Repository.repositorys_Model
         .activeId_1_3_BonAchat.collectAsState()
 
-    // Fix 1: Using the collected value directly, which is now a Long
     val relativeBonAchate = _0_HeadOfRepositorys_Repository_Model
         ._1_3_BonAchat_Repository
-        .modelDatasSnapList.find { it.vid == composeKeyVID }
+        .modelDatasSnapList.find { it.vid == activeId_1_3_BonAchat }
 
     // Fix 2: Using the collected composeKeyVID value for comparison
     val produitsBonAchatIDs = _0_HeadOfRepositorys_Repository_Model
         ._1_2_ProduitAcheteOperation_Repository
         .modelDatasSnapList
         .filter { produitOpe ->
-            produitOpe.parent_1_3_BonAchat == composeKeyVID &&
+            produitOpe.parent_1_3_BonAchat == activeId_1_3_BonAchat &&
                     produitOpe.etateActuellementEst == _1_2_ProduitAcheteOperation
                 .EtateActuellementEst
                 .CONFIRME &&
@@ -129,7 +128,7 @@ fun A_MainScreen_APP2_ID_3(
                         } else {
                             // Always show the list of items, regardless of order mode
                             B_MainList_APP2_ID_3(
-                                composeKeyVID = composeKeyVID,
+                                composeKeyVID = activeId_1_3_BonAchat,
                                 _0_HeadOfRepositorys_Repository_Model = _0_0_HeadOfRepositorys_Repository
                                     .repositorys_Model
                             )
