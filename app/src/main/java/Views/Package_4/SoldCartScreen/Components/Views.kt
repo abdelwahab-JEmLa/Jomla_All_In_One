@@ -1,11 +1,10 @@
-package Views.Package_4.SoldCartScreen.Views
+package Views.Package_4.SoldCartScreen.Components
 
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Package_4._SoldCartScreen
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -26,7 +25,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
@@ -54,84 +52,9 @@ import coil.size.Size
 import com.example.clientjetpack.Models.UiState
 import com.example.clientjetpack.R
 import com.example.clientjetpack.ViewModel.HeadViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import org.koin.androidx.compose.koinViewModel
 import java.io.File
 
-// First, let's add the missing extension function for SoldArticlesTabelle
-fun SoldArticlesTabelle.getTotalQuantity(): Int {
-    return color1SoldQuantity + color2SoldQuantity + color3SoldQuantity + color4SoldQuantity
-}
 
-@Composable
-fun CartSummaryCard(
-    client: B_ClientsDataBase?,
-    itemCount: Int,
-    totalPrice: Double,
-    onConfirmOrder: () -> Unit,
-    windows__ViewModel: Windows__ViewModel = koinViewModel(),
-
-    ) {
-    ElevatedCard(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            // Client Info
-            client?.let {
-                Text(
-                    text = "العميل: ${it.nom}",
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
-
-            // Order Summary
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = "عدد المنتجات: $itemCount",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Text(
-                    text = "المجموع: $totalPrice دج",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
-
-            Button(
-                onClick = {
-                    onConfirmOrder()
-                    /*  windows__ViewModel.stopRecording()   */
-
-                    // Launch a coroutine to handle the suspend functions
-                    CoroutineScope(Dispatchers.Main).launch {
-                        /*  delay(2000)
-                          val createdRecord = client?.let {
-                              windows__ViewModel.repository.ajouteRecodeAvecIntervaleDAchat(
-                                  it.id,
-                                  K_TempTravaille.IntervalesDeTravaille.TypeTemp.DEPLACEMENT
-                              )
-                          }
-                          windows__ViewModel.togleRecodingOnUtilisontCetteIntervale(createdRecord)
-                     */
-                    }
-                },
-                modifier = Modifier.fillMaxWidth(),
-                enabled = itemCount > 0
-            ) {
-                Text("تأكيد الطلب")
-            }
-        }
-    }
-}
 
 @Composable
 fun ImageDisplayer4(
@@ -140,7 +63,6 @@ fun ImageDisplayer4(
     viewModel: HeadViewModel,
     indexColor: Int = 0,
     reloadKey: Any = Unit,
-    onClickToOpenWindos: (ArticlesBasesStatsTable, Int) -> Unit,
     uiState: UiState
 ) {
     val context = LocalContext.current

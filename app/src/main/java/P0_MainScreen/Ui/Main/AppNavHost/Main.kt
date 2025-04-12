@@ -4,7 +4,7 @@ import P0_MainScreen.Ui.Objects.LoadingOverlay
 import P5_DialogeClientsEditer.ClientSelectionDialog
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.A_VendeurAfficheurInfosProduit_FragmentMainId3
 import Views.P1._ArticlesStartFacade.FragmentStartupScreen
-import Views.Package_4.SoldCartScreen.SoldCartScreen
+import Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.Views.MainScreen_APP2_ID_2
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Kotlin._WorkingON.WO_.WifiUpdateClientDisplayerStats
@@ -201,15 +201,11 @@ fun AppNavHost(
                     }
 
                     Box(modifier = Modifier.fillMaxSize()) {
-                        SoldCartScreen(
-                            viewModel = headViewModel,
-                            clientBuyerNow = currentClient,
-                            uiState = uiState,
+                        MainScreen_APP2_ID_2(
                             onConfirmOrder = {
                                 headViewModel
                                     .updateLongAppSetting("clientBuyerNowId", 0)
-                            },
-                            viewModelInitApp = viewModelInitApp
+                            }
                         )
                     }
                 }
