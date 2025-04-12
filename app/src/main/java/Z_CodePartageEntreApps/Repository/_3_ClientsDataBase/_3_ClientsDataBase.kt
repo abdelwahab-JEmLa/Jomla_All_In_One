@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.PanieAchates.APP.Views.Models
+package Z_CodePartageEntreApps.Repository._3_ClientsDataBase
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add

@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.PanieAchates.APP.Views.Models
+package Z_CodePartageEntreApps.Repository._1_3_BonAchat
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
