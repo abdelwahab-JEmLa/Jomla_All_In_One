@@ -51,6 +51,18 @@ import com.example.clientjetpack.R
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import org.koin.compose.koinInject
 
+// Add this object for synchronized VID generation
+object VidGenerator {
+    private var lastGeneratedVid = 0L
+
+    @Synchronized
+    fun generateNewVid(existingVids: List<Long>): Long {
+        val maxExistingVid = existingVids.maxOrNull() ?: 0L
+        lastGeneratedVid = maxOf(lastGeneratedVid + 1, maxExistingVid + 1)
+        return lastGeneratedVid
+    }
+}
+
 @Composable
 fun B_CouleurAfficheur(
     modifier: Modifier = Modifier,
@@ -72,31 +84,48 @@ fun B_CouleurAfficheur(
     val _1_1_CouleurAcheteOperation_Repository =
         koinInject<_1_1_CouleurAcheteOperation_Repository>()
     val couleurActuelleIndex = index.toLong()
+                 //<--
+                 //TODO(1): ajout un scroll au couleurActuelleIndex au start 
+    // Track initialized indices to prevent duplicate initialization
+    val initializedIndices = remember { mutableSetOf<Long>() }
 
     LaunchedEffect(
         key1 = parentCompose_1_2_ProduitAcheteOperationVid,
-        key2 = couleurActuelleIndex
+        key2 = couleurActuelleIndex,
+        key3 = Unit // Adding this key to ensure it runs on initial composition
     ) {
         // Only proceed if we have a valid parent ID - this is critical
         if (parentCompose_1_2_ProduitAcheteOperationVid <= 0) {
             return@LaunchedEffect
         }
 
+        // Skip if already initialized for this index
+        if (initializedIndices.contains(couleurActuelleIndex)) {
+            return@LaunchedEffect
+        }
+
+        // Debug information
+        android.util.Log.d(
+            "ColorOperation",
+            "Checking: Index=$couleurActuelleIndex, ParentVID=$parentCompose_1_2_ProduitAcheteOperationVid"
+        )
+
+        // Get all existing operations to avoid race conditions
+        val allExistingOperations = _1_1_CouleurAcheteOperation_Repository.modelDatasSnapList.toList()
+
         // Check if the color operation already exists
-        val existing_1_1_CouleurAcheteOperation =
-            _1_1_CouleurAcheteOperation_Repository.modelDatasSnapList.find {
-                it.couleurIndex_ParentVID == couleurActuelleIndex &&
-                        it.parentProduitAchateOperationVID == parentCompose_1_2_ProduitAcheteOperationVid
-            }
+        val existing_1_1_CouleurAcheteOperation = allExistingOperations.find {
+            it.couleurIndex_ParentVID == couleurActuelleIndex &&
+                    it.parentProduitAchateOperationVID == parentCompose_1_2_ProduitAcheteOperationVid
+        }
 
         // Set the VID if it exists, otherwise create a new entry
         compose_1_1_CouleurAcheteOperationVid = if (existing_1_1_CouleurAcheteOperation != null) {
             existing_1_1_CouleurAcheteOperation.vid
         } else {
-            // Create a new unique VID
-            val maxVid = _1_1_CouleurAcheteOperation_Repository.modelDatasSnapList
-                .maxOfOrNull { it.vid } ?: 0
-            val newVid = maxVid + 1
+            // Create a new unique VID using the synchronized generator
+            val existingVids = allExistingOperations.map { it.vid }
+            val newVid = VidGenerator.generateNewVid(existingVids)
 
             // Create and add the new entry
             val clickedCouleur = clickedCouleurIndex.toLong() == couleurActuelleIndex
@@ -112,6 +141,15 @@ fun B_CouleurAfficheur(
 
             // Explicitly add the data and verify
             _1_1_CouleurAcheteOperation_Repository.addData(newColorOp)
+
+            // Log successful creation
+            android.util.Log.d(
+                "ColorOperation",
+                "Created new operation with VID=$newVid for index=$couleurActuelleIndex"
+            )
+
+            // Mark this index as initialized
+            initializedIndices.add(couleurActuelleIndex)
 
             newVid
         }

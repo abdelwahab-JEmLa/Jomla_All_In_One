@@ -31,11 +31,47 @@ fun QuantityButton(
         onClick = {
             val couleuracheteoperationRepository =
                 viewModelInitApp._1_1_CouleurAcheteOperation_Repository
-            couleuracheteoperationRepository.modelDatasSnapList.find { it.vid == compose_1_1_CouleurAcheteOperationVid }?.apply {
-                totaleQuantity = quantity
-                etateActuellementEst= _1_1_CouleurAcheteOperation.EtateActuellementEst
-                    .QUANTITY_CHOISI
-            }?.let { couleuracheteoperationRepository.updateUnSeulData(it) }
+
+            // Check if the operation exists
+            val existingOperation = couleuracheteoperationRepository.modelDatasSnapList.find {
+                it.vid == compose_1_1_CouleurAcheteOperationVid
+            }
+
+            if (existingOperation != null) {
+                // Update the existing operation
+                existingOperation.apply {
+                    totaleQuantity = quantity
+                    etateActuellementEst = _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
+                }
+                couleuracheteoperationRepository.updateUnSeulData(existingOperation)
+
+                // Debug log for update
+                android.util.Log.d(
+                    "QuantityButton",
+                    "Updated operation VID=$compose_1_1_CouleurAcheteOperationVid with quantity=$quantity"
+                )
+            } else if (compose_1_1_CouleurAcheteOperationVid > 0) {
+                // Create a new operation if we have a valid VID but no existing record
+                val newOperation = _1_1_CouleurAcheteOperation(
+                    vid = compose_1_1_CouleurAcheteOperationVid,
+                    totaleQuantity = quantity,
+                    etateActuellementEst = _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
+                )
+                couleuracheteoperationRepository.addData(newOperation)
+
+                // Debug log for creation
+                android.util.Log.d(
+                    "QuantityButton",
+                    "Created new operation with VID=$compose_1_1_CouleurAcheteOperationVid and quantity=$quantity"
+                )
+            } else {
+                // Debug log for error case
+                android.util.Log.e(
+                    "QuantityButton",
+                    "Invalid VID: $compose_1_1_CouleurAcheteOperationVid - Cannot update quantity"
+                )
+            }
+
             onClick()
         },
         modifier = Modifier.fillMaxWidth().aspectRatio(1f),
