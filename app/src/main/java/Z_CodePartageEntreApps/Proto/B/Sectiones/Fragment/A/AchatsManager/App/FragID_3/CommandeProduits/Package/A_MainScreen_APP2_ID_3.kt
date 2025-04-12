@@ -15,6 +15,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -41,14 +42,42 @@ fun A_MainScreen_APP2_FragID3(
                 Card() {
                     Column {
                         Text("ProdID>${Produit.produitAcheterID}")
+
+                        // Instead of filtering by Produit.vid, we should filter by produitAcheterID
+                        val colorsForProduct = models._1_1_CouleurAcheteOperation_Repository.modelDatasSnapList
+                            .filter {
+                                // Find the parent product vid that this color belongs to
+                                val parentProduct = models._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList
+                                    .firstOrNull { prod -> prod.vid == it.parentProduitAchateOperationVID }
+
+                                // Check if this color belongs to a product with the same ID as our current product
+                                parentProduct?.produitAcheterID == Produit.produitAcheterID &&
+                                        it.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
+                            }
+
+// Calculate total qu
+                        val buyerIds = remember {
+                            // Find all BonAchat IDs associated with this product
+                            val bonAchatIds = models._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList
+                                .filter {
+                                    it.produitAcheterID == Produit.produitAcheterID &&
+                                            it.etateActuellementEst == _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME
+                                }
+                                .map { it.parent_1_3_BonAchat }
+                                .distinct()
+
+                            // Get all client IDs from those BonAchat entries
+                            models._1_3_BonAchat_Repository.modelDatasSnapList
+                                .filter { it.vid in bonAchatIds }
+                                .map { it.clientAcheteurID }
+                                .distinct()
+                                .joinToString(", ")
+                        }
+
                         LazyRow {
                             items(
-                                models._1_1_CouleurAcheteOperation_Repository.modelDatasSnapList
-                                    .filter {
-                                        it.parentProduitAchateOperationVID == Produit.vid
-                                                && it.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
-                                                && it.totaleQuantity > 0
-                                    }
+                                colorsForProduct
+                                    .filter { it.totaleQuantity > 0 }
                                     .distinctBy { it.couleurIndex_ParentVID }
                             )
                             { Couleur ->
@@ -56,18 +85,15 @@ fun A_MainScreen_APP2_FragID3(
                                     thickness = 9.dp,
                                     color = Color.Red
                                 )
-                                // Calculate total quantity for all colors of this product
-                                val totaleQuantity = models._1_1_CouleurAcheteOperation_Repository.modelDatasSnapList
-                                    .filter {
-                                        it.parentProduitAchateOperationVID == Produit.vid
-                                                && it.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
-                                    }
+
+                                val totaleQuantity = colorsForProduct
+                                    .filter { it.couleurIndex_ParentVID == Couleur.couleurIndex_ParentVID }
                                     .sumOf { it.totaleQuantity }
 
                                 Card(
                                     Modifier.background(Color.Red)
                                 ) {
-                                    Box {
+                                    Column {
                                         A_GlideDisplayImageByKeyId_Proto_4_11(
                                             Produit.produitAcheterID,
                                             Couleur.couleurIndex_ParentVID+1,
@@ -76,6 +102,14 @@ fun A_MainScreen_APP2_FragID3(
                                         Text(
                                             "IDX>${Couleur.couleurIndex_ParentVID}" +
                                                     "=Qua>$totaleQuantity",
+                                            Modifier
+                                                .background(
+                                                    color = Color.White.copy(alpha = 0.50f),
+                                                    shape = RoundedCornerShape(4.dp)
+                                                )
+                                        )
+                                        Text(
+                                            "Achteurs>$buyerIds",
                                             Modifier
                                                 .background(
                                                     color = Color.White.copy(alpha = 0.50f),
