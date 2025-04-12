@@ -34,10 +34,10 @@ import java.io.File
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun A_GlideDisplayImageByKeyId_Proto_4_11(
-    modifier: Modifier = Modifier,
     produitVID: Long? = null,
     couleurVID: Long? = null,
     size: Dp? = null,
+    modifier: Modifier = Modifier,
     onLoadComplete: () -> Unit = {},
     qualityImage: Int = 3,
     onImageNeExistePas: @Composable () -> Unit = {}, // Changed to @Composable lambda
