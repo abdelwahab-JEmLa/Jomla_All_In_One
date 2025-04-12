@@ -42,7 +42,7 @@ fun A_MainScreen_APP2_FragID3(
                 Card() {
                     Column {
                         Text( models._2_1_ProduitsDataBase_Repository.modelDatasSnapList
-                            .find { it.vid==Produit.vid }?.nom!!)
+                            .find { it.vid==Produit.produitAcheterID }?.nom ?: "Produit inconnu")
 
                         // Instead of filtering by Produit.vid, we should filter by produitAcheterID
                         val colorsForProduct =
@@ -110,14 +110,16 @@ fun A_MainScreen_APP2_FragID3(
                                                     shape = RoundedCornerShape(4.dp)
                                                 )
                                         )
-                                        // Instead of LazyColumn for buyers
+                                        // Fixed - Safely handle potentially null client names
                                         Column {
                                             buyerIds.forEach { buyerId ->
+                                                // Get the client by ID and display name with a fallback
+                                                val clientName = models._3_ClientsDataBase_Repository.modelDatasSnapList
+                                                    .find { it.vid == buyerId }?.nom ?: "Client inconnu"
+
                                                 Text(
-                                                    models._3_ClientsDataBase_Repository.modelDatasSnapList
-                                                        .find { it.vid == buyerId }?.nom!!
-                                                    ,
-                                                    Modifier
+                                                    text = clientName,
+                                                    modifier = Modifier
                                                         .background(
                                                             color = Color.White.copy(alpha = 0.50f),
                                                             shape = RoundedCornerShape(4.dp)
