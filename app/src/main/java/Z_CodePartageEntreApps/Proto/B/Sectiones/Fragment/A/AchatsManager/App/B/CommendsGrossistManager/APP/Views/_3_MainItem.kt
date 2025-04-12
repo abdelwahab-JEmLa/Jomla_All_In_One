@@ -5,6 +5,8 @@ import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_Couleu
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
@@ -97,18 +99,18 @@ fun MainItem_APP2_ID_2(
                             .padding(horizontal = 8.dp, vertical = 4.dp)
                     ) {
                         // Row to contain both texts side by side
-                        androidx.compose.foundation.layout.Row(
+                        Row(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             // Total quantity text
                             Text(
-                                text = "Total: $totalQuantity",
+                                text = "$totalQuantity",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.primary
                             )
 
                             // Added spacing between texts
-                            androidx.compose.foundation.layout.Spacer(
+                            Spacer(
                                 modifier = Modifier.padding(horizontal = 4.dp)
                             )
 
