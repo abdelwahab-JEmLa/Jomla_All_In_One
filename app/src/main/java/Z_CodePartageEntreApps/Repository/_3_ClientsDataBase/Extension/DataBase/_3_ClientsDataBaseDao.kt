@@ -9,6 +9,9 @@ import androidx.room.Query
 
 @Dao
 interface _3_ClientsDataBaseDao {
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAllAndReturnVids(items: List<_3_ClientsDataBase>): List<Long>
+
     @Query("SELECT * FROM _3_ClientsDataBase")
     suspend fun getAll(): MutableList<_3_ClientsDataBase>
 

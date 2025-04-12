@@ -16,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -49,7 +50,44 @@ class _3_ClientsDataBase_RepositoryImpl(
             initialize_3_ClientsDataBaseRepository()
         }
     }
+    override fun addMultiDATAsEtReturnVIDsList(
+        dataList: List<_3_ClientsDataBase>,
+        onAddSuccess: (List<Long>) -> Unit
+    ) {
+        try {
+            repositoryScope.launch(Dispatchers.IO) {
+                try {
+                    // Insert into Room and get the new vids
+                    val newVids = appDatabase._3_ClientsDataBaseDao().insertAllAndReturnVids(dataList)
 
+                    // Update the objects with their new vids
+                    dataList.forEachIndexed { index, data ->
+                        data.vid = newVids[index]
+                    }
+
+                    // Update the UI list
+                    withContext(Dispatchers.Main) {
+                        modelDatasSnapList.addAll(dataList)
+                    }
+
+                    // Update Firebase with the new items
+                    val updates = mutableMapOf<String, Any>()
+                    dataList.forEach { data ->
+                        updates[data.vid.toString()] = data
+                    }
+
+                    _3_ClientsDataBase_Repository.sonDataBaseRef.updateChildren(updates).await()
+
+                    // Call the success callback with the new vids
+                    onAddSuccess(newVids)
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error adding multiple data: ${e.message}")
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in addMultiDATAsEtReturnVIDsList: ${e.message}")
+        }
+    }
     override suspend fun ensureDataIsInitialized() {
         try {
             if (!initialDataLoaded) {

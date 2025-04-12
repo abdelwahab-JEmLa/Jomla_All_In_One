@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Repository._3_ClientsDataBase.Extension.Log
 
-import Z_CodePartageEntreApps.Repository._3_ClientsDataBase._3_ClientsDataBase_RepositoryImpl
 import Z_CodePartageEntreApps.Repository._3_ClientsDataBase._3_ClientsDataBase_Repository
+import Z_CodePartageEntreApps.Repository._3_ClientsDataBase._3_ClientsDataBase_RepositoryImpl
 import android.util.Log
 
 class _3_ClientsDataBaseRepositoryLogOperationsExtension(
