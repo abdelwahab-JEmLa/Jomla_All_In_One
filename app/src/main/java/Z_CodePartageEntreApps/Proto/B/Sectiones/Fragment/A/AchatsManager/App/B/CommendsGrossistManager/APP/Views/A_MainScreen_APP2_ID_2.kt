@@ -38,7 +38,7 @@ import java.text.NumberFormat
 import java.util.Locale
 
 @Composable
-fun MainScreen_APP2_ID_2(
+fun A_MainScreen_APP2_ID_2(
     modifier: Modifier = Modifier,
     onConfirmOrder: () -> Unit,
     _0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository = koinInject(),
@@ -191,7 +191,7 @@ fun MainScreen_APP2_ID_2(
                             LoadingContent(message = "Loading data...")
                         }
                     } else {
-                        MainList_APP2_ID_2(
+                        B_MainList_APP2_ID_2(
                             composeKeyVID = composeKeyVID,
                             _0_HeadOfRepositorys_Repository_Model = _0_0_HeadOfRepositorys_Repository
                                 .repositorys_Model

@@ -4,7 +4,7 @@ import P0_MainScreen.Ui.Objects.LoadingOverlay
 import P5_DialogeClientsEditer.ClientSelectionDialog
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.A_VendeurAfficheurInfosProduit_FragmentMainId3
 import Views.P1._ArticlesStartFacade.FragmentStartupScreen
-import Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.Views.MainScreen_APP2_ID_2
+import Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.Views.A_MainScreen_APP2_ID_2
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Kotlin._WorkingON.WO_.WifiUpdateClientDisplayerStats
@@ -201,7 +201,7 @@ fun AppNavHost(
                     }
 
                     Box(modifier = Modifier.fillMaxSize()) {
-                        MainScreen_APP2_ID_2(
+                        A_MainScreen_APP2_ID_2(
                             onConfirmOrder = {
                                 headViewModel
                                     .updateLongAppSetting("clientBuyerNowId", 0)

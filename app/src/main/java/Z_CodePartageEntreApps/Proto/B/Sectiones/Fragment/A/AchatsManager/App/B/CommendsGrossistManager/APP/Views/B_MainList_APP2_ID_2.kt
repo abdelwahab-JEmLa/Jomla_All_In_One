@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun MainList_APP2_ID_2(
+fun B_MainList_APP2_ID_2(
     composeKeyVID: Long?,
     modifier: Modifier = Modifier,
     _0_HeadOfRepositorys_Repository_Model: _0_0_HeadOfRepositorys_Model,
