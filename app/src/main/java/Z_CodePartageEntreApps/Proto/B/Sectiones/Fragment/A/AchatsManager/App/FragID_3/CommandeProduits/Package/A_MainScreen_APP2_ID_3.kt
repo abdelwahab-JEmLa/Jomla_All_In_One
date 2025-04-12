@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -28,7 +29,10 @@ fun A_MainScreen_APP2_FragID3(
 ) {
     val models = viewModel._0_0_HeadOfRepositorys_Repository.repositorys_Model
 
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(modifier = modifier
+        .fillMaxSize()
+        .padding(4.dp)
+    ) {
         LazyColumn {
             items(
                 models._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList
@@ -42,7 +46,9 @@ fun A_MainScreen_APP2_FragID3(
                 Card() {
                     Column {
                         Text( models._2_1_ProduitsDataBase_Repository.modelDatasSnapList
-                            .find { it.vid==Produit.produitAcheterID }?.nom ?: "Produit inconnu")
+                            .find { it.vid==Produit.produitAcheterID }?.nom ?: "Produit inconnu"
+                            ,Modifier.padding(4.dp)
+                        )
 
                         // Instead of filtering by Produit.vid, we should filter by produitAcheterID
                         val colorsForProduct =
@@ -124,6 +130,7 @@ fun A_MainScreen_APP2_FragID3(
                                                             color = Color.White.copy(alpha = 0.50f),
                                                             shape = RoundedCornerShape(4.dp)
                                                         )
+
                                                 )
                                             }
                                         }
