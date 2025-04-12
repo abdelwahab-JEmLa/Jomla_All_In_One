@@ -71,6 +71,7 @@ fun A_MainScreen_APP2_ID_2(
                 }
         }
 
+
     // Calculate total items count
     val itemCount = _0_HeadOfRepositorys_Repository_Model
         ._1_1_CouleurAcheteOperation_Repository
