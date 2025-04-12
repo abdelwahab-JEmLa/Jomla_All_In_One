@@ -19,6 +19,7 @@ import Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.K_TempT
 import Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.K_TempTravailleRepositoryImpl
 import Z_CodePartageEntreApps.Model.O_SoldArticlesTabelle.Repository.SoldArticlesTabelleRepository
 import Z_CodePartageEntreApps.Model.O_SoldArticlesTabelle.Repository.SoldArticlesTabelleRepositoryImpl
+import Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.FragID_3.CommandeProduits.Package.ViewModelFragment_APP2_ID_3
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_RepositoryImpl
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperationRepositoryImpl
@@ -53,6 +54,7 @@ val commonRepositoriesModule = module {
         get(),
         get(),
         get(),
+        get(),
     ) }
 
     single<_1_1_CouleurAcheteOperation_Repository> { _1_1_CouleurAcheteOperationRepositoryImpl(get()) }
@@ -75,6 +77,7 @@ val commonRepositoriesModule = module {
     single<C_GrossistsDataBaseRepository> { C_GrossistsDataBaseRepositoryImpl() }
 
     viewModel { ViewModelFragment_StartUpScreen(get(),get(),get(),get()) }
+    viewModel { ViewModelFragment_StartUpScreen(get(),get(),get(),get()) }
     viewModel { ViewModelInitApp(get(),get()
         ,get()
         ,get()
@@ -82,6 +85,9 @@ val commonRepositoriesModule = module {
         ,get()
         ,get()
         ,get()
+    ) }
+    viewModel { ViewModelFragment_APP2_ID_3(
+        get()
     ) }
 }
 

@@ -6,6 +6,7 @@ import androidx.room.PrimaryKey
 @Entity
 data class _4_CouleurOperationCommand(
     @PrimaryKey(autoGenerate = true)
+    var vid: Long = 0L,
 
     // Section Related Parents Foreign Key IDs
     var couleurIndex_ParentVID: Long = 0L,

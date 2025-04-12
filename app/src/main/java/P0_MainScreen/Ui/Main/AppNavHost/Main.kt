@@ -4,12 +4,12 @@ import P0_MainScreen.Ui.Objects.LoadingOverlay
 import P5_DialogeClientsEditer.ClientSelectionDialog
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.A_VendeurAfficheurInfosProduit_FragmentMainId3
 import Views.P1._ArticlesStartFacade.FragmentStartupScreen
-import Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.PanieAchates.APP.ViewModel.A_MainScreen_APP2_ID_2
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
+import Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.PanieAchates.APP.ViewModel.A_MainScreen_APP2_ID_2
+import Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.FragID_3.CommandeProduits.Package.A_MainScreen_APP2_FragID3
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Kotlin._WorkingON.WO_.WifiUpdateClientDisplayerStats
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.A_id1_ClientsLocationGps
-import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.MainScreen_Windows
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -212,7 +212,7 @@ fun AppNavHost(
 
                 composable(Screen.TravailleTempRecorder.route) {
                     Box(modifier = Modifier.fillMaxSize()) {
-                        MainScreen_Windows(fabsVisibility = viewModelInitApp._paramatersAppsViewModelModel.fabsVisibility)
+                        A_MainScreen_APP2_FragID3()
                     }
                 }
             }
