@@ -7,6 +7,7 @@ import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repos
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur_Repository
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase_Repository
 import Z_CodePartageEntreApps.Repository._3_ClientsDataBase._3_ClientsDataBase_Repository
+import Z_CodePartageEntreApps.Repository._4_CouleurOperationCommand._4_CouleurOperationCommand_Repository
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class _0_0_HeadOfRepositorys_Model(
@@ -21,4 +22,7 @@ class _0_0_HeadOfRepositorys_Model(
 
     val _2_1_ProduitsDataBase_Repository: _2_1_ProduitsDataBase_Repository,
     val _3_ClientsDataBase_Repository: _3_ClientsDataBase_Repository,
+
+    val _4_CouleurOperationCommand_Repository: _4_CouleurOperationCommand_Repository,
+
     )

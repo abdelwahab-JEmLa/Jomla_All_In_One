@@ -8,6 +8,7 @@ import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repos
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur_Repository
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase_Repository
 import Z_CodePartageEntreApps.Repository._3_ClientsDataBase._3_ClientsDataBase_Repository
+import Z_CodePartageEntreApps.Repository._4_CouleurOperationCommand._4_CouleurOperationCommand_Repository
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -32,6 +33,7 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
 
     private val _2_1_Repository: _2_1_ProduitsDataBase_Repository,
     private val _2_2_Repository: _3_ClientsDataBase_Repository,
+    private val _4_CouleurOperationCommand_Repository: _4_CouleurOperationCommand_Repository,
 ) : _0_0_HeadOfRepositorys_Repository {
     private val TAG = _0_0_HeadOfRepositorys_Repository.TAG
 
@@ -48,6 +50,8 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
 
         _2_1_Repository,
         _2_2_Repository,
+
+        _4_CouleurOperationCommand_Repository,
     )
     override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
 
@@ -73,6 +77,7 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
 
             _2_1_Repository.ensureDataIsInitialized()
             _2_2_Repository.ensureDataIsInitialized()
+            _4_CouleurOperationCommand_Repository.ensureDataIsInitialized()
 
             // Start tracking progress afterward
             startProgressTracking() {
@@ -130,7 +135,8 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                 repositoryScope.launch { _1_5_Repository.ensureDataIsInitialized() },
 
                 repositoryScope.launch { _2_1_Repository.ensureDataIsInitialized() },
-                repositoryScope.launch { _2_2_Repository.ensureDataIsInitialized() }
+                repositoryScope.launch { _2_2_Repository.ensureDataIsInitialized() } ,
+                repositoryScope.launch { _4_CouleurOperationCommand_Repository.ensureDataIsInitialized() }
             )
 
             // Wait for all initialization to complete
@@ -165,6 +171,7 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
 
                     _2_1_ProduitsDataBase_Repository = _2_1_Repository,
                     _3_ClientsDataBase_Repository = _2_2_Repository,
+                    _4_CouleurOperationCommand_Repository = _4_CouleurOperationCommand_Repository,
                 )
 
                 // Update progress
@@ -191,7 +198,8 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                 _1_5_Repository.progressRepo,
 
                 _2_1_Repository.progressRepo,
-                _2_2_Repository.progressRepo
+                _2_2_Repository.progressRepo ,
+                _4_CouleurOperationCommand_Repository.progressRepo
             ) { flowValues ->
                 // flowValues is an Array<Float> containing all the progress values
                 val combinedProgress = flowValues.sum() / flowValues.size.toFloat()
@@ -212,6 +220,7 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
 
                                 5 -> "_2_1_Repository"
                                 6 -> "_2_2_Repository"
+                                7 -> "_4_CouleurOperationCommand_Repository"
                                 else -> "Unknown"
                             }
                             Log.d(TAG, "- $repoName incomplete: $progress")

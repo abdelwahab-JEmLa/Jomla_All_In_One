@@ -30,11 +30,12 @@ fun A_MainScreen_APP2_ID_3(
     onConfirmOrder: () -> Unit,
     _0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository = koinInject(),
 ) {
-    val progressValue by _0_0_HeadOfRepositorys_Repository.progressRepo.collectAsState()
     val _0_HeadOfRepositorys_Repository_Model = _0_0_HeadOfRepositorys_Repository
         .repositorys_Model
 
-    val composeKeyVID by _0_0_HeadOfRepositorys_Repository.repositorys_Model.activeId_1_3_BonAchat.collectAsState()
+    val progressValue by _0_0_HeadOfRepositorys_Repository.progressRepo.collectAsState()
+    val composeKeyVID by _0_0_HeadOfRepositorys_Repository.repositorys_Model
+        .activeId_1_3_BonAchat.collectAsState()
 
     // Fix 1: Using the collected value directly, which is now a Long
     val relativeBonAchate = _0_HeadOfRepositorys_Repository_Model
