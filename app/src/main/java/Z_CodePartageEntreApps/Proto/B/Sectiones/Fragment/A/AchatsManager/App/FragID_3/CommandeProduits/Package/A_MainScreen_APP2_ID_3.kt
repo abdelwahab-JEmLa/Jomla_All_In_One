@@ -20,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import java.text.NumberFormat
 import java.util.Locale
@@ -28,6 +29,7 @@ import java.util.Locale
 fun A_MainScreen_APP2_ID_3(
     modifier: Modifier = Modifier,
     onConfirmOrder: () -> Unit,
+    viewModelFragment_APP2_ID_3:ViewModelFragment_APP2_ID_3= koinViewModel(),
     _0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository = koinInject(),
 ) {
     val _0_HeadOfRepositorys_Repository_Model = _0_0_HeadOfRepositorys_Repository
