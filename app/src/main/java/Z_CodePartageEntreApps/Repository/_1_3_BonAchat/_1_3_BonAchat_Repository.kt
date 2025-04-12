@@ -1,9 +1,8 @@
 package Z_CodePartageEntreApps.Repository._1_3_BonAchat
 
 import Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.Views.Models._1_3_BonAchat
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository.Companion._0_0_HeadOfRepositorys_RepositoryRef
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import com.google.firebase.Firebase
-import com.google.firebase.database.database
 import kotlinx.coroutines.flow.MutableStateFlow
 
 interface _1_3_BonAchat_Repository {
@@ -22,9 +21,11 @@ interface _1_3_BonAchat_Repository {
     companion object {
         const val TAG = "_1_3_BonAchat"
 
-        val sonDataBaseRef = Firebase.database
-            .getReference("00_DataPrototype-04-02")
-            .child("_1_3_")
+        val sonDataBaseRef = _0_0_HeadOfRepositorys_RepositoryRef
+            .child("_1")
+            .child("_" +
+                    "3" +
+                    "_")
     }
 
     fun addDataAndReturneItVID(data: _1_3_BonAchat, onAddSuccess: (Long) -> Unit = {})

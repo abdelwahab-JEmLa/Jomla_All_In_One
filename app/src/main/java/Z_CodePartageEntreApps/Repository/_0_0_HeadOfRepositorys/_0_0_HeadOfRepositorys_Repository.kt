@@ -23,5 +23,7 @@ interface _0_0_HeadOfRepositorys_Repository {
 
         val _0_0_HeadOfRepositorys_RepositoryRef = Firebase.database
             .getReference("00_DataPrototype-04-02")
+
+
     }
 }
