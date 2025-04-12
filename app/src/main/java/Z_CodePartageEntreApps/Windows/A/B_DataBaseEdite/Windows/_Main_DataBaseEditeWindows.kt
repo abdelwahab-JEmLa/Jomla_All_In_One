@@ -27,7 +27,10 @@ import org.koin.core.context.loadKoinModules
 import org.koin.dsl.module
 
 val dataBaseEditeWindowsModules = module {
-    viewModel { ViewModel_BProto_ClientsDataBase(get()) }
+    viewModel { ViewModel_BProto_ClientsDataBase(
+        get(),
+        get(),
+        ) }
     viewModel { ViewModel_I_CategorieProduits(get()) }
     viewModel { ViewModel_AProto_ProduitDataBase(
         get(),
