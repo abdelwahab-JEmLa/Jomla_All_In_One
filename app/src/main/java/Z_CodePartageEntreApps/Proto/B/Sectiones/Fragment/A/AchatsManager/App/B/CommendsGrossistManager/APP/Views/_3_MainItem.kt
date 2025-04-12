@@ -20,6 +20,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import java.text.NumberFormat
+import java.util.Locale
 
 @Composable
 fun MainItem_APP2_ID_2(
@@ -52,7 +54,7 @@ fun MainItem_APP2_ID_2(
     val totalPrice = totalQuantity * (relative_2_1_ProduitsDataBase?.monPrixVent ?: 0.0)
 
     // Format price with Euro symbol and proper formatting using NumberFormat
-    val formatter = java.text.NumberFormat.getCurrencyInstance(java.util.Locale.FRANCE)
+    val formatter = NumberFormat.getCurrencyInstance(Locale.FRANCE)
     val formattedPrice = formatter.format(totalPrice)
 
     Card(
