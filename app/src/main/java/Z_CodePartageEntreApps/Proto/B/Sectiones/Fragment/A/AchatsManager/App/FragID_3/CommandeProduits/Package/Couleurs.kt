@@ -122,9 +122,10 @@ fun Couleurs(
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
+                                .padding(10.dp)
                                 .background(
                                     color = Color.White.copy(alpha = 0.70f),
-                                    shape = RoundedCornerShape(4.dp)
+                                    shape = RoundedCornerShape(10.dp)
                                 ),
                         ) {
                             Text(
