@@ -1,7 +1,5 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit.B_CouleursAfficheur.B_MainItem
 
-import Z_CodePartageEntreApps.Model.B_ClientsDataBase
-import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.aspectRatio
@@ -23,8 +21,6 @@ fun QuantityButton(
     quantity: Int,
     isSelected: Boolean,
     onClick: () -> Unit,
-    currentSale: SoldArticlesTabelle?,
-    currentClient: B_ClientsDataBase?,
     compose_1_1_CouleurAcheteOperationVid: Long,
 ) {
     Button(
@@ -46,19 +42,9 @@ fun QuantityButton(
                 // Update the existing operation
                 existingOperation.apply {
                     totaleQuantity = quantity
-
-
-                    etateActuellementEst =
-                        etateActuellementEst1
-
+                    etateActuellementEst = etateActuellementEst1
                 }
                 couleuracheteoperationRepository.updateUnSeulData(existingOperation)
-
-                // Debug log for update
-                android.util.Log.d(
-                    "QuantityButton",
-                    "Updated operation VID=$compose_1_1_CouleurAcheteOperationVid with quantity=$quantity"
-                )
             } else if (compose_1_1_CouleurAcheteOperationVid > 0) {
                 // Create a new operation if we have a valid VID but no existing record
                 val newOperation = _1_1_CouleurAcheteOperation(
@@ -67,18 +53,6 @@ fun QuantityButton(
                     etateActuellementEst = _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
                 )
                 couleuracheteoperationRepository.addData(newOperation)
-
-                // Debug log for creation
-                android.util.Log.d(
-                    "QuantityButton",
-                    "Created new operation with VID=$compose_1_1_CouleurAcheteOperationVid and quantity=$quantity"
-                )
-            } else {
-                // Debug log for error case
-                android.util.Log.e(
-                    "QuantityButton",
-                    "Invalid VID: $compose_1_1_CouleurAcheteOperationVid - Cannot update quantity"
-                )
             }
 
             onClick()

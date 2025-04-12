@@ -151,14 +151,12 @@ private fun QuantityGrid(
         items(quantities.size) { index ->
             val quantityNumber = quantities[index]
             QuantityButton(
+                viewModelInitApp = viewModelInitApp,
                 quantity = quantityNumber,
                 isSelected = quantityNumber == currentQuantity,
                 onClick = {
                     onQuantitySelected(quantityNumber)
                 },
-                currentSale = currentSale,
-                viewModelInitApp = viewModelInitApp,
-                currentClient = currentClient,
                 compose_1_1_CouleurAcheteOperationVid=compose_1_1_CouleurAcheteOperationVid,
             )
         }
