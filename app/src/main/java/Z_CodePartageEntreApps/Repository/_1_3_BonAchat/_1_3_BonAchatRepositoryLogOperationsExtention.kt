@@ -1,5 +1,6 @@
 package Z_CodePartageEntreApps.Repository._1_3_BonAchat
 
+import Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP._OnWorkingOn.Models._1_3_BonAchat
 import android.util.Log
 
 class _1_3_BonAchatRepositoryLogOperationsExtention(
@@ -27,7 +28,7 @@ class _1_3_BonAchatRepositoryLogOperationsExtention(
     }
 
     // New method to log data additions
-    fun logDataAdd(data: Z_CodePartageEntreApps.Model._1_3_BonAchat) {
+    fun logDataAdd(data: _1_3_BonAchat) {
         Log.d(TAG, "Data added to repository:")
         Log.d(TAG, "- ID (vid): ${data.vid}")
         Log.d(TAG, "- Timestamp: ${System.currentTimeMillis()}")

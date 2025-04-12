@@ -53,7 +53,6 @@ import com.example.clientjetpack.R
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import java.io.File
 
-
 @Composable
 fun ImageDisplayer4(
     modifier: Modifier = Modifier,

@@ -1,7 +1,6 @@
 package Z_CodePartageEntreApps.Repository._1_3_BonAchat
 
-import Z_CodePartageEntreApps.Model._1_3_BonAchat
-import Z_CodePartageEntreApps.Model._1_4_PeriodeVent
+import Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP._OnWorkingOn.Models._1_3_BonAchat
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert

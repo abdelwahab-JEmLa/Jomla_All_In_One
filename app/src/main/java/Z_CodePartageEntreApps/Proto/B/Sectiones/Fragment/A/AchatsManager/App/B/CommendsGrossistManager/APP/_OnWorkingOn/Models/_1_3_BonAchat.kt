@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Model
+package Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP._OnWorkingOn.Models
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

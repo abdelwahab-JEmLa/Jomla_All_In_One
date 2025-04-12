@@ -1,7 +1,7 @@
 package Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs
 
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
-import Z_CodePartageEntreApps.Model._1_3_BonAchat
+import Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP._OnWorkingOn.Models._1_3_BonAchat
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_CodePartageEntreApps.Windows.B.Windows.UI.LoadingContent
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
