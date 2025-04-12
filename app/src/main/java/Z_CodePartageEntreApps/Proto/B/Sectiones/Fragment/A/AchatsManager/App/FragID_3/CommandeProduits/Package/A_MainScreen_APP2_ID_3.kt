@@ -46,6 +46,7 @@ fun A_MainScreen_APP2_FragID3(
                     .distinctBy { it.produitAcheterID }
             )
             { Produit ->
+                HorizontalDivider(Modifier.padding(10.dp), thickness = 2.dp)
                 ProduitCommande(models, Produit)
             }
         }
@@ -133,10 +134,11 @@ private fun Couleurs(
                     A_GlideDisplayImageByKeyId_Proto_4_11(
                         Produit.produitAcheterID,
                         Couleur.couleurIndex_ParentVID + 1,
-                        100.dp
+                        360.dp
                     )
-                    Text(
-                        "IDX>${Couleur.couleurIndex_ParentVID}" +
+                    Text(       //<--
+                    //TODO(1): fait que ca soit au milieux avec un backgronde alpha grande text size 
+                        //"IDX>${Couleur.couleurIndex_ParentVID}" +
                                 "=Qua>$totaleQuantity",
                         Modifier
                             .background(
@@ -164,7 +166,8 @@ private fun Acheteurs(
                     .find { it.vid == buyerId }?.nom
                     ?: "Client #$buyerId"
             HorizontalDivider(Modifier.padding(3.dp))
-            Text(
+            Text(        //<--
+            //TODO(1): fait que ca ce ward on row ajout quantity client 
                 text = clientName,
                 modifier = Modifier
                     .background(
