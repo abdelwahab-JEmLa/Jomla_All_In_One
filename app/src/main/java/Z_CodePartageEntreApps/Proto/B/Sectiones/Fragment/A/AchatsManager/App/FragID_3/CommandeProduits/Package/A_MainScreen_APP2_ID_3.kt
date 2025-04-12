@@ -7,8 +7,12 @@ import Z_CodePartageEntreApps.View.A_GlideDisplayImageByKeyId_Proto_4_11
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -19,9 +23,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -116,8 +124,7 @@ private fun Couleurs(
             colorsForProduct
                 .filter { it.totaleQuantity > 0 }
                 .distinctBy { it.couleurIndex_ParentVID }
-        )
-        { Couleur ->
+        ) { Couleur ->
             VerticalDivider(
                 thickness = 9.dp,
                 color = Color.Red
@@ -136,45 +143,82 @@ private fun Couleurs(
                         Couleur.couleurIndex_ParentVID + 1,
                         360.dp
                     )
-                    Text(       //<--
-                    //TODO(1): fait que ca soit au milieux avec un backgronde alpha grande text size 
-                        //"IDX>${Couleur.couleurIndex_ParentVID}" +
-                                "=Qua>$totaleQuantity",
-                        Modifier
+
+                    // TODO(1) FIXED: Center text with larger size and semi-transparent background
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
                             .background(
-                                color = Color.White.copy(alpha = 0.50f),
+                                color = Color.White.copy(alpha = 0.70f),
                                 shape = RoundedCornerShape(4.dp)
-                            )
-                    )
-                    Acheteurs(buyerIds, models)
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "=Qua>$totaleQuantity",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(4.dp)
+                        )
+                    }
+
+                    Column(Modifier.padding(3.dp)) {
+                        buyerIds.forEach { buyerId ->
+                            // Get the client by ID and display name with a fallback
+                            val clientName =
+                                models._3_ClientsDataBase_Repository.modelDatasSnapList
+                                    .find { it.vid == buyerId }?.nom
+                                    ?: "Client #$buyerId"
+
+                            // Get the BonAchat VIDs for this client
+                            val clientBonAchatVids = models._1_3_BonAchat_Repository.modelDatasSnapList
+                                .filter { it.clientAcheteurID == buyerId }
+                                .map { it.vid }
+
+                            // Get all product VIDs associated with this client's BonAchat entries
+                            val clientProductVids = models._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList
+                                .filter { it.parent_1_3_BonAchat in clientBonAchatVids }
+                                .map { it.vid }
+
+                            // Sum the quantities for this client and this color
+                            val clientColorQuantity = colorsForProduct
+                                .filter {
+                                    it.parentProduitAchateOperationVID in clientProductVids &&
+                                            it.couleurIndex_ParentVID == Couleur.couleurIndex_ParentVID
+                                }
+                                .sumOf { it.totaleQuantity }
+
+                            HorizontalDivider(Modifier.padding(3.dp))
+
+                            // Instead of using a separate composable function
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(
+                                        color = Color.White.copy(alpha = 0.50f),
+                                        shape = RoundedCornerShape(4.dp)
+                                    )
+                                    .padding(4.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = clientName,
+                                    modifier = Modifier.weight(1f),
+                                    fontWeight = FontWeight.Medium
+                                )
+
+                                Spacer(modifier = Modifier.width(8.dp))
+
+                                Text(
+                                    text = "Qté: $clientColorQuantity",
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                    }
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun Acheteurs(
-    buyerIds: List<Long>,
-    models: _0_0_HeadOfRepositorys_Model,
-) {
-    Column(Modifier.padding(3.dp)) {
-        buyerIds.forEach { buyerId ->
-            // Get the client by ID and display name with a fallback
-            val clientName =
-                models._3_ClientsDataBase_Repository.modelDatasSnapList
-                    .find { it.vid == buyerId }?.nom
-                    ?: "Client #$buyerId"
-            HorizontalDivider(Modifier.padding(3.dp))
-            Text(        //<--
-            //TODO(1): fait que ca ce ward on row ajout quantity client 
-                text = clientName,
-                modifier = Modifier
-                    .background(
-                        color = Color.White.copy(alpha = 0.50f),
-                        shape = RoundedCornerShape(4.dp)
-                    )
-            )
         }
     }
 }
