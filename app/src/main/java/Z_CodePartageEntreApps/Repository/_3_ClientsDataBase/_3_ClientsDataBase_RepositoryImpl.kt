@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Repository._3_ClientsDataBase
 
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.Views.Models._3_ClientsDataBase
+import Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.PanieAchates.APP.Views.Models._3_ClientsDataBase
 import Z_CodePartageEntreApps.Repository._3_ClientsDataBase.Extension.Log._3_ClientsDataBaseRepositoryLogOperationsExtension
 import Z_CodePartageEntreApps.Repository._3_ClientsDataBase.Extension.Update._3_ClientsDataBaseRepositoryUpdatesOperationsExtension
 import android.util.Log

@@ -1,7 +1,7 @@
 package W.Fragments.A.PanierFinaleDAchat.APP.View
 
 import W.Fragments.A.PanierFinaleDAchat.APP.ViewModel.ViewModelFragment_APP2_ID_1
-import Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.ViewModel.ViewModelFragment_APP2_ID_2
+import Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.PanieAchates.APP.ViewModel.ViewModelFragment_APP2_ID_2
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import org.koin.androidx.compose.koinViewModel

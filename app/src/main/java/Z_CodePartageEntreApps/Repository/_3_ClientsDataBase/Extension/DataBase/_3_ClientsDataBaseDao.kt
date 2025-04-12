@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Repository._3_ClientsDataBase.Extension.DataBase
 
-import Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.Views.Models._3_ClientsDataBase
+import Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.PanieAchates.APP.Views.Models._3_ClientsDataBase
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert

@@ -75,7 +75,7 @@ class ViewModel_BProto_ClientsDataBase(
 
                 // Create a SnapshotStateList from the converted data
                 val snapshotList =
-                    androidx.compose.runtime.snapshots.SnapshotStateList<Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.Views.Models._3_ClientsDataBase>()
+                    androidx.compose.runtime.snapshots.SnapshotStateList<Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.PanieAchates.APP.Views.Models._3_ClientsDataBase>()
                 snapshotList.addAll(convertedData)
 
                 // Update repository with new data structure
@@ -115,8 +115,8 @@ class ViewModel_BProto_ClientsDataBase(
     }
 
     // Helper function to convert B_ClientDataBase to _3_ClientsDataBase
-    private fun convertToClientsDataBase(client: Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase): Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.Views.Models._3_ClientsDataBase {
-        return Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.Views.Models._3_ClientsDataBase(
+    private fun convertToClientsDataBase(client: Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase): Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.PanieAchates.APP.Views.Models._3_ClientsDataBase {
+        return Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.PanieAchates.APP.Views.Models._3_ClientsDataBase(
             vid = client.id,
             nom = client.nom,
             numTelephone = client.numTelephone,
@@ -137,62 +137,62 @@ class ViewModel_BProto_ClientsDataBase(
     }
 
     // Helper function to convert TypeDeSonMagasine enum
-    private fun convertTypeDeSonMagasine(typeDeSonMagasine: Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.TypeDeSonMagasine): Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.Views.Models._3_ClientsDataBase.TypeDeSonMagasine {
+    private fun convertTypeDeSonMagasine(typeDeSonMagasine: Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.TypeDeSonMagasine): Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.PanieAchates.APP.Views.Models._3_ClientsDataBase.TypeDeSonMagasine {
         return when (typeDeSonMagasine) {
             Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT ->
-                Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.Views.Models._3_ClientsDataBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT
+                Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.PanieAchates.APP.Views.Models._3_ClientsDataBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT
 
             Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.TypeDeSonMagasine.AlIMENTATION_GENERALE ->
-                Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.Views.Models._3_ClientsDataBase.TypeDeSonMagasine.AlIMENTATION_GENERALE
+                Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.PanieAchates.APP.Views.Models._3_ClientsDataBase.TypeDeSonMagasine.AlIMENTATION_GENERALE
         }
     }
 
     // Helper function to convert ClientTypeMode enum
-    private fun convertClientTypeMode(clientTypeMode: Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.ClientTypeMode): Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.Views.Models._3_ClientsDataBase.ClientTypeMode {
+    private fun convertClientTypeMode(clientTypeMode: Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.ClientTypeMode): Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.PanieAchates.APP.Views.Models._3_ClientsDataBase.ClientTypeMode {
         return when (clientTypeMode) {
             Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.ClientTypeMode.NEVEAU ->
-                Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.Views.Models._3_ClientsDataBase.ClientTypeMode.NEVEAU
+                Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.PanieAchates.APP.Views.Models._3_ClientsDataBase.ClientTypeMode.NEVEAU
 
             Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.ClientTypeMode.ANCIEN ->
-                Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.Views.Models._3_ClientsDataBase.ClientTypeMode.ANCIEN
+                Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.PanieAchates.APP.Views.Models._3_ClientsDataBase.ClientTypeMode.ANCIEN
 
             Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.ClientTypeMode.EVITE ->
-                Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.Views.Models._3_ClientsDataBase.ClientTypeMode.EVITE
+                Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.PanieAchates.APP.Views.Models._3_ClientsDataBase.ClientTypeMode.EVITE
         }
     }
 
     // Helper function to convert DernierEtatAAffiche enum
-    private fun convertDernierEtatAAffiche(etat: Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.DernierEtatAAffiche): Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.Views.Models._3_ClientsDataBase.DernierEtatAAffiche {
+    private fun convertDernierEtatAAffiche(etat: Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.DernierEtatAAffiche): Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.PanieAchates.APP.Views.Models._3_ClientsDataBase.DernierEtatAAffiche {
         return when (etat) {
             Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.DernierEtatAAffiche.NON_DEFINI ->
-                Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.Views.Models._3_ClientsDataBase.DernierEtatAAffiche.NON_DEFINI
+                Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.PanieAchates.APP.Views.Models._3_ClientsDataBase.DernierEtatAAffiche.NON_DEFINI
 
             Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT ->
-                Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.Views.Models._3_ClientsDataBase.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT
+                Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.PanieAchates.APP.Views.Models._3_ClientsDataBase.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT
 
             Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.DernierEtatAAffiche.VENDU_A_LUI ->
-                Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.Views.Models._3_ClientsDataBase.DernierEtatAAffiche.VENDU_A_LUI
+                Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.PanieAchates.APP.Views.Models._3_ClientsDataBase.DernierEtatAAffiche.VENDU_A_LUI
 
             Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.DernierEtatAAffiche.Cible ->
-                Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.Views.Models._3_ClientsDataBase.DernierEtatAAffiche.Cible
+                Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.PanieAchates.APP.Views.Models._3_ClientsDataBase.DernierEtatAAffiche.Cible
 
             Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.DernierEtatAAffiche.CIBLE_PRIORITE_2 ->
-                Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.Views.Models._3_ClientsDataBase.DernierEtatAAffiche.CIBLE_PRIORITE_2
+                Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.PanieAchates.APP.Views.Models._3_ClientsDataBase.DernierEtatAAffiche.CIBLE_PRIORITE_2
 
             Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.DernierEtatAAffiche.CIBLE_POUR_2 ->
-                Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.Views.Models._3_ClientsDataBase.DernierEtatAAffiche.CIBLE_POUR_2
+                Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.PanieAchates.APP.Views.Models._3_ClientsDataBase.DernierEtatAAffiche.CIBLE_POUR_2
 
             Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.DernierEtatAAffiche.CLIENT_ABSENT ->
-                Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.Views.Models._3_ClientsDataBase.DernierEtatAAffiche.CLIENT_ABSENT
+                Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.PanieAchates.APP.Views.Models._3_ClientsDataBase.DernierEtatAAffiche.CLIENT_ABSENT
 
             Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.DernierEtatAAffiche.AVEC_MARCHANDISE ->
-                Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.Views.Models._3_ClientsDataBase.DernierEtatAAffiche.AVEC_MARCHANDISE
+                Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.PanieAchates.APP.Views.Models._3_ClientsDataBase.DernierEtatAAffiche.AVEC_MARCHANDISE
 
             Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.DernierEtatAAffiche.FERME ->
-                Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.Views.Models._3_ClientsDataBase.DernierEtatAAffiche.FERME
+                Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.PanieAchates.APP.Views.Models._3_ClientsDataBase.DernierEtatAAffiche.FERME
 
             Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.DernierEtatAAffiche.A_EVITE ->
-                Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.Views.Models._3_ClientsDataBase.DernierEtatAAffiche.A_EVITE
+                Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.PanieAchates.APP.Views.Models._3_ClientsDataBase.DernierEtatAAffiche.A_EVITE
         }
     }
 
