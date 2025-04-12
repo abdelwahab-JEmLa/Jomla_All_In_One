@@ -5,6 +5,7 @@ import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
 import Z_CodePartageEntreApps.View.A_GlideDisplayImageByKeyId_Proto_4_11
@@ -80,6 +81,7 @@ fun B_CouleurAfficheur(
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
     parentCompose_1_2_ProduitAcheteOperationVid: Long,
     clickedCouleurIndex: Int,
+    _0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository = koinInject(),
 ) {
     // Using a simpler approach for visibility tracking
     var compose_1_1_CouleurAcheteOperationVid by remember { mutableLongStateOf(0L) }
@@ -111,7 +113,8 @@ fun B_CouleurAfficheur(
         )
 
         // Get all existing operations to avoid race conditions
-        val allExistingOperations = _1_1_CouleurAcheteOperation_Repository.modelDatasSnapList.toList()
+        val allExistingOperations =
+            _1_1_CouleurAcheteOperation_Repository.modelDatasSnapList.toList()
 
         // Check if the color operation already exists
         val existing_1_1_CouleurAcheteOperation = allExistingOperations.find {
@@ -158,29 +161,48 @@ fun B_CouleurAfficheur(
     var showDialog by remember { mutableStateOf(false) }
     var isSelected by remember { mutableStateOf(false) }
 
-    // Enhanced quantity tracking that considers all color positions
-    val currentQuantity = remember(color.idColore, currentSale) {
-        currentSale?.let { sale ->
-            when (color.idColore) {
-                sale.color1IdPicked -> sale.color1SoldQuantity
-                sale.color2IdPicked -> sale.color2SoldQuantity
-                sale.color3IdPicked -> sale.color3SoldQuantity
-                sale.color4IdPicked -> sale.color4SoldQuantity
-                else -> 0
-            }
-        } ?: 0
+    // Get all color operations for the current product
+    val _1_1_CouleurAcheteOperations = _0_0_HeadOfRepositorys_Repository
+        .repositorys_Model
+        ._1_1_CouleurAcheteOperation_Repository
+        .modelDatasSnapList
+
+    // Enhanced quantity tracking that retrieves quantity from _1_1_CouleurAcheteOperation for this color
+    val currentQuantity = remember(
+        color.idColore,
+        currentSale,
+        _1_1_CouleurAcheteOperations,
+        compose_1_1_CouleurAcheteOperationVid
+    ) {
+
+        val colorOperation = _1_1_CouleurAcheteOperations.find {
+            it.vid == compose_1_1_CouleurAcheteOperationVid &&
+                    it.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
+        }
+
+        // Return the quantity from the operation if it exists
+        colorOperation?.totaleQuantity
+            ?: (// Fallback to the legacy method for backward compatibility
+                    currentSale?.let { sale ->
+                        when (color.idColore) {
+                            sale.color1IdPicked -> sale.color1SoldQuantity
+                            sale.color2IdPicked -> sale.color2SoldQuantity
+                            sale.color3IdPicked -> sale.color3SoldQuantity
+                            sale.color4IdPicked -> sale.color4SoldQuantity
+                            else -> 0
+                        }
+                    } ?: 0)
     }
 
     // Check if this color has any quantity across all positions
-    val hasQuantity = remember(currentSale) {
-        currentSale?.let { sale ->
+    val hasQuantity = remember(currentSale, currentQuantity) {
+        currentQuantity > 0 || currentSale?.let { sale ->
             (sale.color1IdPicked == color.idColore && sale.color1SoldQuantity > 0) ||
                     (sale.color2IdPicked == color.idColore && sale.color2SoldQuantity > 0) ||
                     (sale.color3IdPicked == color.idColore && sale.color3SoldQuantity > 0) ||
                     (sale.color4IdPicked == color.idColore && sale.color4SoldQuantity > 0)
         } ?: false
     }
-
 
     // Track whether this color is currently selected as main
     val isMainColor = remember(color.idColore, currentSale) {
@@ -265,7 +287,7 @@ fun B_CouleurAfficheur(
                         onImageNeExistePas = {
                             Text(
                                 text = color.nameColore,
-                                fontSize = 55.sp ,
+                                fontSize = 55.sp,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -299,6 +321,23 @@ fun B_CouleurAfficheur(
                 currentQuantity = currentQuantity,
                 colorName = color.nameColore,
                 onQuantitySelected = { newQuantity ->
+                    // Update the color operation data
+                    val existingOperation = _1_1_CouleurAcheteOperations.find {
+                        it.vid == compose_1_1_CouleurAcheteOperationVid
+                    }
+
+                    if (existingOperation != null) {
+                        val updatedOperation = existingOperation.copy(
+                            totaleQuantity = newQuantity,
+                            etateActuellementEst = if (newQuantity > 0)
+                                _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
+                            else
+                                _1_1_CouleurAcheteOperation.EtateActuellementEst.VUE
+                        )
+                        _1_1_CouleurAcheteOperation_Repository.updateUnSeulData(updatedOperation)
+                    }
+
+                    // Legacy behavior for backward compatibility
                     viewModel.updateColorSelection(color.idColore, newQuantity)
                     viewModel.sendOrderToClientDisplayer(
                         WifiUpdateClientDisplayerStats.ClientWindowsLazyRowSupColorsScrolle.prefix,
