@@ -8,7 +8,6 @@ import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Package_4._SoldCartScreen
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -55,7 +54,6 @@ import com.example.clientjetpack.ViewModel.HeadViewModel
 import java.io.File
 
 
-
 @Composable
 fun ImageDisplayer4(
     modifier: Modifier = Modifier,
@@ -98,7 +96,6 @@ fun ImageDisplayer4(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .clickable { onClickToOpenWindos(article, indexColor) }
     ) {
         // Background image with reduced opacity when no actual image exists
         val painter = rememberAsyncImagePainter(
@@ -307,7 +304,6 @@ private fun ColorItemWithQuantity(
                 article = article,
                 viewModel = viewModel,
                 indexColor = colorIndex,
-                onClickToOpenWindos = onOpenArticleStats,
                 uiState = uiState
             )
 
