@@ -21,6 +21,8 @@ interface _2_1_ProduitsDataBase_Repository {
         onAddSuccess: (List<Long>) -> Unit
     )
 
+    fun upsertUneDataEtReturnVID(data: _2_1_ProduitsDataBase, onSuccess: (Long) -> Unit)
+
     fun addData(data: _2_1_ProduitsDataBase)
     fun updateUnSeulData(data: _2_1_ProduitsDataBase)
     suspend fun updateMultiDatas(datas: SnapshotStateList<_2_1_ProduitsDataBase>)
