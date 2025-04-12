@@ -15,6 +15,4 @@ data class _4_CouleurOperationCommand(
     // Section InfosDeBase
     var totaleQuantity: Int = 0,
 
-    ) {
-
-}
+)

@@ -83,7 +83,6 @@ class ViewModelFragment_APP2_ID_3(
             groupedOperations[key]?.add(operation)
         }
 
-        // Create commands from grouped operations
         val commands = groupedOperations.map { (keyPair, operations) ->
             _4_CouleurOperationCommand(
                 couleurIndex_ParentVID = keyPair.first,
@@ -92,17 +91,14 @@ class ViewModelFragment_APP2_ID_3(
             )
         }
 
-        // Add commands to repository if we have any
         if (commands.isNotEmpty()) {
             repositorys_Model._4_CouleurOperationCommand_Repository.addMultiDATAsEtReturnVIDsList(commands) { vidsList ->
-                // Update the commands with their new IDs
                 commands.forEachIndexed { index, command ->
                     if (index < vidsList.size) {
                         command.vid = vidsList[index]
                     }
                 }
 
-                // Update the UI state
                 _uiStateFlow.value = _uiStateFlow.value.copy(
                     _4_CouleurOperationCommand = mutableStateListOf<_4_CouleurOperationCommand>().apply {
                         addAll(commands)
@@ -111,7 +107,6 @@ class ViewModelFragment_APP2_ID_3(
             }
         }
 
-        // Update loading state
         _uiStateFlow.value = _uiStateFlow.value.copy(isDataLoading = false)
     }
 }

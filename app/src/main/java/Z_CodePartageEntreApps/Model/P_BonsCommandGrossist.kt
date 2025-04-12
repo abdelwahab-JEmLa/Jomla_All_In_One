@@ -18,5 +18,6 @@ class P_BonsCommandGrossist(var vid: Long = 0) {
     @IgnoreExtraProperties
     class EtatesMutable
 
+
     var produitCommendeIDs by mutableStateOf<List<Long>>(emptyList())
 }
