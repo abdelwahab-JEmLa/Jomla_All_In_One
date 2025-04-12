@@ -3,6 +3,7 @@ package Z_CodePartageEntreApps.Windows.A.B_DataBaseEdite.Windows.A_Produit
 import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
 import Z_CodePartageEntreApps.Model.Z.Archive.A_ProduitAncienModelStructure
+import Z_CodePartageEntreApps.Model.Z.Archive._ModelAppsFather.Companion.ref_HeadOfModels
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase
 import android.annotation.SuppressLint
@@ -28,7 +29,7 @@ class ViewModel_AProto_ProduitDataBase(
     val migrationProgress = _migrationProgress.asStateFlow()
 
     // References to the old database structure
-    private val sonAncienReference = A_ProduitRepository.sonDataBaseRef
+    private val sonAncienReference = ref_HeadOfModels.child("A_ProduitModel")
 
     /**
      * Retrieves data from the old database structure
@@ -38,7 +39,24 @@ class ViewModel_AProto_ProduitDataBase(
         withContext(Dispatchers.IO) {
             return@withContext try {
                 Log.d(TAG, "Retrieving data from old database structure...")
+                Log.d(TAG, "Database reference path: ${sonAncienReference.path}")
+                Log.d(TAG, "Database reference complete URL: ${sonAncienReference.toString()}")
+
+                // Log parent reference details
+                Log.d(TAG, "Parent reference path: ${ref_HeadOfModels.path}")
+                Log.d(TAG, "Parent reference URL: ${ref_HeadOfModels.toString()}")
+
                 val snapshot = sonAncienReference.get().await()
+
+                Log.d(TAG, "Snapshot exists: ${snapshot.exists()}")
+                Log.d(TAG, "Snapshot has children: ${snapshot.hasChildren()}")
+                if (snapshot.exists()) {
+                    Log.d(TAG, "Number of children: ${snapshot.childrenCount}")
+                    // Log first few keys if available
+                    snapshot.children.take(5).forEach { child ->
+                        Log.d(TAG, "Child key: ${child.key}, has data: ${child.value != null}")
+                    }
+                }
 
                 if (!snapshot.exists()) {
                     Log.w(TAG, "Old database structure doesn't exist or is empty")
@@ -47,9 +65,11 @@ class ViewModel_AProto_ProduitDataBase(
 
                 val result = snapshot.children.mapNotNull {
                     try {
-                        it.getValue(A_ProduitAncienModelStructure::class.java)
+                        val value = it.getValue(A_ProduitAncienModelStructure::class.java)
+                        Log.d(TAG, "Successfully parsed item with key: ${it.key}, name: ${value?.nom}")
+                        value
                     } catch (e: Exception) {
-                        Log.e(TAG, "Error parsing an old database item: ${e.message}")
+                        Log.e(TAG, "Error parsing item with key: ${it.key}, error: ${e.message}")
                         null
                     }
                 }
@@ -58,9 +78,11 @@ class ViewModel_AProto_ProduitDataBase(
                 result
             } catch (e: Exception) {
                 Log.e(TAG, "Error retrieving data from old database: ${e.message}")
+                Log.e(TAG, "Stack trace: ${e.stackTraceToString()}")
                 emptyList()
             }
         }
+
 
     /**
      * Migrates data from the old database structure to the new one
