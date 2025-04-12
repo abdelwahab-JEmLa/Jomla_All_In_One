@@ -36,6 +36,8 @@ import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsData
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase_RepositoryImpl
 import Z_CodePartageEntreApps.Repository._3_ClientsDataBase._3_ClientsDataBase_Repository
 import Z_CodePartageEntreApps.Repository._3_ClientsDataBase._3_ClientsDataBase_RepositoryImpl
+import Z_CodePartageEntreApps.Repository._4_CouleurOperationCommand._4_CouleurOperationCommand_Repository
+import Z_CodePartageEntreApps.Repository._4_CouleurOperationCommand._4_CouleurOperationCommand_RepositoryImpl
 import Z_CodePartageEntreApps.Windows.B.Windows.ViewModel.ViewModelFragment_StartUpScreen
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.content.Context
@@ -64,7 +66,10 @@ val commonRepositoriesModule = module {
     single<_1_5_Vendeur_Repository> { _1_5_VendeurRepositoryImpl(get()) }
 
     single<_2_1_ProduitsDataBase_Repository> { _2_1_ProduitsDataBase_RepositoryImpl(get()) }
+
     single<_3_ClientsDataBase_Repository> { _3_ClientsDataBase_RepositoryImpl(get()) }
+    single<_4_CouleurOperationCommand_Repository> {
+        _4_CouleurOperationCommand_RepositoryImpl(get()) }
 
     single<B_ClientDataBaseRepository> { B_ClientDataBaseRepositoryImpl(get()) }
     single<A_ProduitRepository> { A_ProduitRepositoryImpl(get()) }
