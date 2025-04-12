@@ -29,10 +29,7 @@ interface _1_5_Vendeur_Repository {
         const val TAG = "_1_5_Vendeur"
 
         val sonDataBaseRef = _0_0_HeadOfRepositorys_RepositoryRef
-            .child("_1")
-            .child("_" +
-                    "4" +
-                    "_")
+            .child("1")
+            .child("5")
     }
-
 }

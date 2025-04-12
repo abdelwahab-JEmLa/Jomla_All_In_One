@@ -86,7 +86,8 @@ class _4_CouleurOperationCommand_RepositoryImpl(
         try {
             repositoryScope.launch(Dispatchers.IO) {
                 try {
-                    // Insert into Room and get the new vids
+                    deleteAllEtRestartSequenceces()
+
                     val newVids = appDatabase._4_CouleurOperationCommandDao().insertAllAndReturnVids(dataList)
 
                     // Update the objects with their new vids
@@ -133,6 +134,28 @@ class _4_CouleurOperationCommand_RepositoryImpl(
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error ensuring data initialization: ${e.message}")
+        }
+    }
+
+    override fun deleteAllEtRestartSequenceces() {
+        repositoryScope.launch(Dispatchers.IO) {
+            try {
+                // Delete from Room and reset sequence
+                appDatabase._4_CouleurOperationCommandDao().deleteAll()
+                appDatabase._4_CouleurOperationCommandDao().restartSequence()
+
+                // Clear snapshot list
+                withContext(Dispatchers.Main) {
+                    modelDatasSnapList.clear()
+                }
+
+                // Delete from Firebase
+                _4_CouleurOperationCommand_Repository.sonDataBaseRef.removeValue().await()
+
+                Log.d(TAG, "Successfully deleted all data and restarted sequences")
+            } catch (e: Exception) {
+                Log.e(TAG, "Error in deleteAllEtRestartSequenceces: ${e.message}")
+            }
         }
     }
 

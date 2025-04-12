@@ -23,10 +23,8 @@ interface _1_2_ProduitAcheteOperation_Repository {
         const val TAG = "_1_2_ProduitAcheteOperation"
 
         val sonDataBaseRef = _0_0_HeadOfRepositorys_RepositoryRef
-            .child("_1")
-            .child("_" +
-                    "2" +
-                    "_")
+            .child("1")
+            .child("2")
     }
 
     fun addDataAndReturneItVID(data: _1_2_ProduitAcheteOperation,

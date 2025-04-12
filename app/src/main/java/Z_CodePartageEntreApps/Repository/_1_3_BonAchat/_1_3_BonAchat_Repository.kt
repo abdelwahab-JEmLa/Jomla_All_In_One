@@ -21,10 +21,8 @@ interface _1_3_BonAchat_Repository {
         const val TAG = "_1_3_BonAchat"
 
         val sonDataBaseRef = _0_0_HeadOfRepositorys_RepositoryRef
-            .child("_1")
-            .child("_" +
-                    "3" +
-                    "_")
+            .child("1")
+            .child("3")
     }
 
     fun addDataAndReturneItVID(data: _1_3_BonAchat, onAddSuccess: (Long) -> Unit = {})

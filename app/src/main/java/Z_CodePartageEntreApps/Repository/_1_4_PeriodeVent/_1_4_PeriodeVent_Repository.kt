@@ -29,10 +29,7 @@ interface _1_4_PeriodeVent_Repository {
         const val TAG = "_1_4_PeriodeVent"
 
         val sonDataBaseRef = _0_0_HeadOfRepositorys_RepositoryRef
-            .child("_1")
-            .child("_" +
-                    "4" +
-                    "_")
+            .child("1")
+            .child("4")
     }
-
 }

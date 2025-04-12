@@ -28,11 +28,14 @@ interface _4_CouleurOperationCommand_Repository {
     suspend fun updateMultiDatas(datas: SnapshotStateList<_4_CouleurOperationCommand>)
     fun deleteUnSeulData(data: _4_CouleurOperationCommand)
 
+    fun deleteAllEtRestartSequenceces()
+
     companion object {
         const val TAG = "_4_CouleurOperationCommand"
 
         val sonDataBaseRef = _0_0_HeadOfRepositorys_RepositoryRef
-            .child("_2_")
-            .child("1_ProduitsDataBase")
+            .child("4")
+            .child("1")
     }
+
 }

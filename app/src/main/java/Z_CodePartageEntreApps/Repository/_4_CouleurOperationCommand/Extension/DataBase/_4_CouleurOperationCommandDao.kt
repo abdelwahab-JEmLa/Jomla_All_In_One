@@ -9,6 +9,9 @@ import androidx.room.Query
 
 @Dao
 interface _4_CouleurOperationCommandDao {
+    @Query("DELETE FROM sqlite_sequence WHERE name = '_4_CouleurOperationCommand'")
+    suspend fun restartSequence()
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAllAndReturnVids(items: List<_4_CouleurOperationCommand>): List<Long>
 

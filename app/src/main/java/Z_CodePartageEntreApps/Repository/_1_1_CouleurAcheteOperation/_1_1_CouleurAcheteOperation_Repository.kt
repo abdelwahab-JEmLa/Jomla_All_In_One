@@ -21,9 +21,7 @@ interface _1_1_CouleurAcheteOperation_Repository {
         const val TAG = "_1_1_CouleurAcheteOperation"
 
         val sonDataBaseRef = _0_0_HeadOfRepositorys_RepositoryRef
-            .child("_1")
-            .child("_" +
-                    "1" +
-                    "_")
+            .child("1")
+            .child("1")
     }
 }

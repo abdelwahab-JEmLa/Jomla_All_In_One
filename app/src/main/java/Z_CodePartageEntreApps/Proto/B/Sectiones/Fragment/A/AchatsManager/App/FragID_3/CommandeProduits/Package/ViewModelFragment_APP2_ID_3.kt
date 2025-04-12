@@ -47,24 +47,29 @@ class ViewModelFragment_APP2_ID_3(
     /**
      * Groups purchase operations by color ID and adds them to _4_CouleurOperationCommand
      */
+    /**
+     * Groups purchase operations by color ID and product ID, then adds them to _4_CouleurOperationCommand
+     */
     fun groupeAchatsParIdCouleurEtAddAu_4_CouleurOperationCommand() {
         // Set loading state
         _uiStateFlow.value = _uiStateFlow.value.copy(isDataLoading = true)
 
-        // Clear existing data
+        // Also clear the UI state list
         _uiStateFlow.value._4_CouleurOperationCommand.clear()
 
-        // Group _1_1_CouleurAcheteOperation by couleurIndex_ParentVID
-        val groupedByCouleurIndex = _1_1_CouleurAcheteOperation
-            .groupBy { it.couleurIndex_ParentVID }
+        // Group _1_1_CouleurAcheteOperation by both couleurIndex_ParentVID and parentProduitAchateOperationVID
+        val groupedByColorAndProduct = _1_1_CouleurAcheteOperation
+            .groupBy { Pair(it.couleurIndex_ParentVID, it.parentProduitAchateOperationVID) }
 
-        // For each color group, create a _4_CouleurOperationCommand
-        groupedByCouleurIndex.forEach { (couleurIndex, operations) ->
-            // Calculate the total quantity for this color
+        // Prepare a list to hold all the commands
+        val allCommands = mutableListOf<_4_CouleurOperationCommand>()
+
+        // For each group, create a _4_CouleurOperationCommand
+        groupedByColorAndProduct.forEach { (keyPair, operations) ->
+            val (couleurIndex, produitVID) = keyPair
+
+            // Calculate the total quantity for this color-product combination
             val totalQuantity = operations.sumOf { it.totaleQuantity }
-
-            // Get the product VID from the first item (assuming all items in the group have the same product)
-            val produitVID = operations.firstOrNull()?.parentProduitAchateOperationVID
 
             // Create the _4_CouleurOperationCommand with the grouped data
             val couleurOperationCommand = _4_CouleurOperationCommand(
@@ -73,15 +78,29 @@ class ViewModelFragment_APP2_ID_3(
                 totaleQuantity = totalQuantity
             )
 
-            // Upsert the data and get its VID
-            repositorys_Model._4_CouleurOperationCommand_Repository.upsertUneDataEtReturnVID(
-                couleurOperationCommand
-            ) { vid ->
-                // Update the VID in our local object
-                couleurOperationCommand.vid = vid
+            // Add to our collection
+            allCommands.add(couleurOperationCommand)
+        }
 
-                // Add to the UI state list
-                _uiStateFlow.value._4_CouleurOperationCommand.add(couleurOperationCommand)
+        // Only proceed if we have commands to add
+        if (allCommands.isNotEmpty()) {
+            // Add all commands at once
+            repositorys_Model._4_CouleurOperationCommand_Repository.addMultiDATAsEtReturnVIDsList(
+                allCommands
+            ) { vidsList ->
+                // Update the VIDs in our objects
+                allCommands.forEachIndexed { index, command ->
+                    if (index < vidsList.size) {
+                        command.vid = vidsList[index]
+                    }
+                }
+
+                // Add all to the UI state list
+                _uiStateFlow.value = _uiStateFlow.value.copy(
+                    _4_CouleurOperationCommand = mutableStateListOf<_4_CouleurOperationCommand>().apply {
+                        addAll(allCommands)
+                    }
+                )
             }
         }
 
