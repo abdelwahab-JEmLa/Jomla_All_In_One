@@ -100,10 +100,6 @@ fun D_ColorDetails_APP2_ID_2(
         ) ?: "Color"
     } else "Color"
 
-
-
-
-
     // Create a dummy sale for the dialog
     val dummySale = remember {
         SoldArticlesTabelle()
