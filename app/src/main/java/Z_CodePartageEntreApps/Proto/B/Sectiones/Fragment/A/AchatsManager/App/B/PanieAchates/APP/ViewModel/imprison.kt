@@ -14,10 +14,8 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-// Constants
 private const val PRINT_INTENT = "pe.diegoveloper.printing"
 private const val TAG = "PrintService"
-
 
 data class ArticleImpression(
     val nomArticle: String,
