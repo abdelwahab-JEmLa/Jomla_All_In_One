@@ -27,15 +27,20 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun ColumnScope.BonAchatInfos(
+    composeKeyVID: Long?,
+    _0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository,
     relativeBonAchate: _1_3_BonAchat?,
     itemCount: Int,
     formattedTotalPrice: String,
     showOrderSuccess: Boolean,
     scope: CoroutineScope,
-    _0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository,
     onConfirmOrder: () -> Unit,
-    onShowOrderSuccessChange: (Boolean) -> Unit // Added parameter for state change
+    onShowOrderSuccessChange: (Boolean) -> Unit, // Added parameter for state change
 ) {
+    val relativeClientDataBase=
+    _0_0_HeadOfRepositorys_Repository.repositorys_Model._3_ClientsDataBase_Repository
+        .modelDatasSnapList.find { it.vid== composeKeyVID}
+
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp)
@@ -45,7 +50,7 @@ fun ColumnScope.BonAchatInfos(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Text(
-                text = "العميل: ${relativeBonAchate?.clientAcheteurID ?: ""}",
+                text = "العميل: ${relativeClientDataBase?.nom ?: ""}",
                 style = MaterialTheme.typography.titleMedium
             )
 

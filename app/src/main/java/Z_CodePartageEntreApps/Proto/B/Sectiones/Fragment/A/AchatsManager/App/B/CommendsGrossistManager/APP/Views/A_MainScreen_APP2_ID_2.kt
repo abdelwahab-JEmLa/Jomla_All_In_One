@@ -111,14 +111,15 @@ fun A_MainScreen_APP2_ID_2(
             // Only show the order form if in ON_MODE_COMMEND_ACTUELLEMENT state
             if (isOrderMode) {
                 BonAchatInfos(
+                    relativeBonAchate?.clientAcheteurID,
+                    _0_0_HeadOfRepositorys_Repository,
                     relativeBonAchate,
                     itemCount,
                     formattedTotalPrice,
                     showOrderSuccess,
                     scope,
-                    _0_0_HeadOfRepositorys_Repository,
                     onConfirmOrder,
-                    onShowOrderSuccessChange = { showOrderSuccess = it } // Pass the state change handler
+                    onShowOrderSuccessChange = { showOrderSuccess = it }
                 )
 
                 Column(
