@@ -109,12 +109,12 @@ fun Couleurs(
                             onImageNeExistePas = {
                                 Text(
                                     text = colorName ?: "Color name not available",
-                                    style = MaterialTheme.typography.headlineLarge,
+                                    fontSize = 55.sp ,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(vertical = 12.dp)
-                                        .graphicsLayer(rotationZ = 45f)  // Rotate 45 degrees
+                                        .padding(40.dp)
+                                        .graphicsLayer(rotationZ = 45f)
                                 )
                             }
                         )
