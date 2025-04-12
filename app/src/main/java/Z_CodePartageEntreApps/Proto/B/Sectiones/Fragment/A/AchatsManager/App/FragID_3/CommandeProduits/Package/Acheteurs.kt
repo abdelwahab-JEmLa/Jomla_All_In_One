@@ -2,21 +2,15 @@ package Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.Fr
 
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -28,14 +22,14 @@ fun Acheteurs(
     colorsForProduct: List<_1_1_CouleurAcheteOperation>,
     Couleur: _1_1_CouleurAcheteOperation,
 ) {
-    // Using LazyColumn to display clients in a scrollable list
-    // This replaces the previous approach where clients were manually iterated
-    LazyColumn(
+    // Using a regular Column instead of LazyColumn to avoid nested scrollable containers
+    // This fixes the "infinity maximum height constraints" error
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
     ) {
-        items(buyerIds) { buyerId ->
+        buyerIds.forEach { buyerId ->
             // Get the client by ID and display name with a fallback
             val clientName =
                 models._3_ClientsDataBase_Repository.modelDatasSnapList
@@ -62,36 +56,22 @@ fun Acheteurs(
                 }
                 .sumOf { it.totaleQuantity }
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        color = Color.White.copy(alpha = 0.50f),
-                        shape = RoundedCornerShape(4.dp)
-                    )
-                    .padding(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(
-                        text = clientName,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp
-                    )
-                }
 
-                Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = clientName,
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp
+            )
 
-                Text(
-                    text = "Qté: $clientColorQuantity",
-                    fontWeight = FontWeight.Bold
-                )
-            }
+            Spacer(modifier = Modifier.width(8.dp))
 
-            // Add a small spacing between client entries
-            Spacer(modifier = Modifier.padding(vertical = 4.dp))
+            Text(
+                text = "Qté: $clientColorQuantity",
+                fontWeight = FontWeight.Bold
+            )
         }
+
+        // Add a small spacing between client entries
+        Spacer(modifier = Modifier.height(4.dp))
     }
 }
