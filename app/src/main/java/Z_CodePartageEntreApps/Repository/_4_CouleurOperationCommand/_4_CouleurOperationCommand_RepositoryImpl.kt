@@ -84,38 +84,60 @@ class _4_CouleurOperationCommand_RepositoryImpl(
         onAddSuccess: (List<Long>) -> Unit
     ) {
         try {
+            if (dataList.isEmpty()) {
+                Log.w(TAG, "addMultiDATAsEtReturnVIDsList: Empty data list provided")
+                onAddSuccess(emptyList())
+                return
+            }
+
+            Log.d(TAG, "addMultiDATAsEtReturnVIDsList: Starting to add ${dataList.size} items")
+
             repositoryScope.launch(Dispatchers.IO) {
                 try {
-                    deleteAllEtRestartSequenceces()
-
+                    // Insert into Room and get the VIDs
                     val newVids = appDatabase._4_CouleurOperationCommandDao().insertAllAndReturnVids(dataList)
+                    Log.d(TAG, "Room insertion successful. Got ${newVids.size} VIDs")
 
                     // Update the objects with their new vids
                     dataList.forEachIndexed { index, data ->
-                        data.vid = newVids[index]
+                        if (index < newVids.size) {
+                            data.vid = newVids[index]
+                        }
                     }
 
                     // Update the UI list
                     withContext(Dispatchers.Main) {
                         modelDatasSnapList.addAll(dataList)
+                        Log.d(TAG, "Updated UI list with ${dataList.size} items")
                     }
 
                     // Update Firebase with the new items
-                    val updates = mutableMapOf<String, Any>()
-                    dataList.forEach { data ->
-                        updates[data.vid.toString()] = data
+                    try {
+                        val updates = mutableMapOf<String, Any>()
+                        dataList.forEach { data ->
+                            updates[data.vid.toString()] = data
+                        }
+
+                        _4_CouleurOperationCommand_Repository.sonDataBaseRef.updateChildren(updates).await()
+                        Log.d(TAG, "Firebase update successful")
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Firebase update failed: ${e.message}", e)
                     }
 
-                    _4_CouleurOperationCommand_Repository.sonDataBaseRef.updateChildren(updates).await()
-
                     // Call the success callback with the new vids
-                    onAddSuccess(newVids)
+                    withContext(Dispatchers.Main) {
+                        onAddSuccess(newVids)
+                    }
                 } catch (e: Exception) {
-                    Log.e(TAG, "Error adding multiple data: ${e.message}")
+                    Log.e(TAG, "Error adding multiple data: ${e.message}", e)
+                    withContext(Dispatchers.Main) {
+                        onAddSuccess(emptyList())
+                    }
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error in addMultiDATAsEtReturnVIDsList: ${e.message}")
+            Log.e(TAG, "Error in addMultiDATAsEtReturnVIDsList: ${e.message}", e)
+            onAddSuccess(emptyList())
         }
     }
 
@@ -142,6 +164,9 @@ class _4_CouleurOperationCommand_RepositoryImpl(
             try {
                 // Delete from Room and reset sequence
                 appDatabase._4_CouleurOperationCommandDao().deleteAll()
+
+                // Note: SQLite auto-increment sequences always start from 1, not 0
+                // This is expected behavior and not an error
                 appDatabase._4_CouleurOperationCommandDao().restartSequence()
 
                 // Clear snapshot list
@@ -158,7 +183,6 @@ class _4_CouleurOperationCommand_RepositoryImpl(
             }
         }
     }
-
     override fun upsertUneDataEtReturnVID(data: _4_CouleurOperationCommand, onSuccess: (Long) -> Unit): Unit {
         try {
             // Create a copy of the data to work with

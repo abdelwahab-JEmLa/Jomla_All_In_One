@@ -21,6 +21,8 @@ fun A_MainScreen_APP2_FragID3(
     viewModel: ViewModelFragment_APP2_ID_3 = koinViewModel(),
 ) {
     val uiState by viewModel.uiStateFlow.collectAsState()
+    val progressValue by viewModel.
+    _0_0_HeadOfRepositorys_Repository.progressRepo.collectAsState()
 
     Box(modifier = modifier.fillMaxSize()) {
         Column(
@@ -36,7 +38,7 @@ fun A_MainScreen_APP2_FragID3(
                     modifier = Modifier.weight(1f),
                 ) {
                     // Show loading indicator while data is being loaded
-                    if (uiState._0_0_HeadOfRepositorys_RepositoryProgress < 1.0f) {
+                    if (progressValue < 1.0f) {
                         Box(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center
