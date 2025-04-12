@@ -1,6 +1,7 @@
 package Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.PanieAchates.APP.ViewModel
 
 import Views.Package_4.SoldCartScreen.Components.OrderSuccessMessage
+import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat
 import androidx.compose.animation.AnimatedVisibility
@@ -33,9 +34,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import org.koin.compose.koinInject
 
 @Composable
 fun ColumnScope.BonAchatInfos(
@@ -48,6 +47,7 @@ fun ColumnScope.BonAchatInfos(
     scope: CoroutineScope,
     onConfirmOrder: () -> Unit,
     onShowOrderSuccessChange: (Boolean) -> Unit,
+    database: AppDatabase = koinInject()
 ) {
     val repositorysModel = _0_0_HeadOfRepositorys_Repository.repositorys_Model
     val relativeClientDataBase =
@@ -67,32 +67,14 @@ fun ColumnScope.BonAchatInfos(
             // Print button at the top end corner
             IconButton(
                 onClick = {
-                    coroutineScope.launch {
-                        // Generate current date string
-                        val dateString = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-                            .format(Date())
-
-                        // Get all relevant articles
-                        val articles = generateArticlesList(
-                            repositorysModel,
-                            relativeBonAchate?.vid,
-                            formattedTotalPrice
-                        )
-
-                        // Get client's current credit balance
-                        val creditBalance = relativeClientDataBase?.currentCreditBalance ?: 0.0
-
-                        // Prepare text for printing
-                        val (texteImprimable, totalBon) = prepareTexteToPrint(
-                            nomClient = relativeClientDataBase?.nom ?: "Client",
-                            dateString = dateString,
-                            articles = articles,
-                            ancienCredits = creditBalance
-                        )
-
-                        // Launch print service
-                        imprimerDonnees(context, texteImprimable.toString(), totalBon)
-                    }
+                    // Using the new consolidated print function
+                    printReceipt(
+                        context = context,
+                        bonAchat = relativeBonAchate,
+                        repositorysModel = repositorysModel,
+                        database = database,
+                        scope = coroutineScope
+                    )
                 },
                 modifier = Modifier
                     .align(Alignment.TopEnd)
