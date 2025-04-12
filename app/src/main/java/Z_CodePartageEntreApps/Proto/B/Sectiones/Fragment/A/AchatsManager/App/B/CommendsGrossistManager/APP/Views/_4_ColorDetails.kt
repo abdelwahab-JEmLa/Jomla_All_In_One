@@ -95,7 +95,6 @@ fun ColorDetails_APP2_ID_2(
                 modifier = Modifier
                     .align(Alignment.TopStart)
                     .padding(4.dp)
-
                     .size(28.dp)
                     .clip(CircleShape)
                     .background(Color.White.copy(alpha = 0.5f))
@@ -119,7 +118,6 @@ fun ColorDetails_APP2_ID_2(
                 modifier = Modifier
                     .align(Alignment.TopStart)
                     .padding(5.dp)
-
                     .size(24.dp)
                     .zIndex(1f)  // This ensures the button appears above other content
             ) {

@@ -1,6 +1,7 @@
 package Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.Views
 
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
+import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -83,7 +84,9 @@ fun MainItem_APP2_ID_2(
             val couleursAcheteOperationsVIDs =
                 _0_HeadOfRepositorys_Repository_Model._1_1_CouleurAcheteOperation_Repository
                     .modelDatasSnapList
-                    .filter { it.parentProduitAchateOperationVID == composeKeyVID }
+                    .filter { it.parentProduitAchateOperationVID==composeKeyVID
+                            && it.etateActuellementEst== _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
+                    }
                     .map { it.vid }
 
             // Only render colors section if there are colors to display
