@@ -109,7 +109,7 @@ fun Couleurs(
                         onImageNeExistePas = {
                             Text(
                                 text = colorName ?: "Color name not available",
-                                style = MaterialTheme.typography.bodyMedium,
+                                style = MaterialTheme.typography.headlineLarge,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier
                                     .fillMaxWidth()
