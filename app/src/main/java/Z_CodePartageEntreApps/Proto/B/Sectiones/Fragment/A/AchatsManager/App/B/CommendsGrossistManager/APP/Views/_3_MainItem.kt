@@ -2,6 +2,8 @@ package Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.
 
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -13,6 +15,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
@@ -26,9 +29,22 @@ fun MainItem_APP2_ID_2(
         ._1_2_ProduitAcheteOperation_Repository
         .modelDatasSnapList.find { it.vid == composeKeyVID }
 
-    val relative_2_1_ProduitsDataBase = _0_HeadOfRepositorys_Repository_Model._2_1_ProduitsDataBase_Repository
-        .modelDatasSnapList.find { it.vid == (relative_1_2_ProduitAcheteOperation
-            ?.produitAcheterID ?: 0) }
+    val relative_2_1_ProduitsDataBase =
+        _0_HeadOfRepositorys_Repository_Model._2_1_ProduitsDataBase_Repository
+            .modelDatasSnapList.find {
+                it.vid == (relative_1_2_ProduitAcheteOperation
+                    ?.produitAcheterID ?: 0)
+            }
+
+    // Calculate total quantity from all color operations for this product
+    val totalQuantity = _0_HeadOfRepositorys_Repository_Model
+        ._1_1_CouleurAcheteOperation_Repository
+        .modelDatasSnapList
+        .filter {
+            it.parentProduitAchateOperationVID == composeKeyVID &&
+                    it.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
+        }
+        .sumOf { it.totaleQuantity }
 
     Card(
         modifier = modifier
@@ -48,28 +64,46 @@ fun MainItem_APP2_ID_2(
                 .padding(8.dp)
         ) {
             // Product info row
-            Card (
+            Card(
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
+                Box(
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
                         text = relative_2_1_ProduitsDataBase?.nom ?: "N/A",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
                     )
 
+                    // Added total quantity text with alpha background at the end
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .background(
+                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
+                                shape = RoundedCornerShape(4.dp)
+                            )
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                    ) {
+                        Text(
+                            text = "Total: $totalQuantity",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 }
             }
 
             val couleursAcheteOperationsVIDs =
                 _0_HeadOfRepositorys_Repository_Model._1_1_CouleurAcheteOperation_Repository
                     .modelDatasSnapList
-                    .filter { it.parentProduitAchateOperationVID==composeKeyVID
-                            && it.etateActuellementEst== _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
+                    .filter {
+                        it.parentProduitAchateOperationVID == composeKeyVID
+                                && it.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
                     }
                     .map { it.vid }
 
@@ -105,4 +139,3 @@ fun MainItem_APP2_ID_2(
         }
     }
 }
-
