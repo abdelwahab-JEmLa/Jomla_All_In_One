@@ -32,6 +32,11 @@ fun QuantityButton(
             val couleuracheteoperationRepository =
                 viewModelInitApp._1_1_CouleurAcheteOperation_Repository
 
+            val etateActuellementEst1 = if (quantity == 0)
+                _1_1_CouleurAcheteOperation.EtateActuellementEst.SUPPRIME_AU_PREMIER_PICK
+            else
+                _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
+
             // Check if the operation exists
             val existingOperation = couleuracheteoperationRepository.modelDatasSnapList.find {
                 it.vid == compose_1_1_CouleurAcheteOperationVid
@@ -41,7 +46,11 @@ fun QuantityButton(
                 // Update the existing operation
                 existingOperation.apply {
                     totaleQuantity = quantity
-                    etateActuellementEst = _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
+
+
+                    etateActuellementEst =
+                        etateActuellementEst1
+
                 }
                 couleuracheteoperationRepository.updateUnSeulData(existingOperation)
 

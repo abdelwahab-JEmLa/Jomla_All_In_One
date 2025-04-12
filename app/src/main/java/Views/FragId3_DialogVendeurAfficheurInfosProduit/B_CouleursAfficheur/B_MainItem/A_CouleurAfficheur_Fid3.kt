@@ -84,9 +84,7 @@ fun B_CouleurAfficheur(
     val _1_1_CouleurAcheteOperation_Repository =
         koinInject<_1_1_CouleurAcheteOperation_Repository>()
     val couleurActuelleIndex = index.toLong()
-                 //<--
-                 //TODO(1): ajout un scroll au couleurActuelleIndex au start 
-    // Track initialized indices to prevent duplicate initialization
+
     val initializedIndices = remember { mutableSetOf<Long>() }
 
     LaunchedEffect(

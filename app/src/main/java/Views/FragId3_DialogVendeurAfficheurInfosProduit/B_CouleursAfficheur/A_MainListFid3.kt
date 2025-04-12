@@ -20,7 +20,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,6 +29,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import com.example.clientjetpack.ViewModel.HeadViewModel
+import kotlinx.coroutines.delay
 
 @Composable
 fun A_MainListFragId3(
@@ -46,7 +46,7 @@ fun A_MainListFragId3(
 ) {
     var colorsListToDisplay by remember { mutableStateOf(emptyList<ColorsArticlesTabelle>()) }
 
-    // Use LazyListState instead of LazyGridState to avoid layout issues
+    // Use LazyListState for list control and scrolling
     val listState = rememberLazyListState()
 
     // Get screen height to calculate appropriate LazyColumn height
@@ -62,6 +62,20 @@ fun A_MainListFragId3(
         colorsListToDisplay = listOf(stats.idcolor1, stats.idcolor2, stats.idcolor3, stats.idcolor4)
             .filter { it != 0L }
             .mapNotNull { colorId -> colorsArticlesTabelleModel.find { it.idColore == colorId } }
+    }
+
+    LaunchedEffect(clickedCouleurIndex, colorsListToDisplay) {
+        // Wait a short delay to ensure colors list is populated and layout is ready
+        delay(100)
+        // Only attempt to scroll if we have a valid index and it's within bounds
+        if (clickedCouleurIndex >= 0 && clickedCouleurIndex < colorsListToDisplay.size) {
+            listState.animateScrollToItem(clickedCouleurIndex)
+            // Log for debug purposes
+            android.util.Log.d(
+                "ColorScroll",
+                "Scrolling to index: $clickedCouleurIndex"
+            )
+        }
     }
 
     Column(
@@ -88,13 +102,7 @@ fun A_MainListFragId3(
                     verticalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
                     itemsIndexed(colorsListToDisplay) { index, color ->
-                        // Calculate if the item is visible in the current viewport
-                        val isItemVisible = remember {
-                            derivedStateOf {
-                                val visibleItems = listState.layoutInfo.visibleItemsInfo
-                                visibleItems.any { it.index == index }
-                            }
-                        }
+
 
                         Box(
                             modifier = Modifier
@@ -118,9 +126,8 @@ fun A_MainListFragId3(
                                 currentClient = currentClient,
                                 colorsArticlesTabelleModele = colorsArticlesTabelleModele,
                                 parentCompose_1_2_ProduitAcheteOperationVid = parentCompose_1_2_ProduitAcheteOperationVid,
-                                clickedCouleurIndex=clickedCouleurIndex,
-
-                                )
+                                clickedCouleurIndex = clickedCouleurIndex,
+                            )
                         }
                     }
                 }
