@@ -69,9 +69,9 @@ fun B_CouleurAfficheur(
     // Using a simpler approach for visibility tracking
     var compose_1_1_CouleurAcheteOperationVid by remember { mutableLongStateOf(0L) }
     val _1_1_CouleurAcheteOperation_Repository = koinInject<_1_1_CouleurAcheteOperation_Repository>()
-    val couleurActuelleId = color.idColore
+    val couleurActuelleIndex = index.toLong()
 
-    LaunchedEffect(key1 = parentCompose_1_2_ProduitAcheteOperationVid, key2 = couleurActuelleId) {
+    LaunchedEffect(key1 = parentCompose_1_2_ProduitAcheteOperationVid, key2 = couleurActuelleIndex) {
         // Only proceed if we have a valid parent ID - this is critical
         if (parentCompose_1_2_ProduitAcheteOperationVid <= 0) {
             return@LaunchedEffect
@@ -80,7 +80,7 @@ fun B_CouleurAfficheur(
         // Check if the color operation already exists
         val existing_1_1_CouleurAcheteOperation =
             _1_1_CouleurAcheteOperation_Repository.modelDatasSnapList.find {
-                it.couleurId_ParentVID == couleurActuelleId &&
+                it.couleurIndex_ParentVID == couleurActuelleIndex &&
                         it.parentProduitAchateOperationVID == parentCompose_1_2_ProduitAcheteOperationVid
             }
 
@@ -96,7 +96,7 @@ fun B_CouleurAfficheur(
             // Create and add the new entry
             val newColorOp = _1_1_CouleurAcheteOperation(
                 vid = newVid,
-                couleurId_ParentVID = couleurActuelleId,
+                couleurIndex_ParentVID = couleurActuelleIndex,
                 parentProduitAchateOperationVID = parentCompose_1_2_ProduitAcheteOperationVid
             )
 

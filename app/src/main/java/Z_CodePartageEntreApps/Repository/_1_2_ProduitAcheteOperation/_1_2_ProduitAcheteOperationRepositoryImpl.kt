@@ -34,7 +34,7 @@ class _1_2_ProduitAcheteOperationRepositoryImpl(
 
     internal var lastUpdateTimestamp = 0L
     var initialDataLoaded = false
-    private val repositoryScope = CoroutineScope(Dispatchers.IO)
+    override val repositoryScope = CoroutineScope(Dispatchers.IO)
     private var valueEventListener: ValueEventListener? = null
     private val listenerLock = Any()
     private val flowListenerLock = Any()

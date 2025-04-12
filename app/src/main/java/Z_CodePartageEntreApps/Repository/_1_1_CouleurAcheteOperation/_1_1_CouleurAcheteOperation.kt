@@ -9,7 +9,7 @@ data class _1_1_CouleurAcheteOperation(
     var vid: Long = 0L,
 
     // Section Related Parents Foreign Key IDs
-    var couleurId_ParentVID: Long = 0L,
+    var couleurIndex_ParentVID: Long = 0L,
     var parentProduitAchateOperationVID: Long? =null,
 
     // Section InfosDeBase

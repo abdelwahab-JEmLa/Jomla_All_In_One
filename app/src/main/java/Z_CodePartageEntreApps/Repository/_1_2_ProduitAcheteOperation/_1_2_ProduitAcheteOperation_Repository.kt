@@ -3,6 +3,7 @@ package Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.firebase.Firebase
 import com.google.firebase.database.database
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 
 interface _1_2_ProduitAcheteOperation_Repository {
@@ -29,4 +30,6 @@ interface _1_2_ProduitAcheteOperation_Repository {
     fun addDataAndReturneItVID(data: _1_2_ProduitAcheteOperation,
                                onAddSuccess: (Long) -> Unit={}
     )
+
+    val repositoryScope: CoroutineScope
 }

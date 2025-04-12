@@ -10,6 +10,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -17,6 +18,7 @@ fun ColorDetails_APP2_ID_2(
     composeKeyVID: Long,
     _0_HeadOfRepositorys_Repository_Model: _0_0_HeadOfRepositorys_Model,
     relative_2_1_ProduitsDataBase_vid: Long?,
+    colorName: String? = null,
 ) {
     val relative_1_1_CouleurAcheteOperation = _0_HeadOfRepositorys_Repository_Model
         ._1_1_CouleurAcheteOperation_Repository
@@ -40,23 +42,31 @@ fun ColorDetails_APP2_ID_2(
                 modifier = Modifier.fillMaxWidth()
             )
             Text(
-                text = "Couleur ID: ${relative_1_1_CouleurAcheteOperation?.couleurId_ParentVID ?: "N/A"}",
+                text = "Couleur ID: ${relative_1_1_CouleurAcheteOperation?.couleurIndex_ParentVID ?: "N/A"}",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.fillMaxWidth()
             )
 
-            val couleurVID = if (relative_1_1_CouleurAcheteOperation?.couleurId_ParentVID
-                != 93L
-            ) {
-                relative_1_1_CouleurAcheteOperation?.couleurId_ParentVID
-            } else 1L
-
-            A_GlideDisplayImageByKeyId_Proto_4_11(
-                produitVID = relative_2_1_ProduitsDataBase_vid,
-                couleurVID = couleurVID,
-                size = 100.dp
-            )
+            if (colorName == null) {
+                A_GlideDisplayImageByKeyId_Proto_4_11(
+                    produitVID = relative_2_1_ProduitsDataBase_vid,
+                    couleurVID = relative_1_1_CouleurAcheteOperation?.couleurIndex_ParentVID?.plus(
+                        1
+                    ),
+                    size = 100.dp
+                )
+            } else {
+                Text(
+                    text = colorName ,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp)
+                        .graphicsLayer(rotationZ = 45f)  // Rotate 45 degrees
+                )
+            }
         }
     }
 }
