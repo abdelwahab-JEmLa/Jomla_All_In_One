@@ -109,7 +109,8 @@ fun A_MainScreen_APP2_ID_2(
     val formattedTotalPrice = formatter.format(totalPrice).replace("€", "دج")
 
     // Check if the BonAchat is in ON_MODE_COMMEND_ACTUELLEMENT state
-    val isOrderMode = relativeBonAchate?.etateActuellementEst == _1_3_BonAchat.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+    val isOrderMode =
+        relativeBonAchate?.etateActuellementEst == _1_3_BonAchat.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
 
     Box(modifier = modifier.fillMaxSize()) {
         Column(
@@ -180,40 +181,41 @@ fun A_MainScreen_APP2_ID_2(
                         }
                     }
                 }
-            }
 
-            // Success Animation Overlay
-            AnimatedVisibility(
-                visible = showOrderSuccess,
-                enter = fadeIn() + slideInVertically(),
-                exit = fadeOut() + slideOutVertically(),
-                modifier = Modifier
-                    .padding(top = 16.dp)
-            ) {
-                OrderSuccessMessage()
-            }
 
-            Column(
-                modifier = modifier.fillMaxSize()
-            ) {
-                Box(
-                    modifier = Modifier.weight(1f),
+                // Success Animation Overlay
+                AnimatedVisibility(
+                    visible = showOrderSuccess,
+                    enter = fadeIn() + slideInVertically(),
+                    exit = fadeOut() + slideOutVertically(),
+                    modifier = Modifier
+                        .padding(top = 16.dp)
                 ) {
-                    // Show loading indicator while data is being loaded
-                    if (progressValue < 1.0f) {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            LoadingContent(message = "Loading data...")
+                    OrderSuccessMessage()
+                }
+
+                Column(
+                    modifier = modifier.fillMaxSize()
+                ) {
+                    Box(
+                        modifier = Modifier.weight(1f),
+                    ) {
+                        // Show loading indicator while data is being loaded
+                        if (progressValue < 1.0f) {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                LoadingContent(message = "Loading data...")
+                            }
+                        } else {
+                            // Always show the list of items, regardless of order mode
+                            B_MainList_APP2_ID_2(
+                                composeKeyVID = composeKeyVID,
+                                _0_HeadOfRepositorys_Repository_Model = _0_0_HeadOfRepositorys_Repository
+                                    .repositorys_Model
+                            )
                         }
-                    } else {
-                        // Always show the list of items, regardless of order mode
-                        B_MainList_APP2_ID_2(
-                            composeKeyVID = composeKeyVID,
-                            _0_HeadOfRepositorys_Repository_Model = _0_0_HeadOfRepositorys_Repository
-                                .repositorys_Model
-                        )
                     }
                 }
             }
