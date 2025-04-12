@@ -2,11 +2,8 @@ package Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.
 
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -57,20 +54,7 @@ fun MainItem_APP2_ID_2(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(8.dp)
                 ) {
-                    Text(
-                        text = "OpVId (${composeKeyVID})",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    Text(
-                        text = "id (${relative_2_1_ProduitsDataBase?.vid ?: "N/A"})",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.fillMaxWidth()
-                    )
                     Text(
                         text = relative_2_1_ProduitsDataBase?.nom ?: "N/A",
                         style = MaterialTheme.typography.bodyMedium,
@@ -89,9 +73,7 @@ fun MainItem_APP2_ID_2(
                     }
                     .map { it.vid }
 
-            // Only render colors section if there are colors to display
             if (couleursAcheteOperationsVIDs.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(8.dp))
 
                 Card(
                     modifier = Modifier
@@ -105,18 +87,9 @@ fun MainItem_APP2_ID_2(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(8.dp)
                     ) {
-                        Text(
-                            text = "Colors",
-                            style = MaterialTheme.typography.titleSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-
-                        Spacer(modifier = Modifier.height(4.dp))
 
                         LazyRow(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             items(couleursAcheteOperationsVIDs) { couleurVId ->
                                 ColorDetails_APP2_ID_2(

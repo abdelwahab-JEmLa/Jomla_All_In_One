@@ -83,7 +83,6 @@ fun ColorDetails_APP2_ID_2(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 8.dp, top = 2.dp),
     ) {
         Box(
             modifier = Modifier
