@@ -27,10 +27,10 @@ class ViewModelFragment_APP2_ID_3(
 
     val repositorys_Model = _0_0_HeadOfRepositorys_Repository.repositorys_Model
 
-    val a_1_1_CouleurAcheteOperation =
+    private val a_1_1_CouleurAcheteOperation =
         repositorys_Model._1_1_CouleurAcheteOperation_Repository.modelDatasSnapList
 
-    val b_1_2_ProduitAcheteOperation =
+    private val b_1_2_ProduitAcheteOperation =
         repositorys_Model._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList
 
     val _2_1_ProduitsDataBase =
@@ -39,11 +39,9 @@ class ViewModelFragment_APP2_ID_3(
     fun groupeAchatsParIdCouleurEtAddAu_4_CouleurOperationCommand() {
         _uiStateFlow.value = _uiStateFlow.value.copy(isDataLoading = true)
 
-        // Clear previous data
         _0_0_HeadOfRepositorys_Repository.repositorys_Model._4_CouleurOperationCommand_Repository.deleteAllEtRestartSequenceces()
         _uiStateFlow.value._4_CouleurOperationCommand.clear()
 
-        // Filter operations based on their state
         val filteredCouleurOperations = a_1_1_CouleurAcheteOperation.filter {
             it.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
         }
@@ -52,13 +50,11 @@ class ViewModelFragment_APP2_ID_3(
             it.etateActuellementEst == _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME
         }
 
-        // Early return if no operations to process
         if (filteredCouleurOperations.isEmpty()) {
             _uiStateFlow.value = _uiStateFlow.value.copy(isDataLoading = false)
             return
         }
 
-        // Create lookup maps for efficient access without using associateBy
         val produitIdMap = mutableMapOf<Long, Any>()
         for (produit in _2_1_ProduitsDataBase) {
             produitIdMap[produit.vid] = produit
@@ -69,11 +65,9 @@ class ViewModelFragment_APP2_ID_3(
             produitAcheteToRealProductMap[produitAchete.vid] = produitAchete.produitAcheterID
         }
 
-        // Group and process operations in one pass
         val groupedOperations = mutableMapOf<Pair<Long, Long?>, MutableList<_1_1_CouleurAcheteOperation>>()
 
         for (operation in filteredCouleurOperations) {
-            // Determine the valid product ID
             val parentProductId = operation.parentProduitAchateOperationVID
             val realProductID = parentProductId?.let { produitAcheteToRealProductMap[it] }
             val validProduitVID = if (realProductID != null && produitIdMap.containsKey(realProductID)) {
