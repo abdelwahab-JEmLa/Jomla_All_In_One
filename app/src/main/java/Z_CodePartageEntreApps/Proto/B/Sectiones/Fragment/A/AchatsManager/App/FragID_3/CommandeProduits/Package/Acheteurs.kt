@@ -22,8 +22,6 @@ fun Acheteurs(
     colorsForProduct: List<_1_1_CouleurAcheteOperation>,
     Couleur: _1_1_CouleurAcheteOperation,
 ) {
-    // Using a regular Column instead of LazyColumn to avoid nested scrollable containers
-    // This fixes the "infinity maximum height constraints" error
     Row(
         modifier = Modifier
             .fillMaxWidth()
