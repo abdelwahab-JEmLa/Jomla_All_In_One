@@ -7,7 +7,7 @@ import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat_Repository
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur_Repository
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase_Repository
-import Z_CodePartageEntreApps.Repository._2_2_ClientsDataBase._2_2_ClientsDataBase_Repository
+import Z_CodePartageEntreApps.Repository._3_ClientsDataBase._3_ClientsDataBase_Repository
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -31,7 +31,7 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
     private val _1_5_Repository: _1_5_Vendeur_Repository,
 
     private val _2_1_Repository: _2_1_ProduitsDataBase_Repository,
-    private val _2_2_Repository: _2_2_ClientsDataBase_Repository,
+    private val _2_2_Repository: _3_ClientsDataBase_Repository,
 ) : _0_0_HeadOfRepositorys_Repository {
     private val TAG = _0_0_HeadOfRepositorys_Repository.TAG
 
@@ -159,7 +159,7 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                     _1_5_Vendeur_Repository = _1_5_Repository,
 
                     _2_1_ProduitsDataBase_Repository = _2_1_Repository,
-                    _2_2_ClientsDataBase_Repository = _2_2_Repository,
+                    _3_ClientsDataBase_Repository = _2_2_Repository,
                 )
 
                 // Update progress

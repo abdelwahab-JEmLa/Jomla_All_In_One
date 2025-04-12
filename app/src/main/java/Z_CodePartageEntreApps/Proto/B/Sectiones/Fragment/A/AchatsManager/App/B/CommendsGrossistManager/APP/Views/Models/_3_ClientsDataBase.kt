@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Model
+package Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.Views.Models
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -11,7 +11,7 @@ import androidx.room.PrimaryKey
 import com.google.firebase.database.IgnoreExtraProperties
 
 @Entity
-data class _2_2_ClientsDataBase(
+data class _3_ClientsDataBase(
     @PrimaryKey(autoGenerate = true)
     var vid: Long = 0L,
 

@@ -1,9 +1,9 @@
-package Z_CodePartageEntreApps.Repository._2_2_ClientsDataBase.Extension.Update
+package Z_CodePartageEntreApps.Repository._3_ClientsDataBase.Extension.Update
 
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import Z_CodePartageEntreApps.Model._2_2_ClientsDataBase
-import Z_CodePartageEntreApps.Repository._2_2_ClientsDataBase._2_2_ClientsDataBase_Repository
-import Z_CodePartageEntreApps.Repository._2_2_ClientsDataBase._2_2_ClientsDataBase_RepositoryImpl
+import Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.Views.Models._3_ClientsDataBase
+import Z_CodePartageEntreApps.Repository._3_ClientsDataBase._3_ClientsDataBase_Repository
+import Z_CodePartageEntreApps.Repository._3_ClientsDataBase._3_ClientsDataBase_RepositoryImpl
 import android.util.Log
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.firebase.database.ValueEventListener
@@ -14,16 +14,16 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
 
-class _2_2_ClientsDataBaseRepositoryUpdatesOperationsExtension(
-    private val repositoryImpl: _2_2_ClientsDataBase_RepositoryImpl
+class _3_ClientsDataBaseRepositoryUpdatesOperationsExtension(
+    private val repositoryImpl: _3_ClientsDataBase_RepositoryImpl
 ) {
-    private val TAG = _2_2_ClientsDataBase_Repository.TAG
+    private val TAG = _3_ClientsDataBase_Repository.TAG
 
     fun updateUnSeulData(
-        data: _2_2_ClientsDataBase,
+        data: _3_ClientsDataBase,
         repositoryScope: CoroutineScope,
         appDatabase: AppDatabase,
-        modelDatasSnapList: SnapshotStateList<_2_2_ClientsDataBase>
+        modelDatasSnapList: SnapshotStateList<_3_ClientsDataBase>
     ) {
         repositoryScope.launch(Dispatchers.Main) {
             val recordIndex = modelDatasSnapList.indexOfFirst { it.vid == data.vid }
@@ -34,7 +34,7 @@ class _2_2_ClientsDataBaseRepositoryUpdatesOperationsExtension(
 
         repositoryScope.launch(Dispatchers.IO) {
             try {
-                appDatabase._2_2_ClientsDataBaseDao().insert(data)
+                appDatabase._3_ClientsDataBaseDao().insert(data)
                 firebaseUpdateData(data)
             } catch (e: Exception) {
                 Log.e(TAG, "Error updating data: ${e.message}")
@@ -43,10 +43,10 @@ class _2_2_ClientsDataBaseRepositoryUpdatesOperationsExtension(
     }
 
     fun deleteUnSeulData(
-        data: _2_2_ClientsDataBase,
+        data: _3_ClientsDataBase,
         repositoryScope: CoroutineScope,
         appDatabase: AppDatabase,
-        modelDatasSnapList: SnapshotStateList<_2_2_ClientsDataBase>
+        modelDatasSnapList: SnapshotStateList<_3_ClientsDataBase>
     ) {
         try {
             repositoryScope.launch(Dispatchers.Main) {
@@ -58,8 +58,8 @@ class _2_2_ClientsDataBaseRepositoryUpdatesOperationsExtension(
 
             repositoryScope.launch(Dispatchers.IO) {
                 try {
-                    _2_2_ClientsDataBase_Repository.sonDataBaseRef.child(data.vid.toString()).removeValue().await()
-                    appDatabase._2_2_ClientsDataBaseDao().delete(data)
+                    _3_ClientsDataBase_Repository.sonDataBaseRef.child(data.vid.toString()).removeValue().await()
+                    appDatabase._3_ClientsDataBaseDao().delete(data)
                 } catch (e: Exception) {
                     Log.e(TAG, "Error deleting data: ${e.message}")
                 }
@@ -70,10 +70,10 @@ class _2_2_ClientsDataBaseRepositoryUpdatesOperationsExtension(
     }
 
     fun addData(
-        data: _2_2_ClientsDataBase,
+        data: _3_ClientsDataBase,
         repositoryScope: CoroutineScope,
         appDatabase: AppDatabase,
-        modelDatasSnapList: SnapshotStateList<_2_2_ClientsDataBase>
+        modelDatasSnapList: SnapshotStateList<_3_ClientsDataBase>
     ) {
         try {
             repositoryScope.launch(Dispatchers.Main) {
@@ -82,8 +82,8 @@ class _2_2_ClientsDataBaseRepositoryUpdatesOperationsExtension(
 
             repositoryScope.launch(Dispatchers.IO) {
                 try {
-                    _2_2_ClientsDataBase_Repository.sonDataBaseRef.child(data.vid.toString()).setValue(data).await()
-                    appDatabase._2_2_ClientsDataBaseDao().insert(data)
+                    _3_ClientsDataBase_Repository.sonDataBaseRef.child(data.vid.toString()).setValue(data).await()
+                    appDatabase._3_ClientsDataBaseDao().insert(data)
                 } catch (e: Exception) {
                     Log.e(TAG, "Error adding data: ${e.message}")
                 }
@@ -93,19 +93,19 @@ class _2_2_ClientsDataBaseRepositoryUpdatesOperationsExtension(
         }
     }
 
-    private suspend fun firebaseUpdateData(data: _2_2_ClientsDataBase) {
+    private suspend fun firebaseUpdateData(data: _3_ClientsDataBase) {
         try {
-            _2_2_ClientsDataBase_Repository.sonDataBaseRef.child(data.vid.toString()).setValue(data).await()
+            _3_ClientsDataBase_Repository.sonDataBaseRef.child(data.vid.toString()).setValue(data).await()
         } catch (e: Exception) {
             Log.e(TAG, "Error updating Firebase data: ${e.message}")
         }
     }
 
     suspend fun updateMultiDatas(
-        datas: SnapshotStateList<_2_2_ClientsDataBase>,
+        datas: SnapshotStateList<_3_ClientsDataBase>,
         isUpdating: AtomicBoolean,
         appDatabase: AppDatabase,
-        modelDatasSnapList: SnapshotStateList<_2_2_ClientsDataBase>,
+        modelDatasSnapList: SnapshotStateList<_3_ClientsDataBase>,
         valueEventListener: ValueEventListener?,
         flowValueEventListener: ValueEventListener?,
         listenerLock: Any,
@@ -122,8 +122,8 @@ class _2_2_ClientsDataBaseRepositoryUpdatesOperationsExtension(
 
             withContext(Dispatchers.IO) {
                 try {
-                    appDatabase._2_2_ClientsDataBaseDao().deleteAll()
-                    appDatabase._2_2_ClientsDataBaseDao().insertAll(datasList)
+                    appDatabase._3_ClientsDataBaseDao().deleteAll()
+                    appDatabase._3_ClientsDataBaseDao().insertAll(datasList)
                 } catch (e: Exception) {
                     Log.e(TAG, "Error updating Room database: ${e.message}")
                 }
@@ -136,7 +136,7 @@ class _2_2_ClientsDataBaseRepositoryUpdatesOperationsExtension(
                 try {
                     synchronized(listenerLock) {
                         valueEventListener?.let {
-                            _2_2_ClientsDataBase_Repository.sonDataBaseRef.removeEventListener(
+                            _3_ClientsDataBase_Repository.sonDataBaseRef.removeEventListener(
                                 it
                             )
                         }
@@ -145,7 +145,7 @@ class _2_2_ClientsDataBaseRepositoryUpdatesOperationsExtension(
 
                     synchronized(flowListenerLock) {
                         flowValueEventListener?.let {
-                            _2_2_ClientsDataBase_Repository.sonDataBaseRef.removeEventListener(
+                            _3_ClientsDataBase_Repository.sonDataBaseRef.removeEventListener(
                                 it
                             )
                         }
@@ -159,7 +159,7 @@ class _2_2_ClientsDataBaseRepositoryUpdatesOperationsExtension(
                 } finally {
                     synchronized(listenerLock) {
                         if (!isListenerActive.get() && tempListener != null) {
-                            _2_2_ClientsDataBase_Repository.sonDataBaseRef.addValueEventListener(
+                            _3_ClientsDataBase_Repository.sonDataBaseRef.addValueEventListener(
                                 tempListener
                             )
                             isListenerActive.set(true)
@@ -168,7 +168,7 @@ class _2_2_ClientsDataBaseRepositoryUpdatesOperationsExtension(
 
                     synchronized(flowListenerLock) {
                         if (!isFlowListenerActive.get() && tempFlowListener != null) {
-                            _2_2_ClientsDataBase_Repository.sonDataBaseRef.addValueEventListener(
+                            _3_ClientsDataBase_Repository.sonDataBaseRef.addValueEventListener(
                                 tempFlowListener
                             )
                             isFlowListenerActive.set(true)
@@ -188,9 +188,9 @@ class _2_2_ClientsDataBaseRepositoryUpdatesOperationsExtension(
         }
     }
 
-    private fun batchFireBaseSet(datas: List<_2_2_ClientsDataBase>) {
+    private fun batchFireBaseSet(datas: List<_3_ClientsDataBase>) {
         try {
-            val reference = _2_2_ClientsDataBase_Repository.sonDataBaseRef
+            val reference = _3_ClientsDataBase_Repository.sonDataBaseRef
             val batchUpdates = HashMap<String, Any>()
 
             for (data in datas) {

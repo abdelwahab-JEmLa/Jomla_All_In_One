@@ -1,9 +1,9 @@
-package Z_CodePartageEntreApps.Repository._2_2_ClientsDataBase
+package Z_CodePartageEntreApps.Repository._3_ClientsDataBase
 
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import Z_CodePartageEntreApps.Model._2_2_ClientsDataBase
-import Z_CodePartageEntreApps.Repository._2_2_ClientsDataBase.Extension.Log._2_2_ClientsDataBaseRepositoryLogOperationsExtension
-import Z_CodePartageEntreApps.Repository._2_2_ClientsDataBase.Extension.Update._2_2_ClientsDataBaseRepositoryUpdatesOperationsExtension
+import Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.CommendsGrossistManager.APP.Views.Models._3_ClientsDataBase
+import Z_CodePartageEntreApps.Repository._3_ClientsDataBase.Extension.Log._3_ClientsDataBaseRepositoryLogOperationsExtension
+import Z_CodePartageEntreApps.Repository._3_ClientsDataBase.Extension.Update._3_ClientsDataBaseRepositoryUpdatesOperationsExtension
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -19,12 +19,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
 
-class _2_2_ClientsDataBase_RepositoryImpl(
+class _3_ClientsDataBase_RepositoryImpl(
     private val appDatabase: AppDatabase,
-) : _2_2_ClientsDataBase_Repository {
-    private val TAG = _2_2_ClientsDataBase_Repository.TAG
+) : _3_ClientsDataBase_Repository {
+    private val TAG = _3_ClientsDataBase_Repository.TAG
 
-    override var modelDatasSnapList: SnapshotStateList<_2_2_ClientsDataBase> =
+    override var modelDatasSnapList: SnapshotStateList<_3_ClientsDataBase> =
         mutableStateListOf()
     override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
     override val activeId = MutableStateFlow(0L)
@@ -41,12 +41,12 @@ class _2_2_ClientsDataBase_RepositoryImpl(
     private val listenerLock = Any()
     private val flowListenerLock = Any()
 
-    private val updatesOperations = _2_2_ClientsDataBaseRepositoryUpdatesOperationsExtension(this)
-    private val logOperations = _2_2_ClientsDataBaseRepositoryLogOperationsExtension(this)
+    private val updatesOperations = _3_ClientsDataBaseRepositoryUpdatesOperationsExtension(this)
+    private val logOperations = _3_ClientsDataBaseRepositoryLogOperationsExtension(this)
 
     init {
         repositoryScope.launch {
-            initialize_2_2_ClientsDataBaseRepository()
+            initialize_3_ClientsDataBaseRepository()
         }
     }
 
@@ -69,12 +69,12 @@ class _2_2_ClientsDataBase_RepositoryImpl(
     }
 
 
-    override fun updateUnSeulData(data: _2_2_ClientsDataBase) {
+    override fun updateUnSeulData(data: _3_ClientsDataBase) {
         updatesOperations.updateUnSeulData(data, repositoryScope, appDatabase, modelDatasSnapList)
     }
 
 
-    private suspend fun initialize_2_2_ClientsDataBaseRepository() {
+    private suspend fun initialize_3_ClientsDataBaseRepository() {
         try {
             loadDepuitRoom()
             checkDataConsistency()
@@ -93,7 +93,7 @@ class _2_2_ClientsDataBase_RepositoryImpl(
             progressRepo.value = 0.2f
             withContext(Dispatchers.IO) {
                 val dataList = try {
-                    appDatabase._2_2_ClientsDataBaseDao().getAll()
+                    appDatabase._3_ClientsDataBaseDao().getAll()
                 } catch (e: Exception) {
                     Log.e(TAG, "Error loading from Room: ${e.message}")
                     emptyList()
@@ -118,7 +118,7 @@ class _2_2_ClientsDataBase_RepositoryImpl(
         try {
             val roomCount = withContext(Dispatchers.IO) {
                 try {
-                    appDatabase._2_2_ClientsDataBaseDao().getCount()
+                    appDatabase._3_ClientsDataBaseDao().getCount()
                 } catch (e: Exception) {
                     Log.e(TAG, "Error getting Room count: ${e.message}")
                     0
@@ -127,7 +127,7 @@ class _2_2_ClientsDataBase_RepositoryImpl(
 
             val firebaseSnapshot = try {
                 withContext(Dispatchers.IO) {
-                    val task = _2_2_ClientsDataBase_Repository.sonDataBaseRef.get()
+                    val task = _3_ClientsDataBase_Repository.sonDataBaseRef.get()
                     Tasks.await(task)
                 }
             } catch (e: Exception) {
@@ -162,9 +162,9 @@ class _2_2_ClientsDataBase_RepositoryImpl(
                 flowValueEventListener = object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         try {
-                            val updatedList = mutableListOf<_2_2_ClientsDataBase>()
+                            val updatedList = mutableListOf<_3_ClientsDataBase>()
                             for (dataSnapshot in snapshot.children) {
-                                val data = dataSnapshot.getValue(_2_2_ClientsDataBase::class.java)
+                                val data = dataSnapshot.getValue(_3_ClientsDataBase::class.java)
                                 data?.let {
                                     updatedList.add(it)
                                 }
@@ -179,8 +179,8 @@ class _2_2_ClientsDataBase_RepositoryImpl(
 
                             repositoryScope.launch(Dispatchers.IO) {
                                 try {
-                                    appDatabase._2_2_ClientsDataBaseDao().deleteAll()
-                                    appDatabase._2_2_ClientsDataBaseDao().insertAll(updatedList)
+                                    appDatabase._3_ClientsDataBaseDao().deleteAll()
+                                    appDatabase._3_ClientsDataBaseDao().insertAll(updatedList)
                                 } catch (e: Exception) {
                                     Log.e(
                                         TAG,
@@ -198,7 +198,7 @@ class _2_2_ClientsDataBase_RepositoryImpl(
                     }
                 }
 
-                _2_2_ClientsDataBase_Repository.sonDataBaseRef.addValueEventListener(flowValueEventListener!!)
+                _3_ClientsDataBase_Repository.sonDataBaseRef.addValueEventListener(flowValueEventListener!!)
                 isFlowListenerActive.set(true)
             }
         }
@@ -208,7 +208,7 @@ class _2_2_ClientsDataBase_RepositoryImpl(
         synchronized(flowListenerLock) {
             if (isFlowListenerActive.get() && flowValueEventListener != null) {
                 try {
-                    _2_2_ClientsDataBase_Repository.sonDataBaseRef.removeEventListener(flowValueEventListener!!)
+                    _3_ClientsDataBase_Repository.sonDataBaseRef.removeEventListener(flowValueEventListener!!)
                 } catch (e: Exception) {
                     Log.e(TAG, "Error removing flow listener: ${e.message}")
                 } finally {
@@ -228,20 +228,20 @@ class _2_2_ClientsDataBase_RepositoryImpl(
 
             viewModelScope.launch(Dispatchers.IO) {
                 try {
-                    val task = _2_2_ClientsDataBase_Repository.sonDataBaseRef.get()
+                    val task = _3_ClientsDataBase_Repository.sonDataBaseRef.get()
                     val snapshot = Tasks.await(task)
 
                     try {
-                        appDatabase._2_2_ClientsDataBaseDao().deleteAll()
+                        appDatabase._3_ClientsDataBaseDao().deleteAll()
                     } catch (e: Exception) {
                         Log.e(TAG, "Error deleting Room data: ${e.message}")
                     }
 
-                    val dataList = mutableListOf<_2_2_ClientsDataBase>()
+                    val dataList = mutableListOf<_3_ClientsDataBase>()
 
                     for (dataSnapshot in snapshot.children) {
                         try {
-                            val data = dataSnapshot.getValue(_2_2_ClientsDataBase::class.java)
+                            val data = dataSnapshot.getValue(_3_ClientsDataBase::class.java)
                             data?.let {
                                 dataList.add(it)
                             }
@@ -252,7 +252,7 @@ class _2_2_ClientsDataBase_RepositoryImpl(
 
                     if (dataList.isNotEmpty()) {
                         try {
-                            appDatabase._2_2_ClientsDataBaseDao().insertAll(dataList)
+                            appDatabase._3_ClientsDataBaseDao().insertAll(dataList)
 
                             withContext(Dispatchers.Main) {
                                 modelDatasSnapList.addAll(dataList)
@@ -279,7 +279,7 @@ class _2_2_ClientsDataBase_RepositoryImpl(
         synchronized(listenerLock) {
             if (isListenerActive.get() && valueEventListener != null) {
                 try {
-                    _2_2_ClientsDataBase_Repository.sonDataBaseRef.removeEventListener(valueEventListener!!)
+                    _3_ClientsDataBase_Repository.sonDataBaseRef.removeEventListener(valueEventListener!!)
                 } catch (e: Exception) {
                     Log.e(TAG, "Error removing data listener: ${e.message}")
                 } finally {
@@ -290,15 +290,15 @@ class _2_2_ClientsDataBase_RepositoryImpl(
         }
     }
 
-    override fun deleteUnSeulData(data: _2_2_ClientsDataBase) {
+    override fun deleteUnSeulData(data: _3_ClientsDataBase) {
         updatesOperations.deleteUnSeulData(data, repositoryScope, appDatabase, modelDatasSnapList)
     }
 
-    override fun addData(data: _2_2_ClientsDataBase) {
+    override fun addData(data: _3_ClientsDataBase) {
         updatesOperations.addData(data, repositoryScope, appDatabase, modelDatasSnapList)
     }
 
-    override suspend fun updateMultiDatas(datas: SnapshotStateList<_2_2_ClientsDataBase>) {
+    override suspend fun updateMultiDatas(datas: SnapshotStateList<_3_ClientsDataBase>) {
         updatesOperations.updateMultiDatas(
             datas,
             isUpdating,
