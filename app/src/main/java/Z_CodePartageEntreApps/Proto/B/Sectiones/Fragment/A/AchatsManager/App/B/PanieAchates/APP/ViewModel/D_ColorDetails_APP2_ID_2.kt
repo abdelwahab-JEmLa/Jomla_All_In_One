@@ -1,10 +1,13 @@
 package Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.PanieAchates.APP.ViewModel
 
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
+import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.View.A_GlideDisplayImageByKeyId_Proto_4_11
+import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -22,12 +25,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import kotlinx.coroutines.launch
@@ -40,8 +45,12 @@ fun D_ColorDetails_APP2_ID_2(
     relative_2_1_ProduitsDataBase_vid: Long?,
 ) {
     val database = koinInject<AppDatabase>()
+    val viewModelInitApp = koinInject<ViewModelInitApp>()
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     var articlesBasesStatsModel by remember { mutableStateOf<List<Any>?>(null) }
+    var showQuantityDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(composeKeyVID) {
         _0_HeadOfRepositorys_Repository_Model._1_2_ProduitAcheteOperation_Repository
@@ -55,6 +64,17 @@ fun D_ColorDetails_APP2_ID_2(
         ._1_1_CouleurAcheteOperation_Repository
         .modelDatasSnapList
         .find { it.vid == composeKeyVID }
+
+    // Find the parent product operation
+    val parentProduitAcheteOperation = relative_1_1_CouleurAcheteOperation?.parentProduitAchateOperationVID?.let { parentId ->
+        _0_HeadOfRepositorys_Repository_Model
+            ._1_2_ProduitAcheteOperation_Repository
+            .modelDatasSnapList
+            .find { it.vid == parentId }
+    }
+
+    // Determine if we should use provisional price or regular price
+    val provisionalPrice = parentProduitAcheteOperation?.provisoireMonPrix ?: 0.0
 
     fun getColorNameByIndex(colorIndex: Long?, productId: Long?): String? {
         if (colorIndex == null || productId == null) return null
@@ -77,8 +97,39 @@ fun D_ColorDetails_APP2_ID_2(
         getColorNameByIndex(
             relative_1_1_CouleurAcheteOperation?.couleurIndex_ParentVID,
             relative_2_1_ProduitsDataBase_vid
+        ) ?: "Color"
+    } else "Color"
+
+
+
+
+
+    // Create a dummy sale for the dialog
+    val dummySale = remember {
+        SoldArticlesTabelle()
+    }
+
+    if (showQuantityDialog && relative_1_1_CouleurAcheteOperation != null) {
+        ColorSelectionDialogF2(
+            onDismiss = { showQuantityDialog = false },
+            currentQuantity = relative_1_1_CouleurAcheteOperation.totaleQuantity,
+            colorName = colorName,
+            onQuantitySelected = { newQuantity ->
+                relative_1_1_CouleurAcheteOperation.let { colorItem ->
+                    val updatedColorItem = colorItem.copy(
+                        totaleQuantity = newQuantity
+                    )
+                    _0_HeadOfRepositorys_Repository_Model
+                        ._1_1_CouleurAcheteOperation_Repository
+                        .updateUnSeulData(updatedColorItem)
+                }
+            },
+            currentSale = dummySale,
+            viewModelInitApp = viewModelInitApp,
+            indexColoreAcheter = relative_1_1_CouleurAcheteOperation.couleurIndex_ParentVID.toInt(),
+            compose_1_1_CouleurAcheteOperationVid = composeKeyVID
         )
-    } else null
+    }
 
     Card(
         modifier = Modifier
@@ -139,7 +190,7 @@ fun D_ColorDetails_APP2_ID_2(
                     size = 100.dp,
                     onImageNeExistePas = {
                         Text(
-                            text = colorName ?: "Color name not available",
+                            text = colorName,
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier
@@ -158,6 +209,9 @@ fun D_ColorDetails_APP2_ID_2(
                                 .size(50.dp)
                                 .clip(CircleShape)
                                 .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
+                                .clickable {
+                                    showQuantityDialog = true
+                                }
                                 .zIndex(2f),
                             contentAlignment = Alignment.Center
                         ) {

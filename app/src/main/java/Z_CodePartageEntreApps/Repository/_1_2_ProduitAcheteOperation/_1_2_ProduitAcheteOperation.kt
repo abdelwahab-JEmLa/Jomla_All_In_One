@@ -14,6 +14,7 @@ data class _1_2_ProduitAcheteOperation(
     // Section InfosDeBase
 
     // Section StatuesMutable
+    var provisoireMonPrix: Double = 0.0,
 
     var etateActuellementEst: EtateActuellementEst =
         EtateActuellementEst.PRESENTATION,

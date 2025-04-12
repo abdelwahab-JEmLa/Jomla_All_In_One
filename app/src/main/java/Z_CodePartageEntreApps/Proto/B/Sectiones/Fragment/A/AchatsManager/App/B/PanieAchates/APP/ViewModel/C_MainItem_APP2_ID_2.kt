@@ -3,6 +3,7 @@ package Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,13 +13,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import java.text.NumberFormat
 import java.util.Locale
@@ -50,12 +60,26 @@ fun C_MainItem_APP2_ID_2(
         }
         .sumOf { it.totaleQuantity }
 
-    // Calculate total price based on quantity and selling price
-    val price = relative_2_1_ProduitsDataBase?.monPrixVent ?: 0.0
+    // Determine if we should use provisional price or regular price
+    val provisionalPrice = relative_1_2_ProduitAcheteOperation?.provisoireMonPrix ?: 0.0
+    val defaultPrice = relative_2_1_ProduitsDataBase?.monPrixVent ?: 0.0
+    val useProvisionalPrice = provisionalPrice > 0.0
+
+    // Initial price value based on whether to use provisional or default price
+    val initialPrice = if (useProvisionalPrice) provisionalPrice else defaultPrice
+
+    // State for price editing
+    var isEditingPrice by remember { mutableStateOf(false) }
+    var priceText by remember { mutableStateOf(initialPrice.toString()) }
+    val focusRequester = remember { FocusRequester() }
 
     // Format price with Euro symbol and proper formatting using NumberFormat
     val formatter = NumberFormat.getCurrencyInstance(Locale.FRANCE)
-    val formattedPrice = formatter.format(price)
+    val formattedPrice = if (useProvisionalPrice) {
+        formatter.format(provisionalPrice).replace("€", "دج")
+    } else {
+        formatter.format(defaultPrice).replace("€", "دج")
+    }
 
     Card(
         modifier = modifier
@@ -116,12 +140,59 @@ fun C_MainItem_APP2_ID_2(
                                 modifier = Modifier.padding(horizontal = 4.dp)
                             )
 
-                            // Price text with product selling price in Euro format
-                            Text(
-                                text = "× $formattedPrice",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.secondary
-                            )
+                            // Show either the editable text field or clickable price text
+                            if (isEditingPrice) {
+                                OutlinedTextField(
+                                    value = priceText,
+                                    onValueChange = { newValue ->
+                                        // Only allow numeric input with optional decimal point
+                                        if (newValue.isEmpty() || newValue.matches(Regex("^\\d*\\.?\\d*$"))) {
+                                            priceText = newValue
+                                        }
+                                    },
+                                    modifier = Modifier
+                                        .focusRequester(focusRequester),
+                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                    singleLine = true,
+                                    label = { Text("Prix") }
+                                )
+
+                                // Request focus when the text field is shown
+                                androidx.compose.runtime.LaunchedEffect(focusRequester) {
+                                    focusRequester.requestFocus()
+                                }
+
+                                // Update price when focus is lost
+                                androidx.compose.runtime.LaunchedEffect(isEditingPrice) {
+                                    if (isEditingPrice) {
+                                        focusRequester.requestFocus()
+                                    } else {
+                                        // When editing is finished, update the provisional price
+                                        val newPrice = priceText.toDoubleOrNull() ?: defaultPrice
+                                        relative_1_2_ProduitAcheteOperation?.let { product ->
+                                            val updatedProduct = product.copy(
+                                                provisoireMonPrix = newPrice
+                                            )
+                                            _0_HeadOfRepositorys_Repository_Model
+                                                ._1_2_ProduitAcheteOperation_Repository
+                                                .updateUnSeulData(updatedProduct)
+                                        }
+                                    }
+                                }
+                            } else {
+                                // Price text with clickable functionality
+                                Text(
+                                    text = "× $formattedPrice",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = if (useProvisionalPrice)
+                                        MaterialTheme.colorScheme.tertiary
+                                    else
+                                        MaterialTheme.colorScheme.secondary,
+                                    modifier = Modifier.clickable {
+                                        isEditingPrice = true
+                                    }
+                                )
+                            }
                         }
                     }
                 }

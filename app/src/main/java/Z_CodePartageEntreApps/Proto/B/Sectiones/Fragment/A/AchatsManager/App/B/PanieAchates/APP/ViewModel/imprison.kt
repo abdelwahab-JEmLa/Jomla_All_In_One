@@ -62,7 +62,13 @@ fun printReceipt(
                 .find { it.vid == product.produitAcheterID }
 
             val productName = productDetails?.nom ?: "Produit"
-            val productPrice = productDetails?.monPrixVent ?: 0.0
+
+            // Use provisional price if available, otherwise use the default price
+            val productPrice = if (product.provisoireMonPrix > 0.0) {
+                product.provisoireMonPrix
+            } else {
+                productDetails?.monPrixVent ?: 0.0
+            }
 
             // Get colors with quantity > 0 and sum their quantities
             val totalQuantity = repositorysModel._1_1_CouleurAcheteOperation_Repository
