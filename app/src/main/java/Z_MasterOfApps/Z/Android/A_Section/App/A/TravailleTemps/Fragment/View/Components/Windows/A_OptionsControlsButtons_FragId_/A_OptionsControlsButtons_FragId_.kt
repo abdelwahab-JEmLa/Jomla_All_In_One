@@ -87,7 +87,6 @@ fun A_OptionsControlsButtons_FragId_(
                     )
                 }
 
-
                 MenuButton(
                     showLabels = showLabels,
                     showMenu = showMenu,
@@ -99,8 +98,7 @@ fun A_OptionsControlsButtons_FragId_(
 }
 
 @Composable
-fun ControlButton(  //<--
-//TODO(1): enlve le gray colos si diable 
+fun ControlButton(
     onClick: () -> Unit,
     icon: Any,
     contentDescription: String,
