@@ -2,11 +2,11 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.core.net.toUri
 import org.osmdroid.views.overlay.Marker
 
 
@@ -14,7 +14,7 @@ import org.osmdroid.views.overlay.Marker
 fun NavigationDialog(
     onDismiss: () -> Unit,
     onConfirm: (Marker) -> Unit,
-    marker: Marker
+    marker: Marker,
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -37,16 +37,15 @@ fun NavigationDialog(
 fun NavDialoge(
     showNavigationDialog: Boolean,
     selectedMarker: Marker?,
-    context: Context
+    context: Context,
 ) {
     var showNavigationDialog1 = showNavigationDialog
     if (showNavigationDialog1 && selectedMarker != null) {
         NavigationDialog(
             onDismiss = { showNavigationDialog1 = false },
             onConfirm = { marker ->
-                val uri = Uri.parse(
-                    "google.navigation:q=${marker.position.latitude},${marker.position.longitude}&mode=d"
-                )
+                val uri =
+                    "google.navigation:q=${marker.position.latitude},${marker.position.longitude}&mode=d".toUri()
                 val mapIntent = Intent(Intent.ACTION_VIEW, uri).apply {
                     setPackage("com.google.android.apps.maps")
                 }
