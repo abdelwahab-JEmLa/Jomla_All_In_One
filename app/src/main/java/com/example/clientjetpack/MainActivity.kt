@@ -35,7 +35,6 @@ import org.koin.core.context.startKoin
 
 private const val TAG = "MainActivity"
 
-
 class MyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
@@ -51,8 +50,6 @@ class MyApplication : Application() {
             Log.e("Firebase", "Initialization error: ${e.message}")
         }
 
-
-        // Initialize Koin with the appropriate modules
         startKoin {
             androidLogger()
             androidContext(this@MyApplication)
@@ -67,7 +64,6 @@ class MyApplication : Application() {
             }
         }
     }
-
 }
 
 data class AppViewModels(

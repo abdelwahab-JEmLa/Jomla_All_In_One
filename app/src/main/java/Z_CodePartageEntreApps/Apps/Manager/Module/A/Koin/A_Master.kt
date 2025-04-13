@@ -82,7 +82,8 @@ val commonRepositoriesModule = module {
 
     viewModel { ViewModelFragment_StartUpScreen(get(),get(),get(),get()) }
     viewModel { ViewModelFragment_StartUpScreen(get(),get(),get(),get()) }
-    viewModel { ViewModelInitApp(get(),get()
+    viewModel { ViewModelInitApp(
+         get()
         ,get()
         ,get()
         ,get()
