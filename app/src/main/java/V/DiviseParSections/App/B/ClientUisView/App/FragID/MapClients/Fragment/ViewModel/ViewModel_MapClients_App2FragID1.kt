@@ -7,6 +7,7 @@ import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
 import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.Parent.AppSettingsSaverModel
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircleOutline
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -20,7 +21,7 @@ import kotlinx.coroutines.tasks.await
 import org.osmdroid.views.MapView
 import java.util.Date
 
-class ViewModel_App2FragID1(
+class ViewModel_MapClients_App2FragID1(
     val mainRepositery: B_ClientDataBaseRepository,
     val _0_0_HeadOfRepositorys_Repository:_0_0_HeadOfRepositorys_Repository
 ) : ViewModel() {
@@ -103,7 +104,9 @@ class ViewModel_App2FragID1(
         mainRepositery.deleteUnSeulData(data)
     }
 
-    enum class VisbleClientsNow(val icon: Any) {
+    enum class VisibleClientsNow(val icon: Any) {
+        AFFICHE_CIBLE_POUR_VENDEUR(Icons.Default.Map),
+
         showNonAbsentClientsOnly(LottieJsonGetterR_Raw_Icons.reacticonanimatedjsonurl),
         affichePourCollecteurCommendes(LottieJsonGetterR_Raw_Icons.afficheFenetre),
         showAtayClients(LottieJsonGetterR_Raw_Icons.atay),

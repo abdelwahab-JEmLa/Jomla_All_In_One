@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_App2FragID1
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.MarkerStatusDialog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Options.A_GlobalOptionsControlsFloatingActionButtons_FragId1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.DEFAULT_LATITUDE
@@ -59,9 +59,9 @@ import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow
 
 @Composable
-fun A_MainScreenA2FragID_1(
+fun A_MapClients_A2FragID_1(
     modifier: Modifier = Modifier,
-    viewModel: ViewModel_App2FragID1 = koinViewModel(),
+    viewModel: ViewModel_MapClients_App2FragID1 = koinViewModel(),
     viewModelInitApp: ViewModelInitApp = viewModel(),
     clientEnCourDeVent: Long = 0,
     onUpdateLongAppSetting: () -> Unit = {},
@@ -86,7 +86,7 @@ fun A_MainScreenA2FragID_1(
 
 @Composable
 private fun MapContent(
-    viewModel: ViewModel_App2FragID1,
+    viewModel: ViewModel_MapClients_App2FragID1,
     viewModelInitApp: ViewModelInitApp,
     clientEnCourDeVent: Long,
     onUpdateLongAppSetting: () -> Unit,
@@ -99,8 +99,8 @@ private fun MapContent(
     var selectedMarker by remember { mutableStateOf<Marker?>(null) }
     var showMarkerDialog by remember { mutableStateOf(false) }
     val showMarkerDetails by remember { mutableStateOf(true) }
-    var currentFilterMode by remember { mutableStateOf<ViewModel_App2FragID1.VisbleClientsNow>(
-        ViewModel_App2FragID1.VisbleClientsNow.affichePourCollecteurCommendes) }
+    var currentFilterMode by remember { mutableStateOf<ViewModel_MapClients_App2FragID1.VisibleClientsNow>(
+        ViewModel_MapClients_App2FragID1.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR) }
 
     var editingMarkerId by remember { mutableLongStateOf(0L) }
     var showEditMarkerMode by remember { mutableStateOf(false) }
@@ -154,12 +154,12 @@ private fun MapContent(
         mapView.overlays.removeAll(markersToRemove)
 
         val clientsToShow = when (currentFilterMode) {
-            ViewModel_App2FragID1.VisbleClientsNow.showNonAbsentClientsOnly -> {
+            ViewModel_MapClients_App2FragID1.VisibleClientsNow.showNonAbsentClientsOnly -> {
                 clientDataBaseSnapList.filter {
                     it.actuelleEtat != B_ClientDataBase.DernierEtatAAffiche.CLIENT_ABSENT
                 }
             }
-            ViewModel_App2FragID1.VisbleClientsNow.affichePourCollecteurCommendes -> {
+            ViewModel_MapClients_App2FragID1.VisibleClientsNow.affichePourCollecteurCommendes -> {
                 clientDataBaseSnapList.filter {
                     it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.Cible
                             || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.CIBLE_PRIORITE_2
@@ -171,7 +171,7 @@ private fun MapContent(
                 }
             }
             // New case for clients with confirmed products
-            ViewModel_App2FragID1.VisbleClientsNow.showClientsWithConfirmedProducts -> {
+            ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsWithConfirmedProducts -> {
                 val clientsWithConfirmedProducts = viewModel._0_0_HeadOfRepositorys_Repository.repositorys_Model
                     ._1_3_BonAchat_Repository.modelDatasSnapList
                     .filter { bonAchat ->
@@ -185,23 +185,30 @@ private fun MapContent(
                 }
             }
 
-            ViewModel_App2FragID1.VisbleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 -> {
+            ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 -> {
                 clientDataBaseSnapList.filter {
                     it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.CIBLE_POUR_2
                 }
             }
-            ViewModel_App2FragID1.VisbleClientsNow.showAtayClients -> {
+            ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAtayClients -> {
                 clientDataBaseSnapList.filter {
                     it.typeDeSonMagasine == B_ClientDataBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT
                 }
             }
-            ViewModel_App2FragID1.VisbleClientsNow.showAlimentionlients -> {
+            ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAlimentionlients -> {
                 clientDataBaseSnapList.filter {
                     it.typeDeSonMagasine == B_ClientDataBase.TypeDeSonMagasine.AlIMENTATION_GENERALE
                 }
             }
-            ViewModel_App2FragID1.VisbleClientsNow.showAll -> {
+            ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAll -> {
                 clientDataBaseSnapList
+            }
+
+            ViewModel_MapClients_App2FragID1.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR -> {
+                clientDataBaseSnapList.filter {
+                    it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.Cible
+                            || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.CIBLE_PRIORITE_2
+                }
             }
         }
 
@@ -296,13 +303,15 @@ private fun MapContent(
                     mapView.overlays.filterIsInstance<Marker>().forEach { it.closeInfoWindow() }
 
                     currentFilterMode = when (currentFilterMode) {
-                        ViewModel_App2FragID1.VisbleClientsNow.showAll -> ViewModel_App2FragID1.VisbleClientsNow.showNonAbsentClientsOnly
-                        ViewModel_App2FragID1.VisbleClientsNow.showNonAbsentClientsOnly -> ViewModel_App2FragID1.VisbleClientsNow.affichePourCollecteurCommendes
-                        ViewModel_App2FragID1.VisbleClientsNow.affichePourCollecteurCommendes -> ViewModel_App2FragID1.VisbleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2
-                        ViewModel_App2FragID1.VisbleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 -> ViewModel_App2FragID1.VisbleClientsNow.showAtayClients
-                        ViewModel_App2FragID1.VisbleClientsNow.showAtayClients -> ViewModel_App2FragID1.VisbleClientsNow.showAlimentionlients
-                        ViewModel_App2FragID1.VisbleClientsNow.showAlimentionlients -> ViewModel_App2FragID1.VisbleClientsNow.showClientsWithConfirmedProducts
-                        ViewModel_App2FragID1.VisbleClientsNow.showClientsWithConfirmedProducts -> ViewModel_App2FragID1.VisbleClientsNow.showAll
+                        ViewModel_MapClients_App2FragID1.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR -> ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAll
+                        ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAll -> ViewModel_MapClients_App2FragID1.VisibleClientsNow.showNonAbsentClientsOnly
+                        ViewModel_MapClients_App2FragID1.VisibleClientsNow.showNonAbsentClientsOnly -> ViewModel_MapClients_App2FragID1.VisibleClientsNow.affichePourCollecteurCommendes
+                        ViewModel_MapClients_App2FragID1.VisibleClientsNow.affichePourCollecteurCommendes -> ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2
+                        ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 -> ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAtayClients
+                        ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAtayClients -> ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAlimentionlients
+                        ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAlimentionlients -> ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsWithConfirmedProducts
+                        ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsWithConfirmedProducts -> ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAll
+
                     }
                 }
             )

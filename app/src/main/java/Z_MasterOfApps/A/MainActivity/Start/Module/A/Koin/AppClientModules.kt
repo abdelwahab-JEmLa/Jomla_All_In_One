@@ -2,7 +2,7 @@ package Z_MasterOfApps.A.MainActivity.Start.Module.A.Koin
 
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Modules.ConnectionManager
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_App2FragID1
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
 import android.content.Context
 import com.example.clientjetpack.ViewModel.HeadViewModel
@@ -21,7 +21,7 @@ val appClientModules = module {
         AppDatabase.DatabaseModule.getDatabase(get())
     ) }
     viewModel { Windows__ViewModel(get()) }
-    viewModel { ViewModel_App2FragID1(
+    viewModel { ViewModel_MapClients_App2FragID1(
         get(),
         get(),
     ) }

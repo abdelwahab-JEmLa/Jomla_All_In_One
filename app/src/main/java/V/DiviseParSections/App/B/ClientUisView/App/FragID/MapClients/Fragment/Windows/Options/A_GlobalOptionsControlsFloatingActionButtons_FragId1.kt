@@ -9,7 +9,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Wi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.LocationTrackingButton
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.MenuButton
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.rememberLocationTracker
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_App2FragID1
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
 import Z_MasterOfApps.Resources.XmlsFilesHandler.Companion.xmlResources
 import Z_MasterOfApps.Z_AppsFather.Kotlin.Partage.Views.AnimatedIconLottieJsonFile
@@ -50,11 +50,11 @@ import kotlin.math.roundToInt
 @Composable
 fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
     mapView: MapView,
-    viewModel: ViewModel_App2FragID1,
+    viewModel: ViewModel_MapClients_App2FragID1,
     viewModelInitApp: ViewModelInitApp,
     onClear: () -> Unit,
     onFilterMarkers: () -> Unit,
-    currentFilterMode: ViewModel_App2FragID1.VisbleClientsNow,
+    currentFilterMode: ViewModel_MapClients_App2FragID1.VisibleClientsNow,
     ) {
     var showDatabaseEditDialog by remember { mutableStateOf(false) }
 

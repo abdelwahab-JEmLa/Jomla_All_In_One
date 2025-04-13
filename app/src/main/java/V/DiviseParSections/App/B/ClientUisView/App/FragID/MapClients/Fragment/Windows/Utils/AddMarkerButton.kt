@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_App2FragID1
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import Z_MasterOfApps.Resources.XmlsFilesHandler.Companion.fixXmlResources
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset
@@ -26,7 +26,7 @@ import org.osmdroid.views.MapView
 
 @Composable
 fun AddMarkerButton(
-    viewModel: ViewModel_App2FragID1,
+    viewModel: ViewModel_MapClients_App2FragID1,
     showLabels: Boolean,
     mapView: MapView,
 ) {

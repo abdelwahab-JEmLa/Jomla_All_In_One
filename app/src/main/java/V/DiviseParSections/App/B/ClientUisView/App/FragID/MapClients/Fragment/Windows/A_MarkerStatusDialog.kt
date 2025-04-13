@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_App2FragID1
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat
@@ -55,7 +55,7 @@ import java.util.Locale
 
 @Composable
 fun MarkerStatusDialog(
-    viewModel: ViewModel_App2FragID1,
+    viewModel: ViewModel_MapClients_App2FragID1,
     viewModelInitApp: ViewModelInitApp,
     selectedMarker: Marker?,
     onDismiss: () -> Unit,

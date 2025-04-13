@@ -8,7 +8,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Pa
 import V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package.A_MainScreen_APP2_FragID3
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_CodePartageEntreApps.Modules.WifiUpdateClientDisplayerStats
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.A_MainScreenA2FragID_1
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.A_MapClients_A2FragID_1
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -42,7 +42,7 @@ fun NavGraphBuilder.app2(
     navController: NavHostController, onClear: () -> Unit,
 ) {
     composable(Screen.A_ClientsLocationGps.route) {
-        A_MainScreenA2FragID_1(
+        A_MapClients_A2FragID_1(
             viewModelInitApp = viewModelInitApp,
             clientEnCourDeVent = clientEnCourDeVent,
             onUpdateLongAppSetting = {

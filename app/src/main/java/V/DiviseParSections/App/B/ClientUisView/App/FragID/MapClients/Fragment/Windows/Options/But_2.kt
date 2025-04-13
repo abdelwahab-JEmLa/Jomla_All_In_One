@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Options
 
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_App2FragID1
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
@@ -9,10 +9,10 @@ import androidx.compose.ui.graphics.Color
 fun But_2(
     showLabels: Boolean,
     onClick: () -> Unit,
-    currentFilterMode: ViewModel_App2FragID1.VisbleClientsNow,
+    currentFilterMode: ViewModel_MapClients_App2FragID1.VisibleClientsNow,
     textButton: String = "",
     viewModelInitApp: ViewModelInitApp,
-    viewModel: ViewModel_App2FragID1,
+    viewModel: ViewModel_MapClients_App2FragID1,
 ) {
     ControlButton(
         onClick = onClick,
