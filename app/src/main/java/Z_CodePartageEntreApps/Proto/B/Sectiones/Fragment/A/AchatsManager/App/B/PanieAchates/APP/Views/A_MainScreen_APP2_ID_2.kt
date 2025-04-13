@@ -42,20 +42,21 @@ fun A_MainScreen_APP2_ID_2(
         .modelDatasSnapList.find { it.vid == composeKeyVID }
 
     // Fix 2: Using the collected composeKeyVID value for comparison
+// This filter might be excluding your new product
     val produitsBonAchatIDs = _0_HeadOfRepositorys_Repository_Model
         ._1_2_ProduitAcheteOperation_Repository
         .modelDatasSnapList
         .filter { produitOpe ->
-            produitOpe.parent_1_3_BonAchat == composeKeyVID &&
-                    produitOpe.etateActuellementEst == _1_2_ProduitAcheteOperation
+            produitOpe.parent_1_3_BonAchat == composeKeyVID
+                    && produitOpe.etateActuellementEst == _1_2_ProduitAcheteOperation
                 .EtateActuellementEst
-                .CONFIRME &&
-                    _0_HeadOfRepositorys_Repository_Model._1_1_CouleurAcheteOperation_Repository
-                        .modelDatasSnapList
-                        .any {
-                            it.parentProduitAchateOperationVID == produitOpe.vid &&
-                                    it.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
-                        }
+                .CONFIRME
+                    && _0_HeadOfRepositorys_Repository_Model._1_1_CouleurAcheteOperation_Repository
+                .modelDatasSnapList
+                .any {
+                    it.parentProduitAchateOperationVID == produitOpe.vid &&
+                            it.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
+                }
         }
 
     // Calculate total items count

@@ -5,6 +5,7 @@ import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Modules.printReceipt
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Print
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
@@ -28,7 +30,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -48,7 +49,7 @@ fun ColumnScope.BonAchatInfos(
     scope: CoroutineScope,
     onConfirmOrder: () -> Unit,
     onShowOrderSuccessChange: (Boolean) -> Unit,
-    database: AppDatabase = koinInject()
+    database: AppDatabase = koinInject(),
 ) {
     val repositorysModel = _0_0_HeadOfRepositorys_Repository.repositorys_Model
     val relativeClientDataBase =
@@ -65,28 +66,104 @@ fun ColumnScope.BonAchatInfos(
         Box(
             modifier = Modifier.fillMaxWidth()
         ) {
-            // Print button at the top end corner
-            IconButton(
-                onClick = {
-                    // Using the new consolidated print function
-                    printReceipt(
-                        context = context,
-                        bonAchat = relativeBonAchate,
-                        repositorysModel = repositorysModel,
-                        database = database,
-                        scope = coroutineScope
+            Row {
+
+                IconButton(
+                    onClick = {
+                        printReceipt(
+                            context = context,
+                            bonAchat = relativeBonAchate,
+                            repositorysModel = repositorysModel,
+                            database = database,
+                            scope = coroutineScope
+                        )
+                    },
+                    modifier = Modifier
+                        .padding(8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Print,
+                        contentDescription = "Imprimer bon",
+                        tint = MaterialTheme.colorScheme.primary
                     )
-                },
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(8.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Print,
-                    contentDescription = "Imprimer bon",
-                    tint = MaterialTheme.colorScheme.primary
-                )
+                }
+
+                IconButton(
+                    onClick = {
+                        // Log the start of product creation process
+                        Log.d("ProductCreation", "Starting product creation process for bon achat ID: $composeKeyVID")
+
+                        coroutineScope.launch {
+                            // First create a temporary product in the database
+                            val tempProduct = Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase(
+                                nom = "منتج جديد",
+                                itsTempProduit = true,
+                                monPrixVent = 0.0
+                            )
+
+                            Log.d("ProductCreation", "Creating new product with name: ${tempProduct.nom}")
+
+                            repositorysModel._2_1_ProduitsDataBase_Repository.addDataAndReturnItVID(tempProduct) { productId ->
+                                // Log the successful product creation
+                                Log.d("ProductCreation", "Product created successfully with ID: $productId")
+
+                                // Then create product operation linked to current bon achat
+                                val produitOperation = Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation(
+                                    produitAcheterID = productId,
+                                    parent_1_3_BonAchat = composeKeyVID ?: 0L,
+                                    etateActuellementEst = Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME
+                                )
+
+                                Log.d("ProductCreation", "Creating product operation with produitAcheterID: $productId, parent_1_3_BonAchat: ${composeKeyVID ?: 0L}")
+
+                                // Add the product operation and get its ID
+                                repositorysModel._1_2_ProduitAcheteOperation_Repository.addDataAndReturneItVID(produitOperation) { produitOperationId ->
+                                    // Log the successful product operation creation
+                                    Log.d("ProductCreation", "Product operation created successfully with ID: $produitOperationId")
+
+                                    // Finally add a color operation with quantity 1
+                                    val couleurOperation = Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation(
+                                        couleurIndex_ParentVID = 0L,
+                                        parentProduitAchateOperationVID = produitOperationId,
+                                        totaleQuantity = 1,
+                                        etateActuellementEst = Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
+                                    )
+
+                                    Log.d("ProductCreation", "Creating color operation with parentProduitAchateOperationVID: $produitOperationId")
+
+                                    // Add color operation
+                                    repositorysModel._1_1_CouleurAcheteOperation_Repository.addData(couleurOperation)
+                                    Log.d("ProductCreation", "Color operation added, checking if product appears in list...")
+
+                                    // Log the current state after all operations
+                                    val currentBonAchatProducts = repositorysModel._1_2_ProduitAcheteOperation_Repository
+                                        .modelDatasSnapList
+                                        .filter { it.parent_1_3_BonAchat == composeKeyVID }
+
+                                    Log.d("ProductCreation", "Current number of products in bon achat: ${currentBonAchatProducts.size}")
+                                    Log.d("ProductCreation", "Products state: ${currentBonAchatProducts.map { "ID: ${it.vid}, ProduitID: ${it.produitAcheterID}, State: ${it.etateActuellementEst}" }}")
+
+                                    val colorOperations = repositorysModel._1_1_CouleurAcheteOperation_Repository
+                                        .modelDatasSnapList
+                                        .filter { it.parentProduitAchateOperationVID == produitOperationId }
+
+                                    Log.d("ProductCreation", "Color operations for product $produitOperationId: ${colorOperations.size}")
+                                    Log.d("ProductCreation", "Color operations state: ${colorOperations.map { "ID: ${it.vid}, State: ${it.etateActuellementEst}, Quantity: ${it.totaleQuantity}" }}")
+                                }
+                            }
+                        }
+                    },
+                    modifier = Modifier
+                        .padding(8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.AddCircle,
+                        contentDescription = "إضافة منتج",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
+
 
             Column(
                 modifier = Modifier.padding(16.dp),
