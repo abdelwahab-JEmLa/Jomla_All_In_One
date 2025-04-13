@@ -18,7 +18,7 @@ fun B_MainList_APP2_ID_2(
     composeKeyVID: Long?,
     modifier: Modifier = Modifier,
     _0_HeadOfRepositorys_Repository_Model: _0_0_HeadOfRepositorys_Model,
-    onQuantitySelected: (Int) -> Unit,
+    onQuantitySelected: () -> Unit,
     onDoneupdatePrice: (SnapshotStateList<_1_1_CouleurAcheteOperation>) -> Unit,
 ) {
     // The list of valid color operations that have a quantity selected
@@ -49,11 +49,8 @@ fun B_MainList_APP2_ID_2(
                 _0_HeadOfRepositorys_Repository_Model = _0_HeadOfRepositorys_Repository_Model,
                 onQuantitySelected = onQuantitySelected,
                 onDoneupdatePrice = { newPrice ->
-                    // FIX: Immediately pass the updated color operations list to the parent
-                    // This ensures the total price is recalculated with the latest data
                     onDoneupdatePrice(_0_HeadOfRepositorys_Repository_Model._1_1_CouleurAcheteOperation_Repository.modelDatasSnapList)
 
-                    // Now update the product with the new provisional price
                     val price = newPrice.toDoubleOrNull() ?: 0.0
                     if (price > 0) {
                         val updatedProduct = produitOperation.copy(
@@ -63,7 +60,6 @@ fun B_MainList_APP2_ID_2(
                             ._1_2_ProduitAcheteOperation_Repository
                             .updateUnSeulData(updatedProduct)
 
-                        onQuantitySelected(0)
 
                         onDoneupdatePrice(_0_HeadOfRepositorys_Repository_Model._1_1_CouleurAcheteOperation_Repository.modelDatasSnapList)
                         _0_HeadOfRepositorys_Repository_Model._1_1_CouleurAcheteOperation_Repository.notifyDataChanged()

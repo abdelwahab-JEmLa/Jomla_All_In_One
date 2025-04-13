@@ -37,6 +37,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import org.koin.compose.koinInject
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -47,32 +48,30 @@ fun C_MainItem_APP2_ID_2(
     modifier: Modifier = Modifier,
     composeKeyVID: Long,
     _0_HeadOfRepositorys_Repository_Model: _0_0_HeadOfRepositorys_Model,
-    onQuantitySelected: (Int) -> Unit,
+    onQuantitySelected: () -> Unit,
     onDoneupdatePrice: (String) -> Unit,
-    headRepository: _0_0_HeadOfRepositorys_Repository // Added parameter for the repository interface
+    headRepository: _0_0_HeadOfRepositorys_Repository= koinInject()
 ) {
     val relative_1_2_ProduitAcheteOperation = _0_HeadOfRepositorys_Repository_Model
         ._1_2_ProduitAcheteOperation_Repository
         .modelDatasSnapList.find { it.vid == composeKeyVID }
 
-    val relative_2_1_ProduitsDataBase by remember {
-        mutableStateOf(
-            _0_HeadOfRepositorys_Repository_Model._2_1_ProduitsDataBase_Repository
-                .modelDatasSnapList.find {
-                    it.vid == (relative_1_2_ProduitAcheteOperation
-                        ?.produitAcheterID ?: 0)
-                })
-    }
+    val relative_2_1_ProduitsDataBase =
+        _0_HeadOfRepositorys_Repository_Model._2_1_ProduitsDataBase_Repository
+            .modelDatasSnapList.find {
+                it.vid == (relative_1_2_ProduitAcheteOperation
+                    ?.produitAcheterID ?: 0)
+            }
 
-    // Use mutableStateOf to store totalQuantity so we can update it when color quantities change
-    var totalQuantity by remember {
-        mutableStateOf(
-            calculateTotalQuantity(
-                composeKeyVID,
-                _0_HeadOfRepositorys_Repository_Model
-            )
-        )
-    }
+    // Calculate total quantity from all color operations for this product
+    val totalQuantity = _0_HeadOfRepositorys_Repository_Model
+        ._1_1_CouleurAcheteOperation_Repository
+        .modelDatasSnapList
+        .filter {
+            it.parentProduitAchateOperationVID == composeKeyVID &&
+                    it.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
+        }
+        .sumOf { it.totaleQuantity }
 
     // Determine if we should use provisional price or regular price
     val provisionalPrice = relative_1_2_ProduitAcheteOperation?.provisoireMonPrix ?: 0.0
@@ -93,6 +92,8 @@ fun C_MainItem_APP2_ID_2(
     } else {
         formatter.format(defaultPrice).replace("€", "دج")
     }
+
+
 
     Card(
         modifier = modifier
@@ -426,14 +427,6 @@ fun C_MainItem_APP2_ID_2(
                                     _0_HeadOfRepositorys_Repository_Model = _0_HeadOfRepositorys_Repository_Model,
                                     relative_2_1_ProduitsDataBase_vid = relative_2_1_ProduitsDataBase?.vid,
                                     onQuantitySelected = { _ ->
-                                        // Recalculate the total quantity after a color's quantity has changed
-                                        totalQuantity = calculateTotalQuantity(
-                                            composeKeyVID,
-                                            _0_HeadOfRepositorys_Repository_Model
-                                        )
-
-                                        onQuantitySelected(totalQuantity)
-
                                         _0_HeadOfRepositorys_Repository_Model._1_2_ProduitAcheteOperation_Repository.notifyDataChanged()
                                     },
                                 )
@@ -446,20 +439,7 @@ fun C_MainItem_APP2_ID_2(
     }
 }
 
-// Helper function to calculate the total quantity for a product
-private fun calculateTotalQuantity(
-    produitOperationVID: Long,
-    repositoryModel: _0_0_HeadOfRepositorys_Model
-): Int {
-    return repositoryModel
-        ._1_1_CouleurAcheteOperation_Repository
-        .modelDatasSnapList
-        .filter {
-            it.parentProduitAchateOperationVID == produitOperationVID &&
-                    it.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
-        }
-        .sumOf { it.totaleQuantity }
-}
+
 
 // Helper function to update the price
 private fun updatePrice(
