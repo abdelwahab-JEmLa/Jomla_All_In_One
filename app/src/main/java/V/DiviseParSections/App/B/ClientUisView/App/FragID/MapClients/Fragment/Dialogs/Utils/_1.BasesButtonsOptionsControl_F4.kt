@@ -1,15 +1,15 @@
-package Z_MasterOfApps.Z.Android.Main.Screen.Startup.B.Dialogs.Utils
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.Utils
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.A.ControlButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.A.ControlButton
 
 @Composable
- fun LabelsButton(
+fun LabelsButton(
     showLabels: Boolean,
     onShowLabelsChange: (Boolean) -> Unit
 ) {
@@ -24,7 +24,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Di
 }
 
 @Composable
- fun MenuButton(
+fun MenuButton(
     showLabels: Boolean,
     showMenu: Boolean,
     onShowMenuChange: (Boolean) -> Unit

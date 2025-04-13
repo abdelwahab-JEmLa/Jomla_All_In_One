@@ -13,8 +13,8 @@ import Z_CodePartageEntreApps.Model.Z.Archive.DevicesTypeManager
 import Z_CodePartageEntreApps.Model.Z.Archive.DiviseurDeDisplayProductForEachClient
 import Z_CodePartageEntreApps.Model.Z.Archive.ProductDisplayController
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
-import Z_MasterOfApps.Kotlin._WorkingON.WO_.ConnectionManager
-import Z_MasterOfApps.Kotlin._WorkingON.WO_.WifiUpdateClientDisplayerStats
+import Z_CodePartageEntreApps.Modules.ConnectionManager
+import Z_CodePartageEntreApps.Modules.WifiUpdateClientDisplayerStats
 import android.content.Context
 import android.os.Build
 import android.util.Log

@@ -1,8 +1,8 @@
 package Z_MasterOfApps.A.MainActivity.Start.Module.A.Koin
 
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import Z_MasterOfApps.Kotlin._WorkingON.WO_.ConnectionManager
-import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.ViewModel.ViewModel_App2FragID1
+import Z_CodePartageEntreApps.Modules.ConnectionManager
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_App2FragID1
 import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
 import android.content.Context
 import com.example.clientjetpack.ViewModel.HeadViewModel

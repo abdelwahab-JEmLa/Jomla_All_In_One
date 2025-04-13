@@ -4,11 +4,11 @@ import P0_MainScreen.Ui.Objects.LoadingOverlay
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.A_VendeurAfficheurInfosProduit_FragmentMainId3
 import Views.P1._ArticlesStartFacade.FragmentStartupScreen
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
-import V.DiviseParSections.App.A.AchatsManager.App.FragID2.PanieAchates.Package.Views.A_MainScreen_APP2_ID_2
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.A_MainScreen_APP2_ID_2
 import V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package.A_MainScreen_APP2_FragID3
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import Z_MasterOfApps.Kotlin._WorkingON.WO_.WifiUpdateClientDisplayerStats
-import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.A_id1_ClientsLocationGps
+import Z_CodePartageEntreApps.Modules.WifiUpdateClientDisplayerStats
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.A_id1_ClientsLocationGps
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
