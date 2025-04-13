@@ -68,9 +68,9 @@ fun A_MainScreen_APP2_ID_2(
         }
         .sumOf { it.totaleQuantity }
 
-    // Changed from remember to mutableState to make it reactive to changes
+    // FIX: Changed from remember to mutableStateOf to make it reactive to changes
     var totalPrice by remember {
-        mutableStateOf( calcule_totalPrice(produitsBonAchatIDs, _0_HeadOfRepositorys_Repository_Model) )
+        mutableStateOf(calcule_totalPrice(produitsBonAchatIDs, _0_HeadOfRepositorys_Repository_Model))
     }
 
     // Format the total price
@@ -128,9 +128,10 @@ fun A_MainScreen_APP2_ID_2(
                                 onQuantitySelected = {
                                     totalPrice = calcule_totalPrice(produitsBonAchatIDs, _0_HeadOfRepositorys_Repository_Model)
                                 },
-                                onDoneupdatePrice = {
-                                    // Fixed: Recalculate total price after product price update
-                                    totalPrice = calcule_totalPrice(produitsBonAchatIDs, _0_HeadOfRepositorys_Repository_Model)
+                                // FIX: In A_MainScreen_APP2_ID_2.kt - properly update totalPrice when price changes
+                                onDoneupdatePrice = { colorOperations ->
+                                    // Use the colorOperations parameter passed from the child component
+                                    totalPrice = calcule_totalPrice(produitsBonAchatIDs, _0_HeadOfRepositorys_Repository_Model, colorOperations)
                                 }
                             )
                         }
@@ -140,10 +141,10 @@ fun A_MainScreen_APP2_ID_2(
         }
     }
 }
-
 private fun calcule_totalPrice(
     produitsBonAchatIDs: List<_1_2_ProduitAcheteOperation>,
     _0_HeadOfRepositorys_Repository_Model: _0_0_HeadOfRepositorys_Model,
+    colorOperations: List<_1_1_CouleurAcheteOperation>? = null
 ) = produitsBonAchatIDs.sumOf { produitOpe ->
     // Check if there's a provisional price, use it instead of the default if available
     val productPrice = if (produitOpe.provisoireMonPrix > 0) {
@@ -156,15 +157,24 @@ private fun calcule_totalPrice(
             ?.monPrixVent ?: 0.0
     }
 
-    // Rest of the function remains the same...
-    val productTotalQuantity = _0_HeadOfRepositorys_Repository_Model
-        ._1_1_CouleurAcheteOperation_Repository
-        .modelDatasSnapList
-        .filter {
-            it.parentProduitAchateOperationVID == produitOpe.vid &&
-                    it.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
-        }
-        .sumOf { it.totaleQuantity }
+    // If colorOperations is provided, filter from that list, otherwise use repository data
+    val productTotalQuantity = if (colorOperations != null) {
+        colorOperations
+            .filter {
+                it.parentProduitAchateOperationVID == produitOpe.vid &&
+                        it.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
+            }
+            .sumOf { it.totaleQuantity }
+    } else {
+        _0_HeadOfRepositorys_Repository_Model
+            ._1_1_CouleurAcheteOperation_Repository
+            .modelDatasSnapList
+            .filter {
+                it.parentProduitAchateOperationVID == produitOpe.vid &&
+                        it.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
+            }
+            .sumOf { it.totaleQuantity }
+    }
 
     // Multiply the quantity by the price for this product
     productTotalQuantity * productPrice

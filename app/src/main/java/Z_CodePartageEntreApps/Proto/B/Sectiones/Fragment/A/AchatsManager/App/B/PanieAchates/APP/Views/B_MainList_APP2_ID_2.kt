@@ -32,7 +32,8 @@ fun B_MainList_APP2_ID_2(
                         it.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
             }
 
-    val produitsBonAchatIDs by remember {
+    // Get the list of product operations for the current bon achat
+    val produitOperations by remember {
         mutableStateOf(
             produitsBonAchatIDs(
                 _0_HeadOfRepositorys_Repository_Model,
@@ -42,57 +43,36 @@ fun B_MainList_APP2_ID_2(
         )
     }
 
-    // Fixed: properly implement the products mapping
-    val produitsBonAchateDepuitproduitsBonAchatIDs by remember {
-        mutableStateOf(
-            produitsBonAchatIDs.map { produitItem ->
-                _0_HeadOfRepositorys_Repository_Model._2_1_ProduitsDataBase_Repository
-                    .modelDatasSnapList.find { it.vid == produitItem.produitAcheterID }
-            }
-        )
-    }
-
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(8.dp)
     ) {
-        items(produitsBonAchatIDs) { produitItem ->
+        items(produitOperations) { produitOperation ->
+            // Pass the product operation ID to the item component
             C_MainItem_APP2_ID_2(
-                composeKeyVID = produitItem.vid,
+                composeKeyVID = produitOperation.vid,
                 _0_HeadOfRepositorys_Repository_Model = _0_HeadOfRepositorys_Repository_Model,
                 onQuantitySelected = onQuantitySelected,
                 onDoneupdatePrice = { newPrice ->
-                    // Update the provisional price after notifying about price update
+                    // FIX: Immediately pass the updated color operations list to the parent
+                    // This ensures the total price is recalculated with the latest data
                     onDoneupdatePrice(_0_HeadOfRepositorys_Repository_Model._1_1_CouleurAcheteOperation_Repository.modelDatasSnapList)
 
                     // Now update the product with the new provisional price
                     val price = newPrice.toDoubleOrNull() ?: 0.0
                     if (price > 0) {
-                        // Find the product and update its provisional price
-                        val produit = _0_HeadOfRepositorys_Repository_Model
+                        val updatedProduct = produitOperation.copy(
+                            provisoireMonPrix = price
+                        )
+                        _0_HeadOfRepositorys_Repository_Model
                             ._1_2_ProduitAcheteOperation_Repository
-                            .modelDatasSnapList
-                            .find { it.vid == produitItem.vid }
+                            .updateUnSeulData(updatedProduct)
 
-                        produit?.let { product ->
-                            val updatedProduct = product.copy(
-                                provisoireMonPrix = price
-                            )
-                            _0_HeadOfRepositorys_Repository_Model
-                                ._1_2_ProduitAcheteOperation_Repository
-                                .updateUnSeulData(updatedProduct)
+                        onQuantitySelected(0)
 
-                            // Update the corresponding product in our mapping list
-                            val productIndex = produitsBonAchatIDs.indexOf(produitItem)
-                            if (productIndex >= 0 && productIndex < produitsBonAchateDepuitproduitsBonAchatIDs.size) {
-                                // This will trigger a recomposition with the updated price
-                                produitsBonAchateDepuitproduitsBonAchatIDs[productIndex]?.let { dbProduct ->
-                                    // We don't need to update the database product, but we need to refresh the list
-                                    onQuantitySelected(0) // Trigger a refresh
-                                }
-                            }
-                        }
+
+                        onDoneupdatePrice(_0_HeadOfRepositorys_Repository_Model._1_1_CouleurAcheteOperation_Repository.modelDatasSnapList)
                     }
                 }
             )
