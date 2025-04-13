@@ -211,7 +211,6 @@ fun MainUi(
                 onAddNotInBaseArticle = onClickToOpenWindos,
                 viewModel = viewModel,
                 uiState = uiState,
-                onClickDonne = onClickDonne
             )
             if (uiState.productDisplayController.isHostPhone || uiState.productDisplayController.isConnected) {
 

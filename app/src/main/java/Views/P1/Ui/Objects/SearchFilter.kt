@@ -13,6 +13,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -24,7 +25,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -41,10 +44,10 @@ fun SearchFilterPB(
     modifier: Modifier = Modifier,
     viewModel: HeadViewModel,
     uiState: UiState,
-    onClickDonne: () -> Unit
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
     val scope = rememberCoroutineScope()
 
     AnimatedVisibility(
@@ -60,6 +63,12 @@ fun SearchFilterPB(
                 .fillMaxWidth()
                 .padding(3.dp)
                 .focusRequester(focusRequester)
+                .onFocusChanged { focusState ->
+                    // Handle focus changes - when focus is lost, this will be called
+                    if (!focusState.isFocused) {
+                        keyboardController?.hide()
+                    }
+                }
                 // Add clickable behavior to show keyboard when field is clicked
                 .pointerInput(Unit) {
                     awaitPointerEventScope {
@@ -73,20 +82,62 @@ fun SearchFilterPB(
                     }
                 },
             trailingIcon = {
-                IconButton(
-                    onClick = {
-                        scope.launch {
-                            viewModel.addNewEmptyArticle(filterText)?.let { newArticle ->
-                                onAddNotInBaseArticle(newArticle, 0)
+                if (filterText.isNotEmpty()) {
+                    // Row to contain both clear and add buttons
+                    androidx.compose.foundation.layout.Row {
+                        // Clear button
+                        IconButton(
+                            onClick = {
+                                onFilterTextChange("")
+                                focusRequester.requestFocus() // Keep focus on the field after clearing
                             }
+                        ) {
+                            Icon(
+                                Icons.Default.Clear, // You'll need to import this icon
+                                contentDescription = "Clear Text"
+                            )
                         }
-                        viewModel.sendOrderToClientDisplayer(
-                            WifiUpdateClientDisplayerStats.SearchWindowsDisplaye.prefix,
-                            filterText
-                        )
+
+                        // Existing Add button
+                        IconButton(
+                            onClick = {
+                                scope.launch {
+                                    viewModel.addNewEmptyArticle(filterText)?.let { newArticle ->
+                                        onAddNotInBaseArticle(newArticle, 0)
+                                    }
+                                }
+                                viewModel.sendOrderToClientDisplayer(
+                                    WifiUpdateClientDisplayerStats.SearchWindowsDisplaye.prefix,
+                                    filterText
+                                )
+                                // Clear focus and hide keyboard after action is performed
+                                focusManager.clearFocus()
+                                keyboardController?.hide()
+                            }
+                        ) {
+                            Icon(Icons.Default.Add, contentDescription = "Add Article")
+                        }
                     }
-                ) {
-                    Icon(Icons.Default.Add, contentDescription = "Add Article")
+                } else {
+                    // Only show Add button when there's no text
+                    IconButton(
+                        onClick = {
+                            scope.launch {
+                                viewModel.addNewEmptyArticle(filterText)?.let { newArticle ->
+                                    onAddNotInBaseArticle(newArticle, 0)
+                                }
+                            }
+                            viewModel.sendOrderToClientDisplayer(
+                                WifiUpdateClientDisplayerStats.SearchWindowsDisplaye.prefix,
+                                filterText
+                            )
+                            // Clear focus and hide keyboard after action is performed
+                            focusManager.clearFocus()
+                            keyboardController?.hide()
+                        }
+                    ) {
+                        Icon(Icons.Default.Add, contentDescription = "Add Article")
+                    }
                 }
             },
             singleLine = true,
@@ -94,7 +145,7 @@ fun SearchFilterPB(
             keyboardActions = KeyboardActions(
                 onDone = {
                     keyboardController?.hide()
-                    onClickDonne()
+                    focusManager.clearFocus() // Clear focus when done is pressed
                 }
             )
         )
@@ -105,6 +156,10 @@ fun SearchFilterPB(
             focusRequester.requestFocus()
             onFilterTextChange("")
             keyboardController?.show()
+        } else {
+            // Ensure keyboard is hidden when filter is not shown
+            keyboardController?.hide()
+            focusManager.clearFocus()
         }
     }
 }
