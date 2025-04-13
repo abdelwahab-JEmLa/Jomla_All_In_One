@@ -106,6 +106,7 @@ class ViewModel_MapClients_App2FragID1(
 
     enum class VisibleClientsNow(val icon: Any) {
         AFFICHE_CIBLE_POUR_VENDEUR(Icons.Default.Map),
+        CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX(Icons.Default.Map),
 
         showNonAbsentClientsOnly(LottieJsonGetterR_Raw_Icons.reacticonanimatedjsonurl),
         affichePourCollecteurCommendes(LottieJsonGetterR_Raw_Icons.afficheFenetre),

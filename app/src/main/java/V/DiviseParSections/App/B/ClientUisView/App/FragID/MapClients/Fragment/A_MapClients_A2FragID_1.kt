@@ -200,6 +200,7 @@ private fun MapContent(
                     it.typeDeSonMagasine == B_ClientDataBase.TypeDeSonMagasine.AlIMENTATION_GENERALE
                 }
             }
+
             ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAll -> {
                 clientDataBaseSnapList
             }
@@ -209,6 +210,10 @@ private fun MapContent(
                     it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.Cible
                             || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.CIBLE_PRIORITE_2
                 }
+            }
+
+            else -> {
+                clientDataBaseSnapList
             }
         }
 
@@ -303,15 +308,24 @@ private fun MapContent(
                     mapView.overlays.filterIsInstance<Marker>().forEach { it.closeInfoWindow() }
 
                     currentFilterMode = when (currentFilterMode) {
-                        ViewModel_MapClients_App2FragID1.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR -> ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAll
-                        ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAll -> ViewModel_MapClients_App2FragID1.VisibleClientsNow.showNonAbsentClientsOnly
-                        ViewModel_MapClients_App2FragID1.VisibleClientsNow.showNonAbsentClientsOnly -> ViewModel_MapClients_App2FragID1.VisibleClientsNow.affichePourCollecteurCommendes
-                        ViewModel_MapClients_App2FragID1.VisibleClientsNow.affichePourCollecteurCommendes -> ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2
-                        ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 -> ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAtayClients
-                        ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAtayClients -> ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAlimentionlients
-                        ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAlimentionlients -> ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsWithConfirmedProducts
-                        ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsWithConfirmedProducts -> ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAll
-
+                        ViewModel_MapClients_App2FragID1.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR ->
+                            ViewModel_MapClients_App2FragID1.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX
+                        ViewModel_MapClients_App2FragID1.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX ->
+                            ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAll
+                        ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAll ->
+                            ViewModel_MapClients_App2FragID1.VisibleClientsNow.showNonAbsentClientsOnly
+                        ViewModel_MapClients_App2FragID1.VisibleClientsNow.showNonAbsentClientsOnly ->
+                            ViewModel_MapClients_App2FragID1.VisibleClientsNow.affichePourCollecteurCommendes
+                        ViewModel_MapClients_App2FragID1.VisibleClientsNow.affichePourCollecteurCommendes ->
+                            ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2
+                        ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 ->
+                            ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAtayClients
+                        ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAtayClients ->
+                            ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAlimentionlients
+                        ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAlimentionlients ->
+                            ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsWithConfirmedProducts
+                        ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsWithConfirmedProducts ->
+                            ViewModel_MapClients_App2FragID1.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
                     }
                 }
             )

@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Options
 
-import Z_CodePartageEntreApps.Windows.A.B_DataBaseEdite.Windows.DataBaseEditeWindows
-import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.C.FilterModesDialog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.A_ChangeIdColor
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.AddMarkerButton
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.ClearHistoryButton
@@ -9,7 +9,8 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Wi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.LocationTrackingButton
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.MenuButton
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.rememberLocationTracker
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
+import Z_CodePartageEntreApps.Windows.A.B_DataBaseEdite.Windows.DataBaseEditeWindows
+import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
 import Z_MasterOfApps.Resources.XmlsFilesHandler.Companion.xmlResources
 import Z_MasterOfApps.Z_AppsFather.Kotlin.Partage.Views.AnimatedIconLottieJsonFile
@@ -26,6 +27,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material.icons.filled.Fireplace
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -55,9 +57,9 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
     onClear: () -> Unit,
     onFilterMarkers: () -> Unit,
     currentFilterMode: ViewModel_MapClients_App2FragID1.VisibleClientsNow,
-    ) {
+) {
     var showDatabaseEditDialog by remember { mutableStateOf(false) }
-
+    var showFilterDialog by remember { mutableStateOf(false) }
     var showMenu by remember { mutableStateOf(false) }
     var showLabels by remember { mutableStateOf(false) }
     val proximiteMeter = 50.0
@@ -96,6 +98,32 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 if (showMenu) {
+
+                    val coloreButton = Color(0xFFF44336)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        FloatingActionButton(
+                            onClick = {
+                                showFilterDialog = true
+                            },
+                            modifier = Modifier.size(40.dp),
+                            containerColor = coloreButton
+                        ) {
+                            Icon(Icons.Filled.FilterAlt, "Filter clients")
+                        }
+
+                        if (showLabels) {
+                            Text(
+                                "Filtrer les clients",
+                                modifier = Modifier
+                                    .background(coloreButton)
+                                    .padding(4.dp),
+                                color = Color.White
+                            )
+                        }
+                    }
 
                     ControlButton(
                         onClick = {
@@ -174,10 +202,24 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                 )
             }
         }
+
         // Show DataBaseEditeWindows dialog when showDatabaseEditDialog is true
         if (showDatabaseEditDialog) {
             DataBaseEditeWindows(
                 onDissmis = { showDatabaseEditDialog= false }
+            )
+        }
+
+        // Show FilterModesDialog when showFilterDialog is true
+        if (showFilterDialog) {
+            FilterModesDialog(
+                currentFilterMode = currentFilterMode,
+                onFilterSelect = { selectedMode ->
+                    mapView.overlays.filterIsInstance<Marker>().forEach { it.closeInfoWindow() }
+
+                    onFilterMarkers()
+                },
+                onDismiss = { showFilterDialog = false }
             )
         }
     }
