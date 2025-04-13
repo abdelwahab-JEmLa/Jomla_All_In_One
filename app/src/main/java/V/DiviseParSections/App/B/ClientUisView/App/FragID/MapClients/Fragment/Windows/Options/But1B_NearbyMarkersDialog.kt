@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.Options
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Options
 
 import Z_CodePartageEntreApps.Model.Z.Archive._ModelAppsFather
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp

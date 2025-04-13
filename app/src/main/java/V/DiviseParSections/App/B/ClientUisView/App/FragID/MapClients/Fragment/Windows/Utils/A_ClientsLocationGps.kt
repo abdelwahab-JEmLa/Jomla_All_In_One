@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.Utils
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils
 
 import android.Manifest
 import android.content.Context

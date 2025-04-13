@@ -1,7 +1,7 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.Utils
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils
 
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.Options.ControlButton
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Options.ControlButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable

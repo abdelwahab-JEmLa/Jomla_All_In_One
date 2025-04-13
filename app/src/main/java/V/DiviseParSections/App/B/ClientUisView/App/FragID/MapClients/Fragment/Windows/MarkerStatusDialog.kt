@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows
 
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat

@@ -1,7 +1,7 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.Options
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Options
 
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.Utils.LocationTracker
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.LocationTracker
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_App2FragID1
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
 import androidx.compose.runtime.Composable

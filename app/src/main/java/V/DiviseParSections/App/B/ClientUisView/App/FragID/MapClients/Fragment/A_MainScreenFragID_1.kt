@@ -1,10 +1,10 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.Options.A_GlobalOptionsControlsFloatingActionButtons_FragId1
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.MarkerStatusDialog
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.Utils.DEFAULT_LATITUDE
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.Utils.DEFAULT_LONGITUDE
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Dialogs.Utils.getCurrentLocation
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.MarkerStatusDialog
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Options.A_GlobalOptionsControlsFloatingActionButtons_FragId1
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.DEFAULT_LATITUDE
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.DEFAULT_LONGITUDE
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.getCurrentLocation
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_App2FragID1
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat
