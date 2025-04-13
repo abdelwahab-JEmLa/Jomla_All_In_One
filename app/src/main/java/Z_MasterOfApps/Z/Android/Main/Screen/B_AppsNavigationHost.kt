@@ -1,7 +1,7 @@
 package Z_MasterOfApps.Z.Android.Main.Screen
 
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.A_id1_ClientsLocationGps
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.A_MainScreenFragID_1
 import Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_1.id4_DeplaceProduitsVerGrossist.A_id4_DeplaceProduitsVerGrossist
 import Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_2.id1_GerantDefinirePosition.A_id1_GerantDefinirePosition
 import Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_3.id5_VerificationProduitAcGrossist.A_ID5_VerificationProduitAcGrossist
@@ -85,7 +85,7 @@ fun AppNavigationHost(
                                 A_id3_AfficheurDesProduitsPourLeColecteur(viewModelInitApp = viewModelInitApp)
                             }
                             composable(InfosDatas_FramgmentId6.route) {
-                                A_id1_ClientsLocationGps(viewModelInitApp = viewModelInitApp)
+                                A_MainScreenFragID_1(viewModelInitApp = viewModelInitApp)
                             }
                             composable(StartupIcon_Start.route) {
                                 A_StartupScreen(viewModelInitApp, { route ->

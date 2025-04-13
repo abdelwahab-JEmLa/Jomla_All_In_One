@@ -59,7 +59,7 @@ import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow
 
 @Composable
-fun A_id1_ClientsLocationGps(
+fun A_MainScreenFragID_1(
     modifier: Modifier = Modifier,
     viewModel: ViewModel_App2FragID1 = koinViewModel(),
     viewModelInitApp: ViewModelInitApp = viewModel(),
