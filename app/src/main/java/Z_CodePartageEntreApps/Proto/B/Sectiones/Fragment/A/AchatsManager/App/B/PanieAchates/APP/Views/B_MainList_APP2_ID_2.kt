@@ -21,6 +21,7 @@ fun B_MainList_APP2_ID_2(
     onQuantitySelected: (Int) -> Unit,
     onDoneupdatePrice: (SnapshotStateList<_1_1_CouleurAcheteOperation>) -> Unit,
 ) {
+    // The list of valid color operations that have a quantity selected
     val validColorOperations =
         _0_HeadOfRepositorys_Repository_Model._1_1_CouleurAcheteOperation_Repository
             .modelDatasSnapList
@@ -29,13 +30,12 @@ fun B_MainList_APP2_ID_2(
                         it.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
             }
 
-    // In B_MainList_APP2_ID_2.kt - Replace the existing produitOperations definition with:
+    // Get the product operations and sort them by VID in descending order
     val produitOperations = produitsBonAchatIDs(
         _0_HeadOfRepositorys_Repository_Model,
         composeKeyVID,
         validColorOperations
-    )
-
+    ).sortedByDescending { it.vid } // Sort by VID in descending order
 
     LazyColumn(
         modifier = modifier.fillMaxSize(),
@@ -65,10 +65,8 @@ fun B_MainList_APP2_ID_2(
 
                         onQuantitySelected(0)
 
-
                         onDoneupdatePrice(_0_HeadOfRepositorys_Repository_Model._1_1_CouleurAcheteOperation_Repository.modelDatasSnapList)
                         _0_HeadOfRepositorys_Repository_Model._1_1_CouleurAcheteOperation_Repository.notifyDataChanged()
-
                     }
                 }
             )
