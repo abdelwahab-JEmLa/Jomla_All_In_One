@@ -59,7 +59,7 @@ import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow
 
 @Composable
-fun A_MainScreenFragID_1(
+fun A_MainScreenA2FragID_1(
     modifier: Modifier = Modifier,
     viewModel: ViewModel_App2FragID1 = koinViewModel(),
     viewModelInitApp: ViewModelInitApp = viewModel(),
