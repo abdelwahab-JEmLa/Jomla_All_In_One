@@ -77,7 +77,6 @@ fun MarkerStatusDialog(
     }
     var clientTypeMode = relatedClients?.clientTypeMode
 
-
     if (selectedMarker == null) return
 
     Dialog(
