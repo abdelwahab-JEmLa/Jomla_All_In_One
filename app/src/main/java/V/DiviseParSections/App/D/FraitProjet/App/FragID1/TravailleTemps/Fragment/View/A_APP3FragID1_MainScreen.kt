@@ -18,10 +18,10 @@ import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun MainScreen_Windows(
+fun A_APP3FragID1_MainScreen(
     modifier: Modifier = Modifier,
     viewModel: Windows__ViewModel = koinViewModel(),
-    fabsVisibility: Boolean,
+    fabsVisibility: Boolean=true,
 ) {
     // Collect recording state
     val isRecording by viewModel.isRecording.collectAsState()

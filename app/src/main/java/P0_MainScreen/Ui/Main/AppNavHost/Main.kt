@@ -1,14 +1,15 @@
 package P0_MainScreen.Ui.Main.AppNavHost
 
 import P0_MainScreen.Ui.Objects.LoadingOverlay
+import V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package.A_APP1FragID3_MainScreen
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.A_MapClients_A2FragID_1
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.A_MainScreen_APP2_ID_2
+import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.A_APP3FragID1_MainScreen
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.A_VendeurAfficheurInfosProduit_FragmentMainId3
 import Views.P1._ArticlesStartFacade.FragmentStartupScreen
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.A_MainScreen_APP2_ID_2
-import V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package.A_MainScreen_APP2_FragID3
-import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_CodePartageEntreApps.Modules.WifiUpdateClientDisplayerStats
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.A_MapClients_A2FragID_1
+import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -194,7 +195,6 @@ fun AppNavHost(
                 }
 
                 composable(Screen.SoldCart.route) {
-                    // Increment navigation count when entering SoldCart
                     LaunchedEffect(Unit) {
                         scrollTiger++
                     }
@@ -211,7 +211,13 @@ fun AppNavHost(
 
                 composable(Screen.TravailleTempRecorder.route) {
                     Box(modifier = Modifier.fillMaxSize()) {
-                        A_MainScreen_APP2_FragID3()
+                        A_APP3FragID1_MainScreen()
+                    }
+                }
+
+                composable(Screen.CommandeProduits.route) {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        A_APP1FragID3_MainScreen()
                     }
                 }
             }

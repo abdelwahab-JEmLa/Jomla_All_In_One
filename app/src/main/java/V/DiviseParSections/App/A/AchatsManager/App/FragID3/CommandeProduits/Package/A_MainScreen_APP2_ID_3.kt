@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
 
 @Composable
-fun A_MainScreen_APP2_FragID3(
+fun A_APP1FragID3_MainScreen(
     modifier: Modifier = Modifier,
     _0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository = koinInject(),
 ) {

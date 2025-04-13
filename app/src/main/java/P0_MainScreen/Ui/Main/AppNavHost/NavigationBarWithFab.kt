@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EditRoad
 import androidx.compose.material.icons.filled.MapsHomeWork
+import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -197,6 +198,7 @@ object NavigationItems {
         Screen.EditDatabaseWithCreateNewArticles,
         Screen.SoldCart,
         Screen.TravailleTempRecorder,
+        Screen.CommandeProduits,
         Screen.ToggleFab
     )
 }
@@ -217,14 +219,21 @@ sealed class Screen(
         route = "main_fragment_edit_database_with_create_new_articles",
         icon = Icons.Default.EditRoad,
         title = "Create New Articles",
-        color = Color(0xFFE30E0E)
+        color = Color(0xFF151414)
     )
 
     data object SoldCart : Screen(
         route = "sold_cart",
         icon = Icons.Default.ShoppingCart,
         title = "Panier Sold",
-        color = Color(0xFF4CAF50)
+        color = Color(0xFFF44336)
+    )
+
+    data object CommandeProduits : Screen(
+        route = "CommandeProduits",
+        icon = Icons.Default.Receipt,
+        title = "CommandeProduits",
+        color = Color(0xFF009688)
     )
 
     data object TravailleTempRecorder : Screen(

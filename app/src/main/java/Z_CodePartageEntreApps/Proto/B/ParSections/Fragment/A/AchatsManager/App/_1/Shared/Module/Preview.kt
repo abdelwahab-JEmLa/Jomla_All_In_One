@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Proto.B.ParSections.Fragment.A.AchatsManager.App._1.Shared.Module
 
-import V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package.A_MainScreen_APP2_FragID3
+import V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package.A_APP1FragID3_MainScreen
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
@@ -16,7 +16,7 @@ fun MainScreenPreview_APP2() {
         KoinAndroidContext {
            // A_MainScreen_APP2_ID_2()
           //  A_MainScreenApp2FragID_1()
-            A_MainScreen_APP2_FragID3()
+            A_APP1FragID3_MainScreen()
         }
     }
 }
