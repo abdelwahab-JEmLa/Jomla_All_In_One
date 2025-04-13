@@ -24,7 +24,8 @@ class ViewModel_App2FragID1(
     val mainRepositery: B_ClientDataBaseRepository,
     val _0_0_HeadOfRepositorys_Repository:_0_0_HeadOfRepositorys_Repository
 ) : ViewModel() {
-    val _1_3_BonAchat_modelDatasSnapList=_0_0_HeadOfRepositorys_Repository.repositorys_Model
+
+    val modelDatasSnapList_1_3_BonAchat=_0_0_HeadOfRepositorys_Repository.repositorys_Model
         ._1_3_BonAchat_Repository.modelDatasSnapList
 
     val bProto_ClientsDataBase = mainRepositery.modelDatas
