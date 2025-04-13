@@ -21,7 +21,6 @@ fun A_APP1FragID3_MainScreen(
     _0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository = koinInject(),
 ) {
     val models = _0_0_HeadOfRepositorys_Repository.repositorys_Model
-
     Box(
         modifier = modifier
             .fillMaxSize()
