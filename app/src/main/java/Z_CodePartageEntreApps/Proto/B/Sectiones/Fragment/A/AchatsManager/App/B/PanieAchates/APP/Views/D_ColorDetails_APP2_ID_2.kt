@@ -44,6 +44,7 @@ fun D_ColorDetails_APP2_ID_2(
     composeKeyVID: Long,
     _0_HeadOfRepositorys_Repository_Model: _0_0_HeadOfRepositorys_Model,
     relative_2_1_ProduitsDataBase_vid: Long?,
+    onQuantitySelected: (Int) -> Unit,
 ) {
     val database = koinInject<AppDatabase>()
     val viewModelInitApp = koinInject<ViewModelInitApp>()
@@ -119,6 +120,8 @@ fun D_ColorDetails_APP2_ID_2(
                     _0_HeadOfRepositorys_Repository_Model
                         ._1_1_CouleurAcheteOperation_Repository
                         .updateUnSeulData(updatedColorItem)
+
+                    onQuantitySelected(newQuantity)
                 }
             },
             currentSale = dummySale,

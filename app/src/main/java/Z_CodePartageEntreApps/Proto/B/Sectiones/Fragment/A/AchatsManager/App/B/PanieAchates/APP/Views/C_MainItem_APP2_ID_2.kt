@@ -2,6 +2,7 @@ package Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.
 
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
+import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -50,24 +51,24 @@ fun C_MainItem_APP2_ID_2(
         ._1_2_ProduitAcheteOperation_Repository
         .modelDatasSnapList.find { it.vid == composeKeyVID }
 
-    val init_relative_2_1_ProduitsDataBase =
-        _0_HeadOfRepositorys_Repository_Model._2_1_ProduitsDataBase_Repository
-            .modelDatasSnapList.find {
-                it.vid == (relative_1_2_ProduitAcheteOperation
-                    ?.produitAcheterID ?: 0)
-            }
+    val relative_2_1_ProduitsDataBase by remember {
+        mutableStateOf(
+            _0_HeadOfRepositorys_Repository_Model._2_1_ProduitsDataBase_Repository
+                .modelDatasSnapList.find {
+                    it.vid == (relative_1_2_ProduitAcheteOperation
+                        ?.produitAcheterID ?: 0)
+                })
+    }
 
-    var relative_2_1_ProduitsDataBase by remember { mutableStateOf(init_relative_2_1_ProduitsDataBase) }
-
-    // Calculate total quantity from all color operations for this product
-    val totalQuantity = _0_HeadOfRepositorys_Repository_Model
-        ._1_1_CouleurAcheteOperation_Repository
-        .modelDatasSnapList
-        .filter {
-            it.parentProduitAchateOperationVID == composeKeyVID &&
-                    it.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
-        }
-        .sumOf { it.totaleQuantity }
+    // Use mutableStateOf to store totalQuantity so we can update it when color quantities change
+    var totalQuantity by remember {
+        mutableStateOf(
+            calculateTotalQuantity(
+                composeKeyVID,
+                _0_HeadOfRepositorys_Repository_Model
+            )
+        )
+    }
 
     // Determine if we should use provisional price or regular price
     val provisionalPrice = relative_1_2_ProduitAcheteOperation?.provisoireMonPrix ?: 0.0
@@ -182,7 +183,8 @@ fun C_MainItem_APP2_ID_2(
                                     label = {
                                         Text(
                                             if (useProvisionalPrice)
-                                                formatter.format(provisionalPrice).replace("€", "دج")
+                                                formatter.format(provisionalPrice)
+                                                    .replace("€", "دج")
                                             else
                                                 formatter.format(defaultPrice).replace("€", "دج")
                                         )
@@ -242,14 +244,19 @@ fun C_MainItem_APP2_ID_2(
                         modifier = Modifier
                             .fillMaxWidth()
                     ) {
-
-                        LazyRow(
-                        ) {
+                        LazyRow {
                             items(couleursAcheteOperationsVIDs) { couleurVId ->
                                 D_ColorDetails_APP2_ID_2(
                                     composeKeyVID = couleurVId,
                                     _0_HeadOfRepositorys_Repository_Model = _0_HeadOfRepositorys_Repository_Model,
                                     relative_2_1_ProduitsDataBase_vid = relative_2_1_ProduitsDataBase?.vid,
+                                    onQuantitySelected = { _ ->
+                                        // Recalculate the total quantity after a color's quantity has changed
+                                        totalQuantity = calculateTotalQuantity(
+                                            composeKeyVID,
+                                            _0_HeadOfRepositorys_Repository_Model
+                                        )
+                                    },
                                 )
                             }
                         }
@@ -260,12 +267,27 @@ fun C_MainItem_APP2_ID_2(
     }
 }
 
+// Helper function to calculate the total quantity for a product
+private fun calculateTotalQuantity(
+    produitOperationVID: Long,
+    repositoryModel: _0_0_HeadOfRepositorys_Model
+): Int {
+    return repositoryModel
+        ._1_1_CouleurAcheteOperation_Repository
+        .modelDatasSnapList
+        .filter {
+            it.parentProduitAchateOperationVID == produitOperationVID &&
+                    it.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
+        }
+        .sumOf { it.totaleQuantity }
+}
+
 // Helper function to update the price
 private fun updatePrice(
     priceText: String,
     defaultPrice: Double,
-    produitAcheteOperation: Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation?,
-    repositoryModel: Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
+    produitAcheteOperation: _1_2_ProduitAcheteOperation?,
+    repositoryModel:_0_0_HeadOfRepositorys_Model,
 ) {
     val newPrice = priceText.toDoubleOrNull() ?: defaultPrice
 
