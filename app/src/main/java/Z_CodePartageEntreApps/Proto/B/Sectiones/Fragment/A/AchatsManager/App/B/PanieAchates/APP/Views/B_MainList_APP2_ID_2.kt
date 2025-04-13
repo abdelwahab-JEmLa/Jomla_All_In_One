@@ -17,6 +17,7 @@ fun B_MainList_APP2_ID_2(
     composeKeyVID: Long?,
     modifier: Modifier = Modifier,
     _0_HeadOfRepositorys_Repository_Model: _0_0_HeadOfRepositorys_Model,
+    onQuantitySelected: (Int) -> Unit,
 ) {
     // First filter color operations to find valid ones
     val validColorOperations = _0_HeadOfRepositorys_Repository_Model._1_1_CouleurAcheteOperation_Repository
@@ -50,6 +51,7 @@ fun B_MainList_APP2_ID_2(
             C_MainItem_APP2_ID_2(
                 composeKeyVID = produitItem.vid,
                 _0_HeadOfRepositorys_Repository_Model = _0_HeadOfRepositorys_Repository_Model,
+                onQuantitySelected = onQuantitySelected,
             )
         }
     }

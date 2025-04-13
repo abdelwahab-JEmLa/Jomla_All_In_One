@@ -1,6 +1,7 @@
 package Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.PanieAchates.APP.Views
 
 import Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App._1.Shared.Views.LoadingContent
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
@@ -67,26 +68,9 @@ fun A_MainScreen_APP2_ID_2(
         }
         .sumOf { it.totaleQuantity }
 
-
-    val totalPrice = produitsBonAchatIDs.sumOf { produitOpe ->
-        val productPrice = _0_HeadOfRepositorys_Repository_Model
-            ._2_1_ProduitsDataBase_Repository
-            .modelDatasSnapList
-            .find { it.vid == produitOpe.produitAcheterID }
-            ?.monPrixVent ?: 0.0
-
-        // Get all color operations for this product and sum their quantities
-        val productTotalQuantity = _0_HeadOfRepositorys_Repository_Model
-            ._1_1_CouleurAcheteOperation_Repository
-            .modelDatasSnapList
-            .filter {
-                it.parentProduitAchateOperationVID == produitOpe.vid &&
-                        it.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
-            }
-            .sumOf { it.totaleQuantity }
-
-        // Multiply the quantity by the price for this product
-        productTotalQuantity * productPrice
+    // Changed from remember to mutableState to make it reactive to changes
+    var totalPrice by remember {
+        mutableStateOf( calcule_totalPrice(produitsBonAchatIDs, _0_HeadOfRepositorys_Repository_Model) )
     }
 
     // Format the total price
@@ -140,7 +124,10 @@ fun A_MainScreen_APP2_ID_2(
                             B_MainList_APP2_ID_2(
                                 composeKeyVID = composeKeyVID,
                                 _0_HeadOfRepositorys_Repository_Model = _0_0_HeadOfRepositorys_Repository
-                                    .repositorys_Model
+                                    .repositorys_Model,
+                                onQuantitySelected = {
+                                    totalPrice = calcule_totalPrice(produitsBonAchatIDs, _0_HeadOfRepositorys_Repository_Model)
+                                }
                             )
                         }
                     }
@@ -148,4 +135,28 @@ fun A_MainScreen_APP2_ID_2(
             }
         }
     }
+}
+
+private fun calcule_totalPrice(
+    produitsBonAchatIDs: List<_1_2_ProduitAcheteOperation>,
+    _0_HeadOfRepositorys_Repository_Model: _0_0_HeadOfRepositorys_Model,
+) = produitsBonAchatIDs.sumOf { produitOpe ->
+    val productPrice = _0_HeadOfRepositorys_Repository_Model
+        ._2_1_ProduitsDataBase_Repository
+        .modelDatasSnapList
+        .find { it.vid == produitOpe.produitAcheterID }
+        ?.monPrixVent ?: 0.0
+
+    // Get all color operations for this product and sum their quantities
+    val productTotalQuantity = _0_HeadOfRepositorys_Repository_Model
+        ._1_1_CouleurAcheteOperation_Repository
+        .modelDatasSnapList
+        .filter {
+            it.parentProduitAchateOperationVID == produitOpe.vid &&
+                    it.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
+        }
+        .sumOf { it.totaleQuantity }
+
+    // Multiply the quantity by the price for this product
+    productTotalQuantity * productPrice
 }
