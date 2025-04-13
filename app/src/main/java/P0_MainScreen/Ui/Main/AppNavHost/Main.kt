@@ -1,7 +1,6 @@
 package P0_MainScreen.Ui.Main.AppNavHost
 
 import P0_MainScreen.Ui.Objects.LoadingOverlay
-import P5_DialogeClientsEditer.ClientSelectionDialog
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.A_VendeurAfficheurInfosProduit_FragmentMainId3
 import Views.P1._ArticlesStartFacade.FragmentStartupScreen
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
@@ -217,33 +216,20 @@ fun AppNavHost(
                 }
             }
 
-            // Overlay dialogs and windows
             if (showClientSelectionWithoutCondition || (showClientSelection && currentClientId == 0L)) {
-                ClientSelectionDialog(
-                    soldArticle = uiState.soldArticlesModel,
-                    viewModel = headViewModel,
-                    clients = viewModelInitApp.clientDataBaseSnapList,
-                    onClientSelected = { AppSetting ->
-                        headViewModel.updateLongAppSetting(
-                            "clientBuyerNowId",
-                            AppSetting.id
-                        )
-                        if (!showClientSelectionWithoutCondition) {
-                            headViewModel.openWindowsNewSaleWithUpdateCurrent(
-                                relatedArticleBaseStats!!.idArticle.toLong(),
-                                AppSetting.id,
-                                pendingIndexColor
-                            )
-                            opnerSaleWindows = true
+                // Navigate to client map selection screen when no client is selected
+                LaunchedEffect(Unit) {
+                    navController.navigate(Screen.A_ClientsLocationGps.route) {
+                        popUpTo(navController.graph.startDestinationId) {
+                            saveState = true
                         }
-                        showClientSelection = false
-                        showClientSelectionWithoutCondition = false
-                    },
-                    onDismiss = {
-                        showClientSelection = false
-                        showClientSelectionWithoutCondition = false
+                        launchSingleTop = true
+                        restoreState = true
                     }
-                )
+                    // Reset dialog states after navigation
+                    showClientSelection = false
+                    showClientSelectionWithoutCondition = false
+                }
             }
 
             if (opnerSaleWindows) {

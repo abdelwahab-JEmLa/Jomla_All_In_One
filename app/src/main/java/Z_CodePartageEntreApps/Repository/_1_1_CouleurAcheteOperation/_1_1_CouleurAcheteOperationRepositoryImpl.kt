@@ -44,6 +44,65 @@ class _1_1_CouleurAcheteOperationRepositoryImpl(
         }
     }
 
+    override fun upsertUneDataEtReturnVID(
+        data: _1_1_CouleurAcheteOperation,
+        onSuccess: (Long) -> Unit
+    ): Unit {
+        try {
+            // Create a copy of the data to work with
+            val dataToUpsert = data.copy()
+
+            repositoryScope.launch(Dispatchers.IO) {
+                try {
+                    // Check if the data already exists (if it has a valid vid)
+                    if (dataToUpsert.vid > 0) {
+                        // Update existing data
+                        appDatabase._1_1_CouleurAcheteOperationDao().insert(dataToUpsert)
+
+                        // Update in snapshot list
+                        withContext(Dispatchers.Main) {
+                            val index = modelDatasSnapList.indexOfFirst { it.vid == dataToUpsert.vid }
+                            if (index >= 0) {
+                                modelDatasSnapList[index] = dataToUpsert
+                            } else {
+                                modelDatasSnapList.add(dataToUpsert)
+                            }
+                        }
+
+                        // Update in Firebase
+                        _1_1_CouleurAcheteOperation_Repository.sonDataBaseRef.child(dataToUpsert.vid.toString())
+                            .setValue(dataToUpsert).await()
+
+                        // Call the success callback with the existing vid
+                        onSuccess(dataToUpsert.vid)
+                    } else {
+                        // If no valid vid, insert as new (same as addDataAndReturneItVID)
+                        val newVid = appDatabase._1_1_CouleurAcheteOperationDao().insertAvecRetureNewVid(dataToUpsert)
+
+                        // Update the object with the new vid
+                        dataToUpsert.vid = newVid
+
+                        withContext(Dispatchers.Main) {
+                            modelDatasSnapList.add(dataToUpsert)
+                        }
+
+                        // Update Firebase with the new vid
+                        _1_1_CouleurAcheteOperation_Repository.sonDataBaseRef.child(newVid.toString())
+                            .setValue(dataToUpsert).await()
+
+                        // Call the success callback with the new vid
+                        onSuccess(newVid)
+                    }
+                    notifyDataChanged()
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error upserting data: ${e.message}")
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in upsertUneDataEtReturnVID: ${e.message}")
+        }
+    }
+
     override fun addDataAndReturnItVID(
         data: _1_1_CouleurAcheteOperation,
         onAddSuccess: (Long) -> Unit

@@ -164,7 +164,7 @@ fun D_ColorDetails_APP2_ID_2(
                         // Update the item in repository
                         _0_HeadOfRepositorys_Repository_Model
                             ._1_1_CouleurAcheteOperation_Repository
-                            .updateUnSeulData(updatedColorItem)
+                            .upsertUneDataEtReturnVID(updatedColorItem)
                     }
                 },
                 modifier = Modifier

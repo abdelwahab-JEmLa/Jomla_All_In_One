@@ -7,6 +7,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
@@ -84,7 +85,7 @@ fun SearchFilterPB(
             trailingIcon = {
                 if (filterText.isNotEmpty()) {
                     // Row to contain both clear and add buttons
-                    androidx.compose.foundation.layout.Row {
+                    Row {
                         // Clear button
                         IconButton(
                             onClick = {

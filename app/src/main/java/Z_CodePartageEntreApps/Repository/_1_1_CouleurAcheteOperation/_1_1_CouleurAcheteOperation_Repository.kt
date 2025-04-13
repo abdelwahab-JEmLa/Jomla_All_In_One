@@ -29,4 +29,5 @@ interface _1_1_CouleurAcheteOperation_Repository {
     }
 
     fun addDataAndReturnItVID(data: _1_1_CouleurAcheteOperation, onAddSuccess: (Long) -> Unit = {})
+    fun upsertUneDataEtReturnVID(data: _1_1_CouleurAcheteOperation, onSuccess: (Long) -> Unit = {})
 }
