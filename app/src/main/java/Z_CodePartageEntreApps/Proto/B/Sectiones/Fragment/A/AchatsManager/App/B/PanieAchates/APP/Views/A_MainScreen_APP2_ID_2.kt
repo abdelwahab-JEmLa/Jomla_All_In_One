@@ -127,6 +127,9 @@ fun A_MainScreen_APP2_ID_2(
                                     .repositorys_Model,
                                 onQuantitySelected = {
                                     totalPrice = calcule_totalPrice(produitsBonAchatIDs, _0_HeadOfRepositorys_Repository_Model)
+                                },
+                                onDoneupdatePrice = {
+                                    totalPrice = calcule_totalPrice(produitsBonAchatIDs, _0_HeadOfRepositorys_Repository_Model)
                                 }
                             )
                         }
@@ -141,13 +144,18 @@ private fun calcule_totalPrice(
     produitsBonAchatIDs: List<_1_2_ProduitAcheteOperation>,
     _0_HeadOfRepositorys_Repository_Model: _0_0_HeadOfRepositorys_Model,
 ) = produitsBonAchatIDs.sumOf { produitOpe ->
-    val productPrice = _0_HeadOfRepositorys_Repository_Model
-        ._2_1_ProduitsDataBase_Repository
-        .modelDatasSnapList
-        .find { it.vid == produitOpe.produitAcheterID }
-        ?.monPrixVent ?: 0.0
+    // Check if there's a provisional price, use it instead of the default if available
+    val productPrice = if (produitOpe.provisoireMonPrix > 0) {
+        produitOpe.provisoireMonPrix
+    } else {
+        _0_HeadOfRepositorys_Repository_Model
+            ._2_1_ProduitsDataBase_Repository
+            .modelDatasSnapList
+            .find { it.vid == produitOpe.produitAcheterID }
+            ?.monPrixVent ?: 0.0
+    }
 
-    // Get all color operations for this product and sum their quantities
+    // Rest of the function remains the same...
     val productTotalQuantity = _0_HeadOfRepositorys_Repository_Model
         ._1_1_CouleurAcheteOperation_Repository
         .modelDatasSnapList

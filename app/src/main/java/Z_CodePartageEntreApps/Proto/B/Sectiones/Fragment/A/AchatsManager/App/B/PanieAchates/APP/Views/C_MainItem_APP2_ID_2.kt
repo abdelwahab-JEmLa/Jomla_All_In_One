@@ -47,6 +47,7 @@ fun C_MainItem_APP2_ID_2(
     composeKeyVID: Long,
     _0_HeadOfRepositorys_Repository_Model: _0_0_HeadOfRepositorys_Model,
     onQuantitySelected: (Int) -> Unit,
+    onDoneupdatePrice: (String) -> Unit,
 ) {
     val relative_1_2_ProduitAcheteOperation = _0_HeadOfRepositorys_Repository_Model
         ._1_2_ProduitAcheteOperation_Repository
@@ -178,6 +179,7 @@ fun C_MainItem_APP2_ID_2(
                                             focusManager.clearFocus()
                                             keyboardController?.hide()
                                             isEditingPrice = false
+                                            onDoneupdatePrice(priceText)
                                         }
                                     ),
                                     singleLine = true,
