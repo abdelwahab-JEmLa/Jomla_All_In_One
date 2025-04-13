@@ -8,6 +8,7 @@ import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.Parent.AppSettingsSaverModel
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircleOutline
 import androidx.compose.material.icons.filled.Map
+import androidx.compose.material.icons.filled.SettingsBackupRestore
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -25,7 +26,6 @@ class ViewModel_MapClients_App2FragID1(
     val mainRepositery: B_ClientDataBaseRepository,
     val _0_0_HeadOfRepositorys_Repository:_0_0_HeadOfRepositorys_Repository
 ) : ViewModel() {
-
     val modelDatasSnapList_1_3_BonAchat=_0_0_HeadOfRepositorys_Repository.repositorys_Model
         ._1_3_BonAchat_Repository.modelDatasSnapList
 
@@ -106,7 +106,7 @@ class ViewModel_MapClients_App2FragID1(
 
     enum class VisibleClientsNow(val icon: Any) {
         AFFICHE_CIBLE_POUR_VENDEUR(Icons.Default.Map),
-        CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX(Icons.Default.Map),
+        CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX(Icons.Default.SettingsBackupRestore),
 
         showNonAbsentClientsOnly(LottieJsonGetterR_Raw_Icons.reacticonanimatedjsonurl),
         affichePourCollecteurCommendes(LottieJsonGetterR_Raw_Icons.afficheFenetre),

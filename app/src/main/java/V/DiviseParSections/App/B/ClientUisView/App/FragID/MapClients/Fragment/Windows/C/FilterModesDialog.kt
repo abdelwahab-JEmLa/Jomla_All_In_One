@@ -33,125 +33,119 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 
+// Liste de filtres définie au niveau supérieur pour éviter la recréation
+private val filtersToShow = listOf(
+    ViewModel_MapClients_App2FragID1.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR,
+    ViewModel_MapClients_App2FragID1.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX
+)
+
 @Composable
-fun FilterModesDialog(
+fun FilterView(
     currentFilterMode: ViewModel_MapClients_App2FragID1.VisibleClientsNow,
     onFilterSelect: (ViewModel_MapClients_App2FragID1.VisibleClientsNow) -> Unit,
     onDismiss: () -> Unit
-) {
-    Dialog(onDismissRequest = onDismiss) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            shape = RoundedCornerShape(16.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+) = Dialog(onDismissRequest = onDismiss) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
         ) {
-            Column(
-                modifier = Modifier.padding(16.dp)
+            // En-tête du dialog
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Sélectionner le mode de filtrage",
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold
+                Text(
+                    text = "Sélectionner le mode de filtrage",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold
+                )
+
+                IconButton(onClick = onDismiss) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Fermer"
                     )
-                    
-                    IconButton(onClick = onDismiss) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "Fermer"
-                        )
-                    }
                 }
-                
-                LazyColumn {
-                    items(ViewModel_MapClients_App2FragID1.VisibleClientsNow.entries.toTypedArray()) { filterMode ->
-                        FilterModeItem(
-                            filterMode = filterMode,
-                            isSelected = filterMode == currentFilterMode,
-                            onClick = { 
+            }
+
+            // Liste des filtres
+            LazyColumn {
+                items(filtersToShow) { filterMode ->
+                    // Élément de filtre intégré directement ici
+                    val backgroundColor = if (filterMode == currentFilterMode)
+                        MaterialTheme.colorScheme.primaryContainer
+                    else
+                        MaterialTheme.colorScheme.surface
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(
+                                color = backgroundColor,
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                            .clickable {
                                 onFilterSelect(filterMode)
                                 onDismiss()
                             }
+                            .padding(12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        // Affichage de l'icône selon son type
+                        when (val icon = filterMode.icon) {
+                            is ImageVector -> {
+                                Box(
+                                    modifier = Modifier
+                                        .size(40.dp)
+                                        .background(
+                                            color = Color(0xFFF44336),
+                                            shape = CircleShape
+                                        ),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = icon,
+                                        contentDescription = null,
+                                        tint = Color.White
+                                    )
+                                }
+                            }
+                            is LottieJsonGetterR_Raw_Icons -> {
+                                Box(
+                                    modifier = Modifier
+                                        .size(40.dp)
+                                        .background(
+                                            color = Color(0xFFF44336),
+                                            shape = CircleShape
+                                        ),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    AnimatedIconLottieJsonFile(
+                                        ressourceXml = icon,
+                                        onClick = {}
+                                    )
+                                }
+                            }
+                        }
+
+                        Text(
+                            text = filterMode.name,
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = if (filterMode == currentFilterMode) FontWeight.Bold else FontWeight.Normal
                         )
                     }
                 }
             }
         }
-    }
-}
-
-@Composable
-fun FilterModeItem(
-    filterMode: ViewModel_MapClients_App2FragID1.VisibleClientsNow,
-    isSelected: Boolean,
-    onClick: () -> Unit
-) {
-    val backgroundColor = if (isSelected) 
-        MaterialTheme.colorScheme.primaryContainer 
-    else 
-        MaterialTheme.colorScheme.surface
-    
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(
-                color = backgroundColor,
-                shape = RoundedCornerShape(8.dp)
-            )
-            .clickable(onClick = onClick)
-            .padding(12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        // Display the icon based on its type
-        when (val icon = filterMode.icon) {
-            is ImageVector -> {
-                Box(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .background(
-                            color = Color(0xFFF44336),
-                            shape = CircleShape
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = null,
-                        tint = Color.White
-                    )
-                }
-            }
-            is LottieJsonGetterR_Raw_Icons -> {
-                Box(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .background(
-                            color = Color(0xFFF44336),
-                            shape = CircleShape
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    AnimatedIconLottieJsonFile(
-                        ressourceXml = icon,
-                        onClick = {}
-                    )
-                }
-            }
-        }
-        
-        Text(
-            text = filterMode.name,
-            style = MaterialTheme.typography.bodyLarge,
-            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
-        )
     }
 }

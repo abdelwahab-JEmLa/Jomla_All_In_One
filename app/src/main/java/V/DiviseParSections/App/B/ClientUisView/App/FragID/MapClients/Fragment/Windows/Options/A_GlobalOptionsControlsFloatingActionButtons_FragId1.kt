@@ -1,7 +1,8 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Options
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.C.FilterModesDialog
+// Importer la nouvelle fonction FilterView au lieu de FilterModesDialog
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.C.FilterView
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.A_ChangeIdColor
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.AddMarkerButton
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.ClearHistoryButton
@@ -48,6 +49,25 @@ import androidx.compose.ui.unit.dp
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import kotlin.math.roundToInt
+
+// Add this utility class for logging filter changes
+private class FilterLogger {
+    companion object {
+        private const val TAG = "FilterChangeLog"
+        private val logs = mutableListOf<String>()
+
+        fun logFilterChange(previousMode: ViewModel_MapClients_App2FragID1.VisibleClientsNow,
+                            newMode: ViewModel_MapClients_App2FragID1.VisibleClientsNow) {
+            val timestamp = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault())
+                .format(java.util.Date())
+            val logMessage = "[$timestamp] Filter changed: $previousMode -> $newMode"
+            logs.add(logMessage)
+            android.util.Log.d(TAG, logMessage)
+        }
+
+        fun getLogs(): List<String> = logs.toList()
+    }
+}
 
 @Composable
 fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
@@ -173,8 +193,36 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                             viewModelInitApp = viewModelInitApp,
                             textButton = "onFilterMarkers",
                             showLabels = showLabels,
-                            onClick = onFilterMarkers,
-                            currentFilterMode =currentFilterMode
+                            onClick = {
+                                mapView.overlays.filterIsInstance<Marker>().forEach { it.closeInfoWindow() }
+
+                                // Log the filter change
+                                val previousMode = currentFilterMode
+                                val newMode = when (currentFilterMode) {
+                                    ViewModel_MapClients_App2FragID1.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR ->
+                                        ViewModel_MapClients_App2FragID1.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX
+                                    ViewModel_MapClients_App2FragID1.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX ->
+                                        ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAll
+                                    ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAll ->
+                                        ViewModel_MapClients_App2FragID1.VisibleClientsNow.showNonAbsentClientsOnly
+                                    ViewModel_MapClients_App2FragID1.VisibleClientsNow.showNonAbsentClientsOnly ->
+                                        ViewModel_MapClients_App2FragID1.VisibleClientsNow.affichePourCollecteurCommendes
+                                    ViewModel_MapClients_App2FragID1.VisibleClientsNow.affichePourCollecteurCommendes ->
+                                        ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2
+                                    ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 ->
+                                        ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAtayClients
+                                    ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAtayClients ->
+                                        ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAlimentionlients
+                                    ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAlimentionlients ->
+                                        ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsWithConfirmedProducts
+                                    ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsWithConfirmedProducts ->
+                                        ViewModel_MapClients_App2FragID1.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
+                                }
+
+                                FilterLogger.logFilterChange(previousMode, newMode)
+                                onFilterMarkers()
+                            },
+                            currentFilterMode = currentFilterMode
                         )
                         A_ChangeIdColor(
                             viewModel=viewModel,
@@ -210,12 +258,15 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
             )
         }
 
-        // Show FilterModesDialog when showFilterDialog is true
+        // Remplacement de FilterModesDialog par FilterView
         if (showFilterDialog) {
-            FilterModesDialog(
+            FilterView(
                 currentFilterMode = currentFilterMode,
                 onFilterSelect = { selectedMode ->
                     mapView.overlays.filterIsInstance<Marker>().forEach { it.closeInfoWindow() }
+
+                    // Log the filter change when selecting from dialog
+                    FilterLogger.logFilterChange(currentFilterMode, selectedMode)
 
                     onFilterMarkers()
                 },

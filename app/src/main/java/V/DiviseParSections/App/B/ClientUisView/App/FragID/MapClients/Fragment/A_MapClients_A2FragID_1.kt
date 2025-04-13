@@ -211,6 +211,16 @@ private fun MapContent(
                             || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.CIBLE_PRIORITE_2
                 }
             }
+            ViewModel_MapClients_App2FragID1.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX -> {
+                clientDataBaseSnapList.filter {
+                            it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.Cible
+                            || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.VENDU_A_LUI
+                            || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.FERME
+                            || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.A_EVITE
+                            || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.AVEC_MARCHANDISE
+                            || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.CLIENT_ABSENT
+                }
+            }
 
             else -> {
                 clientDataBaseSnapList
@@ -304,10 +314,13 @@ private fun MapContent(
                 viewModelInitApp = viewModelInitApp,
                 onClear = onClear,
                 currentFilterMode = currentFilterMode,
+// Then replace the filter change code in A_GlobalOptionsControlsFloatingActionButtons_FragId1 with:
                 onFilterMarkers = {
                     mapView.overlays.filterIsInstance<Marker>().forEach { it.closeInfoWindow() }
 
-                    currentFilterMode = when (currentFilterMode) {
+                    // Log the filter change
+                    val previousMode = currentFilterMode
+                    val newMode = when (currentFilterMode) {
                         ViewModel_MapClients_App2FragID1.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR ->
                             ViewModel_MapClients_App2FragID1.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX
                         ViewModel_MapClients_App2FragID1.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX ->
@@ -327,6 +340,9 @@ private fun MapContent(
                         ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsWithConfirmedProducts ->
                             ViewModel_MapClients_App2FragID1.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
                     }
+
+                    FilterLogger.logFilterChange(previousMode, newMode)
+                    currentFilterMode = newMode
                 }
             )
         }
@@ -429,6 +445,23 @@ private fun MapContent(
                 }
             )
         }
+    }
+}
+private class FilterLogger {
+    companion object {
+        private const val TAG = "FilterChangeLog"
+        private val logs = mutableListOf<String>()
+
+        fun logFilterChange(previousMode: ViewModel_MapClients_App2FragID1.VisibleClientsNow,
+                            newMode: ViewModel_MapClients_App2FragID1.VisibleClientsNow) {
+            val timestamp = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault())
+                .format(java.util.Date())
+            val logMessage = "[$timestamp] Filter changed: $previousMode -> $newMode"
+            logs.add(logMessage)
+            android.util.Log.d(TAG, logMessage)
+        }
+
+        fun getLogs(): List<String> = logs.toList()
     }
 }
 
