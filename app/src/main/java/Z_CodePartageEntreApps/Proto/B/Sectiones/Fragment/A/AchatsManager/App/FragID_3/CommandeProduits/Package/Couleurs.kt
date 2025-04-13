@@ -97,6 +97,10 @@ fun Couleurs(
                 Produit.produitAcheterID
             )
 
+            // Get product name as fallback
+            val productName = models._2_1_ProduitsDataBase_Repository.modelDatasSnapList
+                .find { it.vid == Produit.produitAcheterID }?.nom ?: "Produit #${Produit.produitAcheterID}"
+
             Card(
                 modifier = Modifier.background(Color.Red)
             ) {
@@ -108,8 +112,8 @@ fun Couleurs(
                             360.dp,
                             onImageNeExistePas = {
                                 Text(
-                                    text = colorName ?: "Color name not available",
-                                    fontSize = 55.sp ,
+                                    text = colorName ?: productName,
+                                    fontSize = 55.sp,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier
                                         .fillMaxWidth()

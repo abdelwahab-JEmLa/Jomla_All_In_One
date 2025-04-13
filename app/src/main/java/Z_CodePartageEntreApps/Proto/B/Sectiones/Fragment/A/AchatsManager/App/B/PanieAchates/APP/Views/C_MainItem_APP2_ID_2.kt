@@ -93,8 +93,6 @@ fun C_MainItem_APP2_ID_2(
         formatter.format(defaultPrice).replace("€", "دج")
     }
 
-
-
     Card(
         modifier = modifier
             .padding(vertical = 2.dp, horizontal = 4.dp)
@@ -128,8 +126,11 @@ fun C_MainItem_APP2_ID_2(
                         ) {
                             // Added state to track if we're editing the product name
                             var isEditingProductName by remember { mutableStateOf(false) }
-                            var productNameText by remember { mutableStateOf(relative_2_1_ProduitsDataBase?.nom ?: "N/A") }
+                            var productNameText by remember { mutableStateOf("") }  // Start with empty text
                             val productNameFocusRequester = remember { FocusRequester() }
+
+                            // Get the current product name for reference
+                            val currentProductName = relative_2_1_ProduitsDataBase?.nom ?: "N/A"
 
                             // Show either editable text field or clickable product name text
                             if (isEditingProductName && relative_2_1_ProduitsDataBase != null) {
@@ -147,9 +148,12 @@ fun C_MainItem_APP2_ID_2(
                                     ),
                                     keyboardActions = KeyboardActions(
                                         onDone = {
+                                            // Use the new name if provided, otherwise keep the existing name
+                                            val newName = if (productNameText.isNotEmpty()) productNameText else currentProductName
+
                                             // Update the product with the new name
                                             val updatedProduct = relative_2_1_ProduitsDataBase!!.copy(
-                                                nom = productNameText
+                                                nom = newName
                                             )
 
                                             // Use upsertUneDataEtReturnVID to update the product
@@ -165,7 +169,7 @@ fun C_MainItem_APP2_ID_2(
                                         }
                                     ),
                                     singleLine = true,
-                                    label = { Text("Product Name") }
+                                    label = { Text(currentProductName) } // Show current name as label
                                 )
 
                                 // Request focus when the text field is shown
@@ -180,16 +184,15 @@ fun C_MainItem_APP2_ID_2(
                             } else {
                                 // Product name text with clickable functionality
                                 Text(
-                                    text = relative_2_1_ProduitsDataBase?.nom ?: "N/A",
+                                    text = currentProductName,
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurface,
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(8.dp)
                                         .clickable {
-                                            // Set current product name as initial value
-                                            productNameText =
-                                                relative_2_1_ProduitsDataBase?.nom ?: ""
+                                            // Start with empty text field
+                                            productNameText = ""
                                             isEditingProductName = true
                                         }
                                 )
@@ -438,8 +441,6 @@ fun C_MainItem_APP2_ID_2(
         }
     }
 }
-
-
 
 // Helper function to update the price
 private fun updatePrice(
