@@ -9,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.core.net.toUri
 import org.osmdroid.views.overlay.Marker
 
-
 @Composable
 fun NavigationDialog(
     onDismiss: () -> Unit,
