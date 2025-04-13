@@ -2,7 +2,6 @@ package Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.
 
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -51,12 +50,14 @@ fun C_MainItem_APP2_ID_2(
         ._1_2_ProduitAcheteOperation_Repository
         .modelDatasSnapList.find { it.vid == composeKeyVID }
 
-    val relative_2_1_ProduitsDataBase =
+    val init_relative_2_1_ProduitsDataBase =
         _0_HeadOfRepositorys_Repository_Model._2_1_ProduitsDataBase_Repository
             .modelDatasSnapList.find {
                 it.vid == (relative_1_2_ProduitAcheteOperation
                     ?.produitAcheterID ?: 0)
             }
+
+    var relative_2_1_ProduitsDataBase by remember { mutableStateOf(init_relative_2_1_ProduitsDataBase) }
 
     // Calculate total quantity from all color operations for this product
     val totalQuantity = _0_HeadOfRepositorys_Repository_Model
@@ -72,9 +73,6 @@ fun C_MainItem_APP2_ID_2(
     val provisionalPrice = relative_1_2_ProduitAcheteOperation?.provisoireMonPrix ?: 0.0
     val defaultPrice = relative_2_1_ProduitsDataBase?.monPrixVent ?: 0.0
     val useProvisionalPrice = provisionalPrice > 0.0
-
-    // Initial price value based on whether to use provisional or default price
-    val initialPrice = if (useProvisionalPrice) provisionalPrice else defaultPrice
 
     // State for price editing
     var isEditingPrice by remember { mutableStateOf(false) }
@@ -152,15 +150,12 @@ fun C_MainItem_APP2_ID_2(
 
                             // Show either the editable text field or clickable price text
                             if (isEditingPrice) {
-                                Log.d(TAG, "Showing price editor. KeyboardController: ${keyboardController != null}")
-
                                 OutlinedTextField(
                                     value = priceText,
                                     onValueChange = { newValue ->
                                         // Only allow numeric input with optional decimal point
                                         if (newValue.isEmpty() || newValue.matches(Regex("^\\d*\\.?\\d*$"))) {
                                             priceText = newValue
-                                            Log.d(TAG, "Price text changed to: $newValue")
                                         }
                                     },
                                     modifier = Modifier
@@ -171,7 +166,6 @@ fun C_MainItem_APP2_ID_2(
                                     ),
                                     keyboardActions = KeyboardActions(
                                         onDone = {
-                                            Log.d(TAG, "Keyboard Done pressed. Updating price.")
                                             // Update the price when Done is pressed
                                             updatePrice(
                                                 priceText,
@@ -197,14 +191,11 @@ fun C_MainItem_APP2_ID_2(
 
                                 // Request focus when the text field is shown
                                 LaunchedEffect(Unit) {
-                                    Log.d(TAG, "Requesting focus")
                                     try {
                                         focusRequester.requestFocus()
-                                        Log.d(TAG, "Focus requested successfully")
                                         keyboardController?.show()
-                                        Log.d(TAG, "Keyboard show requested")
                                     } catch (e: Exception) {
-                                        Log.e(TAG, "Error requesting focus: ${e.message}")
+                                        // Silently handle focus request exceptions
                                     }
                                 }
                             } else {
@@ -217,7 +208,6 @@ fun C_MainItem_APP2_ID_2(
                                     else
                                         MaterialTheme.colorScheme.secondary,
                                     modifier = Modifier.clickable {
-                                        Log.d(TAG, "Price text clicked, starting edit mode")
                                         priceText = "" // Reset to empty when starting to edit
                                         isEditingPrice = true
                                     }
@@ -277,18 +267,14 @@ private fun updatePrice(
     produitAcheteOperation: Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation?,
     repositoryModel: Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 ) {
-    Log.d(TAG, "Updating price from text: '$priceText'")
     val newPrice = priceText.toDoubleOrNull() ?: defaultPrice
-    Log.d(TAG, "New price calculated: $newPrice")
 
     produitAcheteOperation?.let { product ->
         val updatedProduct = product.copy(
             provisoireMonPrix = newPrice
         )
-        Log.d(TAG, "Updating product ${product.vid} with new price: $newPrice")
         repositoryModel
             ._1_2_ProduitAcheteOperation_Repository
             .updateUnSeulData(updatedProduct)
-        Log.d(TAG, "Price update complete")
-    } ?: Log.e(TAG, "Cannot update price - product is null")
+    }
 }
