@@ -20,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -158,12 +159,12 @@ fun C_MainItem_APP2_ID_2(
                                 )
 
                                 // Request focus when the text field is shown
-                                androidx.compose.runtime.LaunchedEffect(focusRequester) {
+                                LaunchedEffect(focusRequester) {
                                     focusRequester.requestFocus()
                                 }
 
                                 // Update price when focus is lost
-                                androidx.compose.runtime.LaunchedEffect(isEditingPrice) {
+                                LaunchedEffect(isEditingPrice) {
                                     if (isEditingPrice) {
                                         focusRequester.requestFocus()
                                     } else {
