@@ -13,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Firebase
@@ -104,9 +105,9 @@ class ViewModel_MapClients_App2FragID1(
         mainRepositery.deleteUnSeulData(data)
     }
 
-    enum class VisibleClientsNow(val icon: Any) {
-        AFFICHE_CIBLE_POUR_VENDEUR(Icons.Default.Map),
-        CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX(Icons.Default.SettingsBackupRestore),
+    enum class VisibleClientsNow(val icon: Any,val couleur :Color = Color.White) {
+        AFFICHE_CIBLE_POUR_VENDEUR(Icons.Default.Map, Color.Red),
+        CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX(Icons.Default.SettingsBackupRestore, Color.Blue),
 
         showNonAbsentClientsOnly(LottieJsonGetterR_Raw_Icons.reacticonanimatedjsonurl),
         affichePourCollecteurCommendes(LottieJsonGetterR_Raw_Icons.afficheFenetre),

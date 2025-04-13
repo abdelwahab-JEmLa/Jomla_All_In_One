@@ -1,8 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.C
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
-import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
-import Z_MasterOfApps.Z_AppsFather.Kotlin.Partage.Views.AnimatedIconLottieJsonFile
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -108,7 +106,7 @@ fun FilterView(
                                     modifier = Modifier
                                         .size(40.dp)
                                         .background(
-                                            color = Color(0xFFF44336),
+                                            color = filterMode.couleur,
                                             shape = CircleShape
                                         ),
                                     contentAlignment = Alignment.Center
@@ -117,22 +115,6 @@ fun FilterView(
                                         imageVector = icon,
                                         contentDescription = null,
                                         tint = Color.White
-                                    )
-                                }
-                            }
-                            is LottieJsonGetterR_Raw_Icons -> {
-                                Box(
-                                    modifier = Modifier
-                                        .size(40.dp)
-                                        .background(
-                                            color = Color(0xFFF44336),
-                                            shape = CircleShape
-                                        ),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    AnimatedIconLottieJsonFile(
-                                        ressourceXml = icon,
-                                        onClick = {}
                                     )
                                 }
                             }

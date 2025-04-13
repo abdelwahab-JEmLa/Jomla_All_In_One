@@ -208,9 +208,9 @@ private fun MapContent(
             ViewModel_MapClients_App2FragID1.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR -> {
                 clientDataBaseSnapList.filter {
                     it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.Cible
-                            || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.CIBLE_PRIORITE_2
                 }
             }
+
             ViewModel_MapClients_App2FragID1.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX -> {
                 clientDataBaseSnapList.filter {
                             it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.Cible
@@ -314,7 +314,6 @@ private fun MapContent(
                 viewModelInitApp = viewModelInitApp,
                 onClear = onClear,
                 currentFilterMode = currentFilterMode,
-// Then replace the filter change code in A_GlobalOptionsControlsFloatingActionButtons_FragId1 with:
                 onFilterMarkers = {
                     mapView.overlays.filterIsInstance<Marker>().forEach { it.closeInfoWindow() }
 
@@ -343,6 +342,9 @@ private fun MapContent(
 
                     FilterLogger.logFilterChange(previousMode, newMode)
                     currentFilterMode = newMode
+                },
+                onPickFilter = {
+                    currentFilterMode = it
                 }
             )
         }

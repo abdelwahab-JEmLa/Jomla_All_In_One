@@ -75,6 +75,7 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
     viewModel: ViewModel_MapClients_App2FragID1,
     viewModelInitApp: ViewModelInitApp,
     onClear: () -> Unit,
+    onPickFilter: (ViewModel_MapClients_App2FragID1.VisibleClientsNow) -> Unit,
     onFilterMarkers: () -> Unit,
     currentFilterMode: ViewModel_MapClients_App2FragID1.VisibleClientsNow,
 ) {
@@ -268,7 +269,7 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                     // Log the filter change when selecting from dialog
                     FilterLogger.logFilterChange(currentFilterMode, selectedMode)
 
-                    onFilterMarkers()
+                    onPickFilter(selectedMode)
                 },
                 onDismiss = { showFilterDialog = false }
             )
