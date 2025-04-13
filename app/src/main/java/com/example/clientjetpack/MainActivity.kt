@@ -2,7 +2,6 @@ package com.example.clientjetpack
 
 import P0_MainScreen.Main.MainScreen
 import P6_AiGroupeForSupplier.GenerativeAiViewModel
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.View.composeModules
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.appManagerModules
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.appModule
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.isManagerApp
@@ -62,12 +61,9 @@ class MyApplication : Application() {
             // Conditionally load app-specific modules
             if (isManagerApp(this@MyApplication)) {
                 modules(appManagerModules)
-                // Add this line to include modules needed for A_MainScreenApp2FragID_1
-                modules(composeModules)
             } else {
                 modules(appClientModules)
-                // If you need these modules in the client app as well, add this line
-                modules(composeModules)
+
             }
         }
     }
