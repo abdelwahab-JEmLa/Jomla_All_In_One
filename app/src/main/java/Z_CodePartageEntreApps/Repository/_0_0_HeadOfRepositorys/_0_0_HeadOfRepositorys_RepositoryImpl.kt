@@ -26,8 +26,8 @@ import kotlinx.coroutines.withContext
  */
 class _0_0_HeadOfRepositorys_RepositoryImpl(
     private val _1_1_Repository: _1_1_CouleurAcheteOperation_Repository,
-    private val _1_2_Repository: _1_2_ProduitAcheteOperation_Repository,
-    private val _1_3_Repository: _1_3_BonAchat_Repository,
+    private val _1_2_ProduitAcheteOperation_Repository: _1_2_ProduitAcheteOperation_Repository,
+    private val _1_3_BonAchat_Repository: _1_3_BonAchat_Repository,
     private val _1_4_Repository: _1_4_PeriodeVent_Repository,
     private val _1_5_Repository: _1_5_Vendeur_Repository,
 
@@ -42,8 +42,8 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
 
     override var repositorys_Model: _0_0_HeadOfRepositorys_Model = _0_0_HeadOfRepositorys_Model(
         _1_1_Repository,
-        _1_2_Repository,
-        _1_3_Repository,
+        _1_2_ProduitAcheteOperation_Repository,
+        _1_3_BonAchat_Repository,
         activeId_1_3_BonAchat, // Add the missing MutableStateFlow<Long>
         _1_4_Repository,
         _1_5_Repository,
@@ -70,8 +70,8 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
 
             // Ensure all child repositories are initialized
             _1_1_Repository.ensureDataIsInitialized()
-            _1_2_Repository.ensureDataIsInitialized()
-            _1_3_Repository.ensureDataIsInitialized()
+            _1_2_ProduitAcheteOperation_Repository.ensureDataIsInitialized()
+            _1_3_BonAchat_Repository.ensureDataIsInitialized()
             _1_4_Repository.ensureDataIsInitialized()
             _1_5_Repository.ensureDataIsInitialized()
 
@@ -81,6 +81,37 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
 
             // Start tracking progress afterward
             startProgressTracking() {
+            }
+        }
+    }
+
+    override fun notifyDataChanged_1_3_BonAchat_Repository() {
+        repositoryScope.launch {
+            try {
+                // Reload the products database data
+                withContext(Dispatchers.IO) {
+                    // First, ensure the repository is initialized
+                    _1_3_BonAchat_Repository.ensureDataIsInitialized()
+
+                    // Refresh data from the database
+                    val refreshedData = _1_3_BonAchat_Repository.modelDatasSnapList.toList()
+
+                    // Update the snapshot list
+                    withContext(Dispatchers.Main) {
+                        // Clear and update on the main thread
+                        _1_3_BonAchat_Repository.modelDatasSnapList.clear()
+                        _1_3_BonAchat_Repository.modelDatasSnapList.addAll(refreshedData)
+                    }
+                }
+
+                // Log the refresh operation
+                Log.d(TAG, "ProduitsDataBase refreshed: ${_1_3_BonAchat_Repository.modelDatasSnapList.size} items")
+
+                // Notify any observers that may need to update UI based on this change
+                // (This will cause connected components to recompose)
+                progressRepo.value = progressRepo.value  // Trigger a small update to force recomposition
+            } catch (e: Exception) {
+                Log.e(TAG, "Error in notifyDataChanged_1_3_BonAchat_Repository: ${e.message}")
             }
         }
     }
@@ -158,8 +189,8 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
             // Initialize all child repositories in parallel for better performance
             val initJobs = listOf(
                 repositoryScope.launch { _1_1_Repository.ensureDataIsInitialized() },
-                repositoryScope.launch { _1_2_Repository.ensureDataIsInitialized() },
-                repositoryScope.launch { _1_3_Repository.ensureDataIsInitialized() },
+                repositoryScope.launch { _1_2_ProduitAcheteOperation_Repository.ensureDataIsInitialized() },
+                repositoryScope.launch { _1_3_BonAchat_Repository.ensureDataIsInitialized() },
                 repositoryScope.launch { _1_4_Repository.ensureDataIsInitialized() },
                 repositoryScope.launch { _1_5_Repository.ensureDataIsInitialized() },
 
@@ -192,8 +223,8 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                 // Create a repository head with all repositories
                 repositorys_Model = _0_0_HeadOfRepositorys_Model(
                     _1_1_CouleurAcheteOperation_Repository = _1_1_Repository,
-                    _1_2_ProduitAcheteOperation_Repository = _1_2_Repository,
-                    _1_3_BonAchat_Repository = _1_3_Repository,
+                    _1_2_ProduitAcheteOperation_Repository = _1_2_ProduitAcheteOperation_Repository,
+                    _1_3_BonAchat_Repository = _1_3_BonAchat_Repository,
                     activeId_1_3_BonAchat = activeId_1_3_BonAchat, // Include it here as well
                     _1_4_PeriodeVent_Repository = _1_4_Repository,
                     _1_5_Vendeur_Repository = _1_5_Repository,
@@ -221,8 +252,8 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
             // Use combine with a different syntax
             val combinedFlow = combine(
                 _1_1_Repository.progressRepo,
-                _1_2_Repository.progressRepo,
-                _1_3_Repository.progressRepo,
+                _1_2_ProduitAcheteOperation_Repository.progressRepo,
+                _1_3_BonAchat_Repository.progressRepo,
                 _1_4_Repository.progressRepo,
                 _1_5_Repository.progressRepo,
 

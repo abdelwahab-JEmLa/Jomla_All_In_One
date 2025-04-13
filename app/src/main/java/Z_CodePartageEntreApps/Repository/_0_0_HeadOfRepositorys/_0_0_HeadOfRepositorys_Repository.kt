@@ -30,4 +30,5 @@ interface _0_0_HeadOfRepositorys_Repository {
     }
 
     fun notifyDataChanged_2_1_ProduitsDataBase_Repository()
+    fun notifyDataChanged_1_3_BonAchat_Repository()
 }

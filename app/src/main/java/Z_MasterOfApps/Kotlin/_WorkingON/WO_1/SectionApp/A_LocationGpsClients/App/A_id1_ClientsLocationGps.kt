@@ -1,6 +1,7 @@
 package Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App
 
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
+import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat
 import Z_CodePartageEntreApps.Windows.B.Windows.Options.A_OptionsControlsButtons_Main
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.App.B.Dialogs.A.A_GlobalOptionsControlsFloatingActionButtons_FragId1
@@ -168,6 +169,21 @@ private fun MapContent(
                             || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.CLIENT_ABSENT
                 }
             }
+            // New case for clients with confirmed products
+            ViewModel_App2FragID1.VisbleClientsNow.showClientsWithConfirmedProducts -> {
+                val clientsWithConfirmedProducts = viewModel._0_0_HeadOfRepositorys_Repository.repositorys_Model
+                    ._1_3_BonAchat_Repository.modelDatasSnapList
+                    .filter { bonAchat ->
+                        bonAchat.etateActuellementEst == _1_3_BonAchat.EtateActuellementEst.A_COMMANDE_CONFIRME
+                    }
+                    .map { bonAchat -> bonAchat.clientAcheteurID }
+                    .distinct()
+
+                clientDataBaseSnapList.filter { client ->
+                    clientsWithConfirmedProducts.contains(client.id)
+                }
+            }
+
             ViewModel_App2FragID1.VisbleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 -> {
                 clientDataBaseSnapList.filter {
                     it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.CIBLE_POUR_2
@@ -284,7 +300,8 @@ private fun MapContent(
                         ViewModel_App2FragID1.VisbleClientsNow.affichePourCollecteurCommendes -> ViewModel_App2FragID1.VisbleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2
                         ViewModel_App2FragID1.VisbleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 -> ViewModel_App2FragID1.VisbleClientsNow.showAtayClients
                         ViewModel_App2FragID1.VisbleClientsNow.showAtayClients -> ViewModel_App2FragID1.VisbleClientsNow.showAlimentionlients
-                        ViewModel_App2FragID1.VisbleClientsNow.showAlimentionlients -> ViewModel_App2FragID1.VisbleClientsNow.showAll
+                        ViewModel_App2FragID1.VisbleClientsNow.showAlimentionlients -> ViewModel_App2FragID1.VisbleClientsNow.showClientsWithConfirmedProducts
+                        ViewModel_App2FragID1.VisbleClientsNow.showClientsWithConfirmedProducts -> ViewModel_App2FragID1.VisbleClientsNow.showAll
                     }
                 }
             )

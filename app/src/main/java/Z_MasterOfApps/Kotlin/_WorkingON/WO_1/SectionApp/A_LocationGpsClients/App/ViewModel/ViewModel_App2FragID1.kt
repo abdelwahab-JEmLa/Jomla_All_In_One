@@ -2,6 +2,7 @@ package Z_MasterOfApps.Kotlin._WorkingON.WO_1.SectionApp.A_LocationGpsClients.Ap
 
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.B_ClientDataBaseRepository
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
 import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.Parent.AppSettingsSaverModel
 import androidx.compose.material.icons.Icons
@@ -21,6 +22,7 @@ import java.util.Date
 
 class ViewModel_App2FragID1(
     val mainRepositery: B_ClientDataBaseRepository,
+    val _0_0_HeadOfRepositorys_Repository:_0_0_HeadOfRepositorys_Repository
 ) : ViewModel() {
     val bProto_ClientsDataBase = mainRepositery.modelDatas
 
@@ -103,6 +105,7 @@ class ViewModel_App2FragID1(
         showAtayClients(LottieJsonGetterR_Raw_Icons.atay),
         showClientsOnlyAcEtateCIBLE_POUR_2(Icons.Default.CheckCircleOutline),
         showAlimentionlients(LottieJsonGetterR_Raw_Icons.alimentation),
+        showClientsWithConfirmedProducts(LottieJsonGetterR_Raw_Icons.reacticonanimatedjsonurl), // New filter mode
         showAll(LottieJsonGetterR_Raw_Icons.reacticonanimatedjsonurl);
     }
 }
