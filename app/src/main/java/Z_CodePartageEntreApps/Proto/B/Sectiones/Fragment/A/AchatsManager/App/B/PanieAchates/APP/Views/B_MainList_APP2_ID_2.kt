@@ -9,9 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -32,16 +29,13 @@ fun B_MainList_APP2_ID_2(
                         it.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
             }
 
-    // Get the list of product operations for the current bon achat
-    val produitOperations by remember {
-        mutableStateOf(
-            produitsBonAchatIDs(
-                _0_HeadOfRepositorys_Repository_Model,
-                composeKeyVID,
-                validColorOperations
-            )
-        )
-    }
+    // In B_MainList_APP2_ID_2.kt - Replace the existing produitOperations definition with:
+    val produitOperations = produitsBonAchatIDs(
+        _0_HeadOfRepositorys_Repository_Model,
+        composeKeyVID,
+        validColorOperations
+    )
+
 
     LazyColumn(
         modifier = modifier.fillMaxSize(),
@@ -73,6 +67,8 @@ fun B_MainList_APP2_ID_2(
 
 
                         onDoneupdatePrice(_0_HeadOfRepositorys_Repository_Model._1_1_CouleurAcheteOperation_Repository.modelDatasSnapList)
+                        _0_HeadOfRepositorys_Repository_Model._1_1_CouleurAcheteOperation_Repository.notifyDataChanged()
+
                     }
                 }
             )

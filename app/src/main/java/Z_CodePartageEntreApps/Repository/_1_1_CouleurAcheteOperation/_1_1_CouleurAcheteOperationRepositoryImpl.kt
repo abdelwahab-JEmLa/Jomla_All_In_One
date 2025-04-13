@@ -43,6 +43,31 @@ class _1_1_CouleurAcheteOperationRepositoryImpl(
             initialize_1_1_CouleurAcheteOperationRepository()
         }
     }
+
+    override fun notifyDataChanged() {
+        repositoryScope.launch {
+            try {
+                // Refresh data from Room
+                val roomData = withContext(Dispatchers.IO) {
+                    appDatabase._1_1_CouleurAcheteOperationDao().getAll()
+                }
+
+                // Update the snapshot list on the main thread
+                withContext(Dispatchers.Main) {
+                    modelDatasSnapList.clear()
+                    modelDatasSnapList.addAll(roomData)
+                }
+
+                // Optionally log the refresh
+                if (TAG.isNotEmpty()) {
+                    Log.d(TAG, "Data refreshed: ${roomData.size} items")
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error in notifyDataChanged: ${e.message}")
+            }
+        }
+    }
+
     override suspend fun ensureDataIsInitialized() {
         try {
             if (!initialDataLoaded) {

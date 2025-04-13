@@ -48,6 +48,31 @@ class _1_2_ProduitAcheteOperationRepositoryImpl(
             initialize_1_2_ProduitAcheteOperationRepository()
         }
     }
+    // Add this method to the _1_2_ProduitAcheteOperationRepositoryImpl class
+
+    override fun notifyDataChanged() {
+        repositoryScope.launch {
+            try {
+                // Refresh data from Room
+                val roomData = withContext(Dispatchers.IO) {
+                    appDatabase._1_2_ProduitAcheteOperationDao().getAll()
+                }
+
+                // Update the snapshot list on the main thread
+                withContext(Dispatchers.Main) {
+                    modelDatasSnapList.clear()
+                    modelDatasSnapList.addAll(roomData)
+                }
+
+                // Optionally log the refresh
+                if (TAG.isNotEmpty()) {
+                    Log.d(TAG, "Data refreshed: ${roomData.size} items")
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error in notifyDataChanged: ${e.message}")
+            }
+        }
+    }
 
     override suspend fun ensureDataIsInitialized() {
         try {

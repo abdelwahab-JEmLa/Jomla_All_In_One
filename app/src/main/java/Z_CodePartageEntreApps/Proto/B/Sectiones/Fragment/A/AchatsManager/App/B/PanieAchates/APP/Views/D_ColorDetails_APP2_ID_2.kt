@@ -122,6 +122,8 @@ fun D_ColorDetails_APP2_ID_2(
                         .updateUnSeulData(updatedColorItem)
 
                     onQuantitySelected(newQuantity)
+                    _0_HeadOfRepositorys_Repository_Model._1_1_CouleurAcheteOperation_Repository.notifyDataChanged()
+
                 }
             },
             currentSale = dummySale,

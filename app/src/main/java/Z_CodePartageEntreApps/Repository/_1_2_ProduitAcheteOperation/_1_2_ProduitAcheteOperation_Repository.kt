@@ -19,6 +19,9 @@ interface _1_2_ProduitAcheteOperation_Repository {
     suspend fun updateMultiDatas(datas: SnapshotStateList<_1_2_ProduitAcheteOperation>)
     fun deleteUnSeulData(data: _1_2_ProduitAcheteOperation)
 
+    // Added this method to fix the 'Unresolved reference: notifyDataChanged' error
+    fun notifyDataChanged()
+
     companion object {
         const val TAG = "_1_2_ProduitAcheteOperation"
 

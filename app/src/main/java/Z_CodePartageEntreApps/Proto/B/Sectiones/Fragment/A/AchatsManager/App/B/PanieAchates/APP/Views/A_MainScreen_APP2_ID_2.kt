@@ -68,10 +68,8 @@ fun A_MainScreen_APP2_ID_2(
         }
         .sumOf { it.totaleQuantity }
 
-    // FIX: Changed from remember to mutableStateOf to make it reactive to changes
-    var totalPrice by remember {
-        mutableStateOf(calcule_totalPrice(produitsBonAchatIDs, _0_HeadOfRepositorys_Repository_Model))
-    }
+    val totalPrice = calcule_totalPrice(produitsBonAchatIDs, _0_HeadOfRepositorys_Repository_Model)
+
 
     // Format the total price
     val formatter = NumberFormat.getCurrencyInstance(Locale.FRANCE)
@@ -126,12 +124,10 @@ fun A_MainScreen_APP2_ID_2(
                                 _0_HeadOfRepositorys_Repository_Model = _0_0_HeadOfRepositorys_Repository
                                     .repositorys_Model,
                                 onQuantitySelected = {
-                                    totalPrice = calcule_totalPrice(produitsBonAchatIDs, _0_HeadOfRepositorys_Repository_Model)
                                 },
                                 // FIX: In A_MainScreen_APP2_ID_2.kt - properly update totalPrice when price changes
                                 onDoneupdatePrice = { colorOperations ->
-                                    // Use the colorOperations parameter passed from the child component
-                                    totalPrice = calcule_totalPrice(produitsBonAchatIDs, _0_HeadOfRepositorys_Repository_Model, colorOperations)
+                                    _0_HeadOfRepositorys_Repository_Model._1_1_CouleurAcheteOperation_Repository.notifyDataChanged()
                                 }
                             )
                         }

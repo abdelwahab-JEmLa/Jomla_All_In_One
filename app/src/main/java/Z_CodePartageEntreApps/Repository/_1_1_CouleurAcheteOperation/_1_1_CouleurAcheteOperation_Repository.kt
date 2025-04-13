@@ -17,6 +17,9 @@ interface _1_1_CouleurAcheteOperation_Repository {
     suspend fun updateMultiDatas(datas: SnapshotStateList<_1_1_CouleurAcheteOperation>)
     fun deleteUnSeulData(data: _1_1_CouleurAcheteOperation)
 
+    // Added notifyDataChanged method for consistency with _1_2_ProduitAcheteOperation_Repository
+    fun notifyDataChanged()
+
     companion object {
         const val TAG = "_1_1_CouleurAcheteOperation"
 

@@ -180,6 +180,9 @@ fun C_MainItem_APP2_ID_2(
                                             keyboardController?.hide()
                                             isEditingPrice = false
                                             onDoneupdatePrice(priceText)
+
+                                            // Fixed: Properly notify data changes
+                                            _0_HeadOfRepositorys_Repository_Model._1_2_ProduitAcheteOperation_Repository.notifyDataChanged()
                                         }
                                     ),
                                     singleLine = true,
@@ -261,6 +264,9 @@ fun C_MainItem_APP2_ID_2(
                                         )
 
                                         onQuantitySelected(totalQuantity)
+
+                                        _0_HeadOfRepositorys_Repository_Model._1_2_ProduitAcheteOperation_Repository.notifyDataChanged()
+
 
                                     },
                                 )
