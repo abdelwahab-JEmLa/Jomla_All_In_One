@@ -1,6 +1,6 @@
 package Z_MasterOfApps.Kotlin.ViewModel
 
-import W.Fragments.A.PanierFinaleDAchat.APP.ViewModel.ViewModelFragment_APP2_ID_1
+import W.App.A.PanierFinaleDAchat.APP.ViewModel.ViewModelFragment_APP2_ID_1
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.I_CategoriesRepository
