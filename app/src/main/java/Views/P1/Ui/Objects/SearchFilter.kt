@@ -1,7 +1,7 @@
 package Views.P1.Ui.Objects
 
-import Z_MasterOfApps.Kotlin._WorkingON.WO_.WifiUpdateClientDisplayerStats
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
+import Z_MasterOfApps.Kotlin._WorkingON.WO_.WifiUpdateClientDisplayerStats
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -24,6 +24,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -58,12 +59,22 @@ fun SearchFilterPB(
             modifier = modifier
                 .fillMaxWidth()
                 .padding(3.dp)
-                .focusRequester(focusRequester),
-
+                .focusRequester(focusRequester)
+                // Add clickable behavior to show keyboard when field is clicked
+                .pointerInput(Unit) {
+                    awaitPointerEventScope {
+                        while (true) {
+                            val event = awaitPointerEvent()
+                            if (event.changes.any { it.pressed }) {
+                                focusRequester.requestFocus()
+                                keyboardController?.show()
+                            }
+                        }
+                    }
+                },
             trailingIcon = {
                 IconButton(
                     onClick = {
-
                         scope.launch {
                             viewModel.addNewEmptyArticle(filterText)?.let { newArticle ->
                                 onAddNotInBaseArticle(newArticle, 0)
@@ -73,10 +84,9 @@ fun SearchFilterPB(
                             WifiUpdateClientDisplayerStats.SearchWindowsDisplaye.prefix,
                             filterText
                         )
-
                     }
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = "Search")
+                    Icon(Icons.Default.Add, contentDescription = "Add Article")
                 }
             },
             singleLine = true,
