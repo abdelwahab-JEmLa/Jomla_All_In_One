@@ -1,7 +1,8 @@
-package Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.PanieAchates.APP.ViewModel
+package Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.PanieAchates.APP.Views
 
 import Views.Package_4.SoldCartScreen.Components.OrderSuccessMessage
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
+import Z_CodePartageEntreApps.Modules.printReceipt
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat
 import androidx.compose.animation.AnimatedVisibility

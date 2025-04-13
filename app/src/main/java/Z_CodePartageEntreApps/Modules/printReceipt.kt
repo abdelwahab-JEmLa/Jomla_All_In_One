@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.PanieAchates.APP.ViewModel
+package Z_CodePartageEntreApps.Modules
 
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
@@ -16,6 +16,8 @@ import java.util.Locale
 
 private const val PRINT_INTENT = "pe.diegoveloper.printing"
 private const val TAG = "PrintService"
+
+class  PrintReceiptHandler
 
 data class ArticleImpression(
     val nomArticle: String,
