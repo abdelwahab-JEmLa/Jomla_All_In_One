@@ -28,4 +28,6 @@ interface _0_0_HeadOfRepositorys_Repository {
             .child("_3_")
             .child("_Main")
     }
+
+    fun notifyDataChanged_2_1_ProduitsDataBase_Repository()
 }

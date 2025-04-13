@@ -1,6 +1,7 @@
 package Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.PanieAchates.APP.Views
 
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import androidx.compose.foundation.background
@@ -48,6 +49,7 @@ fun C_MainItem_APP2_ID_2(
     _0_HeadOfRepositorys_Repository_Model: _0_0_HeadOfRepositorys_Model,
     onQuantitySelected: (Int) -> Unit,
     onDoneupdatePrice: (String) -> Unit,
+    headRepository: _0_0_HeadOfRepositorys_Repository // Added parameter for the repository interface
 ) {
     val relative_1_2_ProduitAcheteOperation = _0_HeadOfRepositorys_Repository_Model
         ._1_2_ProduitAcheteOperation_Repository
@@ -116,15 +118,182 @@ fun C_MainItem_APP2_ID_2(
                 Box(
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(
-                        text = relative_2_1_ProduitsDataBase?.nom ?: "N/A",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp)
-                    )
+                    // Product info row
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Box(
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            // Added state to track if we're editing the product name
+                            var isEditingProductName by remember { mutableStateOf(false) }
+                            var productNameText by remember { mutableStateOf(relative_2_1_ProduitsDataBase?.nom ?: "N/A") }
+                            val productNameFocusRequester = remember { FocusRequester() }
 
+                            // Show either editable text field or clickable product name text
+                            if (isEditingProductName && relative_2_1_ProduitsDataBase != null) {
+                                OutlinedTextField(
+                                    value = productNameText,
+                                    onValueChange = { newValue ->
+                                        productNameText = newValue
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(8.dp)
+                                        .focusRequester(productNameFocusRequester),
+                                    keyboardOptions = KeyboardOptions(
+                                        imeAction = ImeAction.Done
+                                    ),
+                                    keyboardActions = KeyboardActions(
+                                        onDone = {
+                                            // Update the product with the new name
+                                            val updatedProduct = relative_2_1_ProduitsDataBase!!.copy(
+                                                nom = productNameText
+                                            )
+
+                                            // Use upsertUneDataEtReturnVID to update the product
+                                            _0_HeadOfRepositorys_Repository_Model._2_1_ProduitsDataBase_Repository
+                                                .upsertUneDataEtReturnVID(updatedProduct) { _ ->
+                                                    headRepository.notifyDataChanged_2_1_ProduitsDataBase_Repository()
+                                                }
+
+                                            // Exit editing mode
+                                            focusManager.clearFocus()
+                                            keyboardController?.hide()
+                                            isEditingProductName = false
+                                        }
+                                    ),
+                                    singleLine = true,
+                                    label = { Text("Product Name") }
+                                )
+
+                                // Request focus when the text field is shown
+                                LaunchedEffect(Unit) {
+                                    try {
+                                        productNameFocusRequester.requestFocus()
+                                        keyboardController?.show()
+                                    } catch (e: Exception) {
+                                        // Silently handle focus request exceptions
+                                    }
+                                }
+                            } else {
+                                // Product name text with clickable functionality
+                                Text(
+                                    text = relative_2_1_ProduitsDataBase?.nom ?: "N/A",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(8.dp)
+                                        .clickable {
+                                            // Set current product name as initial value
+                                            productNameText =
+                                                relative_2_1_ProduitsDataBase?.nom ?: ""
+                                            isEditingProductName = true
+                                        }
+                                )
+                            }
+
+                            // Box for both total quantity and price (remains the same)
+                            Box(
+                                modifier = Modifier
+                                    .align(Alignment.CenterEnd)
+                                    .background(
+                                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
+                                        shape = RoundedCornerShape(4.dp)
+                                    )
+                                    .padding(horizontal = 8.dp, vertical = 4.dp)
+                            ) {
+                                // Row to contain both texts side by side
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    // Total quantity text
+                                    Text(
+                                        text = "$totalQuantity",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+
+                                    // Added spacing between texts
+                                    Spacer(
+                                        modifier = Modifier.padding(horizontal = 4.dp)
+                                    )
+
+                                    // Show either the editable text field or clickable price text
+                                    if (isEditingPrice) {
+                                        OutlinedTextField(
+                                            value = priceText,
+                                            onValueChange = { newValue ->
+                                                // Only allow numeric input with optional decimal point
+                                                if (newValue.isEmpty() || newValue.matches(Regex("^\\d*\\.?\\d*$"))) {
+                                                    priceText = newValue
+                                                }
+                                            },
+                                            modifier = Modifier
+                                                .focusRequester(focusRequester),
+                                            keyboardOptions = KeyboardOptions(
+                                                keyboardType = KeyboardType.Number,
+                                                imeAction = ImeAction.Done
+                                            ),
+                                            keyboardActions = KeyboardActions(
+                                                onDone = {
+                                                    // Update the price when Done is pressed
+                                                    updatePrice(
+                                                        priceText,
+                                                        defaultPrice,
+                                                        relative_1_2_ProduitAcheteOperation,
+                                                        _0_HeadOfRepositorys_Repository_Model
+                                                    )
+                                                    focusManager.clearFocus()
+                                                    keyboardController?.hide()
+                                                    isEditingPrice = false
+                                                    onDoneupdatePrice(priceText)
+
+                                                    // Fixed: Properly notify data changes
+                                                    _0_HeadOfRepositorys_Repository_Model._1_2_ProduitAcheteOperation_Repository.notifyDataChanged()
+                                                }
+                                            ),
+                                            singleLine = true,
+                                            label = {
+                                                Text(
+                                                    if (useProvisionalPrice)
+                                                        formatter.format(provisionalPrice)
+                                                            .replace("€", "دج")
+                                                    else
+                                                        formatter.format(defaultPrice).replace("€", "دج")
+                                                )
+                                            }
+                                        )
+
+                                        // Request focus when the text field is shown
+                                        LaunchedEffect(Unit) {
+                                            try {
+                                                focusRequester.requestFocus()
+                                                keyboardController?.show()
+                                            } catch (e: Exception) {
+                                                // Silently handle focus request exceptions
+                                            }
+                                        }
+                                    } else {
+                                        // Price text with clickable functionality
+                                        Text(
+                                            text = "× $formattedPrice",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = if (useProvisionalPrice)
+                                                MaterialTheme.colorScheme.tertiary
+                                            else
+                                                MaterialTheme.colorScheme.secondary,
+                                            modifier = Modifier.clickable {
+                                                priceText = "" // Reset to empty when starting to edit
+                                                isEditingPrice = true
+                                            }
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
                     // Box for both total quantity and price
                     Box(
                         modifier = Modifier
@@ -266,8 +435,6 @@ fun C_MainItem_APP2_ID_2(
                                         onQuantitySelected(totalQuantity)
 
                                         _0_HeadOfRepositorys_Repository_Model._1_2_ProduitAcheteOperation_Repository.notifyDataChanged()
-
-
                                     },
                                 )
                             }

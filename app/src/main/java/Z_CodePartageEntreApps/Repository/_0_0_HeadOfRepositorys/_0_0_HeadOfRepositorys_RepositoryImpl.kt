@@ -84,7 +84,36 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
             }
         }
     }
+    override fun notifyDataChanged_2_1_ProduitsDataBase_Repository() {
+        repositoryScope.launch {
+            try {
+                // Reload the products database data
+                withContext(Dispatchers.IO) {
+                    // First, ensure the repository is initialized
+                    _2_1_Repository.ensureDataIsInitialized()
 
+                    // Refresh data from the database
+                    val refreshedData = _2_1_Repository.modelDatasSnapList.toList()
+
+                    // Update the snapshot list
+                    withContext(Dispatchers.Main) {
+                        // Clear and update on the main thread
+                        _2_1_Repository.modelDatasSnapList.clear()
+                        _2_1_Repository.modelDatasSnapList.addAll(refreshedData)
+                    }
+                }
+
+                // Log the refresh operation
+                Log.d(TAG, "ProduitsDataBase refreshed: ${_2_1_Repository.modelDatasSnapList.size} items")
+
+                // Notify any observers that may need to update UI based on this change
+                // (This will cause connected components to recompose)
+                progressRepo.value = progressRepo.value  // Trigger a small update to force recomposition
+            } catch (e: Exception) {
+                Log.e(TAG, "Error in notifyDataChanged_2_1_ProduitsDataBase_Repository: ${e.message}")
+            }
+        }
+    }
 
     suspend fun ensureDataIsInitialized() {
         try {
