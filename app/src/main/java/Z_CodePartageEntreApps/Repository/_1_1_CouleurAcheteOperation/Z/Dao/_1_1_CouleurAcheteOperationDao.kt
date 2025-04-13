@@ -10,6 +10,9 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface _1_1_CouleurAcheteOperationDao {
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAvecRetureNewVid(item: _1_1_CouleurAcheteOperation): Long
+
     @Query("SELECT * FROM _1_1_CouleurAcheteOperation")
     suspend fun getAll(): MutableList<_1_1_CouleurAcheteOperation>
 

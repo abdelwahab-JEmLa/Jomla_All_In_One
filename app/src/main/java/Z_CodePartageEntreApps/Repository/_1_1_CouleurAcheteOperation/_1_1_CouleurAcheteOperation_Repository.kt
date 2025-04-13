@@ -27,4 +27,6 @@ interface _1_1_CouleurAcheteOperation_Repository {
             .child("1")
             .child("1")
     }
+
+    fun addDataAndReturnItVID(data: _1_1_CouleurAcheteOperation, onAddSuccess: (Long) -> Unit = {})
 }

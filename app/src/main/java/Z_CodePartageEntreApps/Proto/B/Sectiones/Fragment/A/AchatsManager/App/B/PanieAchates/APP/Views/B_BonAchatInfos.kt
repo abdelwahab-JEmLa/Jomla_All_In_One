@@ -116,7 +116,7 @@ fun ColumnScope.BonAchatInfos(
                                     )
 
                                     // Add color operation
-                                    repositorysModel._1_1_CouleurAcheteOperation_Repository.addData(couleurOperation)
+                                    repositorysModel._1_1_CouleurAcheteOperation_Repository.addDataAndReturnItVID(couleurOperation)
                                 }
                             }
                         }

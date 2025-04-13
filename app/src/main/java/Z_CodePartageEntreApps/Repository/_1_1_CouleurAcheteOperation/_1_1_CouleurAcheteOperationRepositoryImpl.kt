@@ -44,6 +44,35 @@ class _1_1_CouleurAcheteOperationRepositoryImpl(
         }
     }
 
+    override fun addDataAndReturnItVID(
+        data: _1_1_CouleurAcheteOperation,
+        onAddSuccess: (Long) -> Unit
+    ) {
+        try {
+            repositoryScope.launch(Dispatchers.IO) {
+                try {
+                    // Insert into Room and get the new vid
+                    val newVid = appDatabase._1_1_CouleurAcheteOperationDao().insertAvecRetureNewVid(data)
+
+                    // Update the object with the new vid
+                    data.vid = newVid
+                    withContext(Dispatchers.Main) {
+                        modelDatasSnapList.add(data)
+                    }
+
+                    // Update Firebase with the new vid
+                    _1_1_CouleurAcheteOperation_Repository.sonDataBaseRef.child(newVid.toString()).setValue(data).await()
+
+                    // Call the success callback with the new vid
+                    onAddSuccess(newVid)
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error adding data: ${e.message}")
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in addDataAndReturnItVID: ${e.message}")
+        }
+    }
     override fun notifyDataChanged() {
         repositoryScope.launch {
             try {
