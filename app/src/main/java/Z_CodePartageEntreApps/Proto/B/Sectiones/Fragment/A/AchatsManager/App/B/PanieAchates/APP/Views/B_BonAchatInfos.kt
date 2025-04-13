@@ -4,6 +4,8 @@ import Views.Package_4.SoldCartScreen.Components.OrderSuccessMessage
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Modules.printReceipt
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
+import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
+import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
@@ -90,8 +92,6 @@ fun ColumnScope.BonAchatInfos(
 
                 IconButton(
                     onClick = {
-                        // Log the start of product creation process
-                        Log.d("ProductCreation", "Starting product creation process for bon achat ID: $composeKeyVID")
 
                         coroutineScope.launch {
                             // First create a temporary product in the database
@@ -101,20 +101,14 @@ fun ColumnScope.BonAchatInfos(
                                 monPrixVent = 0.0
                             )
 
-                            Log.d("ProductCreation", "Creating new product with name: ${tempProduct.nom}")
 
                             repositorysModel._2_1_ProduitsDataBase_Repository.addDataAndReturnItVID(tempProduct) { productId ->
-                                // Log the successful product creation
-                                Log.d("ProductCreation", "Product created successfully with ID: $productId")
-
-                                // Then create product operation linked to current bon achat
-                                val produitOperation = Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation(
+                              val produitOperation = _1_2_ProduitAcheteOperation(
                                     produitAcheterID = productId,
-                                    parent_1_3_BonAchat = composeKeyVID ?: 0L,
-                                    etateActuellementEst = Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME
+                                    parent_1_3_BonAchat = relativeBonAchate?.vid ?: 0L,  // Utiliser le bon ID du bon d'achat
+                                    etateActuellementEst = _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME
                                 )
 
-                                Log.d("ProductCreation", "Creating product operation with produitAcheterID: $productId, parent_1_3_BonAchat: ${composeKeyVID ?: 0L}")
 
                                 // Add the product operation and get its ID
                                 repositorysModel._1_2_ProduitAcheteOperation_Repository.addDataAndReturneItVID(produitOperation) { produitOperationId ->
@@ -122,23 +116,23 @@ fun ColumnScope.BonAchatInfos(
                                     Log.d("ProductCreation", "Product operation created successfully with ID: $produitOperationId")
 
                                     // Finally add a color operation with quantity 1
-                                    val couleurOperation = Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation(
+                                    val couleurOperation = _1_1_CouleurAcheteOperation(
                                         couleurIndex_ParentVID = 0L,
                                         parentProduitAchateOperationVID = produitOperationId,
                                         totaleQuantity = 1,
-                                        etateActuellementEst = Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
+                                        etateActuellementEst = _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
                                     )
 
                                     Log.d("ProductCreation", "Creating color operation with parentProduitAchateOperationVID: $produitOperationId")
 
                                     // Add color operation
                                     repositorysModel._1_1_CouleurAcheteOperation_Repository.addData(couleurOperation)
-                                    Log.d("ProductCreation", "Color operation added, checking if product appears in list...")
+                                    Log.d("ProductCreation", "Color operation added successfully")
 
-                                    // Log the current state after all operations
+                                    // Ajouter un log pour vérifier l'ajout du produit
                                     val currentBonAchatProducts = repositorysModel._1_2_ProduitAcheteOperation_Repository
                                         .modelDatasSnapList
-                                        .filter { it.parent_1_3_BonAchat == composeKeyVID }
+                                        .filter { it.parent_1_3_BonAchat == relativeBonAchate.vid }
 
                                     Log.d("ProductCreation", "Current number of products in bon achat: ${currentBonAchatProducts.size}")
                                     Log.d("ProductCreation", "Products state: ${currentBonAchatProducts.map { "ID: ${it.vid}, ProduitID: ${it.produitAcheterID}, State: ${it.etateActuellementEst}" }}")

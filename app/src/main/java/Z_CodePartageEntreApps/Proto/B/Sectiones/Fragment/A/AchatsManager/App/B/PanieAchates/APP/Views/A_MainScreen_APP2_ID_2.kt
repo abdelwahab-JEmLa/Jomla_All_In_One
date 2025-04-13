@@ -41,8 +41,6 @@ fun A_MainScreen_APP2_ID_2(
         ._1_3_BonAchat_Repository
         .modelDatasSnapList.find { it.vid == composeKeyVID }
 
-    // Fix 2: Using the collected composeKeyVID value for comparison
-// This filter might be excluding your new product
     val produitsBonAchatIDs = _0_HeadOfRepositorys_Repository_Model
         ._1_2_ProduitAcheteOperation_Repository
         .modelDatasSnapList
