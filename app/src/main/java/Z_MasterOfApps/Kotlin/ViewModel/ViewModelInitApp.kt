@@ -1,6 +1,5 @@
 package Z_MasterOfApps.Kotlin.ViewModel
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.ViewModel.ViewModelFragment_APP2_ID_1
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.I_CategoriesRepository
@@ -33,7 +32,6 @@ import kotlinx.coroutines.tasks.await
 class ViewModelInitApp(
     val produitModelRepository: A_ProduitRepository,
     val i_CategoriesRepository: I_CategoriesRepository,
-    val viewModelFragment_APP2_ID_1: ViewModelFragment_APP2_ID_1,
     val _1_1_CouleurAcheteOperation_Repository: _1_1_CouleurAcheteOperation_Repository,
     val _1_2_ProduitAcheteOperation_Repository: _1_2_ProduitAcheteOperation_Repository,
     val _1_3_BonAchat_Repository: _1_3_BonAchat_Repository,
