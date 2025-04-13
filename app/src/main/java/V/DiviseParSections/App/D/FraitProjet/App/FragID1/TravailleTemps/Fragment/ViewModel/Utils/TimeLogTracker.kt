@@ -1,4 +1,4 @@
-package Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Utils
+package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.Utils
 
 import android.util.Log
 import java.text.SimpleDateFormat

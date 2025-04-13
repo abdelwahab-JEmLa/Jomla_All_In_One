@@ -1,10 +1,10 @@
-package Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_
+package V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_
 
 
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
-import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.Components.LabelsButton
-import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.Components.MenuButton
-import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
+import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.Components.LabelsButton
+import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.Components.MenuButton
+import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
 import Z_MasterOfApps.Z_AppsFather.Kotlin.Partage.Views.AnimatedIconLottieJsonFile
 import android.util.Log
 import androidx.compose.foundation.background
@@ -42,7 +42,7 @@ const val TAG = "ControlButton"
 
 @Composable
 fun A_OptionsControlsButtons_FragId_(
-    viewModel: Windows__ViewModel ,
+    viewModel: Windows__ViewModel,
 ) {
     val isAbdelwahabLeGerant by viewModel.isAbdelwahabLeGerant.collectAsState()
 
@@ -171,7 +171,7 @@ fun ControlButton(
                         ),
                     contentAlignment = Alignment.Center
                 ) {
-                    Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.Components.AnimatedIconLottieJsonFile(
+                    V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.Components.AnimatedIconLottieJsonFile(
                         resourceId = icon,
                         onClick = if (enabled) onClick else ({})
                     )

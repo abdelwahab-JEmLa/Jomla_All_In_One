@@ -3,7 +3,7 @@ package Z_MasterOfApps.A.MainActivity.Start.Module.A.Koin
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Modules.ConnectionManager
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
-import Z_MasterOfApps.Z.Android.A_Section.App.A.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
+import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
 import android.content.Context
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
