@@ -2,6 +2,7 @@ package Z_CodePartageEntreApps.Proto.B.Sectiones.Fragment.A.AchatsManager.App.B.
 
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -29,10 +31,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import java.text.NumberFormat
 import java.util.Locale
+
+private const val TAG = "C_MainItem_APP2_ID_2"
 
 @Composable
 fun C_MainItem_APP2_ID_2(
@@ -71,8 +78,10 @@ fun C_MainItem_APP2_ID_2(
 
     // State for price editing
     var isEditingPrice by remember { mutableStateOf(false) }
-    var priceText by remember { mutableStateOf(initialPrice.toString()) }
+    var priceText by remember { mutableStateOf("") } // Start with empty text
     val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     // Format price with Euro symbol and proper formatting using NumberFormat
     val formatter = NumberFormat.getCurrencyInstance(Locale.FRANCE)
@@ -143,41 +152,59 @@ fun C_MainItem_APP2_ID_2(
 
                             // Show either the editable text field or clickable price text
                             if (isEditingPrice) {
+                                Log.d(TAG, "Showing price editor. KeyboardController: ${keyboardController != null}")
+
                                 OutlinedTextField(
                                     value = priceText,
                                     onValueChange = { newValue ->
                                         // Only allow numeric input with optional decimal point
                                         if (newValue.isEmpty() || newValue.matches(Regex("^\\d*\\.?\\d*$"))) {
                                             priceText = newValue
+                                            Log.d(TAG, "Price text changed to: $newValue")
                                         }
                                     },
                                     modifier = Modifier
                                         .focusRequester(focusRequester),
-                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                    keyboardOptions = KeyboardOptions(
+                                        keyboardType = KeyboardType.Number,
+                                        imeAction = ImeAction.Done
+                                    ),
+                                    keyboardActions = KeyboardActions(
+                                        onDone = {
+                                            Log.d(TAG, "Keyboard Done pressed. Updating price.")
+                                            // Update the price when Done is pressed
+                                            updatePrice(
+                                                priceText,
+                                                defaultPrice,
+                                                relative_1_2_ProduitAcheteOperation,
+                                                _0_HeadOfRepositorys_Repository_Model
+                                            )
+                                            focusManager.clearFocus()
+                                            keyboardController?.hide()
+                                            isEditingPrice = false
+                                        }
+                                    ),
                                     singleLine = true,
-                                    label = { Text("Prix") }
+                                    label = {
+                                        Text(
+                                            if (useProvisionalPrice)
+                                                formatter.format(provisionalPrice).replace("€", "دج")
+                                            else
+                                                formatter.format(defaultPrice).replace("€", "دج")
+                                        )
+                                    }
                                 )
 
                                 // Request focus when the text field is shown
-                                LaunchedEffect(focusRequester) {
-                                    focusRequester.requestFocus()
-                                }
-
-                                // Update price when focus is lost
-                                LaunchedEffect(isEditingPrice) {
-                                    if (isEditingPrice) {
+                                LaunchedEffect(Unit) {
+                                    Log.d(TAG, "Requesting focus")
+                                    try {
                                         focusRequester.requestFocus()
-                                    } else {
-                                        // When editing is finished, update the provisional price
-                                        val newPrice = priceText.toDoubleOrNull() ?: defaultPrice
-                                        relative_1_2_ProduitAcheteOperation?.let { product ->
-                                            val updatedProduct = product.copy(
-                                                provisoireMonPrix = newPrice
-                                            )
-                                            _0_HeadOfRepositorys_Repository_Model
-                                                ._1_2_ProduitAcheteOperation_Repository
-                                                .updateUnSeulData(updatedProduct)
-                                        }
+                                        Log.d(TAG, "Focus requested successfully")
+                                        keyboardController?.show()
+                                        Log.d(TAG, "Keyboard show requested")
+                                    } catch (e: Exception) {
+                                        Log.e(TAG, "Error requesting focus: ${e.message}")
                                     }
                                 }
                             } else {
@@ -190,6 +217,8 @@ fun C_MainItem_APP2_ID_2(
                                     else
                                         MaterialTheme.colorScheme.secondary,
                                     modifier = Modifier.clickable {
+                                        Log.d(TAG, "Price text clicked, starting edit mode")
+                                        priceText = "" // Reset to empty when starting to edit
                                         isEditingPrice = true
                                     }
                                 )
@@ -239,4 +268,27 @@ fun C_MainItem_APP2_ID_2(
             }
         }
     }
+}
+
+// Helper function to update the price
+private fun updatePrice(
+    priceText: String,
+    defaultPrice: Double,
+    produitAcheteOperation: Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation?,
+    repositoryModel: Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
+) {
+    Log.d(TAG, "Updating price from text: '$priceText'")
+    val newPrice = priceText.toDoubleOrNull() ?: defaultPrice
+    Log.d(TAG, "New price calculated: $newPrice")
+
+    produitAcheteOperation?.let { product ->
+        val updatedProduct = product.copy(
+            provisoireMonPrix = newPrice
+        )
+        Log.d(TAG, "Updating product ${product.vid} with new price: $newPrice")
+        repositoryModel
+            ._1_2_ProduitAcheteOperation_Repository
+            .updateUnSeulData(updatedProduct)
+        Log.d(TAG, "Price update complete")
+    } ?: Log.e(TAG, "Cannot update price - product is null")
 }
