@@ -7,6 +7,7 @@ import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepos
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat
+import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -92,7 +93,7 @@ fun ColumnScope.BonAchatInfos(
                     onClick = {
                         coroutineScope.launch {
                             // First create a temporary product in the database
-                            val tempProduct = Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase(
+                            val tempProduct = _2_1_ProduitsDataBase(
                                 nom = "منتج جديد",
                                 itsTempProduit = true,
                                 monPrixVent = 0.0
