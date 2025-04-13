@@ -50,6 +50,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.koin.androidx.compose.koinViewModel
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
@@ -92,7 +94,6 @@ private fun MapContent(
     onUpdateLongAppSetting: () -> Unit,
     onClear: () -> Unit
 ) {
-
     val context = LocalContext.current
     val currentZoom by remember { mutableDoubleStateOf(18.2) }
     val mapView = remember { MapView(context) }
@@ -126,7 +127,11 @@ private fun MapContent(
             setMultiTouchControls(true)
             setTileSource(TileSourceFactory.MAPNIK)
             controller.setZoom(currentZoom)
-            controller.animateTo(GeoPoint(initialPosition.latitude, initialPosition.longitude))
+
+            // Switch to the Main dispatcher before animating
+            withContext(Dispatchers.Main) {
+                controller.animateTo(GeoPoint(initialPosition.latitude, initialPosition.longitude))
+            }
         }
     }
 
