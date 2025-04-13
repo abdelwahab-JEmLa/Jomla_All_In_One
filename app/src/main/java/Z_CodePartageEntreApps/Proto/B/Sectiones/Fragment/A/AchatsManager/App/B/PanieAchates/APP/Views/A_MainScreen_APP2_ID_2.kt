@@ -129,6 +129,7 @@ fun A_MainScreen_APP2_ID_2(
                                     totalPrice = calcule_totalPrice(produitsBonAchatIDs, _0_HeadOfRepositorys_Repository_Model)
                                 },
                                 onDoneupdatePrice = {
+                                    // Fixed: Recalculate total price after product price update
                                     totalPrice = calcule_totalPrice(produitsBonAchatIDs, _0_HeadOfRepositorys_Repository_Model)
                                 }
                             )
