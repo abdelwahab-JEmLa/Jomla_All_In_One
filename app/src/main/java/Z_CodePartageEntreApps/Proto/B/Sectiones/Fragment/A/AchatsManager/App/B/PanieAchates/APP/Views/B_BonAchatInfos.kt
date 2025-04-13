@@ -7,7 +7,6 @@ import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepos
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -69,7 +68,6 @@ fun ColumnScope.BonAchatInfos(
             modifier = Modifier.fillMaxWidth()
         ) {
             Row {
-
                 IconButton(
                     onClick = {
                         printReceipt(
@@ -92,7 +90,6 @@ fun ColumnScope.BonAchatInfos(
 
                 IconButton(
                     onClick = {
-
                         coroutineScope.launch {
                             // First create a temporary product in the database
                             val tempProduct = Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase(
@@ -101,20 +98,15 @@ fun ColumnScope.BonAchatInfos(
                                 monPrixVent = 0.0
                             )
 
-
                             repositorysModel._2_1_ProduitsDataBase_Repository.addDataAndReturnItVID(tempProduct) { productId ->
-                              val produitOperation = _1_2_ProduitAcheteOperation(
+                                val produitOperation = _1_2_ProduitAcheteOperation(
                                     produitAcheterID = productId,
-                                    parent_1_3_BonAchat = relativeBonAchate?.vid ?: 0L,  // Utiliser le bon ID du bon d'achat
+                                    parent_1_3_BonAchat = relativeBonAchate?.vid ?: 0L,
                                     etateActuellementEst = _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME
                                 )
 
-
                                 // Add the product operation and get its ID
                                 repositorysModel._1_2_ProduitAcheteOperation_Repository.addDataAndReturneItVID(produitOperation) { produitOperationId ->
-                                    // Log the successful product operation creation
-                                    Log.d("ProductCreation", "Product operation created successfully with ID: $produitOperationId")
-
                                     // Finally add a color operation with quantity 1
                                     val couleurOperation = _1_1_CouleurAcheteOperation(
                                         couleurIndex_ParentVID = 0L,
@@ -123,26 +115,8 @@ fun ColumnScope.BonAchatInfos(
                                         etateActuellementEst = _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
                                     )
 
-                                    Log.d("ProductCreation", "Creating color operation with parentProduitAchateOperationVID: $produitOperationId")
-
                                     // Add color operation
                                     repositorysModel._1_1_CouleurAcheteOperation_Repository.addData(couleurOperation)
-                                    Log.d("ProductCreation", "Color operation added successfully")
-
-                                    // Ajouter un log pour vérifier l'ajout du produit
-                                    val currentBonAchatProducts = repositorysModel._1_2_ProduitAcheteOperation_Repository
-                                        .modelDatasSnapList
-                                        .filter { it.parent_1_3_BonAchat == relativeBonAchate.vid }
-
-                                    Log.d("ProductCreation", "Current number of products in bon achat: ${currentBonAchatProducts.size}")
-                                    Log.d("ProductCreation", "Products state: ${currentBonAchatProducts.map { "ID: ${it.vid}, ProduitID: ${it.produitAcheterID}, State: ${it.etateActuellementEst}" }}")
-
-                                    val colorOperations = repositorysModel._1_1_CouleurAcheteOperation_Repository
-                                        .modelDatasSnapList
-                                        .filter { it.parentProduitAchateOperationVID == produitOperationId }
-
-                                    Log.d("ProductCreation", "Color operations for product $produitOperationId: ${colorOperations.size}")
-                                    Log.d("ProductCreation", "Color operations state: ${colorOperations.map { "ID: ${it.vid}, State: ${it.etateActuellementEst}, Quantity: ${it.totaleQuantity}" }}")
                                 }
                             }
                         }
@@ -157,7 +131,6 @@ fun ColumnScope.BonAchatInfos(
                     )
                 }
             }
-
 
             Column(
                 modifier = Modifier.padding(16.dp),
