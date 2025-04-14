@@ -1,3 +1,4 @@
+// B_ProduitCommande.kt
 package V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package
 
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
@@ -21,9 +22,6 @@ fun B_ProduitCommande(
     if (Produit.etateActuellementEst != _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME) {
         return
     }
-
-    val productFromDB = models._2_1_ProduitsDataBase_Repository.modelDatasSnapList
-        .find { it.vid == Produit.produitAcheterID }
 
     // Get only colors with QUANTITY_CHOISI status for this specific product
     val colorsForProduct =

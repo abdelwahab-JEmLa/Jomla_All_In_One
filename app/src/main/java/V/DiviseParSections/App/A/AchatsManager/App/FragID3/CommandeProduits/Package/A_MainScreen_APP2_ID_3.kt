@@ -1,3 +1,4 @@
+// A_MainScreen_APP2_ID_3.kt
 package V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package
 
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
@@ -57,8 +58,6 @@ fun A_APP1FragID3_MainScreen(
                 .filter { it.produitAcheterID in productsToShow }
                 .distinctBy { it.produitAcheterID }
 
-            // Fixed TODO(1): We now do the filtering directly rather than in a remember block
-            // This avoids the @Composable invocation error
             val displayableProducts = filteredProducts.filter { product ->
                 // Only include products with CONFIRME status
                 if (product.etateActuellementEst != _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME) {
