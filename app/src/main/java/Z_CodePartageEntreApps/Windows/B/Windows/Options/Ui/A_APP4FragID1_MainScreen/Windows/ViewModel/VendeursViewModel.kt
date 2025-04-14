@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Windows.B.Windows.Options.Ui.ViewModel
+package Z_CodePartageEntreApps.Windows.B.Windows.Options.Ui.A_APP4FragID1_MainScreen.Windows.ViewModel
 
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._1_4_PeriodeVent

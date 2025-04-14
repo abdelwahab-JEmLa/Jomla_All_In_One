@@ -1,9 +1,9 @@
-package Z_CodePartageEntreApps.Windows.B.Windows.Options.Ui
+package Z_CodePartageEntreApps.Windows.B.Windows.Options.Ui.A_APP4FragID1_MainScreen.Windows
 
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._1_4_PeriodeVent
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur
-import Z_CodePartageEntreApps.Windows.B.Windows.Options.Ui.ViewModel.VendeursUiState
-import Z_CodePartageEntreApps.Windows.B.Windows.Options.Ui.ViewModel.VendeursViewModel
+import Z_CodePartageEntreApps.Windows.B.Windows.Options.Ui.A_APP4FragID1_MainScreen.Windows.ViewModel.VendeursUiState
+import Z_CodePartageEntreApps.Windows.B.Windows.Options.Ui.A_APP4FragID1_MainScreen.Windows.ViewModel.VendeursViewModel
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth

@@ -61,7 +61,8 @@ fun A_OptionsControlsButtons_Main(
     // Collect UI state to checkADD_1_4_PeriodeVent if filtering is active
     val uiState by viewModel.uiStateFlow.collectAsState()
     val isFilterActive = uiState.isFilteringActive
-    if(false) {
+
+    if(uiState.itsManagerCompt) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center

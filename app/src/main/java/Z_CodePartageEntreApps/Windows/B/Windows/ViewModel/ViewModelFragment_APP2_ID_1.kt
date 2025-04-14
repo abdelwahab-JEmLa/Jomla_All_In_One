@@ -1,13 +1,14 @@
 package Z_CodePartageEntreApps.Windows.B.Windows.ViewModel
 
-import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
-import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
-import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._1_4_PeriodeVent
-import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
+import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperationRepositoryImpl
-import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
+import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
+import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperationRepositoryImpl
+import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
+import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat
 import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchatRepositoryImpl
 import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat_Repository
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVentRepositoryImpl
@@ -32,34 +33,40 @@ data class UiState_StartUpScreen(
     var errorMessage: String? = null,
     var syncInProgress: Boolean = false,
     var isDataLoading: Boolean = true,
-    var isInitialized: Boolean = false
+    var isInitialized: Boolean = false,
+
+    var itsManagerCompt: Boolean = false,
 )
 
 class ViewModelFragment_StartUpScreen(
+    val _0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository,
     val _1_1_CouleurAcheteOperation_Repository: _1_1_CouleurAcheteOperation_Repository,
     val _1_2_ProduitAcheteOperation_Repository: _1_2_ProduitAcheteOperation_Repository,
     val _1_3_BonAchat_Repository: _1_3_BonAchat_Repository,
     val _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository
 ) : ViewModel() {
     private val TAG = "ViewModelFragment_StartUpScreen"
-
-    private val _uiStateFlow = MutableStateFlow(UiState_StartUpScreen())
-    val uiStateFlow: StateFlow<UiState_StartUpScreen> = _uiStateFlow.asStateFlow()
+    val headModel= _0_0_HeadOfRepositorys_Repository.repositorys_Model
+    private val _uiState = MutableStateFlow(UiState_StartUpScreen())
+    val uiStateFlow: StateFlow<UiState_StartUpScreen> = _uiState.asStateFlow()
 
     private val initializerViewModel = InintializeViewModel_StartUpScreen()
 
     init {
+        loadData()
+
         viewModelScope.launch {
             initializerViewModel.waitForDataInitialization(
                 _1_1_CouleurAcheteOperation_Repository,
                 _1_2_ProduitAcheteOperation_Repository,
                 _1_3_BonAchat_Repository,
                 _1_4_PeriodeVent_Repository,
-                _uiStateFlow,
+                _uiState,
                 viewModelScope,
                 { checkInitializationComplete() },
             )
         }
+
 
         // Add hardcoded data only if repository is empty
         viewModelScope.launch {
@@ -73,6 +80,12 @@ class ViewModelFragment_StartUpScreen(
             }
         }
     }
+    private fun loadData() {
+        _uiState.value = UiState_StartUpScreen(
+            itsManagerCompt= headModel.activeIdDe_1_5_Vendeur > 0
+        )
+    }
+
 
     fun addData_1_4_PeriodeVent(newPeriodeVent: _1_4_PeriodeVent): Unit {
         viewModelScope.launch {
@@ -92,7 +105,7 @@ class ViewModelFragment_StartUpScreen(
             _1_2_ProduitAcheteOperation_Repository,
             _1_3_BonAchat_Repository,
             _1_4_PeriodeVent_Repository,
-            _uiStateFlow,
+            _uiState,
         )
     }
 
