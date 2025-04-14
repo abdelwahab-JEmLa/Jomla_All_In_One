@@ -7,7 +7,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ElevatedCard
@@ -38,6 +37,13 @@ fun MainScreen(
     val _1_5_Vendeur = vendeurRepository.modelDatasSnapList
 
     ElevatedCard(modifier.background(Color.Red)) {
+
+        Text("$ceTelephoneActiveComptID")
+
+        HorizontalDivider(
+            Modifier.height(50.dp)
+        )
+
         Text("_1_5_Vendeur")
 
         LazyColumn(Modifier.fillMaxWidth()) {
@@ -53,7 +59,7 @@ fun MainScreen(
 
                     )
                     HorizontalDivider(
-                        Modifier.width(20.dp)
+                        Modifier.height(20.dp)
                     )
                     val nom = it.nom
                     Text(
@@ -61,7 +67,7 @@ fun MainScreen(
                         fontSize = 30.sp
                     )
                     HorizontalDivider(
-                        Modifier.width(20.dp)
+                        Modifier.height(20.dp)
                     )
                     Text(
                         "idPeri>${it.idPeriodActivePourCeCompt}",
@@ -109,6 +115,41 @@ fun MainScreen(
                                 // Save the update vendor
                                 repository.upsertUneDataEtReturnVID(v)
                             }
+                        }
+                    )
+                }
+            }
+        }
+    }
+
+    HorizontalDivider(
+        Modifier.height(50.dp), color = Color.Red
+    )
+
+    val _1_3_BonAchat_Repository = repository.repositorys_Model
+        ._1_3_BonAchat_Repository
+    val _1_3_BonAchat = _1_3_BonAchat_Repository.modelDatasSnapList
+
+    ElevatedCard(modifier.background(Color.Red)) {
+        Text("MainScreen_1_3_BonAchat_Repository")
+        LazyColumn(Modifier.fillMaxWidth()) {
+            items(_1_3_BonAchat) { bonAchat ->
+                Column {
+                    val vid = bonAchat.vid
+                    Text(
+                        "vid>$vid",
+                        fontSize = 30.sp
+                    )
+
+                    HorizontalDivider(
+                        Modifier.height(10.dp), color = Color.Red
+                    )
+
+                    Text(
+                        "nom>${bonAchat.clientAcheteurID}",
+                        fontSize = 30.sp ,
+                        modifier=Modifier.clickable {
+
                         }
                     )
                 }
