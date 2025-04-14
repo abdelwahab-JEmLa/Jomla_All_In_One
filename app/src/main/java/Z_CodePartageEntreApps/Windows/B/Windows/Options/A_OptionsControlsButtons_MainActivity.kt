@@ -2,8 +2,8 @@ package Z_CodePartageEntreApps.Windows.B.Windows.Options
 
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.Components.LabelsButton
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.ControlButton
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._1_4_PeriodeVent
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._1_4_PeriodeVent
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur
 import Z_CodePartageEntreApps.Windows.B.Windows.UI.LoadingContent
 import Z_CodePartageEntreApps.Windows.B.Windows.ViewModel.ViewModelFragment_StartUpScreen
@@ -52,7 +52,6 @@ const val TAG = "A_OptionsControlsButtons_Main"
 fun A_OptionsControlsButtons_Main(
     viewModel: ViewModelFragment_StartUpScreen = koinViewModel(),
     _0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository = koinInject(),
-
     ) {
     var showMenu by remember { mutableStateOf(false) }
     var showLabels by remember { mutableStateOf(true) }
@@ -62,126 +61,127 @@ fun A_OptionsControlsButtons_Main(
     // Collect UI state to checkADD_1_4_PeriodeVent if filtering is active
     val uiState by viewModel.uiStateFlow.collectAsState()
     val isFilterActive = uiState.isFilteringActive
-
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        // Display loading content if data is loading
-        if (uiState.isDataLoading) {
-            LoadingContent(
-                message = "Loading data...",
-                modifier = Modifier.align(Alignment.Center)
-            )
-        }
-
+    if(false) {
         Box(
-            modifier = Modifier
-                .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
-                .pointerInput(Unit) {
-                    detectDragGestures { change, dragAmount ->
-                        change.consume()
-                        offsetX += dragAmount.x
-                        offsetY += dragAmount.y
-                    }
-                }
-                .padding(16.dp)
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
         ) {
-            Column(
-                modifier = Modifier.align(Alignment.BottomStart),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                if (showMenu) {
-                    val repositorysModel =
-                        _0_0_HeadOfRepositorys_Repository.repositorys_Model
+            // Display loading content if data is loading
+            if (uiState.isDataLoading) {
+                LoadingContent(
+                    message = "Loading data...",
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
 
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        val couleur = Color(0xFF9C27B0)
-                        FloatingActionButton(
-                            onClick = {
-                                repositorysModel
-                                    .repository_1_5_Vendeur
-                                    .addDataAndReturneItVID(
-                                        _1_5_Vendeur()
-                                    )
-                            },
-                            modifier = Modifier.size(40.dp),
-                            containerColor = couleur
-                        ) {
-                            Icon(
-                                Icons.Filled.PhoneAndroid,
-                                contentDescription = "Add New _1_5_Vendeur"    //<--
-                                //TODO(1): change au functionemnent
-                            )
-                        }
-
-                        if (showLabels) {
-                            Text(
-                                "Add New Period_1_4_PeriodeVent",
-                                modifier = Modifier
-                                    .background(
-                                        couleur
-                                    )
-                                    .padding(4.dp),
-                                color = Color.White
-                            )
-                        }
-                        FloatingActionButton(
-                            onClick = {
-                                repositorysModel
-                                    .repository_1_4_PeriodeVent
-                                    .addDataAndReturneItVID(
-                                        _1_4_PeriodeVent(
-                                            startDateInString = LocalDate.now()
-                                                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-                                            vendeur_ParentVID =
-                                                repositorysModel.repository_1_5_Vendeur.modelDatasSnapList
-                                                    .last { it.deviceModelNom == Build.MODEL }.vid
-                                        )
-                                    )
-                            },
-                            modifier = Modifier.size(40.dp),
-                            containerColor = if (isFilterActive) Color(0xFF2196F3) else Color(
-                                0xFF4CAF50
-                            )
-                        ) {
-                            Icon(
-                                Icons.Filled.Add,
-                                contentDescription = "Add New Period"
-                            )
-                        }
-
-                        if (showLabels) {
-                            Text(
-                                "Add New Period",
-                                modifier = Modifier
-                                    .background(
-                                        if (isFilterActive) Color(0xFF009688) else Color(
-                                            0xFF4CAF50
-                                        )
-                                    )
-                                    .padding(4.dp),
-                                color = Color.White
-                            )
+            Box(
+                modifier = Modifier
+                    .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
+                    .pointerInput(Unit) {
+                        detectDragGestures { change, dragAmount ->
+                            change.consume()
+                            offsetX += dragAmount.x
+                            offsetY += dragAmount.y
                         }
                     }
+                    .padding(16.dp)
+            ) {
+                Column(
+                    modifier = Modifier.align(Alignment.BottomStart),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    if (showMenu) {
+                        val repositorysModel =
+                            _0_0_HeadOfRepositorys_Repository.repositorys_Model
 
-                    // Labels Button
-                    LabelsButton(
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            val couleur = Color(0xFF9C27B0)
+                            FloatingActionButton(
+                                onClick = {
+                                    repositorysModel
+                                        .repository_1_5_Vendeur
+                                        .addDataAndReturneItVID(
+                                            _1_5_Vendeur()
+                                        )
+                                },
+                                modifier = Modifier.size(40.dp),
+                                containerColor = couleur
+                            ) {
+                                Icon(
+                                    Icons.Filled.PhoneAndroid,
+                                    contentDescription = "Add New _1_5_Vendeur"    //<--
+                                    //TODO(1): change au functionemnent
+                                )
+                            }
+
+                            if (showLabels) {
+                                Text(
+                                    "Add New Period_1_4_PeriodeVent",
+                                    modifier = Modifier
+                                        .background(
+                                            couleur
+                                        )
+                                        .padding(4.dp),
+                                    color = Color.White
+                                )
+                            }
+                            FloatingActionButton(
+                                onClick = {
+                                    repositorysModel
+                                        .repository_1_4_PeriodeVent
+                                        .addDataAndReturneItVID(
+                                            _1_4_PeriodeVent(
+                                                startDateInString = LocalDate.now()
+                                                    .format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                                                vendeur_ParentVID =
+                                                    repositorysModel.repository_1_5_Vendeur.modelDatasSnapList
+                                                        .last { it.deviceModelNom == Build.MODEL }.vid
+                                            )
+                                        )
+                                },
+                                modifier = Modifier.size(40.dp),
+                                containerColor = if (isFilterActive) Color(0xFF2196F3) else Color(
+                                    0xFF4CAF50
+                                )
+                            ) {
+                                Icon(
+                                    Icons.Filled.Add,
+                                    contentDescription = "Add New Period"
+                                )
+                            }
+
+                            if (showLabels) {
+                                Text(
+                                    "Add New Period",
+                                    modifier = Modifier
+                                        .background(
+                                            if (isFilterActive) Color(0xFF009688) else Color(
+                                                0xFF4CAF50
+                                            )
+                                        )
+                                        .padding(4.dp),
+                                    color = Color.White
+                                )
+                            }
+                        }
+
+                        // Labels Button
+                        LabelsButton(
+                            showLabels = showLabels,
+                            onShowLabelsChange = { showLabels = it }
+                        )
+                    }
+
+                    // Menu Button
+                    MenuButton(
                         showLabels = showLabels,
-                        onShowLabelsChange = { showLabels = it }
+                        showMenu = showMenu,
+                        onShowMenuChange = { showMenu = it }
                     )
                 }
-
-                // Menu Button
-                MenuButton(
-                    showLabels = showLabels,
-                    showMenu = showMenu,
-                    onShowMenuChange = { showMenu = it }
-                )
             }
         }
     }
