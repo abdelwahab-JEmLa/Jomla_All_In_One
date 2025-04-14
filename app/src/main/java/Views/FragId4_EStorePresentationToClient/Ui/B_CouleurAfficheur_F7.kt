@@ -1,9 +1,10 @@
 package Views.FragId4_EStorePresentationToClient.Ui
 
-import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
+import Z_CodePartageEntreApps.Model.Z.Archive.ColorArrangement
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
-import Z_CodePartageEntreApps.View.GlideDisplayImageBykeyId
+import Z_CodePartageEntreApps.View.A_GlideDisplayImageByKeyId_Proto_4_11
+import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -15,7 +16,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -39,7 +40,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import Z_CodePartageEntreApps.Model.Z.Archive.ColorArrangement
 import com.example.clientjetpack.R
 
 @OptIn(ExperimentalGlideComposeApi::class)
@@ -71,16 +71,24 @@ fun B_CouleurAfficheur_F7(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            GlideDisplayImageBykeyId(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(600.dp),
-                imageGlidReloadTigger = 0,
-                mainItem = articleproduitsMainDataBase,
+            A_GlideDisplayImageByKeyId_Proto_4_11(
+                produitVID = article.idArticle.toLong(),
+                couleurVID = colorIndex.toLong() + 1,
                 size = 600.dp,
                 qualityImage = 100,
-                colorIndex = colorIndex
+                onImageNeExistePas = {
+                    Text(
+                        text = color?.nameColore!!,
+                        fontSize = 55.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(40.dp)
+                            .graphicsLayer(rotationZ = 45f)
+                    )
+                }
             )
+
 
             // Add QuantityBadge if there's a quantity to display
             colorArrangement?.let { arrangement ->
