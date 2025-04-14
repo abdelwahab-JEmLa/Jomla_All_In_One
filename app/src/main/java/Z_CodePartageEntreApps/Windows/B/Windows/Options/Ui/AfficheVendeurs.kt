@@ -1,9 +1,7 @@
 package Z_CodePartageEntreApps.Windows.B.Windows.Options.Ui
 
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._1_4_PeriodeVent
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur
-import Z_CodePartageEntreApps.Windows.B.Windows.Options.A_OptionsControlsButtons_Main
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,81 +19,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
-
-// ViewModel to handle business logic
-open class VendeursViewModel(
-    private val repository: _0_0_HeadOfRepositorys_Repository,
-) : ViewModel() {
-
-    private val _uiState = MutableStateFlow(VendeursUiState())
-    open val uiState: StateFlow<VendeursUiState> = _uiState.asStateFlow()
-
-    private val vendeurRepository = repository.repositorys_Model.repository_1_5_Vendeur
-    private val periodeVentRepository = repository.repositorys_Model.repository_1_4_PeriodeVent
-
-    init {
-        // Initial load attempt
-        loadData()
-
-        // Set up collection of the progress flow
-        viewModelScope.launch {
-            repository.progressRepo.collect { progress ->
-                if (progress == 1f) {
-                    loadData()
-                }
-            }
-        }
-    }
-
-    private fun loadData() {
-        val vendeurs = vendeurRepository.modelDatasSnapList
-        val periodes = periodeVentRepository.modelDatasSnapList
-        val activeVendeurId = periodes.firstOrNull()?.vid ?: 0L
-        val activePeriodeId = periodes.lastOrNull()?.vid ?: 0L
-
-        _uiState.value = VendeursUiState(
-            vendeurs = vendeurs,
-            periodes = periodes,
-            activeVendeurId = activeVendeurId,
-            activePeriodeId = activePeriodeId
-        )
-    }
-
-    fun setActiveVendeur(id: Long) {
-        _uiState.value = _uiState.value.copy(activeVendeurId = id)
-    }
-
-    fun setActivePeriode(id: Long) {
-        _uiState.value = _uiState.value.copy(activePeriodeId = id)
-    }
-
-    // Only for development/testing
-    fun addTestData() {
-        vendeurRepository.addDataAndReturneItVID(_1_5_Vendeur(nom = "W"))
-        vendeurRepository.addDataAndReturneItVID(_1_5_Vendeur(nom = "M"))
-        periodeVentRepository.addDataAndReturneItVID(_1_4_PeriodeVent(heurDebutInString = "1:mm"))
-        periodeVentRepository.addDataAndReturneItVID(_1_4_PeriodeVent(heurDebutInString = "2:mm"))
-        loadData()
-    }
-}
-
-// Data class to represent UI state
-data class VendeursUiState(
-    val vendeurs: List<_1_5_Vendeur> = emptyList(),
-    val periodes: List<_1_4_PeriodeVent> = emptyList(),
-    val activeVendeurId: Long = 0L,
-    val activePeriodeId: Long = 0L,
-)
 
 @Composable
 fun MainScreen(
@@ -292,37 +218,4 @@ fun PeriodeItem(
     }
 }
 
-@Preview
-@Composable
-private fun AffichePersonsPV() {
-    // Create mock data for preview
-    val mockUiState = VendeursUiState(
-        vendeurs = listOf(
-            _1_5_Vendeur(vid = 1, nom = "Vendeur 1"),
-            _1_5_Vendeur(vid = 2, nom = "Vendeur 2")
-        ),
-        periodes = listOf(
-            _1_4_PeriodeVent(vid = 1, heurDebutInString = "10:00"),
-            _1_4_PeriodeVent(vid = 2, heurDebutInString = "14:00")
-        ),
-        activeVendeurId = 1,
-        activePeriodeId = 1
-    )
 
-    Column {
-        VendeursContent(
-            uiState = mockUiState,
-            onVendeurSelected = {},
-            onPeriodeSelected = {}
-        )
-    }
-    A_OptionsControlsButtons_Main()
-}
-
-
-// Then use it in your preview
-@Preview
-@Composable
-private fun AffichePersonsPreviewWithKoin() {
-    MainScreen()
-}
