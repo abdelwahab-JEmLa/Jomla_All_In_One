@@ -195,13 +195,12 @@ fun MarkerStatusDialog(
                         coroutineScope.launch {
                             val repositorysModel =
                                 _0_0_HeadOfRepositorys_Repository.repositorys_Model
-                            val activePeriod = _0_0_HeadOfRepositorys_Repository.activePeriod
-                            val parentVidPeriode = activePeriod?.vid ?: 0L
+                            val activeIdDe_1_4_PeriodeVent = repositorysModel.activeIdDe_1_4_PeriodeVent
                             val clientId = relatedClients?.id ?: 0L
 
                             // Check if a BonAchat already exists for this client in the active period
                             val existingBonAchat = viewModel.modelDatasSnapList_1_3_BonAchat.find {
-                                it.clientAcheteurID == clientId && it.parentVID_1_4_PeriodeVent == parentVidPeriode
+                                it.clientAcheteurID == clientId && it.parentVID_1_4_PeriodeVent == activeIdDe_1_4_PeriodeVent
                             }
 
                             if (existingBonAchat != null) {
@@ -218,7 +217,6 @@ fun MarkerStatusDialog(
                                 repositorysModel._1_3_BonAchat_Repository.upsertUneDataEtReturnVID(
                                     updatedBonAchat
                                 ) { vid ->
-                                    // Update the MutableStateFlow with the updated value
                                     repositorysModel.activeId_1_3_BonAchat.value = vid
                                 }
                             } else {
@@ -226,7 +224,7 @@ fun MarkerStatusDialog(
                                 repositorysModel._1_3_BonAchat_Repository.addDataAndReturneItVID(
                                     _1_3_BonAchat(
                                         clientAcheteurID = clientId,
-                                        parentVID_1_4_PeriodeVent = parentVidPeriode,
+                                        parentVID_1_4_PeriodeVent = activeIdDe_1_4_PeriodeVent,
                                         etateActuellementEst = _1_3_BonAchat.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
                                         heurDebutInString = SimpleDateFormat(
                                             "HH:mm",

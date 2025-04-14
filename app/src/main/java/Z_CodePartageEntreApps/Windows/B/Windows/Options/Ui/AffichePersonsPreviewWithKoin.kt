@@ -7,5 +7,5 @@ import androidx.compose.ui.tooling.preview.Preview
 @Preview
 @Composable
 private fun AffichePersonsPreviewWithKoin() {
-    MainScreen()
+    A_APP4FragID1_MainScreen()
 }

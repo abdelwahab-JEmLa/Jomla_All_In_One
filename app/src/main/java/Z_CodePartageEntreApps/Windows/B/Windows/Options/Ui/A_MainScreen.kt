@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.sp
 import org.koin.compose.koinInject
 
 @Composable
-fun MainScreen(
+fun A_APP4FragID1_MainScreen(
     modifier: Modifier = Modifier,
     viewModel: VendeursViewModel = koinInject(),
 ) {

@@ -84,7 +84,7 @@ val vendeursModule = module {
 }
 
 @Composable
-fun MainScreen(
+fun A_APP4FragID1_MainScreen(
     modifier: Modifier = Modifier,
     viewModel: VendeursViewModel = koinInject()
 ) {
@@ -294,7 +294,7 @@ private fun AffichePersonsPV() {
         activeVendeurId = 1,
         activePeriodeId = 1
     )
-    MainScreen()
+    A_APP4FragID1_MainScreen()
       /*
     Column {
         VendeursContent(
