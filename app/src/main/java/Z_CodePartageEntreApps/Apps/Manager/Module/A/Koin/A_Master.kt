@@ -82,8 +82,14 @@ val commonRepositoriesModule = module {
     single<SoldArticlesTabelleRepository> { SoldArticlesTabelleRepositoryImpl() }
     single<C_GrossistsDataBaseRepository> { C_GrossistsDataBaseRepositoryImpl() }
 
-    viewModel { ViewModelFragment_StartUpScreen(get(),get(),get(),get()) }
-    viewModel { ViewModelFragment_StartUpScreen(get(),get(),get(),get()) }
+    viewModel { ViewModelFragment_StartUpScreen(
+        get(),
+        get(),
+        get(),
+        get(),
+        get()
+    ) }
+
     viewModel { ViewModelInitApp(
          get()
         ,get()
@@ -93,6 +99,7 @@ val commonRepositoriesModule = module {
         ,get()
         ,get()
     ) }
+
     viewModel { VendeursViewModel(
          get()
 
