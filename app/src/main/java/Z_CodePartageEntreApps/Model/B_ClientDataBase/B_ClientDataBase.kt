@@ -38,11 +38,12 @@ data class B_ClientDataBase(
     // Keep the enum classes as they are
     @IgnoreExtraProperties
     enum class DernierEtatAAffiche(val color: Int, val nomArabe: String) {
-        NON_DEFINI(android.R.color.white, "غير محدد"),
+        NON_DEFINI(android.R.color.holo_orange_light, "غير محدد"),
         ON_MODE_COMMEND_ACTUELLEMENT(android.R.color.holo_green_light, "نشط / متصل"),
         VENDU_A_LUI(android.R.color.holo_purple, ""),
         Cible(android.R.color.holo_red_light, "Cible"),
-        CIBLE_PRIORITE_2(android.R.color.holo_orange_light, "CIBLE_PRIORITE_2"),
+        CIBLE_PRIORITE_2(android.R.color.holo_orange_dark, "CIBLE_PRIORITE_2"),
+        CIBLE_PRIORITE_3(android.R.color.holo_green_light, "CIBLE_PRIORITE_3"),
         CIBLE_POUR_2(android.R.color.holo_blue_dark, "CIBLE_POUR_2"),
         CLIENT_ABSENT(android.R.color.darker_gray, "غائب الشاري"),
         AVEC_MARCHANDISE(android.R.color.holo_blue_light, "عندو سلعة"),

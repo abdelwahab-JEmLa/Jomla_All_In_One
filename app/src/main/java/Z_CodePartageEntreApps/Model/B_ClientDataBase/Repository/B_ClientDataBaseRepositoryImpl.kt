@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository
 
-import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
+import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.android.gms.tasks.Tasks
@@ -18,8 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 class B_ClientDataBaseRepositoryImpl(
     private val appDatabase: AppDatabase
-) : B_ClientDataBaseRepository {    //<--
-//TODO(1): cree log e pour decouvert pk modelDatas ne se load pas depuit firebase au room
+) : B_ClientDataBaseRepository {
     private val TAG = "B_ClientDataBase"
 
     override var modelDatas: SnapshotStateList<B_ClientDataBase> = mutableStateListOf()

@@ -212,13 +212,17 @@ private fun MapContent(
 
             ViewModel_MapClients_App2FragID1.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR -> {
                 clientDataBaseSnapList.filter {
-                    it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.Cible
+                    it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.NON_DEFINI
+                            ||it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.Cible
+
                 }
             }
 
             ViewModel_MapClients_App2FragID1.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX -> {
                 clientDataBaseSnapList.filter {
-                            it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.Cible
+                    it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.NON_DEFINI
+                            ||it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.Cible
+
                             || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.VENDU_A_LUI
                             || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.FERME
                             || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.A_EVITE

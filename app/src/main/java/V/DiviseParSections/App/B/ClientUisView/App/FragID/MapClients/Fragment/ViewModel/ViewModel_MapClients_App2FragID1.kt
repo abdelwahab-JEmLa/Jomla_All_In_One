@@ -67,7 +67,6 @@ class ViewModel_MapClients_App2FragID1(
                 longitude = center.longitude
                 title = newnom
                 snippet = "Client temporaire"
-                actuelleEtat = B_ClientDataBase.DernierEtatAAffiche.CIBLE_PRIORITE_2
             }
 
             viewModelScope.launch {

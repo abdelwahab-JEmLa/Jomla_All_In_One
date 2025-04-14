@@ -51,6 +51,13 @@ fun BProto_ClientsDataBaseButton(
                     },
                     nameFunciotn = "populateModelearSonAncien()"
                 )
+                ButFun_2(
+                    viewModel = viewModel,
+                    onProgressUpdate = { progress ->
+                        updateProgress = progress
+                    },
+                    nameFunciotn = "changeToutLesclientStateAuCIBLE_PRIORITE_2()"
+                )
             }
 
 

@@ -1,11 +1,13 @@
 package Z_CodePartageEntreApps.Windows.A.B_DataBaseEdite.Windows.BProto_ClientsDataBaseButton
 
+import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.B_ClientDataBaseRepository
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.Z.Archive._ModelAppsFather.Companion.ref_HeadOfModels
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_CodePartageEntreApps.Repository._3_ClientsDataBase._3_ClientsDataBase
 import android.util.Log
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -17,7 +19,40 @@ class ViewModel_BProto_ClientsDataBase(
     val mainRepo: B_ClientDataBaseRepository,
     val _0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository,
     ) : ViewModel() {
+    fun changeToutLesclientStateAuCIBLE_PRIORITE_2() {
+        viewModelScope.launch {
+            try {
+                // Create a copy of the current client list
+                val updatedClients = mainRepo.modelDatas.map { client ->
+                    // Create a copy with modified properties
+                    if (client.nom.startsWith("Nouveau client")) {
+                        // Replace "Nouveau client" with "ز" but keep any numbers/text after it
+                        val newName = client.nom.replace("Nouveau client", "ز")
+                        client.copy(
+                            nom = newName,
+                            actuelleEtat = B_ClientDataBase.DernierEtatAAffiche.NON_DEFINI
+                        )
+                    } else {
+                        // Just update the state for other clients
+                        client.copy(
+                            actuelleEtat = B_ClientDataBase.DernierEtatAAffiche.NON_DEFINI
+                        )
+                    }
+                }
 
+                // Convert to SnapshotStateList for the repository
+                val snapshotList = SnapshotStateList<B_ClientDataBase>()
+                snapshotList.addAll(updatedClients)
+
+                // Update the repository with all modified clients
+                mainRepo.updateMultiDatas(snapshotList)
+
+                Log.d("ViewModel_BProto", "Successfully changed state of ${updatedClients.size} clients to CIBLE_PRIORITE_2")
+            } catch (e: Exception) {
+                Log.e("ViewModel_BProto", "Error changing client states: ${e.message}", e)
+            }
+        }
+    }
     fun populateB_ClientDataBaseParSonAncien() {
         viewModelScope.launch {
             try {
@@ -194,6 +229,10 @@ class ViewModel_BProto_ClientsDataBase(
 
             Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.DernierEtatAAffiche.A_EVITE ->
                 _3_ClientsDataBase.DernierEtatAAffiche.A_EVITE
+
+            else -> {
+                _3_ClientsDataBase.DernierEtatAAffiche.NON_DEFINI
+            }
         }
     }
 

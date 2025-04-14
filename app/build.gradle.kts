@@ -20,7 +20,7 @@ android {
                 "ليوم" +
                 " الاثنين " +
                 "الساعة" +
-                " 8.40"
+                " 9.37"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
