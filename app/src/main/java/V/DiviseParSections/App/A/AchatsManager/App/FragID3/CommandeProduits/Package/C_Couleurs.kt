@@ -226,17 +226,26 @@ fun Couleurs(
             }
         }
 
-        // Show indicator if there are more items
         if (hasMoreItems) {
-            Icon(
-                imageVector = Icons.Default.ArrowForward,
-                contentDescription = "Plus d'articles",
-                tint = Color.Red,
+            Box(
+                contentAlignment = Alignment.Center,
                 modifier = Modifier
-                    .padding(8.dp)
-                    .width(48.dp)
-                    .height(48.dp)
-            )
+                    .padding(4.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f),
+                        shape = RoundedCornerShape(24.dp)
+                    )
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ArrowForward,
+                    contentDescription = "Plus d'articles",
+                    tint = Color.Red,
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .width(32.dp)
+                        .height(32.dp)
+                )
+            }
         }
     }
 }
