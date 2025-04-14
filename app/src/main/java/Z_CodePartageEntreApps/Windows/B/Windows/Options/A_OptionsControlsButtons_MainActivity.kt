@@ -1,12 +1,12 @@
 package Z_CodePartageEntreApps.Windows.B.Windows.Options
 
+import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.Components.LabelsButton
+import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.ControlButton
 import Z_CodePartageEntreApps.Model._1_4_PeriodeVent
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur
 import Z_CodePartageEntreApps.Windows.B.Windows.UI.LoadingContent
 import Z_CodePartageEntreApps.Windows.B.Windows.ViewModel.ViewModelFragment_StartUpScreen
-import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.Components.LabelsButton
-import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.ControlButton
 import android.os.Build
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -99,20 +99,22 @@ fun A_OptionsControlsButtons_Main(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
+                        val couleur = Color(0xFF9C27B0)
                         FloatingActionButton(
                             onClick = {
                                 repositorysModel
                                     ._1_5_Vendeur_Repository
-                                    .addDataAndReturneItVID (
+                                    .addDataAndReturneItVID(
                                         _1_5_Vendeur()
                                     )
                             },
                             modifier = Modifier.size(40.dp),
-                            containerColor =  Color(0xFF9C27B0)
+                            containerColor = couleur
                         ) {
                             Icon(
                                 Icons.Filled.PhoneAndroid,
-                                contentDescription = "Add New "
+                                contentDescription = "Add New "    //<--
+                                //TODO(1): change au functionemnent
                             )
                         }
 
@@ -121,9 +123,7 @@ fun A_OptionsControlsButtons_Main(
                                 "Add New Period",
                                 modifier = Modifier
                                     .background(
-                                        if (isFilterActive) Color(0xFF2196F3) else Color(
-                                            0xFF4CAF50
-                                        )
+                                        couleur
                                     )
                                     .padding(4.dp),
                                 color = Color.White
@@ -139,7 +139,7 @@ fun A_OptionsControlsButtons_Main(
                                                 .format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                                             vendeur_ParentVID =
                                                 repositorysModel._1_5_Vendeur_Repository.modelDatasSnapList
-                                                    .last{ it.deviceModelNom == Build.MODEL }.vid
+                                                    .last { it.deviceModelNom == Build.MODEL }.vid
                                         )
                                     )
                             },

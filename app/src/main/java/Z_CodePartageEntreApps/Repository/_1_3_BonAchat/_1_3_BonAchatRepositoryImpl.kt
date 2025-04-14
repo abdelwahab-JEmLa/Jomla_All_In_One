@@ -18,7 +18,7 @@ import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
 
 class _1_3_BonAchatRepositoryImpl(
-    private val appDatabase: AppDatabase
+     val appDatabase: AppDatabase
 ) : _1_3_BonAchat_Repository {
     private val TAG = _1_3_BonAchat_Repository.TAG
 

@@ -16,6 +16,7 @@ data class _1_5_Vendeur(
     var nom: String = "Manager Vendor",
 
     // Section StatuesMutable
+    var idPeriodActivePourCeCompt: Long = 0L,
 
 ) {
     companion object {

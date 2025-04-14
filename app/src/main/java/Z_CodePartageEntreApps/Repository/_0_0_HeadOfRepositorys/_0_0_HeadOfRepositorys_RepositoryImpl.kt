@@ -1,10 +1,13 @@
 package Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys
 
+import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.Extension.Log._0_0_HeadOfRepositoryLogOperationsExtension
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository.Companion._0_0_HeadOfRepositorys_RepositoryRef
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat_Repository
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
+import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur_Repository
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase_Repository
 import Z_CodePartageEntreApps.Repository._3_ClientsDataBase._3_ClientsDataBase_Repository
@@ -16,6 +19,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
 /**
@@ -25,6 +29,8 @@ import kotlinx.coroutines.withContext
  *     _0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository = koinInject()
  */
 class _0_0_HeadOfRepositorys_RepositoryImpl(
+    val appDatabase: AppDatabase ,
+
     private val _1_1_Repository: _1_1_CouleurAcheteOperation_Repository,
     private val _1_2_ProduitAcheteOperation_Repository: _1_2_ProduitAcheteOperation_Repository,
     private val _1_3_BonAchat_Repository: _1_3_BonAchat_Repository,
@@ -82,6 +88,67 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
             // Start tracking progress afterward
             startProgressTracking() {
             }
+        }
+    }
+    override fun upsertUneDataEtReturnVID(
+        data: _1_5_Vendeur,
+        onSuccess: (Long) -> Unit
+    ): Unit {
+        try {
+            // Create a copy of the data to work with
+            val dataToUpsert = data.copy()
+
+            repositoryScope.launch(Dispatchers.IO) {
+                try {
+                    // Check if the data already exists (if it has a valid vid)
+                    if (dataToUpsert.vid > 0) {
+                        // Update existing data
+                        appDatabase._1_5_VendeurDao().insert(dataToUpsert)
+
+                        // Update in snapshot list
+                        withContext(Dispatchers.Main) {
+                            val index = _1_5_Repository.modelDatasSnapList.indexOfFirst { it.vid == dataToUpsert.vid }
+                            if (index >= 0) {
+                                _1_5_Repository. modelDatasSnapList[index] = dataToUpsert
+                            } else {
+                                _1_5_Repository.modelDatasSnapList.add(dataToUpsert)
+                            }
+                        }
+
+                        // Update in Firebase
+                        _0_0_HeadOfRepositorys_RepositoryRef
+                            .child("1")
+                            .child("3").child(dataToUpsert.vid.toString())
+                            .setValue(dataToUpsert).await()
+
+                        // Call the success callback with the existing vid
+                        onSuccess(dataToUpsert.vid)
+                    } else {
+                        // If no valid vid, insert as new (same as addDataAndReturneItVID)
+                        val newVid = appDatabase._1_5_VendeurDao().insertAvecRetureNewVid(dataToUpsert)
+
+                        // Update the object with the new vid
+                        dataToUpsert.vid = newVid
+
+                        withContext(Dispatchers.Main) {
+                            _1_5_Repository.modelDatasSnapList.add(dataToUpsert)
+                        }
+
+                        // Update Firebase with the new vid
+                        _0_0_HeadOfRepositorys_RepositoryRef
+                            .child("1")
+                            .child("3").child(newVid.toString())
+                            .setValue(dataToUpsert).await()
+
+                        // Call the success callback with the new vid
+                        onSuccess(newVid)
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error upserting data: ${e.message}")
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in upsertUneDataEtReturnVID: ${e.message}")
         }
     }
 

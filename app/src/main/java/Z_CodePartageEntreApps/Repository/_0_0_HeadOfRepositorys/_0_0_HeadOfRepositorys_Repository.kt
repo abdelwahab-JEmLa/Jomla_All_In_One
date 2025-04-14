@@ -1,5 +1,6 @@
 package Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys
 
+import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur
 import com.google.firebase.Firebase
 import com.google.firebase.database.database
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,4 +32,5 @@ interface _0_0_HeadOfRepositorys_Repository {
 
     fun notifyDataChanged_2_1_ProduitsDataBase_Repository()
     fun notifyDataChanged_1_3_BonAchat_Repository()
+    fun upsertUneDataEtReturnVID(data: _1_5_Vendeur, onSuccess: (Long) -> Unit={})
 }
