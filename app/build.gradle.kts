@@ -16,11 +16,11 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "  تحديث زقمٍ " +
-                "V 7.00 " +
+                "V 8.00 " +
                 "ليوم" +
-                " jeu " +
+                " الاثنين " +
                 "الساعة" +
-                " 10.00"
+                " 8.40"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
