@@ -40,6 +40,11 @@ fun Couleurs(
     buyerIds: List<Long>,
     models: _0_0_HeadOfRepositorys_Model,
 ) {
+    // Only proceed if the product is in CONFIRME state
+    if (Produit.etateActuellementEst != _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME) {
+        return
+    }
+
     val database = koinInject<AppDatabase>()
 
     var articlesBasesStatsModel by remember { mutableStateOf<List<Any>?>(null) }
@@ -76,19 +81,31 @@ fun Couleurs(
         }
     }
 
+    // Filter colors to only include those with quantity > 0 and QUANTITY_CHOISI status
+    val filteredColors = colorsForProduct
+        .filter {
+            it.totaleQuantity > 0 &&
+                    it.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
+        }
+        .distinctBy { it.couleurIndex_ParentVID }
+
+    // Don't display anything if no colors meet the criteria
+    if (filteredColors.isEmpty()) {
+        return
+    }
+
     LazyRow {
-        items(
-            colorsForProduct
-                .filter { it.totaleQuantity > 0 }
-                .distinctBy { it.couleurIndex_ParentVID }
-        ) { Couleur ->
+        items(filteredColors) { Couleur ->
             VerticalDivider(
                 thickness = 9.dp,
                 color = Color.Red
             )
 
             val totaleQuantity = colorsForProduct
-                .filter { it.couleurIndex_ParentVID == Couleur.couleurIndex_ParentVID }
+                .filter {
+                    it.couleurIndex_ParentVID == Couleur.couleurIndex_ParentVID &&
+                            it.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
+                }
                 .sumOf { it.totaleQuantity }
 
             // Get color name for this specific color
@@ -133,7 +150,7 @@ fun Couleurs(
                                 ),
                         ) {
                             Text(
-                                text = "Qua>$totaleQuantity",
+                                text = "Qté: $totaleQuantity",
                                 fontSize = 50.sp,
                                 fontWeight = FontWeight.Bold,
                                 textAlign = TextAlign.Center,
@@ -142,8 +159,10 @@ fun Couleurs(
                         }
                     }
 
-                    // Display buyers for this color
-                    Acheteurs(buyerIds, models, colorsForProduct, Couleur)
+                    // Only display buyers if there are any
+                    if (buyerIds.isNotEmpty()) {
+                        Acheteurs(buyerIds, models, colorsForProduct, Couleur)
+                    }
                 }
             }
         }

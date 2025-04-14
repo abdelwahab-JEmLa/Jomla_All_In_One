@@ -59,7 +59,7 @@ fun A_APP1FragID3_MainScreen(
 
             items(filteredProducts) { Produit ->
                 HorizontalDivider(Modifier.padding(10.dp), thickness = 2.dp)
-                ProduitCommande(models, Produit)
+                B_ProduitCommande(models, Produit)
             }
         }
     }
