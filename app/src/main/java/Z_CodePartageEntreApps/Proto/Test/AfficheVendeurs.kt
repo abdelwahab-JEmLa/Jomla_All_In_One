@@ -1,5 +1,5 @@
-package Z_CodePartageEntreApps.Windows.B.Windows.Options.Ui
-
+package Z_CodePartageEntreApps.Proto.Test
+            /*
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._1_4_PeriodeVent
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur
@@ -34,7 +34,7 @@ import org.koin.dsl.module
 
 // ViewModel to handle business logic
 open class VendeursViewModel(
-    private val repository: _0_0_HeadOfRepositorys_Repository,
+    private val repository: _0_0_HeadOfRepositorys_Repository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(VendeursUiState())
     open val uiState: StateFlow<VendeursUiState> = _uiState.asStateFlow()
@@ -59,11 +59,11 @@ open class VendeursViewModel(
         )
     }
 
-    fun setActiveVendeur(id: Long) {
+    open fun setActiveVendeur(id: Long) {
         _uiState.value = _uiState.value.copy(activeVendeurId = id)
     }
 
-    fun setActivePeriode(id: Long) {
+    open fun setActivePeriode(id: Long) {
         _uiState.value = _uiState.value.copy(activePeriodeId = id)
     }
 
@@ -75,7 +75,7 @@ data class VendeursUiState(
     val vendeurs: List<_1_5_Vendeur> = emptyList(),
     val periodes: List<_1_4_PeriodeVent> = emptyList(),
     val activeVendeurId: Long = 0L,
-    val activePeriodeId: Long = 0L,
+    val activePeriodeId: Long = 0L
 )
 
 // Koin module for dependency injection
@@ -86,7 +86,7 @@ val vendeursModule = module {
 @Composable
 fun MainScreen(
     modifier: Modifier = Modifier,
-    viewModel: VendeursViewModel = koinInject(),
+    viewModel: VendeursViewModel = koinInject()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -103,7 +103,7 @@ fun VendeursContent(
     uiState: VendeursUiState,
     onVendeurSelected: (Long) -> Unit,
     onPeriodeSelected: (Long) -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -164,7 +164,7 @@ fun VendeursContent(
 @Composable
 fun SectionDivider(
     color: Color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
-    height: Int = 24,
+    height: Int = 24
 ) {
     HorizontalDivider(
         modifier = Modifier.height(height.dp),
@@ -176,7 +176,7 @@ fun SectionDivider(
 fun VendeursList(
     vendeurs: List<_1_5_Vendeur>,
     activeVendeurId: Long,
-    onVendeurSelected: (Long) -> Unit,
+    onVendeurSelected: (Long) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxWidth()
@@ -195,7 +195,7 @@ fun VendeursList(
 fun VendeurItem(
     vendeur: _1_5_Vendeur,
     isActive: Boolean,
-    onVendeurSelected: (Long) -> Unit,
+    onVendeurSelected: (Long) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -229,7 +229,7 @@ fun VendeurItem(
 fun PeriodesList(
     periodes: List<_1_4_PeriodeVent>,
     activePeriodeId: Long,
-    onPeriodeSelected: (Long) -> Unit,
+    onPeriodeSelected: (Long) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxWidth()
@@ -248,7 +248,7 @@ fun PeriodesList(
 fun PeriodeItem(
     periode: _1_4_PeriodeVent,
     isActive: Boolean,
-    onPeriodeSelected: (Long) -> Unit,
+    onPeriodeSelected: (Long) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -294,21 +294,15 @@ private fun AffichePersonsPV() {
         activeVendeurId = 1,
         activePeriodeId = 1
     )
-
+    MainScreen()
+      /*
     Column {
         VendeursContent(
             uiState = mockUiState,
             onVendeurSelected = {},
             onPeriodeSelected = {}
         )
-    }
+    } */
     A_OptionsControlsButtons_Main()
 }
-
-
-// Then use it in your preview
-@Preview
-@Composable
-private fun AffichePersonsPreviewWithKoin() {
-    MainScreen()
-}
+          */

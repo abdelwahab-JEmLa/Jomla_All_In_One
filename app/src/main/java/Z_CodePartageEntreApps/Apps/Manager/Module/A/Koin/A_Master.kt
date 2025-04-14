@@ -37,6 +37,7 @@ import Z_CodePartageEntreApps.Repository._3_ClientsDataBase._3_ClientsDataBase_R
 import Z_CodePartageEntreApps.Repository._3_ClientsDataBase._3_ClientsDataBase_RepositoryImpl
 import Z_CodePartageEntreApps.Repository._4_2_._4_CouleurOperationCommand._4_CouleurOperationCommand_Repository
 import Z_CodePartageEntreApps.Repository._4_2_._4_CouleurOperationCommand._4_CouleurOperationCommand_RepositoryImpl
+import Z_CodePartageEntreApps.Windows.B.Windows.Options.Ui.VendeursViewModel
 import Z_CodePartageEntreApps.Windows.B.Windows.ViewModel.ViewModelFragment_StartUpScreen
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.content.Context
@@ -91,6 +92,10 @@ val commonRepositoriesModule = module {
         ,get()
         ,get()
         ,get()
+    ) }
+    viewModel { VendeursViewModel(
+         get()
+
     ) }
 
 }
