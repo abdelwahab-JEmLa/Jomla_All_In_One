@@ -57,9 +57,36 @@ fun A_APP1FragID3_MainScreen(
                 .filter { it.produitAcheterID in productsToShow }
                 .distinctBy { it.produitAcheterID }
 
-            items(filteredProducts) { Produit ->
+            // Fixed TODO(1): We now do the filtering directly rather than in a remember block
+            // This avoids the @Composable invocation error
+            val displayableProducts = filteredProducts.filter { product ->
+                // Only include products with CONFIRME status
+                if (product.etateActuellementEst != _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME) {
+                    return@filter false
+                }
+
+                // Check if there are colors with QUANTITY_CHOISI status and quantity > 0
+                val colorsForProduct = models._1_1_CouleurAcheteOperation_Repository.modelDatasSnapList
+                    .filter { color ->
+                        // Find parent product
+                        val parentProduct = models._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList
+                            .firstOrNull { prod -> prod.vid == color.parentProduitAchateOperationVID }
+
+                        // Check color criteria
+                        parentProduct?.produitAcheterID == product.produitAcheterID &&
+                                color.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI &&
+                                color.totaleQuantity > 0
+                    }
+                    .distinctBy { it.couleurIndex_ParentVID }
+
+                // Only include product if it has at least one valid color
+                colorsForProduct.isNotEmpty()
+            }
+
+            items(displayableProducts) { produit ->
+                // Divider is only shown for products that will actually be displayed
                 HorizontalDivider(Modifier.padding(10.dp), thickness = 2.dp)
-                B_ProduitCommande(models, Produit)
+                B_ProduitCommande(models, produit)
             }
         }
     }
