@@ -8,8 +8,11 @@ import Z_CodePartageEntreApps.View.A_GlideDisplayImageByKeyId_Proto_4_11
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -46,6 +49,7 @@ fun Couleurs(
     }
 
     val database = koinInject<AppDatabase>()
+    val tag = "CommandeProduitsLog" // Log tag for tracking
 
     var articlesBasesStatsModel by remember { mutableStateOf<List<Any>?>(null) }
 
@@ -101,12 +105,54 @@ fun Couleurs(
                 color = Color.Red
             )
 
-            val totaleQuantity = colorsForProduct
+            // Calculate expected total quantity - sum of all individual quantities for this color
+            val individualQuantities = colorsForProduct
                 .filter {
                     it.couleurIndex_ParentVID == Couleur.couleurIndex_ParentVID &&
                             it.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
                 }
-                .sumOf { it.totaleQuantity }
+
+            // Calculate sum of all quantities
+            val totaleQuantity = individualQuantities.sumOf { it.totaleQuantity }
+
+            // Log discrepancies - Fix for TODO(1)
+            // Check if the total quantity matches the sum of client quantities
+            val clientQuantitiesSum = buyerIds.sumOf { buyerId ->
+                // Get the BonAchat VIDs for this client
+                val clientBonAchatVids =
+                    models._1_3_BonAchat_Repository.modelDatasSnapList
+                        .filter { it.clientAcheteurID == buyerId }
+                        .map { it.vid }
+
+                // Get all product VIDs associated with this client's BonAchat entries
+                val clientProductVids =
+                    models._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList
+                        .filter { it.parent_1_3_BonAchat in clientBonAchatVids }
+                        .map { it.vid }
+
+                // Sum the quantities for this client and this color
+                colorsForProduct
+                    .filter {
+                        it.parentProduitAchateOperationVID in clientProductVids &&
+                                it.couleurIndex_ParentVID == Couleur.couleurIndex_ParentVID &&
+                                it.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
+                    }
+                    .sumOf { it.totaleQuantity }
+            }
+
+            LaunchedEffect(Couleur.vid) {
+                if (totaleQuantity != clientQuantitiesSum) {
+                    android.util.Log.d(tag, "Quantity mismatch for product ${Produit.produitAcheterID}, color ${Couleur.couleurIndex_ParentVID}:")
+                    android.util.Log.d(tag, "  - Total quantity calculated: $totaleQuantity")
+                    android.util.Log.d(tag, "  - Sum of client quantities: $clientQuantitiesSum")
+                    android.util.Log.d(tag, "  - Difference: ${totaleQuantity - clientQuantitiesSum}")
+
+                    // Log individual quantities for debugging
+                    individualQuantities.forEach { color ->
+                        android.util.Log.d(tag, "  - Color entry ID: ${color.vid}, Quantity: ${color.totaleQuantity}")
+                    }
+                }
+            }
 
             // Get color name for this specific color
             val colorName = getColorNameByIndex(
@@ -166,5 +212,68 @@ fun Couleurs(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun Acheteurs(
+    buyerIds: List<Long>,
+    models: _0_0_HeadOfRepositorys_Model,
+    colorsForProduct: List<_1_1_CouleurAcheteOperation>,
+    Couleur: _1_1_CouleurAcheteOperation,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+    ) {
+        buyerIds.forEach { buyerId ->
+            // Get the client by ID and display name with a fallback
+            val clientName =
+                models._3_ClientsDataBase_Repository.modelDatasSnapList
+                    .find { it.vid == buyerId }?.nom
+                    ?: "Client #$buyerId"
+
+            // Get the BonAchat VIDs for this client
+            val clientBonAchatVids =
+                models._1_3_BonAchat_Repository.modelDatasSnapList
+                    .filter { it.clientAcheteurID == buyerId }
+                    .map { it.vid }
+
+            // Get all product VIDs associated with this client's BonAchat entries
+            val clientProductVids =
+                models._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList
+                    .filter { it.parent_1_3_BonAchat in clientBonAchatVids }
+                    .map { it.vid }
+
+            // Fixed calculation for clientColorQuantity - Fix for TODO(2)
+            // Only sum colors with QUANTITY_CHOISI status
+            val clientColorQuantity = colorsForProduct
+                .filter {
+                    it.parentProduitAchateOperationVID in clientProductVids &&
+                            it.couleurIndex_ParentVID == Couleur.couleurIndex_ParentVID &&
+                            it.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
+                }
+                .sumOf { it.totaleQuantity }
+
+            // Only display if this client has a quantity for this color
+            if (clientColorQuantity > 0) {
+                Text(
+                    text = clientName,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Text(
+                    text = "Qté: $clientColorQuantity",
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+
+        // Add a small spacing between client entries
+        Spacer(modifier = Modifier.height(4.dp))
     }
 }
