@@ -14,6 +14,10 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,7 +31,7 @@ fun MainScreen(
     repository: _0_0_HeadOfRepositorys_Repository = koinInject(),
     modifier: Modifier = Modifier,
 ) {
-    val ceTelephoneActiveComptID = 2L
+    var ceTelephoneActiveComptID by remember { mutableStateOf(2L) }
 
     val vendeurRepository = repository.repositorys_Model
         ._1_5_Vendeur_Repository
@@ -42,7 +46,11 @@ fun MainScreen(
                     val vid = it.vid
                     Text(
                         "vid>$vid",
-                        fontSize = 30.sp
+                        fontSize = 30.sp   ,
+                        modifier=Modifier.clickable {
+                            ceTelephoneActiveComptID = it.vid
+                        }
+
                     )
                     HorizontalDivider(
                         Modifier.width(20.dp)

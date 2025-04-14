@@ -2,7 +2,6 @@ package Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys
 
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.Extension.Log._0_0_HeadOfRepositoryLogOperationsExtension
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository.Companion._0_0_HeadOfRepositorys_RepositoryRef
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat_Repository
@@ -116,9 +115,7 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                         }
 
                         // Update in Firebase
-                        _0_0_HeadOfRepositorys_RepositoryRef
-                            .child("1")
-                            .child("3").child(dataToUpsert.vid.toString())
+                        repositorys_Model._1_5_Vendeur_Ref.child(dataToUpsert.vid.toString())
                             .setValue(dataToUpsert).await()
 
                         // Call the success callback with the existing vid
@@ -135,9 +132,7 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                         }
 
                         // Update Firebase with the new vid
-                        _0_0_HeadOfRepositorys_RepositoryRef
-                            .child("1")
-                            .child("3").child(newVid.toString())
+                        repositorys_Model._1_5_Vendeur_Ref.child(newVid.toString())
                             .setValue(dataToUpsert).await()
 
                         // Call the success callback with the new vid
