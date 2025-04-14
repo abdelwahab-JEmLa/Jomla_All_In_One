@@ -32,15 +32,19 @@ fun MainScreen(
     repository: _0_0_HeadOfRepositorys_Repository = koinInject(),
     modifier: Modifier = Modifier,
 ) {
-    var ceTelephoneActiveComptID by remember { mutableStateOf(0L) }
 
-    val vendeurRepository = repository.repositorys_Model
-        .repository_1_5_Vendeur
+    val vendeurRepository = repository.repositorys_Model.repository_1_5_Vendeur
     val _1_5_VendeurList = vendeurRepository.modelDatasSnapList
 
-    val _1_4_PeriodeVent_Repository = repository.repositorys_Model
-        .repository_1_4_PeriodeVent
+    val _1_4_PeriodeVent_Repository = repository.repositorys_Model.repository_1_4_PeriodeVent
     val _1_4_PeriodeVentList = _1_4_PeriodeVent_Repository.modelDatasSnapList
+
+    var ceTelephoneActiveComptID by remember { mutableStateOf(0L) }
+    val active_1_4_PeriodeVentList by remember {
+        mutableStateOf(
+            _1_4_PeriodeVentList.last().vid
+        )
+    }
 
     if (false) {
         vendeurRepository.addDataAndReturneItVID(_1_5_Vendeur(nom = "W"))
@@ -73,21 +77,17 @@ fun MainScreen(
                     }
 
 
-
                     val vid = compt.vid
                     Text(
-                        "vid>$vid",
-                        fontSize = 30.sp,
-                        modifier = Modifier.clickable {
+                        "vid>$vid", fontSize = 30.sp, modifier = Modifier.clickable {
                             ceTelephoneActiveComptID = compt.vid
-                        }
-                    )
+                        })
 
                     val nom = compt.nom
                     Text(
-                        "nom>$nom",
-                        fontSize = 30.sp
+                        "nom>${nom} ", fontSize = 30.sp
                     )
+
 
                 }
             }
@@ -106,7 +106,7 @@ fun MainScreen(
                     Modifier.height(20.dp), color = Color.Red
                 )
                 Column {
-                    if (_1_4_PeriodeVentList.last().vid == period.vid) {
+                    if (active_1_4_PeriodeVentList == period.vid) {
                         Text(
                             "actPeriodeVent ", color = Color.Red
                         )
@@ -114,8 +114,7 @@ fun MainScreen(
 
                     val vid = period.vid
                     Text(
-                        "vid>$vid",
-                        fontSize = 30.sp
+                        "vid>$vid", fontSize = 30.sp
                     )
 
 
@@ -123,6 +122,10 @@ fun MainScreen(
                     Text(
                         "nom>$nom",
                         fontSize = 30.sp,
+                    )
+
+                    Text(
+                        "heurDeb>${period.heurDebutInString} ", fontSize = 30.sp
                     )
                 }
             }
