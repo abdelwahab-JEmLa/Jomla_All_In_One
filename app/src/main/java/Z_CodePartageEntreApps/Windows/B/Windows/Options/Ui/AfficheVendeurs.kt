@@ -29,8 +29,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import org.koin.compose.koinInject
-import org.koin.core.module.dsl.singleOf
-import org.koin.dsl.module
 
 // ViewModel to handle business logic
 open class VendeursViewModel(
@@ -67,7 +65,14 @@ open class VendeursViewModel(
         _uiState.value = _uiState.value.copy(activePeriodeId = id)
     }
 
-
+    // Only for development/testing
+    fun addTestData() {
+        vendeurRepository.addDataAndReturneItVID(_1_5_Vendeur(nom = "W"))
+        vendeurRepository.addDataAndReturneItVID(_1_5_Vendeur(nom = "M"))
+        periodeVentRepository.addDataAndReturneItVID(_1_4_PeriodeVent(heurDebutInString = "1:mm"))
+        periodeVentRepository.addDataAndReturneItVID(_1_4_PeriodeVent(heurDebutInString = "2:mm"))
+        loadData()
+    }
 }
 
 // Data class to represent UI state
@@ -78,10 +83,7 @@ data class VendeursUiState(
     val activePeriodeId: Long = 0L,
 )
 
-// Koin module for dependency injection
-val vendeursModule = module {
-    singleOf(::VendeursViewModel)
-}
+
 
 @Composable
 fun MainScreen(
@@ -89,7 +91,6 @@ fun MainScreen(
     viewModel: VendeursViewModel = koinInject(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
-
     VendeursContent(
         uiState = uiState,
         onVendeurSelected = viewModel::setActiveVendeur,
@@ -109,6 +110,7 @@ fun VendeursContent(
         modifier = modifier.fillMaxWidth(),
         color = MaterialTheme.colorScheme.background
     ) {
+
         ElevatedCard(
             modifier = Modifier
                 .fillMaxWidth()
