@@ -1,9 +1,11 @@
 package Z_CodePartageEntreApps.Windows.B.Windows.Options.Ui
 
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._1_4_PeriodeVent
+import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur
 import Z_CodePartageEntreApps.Windows.B.Windows.Options.A_OptionsControlsButtons_Main
+import android.os.Build
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -13,10 +15,6 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,16 +28,22 @@ fun MainScreen(
     repository: _0_0_HeadOfRepositorys_Repository = koinInject(),
     modifier: Modifier = Modifier,
 ) {
-    var ceTelephoneActiveComptID by remember { mutableStateOf(2L) }
-
     val vendeurRepository = repository.repositorys_Model
         .repository_1_5_Vendeur
     val _1_5_VendeurList = vendeurRepository.modelDatasSnapList
 
+    val _1_4_PeriodeVent_Repository = repository.repositorys_Model
+        .repository_1_4_PeriodeVent
+    val _1_4_PeriodeVentList = _1_4_PeriodeVent_Repository.modelDatasSnapList
+    if (false) {
+        vendeurRepository.addDataAndReturneItVID(_1_5_Vendeur(nom = "W"))
+        vendeurRepository.addDataAndReturneItVID(_1_5_Vendeur(nom = "M"))
+        _1_4_PeriodeVent_Repository.addDataAndReturneItVID(_1_4_PeriodeVent(heurDebutInString = "1:mm"))
+        _1_4_PeriodeVent_Repository.addDataAndReturneItVID(_1_4_PeriodeVent(heurDebutInString = "2:mm"))
+
+    }
+
     ElevatedCard(modifier.background(Color.Red)) {
-
-        Text("$ceTelephoneActiveComptID")
-
         HorizontalDivider(
             Modifier.height(50.dp)
         )
@@ -52,14 +56,16 @@ fun MainScreen(
                     HorizontalDivider(
                         Modifier.height(20.dp)
                     )
+                    if (it.deviceModelId == Build.ID) {
+                        Text("ceTelephoneActiveComptID")
+
+                    }
                     val vid = it.vid
                     Text(
                         "vid>$vid",
                         fontSize = 30.sp,
-                        modifier = Modifier.clickable {
-                            ceTelephoneActiveComptID = it.vid
-                        }
-                    )
+
+                        )
 
                     val nom = it.nom
                     Text(
@@ -67,38 +73,26 @@ fun MainScreen(
                         fontSize = 30.sp
                     )
 
-                    Text(
-                        "idPeri>${it.idPeriodActivePourCeCompt}",
-                        fontSize = 30.sp
-                    )
                 }
             }
-        }
-    }
-    HorizontalDivider(
-        Modifier.height(50.dp), color = Color.Red
-    )
 
+            item {
+                HorizontalDivider(
+                    Modifier.height(50.dp), color = Color.Red
+                )
 
-    val _1_4_PeriodeVent_Repository = repository.repositorys_Model
-        .repository_1_4_PeriodeVent
-    val _1_4_PeriodeVent = _1_4_PeriodeVent_Repository.modelDatasSnapList
+                Text("MainScreen_1_4_PeriodeVent_Repository")
 
-    var actPeriodeVent =
-            _1_5_VendeurList.firstOrNull() { it.idPeriodActivePourCeCompt > 0 }
-
-
-    ElevatedCard(modifier.background(Color.Red)) {
-        Text("MainScreen_1_4_PeriodeVent_Repository")
-        LazyColumn(Modifier.fillMaxWidth()) {
-
-            items(_1_4_PeriodeVent) { period ->
+            }
+            items(_1_4_PeriodeVentList) { period ->
                 HorizontalDivider(
                     Modifier.height(20.dp), color = Color.Red
                 )
                 Column {
-                    if (actPeriodeVent?.vid == period.vid) {
-                        Text("actPeriodeVent ")
+                    if (_1_4_PeriodeVentList.last().vid == period.vid) {
+                        Text(
+                            "actPeriodeVent ", color = Color.Red
+                        )
                     }
 
                     val vid = period.vid
@@ -108,27 +102,14 @@ fun MainScreen(
                     )
 
 
-
                     val nom = period.vendeur_ParentVID
                     Text(
                         "nom>$nom",
                         fontSize = 30.sp,
-                        modifier = Modifier.clickable {
-                            // Find the vendor with the active account ID
-                            val vendeur =
-                                _1_5_VendeurList.find { it.vid == ceTelephoneActiveComptID }
-
-                            vendeur?.let { v ->
-                                // Update the active period ID
-                                v.idPeriodActivePourCeCompt = period.vid
-
-                                // Save the update vendor
-                                repository.upsertUneDataEtReturnVID(v)
-                            }
-                        }
                     )
                 }
             }
+
         }
     }
 
