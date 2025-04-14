@@ -115,7 +115,7 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                         }
 
                         // Update in Firebase
-                        repositorys_Model._1_5_Vendeur_Ref.child(dataToUpsert.vid.toString())
+                        repositorys_Model.databaseReference_1_5_Vendeur.child(dataToUpsert.vid.toString())
                             .setValue(dataToUpsert).await()
 
                         // Call the success callback with the existing vid
@@ -132,7 +132,7 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                         }
 
                         // Update Firebase with the new vid
-                        repositorys_Model._1_5_Vendeur_Ref.child(newVid.toString())
+                        repositorys_Model.databaseReference_1_5_Vendeur.child(newVid.toString())
                             .setValue(dataToUpsert).await()
 
                         // Call the success callback with the new vid
@@ -288,8 +288,8 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                     _1_2_ProduitAcheteOperation_Repository = _1_2_ProduitAcheteOperation_Repository,
                     _1_3_BonAchat_Repository = _1_3_BonAchat_Repository,
                     activeId_1_3_BonAchat = activeId_1_3_BonAchat, // Include it here as well
-                    _1_4_PeriodeVent_Repository = _1_4_Repository,
-                    _1_5_Vendeur_Repository = _1_5_Repository,
+                    repository_1_4_PeriodeVent = _1_4_Repository,
+                    repository_1_5_Vendeur = _1_5_Repository,
 
                     _2_1_ProduitsDataBase_Repository = _2_1_Repository,
                     _3_ClientsDataBase_Repository = _2_2_Repository,

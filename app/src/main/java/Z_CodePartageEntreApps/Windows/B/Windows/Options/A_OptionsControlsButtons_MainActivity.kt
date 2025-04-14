@@ -103,7 +103,7 @@ fun A_OptionsControlsButtons_Main(
                         FloatingActionButton(
                             onClick = {
                                 repositorysModel
-                                    ._1_5_Vendeur_Repository
+                                    .repository_1_5_Vendeur
                                     .addDataAndReturneItVID(
                                         _1_5_Vendeur()
                                     )
@@ -132,13 +132,13 @@ fun A_OptionsControlsButtons_Main(
                         FloatingActionButton(
                             onClick = {
                                 repositorysModel
-                                    ._1_4_PeriodeVent_Repository
+                                    .repository_1_4_PeriodeVent
                                     .addDataAndReturneItVID(
                                         _1_4_PeriodeVent(
                                             startDateInString = LocalDate.now()
                                                 .format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                                             vendeur_ParentVID =
-                                                repositorysModel._1_5_Vendeur_Repository.modelDatasSnapList
+                                                repositorysModel.repository_1_5_Vendeur.modelDatasSnapList
                                                     .last { it.deviceModelNom == Build.MODEL }.vid
                                         )
                                     )

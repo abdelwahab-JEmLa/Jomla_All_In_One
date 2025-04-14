@@ -30,7 +30,6 @@ interface _1_5_Vendeur_Repository {
 
         val sonDataBaseRef = _0_0_HeadOfRepositorys_RepositoryRef
             .child("1")
-            .child("2")
             .child("5_Vendeur")
     }
 }

@@ -33,7 +33,7 @@ fun MainScreen(
     var ceTelephoneActiveComptID by remember { mutableStateOf(2L) }
 
     val vendeurRepository = repository.repositorys_Model
-        ._1_5_Vendeur_Repository
+        .repository_1_5_Vendeur
     val _1_5_Vendeur = vendeurRepository.modelDatasSnapList
 
     ElevatedCard(modifier.background(Color.Red)) {
@@ -82,7 +82,7 @@ fun MainScreen(
     )
 
     val _1_4_PeriodeVent_Repository = repository.repositorys_Model
-        ._1_4_PeriodeVent_Repository
+        .repository_1_4_PeriodeVent
     val _1_4_PeriodeVent = _1_4_PeriodeVent_Repository.modelDatasSnapList
 
     ElevatedCard(modifier.background(Color.Red)) {
@@ -122,40 +122,6 @@ fun MainScreen(
         }
     }
 
-    HorizontalDivider(
-        Modifier.height(50.dp), color = Color.Red
-    )
-
-    val _1_3_BonAchat_Repository = repository.repositorys_Model
-        ._1_3_BonAchat_Repository
-    val _1_3_BonAchat = _1_3_BonAchat_Repository.modelDatasSnapList
-
-    ElevatedCard(modifier.background(Color.Red)) {
-        Text("MainScreen_1_3_BonAchat_Repository")
-        LazyColumn(Modifier.fillMaxWidth()) {
-            items(_1_3_BonAchat) { bonAchat ->
-                Column {
-                    val vid = bonAchat.vid
-                    Text(
-                        "vid>$vid",
-                        fontSize = 30.sp
-                    )
-
-                    HorizontalDivider(
-                        Modifier.height(10.dp), color = Color.Red
-                    )
-
-                    Text(
-                        "nom>${bonAchat.clientAcheteurID}",
-                        fontSize = 30.sp ,
-                        modifier=Modifier.clickable {
-
-                        }
-                    )
-                }
-            }
-        }
-    }
 }
 
 

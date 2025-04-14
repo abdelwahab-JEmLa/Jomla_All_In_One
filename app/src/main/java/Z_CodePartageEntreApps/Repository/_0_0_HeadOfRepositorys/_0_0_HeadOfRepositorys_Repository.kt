@@ -9,10 +9,10 @@ interface _0_0_HeadOfRepositorys_Repository {
     var repositorys_Model: _0_0_HeadOfRepositorys_Model
 
     // Added properties
-    val currentVendeur get() = repositorys_Model._1_5_Vendeur_Repository.modelDatasSnapList.firstOrNull()
+    val currentVendeur get() = repositorys_Model.repository_1_5_Vendeur.modelDatasSnapList.firstOrNull()
 
     val activePeriod get() = currentVendeur?.let {
-        repositorys_Model._1_4_PeriodeVent_Repository.modelDatasSnapList
+        repositorys_Model.repository_1_4_PeriodeVent.modelDatasSnapList
             .find { it.vendeur_ParentVID == currentVendeur!!.vid }
     }
 
