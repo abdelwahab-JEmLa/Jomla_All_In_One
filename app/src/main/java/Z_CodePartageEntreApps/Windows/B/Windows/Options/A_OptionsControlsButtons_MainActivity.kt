@@ -2,7 +2,7 @@ package Z_CodePartageEntreApps.Windows.B.Windows.Options
 
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.Components.LabelsButton
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.ControlButton
-import Z_CodePartageEntreApps.Model._1_4_PeriodeVent
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._1_4_PeriodeVent
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur
 import Z_CodePartageEntreApps.Windows.B.Windows.UI.LoadingContent
@@ -113,14 +113,14 @@ fun A_OptionsControlsButtons_Main(
                         ) {
                             Icon(
                                 Icons.Filled.PhoneAndroid,
-                                contentDescription = "Add New "    //<--
+                                contentDescription = "Add New _1_5_Vendeur"    //<--
                                 //TODO(1): change au functionemnent
                             )
                         }
 
                         if (showLabels) {
                             Text(
-                                "Add New Period",
+                                "Add New Period_1_4_PeriodeVent",
                                 modifier = Modifier
                                     .background(
                                         couleur

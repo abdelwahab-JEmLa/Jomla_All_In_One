@@ -49,26 +49,24 @@ fun MainScreen(
         LazyColumn(Modifier.fillMaxWidth()) {
             items(_1_5_Vendeur) {
                 Column {
-                    val vid = it.vid
-                    Text(
-                        "vid>$vid",
-                        fontSize = 30.sp   ,
-                        modifier=Modifier.clickable {
-                            ceTelephoneActiveComptID = it.vid
-                        }
-
-                    )
                     HorizontalDivider(
                         Modifier.height(20.dp)
                     )
+                    val vid = it.vid
+                    Text(
+                        "vid>$vid",
+                        fontSize = 30.sp,
+                        modifier = Modifier.clickable {
+                            ceTelephoneActiveComptID = it.vid
+                        }
+                    )
+
                     val nom = it.nom
                     Text(
                         "nom>$nom",
                         fontSize = 30.sp
                     )
-                    HorizontalDivider(
-                        Modifier.height(20.dp)
-                    )
+
                     Text(
                         "idPeri>${it.idPeriodActivePourCeCompt}",
                         fontSize = 30.sp
@@ -81,15 +79,31 @@ fun MainScreen(
         Modifier.height(50.dp), color = Color.Red
     )
 
+
     val _1_4_PeriodeVent_Repository = repository.repositorys_Model
         .repository_1_4_PeriodeVent
     val _1_4_PeriodeVent = _1_4_PeriodeVent_Repository.modelDatasSnapList
+
+    var actPeriodeVent by remember {
+        mutableStateOf(
+            _1_5_Vendeur.first { it.idPeriodActivePourCeCompt > 0 }
+        )
+    }
+
 
     ElevatedCard(modifier.background(Color.Red)) {
         Text("MainScreen_1_4_PeriodeVent_Repository")
         LazyColumn(Modifier.fillMaxWidth()) {
             items(_1_4_PeriodeVent) { period ->
+
                 Column {
+                    if (actPeriodeVent.vid == period.vid) {
+                        Text("actPeriodeVent ")
+                    }
+                    HorizontalDivider(
+                        Modifier.height(10.dp), color = Color.Red
+                    )
+
                     val vid = period.vid
                     Text(
                         "vid>$vid",
@@ -103,10 +117,11 @@ fun MainScreen(
                     val nom = period.vendeur_ParentVID
                     Text(
                         "nom>$nom",
-                        fontSize = 30.sp ,
-                        modifier=Modifier.clickable {
+                        fontSize = 30.sp,
+                        modifier = Modifier.clickable {
                             // Find the vendor with the active account ID
-                            val vendeur = _1_5_Vendeur.find { it.vid == ceTelephoneActiveComptID }
+                            val vendeur =
+                                _1_5_Vendeur.find { it.vid == ceTelephoneActiveComptID }
 
                             vendeur?.let { v ->
                                 // Update the active period ID

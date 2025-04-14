@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Model
+package Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -14,6 +14,7 @@ data class _1_4_PeriodeVent(
     // Section InfosDeBase
     var vendeur_ParentVID: Long = 0L,
     var startDateInString: String = getMainValeKey(),
+    var heurDebutInString: String = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date()),
     var endDateInString: String = "",
 
     // Section StatuesMutable
