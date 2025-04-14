@@ -34,7 +34,7 @@ fun MainScreen(
 
     val vendeurRepository = repository.repositorys_Model
         .repository_1_5_Vendeur
-    val _1_5_Vendeur = vendeurRepository.modelDatasSnapList
+    val _1_5_VendeurList = vendeurRepository.modelDatasSnapList
 
     ElevatedCard(modifier.background(Color.Red)) {
 
@@ -47,7 +47,7 @@ fun MainScreen(
         Text("_1_5_Vendeur")
 
         LazyColumn(Modifier.fillMaxWidth()) {
-            items(_1_5_Vendeur) {
+            items(_1_5_VendeurList) {
                 Column {
                     HorizontalDivider(
                         Modifier.height(20.dp)
@@ -84,25 +84,22 @@ fun MainScreen(
         .repository_1_4_PeriodeVent
     val _1_4_PeriodeVent = _1_4_PeriodeVent_Repository.modelDatasSnapList
 
-    var actPeriodeVent by remember {
-        mutableStateOf(
-            _1_5_Vendeur.first { it.idPeriodActivePourCeCompt > 0 }
-        )
-    }
+    var actPeriodeVent =
+            _1_5_VendeurList.firstOrNull() { it.idPeriodActivePourCeCompt > 0 }
 
 
     ElevatedCard(modifier.background(Color.Red)) {
         Text("MainScreen_1_4_PeriodeVent_Repository")
         LazyColumn(Modifier.fillMaxWidth()) {
-            items(_1_4_PeriodeVent) { period ->
 
+            items(_1_4_PeriodeVent) { period ->
+                HorizontalDivider(
+                    Modifier.height(20.dp), color = Color.Red
+                )
                 Column {
-                    if (actPeriodeVent.vid == period.vid) {
+                    if (actPeriodeVent?.vid == period.vid) {
                         Text("actPeriodeVent ")
                     }
-                    HorizontalDivider(
-                        Modifier.height(10.dp), color = Color.Red
-                    )
 
                     val vid = period.vid
                     Text(
@@ -110,9 +107,7 @@ fun MainScreen(
                         fontSize = 30.sp
                     )
 
-                    HorizontalDivider(
-                        Modifier.height(10.dp), color = Color.Red
-                    )
+
 
                     val nom = period.vendeur_ParentVID
                     Text(
@@ -121,7 +116,7 @@ fun MainScreen(
                         modifier = Modifier.clickable {
                             // Find the vendor with the active account ID
                             val vendeur =
-                                _1_5_Vendeur.find { it.vid == ceTelephoneActiveComptID }
+                                _1_5_VendeurList.find { it.vid == ceTelephoneActiveComptID }
 
                             vendeur?.let { v ->
                                 // Update the active period ID
