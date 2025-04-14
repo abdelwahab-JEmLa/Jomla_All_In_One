@@ -4,8 +4,8 @@ import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepos
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._1_4_PeriodeVent
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur
 import Z_CodePartageEntreApps.Windows.B.Windows.Options.A_OptionsControlsButtons_Main
-import android.os.Build
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,6 +15,10 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -28,6 +32,8 @@ fun MainScreen(
     repository: _0_0_HeadOfRepositorys_Repository = koinInject(),
     modifier: Modifier = Modifier,
 ) {
+    var ceTelephoneActiveComptID by remember { mutableStateOf(0L) }
+
     val vendeurRepository = repository.repositorys_Model
         .repository_1_5_Vendeur
     val _1_5_VendeurList = vendeurRepository.modelDatasSnapList
@@ -35,6 +41,7 @@ fun MainScreen(
     val _1_4_PeriodeVent_Repository = repository.repositorys_Model
         .repository_1_4_PeriodeVent
     val _1_4_PeriodeVentList = _1_4_PeriodeVent_Repository.modelDatasSnapList
+
     if (false) {
         vendeurRepository.addDataAndReturneItVID(_1_5_Vendeur(nom = "W"))
         vendeurRepository.addDataAndReturneItVID(_1_5_Vendeur(nom = "M"))
@@ -44,6 +51,9 @@ fun MainScreen(
     }
 
     ElevatedCard(modifier.background(Color.Red)) {
+
+        Text("$ceTelephoneActiveComptID")
+
         HorizontalDivider(
             Modifier.height(50.dp)
         )
@@ -51,23 +61,29 @@ fun MainScreen(
         Text("_1_5_Vendeur")
 
         LazyColumn(Modifier.fillMaxWidth()) {
-            items(_1_5_VendeurList) {
+            items(_1_5_VendeurList) { compt ->
+                HorizontalDivider(
+                    Modifier.height(20.dp)
+                )
                 Column {
-                    HorizontalDivider(
-                        Modifier.height(20.dp)
-                    )
-                    if (it.deviceModelId == Build.ID) {
-                        Text("ceTelephoneActiveComptID")
-
+                    if (compt.vid == ceTelephoneActiveComptID) {
+                        Text(
+                            "actPeriodeVent ", color = Color.Red
+                        )
                     }
-                    val vid = it.vid
+
+
+
+                    val vid = compt.vid
                     Text(
                         "vid>$vid",
                         fontSize = 30.sp,
+                        modifier = Modifier.clickable {
+                            ceTelephoneActiveComptID = compt.vid
+                        }
+                    )
 
-                        )
-
-                    val nom = it.nom
+                    val nom = compt.nom
                     Text(
                         "nom>$nom",
                         fontSize = 30.sp
@@ -84,6 +100,7 @@ fun MainScreen(
                 Text("MainScreen_1_4_PeriodeVent_Repository")
 
             }
+
             items(_1_4_PeriodeVentList) { period ->
                 HorizontalDivider(
                     Modifier.height(20.dp), color = Color.Red
