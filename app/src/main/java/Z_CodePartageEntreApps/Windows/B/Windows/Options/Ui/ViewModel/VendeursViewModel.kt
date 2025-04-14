@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Windows.B.Windows.Options.Ui
+package Z_CodePartageEntreApps.Windows.B.Windows.Options.Ui.ViewModel
 
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._1_4_PeriodeVent
@@ -9,6 +9,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+
+// Data class to represent UI state
+data class VendeursUiState(
+    val vendeurs: List<_1_5_Vendeur> = emptyList(),
+    val periodes: List<_1_4_PeriodeVent> = emptyList(),
+    val activeVendeurId: Long = 0L,
+    val activePeriodeId: Long = 0L,
+)
 
 // ViewModel to handle business logic
 open class VendeursViewModel(
