@@ -50,6 +50,7 @@ fun MainScreen(
     viewModelInitApp: ViewModelInitApp = koinViewModel(),
     xmlResources: List<Pair<String, Int>>?=null,
 ) {
+
     val a_ProduitModelRepository = koinInject<A_ProduitRepository>()
 
     // Track the repository progress
