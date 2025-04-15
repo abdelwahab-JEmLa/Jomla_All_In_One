@@ -2,6 +2,7 @@
 package V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package
 
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
+import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.B_ClientDataBaseRepository
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
@@ -141,8 +142,9 @@ fun Couleurs(
                 // For each color in our filtered list
                 individualQuantities.forEach { colorEntry ->
                     // Find the parent product
-                    val parentProduct = models._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList
-                        .firstOrNull { it.vid == colorEntry.parentProduitAchateOperationVID }
+                    val parentProduct =
+                        models._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList
+                            .firstOrNull { it.vid == colorEntry.parentProduitAchateOperationVID }
 
                     // Find the bonAchat
                     val bonAchatVid = parentProduct?.parent_1_3_BonAchat
@@ -173,7 +175,8 @@ fun Couleurs(
 
                 // Get product name as fallback
                 val productName = models._2_1_ProduitsDataBase_Repository.modelDatasSnapList
-                    .find { it.vid == Produit.produitAcheterID }?.nom ?: "Produit #${Produit.produitAcheterID}"
+                    .find { it.vid == Produit.produitAcheterID }?.nom
+                    ?: "Produit #${Produit.produitAcheterID}"
 
                 Card(
                     modifier = Modifier.background(Color.Red)
@@ -254,8 +257,9 @@ fun Couleurs(
 @Composable
 fun Acheteurs(
     clientQuantities: Map<Long, Long>,
-    models: _0_0_HeadOfRepositorys_Model
-) {
+    models: _0_0_HeadOfRepositorys_Model,
+    B_ClientDataBaseRepository: B_ClientDataBaseRepository = koinInject(),
+    ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -266,12 +270,14 @@ fun Acheteurs(
             // Skip clients with zero quantity
             if (quantity <= 0) return@forEach
 
-            // Get client name
-            val clientName = models._3_ClientsDataBase_Repository.modelDatasSnapList
-                .find { it.vid == clientId }?.nom ?: "Client #$clientId"
+            val clientDataBaseSnapList = B_ClientDataBaseRepository.modelDatas
+
+            val clientName = clientDataBaseSnapList.find {
+                it.id == clientId
+            }?.nom ?: "Client #$clientId"
 
             Text(
-                text = clientName,
+                text = "$clientName #$clientId",
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp
             )
