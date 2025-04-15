@@ -52,7 +52,7 @@ fun CommandesUiStateDisplay(viewModel: CommandesViewModel) {
                         ) {
                             Column(modifier = Modifier.padding(8.dp)) {
                                 Text(
-                                    text = vendeur.nom,
+                                    text = vendeur.keyID,
                                 )
 
                                 vendeur.produitsVenduParLui.forEach { produit ->
