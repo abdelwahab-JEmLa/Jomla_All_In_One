@@ -26,7 +26,12 @@ fun A_APP1FragID3_MainScreen(
     modifier: Modifier = Modifier,
     _0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository = koinInject(),
 ) {
-    val periodFilter by remember { mutableStateOf(2L) }
+    val activeIdDe_1_5_Vendeur = _0_0_HeadOfRepositorys_Repository.repositorys_Model.activeIdDe_1_5_Vendeur
+    val periodFilter = _0_0_HeadOfRepositorys_Repository
+        . repositorys_Model.repository_1_5_Vendeur
+        .modelDatasSnapList.find { it.vid == activeIdDe_1_5_Vendeur }
+        ?.ceComptVendeurStartAffichePeriod
+
     val models = _0_0_HeadOfRepositorys_Repository.repositorys_Model
 
     // State to hold filtered products
@@ -101,5 +106,6 @@ fun A_APP1FragID3_MainScreen(
                 B_ProduitCommande(models, produit)
             }
         }
+        A_OptionsControlsButtons_A1FragID_3()
     }
 }

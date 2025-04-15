@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Windows.B.Windows.Options.Ui.A_APP4FragID1_MainScreen.Windows.ViewModel
+package V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.ViewModel
 
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._1_4_PeriodeVent
@@ -46,23 +46,34 @@ open class VendeursViewModel(
     private fun loadData() {
         val vendeurs = vendeurRepository.modelDatasSnapList
         val periodes = periodeVentRepository.modelDatasSnapList
-        val activeVendeurId = periodes.firstOrNull()?.vid ?: 0L
+        val activeVendeurId = repository.repositorys_Model.activeIdDe_1_5_Vendeur
         val activePeriodeId = periodes.lastOrNull()?.vid ?: 0L
 
         _uiState.value = VendeursUiState(
-            vendeurs = vendeurs,
             periodes = periodes,
             activeVendeurId = activeVendeurId,
             activePeriodeId = activePeriodeId
         )
     }
+    private fun update_1_5_ceComptVendeurInsertBonsAchatAuPeriodID(id: Long): Unit {
+        val activeIdDe_1_5_Vendeur = repository.repositorys_Model.activeIdDe_1_5_Vendeur
+        val currentVendeur = vendeurRepository.modelDatasSnapList.find { it.vid == activeIdDe_1_5_Vendeur }
+
+        // Update only if we found the vendor
+        currentVendeur?.let { vendeur ->
+            val updatedVendeur = vendeur.copy(ceComptVendeurStartAffichePeriod = id)
+            vendeurRepository.updateUnSeulData(updatedVendeur)
+        }
+    }
 
     fun setActiveVendeur(id: Long) {
         _uiState.value = _uiState.value.copy(activeVendeurId = id)
+
     }
 
     fun setActivePeriode(id: Long) {
         _uiState.value = _uiState.value.copy(activePeriodeId = id)
+        update_1_5_ceComptVendeurInsertBonsAchatAuPeriodID(id)
     }
 
     // Only for development/testing

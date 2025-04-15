@@ -1,9 +1,9 @@
-package Z_CodePartageEntreApps.Windows.B.Windows.Options.Ui.A_APP4FragID1_MainScreen.Windows
+package V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment
 
+import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.ViewModel.VendeursUiState
+import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.ViewModel.VendeursViewModel
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._1_4_PeriodeVent
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur
-import Z_CodePartageEntreApps.Windows.B.Windows.Options.Ui.A_APP4FragID1_MainScreen.Windows.ViewModel.VendeursUiState
-import Z_CodePartageEntreApps.Windows.B.Windows.Options.Ui.A_APP4FragID1_MainScreen.Windows.ViewModel.VendeursViewModel
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -33,7 +33,7 @@ fun A_APP4FragID1_MainScreen(
     val uiState by viewModel.uiState.collectAsState()
     VendeursContent(
         uiState = uiState,
-        onVendeurSelected = viewModel::setActiveVendeur,
+        onVendeurSelected = viewModel::setActiveVendeur ,
         onPeriodeSelected = viewModel::setActivePeriode,
         modifier = modifier
     )
@@ -61,7 +61,7 @@ fun VendeursContent(
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-                Text(
+               /* Text(
                     text = "Active Vendeur ID: ${uiState.activeVendeurId}",
                     style = MaterialTheme.typography.titleMedium
                 )
@@ -80,17 +80,17 @@ fun VendeursContent(
                 )
 
                 SectionDivider(color = Color.Red)
-
+                       */
                 Text(
                     text = "Périodes de Vente",
                     style = MaterialTheme.typography.titleLarge
                 )
-
+                /*
                 Text(
                     text = "Active Periode ID: ${uiState.activePeriodeId}",
                     style = MaterialTheme.typography.bodyLarge
                 )
-
+                                  */
                 SectionDivider()
 
                 PeriodesList(
@@ -142,7 +142,9 @@ fun VendeurItem(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onVendeurSelected(vendeur.vid) }
+            .clickable {
+                onVendeurSelected(vendeur.vid)
+            }
             .padding(vertical = 8.dp)
     ) {
         if (isActive) {

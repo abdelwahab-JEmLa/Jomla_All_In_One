@@ -196,12 +196,15 @@ fun MarkerStatusDialog(
                             val repositorysModel =
                                 _0_0_HeadOfRepositorys_Repository.repositorys_Model
 
-                            val activeIdDe_1_4_PeriodeVent = repositorysModel.activeIdDe_1_4_PeriodeVent
+                            val ceComptVendeurStartAffichePeriod = repositorysModel.repository_1_5_Vendeur.modelDatasSnapList
+                                .find { it.vid== repositorysModel.activeIdDe_1_5_Vendeur}
+                                ?.ceComptVendeurInsertBonsAchatAuPeriodID
+
                             val clientId = relatedClients?.id ?: 0L
 
                             // Check if a BonAchat already exists for this client in the active period
                             val existingBonAchat = viewModel.modelDatasSnapList_1_3_BonAchat.find {
-                                it.clientAcheteurID == clientId && it.parentVID_1_4_PeriodeVent == activeIdDe_1_4_PeriodeVent
+                                it.clientAcheteurID == clientId && it.parentVID_1_4_PeriodeVent == ceComptVendeurStartAffichePeriod
                             }
 
                             if (existingBonAchat != null) {
@@ -225,7 +228,7 @@ fun MarkerStatusDialog(
                                 repositorysModel._1_3_BonAchat_Repository.addDataAndReturneItVID(
                                     _1_3_BonAchat(
                                         clientAcheteurID = clientId,
-                                        parentVID_1_4_PeriodeVent = activeIdDe_1_4_PeriodeVent,
+                                        parentVID_1_4_PeriodeVent = ceComptVendeurStartAffichePeriod!!,
                                         etateActuellementEst = _1_3_BonAchat.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
                                         heurDebutInString = SimpleDateFormat(
                                             "HH:mm",

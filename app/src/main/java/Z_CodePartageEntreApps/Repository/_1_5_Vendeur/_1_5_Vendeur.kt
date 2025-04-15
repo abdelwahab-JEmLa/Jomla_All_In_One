@@ -15,7 +15,10 @@ data class _1_5_Vendeur(
     var nom: String = "Manager Vendor",
 
     // Section StatuesMutable
+    var ceComptVendeurInsertBonsAchatAuPeriodID: Long = 0L,
+    var ceComptVendeurStartAffichePeriod: Long = 0L,
 
-) {
+
+    ) {
 
 }
