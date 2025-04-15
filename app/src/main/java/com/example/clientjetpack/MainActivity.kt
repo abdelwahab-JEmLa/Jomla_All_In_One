@@ -96,6 +96,8 @@ class MainActivity : ComponentActivity() {
 
     private var permissionsChecked by mutableStateOf(false)
 
+    private var applicationAfficheProduitsPourCompt by mutableStateOf(false)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate: API level ${Build.VERSION.SDK_INT}")
@@ -110,7 +112,6 @@ class MainActivity : ComponentActivity() {
                     KoinAndroidContext {
                         Box(modifier = Modifier.fillMaxSize()) {
                             if (permissionsChecked) {
-
                                 MainScreen()
                             } else {}
                         }
