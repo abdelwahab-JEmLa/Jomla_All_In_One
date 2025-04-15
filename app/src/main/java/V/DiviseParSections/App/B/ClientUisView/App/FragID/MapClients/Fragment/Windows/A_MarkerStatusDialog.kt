@@ -195,6 +195,7 @@ fun MarkerStatusDialog(
                         coroutineScope.launch {
                             val repositorysModel =
                                 _0_0_HeadOfRepositorys_Repository.repositorys_Model
+
                             val activeIdDe_1_4_PeriodeVent = repositorysModel.activeIdDe_1_4_PeriodeVent
                             val clientId = relatedClients?.id ?: 0L
 
