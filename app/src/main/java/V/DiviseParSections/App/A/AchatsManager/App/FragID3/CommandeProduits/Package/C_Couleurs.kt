@@ -240,6 +240,8 @@ fun Couleurs(
                                             .graphicsLayer(rotationZ = 45f)
                                     )
                                 }
+                                ,qualityImage=1
+
                             )
 
                             Box(

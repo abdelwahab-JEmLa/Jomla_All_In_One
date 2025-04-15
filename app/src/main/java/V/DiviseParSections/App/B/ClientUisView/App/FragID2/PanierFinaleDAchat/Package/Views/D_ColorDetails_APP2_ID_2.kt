@@ -218,8 +218,10 @@ fun D_ColorDetails_APP2_ID_2(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = "${relative_1_1_CouleurAcheteOperation.vid}-$quantity",
-                                style = MaterialTheme.typography.bodySmall,
+                                text =
+                                    //"${relative_1_1_CouleurAcheteOperation.vid}-" +
+                                        "$quantity",
+                                style = MaterialTheme.typography.headlineMedium,
                                 color = MaterialTheme.colorScheme.onPrimary,
                             )
                         }
