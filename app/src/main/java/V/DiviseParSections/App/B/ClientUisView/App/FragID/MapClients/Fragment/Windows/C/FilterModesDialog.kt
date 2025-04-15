@@ -34,7 +34,8 @@ import androidx.compose.ui.window.Dialog
 // Liste de filtres définie au niveau supérieur pour éviter la recréation
 private val filtersToShow = listOf(
     ViewModel_MapClients_App2FragID1.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR,
-    ViewModel_MapClients_App2FragID1.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX
+    ViewModel_MapClients_App2FragID1.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX,
+    ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsWithConfirmedProducts
 )
 
 @Composable
