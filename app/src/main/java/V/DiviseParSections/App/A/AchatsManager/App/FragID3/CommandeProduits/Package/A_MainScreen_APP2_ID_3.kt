@@ -108,6 +108,7 @@ fun A_APP1FragID3_MainScreen(
                     hasTargetPeriod
                 }
 
+
             Log.d(TAG, "Total products with target period: ${productsWithTargetPeriod.size}")
 
             val displayableProducts = models._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList
