@@ -3,6 +3,7 @@ package V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Pac
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -21,14 +22,20 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.koin.compose.koinInject
 
+
 @Composable
 fun A_APP1FragID3_MainScreen(
     modifier: Modifier = Modifier,
     _0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository = koinInject(),
 ) {
+      val TAG = "APP2_FragID3_MainScreen"
+
+    // Get the active vendor ID
     val activeIdDe_1_5_Vendeur = _0_0_HeadOfRepositorys_Repository.repositorys_Model.activeIdDe_1_5_Vendeur
+
+    // Get the period filter from the active vendor
     val periodFilter = _0_0_HeadOfRepositorys_Repository
-        . repositorys_Model.repository_1_5_Vendeur
+        .repositorys_Model.repository_1_5_Vendeur
         .modelDatasSnapList.find { it.vid == activeIdDe_1_5_Vendeur }
         ?.ceComptVendeurStartAffichePeriod
 
@@ -36,6 +43,11 @@ fun A_APP1FragID3_MainScreen(
 
     // State to hold filtered products
     var displayableProducts by remember { mutableStateOf<List<_1_2_ProduitAcheteOperation>>(emptyList()) }
+
+    // Debug logging for periodFilter
+    LaunchedEffect(periodFilter) {
+        Log.d(TAG, "Active period filter: $periodFilter")
+    }
 
     // Move heavy computation to LaunchedEffect with Dispatchers.Default
     LaunchedEffect(
@@ -46,20 +58,18 @@ fun A_APP1FragID3_MainScreen(
     ) {
         withContext(Dispatchers.Default) {
             // Create lookup maps for faster access
-            val productsById = models._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList
-                .groupBy { it.vid }
-
             val colorsByProductVid = models._1_1_CouleurAcheteOperation_Repository.modelDatasSnapList
                 .groupBy { it.parentProduitAchateOperationVID }
 
             val bonAchatsById = models._1_3_BonAchat_Repository.modelDatasSnapList
                 .associateBy { it.vid }
 
-            // Group product operations by produitAcheterID for better performance
-            val productOperationsByProductId = models._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList
-                .groupBy { it.produitAcheterID }
+            // Debug logging for period filtering
+            val bonAchatsPeriods = models._1_3_BonAchat_Repository.modelDatasSnapList
+                .map { "${it.vid}: ${it.parentVID_1_4_PeriodeVent}" }
+            Log.d(TAG, "BonAchats with periods: $bonAchatsPeriods")
 
-            // First pass: find all products that meet the basic criteria
+            // First pass: find all products that meet the criteria
             val confirmedProducts = models._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList
                 .filter { product ->
                     // 1. Check CONFIRME status
@@ -67,7 +77,7 @@ fun A_APP1FragID3_MainScreen(
                         return@filter false
                     }
 
-                    // 2. Check for valid colors
+                    // 2. Check for valid colors with quantity > 0
                     val productColors = colorsByProductVid[product.vid] ?: emptyList()
                     val hasValidColors = productColors.any { color ->
                         color.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
@@ -78,20 +88,42 @@ fun A_APP1FragID3_MainScreen(
                         return@filter false
                     }
 
-                    // 3. Period filter
-                    val allProductOps = productOperationsByProductId[product.produitAcheterID] ?: emptyList()
-                    val bonAchatIds = allProductOps.map { it.parent_1_3_BonAchat }.distinct()
+                    // 3. Period filter - only if a period filter is set
+                    if (periodFilter != null) {
+                        val bonAchat = bonAchatsById[product.parent_1_3_BonAchat]
+                        val productPeriod = bonAchat?.parentVID_1_4_PeriodeVent
 
-                    val matchesPeriod = bonAchatIds.any { bonAchatId ->
-                        val bonAchat = bonAchatsById[bonAchatId]
-                        bonAchat?.parentVID_1_4_PeriodeVent == periodFilter
+                        // Debug logging for this specific product's period
+                        Log.d(TAG, "Product ${product.vid} has period $productPeriod, filter is $periodFilter")
+
+                        // Check if ALL associated BonAchats match the period filter (to fix period filtering issue)
+                        val allBonAchats = models._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList
+                            .filter { it.produitAcheterID == product.produitAcheterID }
+                            .map { it.parent_1_3_BonAchat }
+                            .distinct()
+
+                        // Get all periods for these BonAchats
+                        val allPeriods = allBonAchats.mapNotNull { bonAchatId ->
+                            bonAchatsById[bonAchatId]?.parentVID_1_4_PeriodeVent
+                        }.distinct()
+
+                        // Only include products where ALL associated periods match the filter
+                        val allPeriodsMatch = allPeriods.all { it == periodFilter }
+
+                        Log.d(TAG, "Product ${product.vid} (ID: ${product.produitAcheterID}) - allPeriods: $allPeriods, allPeriodsMatch: $allPeriodsMatch")
+
+                        return@filter allPeriodsMatch
                     }
 
-                    matchesPeriod
+                    // If no period filter is set, include the product
+                    true
                 }
                 .distinctBy { it.produitAcheterID }
 
             displayableProducts = confirmedProducts
+
+            // Log the final filtered products count
+            Log.d(TAG, "Final displayable products count: ${confirmedProducts.size}")
         }
     }
 

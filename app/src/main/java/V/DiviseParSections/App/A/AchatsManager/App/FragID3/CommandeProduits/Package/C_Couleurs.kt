@@ -253,13 +253,13 @@ fun Couleurs(
     }
 }
 
-// Fixed C_Couleurs.kt - Only the Acheteurs function needs to be updated
+// Completely restructured Acheteurs to use the calculated client quantities
 @Composable
 fun Acheteurs(
     clientQuantities: Map<Long, Long>,
     models: _0_0_HeadOfRepositorys_Model,
     B_ClientDataBaseRepository: B_ClientDataBaseRepository = koinInject(),
-) {
+    ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -272,24 +272,12 @@ fun Acheteurs(
 
             val clientDataBaseSnapList = B_ClientDataBaseRepository.modelDatas
 
-            val client = clientDataBaseSnapList.find {
+            val clientName = clientDataBaseSnapList.find {
                 it.id == clientId
-            }
-            val clientName = client?.nom ?: "Client #$clientId"
-
-            // Find purchase operation VIDs for this client
-            val bonAchatsForClient = models._1_3_BonAchat_Repository.modelDatasSnapList
-                .filter { it.clientAcheteurID == clientId }
-                .map { it.vid }
-
-            val purchaseOperationVIDs = models._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList
-                .filter { it.parent_1_3_BonAchat in bonAchatsForClient }
-                .map { it.vid }
-                .take(1) // Take just the first one to display
-                .joinToString()
+            }?.nom ?: "Client #$clientId"
 
             Text(
-                text = "$clientName #$clientId (VID: ${purchaseOperationVIDs})",
+                text = "$clientName ",
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp
             )

@@ -254,7 +254,7 @@ private fun MapContent(
                         client.latitude.takeIf { it != 0.0 } ?: DEFAULT_LATITUDE,
                         client.longitude
                     )
-                    title = client.nom
+                    title = "${client.nom}"
                     snippet = if (client.cUnClientTemporaire)
                         "Client temporaire" else "Client permanent"
                     setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)

@@ -31,6 +31,9 @@ class ViewModel_MapClients_App2FragID1(
         ._1_3_BonAchat_Repository.modelDatasSnapList
 
     val bProto_ClientsDataBase = mainRepositery.modelDatas
+    val newClientDataBase = _0_0_HeadOfRepositorys_Repository.repositorys_Model
+        ._3_ClientsDataBase_Repository
+        .modelDatasSnapList
 
     var auClickeCaUpdateClientPar by mutableStateOf(B_ClientDataBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT)
     var mapReloadTigger by mutableIntStateOf(0)
