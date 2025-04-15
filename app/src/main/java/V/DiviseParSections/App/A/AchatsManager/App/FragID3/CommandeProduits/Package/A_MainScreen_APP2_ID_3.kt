@@ -1,4 +1,3 @@
-// A_MainScreen_APP2_ID_3.kt
 package V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package
 
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
