@@ -129,61 +129,7 @@ open class CommandesViewModel(
     private val _uiState = MutableStateFlow(CommandesUiState())
     open val uiState: StateFlow<CommandesUiState> = _uiState.asStateFlow()
 
-    // Companion object to hold the test data
-    companion object {
-        // Test data definition with proper object structure
-        val TEST_PERIODES_VENT = listOf(
-            TestPeriodeData(
-                relativePastHours = 1, // 1 hour ago
-                vendeurs = listOf(
-                    TestVendeurData(
-                        nom = "Vendeur 1",
-                        index = 1,
-                        produits = listOf(
-                            TestProduitData("Produit A", 1, 15),
-                            TestProduitData("Produit B", 2, 3),
-                            TestProduitData("Produit C", 3, 8)
-                        )
-                    ),
-                    TestVendeurData(
-                        nom = "Vendeur 2",
-                        index = 2,
-                        produits = listOf(
-                            TestProduitData("Produit A", 1, 5),
-                            TestProduitData("Produit B", 2, 3),
-                            TestProduitData("Produit C", 3, 8)
-                        )
-                    )
-                )
-            ),
-            TestPeriodeData(
-                relativePastHours = 2, // 2 hours ago
-                durationHours = 1,
-                vendeurs = listOf(
-                    TestVendeurData(
-                        nom = "Vendeur 1",
-                        index = 1,
-                        produits = listOf(
-                            TestProduitData("Produit A", 1, 5),
-                            TestProduitData("Produit B", 2, 3),
-                            TestProduitData("Produit C", 3, 8)
-                        )
-                    ),
-                    TestVendeurData(
-                        nom = "Vendeur 2",
-                        index = 2,
-                        produits = listOf(
-                            TestProduitData("Produit A", 1, 5),
-                            TestProduitData("Produit B", 2, 3),
-                            TestProduitData("Produit C", 3, 8)
-                        )
-                    )
-                )
-            )
-        )
-    }
-
-    // Data classes for test data structure
+    // Data classes for test data structure - moved before companion object to be accessible
     data class TestPeriodeData(
         val relativePastHours: Int,
         val durationHours: Int = 1,
@@ -201,6 +147,63 @@ open class CommandesViewModel(
         val index: Int,
         val quantity: Int
     )
+
+    // Companion object to hold the test data - Now using function to generate data
+    // to ensure fresh instances are created each time the data is loaded
+    companion object {
+        // Function to get test data instead of static property
+        fun getTestPeriodesVent(): List<TestPeriodeData> {
+            return listOf(
+                TestPeriodeData(
+                    relativePastHours = 1, // 1 hour ago
+                    vendeurs = listOf(
+                        TestVendeurData(
+                            nom = "Vendeur 1",
+                            index = 1,
+                            produits = listOf(
+                                TestProduitData("Produit A", 1, 105),      // <-- Changed from 5 to 55
+                                TestProduitData("Produit B", 2, 3),
+                                TestProduitData("Produit C", 3, 8)
+                            )
+                        ),
+                        TestVendeurData(
+                            nom = "Vendeur 2",
+                            index = 2,
+                            produits = listOf(
+                                TestProduitData("Produit A", 1, 5),
+                                TestProduitData("Produit B", 2, 3),
+                                TestProduitData("Produit C", 3, 8)
+                            )
+                        )
+                    )
+                ),
+                TestPeriodeData(
+                    relativePastHours = 2, // 2 hours ago
+                    durationHours = 1,
+                    vendeurs = listOf(
+                        TestVendeurData(
+                            nom = "Vendeur 1",
+                            index = 1,
+                            produits = listOf(
+                                TestProduitData("Produit A", 1, 5),
+                                TestProduitData("Produit B", 2, 3),
+                                TestProduitData("Produit C", 3, 8)
+                            )
+                        ),
+                        TestVendeurData(
+                            nom = "Vendeur 2",
+                            index = 2,
+                            produits = listOf(
+                                TestProduitData("Produit A", 1, 5),
+                                TestProduitData("Produit B", 2, 3),
+                                TestProduitData("Produit C", 3, 8)
+                            )
+                        )
+                    )
+                )
+            )
+        }
+    }
 
     init {
         val loadFromTest = true
@@ -233,13 +236,21 @@ open class CommandesViewModel(
         return mutableStateListOf()
     }
 
-    // Load test data from the companion object definition
+    // Public method to reload data - can be called when data changes
+    fun reloadTestData() {
+        loadFromTestData()
+    }
+
+    // Load test data from the companion object function
     private fun loadFromTestData() {
         viewModelScope.launch {
             val periodesVentList = mutableStateListOf<PeriodesVent>()
 
+            // Get fresh data using the function
+            val testData = getTestPeriodesVent()
+
             // Convert the test data structure to actual objects
-            TEST_PERIODES_VENT.forEach { periodeData ->
+            testData.forEach { periodeData ->
                 val currentTime = System.currentTimeMillis()
                 val pastHoursInMillis = periodeData.relativePastHours * 3600000L
                 val durationInMillis = periodeData.durationHours * 3600000L
@@ -274,7 +285,7 @@ open class CommandesViewModel(
                 periodesVentList.add(periode)
             }
 
-            // Update the UI state with the test data
+            // Create a new CommandesUiState instance to trigger recomposition
             _uiState.value = CommandesUiState(periodesVent = periodesVentList)
         }
     }
