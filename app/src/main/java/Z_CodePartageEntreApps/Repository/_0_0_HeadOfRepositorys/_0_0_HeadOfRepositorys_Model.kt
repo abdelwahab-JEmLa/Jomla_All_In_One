@@ -32,3 +32,4 @@ class _0_0_HeadOfRepositorys_Model(
     val activeIdDe_1_5_Vendeur: Long = 1L,
     val activeIdDe_1_4_PeriodeVent: Long = 2L,
     )
+
