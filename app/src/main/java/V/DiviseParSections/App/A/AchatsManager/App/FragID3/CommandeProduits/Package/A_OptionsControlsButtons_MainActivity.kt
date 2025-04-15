@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package
 
-import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.Components.LabelsButton
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.ControlButton
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.A_APP4FragID1_MainScreen
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
@@ -127,18 +126,25 @@ fun A_OptionsControlsButtons_A1FragID_3(
                             }
                         }
 
-                        // Labels Button
-                        LabelsButton(
+                        // Labels Button - Inlined from LabelsButton function
+                        ControlButton(
+                            onClick = { showLabels = !showLabels },
+                            icon = Icons.Default.Info,
+                            contentDescription = if (showLabels) "Hide labels" else "Show labels",
                             showLabels = showLabels,
-                            onShowLabelsChange = { showLabels = it }
+                            labelText = if (showLabels) "Hide labels" else "Show labels",
+                            containerColor = Color(0xFF3F51B5)
                         )
                     }
 
-                    // Menu Button
-                    MenuButton(
+                    // Menu Button - Inlined from MenuButton function
+                    ControlButton(
+                        onClick = { showMenu = !showMenu },
+                        icon = if (showMenu) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                        contentDescription = if (showMenu) "Hide menu" else "Show menu",
                         showLabels = showLabels,
-                        showMenu = showMenu,
-                        onShowMenuChange = { showMenu = it }
+                        labelText = if (showMenu) "Hide" else "Achats Optiones",
+                        containerColor = Color(0xFF3F51B5)
                     )
                 }
             }
@@ -162,41 +168,5 @@ fun A_OptionsControlsButtons_A1FragID_3(
                 )
             }
         }
-
     }
-
-}
-
-
-@Composable
-fun LabelsButton(    //<--
-//TODO(1): enleve et entre au fun principale  fait que ce code soit une seul fun ligneri
-    showLabels: Boolean,
-    onShowLabelsChange: (Boolean) -> Unit,
-) {
-    ControlButton(
-        onClick = { onShowLabelsChange(!showLabels) },
-        icon = Icons.Default.Info,
-        contentDescription = if (showLabels) "Hide labels" else "Show labels",
-        showLabels = showLabels,
-        labelText = if (showLabels) "Hide labels" else "Show labels",
-        containerColor = Color(0xFF3F51B5)
-    )
-}
-
-@Composable
-fun MenuButton(     //<--
-//TODO(1):  enleve et entre au fun principale  fait que ce code soit une seul fun ligneri
-    showLabels: Boolean,
-    showMenu: Boolean,
-    onShowMenuChange: (Boolean) -> Unit,
-) {
-    ControlButton(
-        onClick = { onShowMenuChange(!showMenu) },
-        icon = if (showMenu) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-        contentDescription = if (showMenu) "Hide menu" else "Show menu",
-        showLabels = showLabels,
-        labelText = if (showMenu) "Hide" else "Achats Optiones",
-        containerColor = Color(0xFF3F51B5)
-    )
 }
