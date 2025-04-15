@@ -175,20 +175,7 @@ private fun MapContent(
                             || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.CLIENT_ABSENT
                 }
             }
-            // New case for clients with confirmed products
-            ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsWithConfirmedProducts -> {
-                val clientsWithConfirmedProducts = viewModel._0_0_HeadOfRepositorys_Repository.repositorys_Model
-                    ._1_3_BonAchat_Repository.modelDatasSnapList
-                    .filter { bonAchat ->
-                        bonAchat.etateActuellementEst == _1_3_BonAchat.EtateActuellementEst.A_COMMANDE_CONFIRME
-                    }
-                    .map { bonAchat -> bonAchat.clientAcheteurID }
-                    .distinct()
 
-                clientDataBaseSnapList.filter { client ->
-                    clientsWithConfirmedProducts.contains(client.id)
-                }
-            }
 
             ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 -> {
                 clientDataBaseSnapList.filter {
@@ -208,6 +195,24 @@ private fun MapContent(
 
             ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAll -> {
                 clientDataBaseSnapList
+            }
+
+            // New case for clients with confirmed products
+            ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsWithConfirmedProducts -> {
+                val clientsWithConfirmedProducts = viewModel._0_0_HeadOfRepositorys_Repository.repositorys_Model
+                    ._1_3_BonAchat_Repository.modelDatasSnapList
+                    .filter { bonAchat ->
+                        bonAchat.etateActuellementEst == _1_3_BonAchat.EtateActuellementEst.A_COMMANDE_CONFIRME
+                                ||                        bonAchat.etateActuellementEst == _1_3_BonAchat.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+
+
+                    }
+                    .map { bonAchat -> bonAchat.clientAcheteurID }
+                    .distinct()
+
+                clientDataBaseSnapList.filter { client ->
+                    clientsWithConfirmedProducts.contains(client.id)
+                }
             }
 
             ViewModel_MapClients_App2FragID1.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR -> {
