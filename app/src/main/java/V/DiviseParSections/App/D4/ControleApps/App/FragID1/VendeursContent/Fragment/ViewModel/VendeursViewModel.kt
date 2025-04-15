@@ -55,13 +55,29 @@ open class VendeursViewModel(
             activePeriodeId = activePeriodeId
         )
     }
-    private fun update_1_5_ceComptVendeurInsertBonsAchatAuPeriodID(id: Long): Unit {
+    private fun update_1_5_ceComptVendeurStartAffichePeriod(id: Long): Unit {
         val activeIdDe_1_5_Vendeur = repository.repositorys_Model.activeIdDe_1_5_Vendeur
         val currentVendeur = vendeurRepository.modelDatasSnapList.find { it.vid == activeIdDe_1_5_Vendeur }
 
         // Update only if we found the vendor
         currentVendeur?.let { vendeur ->
             val updatedVendeur = vendeur.copy(ceComptVendeurStartAffichePeriod = id)
+            vendeurRepository.updateUnSeulData(updatedVendeur)
+        }
+    }
+    // Add this method to the VendeursViewModel class
+    fun getActiveVendeur(): _1_5_Vendeur? {
+        val activeIdDe_1_5_Vendeur = repository.repositorys_Model.activeIdDe_1_5_Vendeur
+        return vendeurRepository.modelDatasSnapList.find { it.vid == activeIdDe_1_5_Vendeur }
+    }
+
+    fun onUpdateceComptVendeurInsertBonsAchatAuPeriodID(periodId: Long) {
+        val activeIdDe_1_5_Vendeur = repository.repositorys_Model.activeIdDe_1_5_Vendeur
+        val currentVendeur = vendeurRepository.modelDatasSnapList.find { it.vid == activeIdDe_1_5_Vendeur }
+
+        // Update only if we found the vendor
+        currentVendeur?.let { vendeur ->
+            val updatedVendeur = vendeur.copy(ceComptVendeurInsertBonsAchatAuPeriodID = periodId)
             vendeurRepository.updateUnSeulData(updatedVendeur)
         }
     }
@@ -73,7 +89,7 @@ open class VendeursViewModel(
 
     fun setActivePeriode(id: Long) {
         _uiState.value = _uiState.value.copy(activePeriodeId = id)
-        update_1_5_ceComptVendeurInsertBonsAchatAuPeriodID(id)
+        update_1_5_ceComptVendeurStartAffichePeriod(id)
     }
 
     // Only for development/testing

@@ -4,15 +4,22 @@ import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragm
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.ViewModel.VendeursViewModel
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._1_4_PeriodeVent
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -33,9 +40,11 @@ fun A_APP4FragID1_MainScreen(
     val uiState by viewModel.uiState.collectAsState()
     VendeursContent(
         uiState = uiState,
-        onVendeurSelected = viewModel::setActiveVendeur ,
+        onVendeurSelected = viewModel::setActiveVendeur,
         onPeriodeSelected = viewModel::setActivePeriode,
-        modifier = modifier
+        modifier = modifier,
+        onUpdateceComptVendeurInsertBonsAchatAuPeriodID = 
+            viewModel::onUpdateceComptVendeurInsertBonsAchatAuPeriodID,
     )
 }
 
@@ -44,7 +53,7 @@ fun VendeursContent(
     uiState: VendeursUiState,
     onVendeurSelected: (Long) -> Unit,
     onPeriodeSelected: (Long) -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier, onUpdateceComptVendeurInsertBonsAchatAuPeriodID: (Long) -> Unit,
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -61,26 +70,17 @@ fun VendeursContent(
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-               /* Text(
-                    text = "Active Vendeur ID: ${uiState.activeVendeurId}",
-                    style = MaterialTheme.typography.titleMedium
-                )
 
-                SectionDivider()
-
-                Text(
-                    text = "Liste des Vendeurs",
-                    style = MaterialTheme.typography.titleLarge
-                )
 
                 VendeursList(
+                    uiState = uiState,
                     vendeurs = uiState.vendeurs,
                     activeVendeurId = uiState.activeVendeurId,
                     onVendeurSelected = onVendeurSelected
                 )
 
                 SectionDivider(color = Color.Red)
-                       */
+
                 Text(
                     text = "Périodes de Vente",
                     style = MaterialTheme.typography.titleLarge
@@ -96,7 +96,8 @@ fun VendeursContent(
                 PeriodesList(
                     periodes = uiState.periodes,
                     activePeriodeId = uiState.activePeriodeId,
-                    onPeriodeSelected = onPeriodeSelected
+                    onPeriodeSelected = onPeriodeSelected,
+                    onUpdateceComptVendeurInsertBonsAchatAuPeriodID = onUpdateceComptVendeurInsertBonsAchatAuPeriodID
                 )
             }
         }
@@ -119,10 +120,23 @@ fun VendeursList(
     vendeurs: List<_1_5_Vendeur>,
     activeVendeurId: Long,
     onVendeurSelected: (Long) -> Unit,
+    uiState: VendeursUiState,
 ) {
+    Text(
+        text = "Liste des Vendeurs",
+        style = MaterialTheme.typography.titleLarge
+    )
     LazyColumn(
         modifier = Modifier.fillMaxWidth()
     ) {
+        item {
+            Text(
+                text = "Active Vendeur ID: ${uiState.activeVendeurId}",
+                style = MaterialTheme.typography.titleMedium
+            )
+
+            SectionDivider()
+        }
         items(vendeurs) { vendeur ->
             VendeurItem(
                 vendeur = vendeur,
@@ -161,12 +175,15 @@ fun VendeurItem(
             style = MaterialTheme.typography.bodyLarge
         )
 
+
         Text(
             text = "Nom: ${vendeur.nom}",
             fontSize = 18.sp,
             style = MaterialTheme.typography.bodyMedium
         )
+
     }
+
 }
 
 @Composable
@@ -174,6 +191,7 @@ fun PeriodesList(
     periodes: List<_1_4_PeriodeVent>,
     activePeriodeId: Long,
     onPeriodeSelected: (Long) -> Unit,
+    onUpdateceComptVendeurInsertBonsAchatAuPeriodID: (Long) -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxWidth()
@@ -182,7 +200,8 @@ fun PeriodesList(
             PeriodeItem(
                 periode = periode,
                 isActive = periode.vid == activePeriodeId,
-                onPeriodeSelected = onPeriodeSelected
+                onPeriodeSelected = onPeriodeSelected,
+                onUpdateceComptVendeurInsertBonsAchatAuPeriodID
             )
         }
     }
@@ -193,12 +212,32 @@ fun PeriodeItem(
     periode: _1_4_PeriodeVent,
     isActive: Boolean,
     onPeriodeSelected: (Long) -> Unit,
+    onUpdateceComptVendeurInsertBonsAchatAuPeriodID: (Long) -> Unit,
 ) {
+    val viewModel: VendeursViewModel = koinInject()
+
+    val activeVendeur = viewModel.getActiveVendeur()
+
+    // Check if this period is the one set for ceComptVendeurInsertBonsAchatAuPeriodID
+    val isInsertPeriod = activeVendeur?.ceComptVendeurInsertBonsAchatAuPeriodID == periode.vid
+
+    // Check if this period is the one set for ceComptVendeurStartAffichePeriod
+    val isStartAffichePeriod = activeVendeur?.ceComptVendeurStartAffichePeriod == periode.vid
+
+    // Determine background color based on whether this is the start display period
+    val backgroundColor = when {
+        isStartAffichePeriod -> MaterialTheme.colorScheme.primaryContainer
+        isActive -> MaterialTheme.colorScheme.surfaceVariant
+        else -> MaterialTheme.colorScheme.surface
+    }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onPeriodeSelected(periode.vid) }
             .padding(vertical = 8.dp)
+            .background(color = backgroundColor, shape = MaterialTheme.shapes.medium)
+            .padding(8.dp)
     ) {
         if (isActive) {
             Text(
@@ -208,11 +247,43 @@ fun PeriodeItem(
             )
         }
 
-        Text(
-            text = "ID: ${periode.vid}",
-            fontSize = 20.sp,
-            style = MaterialTheme.typography.bodyLarge
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = "ID: ${periode.vid}",
+                fontSize = 20.sp,
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.weight(1f)
+            )
+
+            IconButton(
+                onClick = {
+                    // Call function to update comptVendeurInsertBonsAchatAuPeriodID
+                    onUpdateceComptVendeurInsertBonsAchatAuPeriodID(periode.vid)
+                }
+            ) {
+                // Change icon based on whether this is the insert period
+                val icon = if (isInsertPeriod) {
+                    Icons.Default.Check
+                } else {
+                    Icons.Default.Add
+                }
+
+                // Change icon color based on status
+                val tint = if (isInsertPeriod) {
+                    Color.Green
+                } else {
+                    MaterialTheme.colorScheme.primary
+                }
+
+                Icon(
+                    imageVector = icon,
+                    contentDescription = if (isInsertPeriod) "Current Insert Period" else "Set as Insert Period",
+                    tint = tint
+                )
+            }
+        }
 
         Text(
             text = "Heure de début: ${periode.heurDebutInString}",
