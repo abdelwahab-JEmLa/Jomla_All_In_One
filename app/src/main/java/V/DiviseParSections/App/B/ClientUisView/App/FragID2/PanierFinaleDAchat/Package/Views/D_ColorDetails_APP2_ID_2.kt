@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.Windows.ColorSelectionDialogF2
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.Windows.ColorSelectionDialogF2
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.View.A_GlideDisplayImageByKeyId_Proto_4_11
@@ -218,8 +218,8 @@ fun D_ColorDetails_APP2_ID_2(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = quantity.toString(),
-                                style = MaterialTheme.typography.headlineMedium,
+                                text = "${relative_1_1_CouleurAcheteOperation.vid}-$quantity",
+                                style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onPrimary,
                             )
                         }

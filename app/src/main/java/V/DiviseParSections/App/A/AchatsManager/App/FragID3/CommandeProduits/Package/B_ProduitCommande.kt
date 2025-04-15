@@ -4,13 +4,17 @@ package V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Pac
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
+import android.util.Log
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -18,25 +22,63 @@ fun B_ProduitCommande(
     models: _0_0_HeadOfRepositorys_Model,
     Produit: _1_2_ProduitAcheteOperation,
 ) {
+    val TAG = "B_ProduitCommande"
+
     // Verify that this product has CONFIRME status before proceeding
     if (Produit.etateActuellementEst != _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME) {
         return
     }
 
-    // Get only colors with QUANTITY_CHOISI status for this specific product
-    val colorsForProduct =
+    // Get the current period filter
+    val activeIdDe_1_5_Vendeur = models.activeIdDe_1_5_Vendeur
+    val periodFilter = models.repository_1_5_Vendeur
+        .modelDatasSnapList.find { it.vid == activeIdDe_1_5_Vendeur }
+        ?.ceComptVendeurStartAffichePeriod
+
+    // Create a map of BonAchat IDs to their periods
+    val bonAchatPeriods = remember {
+        models._1_3_BonAchat_Repository.modelDatasSnapList
+            .associate { it.vid to it.parentVID_1_4_PeriodeVent }
+    }
+
+    // Find all product instances with the same produitAcheterID (same base product)
+    val allProductInstances = remember(Produit.produitAcheterID) {
+        models._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList
+            .filter {
+                it.produitAcheterID == Produit.produitAcheterID &&
+                        it.etateActuellementEst == _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME
+            }
+    }
+
+    // If period filter is active, filter product instances by period
+    val relevantProductInstances = remember(allProductInstances, periodFilter) {
+        if (periodFilter != null) {
+            allProductInstances.filter { product ->
+                val bonAchatPeriod = bonAchatPeriods[product.parent_1_3_BonAchat]
+                bonAchatPeriod == periodFilter
+            }
+        } else {
+            allProductInstances
+        }
+    }
+
+    // Log information about product filtering if it's product 127
+    if (Produit.vid == 127L) {
+        Log.d(TAG, "Product 127: Found ${allProductInstances.size} instances, ${relevantProductInstances.size} match period $periodFilter")
+    }
+
+    // Get the product IDs that match our period filter
+    val filteredProductVids = relevantProductInstances.map { it.vid }
+
+    // Get colors for the filtered product instances
+    val colorsForProduct = remember(filteredProductVids) {
         models._1_1_CouleurAcheteOperation_Repository.modelDatasSnapList
             .filter {
-                // Find the parent product vid that this color belongs to
-                val parentProduct =
-                    models._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList
-                        .firstOrNull { prod -> prod.vid == it.parentProduitAchateOperationVID }
-
-                // Check if this color belongs to a product with the same ID as our current product
-                // AND ensure the color has QUANTITY_CHOISI status
-                parentProduct?.produitAcheterID == Produit.produitAcheterID &&
+                // Check if color belongs to a relevant product instance
+                it.parentProduitAchateOperationVID in filteredProductVids &&
                         it.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
             }
+    }
 
     // Only proceed if there are available colors with quantity > 0
     val filteredColors = colorsForProduct
@@ -44,20 +86,22 @@ fun B_ProduitCommande(
         .distinctBy { it.couleurIndex_ParentVID }
 
     if (filteredColors.isEmpty()) {
+        if (Produit.vid == 127L) {
+            Log.d(TAG, "Product 127: No valid colors found after filtering")
+        }
         return
     }
 
+    if (Produit.vid == 127L) {
+        Log.d(TAG, "Product 127: Displaying with ${filteredColors.size} colors")
+        filteredColors.forEach {
+            Log.d(TAG, "Color index: ${it.couleurIndex_ParentVID}, quantity: ${it.totaleQuantity}")
+        }
+    }
+
     val buyerIds = remember {
-        // Find all BonAchat IDs associated with this product
-        val bonAchatIds =
-            models._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList
-                .filter {
-                    // Only include products with CONFIRME status and matching produitAcheterID
-                    it.produitAcheterID == Produit.produitAcheterID &&
-                            it.etateActuellementEst == _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME
-                }
-                .map { it.parent_1_3_BonAchat }
-                .distinct()
+        // Find all BonAchat IDs associated with filtered product instances
+        val bonAchatIds = relevantProductInstances.map { it.parent_1_3_BonAchat }.distinct()
 
         // Get all client IDs from those BonAchat entries
         models._1_3_BonAchat_Repository.modelDatasSnapList
@@ -67,6 +111,8 @@ fun B_ProduitCommande(
     }
 
     Card() {
+        HorizontalDivider(Modifier.height(20.dp), thickness = 5.dp,color= Color.Red)
+
         Column {
             Text(
                 models._2_1_ProduitsDataBase_Repository.modelDatasSnapList
@@ -74,7 +120,7 @@ fun B_ProduitCommande(
                     ?: "Produit inconnu", Modifier.padding(4.dp)
             )
 
-            Couleurs(Produit, colorsForProduct, buyerIds, models)
+            Couleurs(Produit, colorsForProduct, buyerIds, models, periodFilter)
         }
     }
 }

@@ -45,13 +45,13 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
-// Updated fix for C_Couleurs.kt
 @Composable
 fun Couleurs(
     Produit: _1_2_ProduitAcheteOperation,
     colorsForProduct: List<_1_1_CouleurAcheteOperation>,
     buyerIds: List<Long>,
     models: _0_0_HeadOfRepositorys_Model,
+    periodFilter: Long? = null  // Add the missing periodFilter parameter
 ) {
     // Only proceed if the product is in CONFIRME state
     if (Produit.etateActuellementEst != _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME) {
@@ -94,10 +94,31 @@ fun Couleurs(
     }
 
     // Filter colors to only include those with quantity > 0 and QUANTITY_CHOISI status
+    // Also respect the period filter if provided
     val filteredColors = colorsForProduct
-        .filter {
-            it.totaleQuantity > 0 &&
-                    it.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
+        .filter { color ->
+            // Basic filter conditions
+            val basicCondition = color.totaleQuantity > 0 &&
+                    color.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
+
+            if (!basicCondition) return@filter false
+
+            // If no period filter, accept all colors that meet basic condition
+            if (periodFilter == null) return@filter true
+
+            // If period filter is set, check if this color belongs to a product in the specified period
+            val parentProduct = models._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList
+                .firstOrNull { it.vid == color.parentProduitAchateOperationVID }
+
+            val bonAchatId = parentProduct?.parent_1_3_BonAchat
+
+            val bonAchatPeriod = bonAchatId?.let { id ->
+                models._1_3_BonAchat_Repository.modelDatasSnapList
+                    .firstOrNull { it.vid == id }?.parentVID_1_4_PeriodeVent
+            }
+
+            // Return true if this color's BonAchat matches the period filter
+            bonAchatPeriod == periodFilter
         }
         .distinctBy { it.couleurIndex_ParentVID }
 
@@ -130,10 +151,31 @@ fun Couleurs(
                 )
 
                 // Calculate expected total quantity - sum of all individual quantities for this color
+                // That respect the period filter if provided
                 val individualQuantities = colorsForProduct
-                    .filter {
-                        it.couleurIndex_ParentVID == Couleur.couleurIndex_ParentVID &&
-                                it.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
+                    .filter { color ->
+                        // Basic match on color index
+                        val colorMatch = color.couleurIndex_ParentVID == Couleur.couleurIndex_ParentVID &&
+                                color.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
+
+                        if (!colorMatch) return@filter false
+
+                        // If no period filter, include all matching colors
+                        if (periodFilter == null) return@filter true
+
+                        // If period filter exists, check if this color belongs to the filtered period
+                        val parentProduct = models._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList
+                            .firstOrNull { it.vid == color.parentProduitAchateOperationVID }
+
+                        val bonAchatId = parentProduct?.parent_1_3_BonAchat
+
+                        val bonAchatPeriod = bonAchatId?.let { id ->
+                            models._1_3_BonAchat_Repository.modelDatasSnapList
+                                .firstOrNull { it.vid == id }?.parentVID_1_4_PeriodeVent
+                        }
+
+                        // Return true if this color's BonAchat matches the period filter
+                        bonAchatPeriod == periodFilter
                     }
 
                 // Calculate client quantities using a more reliable approach
@@ -259,7 +301,7 @@ fun Acheteurs(
     clientQuantities: Map<Long, Long>,
     models: _0_0_HeadOfRepositorys_Model,
     B_ClientDataBaseRepository: B_ClientDataBaseRepository = koinInject(),
-    ) {
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
