@@ -27,7 +27,7 @@ fun A_APP1FragID3_MainScreen(
     modifier: Modifier = Modifier,
     _0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository = koinInject(),
 ) {
-    val periodFilter by remember { mutableStateOf(1L) }
+    val periodFilter by remember { mutableStateOf(2L) }
     val models = _0_0_HeadOfRepositorys_Repository.repositorys_Model
 
     // State to hold filtered products
