@@ -2,7 +2,6 @@ package com.example.clientjetpack
 
 import P0_MainScreen.Main.MainScreen
 import P6_AiGroupeForSupplier.GenerativeAiViewModel
-import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.A_APP4FragID1_MainScreen
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.appManagerModules
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.appModule
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.isManagerApp
@@ -20,17 +19,10 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.clientjetpack.ui.theme.ClientJetPackTheme

@@ -114,8 +114,7 @@ fun MainScreen(
 
             // Navigate to FragmentStartupScreen instead of A_ClientsLocationGps
             navController.navigate(Screen.EditDatabaseWithCreateNewArticles.route) {
-                // Only pop up to start if explicitly returning to home
-                // launchSingleTop = true
+
             }
         }
     }
@@ -128,6 +127,7 @@ fun MainScreen(
                 .repositorys_Model
             val hideAppScreen = repositorysModel.repository_1_5_Vendeur.modelDatasSnapList
                 .find { it.vid == repositorysModel.activeIdDe_1_5_Vendeur }?.hideAppScreen ?: false
+            var isControleFabVisible by remember { mutableStateOf(false) }
 
             if (!shouldShowContent ) {
                 Box(
@@ -185,7 +185,10 @@ fun MainScreen(
                                 onClear = {},
                                 headViewModel = headViewModel,
                                 targetCategoryId = targetCategoryId,
-                                lockHost = isHostPhone
+                                lockHost = isHostPhone,
+                                onClickImageToShowControles = {
+                                    isControleFabVisible = !isControleFabVisible
+                                }
                             )
 
                             // Disable interactions when not host phone
@@ -197,10 +200,11 @@ fun MainScreen(
                                 )
                             }
                         }
-
-                        A_OptionsControlsButtons_A1FragID_3() {
-                            showVendeursDialog = true
-                        }
+                            if (isControleFabVisible) {
+                                A_OptionsControlsButtons_A1FragID_3() {
+                                    showVendeursDialog = true
+                                }
+                            }
 
                     }
                     if (showVendeursDialog) {

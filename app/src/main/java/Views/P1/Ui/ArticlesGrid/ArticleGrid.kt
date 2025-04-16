@@ -58,8 +58,9 @@ fun ArticleGridWithScrollbar(
      currentClient: B_ClientsDataBase?,
      viewModelInitApp: ViewModelInitApp,
      a_ProduitModelRepository: A_ProduitRepository,
-     targetCategoryId: MutableState<Long?> = mutableStateOf(null), lockHost: Boolean
-) {
+     targetCategoryId: MutableState<Long?> = mutableStateOf(null), lockHost: Boolean,
+     onClickImageToShowControles: () -> Unit
+ ) {
     Box(modifier = modifier) {
         // Scrollbar first (will be on the left)
         Scrollbar(
@@ -84,7 +85,7 @@ fun ArticleGridWithScrollbar(
             currentClient = currentClient,
             targetCategoryId = targetCategoryId , a_ProduitModelRepository =a_ProduitModelRepository,
             lockHost = lockHost ,
-            viewModelInitApp =viewModelInitApp
+            viewModelInitApp =viewModelInitApp, onClickImageToShowControles = onClickImageToShowControles
         )
     }
 }
@@ -104,7 +105,7 @@ fun ArticleGrid(
     targetCategoryId: MutableState<Long?> = mutableStateOf(null),
     a_ProduitModelRepository: A_ProduitRepository,
     lockHost: Boolean,
-    viewModelInitApp: ViewModelInitApp
+    viewModelInitApp: ViewModelInitApp, onClickImageToShowControles: () -> Unit
 ) {
     // Track scroll state and first visible item
     var lastSettledFirstVisible by remember { mutableStateOf(-1) }
@@ -187,10 +188,11 @@ fun ArticleGrid(
                 ScrolleAdBanner(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 8.dp) ,
+                        .padding(bottom = 8.dp),
                     onBannerClick = {
 
-                    }
+                    },
+                    onClickImageToShowControles
                 )
             }
         }

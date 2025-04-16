@@ -81,7 +81,7 @@ fun AppNavHost(
     onClear: () -> Unit,
     headViewModel: HeadViewModel,
     targetCategoryId: MutableState<Long?> = mutableStateOf(null),
-    lockHost: Boolean
+    lockHost: Boolean, onClickImageToShowControles: () -> Unit
 ) {
     val uiState by headViewModel.uiState.collectAsState()
     // Get current client from settings
@@ -182,7 +182,7 @@ fun AppNavHost(
                             currentClient = currentClient,
                             viewModelInitApp = viewModelInitApp,
                             targetCategoryId = targetCategoryId,
-                            lockHost = lockHost
+                            lockHost = lockHost, onClickImageToShowControles = onClickImageToShowControles
                         )
 
                         if (uiState.isLoading) {

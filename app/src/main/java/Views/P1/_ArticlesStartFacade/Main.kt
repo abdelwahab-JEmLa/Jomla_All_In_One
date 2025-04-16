@@ -59,7 +59,7 @@ fun FragmentStartupScreen(
     currentClient: B_ClientsDataBase?,
     viewModelInitApp: ViewModelInitApp,
     targetCategoryId: MutableState<Long?> = mutableStateOf(null),
-    lockHost: Boolean
+    lockHost: Boolean, onClickImageToShowControles: () -> Unit
 ) {
     var gridColumns by remember { mutableStateOf(2) }
     var showFilter by remember { mutableStateOf(false) }
@@ -92,7 +92,7 @@ fun FragmentStartupScreen(
         currentClient = currentClient,
         viewModelInitApp = viewModelInitApp,
         targetCategoryId = targetCategoryId,
-        lockHost = lockHost
+        lockHost = lockHost, onClickImageToShowControles = onClickImageToShowControles
     )
 }
 
@@ -119,7 +119,7 @@ fun MainUi(
     currentClient: B_ClientsDataBase?,
     viewModelInitApp: ViewModelInitApp,
     targetCategoryId: MutableState<Long?> = mutableStateOf(null),
-    lockHost: Boolean
+    lockHost: Boolean, onClickImageToShowControles: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val tag = if (uiState.productDisplayController.isHostPhone) "📱 ServerScreen" else "📱 ClientScreen"
@@ -227,7 +227,8 @@ fun MainUi(
                         currentClient = currentClient
                         , viewModelInitApp =viewModelInitApp ,
                         targetCategoryId =targetCategoryId ,
-                        a_ProduitModelRepository=a_ProduitModelRepository, lockHost = lockHost
+                        a_ProduitModelRepository=a_ProduitModelRepository, lockHost = lockHost,
+                        onClickImageToShowControles = onClickImageToShowControles
                     )
                 }
             }

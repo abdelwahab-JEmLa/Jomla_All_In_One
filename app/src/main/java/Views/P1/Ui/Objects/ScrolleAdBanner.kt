@@ -32,7 +32,8 @@ import kotlinx.coroutines.delay
 @Composable
 fun ScrolleAdBanner(
     modifier: Modifier = Modifier,
-    onBannerClick: (Int) -> Unit = {} // Default empty handler
+    onBannerClick: (Int) -> Unit = {}, // Default empty handler
+    onClickImageToShowControles: () -> Unit
 ) {
     var currentBannerIndex by remember { mutableStateOf(0) }
     val scrollState = rememberScrollState()
@@ -111,7 +112,7 @@ fun ScrolleAdBanner(
                     contentDescription = "Banner image ${index + 1}",
                     modifier = Modifier.fillMaxSize()
                         .clickable {
-
+                           onClickImageToShowControles()
                     },
                     contentScale = ContentScale.Crop
                 )
