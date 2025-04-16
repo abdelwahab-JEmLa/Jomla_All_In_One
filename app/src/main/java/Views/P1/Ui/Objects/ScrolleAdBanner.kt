@@ -109,7 +109,10 @@ fun ScrolleAdBanner(
                 Image(
                     painter = painterResource(id = imageRes),
                     contentDescription = "Banner image ${index + 1}",
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize()
+                        .clickable {
+
+                    },
                     contentScale = ContentScale.Crop
                 )
             }

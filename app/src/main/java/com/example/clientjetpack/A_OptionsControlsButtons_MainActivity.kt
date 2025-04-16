@@ -1,7 +1,6 @@
-package V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package
+package com.example.clientjetpack
 
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.ControlButton
-import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.A_APP4FragID1_MainScreen
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_CodePartageEntreApps.Windows.B.Windows.UI.LoadingContent
 import Z_CodePartageEntreApps.Windows.B.Windows.ViewModel.ViewModelFragment_StartUpScreen
@@ -12,8 +11,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -22,11 +19,9 @@ import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.PhoneAndroid
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -44,13 +39,14 @@ import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import kotlin.math.roundToInt
 
-const val TAG = "A_OptionsControlsButtons_Main"
-
 @Composable
 fun A_OptionsControlsButtons_A1FragID_3(
     viewModel: ViewModelFragment_StartUpScreen = koinViewModel(),
     _0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository = koinInject(),
+    onShoControleurApps: () -> Unit,
 ) {
+     val TAG = "A_OptionsControlsButtons_Main"
+
     var showMenu by remember { mutableStateOf(false) }
     var showLabels by remember { mutableStateOf(true) }
     var offsetX by remember { mutableFloatStateOf(0f) }
@@ -59,7 +55,6 @@ fun A_OptionsControlsButtons_A1FragID_3(
     // Collect UI state to checkADD_1_4_PeriodeVent if filtering is active
     val uiState by viewModel.uiStateFlow.collectAsState()
     val isFilterActive = uiState.isFilteringActive
-    var showVendeursDialog by remember { mutableStateOf(false) }
 
     if(uiState.itsManagerCompt) {
         Box(
@@ -99,7 +94,7 @@ fun A_OptionsControlsButtons_A1FragID_3(
                             val couleur = Color(0xFF9C27B0)
                             FloatingActionButton(
                                 onClick = {
-                                    showVendeursDialog = true
+                                    onShoControleurApps()
 
                                 },
                                 modifier = Modifier.size(40.dp),
@@ -149,24 +144,6 @@ fun A_OptionsControlsButtons_A1FragID_3(
                 }
             }
 
-            if (showVendeursDialog) {
-                AlertDialog(
-                    onDismissRequest = { showVendeursDialog = false },
-                    title = { Text("Manage Vendeurs") },
-                    text = {
-                        A_APP4FragID1_MainScreen(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(500.dp)
-                        )
-                    },
-                    confirmButton = {
-                        TextButton(onClick = { showVendeursDialog = false }) {
-                            Text("Close")
-                        }
-                    }
-                )
-            }
         }
     }
 }

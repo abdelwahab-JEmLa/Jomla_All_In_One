@@ -19,7 +19,10 @@ interface _0_0_HeadOfRepositorys_Repository {
     val progressRepo: MutableStateFlow<Float>
         get() { return MutableStateFlow(0f)}
 
+
     companion object {
+
+
         const val TAG = "_0_0_HeadOfRepositorys"
 
         val _0_0_HeadOfRepositorys_RepositoryRef = Firebase.database
@@ -29,7 +32,7 @@ interface _0_0_HeadOfRepositorys_Repository {
             .child("_3_")
             .child("_Main")
     }
-
+    fun updateActiveIdDe_1_5_Vendeur(id: Long = -1L)
     fun notifyDataChanged_2_1_ProduitsDataBase_Repository()
     fun notifyDataChanged_1_3_BonAchat_Repository()
     fun upsertUneDataEtReturnVID(data: _1_5_Vendeur, onSuccess: (Long) -> Unit={})

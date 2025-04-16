@@ -177,6 +177,10 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
             }
         }
     }
+    override fun updateActiveIdDe_1_5_Vendeur(id: Long): Unit {
+        repositorys_Model.activeIdDe_1_5_Vendeur= id
+    }
+
     override fun notifyDataChanged_2_1_ProduitsDataBase_Repository() {
         repositoryScope.launch {
             try {

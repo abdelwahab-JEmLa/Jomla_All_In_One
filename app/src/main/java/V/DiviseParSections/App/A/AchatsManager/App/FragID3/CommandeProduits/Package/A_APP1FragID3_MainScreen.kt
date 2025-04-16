@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -193,6 +192,6 @@ fun A_APP1FragID3_MainScreen(
                 B_ProduitCommande(models, produit)
             }
         }
-        A_OptionsControlsButtons_A1FragID_3()
+
     }
 }

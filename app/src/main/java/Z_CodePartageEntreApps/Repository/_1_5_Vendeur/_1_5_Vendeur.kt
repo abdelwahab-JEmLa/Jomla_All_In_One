@@ -18,6 +18,8 @@ data class _1_5_Vendeur(
     var ceComptVendeurInsertBonsAchatAuPeriodID: Long = 0L,
     var ceComptVendeurStartAffichePeriod: Long = 0L,
 
+    var hideAppScreen: Boolean = false,
+
 
     ) {
 

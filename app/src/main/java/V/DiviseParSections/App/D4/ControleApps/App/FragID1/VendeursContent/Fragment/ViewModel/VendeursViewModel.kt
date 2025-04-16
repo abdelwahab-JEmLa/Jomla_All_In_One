@@ -50,6 +50,7 @@ open class VendeursViewModel(
         val activePeriodeId = periodes.lastOrNull()?.vid ?: 0L
 
         _uiState.value = VendeursUiState(
+            vendeurs = vendeurs,
             periodes = periodes,
             activeVendeurId = activeVendeurId,
             activePeriodeId = activePeriodeId
@@ -65,6 +66,11 @@ open class VendeursViewModel(
             vendeurRepository.updateUnSeulData(updatedVendeur)
         }
     }
+    fun update_1_5(data: _1_5_Vendeur): Unit {
+          repository.upsertUneDataEtReturnVID(data)
+    }
+
+
     // Add this method to the VendeursViewModel class
     fun getActiveVendeur(): _1_5_Vendeur? {
         val activeIdDe_1_5_Vendeur = repository.repositorys_Model.activeIdDe_1_5_Vendeur
@@ -85,7 +91,10 @@ open class VendeursViewModel(
     fun setActiveVendeur(id: Long) {
         _uiState.value = _uiState.value.copy(activeVendeurId = id)
 
+        // Call the method on the repository instance with the ID
+        repository.updateActiveIdDe_1_5_Vendeur(id)
     }
+
 
     fun setActivePeriode(id: Long) {
         _uiState.value = _uiState.value.copy(activePeriodeId = id)

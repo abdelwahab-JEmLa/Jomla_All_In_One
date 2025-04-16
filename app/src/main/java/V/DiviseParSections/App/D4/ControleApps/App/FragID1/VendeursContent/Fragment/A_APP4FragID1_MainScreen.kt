@@ -16,6 +16,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -43,8 +45,9 @@ fun A_APP4FragID1_MainScreen(
         onVendeurSelected = viewModel::setActiveVendeur,
         onPeriodeSelected = viewModel::setActivePeriode,
         modifier = modifier,
-        onUpdateceComptVendeurInsertBonsAchatAuPeriodID = 
+        onUpdateceComptVendeurInsertBonsAchatAuPeriodID =
             viewModel::onUpdateceComptVendeurInsertBonsAchatAuPeriodID,
+        onVendeurUpdate = viewModel::update_1_5
     )
 }
 
@@ -53,13 +56,14 @@ fun VendeursContent(
     uiState: VendeursUiState,
     onVendeurSelected: (Long) -> Unit,
     onPeriodeSelected: (Long) -> Unit,
-    modifier: Modifier = Modifier, onUpdateceComptVendeurInsertBonsAchatAuPeriodID: (Long) -> Unit,
+    onVendeurUpdate: (_1_5_Vendeur) -> Unit,
+    modifier: Modifier = Modifier,
+    onUpdateceComptVendeurInsertBonsAchatAuPeriodID: (Long) -> Unit,
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
         color = MaterialTheme.colorScheme.background
     ) {
-
         ElevatedCard(
             modifier = Modifier
                 .fillMaxWidth()
@@ -70,13 +74,12 @@ fun VendeursContent(
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-
-
                 VendeursList(
                     uiState = uiState,
                     vendeurs = uiState.vendeurs,
                     activeVendeurId = uiState.activeVendeurId,
-                    onVendeurSelected = onVendeurSelected
+                    onVendeurSelected = onVendeurSelected,
+                    onVendeurUpdate = onVendeurUpdate
                 )
 
                 SectionDivider(color = Color.Red)
@@ -85,12 +88,12 @@ fun VendeursContent(
                     text = "Périodes de Vente",
                     style = MaterialTheme.typography.titleLarge
                 )
-                /*
+
                 Text(
                     text = "Active Periode ID: ${uiState.activePeriodeId}",
                     style = MaterialTheme.typography.bodyLarge
                 )
-                                  */
+
                 SectionDivider()
 
                 PeriodesList(
@@ -120,6 +123,7 @@ fun VendeursList(
     vendeurs: List<_1_5_Vendeur>,
     activeVendeurId: Long,
     onVendeurSelected: (Long) -> Unit,
+    onVendeurUpdate: (_1_5_Vendeur) -> Unit,
     uiState: VendeursUiState,
 ) {
     Text(
@@ -141,7 +145,8 @@ fun VendeursList(
             VendeurItem(
                 vendeur = vendeur,
                 isActive = vendeur.vid == activeVendeurId,
-                onVendeurSelected = onVendeurSelected
+                onVendeurSelected = onVendeurSelected,
+                onVendeurUpdate = onVendeurUpdate
             )
         }
     }
@@ -152,14 +157,22 @@ fun VendeurItem(
     vendeur: _1_5_Vendeur,
     isActive: Boolean,
     onVendeurSelected: (Long) -> Unit,
+    onVendeurUpdate: (_1_5_Vendeur) -> Unit,
 ) {
+    // Determine background color based on whether this is the active vendeur
+    val backgroundColor = when {
+        isActive -> MaterialTheme.colorScheme.surfaceVariant
+        else -> MaterialTheme.colorScheme.surface
+    }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
                 onVendeurSelected(vendeur.vid)
             }
-            .padding(vertical = 8.dp)
+            .background(color = backgroundColor, shape = MaterialTheme.shapes.medium)
+            .padding(8.dp)
     ) {
         if (isActive) {
             Text(
@@ -169,21 +182,51 @@ fun VendeurItem(
             )
         }
 
-        Text(
-            text = "ID: ${vendeur.vid}",
-            fontSize = 20.sp,
-            style = MaterialTheme.typography.bodyLarge
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = "ID: ${vendeur.vid}",
+                fontSize = 20.sp,
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.weight(1f)
+            )
 
+            IconButton(
+                onClick = {
+                    // Toggle hideAppScreen property and update the vendeur
+                    val updatedVendeur = vendeur.copy(hideAppScreen = !vendeur.hideAppScreen)
+                    onVendeurUpdate(updatedVendeur)
+                }
+            ) {
+                // Change icon based on hideAppScreen status
+                val icon = if (vendeur.hideAppScreen) {
+                    Icons.Default.VisibilityOff
+                } else {
+                    Icons.Default.Visibility
+                }
+
+                // Change icon color
+                val tint = if (vendeur.hideAppScreen) {
+                    Color.Gray
+                } else {
+                    MaterialTheme.colorScheme.primary
+                }
+
+                Icon(
+                    imageVector = icon,
+                    contentDescription = if (vendeur.hideAppScreen) "Show App Screen" else "Hide App Screen",
+                    tint = tint
+                )
+            }
+        }
 
         Text(
             text = "Nom: ${vendeur.nom}",
             fontSize = 18.sp,
             style = MaterialTheme.typography.bodyMedium
         )
-
     }
-
 }
 
 @Composable
@@ -235,7 +278,6 @@ fun PeriodeItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onPeriodeSelected(periode.vid) }
-            .padding(vertical = 8.dp)
             .background(color = backgroundColor, shape = MaterialTheme.shapes.medium)
             .padding(8.dp)
     ) {
@@ -292,5 +334,3 @@ fun PeriodeItem(
         )
     }
 }
-
-

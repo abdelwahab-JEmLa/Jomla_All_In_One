@@ -7,6 +7,7 @@ import P0_MainScreen.Ui.Main.AppNavHost.NavigationBarWithFab
 import P0_MainScreen.Ui.Main.AppNavHost.NavigationItems
 import P0_MainScreen.Ui.Main.AppNavHost.Screen
 import P0_MainScreen.Ui.Objects.ConnexionCard
+import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.A_APP4FragID1_MainScreen
 import Views.FragId4_EStorePresentationToClient.FragmentDisplayeInfoProductToClient7
 import Views.FragId4_EStorePresentationToClient.Modules.SearchArticle
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
@@ -19,12 +20,17 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -38,6 +44,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.clientjetpack.A_OptionsControlsButtons_A1FragID_3
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
@@ -50,6 +57,7 @@ fun MainScreen(
     viewModelInitApp: ViewModelInitApp = koinViewModel(),
     xmlResources: List<Pair<String, Int>>?=null,
 ) {
+    var showVendeursDialog by remember { mutableStateOf(true) }
 
     val a_ProduitModelRepository = koinInject<A_ProduitRepository>()
 
@@ -116,8 +124,12 @@ fun MainScreen(
         color = MaterialTheme.colorScheme.background
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            // Show loading indicator while repository is loading
-            if (!shouldShowContent) {
+            val repositorysModel = viewModelInitApp._0_0_HeadOfRepositorys_Repository
+                .repositorys_Model
+            val hideAppScreen = repositorysModel.repository_1_5_Vendeur.modelDatasSnapList
+                .find { it.vid == repositorysModel.activeIdDe_1_5_Vendeur }?.hideAppScreen ?: false
+
+            if (!shouldShowContent && !hideAppScreen) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
@@ -128,6 +140,9 @@ fun MainScreen(
                         trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
                         color = MaterialTheme.colorScheme.primary
                     )
+                    A_OptionsControlsButtons_A1FragID_3() {
+                        showVendeursDialog=true
+                    }
                 }
             } else {
                 // Main content - only display when repository is loaded
@@ -177,7 +192,42 @@ fun MainScreen(
                                     .clickable(enabled = false) { }
                             )
                         }
+
+                        // First TODO location - Add logging before showing dialog
+                        A_OptionsControlsButtons_A1FragID_3() {
+                            Log.d("VendeursDialog", "Attempting to show dialog, current state: $showVendeursDialog")
+                            showVendeursDialog = true
+                        }
+
                     }
+                    if (showVendeursDialog) {
+                        Log.d("VendeursDialog", "Dialog state is true, preparing to display AlertDialog")
+                        AlertDialog(
+                            onDismissRequest = {
+                                Log.d("VendeursDialog", "Dialog dismissed by user")
+                                showVendeursDialog = false
+                            },
+                            title = { Text("Manage Vendeurs") },
+                            text = {
+                                Log.d("VendeursDialog", "Rendering A_APP4FragID1_MainScreen content")
+                                A_APP4FragID1_MainScreen(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(500.dp)
+                                )
+                            },
+                            confirmButton = {
+                                TextButton(onClick = {
+                                    Log.d("VendeursDialog", "Close button clicked")
+                                    showVendeursDialog = false
+                                }) {
+                                    Text("Close")
+                                }
+                            }
+                        )
+                        Log.d("VendeursDialog", "AlertDialog composable called")
+                    }
+
                 }
 
                 // Navigation Bar with FAB
@@ -253,7 +303,9 @@ fun MainScreen(
                         )
                     }
                 }
+
             }
         }
+
     }
 }
