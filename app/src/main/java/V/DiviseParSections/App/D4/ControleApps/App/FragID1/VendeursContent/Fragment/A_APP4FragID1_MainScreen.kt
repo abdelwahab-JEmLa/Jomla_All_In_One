@@ -69,39 +69,60 @@ fun VendeursContent(
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            Column(
+            LazyColumn(  // Changed from Column to LazyColumn to display all items
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-                VendeursList(
-                    uiState = uiState,
-                    vendeurs = uiState.vendeurs,
-                    activeVendeurId = uiState.activeVendeurId,
-                    onVendeurSelected = onVendeurSelected,
-                    onVendeurUpdate = onVendeurUpdate
-                )
+                item {
+                    Text(
+                        text = "Liste des Vendeurs",
+                        style = MaterialTheme.typography.titleLarge
+                    )
 
-                SectionDivider(color = Color.Red)
+                    Text(
+                        text = "Active Vendeur ID: ${uiState.activeVendeurId}",
+                        style = MaterialTheme.typography.titleMedium
+                    )
 
-                Text(
-                    text = "Périodes de Vente",
-                    style = MaterialTheme.typography.titleLarge
-                )
+                    SectionDivider()
+                }
 
-                Text(
-                    text = "Active Periode ID: ${uiState.activePeriodeId}",
-                    style = MaterialTheme.typography.bodyLarge
-                )
+                // Add vendeurs as items
+                items(uiState.vendeurs) { vendeur ->
+                    VendeurItem(
+                        vendeur = vendeur,
+                        isActive = vendeur.vid == uiState.activeVendeurId,
+                        onVendeurSelected = onVendeurSelected,
+                        onVendeurUpdate = onVendeurUpdate
+                    )
+                }
 
-                SectionDivider()
+                item {
+                    SectionDivider(color = Color.Red)
 
-                PeriodesList(
-                    periodes = uiState.periodes,
-                    activePeriodeId = uiState.activePeriodeId,
-                    onPeriodeSelected = onPeriodeSelected,
-                    onUpdateceComptVendeurInsertBonsAchatAuPeriodID = onUpdateceComptVendeurInsertBonsAchatAuPeriodID
-                )
+                    Text(
+                        text = "Périodes de Vente",
+                        style = MaterialTheme.typography.titleLarge
+                    )
+
+                    Text(
+                        text = "Active Periode ID: ${uiState.activePeriodeId}",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+
+                    SectionDivider()
+                }
+
+                // Add periodes as items
+                items(uiState.periodes) { periode ->
+                    PeriodeItem(
+                        periode = periode,
+                        isActive = periode.vid == uiState.activePeriodeId,
+                        onPeriodeSelected = onPeriodeSelected,
+                        onUpdateceComptVendeurInsertBonsAchatAuPeriodID = onUpdateceComptVendeurInsertBonsAchatAuPeriodID
+                    )
+                }
             }
         }
     }
