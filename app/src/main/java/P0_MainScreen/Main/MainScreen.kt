@@ -57,7 +57,7 @@ fun MainScreen(
     viewModelInitApp: ViewModelInitApp = koinViewModel(),
     xmlResources: List<Pair<String, Int>>?=null,
 ) {
-    var showVendeursDialog by remember { mutableStateOf(true) }
+    var showVendeursDialog by remember { mutableStateOf(false) }
 
     val a_ProduitModelRepository = koinInject<A_ProduitRepository>()
 
@@ -129,7 +129,7 @@ fun MainScreen(
             val hideAppScreen = repositorysModel.repository_1_5_Vendeur.modelDatasSnapList
                 .find { it.vid == repositorysModel.activeIdDe_1_5_Vendeur }?.hideAppScreen ?: false
 
-            if (!shouldShowContent && !hideAppScreen) {
+            if (!shouldShowContent ) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
@@ -145,6 +145,7 @@ fun MainScreen(
                     }
                 }
             } else {
+
                 // Main content - only display when repository is loaded
                 val isHostPhone = productDisplayController.isHostPhone
                 Column(modifier = Modifier.fillMaxSize()) {
@@ -168,34 +169,36 @@ fun MainScreen(
 
                     // Main Content Area
                     Box(modifier = Modifier.weight(1f)) {
-                        AppNavHost(
-                            navController = navController,
-                            onToggleNavBar = { isNavBarVisible = !isNavBarVisible },
-                            modifier = Modifier.fillMaxSize(),
-                            isFabVisible = isFabVisible,
-                            onClickDonne = { isFabVisible = false },
-                            onClickToDisplayeConexionWifi = {
-                                isDisplayedConnexionWifiVisible = !isDisplayedConnexionWifiVisible
-                            },
-                            onToggleLockHost = {lockHost=!lockHost}, viewModelInitApp = viewModelInitApp,
-                            onClear = {},
-                            headViewModel = headViewModel,
-                            targetCategoryId=targetCategoryId,
-                            lockHost = isHostPhone
-                        )
-
-                        // Disable interactions when not host phone
-                        if (!isHostPhone && productDisplayController.isConnected) {
-                            Box(
-                                modifier = Modifier
-                                    .matchParentSize()
-                                    .clickable(enabled = false) { }
+                        if(!hideAppScreen) {
+                            AppNavHost(
+                                navController = navController,
+                                onToggleNavBar = { isNavBarVisible = !isNavBarVisible },
+                                modifier = Modifier.fillMaxSize(),
+                                isFabVisible = isFabVisible,
+                                onClickDonne = { isFabVisible = false },
+                                onClickToDisplayeConexionWifi = {
+                                    isDisplayedConnexionWifiVisible =
+                                        !isDisplayedConnexionWifiVisible
+                                },
+                                onToggleLockHost = { lockHost = !lockHost },
+                                viewModelInitApp = viewModelInitApp,
+                                onClear = {},
+                                headViewModel = headViewModel,
+                                targetCategoryId = targetCategoryId,
+                                lockHost = isHostPhone
                             )
+
+                            // Disable interactions when not host phone
+                            if (!isHostPhone && productDisplayController.isConnected) {
+                                Box(
+                                    modifier = Modifier
+                                        .matchParentSize()
+                                        .clickable(enabled = false) { }
+                                )
+                            }
                         }
 
-                        // First TODO location - Add logging before showing dialog
                         A_OptionsControlsButtons_A1FragID_3() {
-                            Log.d("VendeursDialog", "Attempting to show dialog, current state: $showVendeursDialog")
                             showVendeursDialog = true
                         }
 
