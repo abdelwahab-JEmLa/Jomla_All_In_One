@@ -228,6 +228,7 @@ fun D_ColorDetails_APP2_ID_2(
                     }
                 }
             }
+
         }
     }
 }
