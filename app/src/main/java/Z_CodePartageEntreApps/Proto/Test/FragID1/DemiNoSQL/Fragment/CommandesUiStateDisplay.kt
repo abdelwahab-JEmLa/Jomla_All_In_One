@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Proto.Test.CommandesUiStateDisplay
+package Z_CodePartageEntreApps.Proto.Test.FragID1.DemiNoSQL.Fragment
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

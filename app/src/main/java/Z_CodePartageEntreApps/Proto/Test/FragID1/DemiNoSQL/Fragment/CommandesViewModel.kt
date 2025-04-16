@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Proto.Test.CommandesUiStateDisplay
+package Z_CodePartageEntreApps.Proto.Test.FragID1.DemiNoSQL.Fragment
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -12,102 +12,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 // Data class for representing UI state
 data class CommandesUiState(
     val periodesVent: SnapshotStateList<PeriodesVent> = mutableStateListOf()
 )
 
-// Class representing a period of sales
-class PeriodesVent {
-    var keyID by mutableStateOf("")
-    private var _startTime by mutableStateOf(0L)
-    private var _endTime by mutableStateOf(0L)
-
-    // Use custom getters and setters to avoid JVM signature clash
-    var startTime: Long
-        get() = _startTime
-        set(value) {
-            _startTime = value
-            updateKeyID()
-        }
-
-    var endTime: Long
-        get() = _endTime
-        set(value) {
-            _endTime = value
-        }
-
-    @get:Exclude
-    var vendeursActiveDonsCettePeriode: SnapshotStateList<VendeursActiveDonsCettePeriode> = mutableStateListOf()
-
-    fun updateKeyID() {
-        val dateFormat = SimpleDateFormat("yyyy_MM_dd", Locale.getDefault())
-        val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
-        val dateStr = dateFormat.format(Date(_startTime))
-        val timeStr = timeFormat.format(Date(_startTime))
-        keyID = "${dateStr}->($timeStr)"
-    }
-}
-
-// Class representing a vendor active during a sales period
-class VendeursActiveDonsCettePeriode {
-    var keyID by mutableStateOf("")
-    private var _nom by mutableStateOf("")
-    private var _startIndex by mutableStateOf(0)
-
-    // Use custom getters and setters to avoid JVM signature clash
-    var nom: String
-        get() = _nom
-        set(value) {
-            _nom = value
-            updateKeyID()
-        }
-
-    var startIndex: Int
-        get() = _startIndex
-        set(value) {
-            _startIndex = value
-            updateKeyID()
-        }
-
-    @get:Exclude
-    var produitsVenduParLui: SnapshotStateList<ProduitsVenduParLui> = mutableStateListOf()
-
-    fun updateKeyID() {
-        keyID = "${_startIndex}->($_nom)"
-    }
-}
-
-// Class representing a product sold by a vendor
-class ProduitsVenduParLui {
-    var keyID by mutableStateOf("")
-    private var _nom by mutableStateOf("")
-    private var _startIndex by mutableStateOf(0)
-    var quantity by mutableStateOf(0)
-
-    // Use custom getters and setters to avoid JVM signature clash
-    var nom: String
-        get() = _nom
-        set(value) {
-            _nom = value
-            updateKeyID()
-        }
-
-    var startIndex: Int
-        get() = _startIndex
-        set(value) {
-            _startIndex = value
-            updateKeyID()
-        }
-
-    fun updateKeyID() {
-        keyID = "${_startIndex}->($_nom)"
-    }
-}
 
 // ViewModel for handling commands/orders
 open class CommandesViewModel(
