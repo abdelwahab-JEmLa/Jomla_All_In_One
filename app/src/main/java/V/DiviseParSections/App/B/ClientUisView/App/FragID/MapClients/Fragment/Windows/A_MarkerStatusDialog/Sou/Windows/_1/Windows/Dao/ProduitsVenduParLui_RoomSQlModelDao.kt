@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Dao
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.ProduitsVenduParLui
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.ProduitsVenduParLuiRoomSQlModel
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -11,25 +11,25 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ProduitsVenduParLui_RoomSQlModelDao {
     @Query("SELECT * FROM ProduitsVenduParLuiRoomSQlModel")
-    fun getAllAsFlow(): Flow<List<ProduitsVenduParLui.ProduitsVenduParLuiRoomSQlModel>>
+    fun getAllAsFlow(): Flow<List<ProduitsVenduParLuiRoomSQlModel>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAvecRetureNewVid(item: ProduitsVenduParLui.ProduitsVenduParLuiRoomSQlModel): Long
+    suspend fun insertAvecRetureNewVid(item: ProduitsVenduParLuiRoomSQlModel): Long
 
     @Query("SELECT * FROM ProduitsVenduParLuiRoomSQlModel")
-    suspend fun getAll(): MutableList<ProduitsVenduParLui.ProduitsVenduParLuiRoomSQlModel>
+    suspend fun getAll(): MutableList<ProduitsVenduParLuiRoomSQlModel>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun add(produitAcheteOperation: ProduitsVenduParLui.ProduitsVenduParLuiRoomSQlModel): Long
+    suspend fun add(produitAcheteOperation: ProduitsVenduParLuiRoomSQlModel): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(item: ProduitsVenduParLui.ProduitsVenduParLuiRoomSQlModel)
+    suspend fun insert(item: ProduitsVenduParLuiRoomSQlModel)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(items: List<ProduitsVenduParLui.ProduitsVenduParLuiRoomSQlModel>)
+    suspend fun insertAll(items: List<ProduitsVenduParLuiRoomSQlModel>)
 
     @Delete
-    suspend fun delete(item: ProduitsVenduParLui.ProduitsVenduParLuiRoomSQlModel)
+    suspend fun delete(item: ProduitsVenduParLuiRoomSQlModel)
 
     @Query("DELETE FROM ProduitsVenduParLuiRoomSQlModel")
     suspend fun deleteAll()

@@ -38,7 +38,7 @@ open class PeriodesViewModel(
         viewModelScope.launch {
             try {
                 // Create test data for vendeurs
-                val vendeur1 = VendeursActiveDonsCettePeriode.VendeursActiveDonsCettePeriodeRoomSQlModel(
+                val vendeur1 = VendeursActiveDonsCettePeriodeRoomSQlModel(
                     keyID = "1->(Vendeur Test 1)",
                     parentkeyID = "2023_04_17->(14:30)",
                     startIndex = 1,
@@ -46,7 +46,7 @@ open class PeriodesViewModel(
                     quantity = 8
                 )
 
-                val vendeur2 = VendeursActiveDonsCettePeriode.VendeursActiveDonsCettePeriodeRoomSQlModel(
+                val vendeur2 = VendeursActiveDonsCettePeriodeRoomSQlModel(
                     keyID = "2->(Vendeur Test 2)",
                     parentkeyID = "2023_04_17->(14:30)",
                     startIndex = 2,
@@ -55,7 +55,7 @@ open class PeriodesViewModel(
                 )
 
                 // Create test data for produits
-                val produit1 = ProduitsVenduParLui.ProduitsVenduParLuiRoomSQlModel(
+                val produit1 = ProduitsVenduParLuiRoomSQlModel(
                     keyID = "1->(Produit Test 1)",
                     parentkeyID = "1->(Vendeur Test 1)",
                     startIndex = 1,
@@ -63,7 +63,7 @@ open class PeriodesViewModel(
                     quantity = 5
                 )
 
-                val produit2 = ProduitsVenduParLui.ProduitsVenduParLuiRoomSQlModel(
+                val produit2 = ProduitsVenduParLuiRoomSQlModel(
                     keyID = "2->(Produit Test 2)",
                     parentkeyID = "1->(Vendeur Test 1)",
                     startIndex = 2,
@@ -71,7 +71,7 @@ open class PeriodesViewModel(
                     quantity = 3
                 )
 
-                val produit3 = ProduitsVenduParLui.ProduitsVenduParLuiRoomSQlModel(
+                val produit3 = ProduitsVenduParLuiRoomSQlModel(
                     keyID = "1->(Produit Test 3)",
                     parentkeyID = "2->(Vendeur Test 2)",
                     startIndex = 1,

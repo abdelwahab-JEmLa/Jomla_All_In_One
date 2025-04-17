@@ -2,8 +2,8 @@ package Z_CodePartageEntreApps.Apps.Manager.Module.B.Room
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Dao.ProduitsVenduParLui_RoomSQlModelDao
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Dao.VendeursActiveDonsCettePeriode_RoomSQlModelDao
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.ProduitsVenduParLui
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.VendeursActiveDonsCettePeriode
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.ProduitsVenduParLuiRoomSQlModel
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.VendeursActiveDonsCettePeriodeRoomSQlModel
 import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.Extension.A_ProduitDao
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
@@ -69,8 +69,8 @@ import java.util.Date
         _4_CouleurOperationCommand::class,
 
         // Add our new entity classes
-        VendeursActiveDonsCettePeriode.VendeursActiveDonsCettePeriodeRoomSQlModel::class,
-        ProduitsVenduParLui.ProduitsVenduParLuiRoomSQlModel::class
+        VendeursActiveDonsCettePeriodeRoomSQlModel::class,
+        ProduitsVenduParLuiRoomSQlModel::class
     ],
     version = 3, // Increment version number since we're adding new entities
     exportSchema = false

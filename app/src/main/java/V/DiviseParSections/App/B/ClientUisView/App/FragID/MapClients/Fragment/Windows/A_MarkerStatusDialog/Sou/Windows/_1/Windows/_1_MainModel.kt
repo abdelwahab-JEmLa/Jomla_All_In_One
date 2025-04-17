@@ -34,27 +34,27 @@ class VendeursActiveDonsCettePeriode {
         keyID = "${startIndex}->($nom)"
     }
 
-    @Entity
-    data class VendeursActiveDonsCettePeriodeRoomSQlModel(
-        @PrimaryKey
-        var keyID: String = "",
-        var parentkeyID: String = "",
-        var startIndex: Int = 0,
-        var nom: String = "",
-        var quantity: Int = 0,
-    ) {
-        fun testData(): VendeursActiveDonsCettePeriodeRoomSQlModel {
-            return VendeursActiveDonsCettePeriodeRoomSQlModel(
-                keyID = "1->(Vendeur Test)",
-                parentkeyID = "2023_04_17->(14:30)",
-                startIndex = 1,
-                nom = "Vendeur Test",
-                quantity = 10
-            )
-        }
+
+}
+@Entity
+data class VendeursActiveDonsCettePeriodeRoomSQlModel(
+    @PrimaryKey
+    var keyID: String = "",
+    var parentkeyID: String = "",
+    var startIndex: Int = 0,
+    var nom: String = "",
+    var quantity: Int = 0,
+) {
+    fun testData(): VendeursActiveDonsCettePeriodeRoomSQlModel {
+        return VendeursActiveDonsCettePeriodeRoomSQlModel(
+            keyID = "1->(Vendeur Test)",
+            parentkeyID = "2023_04_17->(14:30)",
+            startIndex = 1,
+            nom = "Vendeur Test",
+            quantity = 10
+        )
     }
 }
-
 // Class representing a vendor active during a sales period
 class ProduitsVenduParLui {
     private var keyID by mutableStateOf("{startIndex}->({nom})")
@@ -66,23 +66,25 @@ class ProduitsVenduParLui {
         keyID = "${startIndex}->($nom)"
     }
 
-    @Entity
-    data class ProduitsVenduParLuiRoomSQlModel(
-        @PrimaryKey
-        var keyID: String = "",
-        var parentkeyID: String = "",
-        var startIndex: Int = 0,
-        var nom: String = "",
-        var quantity: Int = 0,
-    ) {
-        fun testData(): ProduitsVenduParLuiRoomSQlModel {
-            return ProduitsVenduParLuiRoomSQlModel(
-                keyID = "1->(Produit Test)",
-                parentkeyID = "1->(Vendeur Test)",
-                startIndex = 1,
-                nom = "Produit Test",
-                quantity = 5
-            )
-        }
+
+}
+
+@Entity
+data class ProduitsVenduParLuiRoomSQlModel(
+    @PrimaryKey
+    var keyID: String = "",
+    var parentkeyID: String = "",
+    var startIndex: Int = 0,
+    var nom: String = "",
+    var quantity: Int = 0,
+) {
+    fun testData(): ProduitsVenduParLuiRoomSQlModel {
+        return ProduitsVenduParLuiRoomSQlModel(
+            keyID = "1->(Produit Test)",
+            parentkeyID = "1->(Vendeur Test)",
+            startIndex = 1,
+            nom = "Produit Test",
+            quantity = 5
+        )
     }
 }
