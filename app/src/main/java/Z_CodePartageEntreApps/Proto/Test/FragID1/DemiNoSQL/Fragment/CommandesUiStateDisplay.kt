@@ -8,6 +8,7 @@ import androidx.compose.runtime.getValue
 @Composable
 fun CommandesUiStateDisplay(viewModel: CommandesViewModel) {
     val uiState by viewModel.uiState.collectAsState()
+
           /*
     LazyColumn(modifier = Modifier.padding(16.dp)) {
         item {
@@ -56,4 +57,5 @@ fun CommandesUiStateDisplay(viewModel: CommandesViewModel) {
             }
         }
   }             */
+
 }
