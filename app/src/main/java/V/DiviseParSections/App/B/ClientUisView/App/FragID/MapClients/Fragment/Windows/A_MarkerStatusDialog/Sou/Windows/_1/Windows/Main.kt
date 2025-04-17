@@ -27,6 +27,8 @@ fun Main(
     modifier: Modifier = Modifier,
     viewModel: PeriodesViewModel = koinInject(),
 ) {
+    //<--
+    //TODO(1): cee log pour suit le probleme que aucun produit ne s affiche
     val uiState by viewModel.uiState.collectAsState()
     MainScreen(
         uiState = uiState,

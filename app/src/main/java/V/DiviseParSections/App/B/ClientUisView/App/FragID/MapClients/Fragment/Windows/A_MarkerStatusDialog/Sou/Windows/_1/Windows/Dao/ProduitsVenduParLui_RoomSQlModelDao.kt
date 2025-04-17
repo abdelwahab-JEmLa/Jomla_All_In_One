@@ -10,13 +10,13 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ProduitsVenduParLui_RoomSQlModelDao {
-    @Query("SELECT * FROM VendeursActiveDonsCettePeriodeRoomSQlModel")
+    @Query("SELECT * FROM ProduitsVenduParLuiRoomSQlModel")
     fun getAllAsFlow(): Flow<List<ProduitsVenduParLui.ProduitsVenduParLuiRoomSQlModel>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAvecRetureNewVid(item: ProduitsVenduParLui.ProduitsVenduParLuiRoomSQlModel): Long
 
-    @Query("SELECT * FROM VendeursActiveDonsCettePeriodeRoomSQlModel")
+    @Query("SELECT * FROM ProduitsVenduParLuiRoomSQlModel")
     suspend fun getAll(): MutableList<ProduitsVenduParLui.ProduitsVenduParLuiRoomSQlModel>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -31,9 +31,9 @@ interface ProduitsVenduParLui_RoomSQlModelDao {
     @Delete
     suspend fun delete(item: ProduitsVenduParLui.ProduitsVenduParLuiRoomSQlModel)
 
-    @Query("DELETE FROM VendeursActiveDonsCettePeriodeRoomSQlModel")
+    @Query("DELETE FROM ProduitsVenduParLuiRoomSQlModel")
     suspend fun deleteAll()
 
-    @Query("SELECT COUNT(*) FROM VendeursActiveDonsCettePeriodeRoomSQlModel")
+    @Query("SELECT COUNT(*) FROM ProduitsVenduParLuiRoomSQlModel")
     fun getCount(): Int
 }
