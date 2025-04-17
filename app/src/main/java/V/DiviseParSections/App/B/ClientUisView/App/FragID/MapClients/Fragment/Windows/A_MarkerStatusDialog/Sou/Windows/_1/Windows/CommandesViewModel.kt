@@ -26,6 +26,7 @@ open class PeriodesViewModel(
 
     init {
         viewModelScope.launch {
+            // This is fine now because getCount() is suspend
             val count = appDatabase.vendeursActiveDonsCettePeriodeDao().getCount()
             if (count == 0) {
                 insertTestData()

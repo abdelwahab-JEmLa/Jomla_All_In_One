@@ -34,6 +34,7 @@ interface ProduitsVenduParLui_RoomSQlModelDao {
     @Query("DELETE FROM ProduitsVenduParLuiRoomSQlModel")
     suspend fun deleteAll()
 
+    // In ProduitsVenduParLui_RoomSQlModelDao.kt
     @Query("SELECT COUNT(*) FROM ProduitsVenduParLuiRoomSQlModel")
-    fun getCount(): Int
+    suspend fun getCount(): Int
 }

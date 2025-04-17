@@ -35,5 +35,5 @@ interface VendeursActiveDonsCettePeriode_RoomSQlModelDao {
     suspend fun deleteAll()
 
     @Query("SELECT COUNT(*) FROM VendeursActiveDonsCettePeriodeRoomSQlModel")
-    fun getCount(): Int
+    suspend fun getCount(): Int
 }
