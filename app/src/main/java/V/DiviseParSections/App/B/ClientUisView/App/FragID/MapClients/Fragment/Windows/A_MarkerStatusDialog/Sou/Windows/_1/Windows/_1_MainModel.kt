@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.firebase.firestore.Exclude
 
 class PeriodesVent {
@@ -34,15 +35,16 @@ class VendeursActiveDonsCettePeriode {
     }
 
     @Entity
-    data class RoomSQlModel(
+    data class VendeursActiveDonsCettePeriodeRoomSQlModel(
+        @PrimaryKey
         var keyID: String = "",
         var parentkeyID: String = "",
         var startIndex: Int = 0,
         var nom: String = "",
         var quantity: Int = 0,
     ) {
-        fun testData(): RoomSQlModel {
-            return RoomSQlModel(
+        fun testData(): VendeursActiveDonsCettePeriodeRoomSQlModel {
+            return VendeursActiveDonsCettePeriodeRoomSQlModel(
                 keyID = "1->(Vendeur Test)",
                 parentkeyID = "2023_04_17->(14:30)",
                 startIndex = 1,
@@ -65,15 +67,16 @@ class ProduitsVenduParLui {
     }
 
     @Entity
-    data class RoomSQlModel(
+    data class ProduitsVenduParLuiRoomSQlModel(
+        @PrimaryKey
         var keyID: String = "",
         var parentkeyID: String = "",
         var startIndex: Int = 0,
         var nom: String = "",
         var quantity: Int = 0,
     ) {
-        fun testData(): RoomSQlModel {
-            return RoomSQlModel(
+        fun testData(): ProduitsVenduParLuiRoomSQlModel {
+            return ProduitsVenduParLuiRoomSQlModel(
                 keyID = "1->(Produit Test)",
                 parentkeyID = "1->(Vendeur Test)",
                 startIndex = 1,

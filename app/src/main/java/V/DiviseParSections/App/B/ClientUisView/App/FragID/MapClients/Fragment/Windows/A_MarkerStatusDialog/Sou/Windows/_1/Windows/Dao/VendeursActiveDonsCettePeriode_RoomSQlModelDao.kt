@@ -10,30 +10,30 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface VendeursActiveDonsCettePeriode_RoomSQlModelDao {
-    @Query("SELECT * FROM RoomSQlModel")
-    fun getAllAsFlow(): Flow<List<VendeursActiveDonsCettePeriode.RoomSQlModel>>
+    @Query("SELECT * FROM VendeursActiveDonsCettePeriodeRoomSQlModel")
+    fun getAllAsFlow(): Flow<List<VendeursActiveDonsCettePeriode.VendeursActiveDonsCettePeriodeRoomSQlModel>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAvecRetureNewVid(item: VendeursActiveDonsCettePeriode.RoomSQlModel): Long
+    suspend fun insertAvecRetureNewVid(item: VendeursActiveDonsCettePeriode.VendeursActiveDonsCettePeriodeRoomSQlModel): Long
 
-    @Query("SELECT * FROM RoomSQlModel")
-    suspend fun getAll(): MutableList<VendeursActiveDonsCettePeriode.RoomSQlModel>
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun add(produitAcheteOperation: VendeursActiveDonsCettePeriode.RoomSQlModel): Long
+    @Query("SELECT * FROM VendeursActiveDonsCettePeriodeRoomSQlModel")
+    suspend fun getAll(): MutableList<VendeursActiveDonsCettePeriode.VendeursActiveDonsCettePeriodeRoomSQlModel>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(item: VendeursActiveDonsCettePeriode.RoomSQlModel)
+    suspend fun add(produitAcheteOperation: VendeursActiveDonsCettePeriode.VendeursActiveDonsCettePeriodeRoomSQlModel): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(items: List<VendeursActiveDonsCettePeriode.RoomSQlModel>)
+    suspend fun insert(item: VendeursActiveDonsCettePeriode.VendeursActiveDonsCettePeriodeRoomSQlModel)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(items: List<VendeursActiveDonsCettePeriode.VendeursActiveDonsCettePeriodeRoomSQlModel>)
 
     @Delete
-    suspend fun delete(item: VendeursActiveDonsCettePeriode.RoomSQlModel)
+    suspend fun delete(item: VendeursActiveDonsCettePeriode.VendeursActiveDonsCettePeriodeRoomSQlModel)
 
-    @Query("DELETE FROM RoomSQlModel")
+    @Query("DELETE FROM VendeursActiveDonsCettePeriodeRoomSQlModel")
     suspend fun deleteAll()
 
-    @Query("SELECT COUNT(*) FROM RoomSQlModel")
+    @Query("SELECT COUNT(*) FROM VendeursActiveDonsCettePeriodeRoomSQlModel")
     fun getCount(): Int
 }

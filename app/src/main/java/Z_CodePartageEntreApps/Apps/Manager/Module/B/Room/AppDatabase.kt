@@ -1,5 +1,9 @@
 package Z_CodePartageEntreApps.Apps.Manager.Module.B.Room
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Dao.ProduitsVenduParLui_RoomSQlModelDao
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Dao.VendeursActiveDonsCettePeriode_RoomSQlModelDao
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.ProduitsVenduParLui
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.VendeursActiveDonsCettePeriode
 import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.Extension.A_ProduitDao
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
@@ -18,7 +22,7 @@ import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._1_4_PeriodeVent
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation.Z.Dao._1_1_CouleurAcheteOperationDao
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation.Dao._1_2_ProduitAcheteOperationDao
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Models._1_2_ProduitAcheteOperation
+import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat
 import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchatDao
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVentDao
@@ -50,7 +54,7 @@ import java.util.Date
         DevicesTypeManager::class,
         DiviseurDeDisplayProductForEachClient::class,
         BaseDonne::class,
-         B_ClientDataBase::class,
+        B_ClientDataBase::class,
 
         I_CategorieProduits::class,
         A_Produit::class,
@@ -63,8 +67,12 @@ import java.util.Date
         _2_1_ProduitsDataBase::class,
         _3_ClientsDataBase::class,
         _4_CouleurOperationCommand::class,
+
+        // Add our new entity classes
+        VendeursActiveDonsCettePeriode.VendeursActiveDonsCettePeriodeRoomSQlModel::class,
+        ProduitsVenduParLui.ProduitsVenduParLuiRoomSQlModel::class
     ],
-    version = 2,
+    version = 3, // Increment version number since we're adding new entities
     exportSchema = false
 )
 
@@ -81,7 +89,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun diviseurDeDisplayProductForEachClientDao(): DiviseurDeDisplayProductForEachClientDao
     abstract fun articleDao(): ArticleDao
 
-
     abstract fun b_ClientDataBaseDao(): B_ClientDataBaseDao
     abstract fun I_CategorieProduitsDao(): I_CategorieProduitsDao
     abstract fun a_ProduiteDao(): A_ProduitDao
@@ -95,6 +102,10 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun _2_1_ProduitsDataBaseDao(): _2_1_ProduitsDataBaseDao
     abstract fun _3_ClientsDataBaseDao(): _3_ClientsDataBaseDao
     abstract fun _4_CouleurOperationCommandDao(): _4_CouleurOperationCommandDao
+
+    // Add our new DAOs
+    abstract fun vendeursActiveDonsCettePeriodeDao(): VendeursActiveDonsCettePeriode_RoomSQlModelDao
+    abstract fun produitsVenduParLuiDao(): ProduitsVenduParLui_RoomSQlModelDao
 
     object DatabaseModule {
 
@@ -132,6 +143,7 @@ class ListLongConverter {
         return gson.fromJson(value, listType)
     }
 }
+
 // First, let's properly set up the DateConverter
 class DateConverter {
     @TypeConverter
@@ -144,4 +156,3 @@ class DateConverter {
         return date?.time
     }
 }
-

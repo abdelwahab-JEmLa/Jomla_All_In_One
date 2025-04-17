@@ -1,5 +1,6 @@
 package Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.PeriodesViewModel
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.ViewModel.VendeursViewModel
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
@@ -102,10 +103,11 @@ val commonRepositoriesModule = module {
     ) }
 
     viewModel { VendeursViewModel(
-         get()
-
+         get(),
     ) }
-
+    viewModel { PeriodesViewModel(
+        get(),
+        ) }
 }
 // Function to determine the application type
 fun isManagerApp(context: Context): Boolean {

@@ -10,30 +10,30 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ProduitsVenduParLui_RoomSQlModelDao {
-    @Query("SELECT * FROM RoomSQlModel")
-    fun getAllAsFlow(): Flow<List<ProduitsVenduParLui.RoomSQlModel>>
+    @Query("SELECT * FROM VendeursActiveDonsCettePeriodeRoomSQlModel")
+    fun getAllAsFlow(): Flow<List<ProduitsVenduParLui.ProduitsVenduParLuiRoomSQlModel>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAvecRetureNewVid(item: ProduitsVenduParLui.RoomSQlModel): Long
+    suspend fun insertAvecRetureNewVid(item: ProduitsVenduParLui.ProduitsVenduParLuiRoomSQlModel): Long
 
-    @Query("SELECT * FROM RoomSQlModel")
-    suspend fun getAll(): MutableList<ProduitsVenduParLui.RoomSQlModel>
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun add(produitAcheteOperation: ProduitsVenduParLui.RoomSQlModel): Long
+    @Query("SELECT * FROM VendeursActiveDonsCettePeriodeRoomSQlModel")
+    suspend fun getAll(): MutableList<ProduitsVenduParLui.ProduitsVenduParLuiRoomSQlModel>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(item: ProduitsVenduParLui.RoomSQlModel)
+    suspend fun add(produitAcheteOperation: ProduitsVenduParLui.ProduitsVenduParLuiRoomSQlModel): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(items: List<ProduitsVenduParLui.RoomSQlModel>)
+    suspend fun insert(item: ProduitsVenduParLui.ProduitsVenduParLuiRoomSQlModel)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(items: List<ProduitsVenduParLui.ProduitsVenduParLuiRoomSQlModel>)
 
     @Delete
-    suspend fun delete(item: ProduitsVenduParLui.RoomSQlModel)
+    suspend fun delete(item: ProduitsVenduParLui.ProduitsVenduParLuiRoomSQlModel)
 
-    @Query("DELETE FROM RoomSQlModel")
+    @Query("DELETE FROM VendeursActiveDonsCettePeriodeRoomSQlModel")
     suspend fun deleteAll()
 
-    @Query("SELECT COUNT(*) FROM RoomSQlModel")
+    @Query("SELECT COUNT(*) FROM VendeursActiveDonsCettePeriodeRoomSQlModel")
     fun getCount(): Int
 }

@@ -1,7 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Dao.ProduitsVenduParLui_RoomSQlModelDao
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Dao.VendeursActiveDonsCettePeriode_RoomSQlModelDao
+import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
@@ -19,8 +18,7 @@ data class PeriodesUiState(
 
 // ViewModel for handling commands/orders
 open class PeriodesViewModel(
-    private val vendeursDao: VendeursActiveDonsCettePeriode_RoomSQlModelDao,
-    private val produitsDao: ProduitsVenduParLui_RoomSQlModelDao
+    val appDatabase: AppDatabase,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(PeriodesUiState())
     open val uiState: StateFlow<PeriodesUiState> = _uiState.asStateFlow()
@@ -33,7 +31,7 @@ open class PeriodesViewModel(
     private fun insertTestData() {
         viewModelScope.launch {
             // Create test data for vendeurs
-            val vendeur1 = VendeursActiveDonsCettePeriode.RoomSQlModel(
+            val vendeur1 = VendeursActiveDonsCettePeriode.VendeursActiveDonsCettePeriodeRoomSQlModel(
                 keyID = "1->(Vendeur Test 1)",
                 parentkeyID = "2023_04_17->(14:30)",
                 startIndex = 1,
@@ -41,7 +39,7 @@ open class PeriodesViewModel(
                 quantity = 8
             )
 
-            val vendeur2 = VendeursActiveDonsCettePeriode.RoomSQlModel(
+            val vendeur2 = VendeursActiveDonsCettePeriode.VendeursActiveDonsCettePeriodeRoomSQlModel(
                 keyID = "2->(Vendeur Test 2)",
                 parentkeyID = "2023_04_17->(14:30)",
                 startIndex = 2,
@@ -50,7 +48,7 @@ open class PeriodesViewModel(
             )
 
             // Create test data for produits
-            val produit1 = ProduitsVenduParLui.RoomSQlModel(
+            val produit1 = ProduitsVenduParLui.ProduitsVenduParLuiRoomSQlModel(
                 keyID = "1->(Produit Test 1)",
                 parentkeyID = "1->(Vendeur Test 1)",
                 startIndex = 1,
@@ -58,7 +56,7 @@ open class PeriodesViewModel(
                 quantity = 5
             )
 
-            val produit2 = ProduitsVenduParLui.RoomSQlModel(
+            val produit2 = ProduitsVenduParLui.ProduitsVenduParLuiRoomSQlModel(
                 keyID = "2->(Produit Test 2)",
                 parentkeyID = "1->(Vendeur Test 1)",
                 startIndex = 2,
@@ -66,7 +64,7 @@ open class PeriodesViewModel(
                 quantity = 3
             )
 
-            val produit3 = ProduitsVenduParLui.RoomSQlModel(
+            val produit3 = ProduitsVenduParLui.ProduitsVenduParLuiRoomSQlModel(
                 keyID = "1->(Produit Test 3)",
                 parentkeyID = "2->(Vendeur Test 2)",
                 startIndex = 1,
@@ -75,8 +73,8 @@ open class PeriodesViewModel(
             )
 
             // Insert test data
-            vendeursDao.insertAll(listOf(vendeur1, vendeur2))
-            produitsDao.insertAll(listOf(produit1, produit2, produit3))
+            appDatabase.vendeursActiveDonsCettePeriodeDao().insertAll(listOf(vendeur1, vendeur2))
+            appDatabase.produitsVenduParLuiDao().insertAll(listOf(produit1, produit2, produit3))
         }
     }
 
@@ -87,7 +85,7 @@ open class PeriodesViewModel(
                 val periodeMap = mutableMapOf<String, PeriodesVent>()
 
                 // Collect vendeurs
-                vendeursDao.getAllAsFlow().collectLatest { vendeursList ->
+                appDatabase.vendeursActiveDonsCettePeriodeDao().getAllAsFlow().collectLatest { vendeursList ->
                     val vendeursMap = mutableMapOf<String, MutableMap<String, VendeursActiveDonsCettePeriode>>()
 
                     // Group vendeurs by periode
@@ -114,7 +112,7 @@ open class PeriodesViewModel(
                     }
 
                     // Collect produits for each vendeur
-                    produitsDao.getAllAsFlow().collectLatest { produitsList ->
+                    appDatabase.produitsVenduParLuiDao().getAllAsFlow().collectLatest { produitsList ->
                         // Group produits by vendeur
                         produitsList.forEach { produitModel ->
                             val vendeurId = produitModel.parentkeyID

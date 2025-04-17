@@ -6,7 +6,7 @@ import androidx.compose.ui.tooling.preview.Preview
 
 @Preview
 @Composable
-private fun PreviewData() {
+private fun PreviewMain() {
     MaterialTheme {
         Main()
     }
