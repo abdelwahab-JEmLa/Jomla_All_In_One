@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Proto.Test.FragID1.DemiNoSQL.Fragment
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -17,7 +17,6 @@ data class CommandesUiState(
 // ViewModel for handling commands/orders
 open class CommandesViewModel(
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(CommandesUiState())
     open val uiState: StateFlow<CommandesUiState> = _uiState.asStateFlow()
 

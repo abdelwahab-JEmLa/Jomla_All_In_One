@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Proto.Test.FragID1.DemiNoSQL.Fragment
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState

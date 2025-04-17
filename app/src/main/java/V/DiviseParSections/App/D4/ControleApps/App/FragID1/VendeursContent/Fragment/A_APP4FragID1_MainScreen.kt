@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment
 
-import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.ViewModel.VendeursUiState
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.UiState
+import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.ViewModel.UiState
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.ViewModel.VendeursViewModel
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._1_4_PeriodeVent
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur
@@ -53,7 +54,7 @@ fun A_APP4FragID1_MainScreen(
 
 @Composable
 fun VendeursContent(
-    uiState: VendeursUiState,
+    uiState: UiState,
     onVendeurSelected: (Long) -> Unit,
     onPeriodeSelected: (Long) -> Unit,
     onVendeurUpdate: (_1_5_Vendeur) -> Unit,
@@ -145,7 +146,7 @@ fun VendeursList(
     activeVendeurId: Long,
     onVendeurSelected: (Long) -> Unit,
     onVendeurUpdate: (_1_5_Vendeur) -> Unit,
-    uiState: VendeursUiState,
+    uiState: UiState,
 ) {
     Text(
         text = "Liste des Vendeurs",

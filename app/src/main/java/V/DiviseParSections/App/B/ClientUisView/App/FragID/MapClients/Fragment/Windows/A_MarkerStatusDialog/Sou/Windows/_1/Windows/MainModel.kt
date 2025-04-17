@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Proto.Test.FragID1.DemiNoSQL.Fragment
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -15,7 +15,6 @@ class PeriodesVent {
     var keyID by mutableStateOf("")
     private var startTimePeriode by mutableStateOf(0L)
     private var endTimePeriode by mutableStateOf(0L)
-
 
     @get:Exclude
     var vendeursActiveDonsCettePeriode: SnapshotStateList<String> =
