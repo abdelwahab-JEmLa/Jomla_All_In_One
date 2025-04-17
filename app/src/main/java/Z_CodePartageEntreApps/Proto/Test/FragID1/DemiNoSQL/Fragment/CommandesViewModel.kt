@@ -1,13 +1,9 @@
 package Z_CodePartageEntreApps.Proto.Test.FragID1.DemiNoSQL.Fragment
 
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.firestore.Exclude
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,7 +13,6 @@ import kotlinx.coroutines.launch
 data class CommandesUiState(
     val periodesVent: SnapshotStateList<PeriodesVent> = mutableStateListOf()
 )
-
 
 // ViewModel for handling commands/orders
 open class CommandesViewModel(
@@ -45,8 +40,6 @@ open class CommandesViewModel(
         val quantity: Int
     )
 
-    // Companion object to hold the test data - Now using function to generate data
-    // to ensure fresh instances are created each time the data is loaded
     companion object {
         // Function to get test data instead of static property
         fun getTestPeriodesVent(): List<TestPeriodeData> {
@@ -165,13 +158,12 @@ open class CommandesViewModel(
 
     // Load test data from the companion object function
     private fun loadFromTestData() {
-        viewModelScope.launch {
+      /*  viewModelScope.launch {
             val periodesVentList = mutableStateListOf<PeriodesVent>()
 
             // Get fresh data using the function
             val testData = getTestPeriodesVent()
 
-            // Convert the test data structure to actual objects
             testData.forEach { periodeData ->
                 val currentTime = System.currentTimeMillis()
                 val pastHoursInMillis = periodeData.relativePastHours * 3600000L
@@ -209,7 +201,7 @@ open class CommandesViewModel(
 
             // Create a new CommandesUiState instance to trigger recomposition
             _uiState.value = CommandesUiState(periodesVent = periodesVentList)
-        }
+        }   */
     }
 }
 

@@ -18,7 +18,7 @@ class PeriodesVent {
 
 
     @get:Exclude
-    var vendeursActiveDonsCettePeriode: SnapshotStateList<VendeursActiveDonsCettePeriode> =
+    var vendeursActiveDonsCettePeriode: SnapshotStateList<String> =
         mutableStateListOf()
 
     fun updateKeyID() {
