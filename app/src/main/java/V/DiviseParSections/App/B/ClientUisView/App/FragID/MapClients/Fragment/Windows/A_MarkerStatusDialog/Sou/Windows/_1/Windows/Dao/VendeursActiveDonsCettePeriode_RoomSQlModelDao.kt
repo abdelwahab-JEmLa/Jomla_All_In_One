@@ -6,11 +6,13 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface VendeursActiveDonsCettePeriode_RoomSQlModelDao {
-    //<--
-    //TODO(1): ajout un collecteur  fun
+    @Query("SELECT * FROM RoomSQlModel")
+    fun getAllAsFlow(): Flow<List<VendeursActiveDonsCettePeriode.RoomSQlModel>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAvecRetureNewVid(item: VendeursActiveDonsCettePeriode.RoomSQlModel): Long
 

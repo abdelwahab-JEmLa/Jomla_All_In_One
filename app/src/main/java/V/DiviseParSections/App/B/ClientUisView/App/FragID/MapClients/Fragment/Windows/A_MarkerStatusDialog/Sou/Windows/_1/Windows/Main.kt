@@ -59,13 +59,11 @@ private fun MainList(
             .fillMaxWidth()
             .padding(16.dp)
     ) {
-        item {
-           
 
-        }
 
-        items(uiState) { vendeur ->
-            
+        items(uiState) {  ->
+                    //<--
+                    //TODO(1): affiche ici chasque produi  avec ce qui il faut
         }
 
 
