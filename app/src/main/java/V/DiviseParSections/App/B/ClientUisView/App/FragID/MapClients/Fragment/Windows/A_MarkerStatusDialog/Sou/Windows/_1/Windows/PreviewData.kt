@@ -8,6 +8,6 @@ import androidx.compose.ui.tooling.preview.Preview
 @Composable
 private fun PreviewData() {
     MaterialTheme {
-        CommandesUiStateDisplay(viewModel = CommandesViewModel())
+        Main()
     }
 }
