@@ -13,8 +13,7 @@ class PeriodesVent {
     private var tempDebutDeCettePeriode by mutableStateOf("HH:mm")
 
     @get:Exclude
-    var vendeursActiveDonsCettePeriode: Map<String, VendeursActiveDonsCettePeriode>    //->
-    //TODO(FIXME):Fix erreur Property must be initialized or be abstract
+    var vendeursActiveDonsCettePeriode: Map<String, VendeursActiveDonsCettePeriode> = mutableMapOf()
 
     private fun genereModelKeyID() {
         keyID = "${dateDebutDeCettePeriode}->($tempDebutDeCettePeriode)"
@@ -28,8 +27,7 @@ class VendeursActiveDonsCettePeriode {
     private var nom by mutableStateOf("")
 
     @get:Exclude
-    var produitsVenduParLui: Map<String, ProduitsVenduParLui>    //->
-    //TODO(FIXME):Fix erreur Property must be initialized or be 
+    var produitsVenduParLui: Map<String, ProduitsVenduParLui> = mutableMapOf()
 
     fun genereModelKeyID() {
         keyID = "${startIndex}->($nom)"
@@ -37,18 +35,21 @@ class VendeursActiveDonsCettePeriode {
 
     @Entity
     data class RoomSQlModel(
-        var keyID: String,
-        var parentkeyID: String ,
-        var startIndex: Int,
-        var nom: String,
-        var quantity: Int,
-    )  {
-        fun testData(): this {
-              //<--
-              //TODO(1): cree un test data
+        var keyID: String = "",
+        var parentkeyID: String = "",
+        var startIndex: Int = 0,
+        var nom: String = "",
+        var quantity: Int = 0,
+    ) {
+        fun testData(): RoomSQlModel {
+            return RoomSQlModel(
+                keyID = "1->(Vendeur Test)",
+                parentkeyID = "2023_04_17->(14:30)",
+                startIndex = 1,
+                nom = "Vendeur Test",
+                quantity = 10
+            )
         }
-
-
     }
 }
 
@@ -65,14 +66,20 @@ class ProduitsVenduParLui {
 
     @Entity
     data class RoomSQlModel(
-        var keyID: String,
-        var parentkeyID: String ,
-        var startIndex: Int,
-        var nom: String,
-        var quantity: Int,
-        )
-    { fun testData(): this {
-        //<--
-        //TODO(1): cree un test data
-    }}
+        var keyID: String = "",
+        var parentkeyID: String = "",
+        var startIndex: Int = 0,
+        var nom: String = "",
+        var quantity: Int = 0,
+    ) {
+        fun testData(): RoomSQlModel {
+            return RoomSQlModel(
+                keyID = "1->(Produit Test)",
+                parentkeyID = "1->(Vendeur Test)",
+                startIndex = 1,
+                nom = "Produit Test",
+                quantity = 5
+            )
+        }
+    }
 }
