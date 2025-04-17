@@ -1,7 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows
 
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
@@ -83,10 +82,8 @@ open class PeriodesViewModel(
                 // Insert test data
                 appDatabase.vendeursActiveDonsCettePeriodeDao().insertAll(listOf(vendeur1, vendeur2))
                 appDatabase.produitsVenduParLuiDao().insertAll(listOf(produit1, produit2, produit3))
-
-                Log.d("PeriodesViewModel", "Test data inserted successfully")
             } catch (e: Exception) {
-                Log.e("PeriodesViewModel", "Error inserting test data: ${e.message}", e)
+                // Error handling without logging
             }
         }
     }
@@ -99,8 +96,6 @@ open class PeriodesViewModel(
                 val produitsFlow = appDatabase.produitsVenduParLuiDao().getAllAsFlow()
 
                 combine(vendeursFlow, produitsFlow) { vendeursList, produitsList ->
-                    Log.d("PeriodesViewModel", "Processing data: ${vendeursList.size} vendeurs, ${produitsList.size} produits")
-
                     // Create a periode map to group vendeurs by periode
                     val periodeMap = mutableMapOf<String, PeriodesVent>()
 
@@ -136,8 +131,6 @@ open class PeriodesViewModel(
 
                                     // Add produit to vendeur
                                     (vendeur.produitsVenduParLui as MutableMap<String, ProduitsVenduParLui>)[produitModel.keyID] = produit
-
-                                    Log.d("PeriodesViewModel", "Added product ${produitModel.keyID} to vendeur $vendeurKey with quantity ${produitModel.quantity}")
                                 }
                             }
                         }
@@ -149,14 +142,10 @@ open class PeriodesViewModel(
                             addAll(periodeMap.values)
                         }
                     )
-
-                    Log.d("PeriodesViewModel", "UI state updated with ${periodeMap.size} periods")
                 }.collect {}
 
             } catch (e: Exception) {
-                // Handle errors
-                Log.e("PeriodesViewModel", "Error collecting data: ${e.message}", e)
-                e.printStackTrace()
+                // Handle errors without logging
             }
         }
     }
