@@ -55,6 +55,7 @@ data class VendeursActiveDonsCettePeriodeRoomSQlModel(
         )
     }
 }
+
 // Class representing a vendor active during a sales period
 class ProduitsVenduParLui {
     private var keyID by mutableStateOf("{startIndex}->({nom})")
@@ -65,7 +66,6 @@ class ProduitsVenduParLui {
     fun genereModelKeyID() {
         keyID = "${startIndex}->($nom)"
     }
-
 
 }
 

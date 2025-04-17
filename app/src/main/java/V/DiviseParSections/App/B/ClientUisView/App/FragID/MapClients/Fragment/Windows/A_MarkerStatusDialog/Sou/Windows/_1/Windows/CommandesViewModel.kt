@@ -113,7 +113,8 @@ open class PeriodesViewModel(
                             this.produitsVenduParLui = mutableMapOf()
                         }
 
-                        (periodeMap[periodeId]!!.vendeursActiveDonsCettePeriode as MutableMap<String, VendeursActiveDonsCettePeriode>)[vendeurModel.keyID] = vendeur
+                        (periodeMap[periodeId]!!.vendeursActiveDonsCettePeriode as
+                                MutableMap<String, VendeursActiveDonsCettePeriode>)[vendeurModel.keyID] = vendeur
                     }
 
                     // Then process produits
