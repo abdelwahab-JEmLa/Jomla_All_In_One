@@ -134,7 +134,6 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
         }
     }
 
-    // Update Firebase with current modelDatasSnapList data
     private fun updateFirebase() {
         coroutineScope.launch {
             // Convert to a Map structure that Firebase can store
@@ -173,6 +172,7 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
         attachFirebaseListener()
     }
 
+    // 3. Modification de _01_PeriodesVent_RepositoryImpl.kt pour améliorer les mises à jour
     private fun attachFirebaseListener() {
         valueEventListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -214,26 +214,32 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
 
                 // Update local data
                 coroutineScope.launch(Dispatchers.Main) {
+                    // Important: Clear and addAll in a single batched operation
                     modelDatasSnapList.clear()
                     modelDatasSnapList.addAll(periodesList)
 
+                    // Notify that data has changed
+                    _progressRepo.value = 0.5f  // Indicate that we're half done
+
                     // Also update Realm - but don't trigger another Firebase update
                     updateRealmSafely()
-                }
 
-                _progressRepo.value = 1.0f
+                    // Indicate that we're done
+                    _progressRepo.value = 1.0f
+                }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                // Handle error
-                _progressRepo.value = 1.0f
+                // Handle error on main thread
+                coroutineScope.launch(Dispatchers.Main) {
+                    _progressRepo.value = 1.0f
+                }
             }
         }
 
         // Attach the listener
         firebaseRef.addValueEventListener(valueEventListener!!)
     }
-
     private fun removeFirebaseListener() {
         valueEventListener?.let {
             firebaseRef.removeEventListener(it)

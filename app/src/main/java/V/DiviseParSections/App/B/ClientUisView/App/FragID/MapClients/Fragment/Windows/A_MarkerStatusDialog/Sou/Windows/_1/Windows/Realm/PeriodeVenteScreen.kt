@@ -42,14 +42,11 @@ import org.koin.androidx.compose.koinViewModel
 fun PeriodeVenteScreen(
     viewModel: PeriodeVenteViewModel = koinViewModel()
 ) {
-    // Utilisez directement la SnapshotStateList sans collectAsStateWithLifecycle
     val periodesVente = viewModel.periodesVente
     val selectedPeriode by viewModel.selectedPeriode.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
 
-    // Ajout d'un effet pour rafraîchir périodiquement les données
     LaunchedEffect(Unit) {
-        // Vous pourriez ajouter une logique pour rafraîchir périodiquement si nécessaire
         viewModel.refreshData()
     }
 
