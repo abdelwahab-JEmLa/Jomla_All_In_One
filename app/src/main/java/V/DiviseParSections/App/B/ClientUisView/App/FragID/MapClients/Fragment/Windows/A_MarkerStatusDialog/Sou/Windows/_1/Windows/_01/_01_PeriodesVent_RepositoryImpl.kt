@@ -17,7 +17,7 @@ import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
 
 class _01_PeriodesVent_RepositoryImpl(
-     val appDatabase: AppDatabase,
+    val appDatabase: AppDatabase,
 ) : _01_PeriodesVent_Repository {
     private val TAG = "_01_PeriodesVentNoSQl"
 
@@ -25,13 +25,16 @@ class _01_PeriodesVent_RepositoryImpl(
         mutableStateListOf()
     override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
 
-     var _01_PeriodesVentRoomSQl: SnapshotStateList<_01_PeriodesVentRoomSQl> =
+
+    var _01_PeriodesVentRoomSQl: SnapshotStateList<_01_PeriodesVentRoomSQl> =
         mutableStateListOf()
-     var _02_VendeursActiveDonsCettePeriodeRoomSQlModel:
-             SnapshotStateList<_02_VendeursActiveDonsCettePeriodeRoomSQlModel> =
+
+    var _02_VendeursActiveDonsCettePeriodeRoomSQlModel:
+            SnapshotStateList<_02_VendeursActiveDonsCettePeriodeRoomSQlModel> =
         mutableStateListOf()
-     var _03_ProduitsVenduParLuiRoomSQlModel:
-             SnapshotStateList<_03_ProduitsVenduParLuiRoomSQlModel> =
+
+    var _03_ProduitsVenduParLuiRoomSQlModel:
+            SnapshotStateList<_03_ProduitsVenduParLuiRoomSQlModel> =
         mutableStateListOf()
 
     private val isListenerActive = AtomicBoolean(false)
@@ -60,7 +63,8 @@ class _01_PeriodesVent_RepositoryImpl(
             Log.e(TAG, "Error initializing repository: ${e.message}")
         }
     }
-     suspend fun ensureDataIsInitialized() {
+
+    suspend fun ensureDataIsInitialized() {
         try {
             if (!initialDataLoaded) {
                 withContext(Dispatchers.IO) {
@@ -164,7 +168,8 @@ class _01_PeriodesVent_RepositoryImpl(
                             repositoryScope.launch(Dispatchers.IO) {
                                 try {
                                     appDatabase._01_PeriodesVentRoomSQlModelDao().deleteAll()
-                                    appDatabase._01_PeriodesVentRoomSQlModelDao().insertAll(updatedList)
+                                    appDatabase._01_PeriodesVentRoomSQlModelDao()
+                                        .insertAll(updatedList)
                                 } catch (e: Exception) {
                                     Log.e(
                                         TAG,
@@ -179,7 +184,9 @@ class _01_PeriodesVent_RepositoryImpl(
                     }
                 }
 
-                _01_PeriodesVent_Repository.sonDataBaseRef.addValueEventListener(flowValueEventListener!!)
+                _01_PeriodesVent_Repository.sonDataBaseRef.addValueEventListener(
+                    flowValueEventListener!!
+                )
                 isFlowListenerActive.set(true)
             }
         }
@@ -189,7 +196,9 @@ class _01_PeriodesVent_RepositoryImpl(
         synchronized(flowListenerLock) {
             if (isFlowListenerActive.get() && flowValueEventListener != null) {
                 try {
-                    _01_PeriodesVent_Repository.sonDataBaseRef.removeEventListener(flowValueEventListener!!)
+                    _01_PeriodesVent_Repository.sonDataBaseRef.removeEventListener(
+                        flowValueEventListener!!
+                    )
                 } catch (e: Exception) {
                 } finally {
                     flowValueEventListener = null
@@ -254,7 +263,9 @@ class _01_PeriodesVent_RepositoryImpl(
         synchronized(listenerLock) {
             if (isListenerActive.get() && valueEventListener != null) {
                 try {
-                    _01_PeriodesVent_Repository.sonDataBaseRef.removeEventListener(valueEventListener!!)
+                    _01_PeriodesVent_Repository.sonDataBaseRef.removeEventListener(
+                        valueEventListener!!
+                    )
                 } catch (e: Exception) {
                 } finally {
                     valueEventListener = null
@@ -263,9 +274,6 @@ class _01_PeriodesVent_RepositoryImpl(
             }
         }
     }
-
-
-
 
 
     fun cleanup() {
