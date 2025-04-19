@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.google.gms.google.services)
     id("kotlin-kapt")
     id("org.jetbrains.kotlin.plugin.serialization") version "1.8.0"
+    id("io.realm.kotlin") // Ajoutez cette ligne
 }
 
 android {
@@ -133,6 +134,10 @@ dependencies {
     // Koin pour Android
     implementation ("io.insert-koin:koin-android:3.5.0")
     implementation ("io.insert-koin:koin-androidx-compose:3.5.0")
+
+    // Dépendances Realm
+    implementation("io.realm.kotlin:library-base:1.12.0")
+    implementation("io.realm.kotlin:library-sync:1.12.0") // Optionnel, si vous avez besoin de synchronisation
 
 }
 

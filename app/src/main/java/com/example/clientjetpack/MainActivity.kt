@@ -2,13 +2,8 @@ package com.example.clientjetpack
 
 import P0_MainScreen.Main.MainScreen
 import P6_AiGroupeForSupplier.GenerativeAiViewModel
-import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.appManagerModules
-import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.appModule
-import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.isManagerApp
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import Z_MasterOfApps.A.MainActivity.Start.Module.A.Koin.appClientModules
 import Z_CodePartageEntreApps.Apps.Manager.Module.C.Permission.PermissionHandler
-import android.app.Application
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
@@ -26,45 +21,10 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.clientjetpack.ui.theme.ClientJetPackTheme
-import com.google.firebase.database.FirebaseDatabase
-import org.koin.android.ext.koin.androidContext
-import org.koin.android.ext.koin.androidLogger
 import org.koin.androidx.compose.KoinAndroidContext
 import org.koin.core.annotation.KoinExperimentalAPI
-import org.koin.core.context.startKoin
 
 private const val TAG = "MainActivity"
-
-class MyApplication : Application() {
-    override fun onCreate() {
-        super.onCreate()
-
-        // Configure Firebase FIRST before any other Firebase operations
-        try {
-            // Get reference to database ONCE and configure it
-            FirebaseDatabase.getInstance().apply {
-                setPersistenceEnabled(true)
-                setPersistenceCacheSizeBytes(100L * 1024L * 1024L) // 100MB
-            }
-        } catch (e: Exception) {
-            Log.e("Firebase", "Initialization error: ${e.message}")
-        }
-
-        startKoin {
-            androidLogger()
-            androidContext(this@MyApplication)
-            modules(appModule)
-
-            // Conditionally load app-specific modules
-            if (isManagerApp(this@MyApplication)) {
-                modules(appManagerModules)
-            } else {
-                modules(appClientModules)
-
-            }
-        }
-    }
-}
 
 data class AppViewModels(
     val generativeAiViewModel: GenerativeAiViewModel,
