@@ -1,5 +1,5 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows._01.Extension.DataBase
-
+          /*
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows._00._03_ProduitsVenduParLuiRoomSQlModel
 import androidx.room.Dao
 import androidx.room.Delete
@@ -38,3 +38,4 @@ interface _03_ProduitsVenduParLui_RoomSQlModelDao {
     @Query("SELECT COUNT(*) FROM _03_ProduitsVenduParLuiRoomSQlModel")
     suspend fun getCount(): Int
 }
+                                */
