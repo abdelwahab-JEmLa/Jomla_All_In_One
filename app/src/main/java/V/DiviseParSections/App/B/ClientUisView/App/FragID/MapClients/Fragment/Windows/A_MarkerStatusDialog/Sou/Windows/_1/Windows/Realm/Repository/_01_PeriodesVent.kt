@@ -8,7 +8,7 @@ import io.realm.kotlin.types.annotations.PrimaryKey
 
 class _01_PeriodesVent : RealmObject {
     @PrimaryKey
-    var keyID: String = ""
+    var keyID: String =  "dateDebutDeCettePeriode->HH:mm"
     var dateDebutDeCettePeriode: String = "yyyy_MM_dd"
     var tempDebutDeCettePeriode: String = "HH:mm"
     var vendeurs: RealmList<Vendeur> = realmListOf()
@@ -16,16 +16,16 @@ class _01_PeriodesVent : RealmObject {
 
 class Vendeur : RealmObject {
     @PrimaryKey
-    var keyID: String = ""
-    var startIndex: Int = 0
+    var keyID: String = "id->nom"
+    var id: Long = 0L
     var nom: String = ""
     var produits: RealmList<Produit> = realmListOf()
 }
 
 class Produit : RealmObject {
     @PrimaryKey
-    var keyID: String = ""
-    var startIndex: Int = 0
+    var keyID: String = "id->nom"
+    var id: Long = 0L
     var nom: String = ""
     var quantity: Int = 0
 }

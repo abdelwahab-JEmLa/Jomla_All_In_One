@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
 
 class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
     override var modelDatasSnapList: SnapshotStateList<_01_PeriodesVent> = mutableStateListOf()
+    var idComptDeCeTelephone: String = "2->Jean Dupont"
 
     // Initialize Realm with proper configuration
     private var realm: Realm = Realm.open(
@@ -65,38 +66,113 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
 
     private fun createTestDataIfEmpty() {
         coroutineScope.launch {
-            // Create sample data
-            val testPeriode = _01_PeriodesVent().apply {
-                keyID = "test_periode_${System.currentTimeMillis()}"
+            // Create first test period
+            val testPeriode1 = _01_PeriodesVent().apply {
+                keyID = "2025_04_19->10:00"
                 dateDebutDeCettePeriode = "2025_04_19"
                 tempDebutDeCettePeriode = "10:00"
 
                 // Add a test vendeur
-                val testVendeur = Vendeur().apply {
-                    keyID = "test_vendeur_${System.currentTimeMillis()}"
-                    startIndex = 0
+                val testVendeur1 = Vendeur().apply {
+                    keyID = "1->Jean Dupont"
+                    id = 1
                     nom = "Jean Dupont"
 
                     // Add test products
                     produits.add(Produit().apply {
-                        keyID = "test_produit_1_${System.currentTimeMillis()}"
-                        startIndex = 0
+                        keyID = "1->T-shirt"
+                        id = 1
                         nom = "T-shirt"
                         quantity = 10
                     })
 
                     produits.add(Produit().apply {
-                        keyID = "test_produit_2_${System.currentTimeMillis()}"
-                        startIndex = 1
+                        keyID = "2->Pantalon"
+                        id = 2
                         nom = "Pantalon"
                         quantity = 5
+                    })
+                }
+
+                vendeurs.add(testVendeur1)
+
+                // Add a second vendeur
+                val testVendeur2 = Vendeur().apply {
+                    keyID = "2->Marie Martin"
+                    id = 2
+                    nom = "Marie Martin"
+
+                    // Add test products
+                    produits.add(Produit().apply {
+                        keyID = "3->Chaussures"
+                        id = 3
+                        nom = "Chaussures"
+                        quantity = 8
+                    })
+
+                    produits.add(Produit().apply {
+                        keyID = "4->Veste"
+                        id = 4
+                        nom = "Veste"
+                        quantity = 3
+                    })
+                }
+
+                vendeurs.add(testVendeur2)
+            }
+
+            // Create second test period
+            val testPeriode2 = _01_PeriodesVent().apply {
+                keyID = "2025_04_19->14:00"
+                dateDebutDeCettePeriode = "2025_04_19"
+                tempDebutDeCettePeriode = "14:00"
+
+                // Add a test vendeur
+                val testVendeur = Vendeur().apply {
+                    keyID = "1->Jean Dupont"
+                    id = 1
+                    nom = "Jean Dupont"
+
+                    // Add test products
+                    produits.add(Produit().apply {
+                        keyID = "1->T-shirt"
+                        id = 1
+                        nom = "T-shirt"
+                        quantity = 7
                     })
                 }
 
                 vendeurs.add(testVendeur)
             }
 
-            modelDatasSnapList.add(testPeriode)
+            // Create third test period
+            val testPeriode3 = _01_PeriodesVent().apply {
+                keyID = "2025_04_20->09:00"
+                dateDebutDeCettePeriode = "2025_04_20"
+                tempDebutDeCettePeriode = "09:00"
+
+                // Add a test vendeur
+                val testVendeur = Vendeur().apply {
+                    keyID = "2->Marie Martin"
+                    id = 2
+                    nom = "Marie Martin"
+
+                    // Add test products
+                    produits.add(Produit().apply {
+                        keyID = "4->Veste"
+                        id = 4
+                        nom = "Veste"
+                        quantity = 12
+                    })
+                }
+
+                vendeurs.add(testVendeur)
+            }
+
+            // Add all periods to the list
+            modelDatasSnapList.add(testPeriode1)
+            modelDatasSnapList.add(testPeriode2)
+            modelDatasSnapList.add(testPeriode3)
 
             // Update both Realm and Firebase
             updateRealmAndFirebase()
@@ -143,11 +219,11 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
                     "tempDebutDeCettePeriode" to periode.tempDebutDeCettePeriode,
                     "vendeurs" to periode.vendeurs.associate { vendeur ->
                         vendeur.keyID to mapOf(
-                            "startIndex" to vendeur.startIndex,
+                            "startIndex" to vendeur.id,
                             "nom" to vendeur.nom,
                             "produits" to vendeur.produits.associate { produit ->
                                 produit.keyID to mapOf(
-                                    "startIndex" to produit.startIndex,
+                                    "startIndex" to produit.id, // Fixed: using id instead of undefined startIndex
                                     "nom" to produit.nom,
                                     "quantity" to produit.quantity
                                 )
@@ -172,7 +248,6 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
         attachFirebaseListener()
     }
 
-    // 3. Modification de _01_PeriodesVent_RepositoryImpl.kt pour améliorer les mises à jour
     private fun attachFirebaseListener() {
         valueEventListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -185,12 +260,24 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
                         tempDebutDeCettePeriode = periodeSnapshot.child("tempDebutDeCettePeriode").getValue(String::class.java) ?: "HH:mm"
                     }
 
+                    // Variable to track if this periode includes changes to the current user's data
+                    var shouldSkipUpdate = false
+
                     // Load vendeurs
                     val vendeursSnapshot = periodeSnapshot.child("vendeurs")
                     for (vendeurSnapshot in vendeursSnapshot.children) {
+                        val vendeurKey = vendeurSnapshot.key ?: ""
+
+                        // Check if this vendor is the current user's vendor
+                        if (vendeurKey == idComptDeCeTelephone) {
+                            // Skip updates for the current user's vendor to prevent listener conflicts
+                            shouldSkipUpdate = true
+                            continue
+                        }
+
                         val vendeur = Vendeur().apply {
-                            keyID = vendeurSnapshot.key ?: ""
-                            startIndex = vendeurSnapshot.child("startIndex").getValue(Int::class.java) ?: 0
+                            keyID = vendeurKey
+                            id = vendeurSnapshot.child("id").getValue(Long::class.java) ?: 0
                             nom = vendeurSnapshot.child("nom").getValue(String::class.java) ?: ""
                         }
 
@@ -199,7 +286,7 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
                         for (produitSnapshot in produitsSnapshot.children) {
                             val produit = Produit().apply {
                                 keyID = produitSnapshot.key ?: ""
-                                startIndex = produitSnapshot.child("startIndex").getValue(Int::class.java) ?: 0
+                                id = produitSnapshot.child("id").getValue(Long::class.java) ?: 0
                                 nom = produitSnapshot.child("nom").getValue(String::class.java) ?: ""
                                 quantity = produitSnapshot.child("quantity").getValue(Int::class.java) ?: 0
                             }
@@ -209,23 +296,29 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
                         periode.vendeurs.add(vendeur)
                     }
 
-                    periodesList.add(periode)
+                    // Only add this period if it doesn't contain data from the current user
+                    if (!shouldSkipUpdate) {
+                        periodesList.add(periode)
+                    }
                 }
 
-                // Update local data
-                coroutineScope.launch(Dispatchers.Main) {
-                    // Important: Clear and addAll in a single batched operation
-                    modelDatasSnapList.clear()
-                    modelDatasSnapList.addAll(periodesList)
+                // Only proceed with update if we have valid data and no conflicts
+                if (periodesList.isNotEmpty()) {
+                    // Update local data
+                    coroutineScope.launch(Dispatchers.Main) {
+                        // Important: Clear and addAll in a single batched operation
+                        modelDatasSnapList.clear()
+                        modelDatasSnapList.addAll(periodesList)
 
-                    // Notify that data has changed
-                    _progressRepo.value = 0.5f  // Indicate that we're half done
+                        // Notify that data has changed
+                        _progressRepo.value = 0.5f  // Indicate that we're half done
 
-                    // Also update Realm - but don't trigger another Firebase update
-                    updateRealmSafely()
+                        // Also update Realm - but don't trigger another Firebase update
+                        updateRealmSafely()
 
-                    // Indicate that we're done
-                    _progressRepo.value = 1.0f
+                        // Indicate that we're done
+                        _progressRepo.value = 1.0f
+                    }
                 }
             }
 
@@ -240,6 +333,7 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
         // Attach the listener
         firebaseRef.addValueEventListener(valueEventListener!!)
     }
+
     private fun removeFirebaseListener() {
         valueEventListener?.let {
             firebaseRef.removeEventListener(it)
@@ -282,7 +376,7 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
         source.vendeurs.forEach { sourceVendeur ->
             val vendeurCopy = Vendeur().apply {
                 keyID = sourceVendeur.keyID
-                startIndex = sourceVendeur.startIndex
+                id = sourceVendeur.id
                 nom = sourceVendeur.nom
                 produits = realmListOf()
             }
@@ -291,7 +385,7 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
             sourceVendeur.produits.forEach { sourceProduit ->
                 val produitCopy = Produit().apply {
                     keyID = sourceProduit.keyID
-                    startIndex = sourceProduit.startIndex
+                    id = sourceProduit.id
                     nom = sourceProduit.nom
                     quantity = sourceProduit.quantity
                 }
