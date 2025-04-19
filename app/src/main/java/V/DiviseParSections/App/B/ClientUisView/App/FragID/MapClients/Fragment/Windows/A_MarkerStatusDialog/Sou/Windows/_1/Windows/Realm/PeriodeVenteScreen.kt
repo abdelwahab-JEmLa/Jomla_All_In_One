@@ -49,20 +49,23 @@ fun PeriodeVenteScreen(
     viewModel: PeriodeVenteViewModel = koinViewModel()
 ) {
     val produitKeyALog = "2025_04_19->11:00->2(Vendeur 2)->2(Produit 2)"
-    // Create logging for this specific product key to monitor changes
+
+    // Observe UI state to force recomposition
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
     val periodesVente = viewModel.periodesVente
     val selectedPeriode by viewModel.selectedPeriode.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
 
     // Track monitored product data changes
-    val monitoredProduct by remember {
+    val monitoredProduct by remember(uiState) {
         derivedStateOf {
             findProductByKey(periodesVente, produitKeyALog)
         }
     }
 
     // Log when monitored product changes
-    LaunchedEffect(monitoredProduct) {
+    LaunchedEffect(monitoredProduct?.quantity, uiState) {
         if (monitoredProduct != null) {
             Log.d(TAG, "Monitored product updated: $produitKeyALog")
             Log.d(TAG, "Current quantity: ${monitoredProduct?.quantity}")
@@ -74,9 +77,9 @@ fun PeriodeVenteScreen(
 
     LaunchedEffect(Unit) {
         viewModel.refreshData()
-        // Initial log for tracked product
         Log.d(TAG, "Initial search for product: $produitKeyALog")
     }
+
 
     Scaffold(
         topBar = {
@@ -145,7 +148,7 @@ fun PeriodeVenteScreen(
 }
 
 // Helper function to find a product by its key in the list of periods
-private fun findProductByKey(
+fun findProductByKey(
     periodes: List<_01_PeriodesVent>,
     productKey: String
 ): Produit? {
@@ -261,9 +264,16 @@ fun PeriodeDetail(periode: _01_PeriodesVent) {
         }
     }
 }
+// In PeriodeVenteScreen.kt
 
 @Composable
-fun VendeurCard(vendeur: Vendeur) {
+fun VendeurCard(
+    vendeur: Vendeur,
+    viewModel: PeriodeVenteViewModel = koinViewModel()
+) {
+    // Observe the monitored product quantity to force recomposition
+    val monitoredProductQuantity by viewModel.monitoredProductQuantity.collectAsStateWithLifecycle()
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -307,9 +317,15 @@ fun VendeurCard(vendeur: Vendeur) {
                     )
                 }
 
-                // Products
+                // Products - force recomposition with monitoredProductQuantity
                 vendeur.produits.forEach { produit ->
-                    ProduitRow(produit = produit)
+                    // Pass the monitored product quantity to ensure recomposition
+                    ProduitRow(
+                        produit = produit,
+                        monitoredProductKey = "2025_04_19->11:00->2(Vendeur 2)->2(Produit 2)",
+                        monitoredQuantity = if (produit.keyID == "2025_04_19->11:00->2(Vendeur 2)->2(Produit 2)")
+                            monitoredProductQuantity else 0
+                    )
                 }
             } else {
                 Text(
