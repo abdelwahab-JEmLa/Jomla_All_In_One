@@ -8,7 +8,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.firebase.firestore.Exclude
 
-class _01_PeriodesVentNoSQl {
+class _01_VentsNoSQl {
     var keyID by mutableStateOf("{dateDebutDeCettePeriode}->(tempDebutDeCettePeriode)")
     var dateDebutDeCettePeriode by mutableStateOf("yyyy_MM_dd")
     var tempDebutDeCettePeriode by mutableStateOf("HH:mm")
@@ -16,11 +16,39 @@ class _01_PeriodesVentNoSQl {
     @get:Exclude
     var vendeursActiveDonsCettePeriode: Map<String, VendeursActiveDonsCettePeriode> = mutableMapOf()
 
-    var a01PeriodesVent: List<_01_PeriodesVentNoSQl> = listOf()             //<--
-    //TODO(1): pk ca n ai pas utilise 
+
+    @get:Exclude
+    var a01PeriodesVent: List<_01_VentsNoSQl> = listOf()
 
     fun genereModelKeyID() {
         keyID = "${dateDebutDeCettePeriode}->($tempDebutDeCettePeriode)"
+    }
+
+    // Find periods that are in the same day
+    fun getPeriodesFromSameDay(): List<_01_VentsNoSQl> {
+        return a01PeriodesVent.filter {
+            it.dateDebutDeCettePeriode == this.dateDebutDeCettePeriode && it.keyID != this.keyID
+        }
+    }
+
+    // Find periods that have specific vendeur
+    fun getPeriodesWithVendeur(vendeurNom: String): List<_01_VentsNoSQl> {
+        return a01PeriodesVent.filter { periode ->
+            periode.vendeursActiveDonsCettePeriode.values.any { vendeur ->
+                vendeur.nom == vendeurNom
+            }
+        }
+    }
+
+    // Get total quantity of all products sold in this period
+    fun getTotalQuantity(): Int {
+        var total = 0
+        vendeursActiveDonsCettePeriode.values.forEach { vendeur ->
+            vendeur.produitsVenduParLui.values.forEach { produit ->
+                total += produit.quantity
+            }
+        }
+        return total
     }
 }
 
@@ -44,6 +72,11 @@ class VendeursActiveDonsCettePeriode {
 
     fun genereModelKeyID() {
         keyID = "${startIndex}->($nom)"
+    }
+
+    // Get total quantity sold by this vendeur
+    fun getTotalQuantity(): Int {
+        return produitsVenduParLui.values.sumOf { it.quantity }
     }
 }
 

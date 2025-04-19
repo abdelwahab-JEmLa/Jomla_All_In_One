@@ -2,8 +2,8 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows._00.ProduitsVenduParLui
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows._00.VendeursActiveDonsCettePeriode
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows._00._01_PeriodesVentNoSQl
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows._00._01_PeriodesVentRoomSQl
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows._00._01_VentsNoSQl
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows._00._02_VendeursActiveDonsCettePeriodeRoomSQlModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows._00._03_ProduitsVenduParLuiRoomSQlModel
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
@@ -22,9 +22,9 @@ import java.util.Locale
 class _01_PeriodesVent_RepositoryImpl(
     val appDatabase: AppDatabase,
 ) : _01_PeriodesVent_Repository {
-    private val TAG = "_01_PeriodesVentNoSQl"
+    private val TAG = "_01_VentsNoSQl"
 
-    override var modelDatasSnapList: SnapshotStateList<_01_PeriodesVentNoSQl> =
+    override var modelDatasSnapList: SnapshotStateList<_01_VentsNoSQl> =
         mutableStateListOf()
 
     private val _progressRepo = MutableStateFlow(0f)
@@ -106,8 +106,17 @@ class _01_PeriodesVent_RepositoryImpl(
                     quantity = 5
                 )
 
+                // Add another period on the same day as periode1 for testing related periods
+                val periode3 = _01_PeriodesVentRoomSQl(
+                    keyID = "2023_04_17->(18:00)",
+                    parentkeyID = "",
+                    startIndex = 3,
+                    nom = "Période Test 3",
+                    quantity = 7
+                )
+
                 // Insert periods
-                appDatabase._01_PeriodesVentRoomSQlModelDao().insertAll(listOf(periode1, periode2))
+                appDatabase._01_PeriodesVentRoomSQlModelDao().insertAll(listOf(periode1, periode2, periode3))
 
                 // Create test data for vendeurs
                 val vendeur1 = _02_VendeursActiveDonsCettePeriodeRoomSQlModel(
@@ -132,6 +141,15 @@ class _01_PeriodesVent_RepositoryImpl(
                     startIndex = 1,
                     nom = "Vendeur Test 3",
                     quantity = 5
+                )
+
+                // Add the same vendeur in another period to test related periods
+                val vendeur4 = _02_VendeursActiveDonsCettePeriodeRoomSQlModel(
+                    keyID = "1->(Vendeur Test 1)",
+                    parentkeyID = "2023_04_17->(18:00)",
+                    startIndex = 1,
+                    nom = "Vendeur Test 1",
+                    quantity = 7
                 )
 
                 // Create test data for produits
@@ -167,12 +185,29 @@ class _01_PeriodesVent_RepositoryImpl(
                     quantity = 5
                 )
 
+                // Add products for vendeur4
+                val produit5 = _03_ProduitsVenduParLuiRoomSQlModel(
+                    keyID = "1->(Produit Test 1)",
+                    parentkeyID = "1->(Vendeur Test 1)",
+                    id = 1,
+                    nom = "Produit Test 1",
+                    quantity = 4
+                )
+
+                val produit6 = _03_ProduitsVenduParLuiRoomSQlModel(
+                    keyID = "3->(Produit Test 5)",
+                    parentkeyID = "1->(Vendeur Test 1)",
+                    id = 3,
+                    nom = "Produit Test 5",
+                    quantity = 3
+                )
+
                 // Insert test data
                 appDatabase._02_VendeursActiveDonsCettePeriode_RoomSQlModelDao().insertAll(
-                    listOf(vendeur1, vendeur2, vendeur3)
+                    listOf(vendeur1, vendeur2, vendeur3, vendeur4)
                 )
                 appDatabase._03_ProduitsVenduParLui_RoomSQlModelDao().insertAll(
-                    listOf(produit1, produit2, produit3, produit4)
+                    listOf(produit1, produit2, produit3, produit4, produit5, produit6)
                 )
             } catch (e: Exception) {
                 // Error handling without logging
@@ -187,16 +222,16 @@ class _01_PeriodesVent_RepositoryImpl(
                 _progressRepo.value = 0.1f
 
                 // Process data directly without using combine since we already have the lists
-                val periodesList = _periodesVentRoomSQl
+                val periodesRoomList = _periodesVentRoomSQl  // Renamed this variable
                 val vendeursList = _vendeursActiveDonsCettePeriodeRoomSQlModel
                 val produitsList = _produitsVenduParLuiRoomSQlModel
 
                 // Create a periode map to group vendeurs by periode
-                val periodeMap = mutableMapOf<String, _01_PeriodesVentNoSQl>()
+                val periodeMap = mutableMapOf<String, _01_VentsNoSQl>()
 
                 // First process periods
-                periodesList.forEach { periodeModel ->
-                    periodeMap[periodeModel.keyID] = _01_PeriodesVentNoSQl().apply {
+                periodesRoomList.forEach { periodeModel ->
+                    periodeMap[periodeModel.keyID] = _01_VentsNoSQl().apply {
                         this.keyID = periodeModel.keyID
                         this.dateDebutDeCettePeriode = periodeModel.keyID.split("->(")[0]
                         this.tempDebutDeCettePeriode = periodeModel.keyID.split("->(")[1].removeSuffix(")")
@@ -247,11 +282,22 @@ class _01_PeriodesVent_RepositoryImpl(
                     }
                 }
 
+                _progressRepo.value = 0.8f
+
+                // Convert the map to a list for the modelDatasSnapList
+                val periodesNoSqlList = periodeMap.values.toList()  // Used a different name here
+
+                // Now set the a01PeriodesVent for each periode to reference all periods
+                // This allows each period to access other periods for related data
+                periodeMap.values.forEach { periode ->
+                    periode.a01PeriodesVent = periodesNoSqlList
+                }
+
                 _progressRepo.value = 0.9f
 
                 // Update the model data list
                 modelDatasSnapList.clear()
-                modelDatasSnapList.addAll(periodeMap.values)
+                modelDatasSnapList.addAll(periodesNoSqlList)
 
                 _progressRepo.value = 1.0f
 
@@ -260,5 +306,4 @@ class _01_PeriodesVent_RepositoryImpl(
                 _progressRepo.value = 0f
             }
         }
-    }
-}
+    }}

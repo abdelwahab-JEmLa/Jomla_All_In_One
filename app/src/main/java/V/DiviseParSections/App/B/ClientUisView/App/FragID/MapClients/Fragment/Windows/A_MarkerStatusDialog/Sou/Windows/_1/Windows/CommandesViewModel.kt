@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows._00._01_PeriodesVentNoSQl
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows._00._01_VentsNoSQl
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows._01._01_PeriodesVent_Repository
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 
 // Data class for representing UI state
 data class PeriodesUiState(
-    val a01PeriodesVent: SnapshotStateList<_01_PeriodesVentNoSQl> = mutableStateListOf()
+    val a01PeriodesVent: SnapshotStateList<_01_VentsNoSQl> = mutableStateListOf()
 )
 
 // ViewModel for handling commands/orders
