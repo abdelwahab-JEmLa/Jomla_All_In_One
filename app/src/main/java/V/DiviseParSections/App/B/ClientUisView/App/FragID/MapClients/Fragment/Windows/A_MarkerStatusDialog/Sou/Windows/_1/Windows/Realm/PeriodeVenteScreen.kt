@@ -17,8 +17,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -30,60 +34,75 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PeriodeVenteScreen(
-    viewModel: PeriodeVenteViewModel = koinViewModel(),
+    viewModel: PeriodeVenteViewModel = koinViewModel()
 ) {
     val periodesVente by viewModel.periodesVente.collectAsStateWithLifecycle()
     val selectedPeriode by viewModel.selectedPeriode.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
 
-    if (isLoading) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator()
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Périodes de Vente") },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            )
         }
-    } else {
-        Column(
-            modifier = Modifier
-                .fillMaxSize(),
-        ) {
-            // Périodes selector
-            LazyColumn(
+    ) { paddingValues ->
+        if (isLoading) {
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(120.dp)
-                    .padding(8.dp)
-                    .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.medium),
-                contentPadding = PaddingValues(8.dp)
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center
             ) {
-                items(periodesVente) { periode ->
-                    PeriodeItem(
-                        periode = periode,
-                        isSelected = periode.keyID == selectedPeriode?.keyID,
-                        onClick = { viewModel.selectPeriode(periode) }
-                    )
-                }
+                CircularProgressIndicator()
             }
-
-            // Detail view
-            selectedPeriode?.let { periode ->
-                PeriodeDetail(periode = periode)
-            } ?: run {
-                Box(
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
+                // Périodes selector
+                LazyColumn(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    contentAlignment = Alignment.Center
+                        .fillMaxWidth()
+                        .height(120.dp)
+                        .padding(8.dp)
+                        .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.medium),
+                    contentPadding = PaddingValues(8.dp)
                 ) {
-                    Text(
-                        text = "Sélectionnez une période",
-                        fontSize = 18.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                    items(periodesVente) { periode ->
+                        PeriodeItem(
+                            periode = periode,
+                            isSelected = periode.keyID == selectedPeriode?.keyID,
+                            onClick = { viewModel.selectPeriode(periode) }
+                        )
+                    }
+                }
+
+                // Detail view
+                selectedPeriode?.let { periode ->
+                    PeriodeDetail(periode = periode)
+                } ?: run {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Sélectionnez une période",
+                            fontSize = 18.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             }
         }
@@ -94,7 +113,7 @@ fun PeriodeVenteScreen(
 fun PeriodeItem(
     periode: PeriodeVente,
     isSelected: Boolean,
-    onClick: () -> Unit,
+    onClick: () -> Unit
 ) {
     Row(
         modifier = Modifier

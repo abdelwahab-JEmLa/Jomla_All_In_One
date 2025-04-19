@@ -4,6 +4,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Wi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.PeriodeVenteRepository
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Produit
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Vendeur
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.viewModelModule
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.appManagerModules
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.appModule
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.isManagerApp
@@ -56,7 +57,7 @@ class MyApplication : Application() {
         startKoin {
             androidLogger()
             androidContext(this@MyApplication)
-            modules(appModule, databaseModule) // Add the database module here
+            modules(appModule, databaseModule, viewModelModule) // Add viewModelModule here
 
             // Conditionally load app-specific modules
             if (isManagerApp(this@MyApplication)) {
