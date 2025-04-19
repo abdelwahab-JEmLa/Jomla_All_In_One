@@ -16,8 +16,8 @@ class _01_PeriodesVentNoSQl {
     @get:Exclude
     var vendeursActiveDonsCettePeriode: Map<String, VendeursActiveDonsCettePeriode> = mutableMapOf()
 
-    // Add an a01PeriodesVent field to match collection model in implementation
-    var a01PeriodesVent: List<_01_PeriodesVentNoSQl> = listOf()
+    var a01PeriodesVent: List<_01_PeriodesVentNoSQl> = listOf()             //<--
+    //TODO(1): pk ca n ai pas utilise 
 
     fun genereModelKeyID() {
         keyID = "${dateDebutDeCettePeriode}->($tempDebutDeCettePeriode)"

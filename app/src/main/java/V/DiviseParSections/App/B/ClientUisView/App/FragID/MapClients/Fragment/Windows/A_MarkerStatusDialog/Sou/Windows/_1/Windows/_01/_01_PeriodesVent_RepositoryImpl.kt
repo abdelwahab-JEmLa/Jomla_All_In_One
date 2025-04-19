@@ -83,10 +83,6 @@ class _01_PeriodesVent_RepositoryImpl(
         refreshData()
     }
 
-    override suspend fun getAllPeriodes(): List<_01_PeriodesVentRoomSQl> {
-        return appDatabase._01_PeriodesVentRoomSQlModelDao().getAll()
-    }
-
     private fun insertTestData() {
         repositoryScope.launch {
             try {
@@ -210,7 +206,6 @@ class _01_PeriodesVent_RepositoryImpl(
 
                 _progressRepo.value = 0.3f
 
-                // Then process vendeurs
                 vendeursList.forEach { vendeurModel ->
                     val periodeId = vendeurModel.parentkeyID
                     if (periodeMap.containsKey(periodeId)) {

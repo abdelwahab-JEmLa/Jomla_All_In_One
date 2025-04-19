@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -31,8 +32,11 @@ fun Main(
     viewModel: PeriodesViewModel = koinInject(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val progress by viewModel._01_PeriodesVent_Repository.progressRepo.collectAsState()
+
     MainScreen(
         uiState = uiState,
+        progress = progress,
         modifier = modifier
     )
 }
@@ -40,20 +44,41 @@ fun Main(
 @Composable
 fun MainScreen(
     uiState: PeriodesUiState,
+    progress: Float,
     modifier: Modifier = Modifier,
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
         color = MaterialTheme.colorScheme.background
     ) {
-        ElevatedCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            MainList(
-                uiState = uiState,
-            )
+        Column {
+            // Show progress indicator when loading
+            if (progress < 1.0f) {
+                LinearProgressIndicator(
+                    progress = progress,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                )
+            }
+
+            ElevatedCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                if (uiState.a01PeriodesVent.isEmpty()) {
+                    Text(
+                        text = "Chargement des périodes...",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                } else {
+                    MainList(
+                        uiState = uiState,
+                    )
+                }
+            }
         }
     }
 }
@@ -81,7 +106,7 @@ private fun PeriodeItem(periode: _01_PeriodesVentNoSQl) {
             .padding(8.dp)
     ) {
         Text(
-            text = "Période de vente",
+            text = "Période de vente: ${periode.dateDebutDeCettePeriode} à ${periode.tempDebutDeCettePeriode}",
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold
         )
@@ -107,7 +132,7 @@ private fun VendeurItem(vendeurId: String, vendeur: VendeursActiveDonsCettePerio
             .padding(start = 16.dp, end = 8.dp)
     ) {
         Text(
-            text = "Vendeur: ${vendeurId.substringAfter("->").trim('(', ')')}",
+            text = "Vendeur: ${vendeur.nom}",
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold
         )
@@ -129,7 +154,7 @@ private fun ProduitItem(produitId: String, produit: ProduitsVenduParLui) {
             .padding(start = 24.dp)
     ) {
         Text(
-            text = produitId.substringAfter("->").trim('(', ')'),
+            text = produit.nom,
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.weight(1f)
         )

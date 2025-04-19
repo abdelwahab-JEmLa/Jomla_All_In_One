@@ -11,6 +11,4 @@ interface _01_PeriodesVent_Repository {
     val progressRepo: StateFlow<Float>
     suspend fun refreshData()
     suspend fun addPeriode(periode: _01_PeriodesVentRoomSQl)
-    suspend fun getAllPeriodes(): List<_01_PeriodesVentRoomSQl>
-
 }
