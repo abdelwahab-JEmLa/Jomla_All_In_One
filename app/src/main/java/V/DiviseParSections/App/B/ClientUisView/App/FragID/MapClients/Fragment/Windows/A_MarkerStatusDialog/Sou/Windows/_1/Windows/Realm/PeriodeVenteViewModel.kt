@@ -25,7 +25,7 @@ open class PeriodeVenteViewModel(private val repository: PeriodeVenteRepository)
 
         // Create test data when initialized
         viewModelScope.launch {
-            createTestDataIfEmpty()
+          //  createTestDataIfEmpty()
         }
     }
 

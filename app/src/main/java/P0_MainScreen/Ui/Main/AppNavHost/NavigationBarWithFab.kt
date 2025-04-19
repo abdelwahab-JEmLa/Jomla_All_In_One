@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.EditRoad
 import androidx.compose.material.icons.filled.MapsHomeWork
 import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.TravelExplore
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.filled.Work
@@ -199,7 +200,8 @@ object NavigationItems {
         Screen.SoldCart,
         Screen.TravailleTempRecorder,
         Screen.CommandeProduits,
-        Screen.ToggleFab
+        Screen.ToggleFab,
+        Screen.NewFragTest
     )
 }
 
@@ -241,6 +243,13 @@ sealed class Screen(
         icon = Icons.Default.Work,
         title = "TravailleTempRecorder",
         color = Color(0xFF9C27B0)
+    )
+
+    data object NewFragTest : Screen(
+        route = "NewFragTest",
+        icon = Icons.Default.TravelExplore,
+        title = "NewFragTest",
+        color = Color(0xFF4CAF50)
     )
 
     data object ToggleFab : Screen(
