@@ -27,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,15 +37,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PeriodeVenteScreen(
     viewModel: PeriodeVenteViewModel = koinViewModel()
 ) {
-    val periodesVente by viewModel.periodesVente.collectAsStateWithLifecycle()
+    // Utilisez directement la SnapshotStateList sans collectAsStateWithLifecycle
+    val periodesVente = viewModel.periodesVente
     val selectedPeriode by viewModel.selectedPeriode.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+
+    // Ajout d'un effet pour rafraîchir périodiquement les données
+    LaunchedEffect(Unit) {
+        // Vous pourriez ajouter une logique pour rafraîchir périodiquement si nécessaire
+        viewModel.refreshData()
+    }
 
     Scaffold(
         topBar = {

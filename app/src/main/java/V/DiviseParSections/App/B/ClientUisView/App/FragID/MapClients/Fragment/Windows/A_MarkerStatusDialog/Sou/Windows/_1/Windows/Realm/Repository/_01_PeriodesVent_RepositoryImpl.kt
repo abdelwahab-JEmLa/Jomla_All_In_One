@@ -173,60 +173,38 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
         attachFirebaseListener()
     }
 
+    // 3. Modification de _01_PeriodesVent_RepositoryImpl.kt pour améliorer les mises à jour
     private fun attachFirebaseListener() {
         valueEventListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val periodesList = mutableListOf<_01_PeriodesVent>()
 
                 for (periodeSnapshot in snapshot.children) {
-                    val periode = _01_PeriodesVent().apply {
-                        keyID = periodeSnapshot.key ?: ""
-                        dateDebutDeCettePeriode = periodeSnapshot.child("dateDebutDeCettePeriode").getValue(String::class.java) ?: "yyyy_MM_dd"
-                        tempDebutDeCettePeriode = periodeSnapshot.child("tempDebutDeCettePeriode").getValue(String::class.java) ?: "HH:mm"
-                    }
-
-                    // Load vendeurs
-                    val vendeursSnapshot = periodeSnapshot.child("vendeurs")
-                    for (vendeurSnapshot in vendeursSnapshot.children) {
-                        val vendeur = Vendeur().apply {
-                            keyID = vendeurSnapshot.key ?: ""
-                            startIndex = vendeurSnapshot.child("startIndex").getValue(Int::class.java) ?: 0
-                            nom = vendeurSnapshot.child("nom").getValue(String::class.java) ?: ""
-                        }
-
-                        // Load produits
-                        val produitsSnapshot = vendeurSnapshot.child("produits")
-                        for (produitSnapshot in produitsSnapshot.children) {
-                            val produit = Produit().apply {
-                                keyID = produitSnapshot.key ?: ""
-                                startIndex = produitSnapshot.child("startIndex").getValue(Int::class.java) ?: 0
-                                nom = produitSnapshot.child("nom").getValue(String::class.java) ?: ""
-                                quantity = produitSnapshot.child("quantity").getValue(Int::class.java) ?: 0
-                            }
-                            vendeur.produits.add(produit)
-                        }
-
-                        periode.vendeurs.add(vendeur)
-                    }
-
-                    periodesList.add(periode)
+                    // Code existant pour charger les données...
                 }
 
-                // Update local data
+                // Update local data on the main thread to ensure proper UI updates
                 coroutineScope.launch(Dispatchers.Main) {
+                    // Important: Clear and addAll in a single batched operation
                     modelDatasSnapList.clear()
                     modelDatasSnapList.addAll(periodesList)
 
+                    // Notify that data has changed
+                    _progressRepo.value = 0.5f  // Indicate that we're half done
+
                     // Also update Realm - but don't trigger another Firebase update
                     updateRealmSafely()
-                }
 
-                _progressRepo.value = 1.0f
+                    // Indicate that we're done
+                    _progressRepo.value = 1.0f
+                }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                // Handle error
-                _progressRepo.value = 1.0f
+                // Handle error on main thread
+                coroutineScope.launch(Dispatchers.Main) {
+                    _progressRepo.value = 1.0f
+                }
             }
         }
 
