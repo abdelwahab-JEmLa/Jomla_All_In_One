@@ -30,14 +30,12 @@ class _01_PeriodesVent_RepositoryImpl(
     private val _progressRepo = MutableStateFlow(0f)
     override val progressRepo: StateFlow<Float> = _progressRepo.asStateFlow()
 
-    // Use proper SnapshotStateList for each model
+
     private var _periodesVentRoomSQl: SnapshotStateList<_01_PeriodesVentRoomSQl> =
         mutableStateListOf()
-
     private var _vendeursActiveDonsCettePeriodeRoomSQlModel:
             SnapshotStateList<_02_VendeursActiveDonsCettePeriodeRoomSQlModel> =
         mutableStateListOf()
-
     private var _produitsVenduParLuiRoomSQlModel:
             SnapshotStateList<_03_ProduitsVenduParLuiRoomSQlModel> =
         mutableStateListOf()
@@ -46,35 +44,20 @@ class _01_PeriodesVent_RepositoryImpl(
 
     init {
         repositoryScope.launch {
-            // This is fine now because getCount() is suspend
-            val count = appDatabase._02_VendeursActiveDonsCettePeriode_RoomSQlModelDao().getCount()
+
+            val count = appDatabase
+                ._02_VendeursActiveDonsCettePeriode_RoomSQlModelDao()
+                .getCount()
+
             if (count == 0) {
                 insertTestData()
             }
-            loadDataFromDatabase()
+
             collecteConvertSQlToNoSqlDataBase()
         }
     }
 
-    private suspend fun loadDataFromDatabase() {
-        // Load periods from database
-        val periodes = appDatabase._01_PeriodesVentRoomSQlModelDao().getAll()
-        _periodesVentRoomSQl.clear()
-        _periodesVentRoomSQl.addAll(periodes)
-
-        // Load vendeurs from database
-        val vendeurs = appDatabase._02_VendeursActiveDonsCettePeriode_RoomSQlModelDao().getAll()
-        _vendeursActiveDonsCettePeriodeRoomSQlModel.clear()
-        _vendeursActiveDonsCettePeriodeRoomSQlModel.addAll(vendeurs)
-
-        // Load produits from database
-        val produits = appDatabase._03_ProduitsVenduParLui_RoomSQlModelDao().getAll()
-        _produitsVenduParLuiRoomSQlModel.clear()
-        _produitsVenduParLuiRoomSQlModel.addAll(produits)
-    }
-
     override suspend fun refreshData() {
-        loadDataFromDatabase()
         collecteConvertSQlToNoSqlDataBase()
     }
 
@@ -92,7 +75,7 @@ class _01_PeriodesVent_RepositoryImpl(
 
                 val periode1 = _01_PeriodesVentRoomSQl(
                     keyID = "2023_04_17->(14:30)",
-                    parentkeyID = "", // No parent for periods
+                    parentkeyID = "",
                     startIndex = 1,
                     nom = "Période Test 1",
                     quantity = 10
@@ -100,7 +83,7 @@ class _01_PeriodesVent_RepositoryImpl(
 
                 val periode2 = _01_PeriodesVentRoomSQl(
                     keyID = "$currentDate->($currentTime)",
-                    parentkeyID = "", // No parent for periods
+                    parentkeyID = "",
                     startIndex = 2,
                     nom = "Période Test 2",
                     quantity = 5

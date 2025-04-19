@@ -1,5 +1,5 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows._01
-
+      /*
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows._00._01_VentsNoSQl
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
@@ -284,3 +284,4 @@ fun cleanup() {
 fun onDestroy() {
     cleanup()
 }
+              */
