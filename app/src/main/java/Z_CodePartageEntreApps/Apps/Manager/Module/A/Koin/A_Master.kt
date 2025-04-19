@@ -1,8 +1,12 @@
 package Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.PeriodesViewModel
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows._01._01_PeriodesVent_Repository
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows._01._01_PeriodesVent_RepositoryImpl
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.PeriodeVenteViewModel
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Repository.Produit
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Repository.Vendeur
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Repository._01_PeriodesVent
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Repository._01_PeriodesVent_Repository
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Repository._01_PeriodesVent_RepositoryImpl
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.ViewModel.VendeursViewModel
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
@@ -44,18 +48,30 @@ import Z_CodePartageEntreApps.Repository._4_2_._4_CouleurOperationCommand._4_Cou
 import Z_CodePartageEntreApps.Windows.B.Windows.ViewModel.ViewModelFragment_StartUpScreen
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.content.Context
+import io.realm.kotlin.Realm
+import io.realm.kotlin.RealmConfiguration
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
-          //<--
-          //TODO(1): recre ca 
+
 // Common repositories that are used by both app types
 val commonRepositoriesModule = module {
     single { AppDatabase.DatabaseModule.getDatabase(get()) }
 
+    // Realm configuration and repository
+    single {
+        val config = RealmConfiguration.Builder(
+            schema = setOf(
+                _01_PeriodesVent::class, Vendeur::class, Produit::class
+            )
+        )
+            .name("ventesDatabase.realm")
+            .schemaVersion(1)
+            .build()
 
-    single<_01_PeriodesVent_Repository> { _01_PeriodesVent_RepositoryImpl(
-        get(),
-    ) }
+        Realm.open(config)
+    }
+
+    single<_01_PeriodesVent_Repository> { _01_PeriodesVent_RepositoryImpl() }
 
     single<_0_0_HeadOfRepositorys_Repository> { _0_0_HeadOfRepositorys_RepositoryImpl(
         get(),
@@ -100,7 +116,7 @@ val commonRepositoriesModule = module {
     ) }
 
     viewModel { ViewModelInitApp(
-         get()
+        get()
         ,get()
         ,get()
         ,get()
@@ -111,12 +127,17 @@ val commonRepositoriesModule = module {
     ) }
 
     viewModel { VendeursViewModel(
-         get(),
+        get(),
     ) }
     viewModel { PeriodesViewModel(
         get(),
-        ) }
+    ) }
 }
+
+val viewModelModule = module {
+    viewModel { PeriodeVenteViewModel(get()) }
+}
+
 // Function to determine the application type
 fun isManagerApp(context: Context): Boolean {
     return context.packageName == "com.example.abdelwahabjemlajetpack.serveur"
@@ -130,7 +151,7 @@ val appTypeModule = module {
 }
 
 val appModule = module {
-    includes(commonRepositoriesModule, appTypeModule)
+    includes(commonRepositoriesModule, appTypeModule, viewModelModule)
 
     single {
         val context = get<Context>()

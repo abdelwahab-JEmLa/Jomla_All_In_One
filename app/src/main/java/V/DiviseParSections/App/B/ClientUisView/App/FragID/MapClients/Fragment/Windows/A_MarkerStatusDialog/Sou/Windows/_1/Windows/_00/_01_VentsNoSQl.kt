@@ -1,5 +1,5 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows._00
-
+/*
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -110,3 +110,4 @@ data class _03_ProduitsVenduParLuiRoomSQlModel(
     var nom: String = "",
     var quantity: Int = 0,
 )
+       */

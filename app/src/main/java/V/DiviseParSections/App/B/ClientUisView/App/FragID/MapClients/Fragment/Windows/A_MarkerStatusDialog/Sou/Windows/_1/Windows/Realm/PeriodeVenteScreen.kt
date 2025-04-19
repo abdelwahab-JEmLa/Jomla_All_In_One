@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Repository.PeriodeVente
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Repository.Produit
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Repository.Vendeur
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Repository._01_PeriodesVent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -114,7 +114,7 @@ fun PeriodeVenteScreen(
 
 @Composable
 fun PeriodeItem(
-    periode: PeriodeVente,
+    periode: _01_PeriodesVent,
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
@@ -152,7 +152,7 @@ fun PeriodeItem(
 }
 
 @Composable
-fun PeriodeDetail(periode: PeriodeVente) {
+fun PeriodeDetail(periode: _01_PeriodesVent) {
     Column(
         modifier = Modifier
             .fillMaxSize()

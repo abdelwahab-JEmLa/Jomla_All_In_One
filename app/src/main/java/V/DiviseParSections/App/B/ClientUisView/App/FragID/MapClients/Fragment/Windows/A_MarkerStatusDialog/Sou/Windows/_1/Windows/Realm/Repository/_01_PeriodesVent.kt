@@ -6,13 +6,12 @@ import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
 
 
-class PeriodeVente : RealmObject {
+class _01_PeriodesVent : RealmObject {
     @PrimaryKey
     var keyID: String = ""
     var dateDebutDeCettePeriode: String = "yyyy_MM_dd"
     var tempDebutDeCettePeriode: String = "HH:mm"
     var vendeurs: RealmList<Vendeur> = realmListOf()
-
 }
 
 class Vendeur : RealmObject {

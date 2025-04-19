@@ -1,10 +1,5 @@
 package com.example.clientjetpack
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Repository.PeriodeVente
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Repository.PeriodeVenteRepository
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Repository.Produit
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Repository.Vendeur
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.viewModelModule
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.appManagerModules
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.appModule
 import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.isManagerApp
@@ -12,33 +7,11 @@ import Z_MasterOfApps.A.MainActivity.Start.Module.A.Koin.appClientModules
 import android.app.Application
 import android.util.Log
 import com.google.firebase.database.FirebaseDatabase
-import io.realm.kotlin.Realm
-import io.realm.kotlin.RealmConfiguration
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
-import org.koin.dsl.module
 
 class MyApplication : Application() {
-
-    // Create a module for the repository
-    private val databaseModule = module {
-        single {
-            val config = RealmConfiguration.Builder(
-                schema = setOf(
-                    PeriodeVente::class, Vendeur::class, Produit::class
-                )
-            )
-                .name("ventesDatabase.realm")
-                .schemaVersion(1)
-                .build()
-
-            Realm.open(config)
-        }
-
-        // Provide the PeriodeVenteRepository
-        single { PeriodeVenteRepository(get()) }
-    }
 
     override fun onCreate() {
         super.onCreate()
@@ -57,7 +30,7 @@ class MyApplication : Application() {
         startKoin {
             androidLogger()
             androidContext(this@MyApplication)
-            modules(appModule, databaseModule, viewModelModule) // Add viewModelModule here
+            modules(appModule) // Add viewModelModule here
 
             // Conditionally load app-specific modules
             if (isManagerApp(this@MyApplication)) {
