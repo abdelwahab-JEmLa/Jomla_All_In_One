@@ -1,20 +1,23 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows._01
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows._00.ProduitsVenduParLui
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows._00.VendeursActiveDonsCettePeriode
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows._00._01_PeriodesVentNoSQl
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows._00._01_PeriodesVentRoomSQl
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows._00._02_VendeursActiveDonsCettePeriodeRoomSQlModel
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows._00._03_ProduitsVenduParLuiRoomSQlModel
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import com.google.android.gms.tasks.Tasks
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.util.concurrent.atomic.AtomicBoolean
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class _01_PeriodesVent_RepositoryImpl(
     val appDatabase: AppDatabase,
@@ -23,269 +26,244 @@ class _01_PeriodesVent_RepositoryImpl(
 
     override var modelDatasSnapList: SnapshotStateList<_01_PeriodesVentNoSQl> =
         mutableStateListOf()
-    override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
 
+    private val _progressRepo = MutableStateFlow(0f)
+    override val progressRepo: StateFlow<Float> = _progressRepo.asStateFlow()
 
-    var _01_PeriodesVentRoomSQl: SnapshotStateList<_01_PeriodesVentRoomSQl> =
+    // Use proper SnapshotStateList for each model
+    private var _periodesVentRoomSQl: SnapshotStateList<_01_PeriodesVentRoomSQl> =
         mutableStateListOf()
 
-    var _02_VendeursActiveDonsCettePeriodeRoomSQlModel:
+    private var _vendeursActiveDonsCettePeriodeRoomSQlModel:
             SnapshotStateList<_02_VendeursActiveDonsCettePeriodeRoomSQlModel> =
         mutableStateListOf()
 
-    var _03_ProduitsVenduParLuiRoomSQlModel:
+    private var _produitsVenduParLuiRoomSQlModel:
             SnapshotStateList<_03_ProduitsVenduParLuiRoomSQlModel> =
         mutableStateListOf()
 
-    private val isListenerActive = AtomicBoolean(false)
-    private val isFlowListenerActive = AtomicBoolean(false)
-    private var flowValueEventListener: ValueEventListener? = null
-
-    var initialDataLoaded = false
     private val repositoryScope = CoroutineScope(Dispatchers.IO)
-    private var valueEventListener: ValueEventListener? = null
-    private val listenerLock = Any()
-    private val flowListenerLock = Any()
-
 
     init {
         repositoryScope.launch {
-            initialize_01_PeriodesVentRepository()
+            // This is fine now because getCount() is suspend
+            val count = appDatabase._02_VendeursActiveDonsCettePeriode_RoomSQlModelDao().getCount()
+            if (count == 0) {
+                insertTestData()
+            }
+            loadDataFromDatabase()
+            collecteConvertSQlToNoSqlDataBase()
         }
     }
 
-    private suspend fun initialize_01_PeriodesVentRepository() {
-        try {
-            loadDepuitRoom()
-            checkDataConsistency()
+    private suspend fun loadDataFromDatabase() {
+        // Load periods from database
+        val periodes = appDatabase._01_PeriodesVentRoomSQlModelDao().getAll()
+        _periodesVentRoomSQl.clear()
+        _periodesVentRoomSQl.addAll(periodes)
 
-        } catch (e: Exception) {
-            Log.e(TAG, "Error initializing repository: ${e.message}")
-        }
+        // Load vendeurs from database
+        val vendeurs = appDatabase._02_VendeursActiveDonsCettePeriode_RoomSQlModelDao().getAll()
+        _vendeursActiveDonsCettePeriodeRoomSQlModel.clear()
+        _vendeursActiveDonsCettePeriodeRoomSQlModel.addAll(vendeurs)
+
+        // Load produits from database
+        val produits = appDatabase._03_ProduitsVenduParLui_RoomSQlModelDao().getAll()
+        _produitsVenduParLuiRoomSQlModel.clear()
+        _produitsVenduParLuiRoomSQlModel.addAll(produits)
     }
 
-    suspend fun ensureDataIsInitialized() {
-        try {
-            if (!initialDataLoaded) {
-                withContext(Dispatchers.IO) {
-                    // Wait until data is loaded
-                    while (!initialDataLoaded) {
-                        delay(100)
-                        if (progressRepo.value >= 1.0f) {
-                            initialDataLoaded = true
-                        }
-                    }
-                }
-            }
-        } catch (e: Exception) {
-        }
+    override suspend fun refreshData() {
+        loadDataFromDatabase()
+        collecteConvertSQlToNoSqlDataBase()
     }
 
-    private suspend fun loadDepuitRoom() {
-        try {
-            progressRepo.value = 0.2f
-            withContext(Dispatchers.IO) {
-                val dataList = try {
-                    appDatabase._01_PeriodesVentRoomSQlModelDao().getAll()
-                } catch (e: Exception) {
-                    emptyList()
-                }
-
-                withContext(Dispatchers.Main) {
-                    modelDatasSnapList.clear()
-                    if (dataList.isNotEmpty()) {
-                        modelDatasSnapList.addAll(dataList)
-                    }
-                    initialDataLoaded = true
-                    progressRepo.value = 1.0f
-                }
-            }
-        } catch (e: Exception) {
-            progressRepo.value = 0f
-        }
+    override suspend fun addPeriode(periode: _01_PeriodesVentRoomSQl) {
+        appDatabase._01_PeriodesVentRoomSQlModelDao().insert(periode)
+        refreshData()
     }
 
-    private suspend fun checkDataConsistency() {
-        try {
-            val roomCount = withContext(Dispatchers.IO) {
-                try {
-                    appDatabase._01_PeriodesVentRoomSQlModelDao().getCount()
-                } catch (e: Exception) {
-                    0
-                }
-            }
-
-            val firebaseSnapshot = try {
-                withContext(Dispatchers.IO) {
-                    val task = _01_PeriodesVent_Repository.sonDataBaseRef.get()
-                    Tasks.await(task)
-                }
-            } catch (e: Exception) {
-                null
-            }
-
-            val firebaseCount = firebaseSnapshot?.childrenCount?.toInt() ?: 0
-
-            if (roomCount != firebaseCount || roomCount == 0) {
-                if (firebaseCount > 0) {
-                    importDeFireBaseAuRoom(repositoryScope)
-                }
-            }
-
-            withContext(Dispatchers.Main) {
-                FireBaseOnDataChangeListner()
-            }
-        } catch (e: Exception) {
-            withContext(Dispatchers.Main) {
-                FireBaseOnDataChangeListner()
-            }
-        }
+    override suspend fun getAllPeriodes(): List<_01_PeriodesVentRoomSQl> {
+        return appDatabase._01_PeriodesVentRoomSQlModelDao().getAll()
     }
 
-    private fun FireBaseOnDataChangeListner() {
-        synchronized(flowListenerLock) {
-            removeFlowDataListener()
-
-            if (!isFlowListenerActive.get()) {
-                flowValueEventListener = object : ValueEventListener {
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        try {
-                            val updatedList = mutableListOf<_01_PeriodesVentNoSQl>()
-                            for (dataSnapshot in snapshot.children) {
-                                val data = dataSnapshot.getValue(_01_PeriodesVentNoSQl::class.java)
-                                data?.let {
-                                    updatedList.add(it)
-                                }
-                            }
-
-                            repositoryScope.launch(Dispatchers.Main) {
-                                if (updatedList.isNotEmpty()) {
-                                    modelDatasSnapList.clear()
-                                    modelDatasSnapList.addAll(updatedList)
-                                }
-                            }
-
-                            repositoryScope.launch(Dispatchers.IO) {
-                                try {
-                                    appDatabase._01_PeriodesVentRoomSQlModelDao().deleteAll()
-                                    appDatabase._01_PeriodesVentRoomSQlModelDao()
-                                        .insertAll(updatedList)
-                                } catch (e: Exception) {
-                                    Log.e(
-                                        TAG,
-                                    )
-                                }
-                            }
-                        } catch (e: Exception) {
-                        }
-                    }
-
-                    override fun onCancelled(error: DatabaseError) {
-                    }
-                }
-
-                _01_PeriodesVent_Repository.sonDataBaseRef.addValueEventListener(
-                    flowValueEventListener!!
-                )
-                isFlowListenerActive.set(true)
-            }
-        }
-    }
-
-    private fun removeFlowDataListener() {
-        synchronized(flowListenerLock) {
-            if (isFlowListenerActive.get() && flowValueEventListener != null) {
-                try {
-                    _01_PeriodesVent_Repository.sonDataBaseRef.removeEventListener(
-                        flowValueEventListener!!
-                    )
-                } catch (e: Exception) {
-                } finally {
-                    flowValueEventListener = null
-                    isFlowListenerActive.set(false)
-                }
-            }
-        }
-    }
-
-    private fun importDeFireBaseAuRoom(viewModelScope: CoroutineScope) {
-        try {
-            progressRepo.value = 0f
-            viewModelScope.launch(Dispatchers.Main) {
-                modelDatasSnapList.clear()
-            }
-
-            viewModelScope.launch(Dispatchers.IO) {
-                try {
-                    val task = _01_PeriodesVent_Repository.sonDataBaseRef.get()
-                    val snapshot = Tasks.await(task)
-
-                    try {
-                        appDatabase._01_PeriodesVentRoomSQlModelDao().deleteAll()
-                    } catch (e: Exception) {
-                    }
-
-                    val dataList = mutableListOf<_01_PeriodesVentNoSQl>()
-
-                    for (dataSnapshot in snapshot.children) {
-                        try {
-                            val data = dataSnapshot.getValue(_01_PeriodesVentNoSQl::class.java)
-                            data?.let {
-                                dataList.add(it)
-                            }
-                        } catch (e: Exception) {
-                        }
-                    }
-
-                    if (dataList.isNotEmpty()) {
-                        try {
-                            appDatabase._01_PeriodesVentRoomSQlModelDao().insertAll(dataList)
-
-                            withContext(Dispatchers.Main) {
-                                modelDatasSnapList.addAll(dataList)
-                            }
-                        } catch (e: Exception) {
-                        }
-                    }
-
-                    initialDataLoaded = true
-                    progressRepo.value = 1.0f
-                } catch (e: Exception) {
-                    progressRepo.value = 0f
-                }
-            }
-        } catch (e: Exception) {
-            progressRepo.value = 0f
-        }
-    }
-
-    private fun removeDataChangeListener() {
-        synchronized(listenerLock) {
-            if (isListenerActive.get() && valueEventListener != null) {
-                try {
-                    _01_PeriodesVent_Repository.sonDataBaseRef.removeEventListener(
-                        valueEventListener!!
-                    )
-                } catch (e: Exception) {
-                } finally {
-                    valueEventListener = null
-                    isListenerActive.set(false)
-                }
-            }
-        }
-    }
-
-
-    fun cleanup() {
+    private fun insertTestData() {
         repositoryScope.launch {
-            removeDataChangeListener()
-            removeFlowDataListener()
+            try {
+                // Create test data for periods
+                val currentDate = SimpleDateFormat("yyyy_MM_dd", Locale.getDefault()).format(Date())
+                val currentTime = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
+
+                val periode1 = _01_PeriodesVentRoomSQl(
+                    keyID = "2023_04_17->(14:30)",
+                    parentkeyID = "", // No parent for periods
+                    startIndex = 1,
+                    nom = "Période Test 1",
+                    quantity = 10
+                )
+
+                val periode2 = _01_PeriodesVentRoomSQl(
+                    keyID = "$currentDate->($currentTime)",
+                    parentkeyID = "", // No parent for periods
+                    startIndex = 2,
+                    nom = "Période Test 2",
+                    quantity = 5
+                )
+
+                // Insert periods
+                appDatabase._01_PeriodesVentRoomSQlModelDao().insertAll(listOf(periode1, periode2))
+
+                // Create test data for vendeurs
+                val vendeur1 = _02_VendeursActiveDonsCettePeriodeRoomSQlModel(
+                    keyID = "1->(Vendeur Test 1)",
+                    parentkeyID = "2023_04_17->(14:30)",
+                    startIndex = 1,
+                    nom = "Vendeur Test 1",
+                    quantity = 8
+                )
+
+                val vendeur2 = _02_VendeursActiveDonsCettePeriodeRoomSQlModel(
+                    keyID = "2->(Vendeur Test 2)",
+                    parentkeyID = "2023_04_17->(14:30)",
+                    startIndex = 2,
+                    nom = "Vendeur Test 2",
+                    quantity = 2
+                )
+
+                val vendeur3 = _02_VendeursActiveDonsCettePeriodeRoomSQlModel(
+                    keyID = "1->(Vendeur Test 3)",
+                    parentkeyID = "$currentDate->($currentTime)",
+                    startIndex = 1,
+                    nom = "Vendeur Test 3",
+                    quantity = 5
+                )
+
+                // Create test data for produits
+                val produit1 = _03_ProduitsVenduParLuiRoomSQlModel(
+                    keyID = "1->(Produit Test 1)",
+                    parentkeyID = "1->(Vendeur Test 1)",
+                    id = 1,
+                    nom = "Produit Test 1",
+                    quantity = 5
+                )
+
+                val produit2 = _03_ProduitsVenduParLuiRoomSQlModel(
+                    keyID = "2->(Produit Test 2)",
+                    parentkeyID = "1->(Vendeur Test 1)",
+                    id = 2,
+                    nom = "Produit Test 2",
+                    quantity = 3
+                )
+
+                val produit3 = _03_ProduitsVenduParLuiRoomSQlModel(
+                    keyID = "1->(Produit Test 3)",
+                    parentkeyID = "2->(Vendeur Test 2)",
+                    id = 1,
+                    nom = "Produit Test 3",
+                    quantity = 2
+                )
+
+                val produit4 = _03_ProduitsVenduParLuiRoomSQlModel(
+                    keyID = "1->(Produit Test 4)",
+                    parentkeyID = "1->(Vendeur Test 3)",
+                    id = 1,
+                    nom = "Produit Test 4",
+                    quantity = 5
+                )
+
+                // Insert test data
+                appDatabase._02_VendeursActiveDonsCettePeriode_RoomSQlModelDao().insertAll(
+                    listOf(vendeur1, vendeur2, vendeur3)
+                )
+                appDatabase._03_ProduitsVenduParLui_RoomSQlModelDao().insertAll(
+                    listOf(produit1, produit2, produit3, produit4)
+                )
+            } catch (e: Exception) {
+                // Error handling without logging
+            }
         }
     }
 
-    fun onDestroy() {
-        cleanup()
+    private fun collecteConvertSQlToNoSqlDataBase() {
+        repositoryScope.launch {
+            try {
+                // Convert the lists to flows
+                _progressRepo.value = 0.1f
+
+                // Process data directly without using combine since we already have the lists
+                val periodesList = _periodesVentRoomSQl
+                val vendeursList = _vendeursActiveDonsCettePeriodeRoomSQlModel
+                val produitsList = _produitsVenduParLuiRoomSQlModel
+
+                // Create a periode map to group vendeurs by periode
+                val periodeMap = mutableMapOf<String, _01_PeriodesVentNoSQl>()
+
+                // First process periods
+                periodesList.forEach { periodeModel ->
+                    periodeMap[periodeModel.keyID] = _01_PeriodesVentNoSQl().apply {
+                        this.keyID = periodeModel.keyID
+                        this.dateDebutDeCettePeriode = periodeModel.keyID.split("->(")[0]
+                        this.tempDebutDeCettePeriode = periodeModel.keyID.split("->(")[1].removeSuffix(")")
+                        this.vendeursActiveDonsCettePeriode = mutableMapOf()
+                    }
+                }
+
+                _progressRepo.value = 0.3f
+
+                // Then process vendeurs
+                vendeursList.forEach { vendeurModel ->
+                    val periodeId = vendeurModel.parentkeyID
+                    if (periodeMap.containsKey(periodeId)) {
+                        // Create vendeur object
+                        val vendeur = VendeursActiveDonsCettePeriode().apply {
+                            this.keyID = vendeurModel.keyID
+                            this.startIndex = vendeurModel.startIndex
+                            this.nom = vendeurModel.nom
+                            this.produitsVenduParLui = mutableMapOf()
+                        }
+
+                        (periodeMap[periodeId]!!.vendeursActiveDonsCettePeriode as
+                                MutableMap<String, VendeursActiveDonsCettePeriode>)[vendeurModel.keyID] = vendeur
+                    }
+                }
+
+                _progressRepo.value = 0.6f
+
+                // Finally process produits
+                produitsList.forEach { produitModel ->
+                    val vendeurId = produitModel.parentkeyID
+
+                    // Find the vendeur in all periods
+                    periodeMap.values.forEach { periode ->
+                        periode.vendeursActiveDonsCettePeriode.forEach { (vendeurKey, vendeur) ->
+                            if (vendeurKey == vendeurId) {
+                                // Create produit object
+                                val produit = ProduitsVenduParLui().apply {
+                                    this.keyID = produitModel.keyID
+                                    this.startIndex = produitModel.id
+                                    this.nom = produitModel.nom
+                                    this.quantity = produitModel.quantity
+                                }
+
+                                // Add produit to vendeur
+                                (vendeur.produitsVenduParLui as MutableMap<String, ProduitsVenduParLui>)[produitModel.keyID] = produit
+                            }
+                        }
+                    }
+                }
+
+                _progressRepo.value = 0.9f
+
+                // Update the model data list
+                modelDatasSnapList.clear()
+                modelDatasSnapList.addAll(periodeMap.values)
+
+                _progressRepo.value = 1.0f
+
+            } catch (e: Exception) {
+                // Handle errors without logging
+                _progressRepo.value = 0f
+            }
+        }
     }
-
-
 }

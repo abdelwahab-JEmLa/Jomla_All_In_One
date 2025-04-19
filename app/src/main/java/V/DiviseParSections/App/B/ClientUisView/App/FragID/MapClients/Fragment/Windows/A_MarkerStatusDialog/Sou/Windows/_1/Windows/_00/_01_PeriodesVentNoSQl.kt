@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows._01
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows._00
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -9,14 +9,17 @@ import androidx.room.PrimaryKey
 import com.google.firebase.firestore.Exclude
 
 class _01_PeriodesVentNoSQl {
-    private var keyID by mutableStateOf("{dateDebutDeCettePeriode}->(tempDebutDeCettePeriode)")
-    private var dateDebutDeCettePeriode by mutableStateOf("yyyy_MM_dd")
-    private var tempDebutDeCettePeriode by mutableStateOf("HH:mm")
+    var keyID by mutableStateOf("{dateDebutDeCettePeriode}->(tempDebutDeCettePeriode)")
+    var dateDebutDeCettePeriode by mutableStateOf("yyyy_MM_dd")
+    var tempDebutDeCettePeriode by mutableStateOf("HH:mm")
 
     @get:Exclude
     var vendeursActiveDonsCettePeriode: Map<String, VendeursActiveDonsCettePeriode> = mutableMapOf()
 
-    private fun genereModelKeyID() {
+    // Add an a01PeriodesVent field to match collection model in implementation
+    var a01PeriodesVent: List<_01_PeriodesVentNoSQl> = listOf()
+
+    fun genereModelKeyID() {
         keyID = "${dateDebutDeCettePeriode}->($tempDebutDeCettePeriode)"
     }
 }
@@ -24,17 +27,17 @@ class _01_PeriodesVentNoSQl {
 @Entity
 data class _01_PeriodesVentRoomSQl(
     @PrimaryKey
-    var keyID: String = "0->(Vendeur nom)",
-    var parentkeyID: String = "2025_01_01->(00:00)",
+    var keyID: String = "0->(Periode nom)",
+    var parentkeyID: String = "",  // Periods have no parent
     var startIndex: Int = 0,
     var nom: String = "",
     var quantity: Int = 0,
 )
 
 class VendeursActiveDonsCettePeriode {
-    private var keyID by mutableStateOf("{startIndex}->({nom})")
-    private var startIndex by mutableIntStateOf(0)
-    private var nom by mutableStateOf("")
+    var keyID by mutableStateOf("{startIndex}->({nom})")
+    var startIndex by mutableIntStateOf(0)
+    var nom by mutableStateOf("")
 
     @get:Exclude
     var produitsVenduParLui: Map<String, ProduitsVenduParLui> = mutableMapOf()
@@ -43,6 +46,7 @@ class VendeursActiveDonsCettePeriode {
         keyID = "${startIndex}->($nom)"
     }
 }
+
 @Entity
 data class _02_VendeursActiveDonsCettePeriodeRoomSQlModel(
     @PrimaryKey
@@ -54,15 +58,14 @@ data class _02_VendeursActiveDonsCettePeriodeRoomSQlModel(
 )
 
 class ProduitsVenduParLui {
-    private var keyID by mutableStateOf("{startIndex}->({nom})")
-    private var startIndex by mutableIntStateOf(0)
-    private var nom by mutableStateOf("")
+    var keyID by mutableStateOf("{startIndex}->({nom})")
+    var startIndex by mutableIntStateOf(0)
+    var nom by mutableStateOf("")
     var quantity by mutableStateOf(0)
 
     fun genereModelKeyID() {
         keyID = "${startIndex}->($nom)"
     }
-
 }
 
 @Entity

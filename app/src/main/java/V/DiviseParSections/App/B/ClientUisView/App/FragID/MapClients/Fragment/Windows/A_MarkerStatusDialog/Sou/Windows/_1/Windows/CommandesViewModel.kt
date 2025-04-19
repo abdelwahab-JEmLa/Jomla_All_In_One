@@ -1,10 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows._01.ProduitsVenduParLui
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows._01.VendeursActiveDonsCettePeriode
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows._01._01_PeriodesVentNoSQl
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows._01._02_VendeursActiveDonsCettePeriodeRoomSQlModel
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows._01._03_ProduitsVenduParLuiRoomSQlModel
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows._00._01_PeriodesVentNoSQl
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -13,7 +9,6 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 // Data class for representing UI state
@@ -39,120 +34,5 @@ open class PeriodesViewModel(
         collecteConvertSQlToNoSqlDataBase()
     }
 
-    private fun insertTestData() {
-        viewModelScope.launch {
-            try {
-                // Create test data for vendeurs
-                val vendeur1 = _02_VendeursActiveDonsCettePeriodeRoomSQlModel(
-                    keyID = "1->(Vendeur Test 1)",
-                    parentkeyID = "2023_04_17->(14:30)",
-                    startIndex = 1,
-                    nom = "Vendeur Test 1",
-                    quantity = 8
-                )
 
-                val vendeur2 = _02_VendeursActiveDonsCettePeriodeRoomSQlModel(
-                    keyID = "2->(Vendeur Test 2)",
-                    parentkeyID = "2023_04_17->(14:30)",
-                    startIndex = 2,
-                    nom = "Vendeur Test 2",
-                    quantity = 2
-                )
-
-                // Create test data for produits
-                val produit1 = _03_ProduitsVenduParLuiRoomSQlModel(
-                    keyID = "1->(Produit Test 1)",
-                    parentkeyID = "1->(Vendeur Test 1)",
-                    id = 1,
-                    nom = "Produit Test 1",
-                    quantity = 5
-                )
-
-                val produit2 = _03_ProduitsVenduParLuiRoomSQlModel(
-                    keyID = "2->(Produit Test 2)",
-                    parentkeyID = "1->(Vendeur Test 1)",
-                    id = 2,
-                    nom = "Produit Test 2",
-                    quantity = 3
-                )
-
-                val produit3 = _03_ProduitsVenduParLuiRoomSQlModel(
-                    keyID = "1->(Produit Test 3)",
-                    parentkeyID = "2->(Vendeur Test 2)",
-                    id = 1,
-                    nom = "Produit Test 3",
-                    quantity = 2
-                )
-
-                // Insert test data
-                appDatabase._02_VendeursActiveDonsCettePeriode_RoomSQlModelDao().insertAll(listOf(vendeur1, vendeur2))
-                appDatabase._03_ProduitsVenduParLui_RoomSQlModelDao().insertAll(listOf(produit1, produit2, produit3))
-            } catch (e: Exception) {
-                // Error handling without logging
-            }
-        }
-    }
-
-    private fun collecteConvertSQlToNoSqlDataBase() {
-        viewModelScope.launch {
-            try {
-                // Combine flows from both DAOs to process data together
-                val vendeursFlow = appDatabase._02_VendeursActiveDonsCettePeriode_RoomSQlModelDao().getAllAsFlow()
-                val produitsFlow = appDatabase._03_ProduitsVenduParLui_RoomSQlModelDao().getAllAsFlow()
-
-                combine(vendeursFlow, produitsFlow) { vendeursList, produitsList ->
-                    // Create a periode map to group vendeurs by periode
-                    val periodeMap = mutableMapOf<String, _01_PeriodesVentNoSQl>()
-
-                    // First process vendeurs
-                    vendeursList.forEach { vendeurModel ->
-                        val periodeId = vendeurModel.parentkeyID
-                        if (!periodeMap.containsKey(periodeId)) {
-                            periodeMap[periodeId] = _01_PeriodesVentNoSQl().apply {
-                                this.vendeursActiveDonsCettePeriode = mutableMapOf()
-                            }
-                        }
-
-                        // Create vendeur object
-                        val vendeur = VendeursActiveDonsCettePeriode().apply {
-                            this.produitsVenduParLui = mutableMapOf()
-                        }
-
-                        (periodeMap[periodeId]!!.vendeursActiveDonsCettePeriode as
-                                MutableMap<String, VendeursActiveDonsCettePeriode>)[vendeurModel.keyID] = vendeur
-                    }
-
-                    // Then process produits
-                    produitsList.forEach { produitModel ->
-                        val vendeurId = produitModel.parentkeyID
-
-                        // Find the vendeur in all periods
-                        periodeMap.values.forEach { periode ->
-                            periode.vendeursActiveDonsCettePeriode.forEach { (vendeurKey, vendeur) ->
-                                if (vendeurKey == vendeurId) {
-                                    // Create produit object
-                                    val produit = ProduitsVenduParLui().apply {
-                                        this.quantity = produitModel.quantity
-                                    }
-
-                                    // Add produit to vendeur
-                                    (vendeur.produitsVenduParLui as MutableMap<String, ProduitsVenduParLui>)[produitModel.keyID] = produit
-                                }
-                            }
-                        }
-                    }
-
-                    // Update UI state with collected data
-                    _uiState.value = PeriodesUiState(
-                        a01PeriodesVent = mutableStateListOf<_01_PeriodesVentNoSQl>().apply {
-                            addAll(periodeMap.values)
-                        }
-                    )
-                }.collect {}
-
-            } catch (e: Exception) {
-                // Handle errors without logging
-            }
-        }
-    }
 }
