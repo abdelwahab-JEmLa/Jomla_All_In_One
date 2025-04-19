@@ -62,16 +62,4 @@ override fun upsertUnSeulDataEtReturnVID(data: _01_PeriodesVentNoSQl, onSuccess:
         TODO("Not yet implemented")
     }
 
-    private suspend fun initialize_01_PeriodesVentRepository() {
-        try {
-            loadDepuitRoom()
-            checkDataConsistency()
 
-
-            if (TAG.isNotEmpty()) {
-                log()
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error initializing repository: ${e.message}")
-        }
-    }

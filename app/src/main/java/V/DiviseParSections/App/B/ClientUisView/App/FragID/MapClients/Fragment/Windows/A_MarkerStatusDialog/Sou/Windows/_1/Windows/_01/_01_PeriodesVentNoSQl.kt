@@ -31,7 +31,6 @@ data class _01_PeriodesVentRoomSQl(
     var quantity: Int = 0,
 )
 
-// Class representing a vendor active during a sales period
 class VendeursActiveDonsCettePeriode {
     private var keyID by mutableStateOf("{startIndex}->({nom})")
     private var startIndex by mutableIntStateOf(0)
@@ -54,7 +53,6 @@ data class _02_VendeursActiveDonsCettePeriodeRoomSQlModel(
     var quantity: Int = 0,
 )
 
-// Class representing a vendor active during a sales period
 class ProduitsVenduParLui {
     private var keyID by mutableStateOf("{startIndex}->({nom})")
     private var startIndex by mutableIntStateOf(0)

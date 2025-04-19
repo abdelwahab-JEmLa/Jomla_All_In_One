@@ -18,7 +18,3 @@ interface _01_PeriodesVent_Repository {
     }
 }
 
-class MainModelsRepository{
-    var modelDatasSnapList: SnapshotStateList<_01_PeriodesVentNoSQl>
-
-}
