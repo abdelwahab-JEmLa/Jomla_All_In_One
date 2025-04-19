@@ -38,8 +38,64 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
     private val firebaseRef = _01_PeriodesVent_Repository.sonDataBaseRef
 
     init {
-        loadFromRealmTOmodelDatasSnapList()
-        loadFromFirebase()
+        val isRealmEmpty = realm.query<_01_PeriodesVent>().count().find() == 0L
+
+        if (isRealmEmpty) {
+            // Check if Firebase is empty and create test data if needed
+            firebaseRef.get().addOnSuccessListener { snapshot ->
+                if (!snapshot.exists() || snapshot.childrenCount == 0L) {
+                    createTestDataIfEmpty()
+                } else {
+                    loadFromFirebase()
+                }
+            }.addOnFailureListener {
+                // If Firebase check fails, load from Firebase anyway
+                loadFromFirebase()
+            }
+        } else {
+            // Realm has data, load it
+            loadFromRealmTOmodelDatasSnapList()
+        }
+    }
+
+    private fun createTestDataIfEmpty() {
+        coroutineScope.launch {
+            // Create sample data
+            val testPeriode = _01_PeriodesVent().apply {
+                keyID = "test_periode_${System.currentTimeMillis()}"
+                dateDebutDeCettePeriode = "2025_04_19"
+                tempDebutDeCettePeriode = "10:00"
+
+                // Add a test vendeur
+                val testVendeur = Vendeur().apply {
+                    keyID = "test_vendeur_${System.currentTimeMillis()}"
+                    startIndex = 0
+                    nom = "Jean Dupont"
+
+                    // Add test products
+                    produits.add(Produit().apply {
+                        keyID = "test_produit_1_${System.currentTimeMillis()}"
+                        startIndex = 0
+                        nom = "T-shirt"
+                        quantity = 10
+                    })
+
+                    produits.add(Produit().apply {
+                        keyID = "test_produit_2_${System.currentTimeMillis()}"
+                        startIndex = 1
+                        nom = "Pantalon"
+                        quantity = 5
+                    })
+                }
+
+                vendeurs.add(testVendeur)
+            }
+
+            modelDatasSnapList.add(testPeriode)
+
+            // Update both Realm and Firebase
+            updateRealmAndFirebase()
+        }
     }
 
     private fun loadFromRealmTOmodelDatasSnapList() {
@@ -101,7 +157,6 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
         }
     }
 
-    // Load data from Firebase
     private fun loadFromFirebase() {
         firebaseRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -202,25 +257,6 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
         loadFromRealmTOmodelDatasSnapList()
     }
 
-    // Methods to modify the modelDatasSnapList that ensure synchronization
-    fun addPeriodeVente(periode: _01_PeriodesVent) {
-        modelDatasSnapList.add(periode)
-        updateRealmAndFirebase()
-    }
-
-    fun updatePeriodeVente(index: Int, periode: _01_PeriodesVent) {
-        if (index in 0 until modelDatasSnapList.size) {
-            modelDatasSnapList[index] = periode
-            updateRealmAndFirebase()
-        }
-    }
-
-    fun removePeriodeVente(index: Int) {
-        if (index in 0 until modelDatasSnapList.size) {
-            modelDatasSnapList.removeAt(index)
-            updateRealmAndFirebase()
-        }
-    }
 
     // Cleanup method to close Realm when repository is no longer needed
     fun cleanup() {
