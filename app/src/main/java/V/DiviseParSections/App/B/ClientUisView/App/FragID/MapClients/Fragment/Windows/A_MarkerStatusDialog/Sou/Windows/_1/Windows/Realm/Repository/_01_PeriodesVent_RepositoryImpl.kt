@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 
 class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
     override var modelDatasSnapList: SnapshotStateList<_01_PeriodesVent> = mutableStateListOf()
-    var idComptDeCeTelephone: String = "2->Jean Dupont"
+    var idComptDeCeTelephone: String = "2025_04_19->11:00->1(Vendeur 1)"
 
     // Initialize Realm with proper configuration
     private var realm: Realm = Realm.open(
@@ -66,119 +66,65 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
 
     private fun createTestDataIfEmpty() {
         coroutineScope.launch {
-            // Create first test period
-            val testPeriode1 = _01_PeriodesVent().apply {
-                keyID = "2025_04_19->10:00"
-                dateDebutDeCettePeriode = "2025_04_19"
-                tempDebutDeCettePeriode = "10:00"
+            // Create 3 periods with 2 vendors each, and 5 products per vendor
+            val testPeriodes = mutableListOf<_01_PeriodesVent>()
 
-                // Add first vendeur with unique key
-                val testVendeur1 = Vendeur().apply {
-                    keyID = "1->Jean Dupont"
-                    id = 1
-                    nom = "Jean Dupont"
+            // Create 3 periods
+            for (i in 1..3) {
+                val date = "2025_04_${18 + i}"  // April 19-21, 2025
+                val time = "${10 + i}:00"       // 11:00, 12:00, 13:00
 
-                    // Add test products with unique keys
-                    produits.add(Produit().apply {
-                        keyID = "p1->T-shirt"
-                        id = 1
-                        nom = "T-shirt"
-                        quantity = 10
-                    })
-
-                    produits.add(Produit().apply {
-                        keyID = "p2->Pantalon"
-                        id = 2
-                        nom = "Pantalon"
-                        quantity = 5
-                    })
+                val periodeKey = "$date->$time"
+                val periode = _01_PeriodesVent().apply {
+                    keyID = periodeKey
+                    dateDebutDeCettePeriode = date
+                    tempDebutDeCettePeriode = time
+                    vendeurs = realmListOf()
                 }
 
-                vendeurs.add(testVendeur1)
+                // Create 2 vendors per period
+                for (j in 1..2) {
+                    val vendeurId = j.toLong()
+                    val vendeurNom = "Vendeur $j"
+                    val vendeurKey = "${periodeKey}->${vendeurId}($vendeurNom)"
 
-                // Add a second vendeur with a distinct key
-                val testVendeur2 = Vendeur().apply {
-                    keyID = "2->Marie Martin"
-                    id = 2
-                    nom = "Marie Martin"
+                    val vendeur = Vendeur().apply {
+                        keyID = vendeurKey
+                        id = vendeurId
+                        nom = vendeurNom
+                        produits = realmListOf()
+                    }
 
-                    // Add test products with unique keys
-                    produits.add(Produit().apply {
-                        keyID = "p3->Chaussures"
-                        id = 3
-                        nom = "Chaussures"
-                        quantity = 8
-                    })
+                    // Create 5 products per vendor
+                    for (k in 1..5) {
+                        val produitId = k.toLong()
+                        val produitNom = "Produit $k"
+                        val produitKey = "${vendeurKey}->${produitId}($produitNom)"
 
-                    produits.add(Produit().apply {
-                        keyID = "p4->Veste"
-                        id = 4
-                        nom = "Veste"
-                        quantity = 3
-                    })
+                        val produit = Produit().apply {
+                            keyID = produitKey
+                            id = produitId
+                            nom = produitNom
+                            quantity = (k * 5)  // Different quantities for each product
+                        }
+
+                        vendeur.produits.add(produit)
+                    }
+
+                    periode.vendeurs.add(vendeur)
                 }
 
-                vendeurs.add(testVendeur2)
+                testPeriodes.add(periode)
             }
 
-            // Create second test period with different vendeur instances
-            val testPeriode2 = _01_PeriodesVent().apply {
-                keyID = "2025_04_19->14:00"
-                dateDebutDeCettePeriode = "2025_04_19"
-                tempDebutDeCettePeriode = "14:00"
-
-                // Create a new vendeur instance with a different key
-                val testVendeur = Vendeur().apply {
-                    keyID = "p2_1->Jean Dupont"  // Different key for the same person
-                    id = 1
-                    nom = "Jean Dupont"
-
-                    // Add test products with unique keys
-                    produits.add(Produit().apply {
-                        keyID = "p2_1->T-shirt"
-                        id = 1
-                        nom = "T-shirt"
-                        quantity = 7
-                    })
-                }
-
-                vendeurs.add(testVendeur)
-            }
-
-            // Create third test period
-            val testPeriode3 = _01_PeriodesVent().apply {
-                keyID = "2025_04_20->09:00"
-                dateDebutDeCettePeriode = "2025_04_20"
-                tempDebutDeCettePeriode = "09:00"
-
-                // Create a new vendeur instance with a different key
-                val testVendeur = Vendeur().apply {
-                    keyID = "p3_2->Marie Martin"  // Different key for the same person
-                    id = 2
-                    nom = "Marie Martin"
-
-                    // Add test products with unique keys
-                    produits.add(Produit().apply {
-                        keyID = "p3_4->Veste"
-                        id = 4
-                        nom = "Veste"
-                        quantity = 12
-                    })
-                }
-
-                vendeurs.add(testVendeur)
-            }
-
-            // Add all periods to the list
-            modelDatasSnapList.add(testPeriode1)
-            modelDatasSnapList.add(testPeriode2)
-            modelDatasSnapList.add(testPeriode3)
+            // Add to modelDatasSnapList
+            modelDatasSnapList.clear()
+            modelDatasSnapList.addAll(testPeriodes)
 
             // Update both Realm and Firebase
             updateRealmAndFirebase()
         }
     }
-
     private fun loadFromRealmTOmodelDatasSnapList() {
         val allPeriodes = realm.query<_01_PeriodesVent>()
             .sort("dateDebutDeCettePeriode", Sort.DESCENDING)
@@ -199,12 +145,8 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
     private fun updateRealm() {
         coroutineScope.launch {
             try {
-// In updateRealm() method
                 realm.write {
-                    // First delete all existing data
-                    // Change from:
-                    // deleteAll<_01_PeriodesVent>()
-                    // To:
+
                     query<_01_PeriodesVent>().find().also { delete(it) }
                     query<Vendeur>().find().also { delete(it) }
                     query<Produit>().find().also { delete(it) }
@@ -230,11 +172,11 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
                     "tempDebutDeCettePeriode" to periode.tempDebutDeCettePeriode,
                     "vendeurs" to periode.vendeurs.associate { vendeur ->
                         vendeur.keyID to mapOf(
-                            "startIndex" to vendeur.id,
+                            "id" to vendeur.id,
                             "nom" to vendeur.nom,
                             "produits" to vendeur.produits.associate { produit ->
                                 produit.keyID to mapOf(
-                                    "startIndex" to produit.id,
+                                    "id" to produit.id,
                                     "nom" to produit.nom,
                                     "quantity" to produit.quantity
                                 )
@@ -260,6 +202,7 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
     }
 
     private fun attachFirebaseListener() {
+        // Fix the schema database connection
         valueEventListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val periodesList = mutableListOf<_01_PeriodesVent>()
@@ -283,19 +226,22 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
                         val vendeurKey = vendeurSnapshot.key ?: return@forEach
 
                         // Check if this is the current user's vendor
-                        if (vendeurKey == idComptDeCeTelephone) {
+                        if (vendeurKey.contains(idComptDeCeTelephone)) {
                             containsCurrentUser = true
                             // Skip this vendeur to prevent listener conflicts
                             return@forEach
                         }
 
-                        // Generate a completely unique key for this vendeur instance
-                        val uniqueVendeurKey = "${periodeKey}_${vendeurKey}"
+                        // Use the key format consistent with your schema
+                        // The correct format should be "${periodeKey}->${vendeurId}(${vendeurNom})"
+                        val vendeurId = vendeurSnapshot.child("id").getValue(Long::class.java) ?: 0
+                        val vendeurNom = vendeurSnapshot.child("nom").getValue(String::class.java) ?: ""
+                        val standardizedVendeurKey = "${periodeKey}->${vendeurId}(${vendeurNom})"
 
                         val vendeur = Vendeur().apply {
-                            keyID = uniqueVendeurKey
-                            id = vendeurSnapshot.child("id").getValue(Long::class.java) ?: 0
-                            nom = vendeurSnapshot.child("nom").getValue(String::class.java) ?: ""
+                            keyID = standardizedVendeurKey
+                            id = vendeurId
+                            nom = vendeurNom
                         }
 
                         // Load produits
@@ -303,13 +249,16 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
                         produitsSnapshot.children.forEach { produitSnapshot ->
                             val produitKey = produitSnapshot.key ?: return@forEach
 
-                            // Generate a unique key for this product instance
-                            val uniqueProduitKey = "${uniqueVendeurKey}_${produitKey}"
+                            // Use the key format consistent with your schema
+                            // The correct format should be "${vendeurKey}->${produitId}(${produitNom})"
+                            val produitId = produitSnapshot.child("id").getValue(Long::class.java) ?: 0
+                            val produitNom = produitSnapshot.child("nom").getValue(String::class.java) ?: ""
+                            val standardizedProduitKey = "${standardizedVendeurKey}->${produitId}(${produitNom})"
 
                             val produit = Produit().apply {
-                                keyID = uniqueProduitKey
-                                id = produitSnapshot.child("id").getValue(Long::class.java) ?: 0
-                                nom = produitSnapshot.child("nom").getValue(String::class.java) ?: ""
+                                keyID = standardizedProduitKey
+                                id = produitId
+                                nom = produitNom
                                 quantity = produitSnapshot.child("quantity").getValue(Int::class.java)
                                     ?: produitSnapshot.child("quantity").getValue(Long::class.java)?.toInt()
                                             ?: 0
@@ -380,10 +329,7 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
             try {
 // In updateRealm() method
                 realm.write {
-                    // First delete all existing data
-                    // Change from:
-                    // deleteAll<_01_PeriodesVent>()
-                    // To:
+
                     query<_01_PeriodesVent>().find().also { delete(it) }
                     query<Vendeur>().find().also { delete(it) }
                     query<Produit>().find().also { delete(it) }

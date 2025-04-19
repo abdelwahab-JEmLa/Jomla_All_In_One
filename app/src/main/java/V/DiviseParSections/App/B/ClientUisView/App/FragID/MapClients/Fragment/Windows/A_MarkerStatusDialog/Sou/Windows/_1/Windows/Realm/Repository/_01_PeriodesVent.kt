@@ -16,7 +16,7 @@ class _01_PeriodesVent : RealmObject {
 
 class Vendeur : RealmObject {
     @PrimaryKey
-    var keyID: String = "id->nom"
+    var keyID: String = "_01_PeriodesVent.keyID->id(nom)"
     var id: Long = 0L
     var nom: String = ""
     var produits: RealmList<Produit> = realmListOf()
@@ -24,7 +24,7 @@ class Vendeur : RealmObject {
 
 class Produit : RealmObject {
     @PrimaryKey
-    var keyID: String = "id->nom"
+    var keyID: String = "Vendeur.keyID->id(nom)"
     var id: Long = 0L
     var nom: String = ""
     var quantity: Int = 0
