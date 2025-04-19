@@ -37,6 +37,9 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
     // Firebase reference
     private val firebaseRef = _01_PeriodesVent_Repository.sonDataBaseRef
 
+    // Keep reference to the listener
+    private var valueEventListener: ValueEventListener? = null
+
     init {
         val isRealmEmpty = realm.query<_01_PeriodesVent>().count().find() == 0L
 
@@ -55,6 +58,8 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
         } else {
             // Realm has data, load it
             loadFromRealmTOmodelDatasSnapList()
+            // Still attach Firebase listener to get updates
+            loadFromFirebase()
         }
     }
 
@@ -118,6 +123,7 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
     private fun updateRealm() {
         coroutineScope.launch {
             realm.write {
+                // Delete existing items
                 query<_01_PeriodesVent>().find().forEach { delete(it) }
 
                 // Add all current items from the list
@@ -152,13 +158,23 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
                 )
             }
 
-            // Update Firebase
-            firebaseRef.setValue(dataToUpdate)
+            // Update Firebase - temporarily remove listener to avoid duplicate updates
+            removeFirebaseListener()
+            firebaseRef.setValue(dataToUpdate).addOnCompleteListener {
+                // Reattach listener after update is complete
+                attachFirebaseListener()
+            }
         }
     }
 
     private fun loadFromFirebase() {
-        firebaseRef.addValueEventListener(object : ValueEventListener {
+        // Remove any existing listener before adding a new one
+        removeFirebaseListener()
+        attachFirebaseListener()
+    }
+
+    private fun attachFirebaseListener() {
+        valueEventListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val periodesList = mutableListOf<_01_PeriodesVent>()
 
@@ -201,8 +217,8 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
                     modelDatasSnapList.clear()
                     modelDatasSnapList.addAll(periodesList)
 
-                    // Also update Realm
-                    updateRealm()
+                    // Also update Realm - but don't trigger another Firebase update
+                    updateRealmSafely()
                 }
 
                 _progressRepo.value = 1.0f
@@ -212,10 +228,40 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
                 // Handle error
                 _progressRepo.value = 1.0f
             }
-        })
+        }
+
+        // Attach the listener
+        firebaseRef.addValueEventListener(valueEventListener!!)
     }
 
+    private fun removeFirebaseListener() {
+        valueEventListener?.let {
+            firebaseRef.removeEventListener(it)
+            valueEventListener = null
+        }
+    }
 
+    // Update only Realm without touching Firebase - with duplicate key handling
+    private fun updateRealmSafely() {
+        coroutineScope.launch {
+            try {
+                realm.write {
+                    // First clear all existing objects to prevent primary key conflicts
+                    query<_01_PeriodesVent>().find().forEach { delete(it) }
+                    query<Vendeur>().find().forEach { delete(it) }
+                    query<Produit>().find().forEach { delete(it) }
+
+                    // Now safe to add all items from the list
+                    modelDatasSnapList.forEach { periode ->
+                        copyToRealm(createDeepCopyForRealm(periode))
+                    }
+                }
+            } catch (e: Exception) {
+                // Handle errors more gracefully - log or notify about the error
+                e.printStackTrace()
+            }
+        }
+    }
 
     // Helper function to create deep copies for Realm
     private fun createDeepCopyForRealm(source: _01_PeriodesVent): _01_PeriodesVent {
@@ -255,11 +301,12 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
     override suspend fun refreshData() {
         _progressRepo.value = 0f
         loadFromRealmTOmodelDatasSnapList()
+        loadFromFirebase()
     }
-
 
     // Cleanup method to close Realm when repository is no longer needed
     fun cleanup() {
+        removeFirebaseListener()
         realm.close()
     }
 }
