@@ -99,7 +99,7 @@ class _1_1_CouleurAcheteOperationRepositoryImpl(
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error in upsertUneDataEtReturnVID: ${e.message}")
+            Log.e(TAG, "Error in upsertUnSeulDataEtReturnVID: ${e.message}")
         }
     }
 

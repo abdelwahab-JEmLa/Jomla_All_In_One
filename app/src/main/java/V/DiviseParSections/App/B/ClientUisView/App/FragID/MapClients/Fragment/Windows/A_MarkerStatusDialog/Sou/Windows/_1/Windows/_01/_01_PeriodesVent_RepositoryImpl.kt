@@ -1,5 +1,7 @@
-package Z_CodePartageEntreApps.Repository._1_3_BonAchat
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows._01
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows._01.Extension.Log._01_PeriodesVentRepositoryLogOperationsExtension
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows._01.Extension.Update._01_PeriodesVentRepositoryUpdatesOperationsExtension
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
@@ -17,126 +19,34 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
 
-class _1_3_BonAchatRepositoryImpl(
-     val appDatabase: AppDatabase
-) : _1_3_BonAchat_Repository {
-    private val TAG = _1_3_BonAchat_Repository.TAG
+class _01_PeriodesVent_RepositoryImpl(
+     val appDatabase: AppDatabase,
+) : _01_PeriodesVent_Repository {
+    private val TAG = "_01_PeriodesVentNoSQl"
 
-    override var modelDatasSnapList: SnapshotStateList<_1_3_BonAchat> =
+    override var modelDatasSnapList: SnapshotStateList<_01_PeriodesVentNoSQl> =
         mutableStateListOf()
-
     override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
-    override val activeId = MutableStateFlow(0L)
 
     private val isUpdating = AtomicBoolean(false)
     private val isListenerActive = AtomicBoolean(false)
     private val isFlowListenerActive = AtomicBoolean(false)
     private var flowValueEventListener: ValueEventListener? = null
 
-    internal var lastUpdateTimestamp = 0L
     var initialDataLoaded = false
     private val repositoryScope = CoroutineScope(Dispatchers.IO)
     private var valueEventListener: ValueEventListener? = null
     private val listenerLock = Any()
     private val flowListenerLock = Any()
 
-    private val updatesOperations = _1_3_BonAchatRepositoryUpdatesOperaionsExtention(this)
-    private val logOperations = _1_3_BonAchatRepositoryLogOperationsExtention(this)
+    private val logOperations = _01_PeriodesVentRepositoryLogOperationsExtension(this)
 
     init {
         repositoryScope.launch {
-            initialize_1_3_BonAchatRepository()
+            initialize_01_PeriodesVentRepository()
         }
     }
 
-    override fun upsertUneDataEtReturnVID(data: _1_3_BonAchat, onSuccess: (Long) -> Unit): Unit {
-        try {
-            // Create a copy of the data to work with
-            val dataToUpsert = data.copy()
-
-            repositoryScope.launch(Dispatchers.IO) {
-                try {
-                    // Check if the data already exists (if it has a valid vid)
-                    if (dataToUpsert.vid > 0) {
-                        // Update existing data
-                        appDatabase._1_3_BonAchatDao().insert(dataToUpsert)
-
-                        // Update in snapshot list
-                        withContext(Dispatchers.Main) {
-                            val index = modelDatasSnapList.indexOfFirst { it.vid == dataToUpsert.vid }
-                            if (index >= 0) {
-                                modelDatasSnapList[index] = dataToUpsert
-                            } else {
-                                modelDatasSnapList.add(dataToUpsert)
-                            }
-                        }
-
-                        // Update in Firebase
-                        _1_3_BonAchat_Repository.sonDataBaseRef.child(dataToUpsert.vid.toString())
-                            .setValue(dataToUpsert).await()
-
-                        // Call the success callback with the existing vid
-                        onSuccess(dataToUpsert.vid)
-                    } else {
-                        // If no valid vid, insert as new (same as addDataAndReturneItVID)
-                        val newVid = appDatabase._1_3_BonAchatDao().insertAvecRetureNewVid(dataToUpsert)
-
-                        // Update the object with the new vid
-                        dataToUpsert.vid = newVid
-
-                        withContext(Dispatchers.Main) {
-                            modelDatasSnapList.add(dataToUpsert)
-                        }
-
-                        // Update Firebase with the new vid
-                        _1_3_BonAchat_Repository.sonDataBaseRef.child(newVid.toString())
-                            .setValue(dataToUpsert).await()
-
-                        // Call the success callback with the new vid
-                        onSuccess(newVid)
-                    }
-                } catch (e: Exception) {
-                    Log.e(TAG, "Error upserting data: ${e.message}")
-                }
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error in upsertUnSeulDataEtReturnVID: ${e.message}")
-        }
-    }
-
-    override fun addDataAndReturneItVID(
-        data: _1_3_BonAchat,
-        onAddSuccess: (Long) -> Unit
-    ) {
-        try {
-            // Create a copy of the data to work with
-            val dataToAdd = data.copy()
-
-            repositoryScope.launch(Dispatchers.IO) {
-                try {
-                    // Insert into Room and get the new vid
-                    val newVid = appDatabase._1_3_BonAchatDao().insertAvecRetureNewVid(dataToAdd)
-
-                    // Update the object with the new vid
-                    dataToAdd.vid = newVid
-
-                    withContext(Dispatchers.Main) {
-                        modelDatasSnapList.add(dataToAdd)
-                    }
-
-                    // Update Firebase with the new vid
-                    _1_3_BonAchat_Repository.sonDataBaseRef.child(newVid.toString()).setValue(dataToAdd).await()
-
-                    // Call the success callback with the new vid
-                    onAddSuccess(newVid)
-                } catch (e: Exception) {
-                    Log.e(TAG, "Error adding data: ${e.message}")
-                }
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error in addDataAndReturnItVID: ${e.message}")
-        }
-    }
     override suspend fun ensureDataIsInitialized() {
         try {
             if (!initialDataLoaded) {
@@ -155,23 +65,6 @@ class _1_3_BonAchatRepositoryImpl(
         }
     }
 
-    override fun updateUnSeulData(data: _1_3_BonAchat) {
-        updatesOperations.updateUnSeulData(data, repositoryScope, appDatabase, modelDatasSnapList)
-    }
-
-    private suspend fun initialize_1_3_BonAchatRepository() {
-        try {
-            loadDepuitRoom()
-                checkDataConsistency()
-
-
-            if (TAG.isNotEmpty()) {
-                log()
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error initializing repository: ${e.message}")
-        }
-    }
 
 
     private suspend fun loadDepuitRoom() {
@@ -179,7 +72,7 @@ class _1_3_BonAchatRepositoryImpl(
             progressRepo.value = 0.2f
             withContext(Dispatchers.IO) {
                 val dataList = try {
-                    appDatabase._1_3_BonAchatDao().getAll()
+                    appDatabase._01_PeriodesVentRoomSQlModelDao().getAll()
                 } catch (e: Exception) {
                     Log.e(TAG, "Error loading from Room: ${e.message}")
                     emptyList()
@@ -204,7 +97,7 @@ class _1_3_BonAchatRepositoryImpl(
         try {
             val roomCount = withContext(Dispatchers.IO) {
                 try {
-                    appDatabase._1_3_BonAchatDao().getCount()
+                    appDatabase._01_PeriodesVentRoomSQlModelDao().getCount()
                 } catch (e: Exception) {
                     Log.e(TAG, "Error getting Room count: ${e.message}")
                     0
@@ -213,7 +106,7 @@ class _1_3_BonAchatRepositoryImpl(
 
             val firebaseSnapshot = try {
                 withContext(Dispatchers.IO) {
-                    val task = _1_3_BonAchat_Repository.sonDataBaseRef.get()
+                    val task = _01_PeriodesVent_Repository.sonDataBaseRef.get()
                     Tasks.await(task)
                 }
             } catch (e: Exception) {
@@ -248,9 +141,9 @@ class _1_3_BonAchatRepositoryImpl(
                 flowValueEventListener = object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         try {
-                            val updatedList = mutableListOf<_1_3_BonAchat>()
+                            val updatedList = mutableListOf<_01_PeriodesVentNoSQl>()
                             for (dataSnapshot in snapshot.children) {
-                                val data = dataSnapshot.getValue(_1_3_BonAchat::class.java)
+                                val data = dataSnapshot.getValue(_01_PeriodesVentNoSQl::class.java)
                                 data?.let {
                                     updatedList.add(it)
                                 }
@@ -265,8 +158,8 @@ class _1_3_BonAchatRepositoryImpl(
 
                             repositoryScope.launch(Dispatchers.IO) {
                                 try {
-                                    appDatabase._1_3_BonAchatDao().deleteAll()
-                                    appDatabase._1_3_BonAchatDao().insertAll(updatedList)
+                                    appDatabase._01_PeriodesVentRoomSQlModelDao().deleteAll()
+                                    appDatabase._01_PeriodesVentRoomSQlModelDao().insertAll(updatedList)
                                 } catch (e: Exception) {
                                     Log.e(
                                         TAG,
@@ -284,7 +177,7 @@ class _1_3_BonAchatRepositoryImpl(
                     }
                 }
 
-                _1_3_BonAchat_Repository.sonDataBaseRef.addValueEventListener(flowValueEventListener!!)
+                _01_PeriodesVent_Repository.sonDataBaseRef.addValueEventListener(flowValueEventListener!!)
                 isFlowListenerActive.set(true)
             }
         }
@@ -294,7 +187,7 @@ class _1_3_BonAchatRepositoryImpl(
         synchronized(flowListenerLock) {
             if (isFlowListenerActive.get() && flowValueEventListener != null) {
                 try {
-                    _1_3_BonAchat_Repository.sonDataBaseRef.removeEventListener(flowValueEventListener!!)
+                    _01_PeriodesVent_Repository.sonDataBaseRef.removeEventListener(flowValueEventListener!!)
                 } catch (e: Exception) {
                     Log.e(TAG, "Error removing flow listener: ${e.message}")
                 } finally {
@@ -314,20 +207,20 @@ class _1_3_BonAchatRepositoryImpl(
 
             viewModelScope.launch(Dispatchers.IO) {
                 try {
-                    val task = _1_3_BonAchat_Repository.sonDataBaseRef.get()
+                    val task = _01_PeriodesVent_Repository.sonDataBaseRef.get()
                     val snapshot = Tasks.await(task)
 
                     try {
-                        appDatabase._1_3_BonAchatDao().deleteAll()
+                        appDatabase._01_PeriodesVentRoomSQlModelDao().deleteAll()
                     } catch (e: Exception) {
                         Log.e(TAG, "Error deleting Room data: ${e.message}")
                     }
 
-                    val dataList = mutableListOf<_1_3_BonAchat>()
+                    val dataList = mutableListOf<_01_PeriodesVentNoSQl>()
 
                     for (dataSnapshot in snapshot.children) {
                         try {
-                            val data = dataSnapshot.getValue(_1_3_BonAchat::class.java)
+                            val data = dataSnapshot.getValue(_01_PeriodesVentNoSQl::class.java)
                             data?.let {
                                 dataList.add(it)
                             }
@@ -338,7 +231,7 @@ class _1_3_BonAchatRepositoryImpl(
 
                     if (dataList.isNotEmpty()) {
                         try {
-                            appDatabase._1_3_BonAchatDao().insertAll(dataList)
+                            appDatabase._01_PeriodesVentRoomSQlModelDao().insertAll(dataList)
 
                             withContext(Dispatchers.Main) {
                                 modelDatasSnapList.addAll(dataList)
@@ -365,7 +258,7 @@ class _1_3_BonAchatRepositoryImpl(
         synchronized(listenerLock) {
             if (isListenerActive.get() && valueEventListener != null) {
                 try {
-                    _1_3_BonAchat_Repository.sonDataBaseRef.removeEventListener(valueEventListener!!)
+                    _01_PeriodesVent_Repository.sonDataBaseRef.removeEventListener(valueEventListener!!)
                 } catch (e: Exception) {
                     Log.e(TAG, "Error removing data listener: ${e.message}")
                 } finally {
@@ -376,28 +269,9 @@ class _1_3_BonAchatRepositoryImpl(
         }
     }
 
-    override fun deleteUnSeulData(data: _1_3_BonAchat) {
-        updatesOperations.deleteUnSeulData(data, repositoryScope, appDatabase, modelDatasSnapList)
-    }
 
-    override fun addData(data: _1_3_BonAchat) {
-        updatesOperations.addData(data, repositoryScope, appDatabase, modelDatasSnapList)
-    }
 
-    override suspend fun updateMultiDatas(datas: SnapshotStateList<_1_3_BonAchat>) {
-        updatesOperations.updateMultiDatas(
-            datas,
-            isUpdating,
-            appDatabase,
-            modelDatasSnapList,
-            valueEventListener,
-            flowValueEventListener,
-            listenerLock,
-            flowListenerLock,
-            isListenerActive,
-            isFlowListenerActive
-        )
-    }
+
 
     fun cleanup() {
         repositoryScope.launch {
@@ -415,7 +289,6 @@ class _1_3_BonAchatRepositoryImpl(
             modelDatasSnapList.size,
             initialDataLoaded,
             progressRepo.value,
-            lastUpdateTimestamp,
             isListenerActive.get(),
             isFlowListenerActive.get()
         )

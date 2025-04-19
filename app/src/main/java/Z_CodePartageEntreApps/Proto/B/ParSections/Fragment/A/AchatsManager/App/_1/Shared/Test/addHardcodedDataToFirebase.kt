@@ -262,7 +262,7 @@ suspend fun addHardcodedDataToFirebase(
                 _1_4_PeriodeVent_Repository.updateMultiDatas(snapListPeriodeVent)
                 Log.d(
                     TAG,
-                    "Added ${periodeVentTestData.size} hardcoded PeriodesVent items to repository"
+                    "Added ${periodeVentTestData.size} hardcoded _01_PeriodesVentNoSQl items to repository"
                 )
             }
 

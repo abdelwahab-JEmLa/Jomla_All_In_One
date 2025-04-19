@@ -1,5 +1,8 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows._01._01_PeriodesVentNoSQl
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows._01.ProduitsVenduParLui
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows._01.VendeursActiveDonsCettePeriode
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -64,14 +67,14 @@ private fun MainList(
             .fillMaxWidth()
             .padding(16.dp)
     ) {
-        items(uiState.periodesVent) { periode ->
+        items(uiState.a01PeriodesVent) { periode ->
             PeriodeItem(periode)
         }
     }
 }
 
 @Composable
-private fun PeriodeItem(periode: PeriodesVent) {
+private fun PeriodeItem(periode: _01_PeriodesVentNoSQl) {
     Column(
         modifier = Modifier
             .fillMaxWidth()

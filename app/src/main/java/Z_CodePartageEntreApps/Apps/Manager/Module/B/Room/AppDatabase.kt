@@ -1,9 +1,11 @@
 package Z_CodePartageEntreApps.Apps.Manager.Module.B.Room
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Dao.ProduitsVenduParLui_RoomSQlModelDao
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Dao.VendeursActiveDonsCettePeriode_RoomSQlModelDao
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.ProduitsVenduParLuiRoomSQlModel
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.VendeursActiveDonsCettePeriodeRoomSQlModel
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Dao._02_VendeursActiveDonsCettePeriode_RoomSQlModelDao
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Dao._03_ProduitsVenduParLui_RoomSQlModelDao
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows._01.Extension.DataBase._01_PeriodesVentRoomSQlModelDao
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows._01._01_PeriodesVentRoomSQl
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows._01._02_VendeursActiveDonsCettePeriodeRoomSQlModel
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows._01._03_ProduitsVenduParLuiRoomSQlModel
 import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.Extension.A_ProduitDao
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
@@ -69,8 +71,10 @@ import java.util.Date
         _4_CouleurOperationCommand::class,
 
         // Add our new entity classes
-        VendeursActiveDonsCettePeriodeRoomSQlModel::class,
-        ProduitsVenduParLuiRoomSQlModel::class
+        _01_PeriodesVentRoomSQl::class,
+        _02_VendeursActiveDonsCettePeriodeRoomSQlModel::class,
+        _03_ProduitsVenduParLuiRoomSQlModel::class,
+
     ],
     version = 3, // Increment version number since we're adding new entities
     exportSchema = false
@@ -104,8 +108,9 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun _4_CouleurOperationCommandDao(): _4_CouleurOperationCommandDao
 
     // Add our new DAOs
-    abstract fun vendeursActiveDonsCettePeriodeDao(): VendeursActiveDonsCettePeriode_RoomSQlModelDao
-    abstract fun produitsVenduParLuiDao(): ProduitsVenduParLui_RoomSQlModelDao
+    abstract fun _01_PeriodesVentRoomSQlModelDao(): _01_PeriodesVentRoomSQlModelDao
+    abstract fun _02_VendeursActiveDonsCettePeriode_RoomSQlModelDao(): _02_VendeursActiveDonsCettePeriode_RoomSQlModelDao
+    abstract fun _03_ProduitsVenduParLui_RoomSQlModelDao(): _03_ProduitsVenduParLui_RoomSQlModelDao
 
     object DatabaseModule {
 

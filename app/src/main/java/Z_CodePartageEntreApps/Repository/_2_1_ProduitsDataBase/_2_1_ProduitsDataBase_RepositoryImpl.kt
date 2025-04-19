@@ -187,7 +187,7 @@ class _2_1_ProduitsDataBase_RepositoryImpl(
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error in upsertUneDataEtReturnVID: ${e.message}")
+            Log.e(TAG, "Error in upsertUnSeulDataEtReturnVID: ${e.message}")
         }
     }
 

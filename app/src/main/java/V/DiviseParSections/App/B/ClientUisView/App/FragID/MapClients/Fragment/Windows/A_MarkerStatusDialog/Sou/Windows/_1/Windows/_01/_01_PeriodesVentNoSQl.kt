@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows._01
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -8,7 +8,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.firebase.firestore.Exclude
 
-class PeriodesVent {
+class _01_PeriodesVentNoSQl {
     private var keyID by mutableStateOf("{dateDebutDeCettePeriode}->(tempDebutDeCettePeriode)")
     private var dateDebutDeCettePeriode by mutableStateOf("yyyy_MM_dd")
     private var tempDebutDeCettePeriode by mutableStateOf("HH:mm")
@@ -20,6 +20,16 @@ class PeriodesVent {
         keyID = "${dateDebutDeCettePeriode}->($tempDebutDeCettePeriode)"
     }
 }
+
+@Entity
+data class _01_PeriodesVentRoomSQl(
+    @PrimaryKey
+    var keyID: String = "0->(Vendeur nom)",
+    var parentkeyID: String = "2025_01_01->(00:00)",
+    var startIndex: Int = 0,
+    var nom: String = "",
+    var quantity: Int = 0,
+)
 
 // Class representing a vendor active during a sales period
 class VendeursActiveDonsCettePeriode {
@@ -33,28 +43,16 @@ class VendeursActiveDonsCettePeriode {
     fun genereModelKeyID() {
         keyID = "${startIndex}->($nom)"
     }
-
-
 }
 @Entity
-data class VendeursActiveDonsCettePeriodeRoomSQlModel(
+data class _02_VendeursActiveDonsCettePeriodeRoomSQlModel(
     @PrimaryKey
-    var keyID: String = "",
-    var parentkeyID: String = "",
+    var keyID: String = "0->(Vendeur nom)",
+    var parentkeyID: String = "2025_01_01->(00:00)",
     var startIndex: Int = 0,
     var nom: String = "",
     var quantity: Int = 0,
-) {
-    fun testData(): VendeursActiveDonsCettePeriodeRoomSQlModel {
-        return VendeursActiveDonsCettePeriodeRoomSQlModel(
-            keyID = "1->(Vendeur Test)",
-            parentkeyID = "2023_04_17->(14:30)",
-            startIndex = 1,
-            nom = "Vendeur Test",
-            quantity = 10
-        )
-    }
-}
+)
 
 // Class representing a vendor active during a sales period
 class ProduitsVenduParLui {
@@ -70,21 +68,11 @@ class ProduitsVenduParLui {
 }
 
 @Entity
-data class ProduitsVenduParLuiRoomSQlModel(
+data class _03_ProduitsVenduParLuiRoomSQlModel(
     @PrimaryKey
-    var keyID: String = "",
-    var parentkeyID: String = "",
-    var startIndex: Int = 0,
+    var keyID: String = "0->(Produit 0)",
+    var parentkeyID: String = "0->(Vendeur 0)",
+    var id: Int = 0,
     var nom: String = "",
     var quantity: Int = 0,
-) {
-    fun testData(): ProduitsVenduParLuiRoomSQlModel {
-        return ProduitsVenduParLuiRoomSQlModel(
-            keyID = "1->(Produit Test)",
-            parentkeyID = "1->(Vendeur Test)",
-            startIndex = 1,
-            nom = "Produit Test",
-            quantity = 5
-        )
-    }
-}
+)
