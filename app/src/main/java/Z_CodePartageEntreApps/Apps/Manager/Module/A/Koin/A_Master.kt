@@ -115,7 +115,6 @@ val viewModelModule = module {
         get(),
         get(),
     ) }
-
 }
 
 // Function to determine the application type
