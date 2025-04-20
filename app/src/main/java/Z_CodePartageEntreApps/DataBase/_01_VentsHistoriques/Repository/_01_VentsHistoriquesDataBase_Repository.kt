@@ -15,5 +15,5 @@ interface _01_VentsHistoriquesDataBase_Repository {
 
     fun notifieDataChange()
 
-
+    fun addTestVals()
 }

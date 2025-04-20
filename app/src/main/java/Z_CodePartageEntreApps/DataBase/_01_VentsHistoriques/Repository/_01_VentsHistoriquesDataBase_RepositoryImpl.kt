@@ -36,10 +36,10 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
     override var modelDatasSnapList: SnapshotStateList<_01_VentsHistoriquesDataBase> = mutableStateListOf()
 
     private val _01_HeadRef = Firebase.database.getReference("01_DataPrototype-04-19")
-    private val _1_developingTestRef = _01_HeadRef.child("_1_developingTestRef")
+    private val _1_developingRef = _01_HeadRef.child("_1_developingRef")
     private val _2_productionTestRef = _01_HeadRef.child("_2_productionTestRef")
     private val firebaseRef = if (!itsProductionMode)
-        _1_developingTestRef else  _2_productionTestRef
+        _1_developingRef else  _2_productionTestRef
         .child("_01_VentsHistoriquesDataBase")
 
     private val _progressRepo = MutableStateFlow(0f)
@@ -71,21 +71,24 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
         return Realm.open(config)
     }
 
-    private fun checkFirebaseOrCreateTestData() {
-        firebaseRef.get().addOnSuccessListener { snapshot ->
-            if (!snapshot.exists() || snapshot.childrenCount == 0L) {
-                val testPeriodes = createTestData()
-                updateModelDatasList(testPeriodes)
+    private fun initializeData() {
+        val isRealmEmpty = realm.query<_01_VentsHistoriquesDataBase>().count().find() == 0L
 
-                val dataToUpdate = convertToFirebaseFormat(testPeriodes)
-                firebaseRef.setValue(dataToUpdate).addOnCompleteListener { task ->
-                    updateRealm()
-                    loadFromFirebase()
-                }
-            } else {
-                loadFromFirebase()
-            }
-        }.addOnFailureListener { exception ->
+        if (isRealmEmpty) {
+            loadFromFirebase()
+        } else {
+            loadFromRealmTOmodelDatasSnapList()
+            loadFromFirebase()
+        }
+    }
+
+    override fun addTestVals() {
+        val testPeriodes = createTestData()
+        updateModelDatasList(testPeriodes)
+
+        val dataToUpdate = convertToFirebaseFormat(testPeriodes)
+        firebaseRef.setValue(dataToUpdate).addOnCompleteListener { task ->
+            updateRealm()
             loadFromFirebase()
         }
     }
@@ -155,16 +158,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
         return newPeriodesVente
     }
 
-    private fun initializeData() {
-        val isRealmEmpty = realm.query<_01_VentsHistoriquesDataBase>().count().find() == 0L
 
-        if (isRealmEmpty) {
-            checkFirebaseOrCreateTestData()
-        } else {
-            loadFromRealmTOmodelDatasSnapList()
-            loadFromFirebase()
-        }
-    }
 
     private fun loadFromRealmTOmodelDatasSnapList() {
         val allPeriodes = realm.query<_01_VentsHistoriquesDataBase>()
