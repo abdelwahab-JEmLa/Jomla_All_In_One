@@ -25,22 +25,7 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
     override var modelDatasSnapList: SnapshotStateList<_01_PeriodesVent> = mutableStateListOf()
     var idComptDeCeTelephone: String = ""
 
-    private var realm: Realm = Realm.open(
-        RealmConfiguration.create(
-            schema = setOf(
-                _01_PeriodesVent::class,
-                Vendeur::class,
-                Produit::class
-            )
-        )
-    )
-
-    private val _progressRepo = MutableStateFlow(0f)
-    override val progressRepo: StateFlow<Float> = _progressRepo
-
-    private val _dataChangedEvent = MutableStateFlow(0L)
-    override val dataChangedEvent: StateFlow<Long> = _dataChangedEvent
-
+    private val realm: Realm = createRealm()
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
     private val realmMutex = Mutex()
     private val pendingRealmUpdate = AtomicBoolean(false)
@@ -49,80 +34,108 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
     private var valueEventListener: ValueEventListener? = null
     private var productChangeListener: ValueEventListener? = null
 
+    private val _progressRepo = MutableStateFlow(0f)
+    override val progressRepo: StateFlow<Float> = _progressRepo
+
+    private val _dataChangedEvent = MutableStateFlow(0L)
+    override val dataChangedEvent: StateFlow<Long> = _dataChangedEvent
+
     init {
         initializeData()
+    }
+
+    private fun createRealm(): Realm {
+        val config = RealmConfiguration.create(
+            schema = setOf(
+                _01_PeriodesVent::class,
+                Vendeur::class,
+                Produit::class
+            )
+        )
+        return Realm.open(config)
     }
 
     private fun initializeData() {
         val isRealmEmpty = realm.query<_01_PeriodesVent>().count().find() == 0L
 
         if (isRealmEmpty) {
-            firebaseRef.get().addOnSuccessListener { snapshot ->
-                if (!snapshot.exists() || snapshot.childrenCount == 0L) {
-                    createTestDataIfEmpty()
-                } else {
-                    loadFromFirebase()
-                }
-            }.addOnFailureListener {
-                loadFromFirebase()
-            }
+            checkFirebaseOrCreateTestData()
         } else {
             loadFromRealmTOmodelDatasSnapList()
             loadFromFirebase()
         }
     }
 
+    private fun checkFirebaseOrCreateTestData() {
+        firebaseRef.get().addOnSuccessListener { snapshot ->
+            if (!snapshot.exists() || snapshot.childrenCount == 0L) {
+                createTestDataIfEmpty()
+            } else {
+                loadFromFirebase()
+            }
+        }.addOnFailureListener {
+            loadFromFirebase()
+        }
+    }
+
     private fun createTestDataIfEmpty() {
         coroutineScope.launch {
-            val testPeriodes = mutableListOf<_01_PeriodesVent>()
-
-            for (i in 1..3) {
-                val date = "2025_04_${18 + i}"
-                val time = "${10 + i}:00"
-
-                val periodeKey = "{PV}->$date=$time"
-                val periode = _01_PeriodesVent().apply {
-                    keyID = periodeKey
-                    dateDebutDeCettePeriode = date
-                    tempDebutDeCettePeriode = time
-                    vendeurs = realmListOf()
-                }
-
-                for (j in 1..2) {
-                    val vendeurId = j.toLong()
-                    val vendeurNom = "Vendeur $j"
-                    val vendeurKey = "$periodeKey-<{Ve}->($vendeurId=$vendeurNom)"
-
-                    val vendeur = Vendeur().apply {
-                        keyID = vendeurKey
-                        idVendeur = vendeurId
-                        nomVendeur = vendeurNom
-                        produits = realmListOf()
-                    }
-
-                    for (k in 1..5) {
-                        val produitId = k.toLong()
-                        val produitNom = "Produit $k"
-                        val produitKey = "$vendeurKey-<{Pr}->($produitId=$produitNom)"
-
-                        val produit = Produit().apply {
-                            keyID = produitKey
-                            idProduit = produitId
-                            nomProduit = produitNom
-                            quantity = (k * 5)
-                        }
-
-                        vendeur.produits.add(produit)
-                    }
-
-                    periode.vendeurs.add(vendeur)
-                }
-
-                testPeriodes.add(periode)
-            }
-
+            val testPeriodes = createTestData()
             updateModelDatasList(testPeriodes)
             updateRealmAndFirebase()
+        }
+    }
+
+    private fun createTestData(): List<_01_PeriodesVent> {
+        val testPeriodes = mutableListOf<_01_PeriodesVent>()
+
+        for (i in 1..3) {
+            val date = "2025_04_${18 + i}"
+            val time = "${10 + i}:00"
+            val periodeKey = "{PV}->$date=$time"
+
+            val periode = _01_PeriodesVent().apply {
+                keyID = periodeKey
+                dateDebutDeCettePeriode = date
+                tempDebutDeCettePeriode = time
+                vendeurs = realmListOf()
+            }
+
+            for (j in 1..2) {
+                val vendeurId = j.toLong()
+                val vendeurNom = "Vendeur $j"
+                val vendeurKey = "$periodeKey-<{Ve}->($vendeurId=$vendeurNom)"
+                val vendeur = createVendeur(vendeurId, vendeurNom, vendeurKey)
+                periode.vendeurs.add(vendeur)
+            }
+
+            testPeriodes.add(periode)
+        }
+
+        return testPeriodes
+    }
+
+    private fun createVendeur(id: Long, nom: String, vendeurKey: String): Vendeur {
+        return Vendeur().apply {
+            keyID = vendeurKey
+            idVendeur = id
+            nomVendeur = nom
+            produits = realmListOf()
+
+            for (k in 1..5) {
+                val produitId = k.toLong()
+                val produitNom = "Produit $k"
+                val produitKey = "$keyID-<{Pr}->($produitId=$produitNom)"
+
+                val produit = Produit().apply {
+                    keyID = produitKey
+                    idProduit = produitId
+                    nomProduit = produitNom
+                    quantity = (k * 5)
+                }
+
+                produits.add(produit)
+            }
         }
     }
 
@@ -136,9 +149,7 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
     }
 
     private fun updateModelDatasList(periodes: List<_01_PeriodesVent>) {
-        if (modelUpdateInProgress.getAndSet(true)) {
-            return
-        }
+        if (modelUpdateInProgress.getAndSet(true)) return
 
         try {
             modelDatasSnapList.clear()
@@ -158,17 +169,18 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
             realmMutex.withLock {
                 try {
                     realm.write {
+                        // Clear existing data
                         query<_01_PeriodesVent>().find().also { delete(it) }
                         query<Vendeur>().find().also { delete(it) }
                         query<Produit>().find().also { delete(it) }
 
-                        val dataSnapshot = modelDatasSnapList.toList()
-
-                        dataSnapshot.forEach { periode ->
+                        // Save current data
+                        modelDatasSnapList.forEach { periode ->
                             copyToRealm(createDeepCopyForRealm(periode))
                         }
                     }
                 } catch (e: Exception) {
+                    // Error handling would go here
                 } finally {
                     _progressRepo.value = 1.0f
                 }
@@ -179,60 +191,77 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
     private fun updateFirebase() {
         coroutineScope.launch {
             try {
-                val dataSnapshot = modelDatasSnapList.toList()
-                val dataToUpdate = convertToFirebaseFormat(dataSnapshot)
-
+                val dataToUpdate = convertToFirebaseFormat(modelDatasSnapList)
                 removeFirebaseListener()
                 firebaseRef.setValue(dataToUpdate).addOnCompleteListener {
                     attachFirebaseListener()
                 }
             } catch (e: Exception) {
+                // Error handling would go here
             }
         }
     }
 
     private fun convertToFirebaseFormat(periodes: List<_01_PeriodesVent>): Map<String, Any> {
         return periodes.associate { periode ->
-            // Make sure we're using the proper key format
-            val validPeriodeKey = if (periode.keyID.startsWith("{PV}->")) {
-                periode.keyID
-            } else {
-                "{PV}->${periode.dateDebutDeCettePeriode}=${periode.tempDebutDeCettePeriode}"
-            }
+            val validPeriodeKey = ensureValidPeriodeKey(periode)
 
             validPeriodeKey to mapOf(
                 "dateDebutDeCettePeriode" to periode.dateDebutDeCettePeriode,
                 "tempDebutDeCettePeriode" to periode.tempDebutDeCettePeriode,
-                "vendeurs" to periode.vendeurs.associate { vendeur ->
-                    // Validate vendeur key follows format
-                    val validVendeurKey = if (vendeur.keyID.contains("<{Ve}->")) {
-                        vendeur.keyID
-                    } else {
-                        "$validPeriodeKey-<{Ve}->(${vendeur.idVendeur}=${vendeur.nomVendeur})"
-                    }
-
-                    validVendeurKey to mapOf(
-                        "idVendeur" to vendeur.idVendeur,
-                        "nomVendeur" to vendeur.nomVendeur,
-                        "produits" to vendeur.produits.associate { produit ->
-                            // Validate produit key follows format
-                            val validProduitKey = if (produit.keyID.contains("<{Pr}->")) {
-                                produit.keyID
-                            } else {
-                                "$validVendeurKey-<{Pr}->(${produit.idProduit}=${produit.nomProduit})"
-                            }
-
-                            validProduitKey to mapOf(
-                                "idProduit" to produit.idProduit,
-                                "nomProduit" to produit.nomProduit,
-                                "quantity" to produit.quantity
-                            )
-                        }
-                    )
-                }
+                "vendeurs" to mapVendeurs(periode.vendeurs, validPeriodeKey)
             )
         }
     }
+
+    private fun ensureValidPeriodeKey(periode: _01_PeriodesVent): String {
+        return if (periode.keyID.startsWith("{PV}->")) {
+            periode.keyID
+        } else {
+            "{PV}->${periode.dateDebutDeCettePeriode}=${periode.tempDebutDeCettePeriode}"
+        }
+    }
+
+    private fun mapVendeurs(vendeurs: List<Vendeur>, periodeKey: String): Map<String, Any> {
+        return vendeurs.associate { vendeur ->
+            val validVendeurKey = ensureValidVendeurKey(vendeur, periodeKey)
+
+            validVendeurKey to mapOf(
+                "idVendeur" to vendeur.idVendeur,
+                "nomVendeur" to vendeur.nomVendeur,
+                "produits" to mapProduits(vendeur.produits, validVendeurKey)
+            )
+        }
+    }
+
+    private fun ensureValidVendeurKey(vendeur: Vendeur, periodeKey: String): String {
+        return if (vendeur.keyID.contains("<{Ve}->")) {
+            vendeur.keyID
+        } else {
+            "$periodeKey-<{Ve}->(${vendeur.idVendeur}=${vendeur.nomVendeur})"
+        }
+    }
+
+    private fun mapProduits(produits: List<Produit>, vendeurKey: String): Map<String, Any> {
+        return produits.associate { produit ->
+            val validProduitKey = ensureValidProduitKey(produit, vendeurKey)
+
+            validProduitKey to mapOf(
+                "idProduit" to produit.idProduit,
+                "nomProduit" to produit.nomProduit,
+                "quantity" to produit.quantity
+            )
+        }
+    }
+
+    private fun ensureValidProduitKey(produit: Produit, vendeurKey: String): String {
+        return if (produit.keyID.contains("<{Pr}->")) {
+            produit.keyID
+        } else {
+            "$vendeurKey-<{Pr}->(${produit.idProduit}=${produit.nomProduit})"
+        }
+    }
+
     private fun loadFromFirebase() {
         removeFirebaseListener()
         attachFirebaseListener()
@@ -240,7 +269,16 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
     }
 
     private fun attachFirebaseListener() {
-        valueEventListener = object : ValueEventListener {
+        valueEventListener = createFirebaseValueEventListener()
+        try {
+            firebaseRef.addValueEventListener(valueEventListener!!)
+        } catch (e: Exception) {
+            _progressRepo.value = 1.0f
+        }
+    }
+
+    private fun createFirebaseValueEventListener(): ValueEventListener {
+        return object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 try {
                     parseFirebaseSnapshot(snapshot)
@@ -256,75 +294,66 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
                 _progressRepo.value = 1.0f
             }
         }
-
-        try {
-            firebaseRef.addValueEventListener(valueEventListener!!)
-        } catch (e: Exception) {
-            _progressRepo.value = 1.0f
-        }
     }
 
     private fun attachProductChangeListener() {
-        productChangeListener = object : ValueEventListener {
+        productChangeListener = createProductChangeListener()
+        try {
+            firebaseRef.addValueEventListener(productChangeListener!!)
+        } catch (e: Exception) {
+            // Log error if needed
+        }
+    }
+
+    private fun createProductChangeListener(): ValueEventListener {
+        return object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 try {
-                    var changesMade = false
-
-                    snapshot.children.forEach { periodeSnapshot ->
-                        val periodeKey = periodeSnapshot.key ?: return@forEach
-
-                        // Verify the periode key format matches our schema
-                        if (!periodeKey.startsWith("{PV}->")) {
-                            return@forEach
-                        }
-
-                        periodeSnapshot.child("vendeurs").children.forEach { vendeurSnapshot ->
-                            val vendeurKey = vendeurSnapshot.key ?: return@forEach
-
-                            // Verify the vendeur key format matches our schema
-                            if (!vendeurKey.contains("<{Ve}->")) {
-                                return@forEach
-                            }
-
-                            vendeurSnapshot.child("produits").children.forEach { produitSnapshot ->
-                                val produitKey = produitSnapshot.key ?: return@forEach
-
-                                // Verify the produit key format matches our schema
-                                if (!produitKey.contains("<{Pr}->")) {
-                                    return@forEach
-                                }
-
-                                val idProduit = produitSnapshot.child("idProduit").getValue(Long::class.java) ?: 0L
-                                val nomProduit = produitSnapshot.child("nomProduit").getValue(String::class.java) ?: ""
-                                val quantity = produitSnapshot.child("quantity").getValue(Int::class.java) ?: 0
-
-                                val updated = updateProductInModel(periodeKey, vendeurKey, produitKey, idProduit, nomProduit, quantity)
-                                if (updated) changesMade = true
-                            }
-                        }
-                    }
-
+                    var changesMade = processProductChanges(snapshot)
                     if (changesMade) {
                         scheduleSafeRealmUpdate()
                         notifyUIUpdate()
                         _dataChangedEvent.value = System.currentTimeMillis()
                     }
                 } catch (e: Exception) {
-                    // Consider logging the exception for debugging
+                    // Log error if needed
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                // Consider logging the error for debugging
+                // Log error if needed
+            }
+        }
+    }
+
+    private fun processProductChanges(snapshot: DataSnapshot): Boolean {
+        var changesMade = false
+
+        snapshot.children.forEach { periodeSnapshot ->
+            val periodeKey = periodeSnapshot.key ?: return@forEach
+            if (!periodeKey.startsWith("{PV}->")) return@forEach
+
+            periodeSnapshot.child("vendeurs").children.forEach { vendeurSnapshot ->
+                val vendeurKey = vendeurSnapshot.key ?: return@forEach
+                if (!vendeurKey.contains("<{Ve}->")) return@forEach
+
+                vendeurSnapshot.child("produits").children.forEach { produitSnapshot ->
+                    val produitKey = produitSnapshot.key ?: return@forEach
+                    if (!produitKey.contains("<{Pr}->")) return@forEach
+
+                    val idProduit = produitSnapshot.child("idProduit").getValue(Long::class.java) ?: 0L
+                    val nomProduit = produitSnapshot.child("nomProduit").getValue(String::class.java) ?: ""
+                    val quantity = produitSnapshot.child("quantity").getValue(Int::class.java) ?: 0
+
+                    val updated = updateProductInModel(periodeKey, vendeurKey, produitKey, idProduit, nomProduit, quantity)
+                    if (updated) changesMade = true
+                }
             }
         }
 
-        try {
-            firebaseRef.addValueEventListener(productChangeListener!!)
-        } catch (e: Exception) {
-            // Consider logging the exception for debugging
-        }
+        return changesMade
     }
+
     private fun scheduleSafeRealmUpdate() {
         if (pendingRealmUpdate.compareAndSet(false, true)) {
             coroutineScope.launch {
@@ -346,24 +375,14 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
         nom: String,
         quantity: Int
     ): Boolean {
-        if (modelUpdateInProgress.getAndSet(true)) {
-            return false
-        }
+        if (modelUpdateInProgress.getAndSet(true)) return false
 
         try {
-            val periode = modelDatasSnapList.find { it.keyID == periodeKey }
-            if (periode == null) {
-                return false
-            }
-
-            val vendeur = periode.vendeurs.find { it.keyID == vendeurKey }
-            if (vendeur == null) {
-                return false
-            }
-
+            val periode = modelDatasSnapList.find { it.keyID == periodeKey } ?: return false
+            val vendeur = periode.vendeurs.find { it.keyID == vendeurKey } ?: return false
             val produit = vendeur.produits.find { it.keyID == produitKey }
 
-            if (produit != null) {
+            return if (produit != null) {
                 val changed = produit.quantity != quantity ||
                         produit.idProduit != id ||
                         produit.nomProduit != nom
@@ -372,9 +391,10 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
                     produit.quantity = quantity
                     produit.idProduit = id
                     produit.nomProduit = nom
-                    return true
+                    true
+                } else {
+                    false
                 }
-                return false
             } else {
                 vendeur.produits.add(Produit().apply {
                     keyID = produitKey
@@ -382,7 +402,7 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
                     this.nomProduit = nom
                     this.quantity = quantity
                 })
-                return true
+                true
             }
         } finally {
             modelUpdateInProgress.set(false)
@@ -392,9 +412,7 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
     private fun notifyUIUpdate() {
         coroutineScope.launch(Dispatchers.Main) {
             try {
-                if (modelUpdateInProgress.getAndSet(true)) {
-                    return@launch
-                }
+                if (modelUpdateInProgress.getAndSet(true)) return@launch
 
                 try {
                     val currentList = modelDatasSnapList.toList()
@@ -404,6 +422,7 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
                     modelUpdateInProgress.set(false)
                 }
             } catch (e: Exception) {
+                // Log error if needed
             }
         }
     }
@@ -423,39 +442,45 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
                 vendeurs = realmListOf()
             }
 
-            periodeSnapshot.child("vendeurs").children.forEach { vendeurSnapshot ->
-                val vendeurKey = vendeurSnapshot.key ?: return@forEach
-                val vendeurId = vendeurSnapshot.child("id").getValue(Long::class.java) ?: 0L
-                val vendeurNom = vendeurSnapshot.child("nom").getValue(String::class.java) ?: ""
-
-                val vendeur = Vendeur().apply {
-                    keyID = vendeurKey
-                    idVendeur = vendeurId
-                    nomVendeur = vendeurNom
-                    produits = realmListOf()
-                }
-
-                vendeurSnapshot.child("produits").children.forEach { produitSnapshot ->
-                    val produitKey = produitSnapshot.key ?: return@forEach
-                    val produitId = produitSnapshot.child("id").getValue(Long::class.java) ?: 0L
-                    val produitNom = produitSnapshot.child("nom").getValue(String::class.java) ?: ""
-                    val quantity = produitSnapshot.child("quantity").getValue(Int::class.java) ?: 0
-
-                    vendeur.produits.add(Produit().apply {
-                        keyID = produitKey
-                        idProduit = produitId
-                        nomProduit = produitNom
-                        this.quantity = quantity
-                    })
-                }
-
-                periode.vendeurs.add(vendeur)
-            }
-
+            parsePeriodeVendeurs(periodeSnapshot, periode)
             newPeriodesVente.add(periode)
         }
 
         updateModelDatasList(newPeriodesVente)
+    }
+
+    private fun parsePeriodeVendeurs(periodeSnapshot: DataSnapshot, periode: _01_PeriodesVent) {
+        periodeSnapshot.child("vendeurs").children.forEach { vendeurSnapshot ->
+            val vendeurKey = vendeurSnapshot.key ?: return@forEach
+            val vendeurId = vendeurSnapshot.child("id").getValue(Long::class.java) ?: 0L
+            val vendeurNom = vendeurSnapshot.child("nom").getValue(String::class.java) ?: ""
+
+            val vendeur = Vendeur().apply {
+                keyID = vendeurKey
+                idVendeur = vendeurId
+                nomVendeur = vendeurNom
+                produits = realmListOf()
+            }
+
+            parseVendeurProduits(vendeurSnapshot, vendeur)
+            periode.vendeurs.add(vendeur)
+        }
+    }
+
+    private fun parseVendeurProduits(vendeurSnapshot: DataSnapshot, vendeur: Vendeur) {
+        vendeurSnapshot.child("produits").children.forEach { produitSnapshot ->
+            val produitKey = produitSnapshot.key ?: return@forEach
+            val produitId = produitSnapshot.child("id").getValue(Long::class.java) ?: 0L
+            val produitNom = produitSnapshot.child("nom").getValue(String::class.java) ?: ""
+            val quantity = produitSnapshot.child("quantity").getValue(Int::class.java) ?: 0
+
+            vendeur.produits.add(Produit().apply {
+                keyID = produitKey
+                idProduit = produitId
+                nomProduit = produitNom
+                this.quantity = quantity
+            })
+        }
     }
 
     private fun removeFirebaseListener() {
@@ -463,6 +488,7 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
             try {
                 firebaseRef.removeEventListener(it)
             } catch (e: Exception) {
+                // Log error if needed
             }
             valueEventListener = null
         }
@@ -471,6 +497,7 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
             try {
                 firebaseRef.removeEventListener(it)
             } catch (e: Exception) {
+                // Log error if needed
             }
             productChangeListener = null
         }
@@ -480,18 +507,19 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
         coroutineScope.launch {
             realmMutex.withLock {
                 try {
-                    val dataSnapshot = modelDatasSnapList.toList()
-
                     realm.write {
+                        // Clear existing data
                         query<_01_PeriodesVent>().find().also { delete(it) }
                         query<Vendeur>().find().also { delete(it) }
                         query<Produit>().find().also { delete(it) }
 
-                        dataSnapshot.forEach { periode ->
+                        // Save current data
+                        modelDatasSnapList.forEach { periode ->
                             copyToRealm(createDeepCopyForRealm(periode))
                         }
                     }
                 } catch (e: Exception) {
+                    // Log error if needed
                 }
             }
         }
@@ -506,27 +534,31 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
         }
 
         source.vendeurs.forEach { sourceVendeur ->
-            val vendeurCopy = Vendeur().apply {
-                keyID = sourceVendeur.keyID
-                idVendeur = sourceVendeur.idVendeur
-                nomVendeur = sourceVendeur.nomVendeur
-                produits = realmListOf()
-            }
-
-            sourceVendeur.produits.forEach { sourceProduit ->
-                val produitCopy = Produit().apply {
-                    keyID = sourceProduit.keyID
-                    idProduit = sourceProduit.idProduit
-                    nomProduit = sourceProduit.nomProduit
-                    quantity = sourceProduit.quantity
-                }
-                vendeurCopy.produits.add(produitCopy)
-            }
-
+            val vendeurCopy = createVendeurCopy(sourceVendeur)
             copy.vendeurs.add(vendeurCopy)
         }
 
         return copy
+    }
+
+    private fun createVendeurCopy(sourceVendeur: Vendeur): Vendeur {
+        val vendeurCopy = Vendeur().apply {
+            keyID = sourceVendeur.keyID
+            idVendeur = sourceVendeur.idVendeur
+            nomVendeur = sourceVendeur.nomVendeur
+            produits = realmListOf()
+        }
+
+        sourceVendeur.produits.forEach { sourceProduit ->
+            vendeurCopy.produits.add(Produit().apply {
+                keyID = sourceProduit.keyID
+                idProduit = sourceProduit.idProduit
+                nomProduit = sourceProduit.nomProduit
+                quantity = sourceProduit.quantity
+            })
+        }
+
+        return vendeurCopy
     }
 
     override suspend fun refreshData() {
