@@ -1,13 +1,12 @@
-package V.DiviseParSections.App.D.FraitProjet.App.FragID2.VentsHistoriquesDisplayer.Fragment._01_VentsHistoriques.DataBase.Repository
+package Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository
 
-import V.DiviseParSections.App.D.FraitProjet.App.FragID2.VentsHistoriquesDisplayer.Fragment._01_VentsHistoriques.DataBase.Models._01_VentsHistoriquesDataBase
-import V.DiviseParSections.App.D.FraitProjet.App.FragID2.VentsHistoriquesDisplayer.Fragment._01_VentsHistoriques.DataBase.Models._01_VentsHistoriquesDataBase.Companion.convertToFirebaseFormat
-import V.DiviseParSections.App.D.FraitProjet.App.FragID2.VentsHistoriquesDisplayer.Fragment._01_VentsHistoriques.DataBase.Models._01_VentsHistoriquesDataBase.Companion.parsePeriodeFromSnapshot
-import V.DiviseParSections.App.D.FraitProjet.App.FragID2.VentsHistoriquesDisplayer.Fragment._01_VentsHistoriques.DataBase.Models._01_VentsHistoriquesDataBase.Companion.test_01_PeriodesVent
-import V.DiviseParSections.App.D.FraitProjet.App.FragID2.VentsHistoriquesDisplayer.Fragment._01_VentsHistoriques.DataBase.Models._012_Vendeur
-import V.DiviseParSections.App.D.FraitProjet.App.FragID2.VentsHistoriquesDisplayer.Fragment._01_VentsHistoriques.DataBase.Models._013_Acheteurs
-import V.DiviseParSections.App.D.FraitProjet.App.FragID2.VentsHistoriquesDisplayer.Fragment._01_VentsHistoriques.DataBase.Models._014_Produits
-import android.util.Log
+import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._012_Vendeur
+import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._013_Acheteurs
+import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._014_Produits
+import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase
+import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase.Companion.convertToFirebaseFormat
+import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase.Companion.parsePeriodeFromSnapshot
+import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase.Companion.test_01_PeriodesVent
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.firebase.database.DataSnapshot
@@ -65,91 +64,54 @@ class _00VentsHistoriquesDataBase_RepositoryImpl : _00_VentsHistoriquesDataBase_
         return Realm.open(config)
     }
 
-
-
     private fun checkFirebaseOrCreateTestData() {
-        Log.d(TAG, "Checking if Firebase data exists...")
         firebaseRef.get().addOnSuccessListener { snapshot ->
             if (!snapshot.exists() || snapshot.childrenCount == 0L) {
-                Log.d(TAG, "Firebase is empty, creating test data...")
-                // Create test data first
                 val testPeriodes = createTestData()
-                Log.d(TAG, "Test data created: ${testPeriodes.size} periods")
                 updateModelDatasList(testPeriodes)
 
-                // Then explicitly update Firebase with this data
-                Log.d(TAG, "Converting test data to Firebase format...")
                 val dataToUpdate = convertToFirebaseFormat(testPeriodes)
-                Log.d(TAG, "Updating Firebase with test data...")
                 firebaseRef.setValue(dataToUpdate).addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        Log.d(TAG, "Firebase successfully updated with test data")
-                    } else {
-                        Log.e(TAG, "Failed to update Firebase: ${task.exception?.message}")
-                    }
-                    // Only after Firebase update completes, update the Realm database
-                    Log.d(TAG, "Updating Realm database...")
                     updateRealm()
-                    // Then attach listeners to monitor future changes
-                    Log.d(TAG, "Setting up Firebase listeners...")
                     loadFromFirebase()
                 }
             } else {
-                Log.d(TAG, "Firebase has data (${snapshot.childrenCount} entries), loading existing data...")
                 loadFromFirebase()
             }
         }.addOnFailureListener { exception ->
-            Log.e(TAG, "Failed to check Firebase data: ${exception.message}")
-            // In case of network failure, still try to load what might be in Firebase
-            Log.d(TAG, "Attempting to load from Firebase despite failure...")
             loadFromFirebase()
         }
     }
 
     private fun createTestData(): List<_01_VentsHistoriquesDataBase> {
-        Log.d(TAG, "Creating test data...")
         val testPeriodes = mutableListOf<_01_VentsHistoriquesDataBase>()
 
         for (i in 1..3) {
-            Log.d(TAG, "Creating test period $i")
             test_01_PeriodesVent(i, testPeriodes)
         }
 
-        Log.d(TAG, "Test data creation complete: ${testPeriodes.size} periods with keys: ${testPeriodes.map { it.keyID }}")
         return testPeriodes
     }
 
     private fun updateFirebase() {
         coroutineScope.launch {
             try {
-                Log.d(TAG, "Preparing to update Firebase...")
                 val dataToUpdate = convertToFirebaseFormat(modelDatasSnapList)
-                Log.d(TAG, "Firebase update data prepared, removing listeners...")
                 removeFirebaseListener()
-                Log.d(TAG, "Setting Firebase data...")
                 firebaseRef.setValue(dataToUpdate).addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        Log.d(TAG, "Firebase update successful")
-                    } else {
-                        Log.e(TAG, "Firebase update failed: ${task.exception?.message}")
-                    }
-                    Log.d(TAG, "Re-attaching Firebase listeners...")
                     attachFirebaseListener()
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Error during Firebase update: ${e.message}", e)
+                // Error handling would go here
             }
         }
     }
 
     private fun attachFirebaseListener() {
-        Log.d(TAG, "Creating and attaching main Firebase listener...")
         valueEventListener = createFirebaseValueEventListener()
         try {
             firebaseRef.addValueEventListener(valueEventListener!!)
-            Log.d(TAG, "Main Firebase listener attached successfully")
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to attach main Firebase listener: ${e.message}", e)
             _progressRepo.value = 1.0f
         }
     }
@@ -158,55 +120,41 @@ class _00VentsHistoriquesDataBase_RepositoryImpl : _00_VentsHistoriquesDataBase_
         return object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 try {
-                    Log.d(TAG, "Firebase data changed, snapshot children count: ${snapshot.childrenCount}")
                     val parsedData = parseFirebaseSnapshot(snapshot)
-                    Log.d(TAG, "Parsed ${parsedData.size} periods from Firebase")
                     updateModelDatasList(parsedData)
                     scheduleSafeRealmUpdate()
                     _progressRepo.value = 1.0f
                     _dataChangedEvent.value = System.currentTimeMillis()
-                    Log.d(TAG, "Model data updated from Firebase successfully")
                 } catch (e: Exception) {
-                    Log.e(TAG, "Error processing Firebase data change: ${e.message}", e)
                     _progressRepo.value = 1.0f
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Log.e(TAG, "Firebase data change event cancelled: ${error.message}")
                 _progressRepo.value = 1.0f
             }
         }
     }
 
     private fun parseFirebaseSnapshot(snapshot: DataSnapshot): MutableList<_01_VentsHistoriquesDataBase> {
-        Log.d(TAG, "Parsing Firebase snapshot with ${snapshot.childrenCount} children")
         val newPeriodesVente = mutableListOf<_01_VentsHistoriquesDataBase>()
 
         snapshot.children.forEach { periodeSnapshot ->
-            Log.d(TAG, "Parsing period with key: ${periodeSnapshot.key}")
             parsePeriodeFromSnapshot(periodeSnapshot)?.let {
-                Log.d(TAG, "Successfully parsed period: ${it.keyID}")
                 newPeriodesVente.add(it)
-            } ?: Log.w(TAG, "Failed to parse period from snapshot: ${periodeSnapshot.key}")
+            }
         }
 
-        Log.d(TAG, "Parsed ${newPeriodesVente.size} periods from Firebase")
         return newPeriodesVente
     }
 
     private fun initializeData() {
-        Log.d(TAG, "Initializing data...")
         val isRealmEmpty = realm.query<_01_VentsHistoriquesDataBase>().count().find() == 0L
-        Log.d(TAG, "Realm database is empty: $isRealmEmpty")
 
         if (isRealmEmpty) {
-            Log.d(TAG, "Realm is empty, checking Firebase...")
             checkFirebaseOrCreateTestData()
         } else {
-            Log.d(TAG, "Loading data from Realm to model...")
             loadFromRealmTOmodelDatasSnapList()
-            Log.d(TAG, "Setting up Firebase listeners...")
             loadFromFirebase()
         }
     }
@@ -268,14 +216,12 @@ class _00VentsHistoriquesDataBase_RepositoryImpl : _00_VentsHistoriquesDataBase_
         attachAcheteursChangeListener()
     }
 
-
-
     private fun attachAcheteursChangeListener() {
         acheteursChangeListener = createAcheteursChangeListener()
         try {
             firebaseRef.addValueEventListener(acheteursChangeListener!!)
         } catch (e: Exception) {
-            // Log error if needed
+            // Error handling would go here
         }
     }
 
@@ -290,12 +236,12 @@ class _00VentsHistoriquesDataBase_RepositoryImpl : _00_VentsHistoriquesDataBase_
                         _dataChangedEvent.value = System.currentTimeMillis()
                     }
                 } catch (e: Exception) {
-                    // Log error if needed
+                    // Error handling would go here
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                // Log error if needed
+                // Error handling would go here
             }
         }
     }
@@ -425,11 +371,10 @@ class _00VentsHistoriquesDataBase_RepositoryImpl : _00_VentsHistoriquesDataBase_
                     modelUpdateInProgress.set(false)
                 }
             } catch (e: Exception) {
-                // Log error if needed
+                // Error handling would go here
             }
         }
     }
-
 
     private fun updateRealmSafely() {
         coroutineScope.launch {
@@ -448,7 +393,7 @@ class _00VentsHistoriquesDataBase_RepositoryImpl : _00_VentsHistoriquesDataBase_
                         }
                     }
                 } catch (e: Exception) {
-                    // Log error if needed
+                    // Error handling would go here
                 }
             }
         }
@@ -519,7 +464,7 @@ class _00VentsHistoriquesDataBase_RepositoryImpl : _00_VentsHistoriquesDataBase_
             try {
                 firebaseRef.removeEventListener(it)
             } catch (e: Exception) {
-                // Log error if needed
+                // Error handling would go here
             }
             valueEventListener = null
         }
@@ -528,7 +473,7 @@ class _00VentsHistoriquesDataBase_RepositoryImpl : _00_VentsHistoriquesDataBase_
             try {
                 firebaseRef.removeEventListener(it)
             } catch (e: Exception) {
-                // Log error if needed
+                // Error handling would go here
             }
             acheteursChangeListener = null
         }

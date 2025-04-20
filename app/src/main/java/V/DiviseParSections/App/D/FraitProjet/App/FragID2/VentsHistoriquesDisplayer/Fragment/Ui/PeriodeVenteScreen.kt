@@ -1,9 +1,9 @@
 package V.DiviseParSections.App.D.FraitProjet.App.FragID2.VentsHistoriquesDisplayer.Fragment.Ui
 
-import V.DiviseParSections.App.D.FraitProjet.App.FragID2.VentsHistoriquesDisplayer.Fragment._01_VentsHistoriques.DataBase.Models._01_VentsHistoriquesDataBase
-import V.DiviseParSections.App.D.FraitProjet.App.FragID2.VentsHistoriquesDisplayer.Fragment._01_VentsHistoriques.DataBase.Models._012_Vendeur
-import V.DiviseParSections.App.D.FraitProjet.App.FragID2.VentsHistoriquesDisplayer.Fragment._01_VentsHistoriques.DataBase.Models._013_Acheteurs
-import V.DiviseParSections.App.D.FraitProjet.App.FragID2.VentsHistoriquesDisplayer.Fragment._01_VentsHistoriques.DataBase.Models._014_Produits
+import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase
+import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._012_Vendeur
+import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._013_Acheteurs
+import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._014_Produits
 import V.DiviseParSections.App.D.FraitProjet.App.FragID2.VentsHistoriquesDisplayer.Fragment.ViewModel.PeriodeVenteViewModel
 import V.DiviseParSections.App.D.FraitProjet.App.FragID2.VentsHistoriquesDisplayer.Fragment.ViewModel.ViewMode
 import androidx.compose.animation.AnimatedVisibility

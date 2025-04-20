@@ -1,7 +1,7 @@
-package V.DiviseParSections.App.D.FraitProjet.App.FragID2.VentsHistoriquesDisplayer.Fragment._01_VentsHistoriques.DataBase.Models
+package Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models
 
-import V.DiviseParSections.App.D.FraitProjet.App.FragID2.VentsHistoriquesDisplayer.Fragment._01_VentsHistoriques.DataBase.Models._012_Vendeur.Companion.createVendeur
-import V.DiviseParSections.App.D.FraitProjet.App.FragID2.VentsHistoriquesDisplayer.Fragment._01_VentsHistoriques.DataBase.Models._012_Vendeur.Companion.mapVendeurs
+import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._012_Vendeur.Companion.createVendeur
+import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._012_Vendeur.Companion.mapVendeurs
 import com.google.firebase.database.DataSnapshot
 import io.realm.kotlin.ext.realmListOf
 import io.realm.kotlin.types.RealmList

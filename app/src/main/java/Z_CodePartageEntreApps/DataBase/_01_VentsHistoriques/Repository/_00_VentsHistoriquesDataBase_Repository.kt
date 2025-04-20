@@ -1,6 +1,6 @@
-package V.DiviseParSections.App.D.FraitProjet.App.FragID2.VentsHistoriquesDisplayer.Fragment._01_VentsHistoriques.DataBase.Repository
+package Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository
 
-import V.DiviseParSections.App.D.FraitProjet.App.FragID2.VentsHistoriquesDisplayer.Fragment._01_VentsHistoriques.DataBase.Models._01_VentsHistoriquesDataBase
+import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.firebase.Firebase
 import com.google.firebase.database.database

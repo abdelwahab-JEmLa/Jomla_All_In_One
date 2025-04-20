@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin
 
-import V.DiviseParSections.App.D.FraitProjet.App.FragID2.VentsHistoriquesDisplayer.Fragment._01_VentsHistoriques.DataBase.Repository._00_VentsHistoriquesDataBase_Repository
-import V.DiviseParSections.App.D.FraitProjet.App.FragID2.VentsHistoriquesDisplayer.Fragment._01_VentsHistoriques.DataBase.Repository._00VentsHistoriquesDataBase_RepositoryImpl
+import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository._00_VentsHistoriquesDataBase_Repository
+import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository._00VentsHistoriquesDataBase_RepositoryImpl
 import V.DiviseParSections.App.D.FraitProjet.App.FragID2.VentsHistoriquesDisplayer.Fragment.ViewModel.PeriodeVenteViewModel
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.ViewModel.VendeursViewModel
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
