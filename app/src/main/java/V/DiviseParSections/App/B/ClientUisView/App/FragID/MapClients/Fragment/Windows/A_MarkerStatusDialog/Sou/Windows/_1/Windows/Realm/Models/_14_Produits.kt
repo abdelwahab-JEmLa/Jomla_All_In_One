@@ -10,7 +10,7 @@ class _14_Produits : RealmObject {
     var tempCreationString: String = "yyyy.mm.dd(HH:mm)"
 
     @PrimaryKey
-    var keyID: String = "$startDesignation->$id"
+    var keyID: String = "$id->$startDesignation"
 
     var quantity: Int = 0
 
@@ -31,7 +31,7 @@ class _14_Produits : RealmObject {
                     id = k.toLong()
                     startDesignation = "_14_Produits $k"
                     tempCreationString = "2025.04.20(12:00)"
-                    keyID = "$startDesignation->$id"
+                    keyID = "$id->$startDesignation"
                     quantity = k * 2
                 })
             }

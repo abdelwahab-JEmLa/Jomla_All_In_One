@@ -12,7 +12,7 @@ class _13_Acheteurs : RealmObject {
     var tempCreationString: String = "yyyy.mm.dd(HH:mm)"
 
     @PrimaryKey
-    var keyID: String = "$startDesignation->$id"
+    var keyID: String = "$id->$startDesignation"
 
     var child_14Produits: RealmList<_14_Produits> = realmListOf()
 
@@ -25,7 +25,7 @@ class _13_Acheteurs : RealmObject {
                     id = k.toLong()
                     startDesignation = "_13_Acheteurs $k"
                     tempCreationString = "2025.04.20(12:00)"
-                    keyID = "$startDesignation->$id"
+                    keyID = "$id->$startDesignation"
                     child_14Produits = realmListOf()
                 }
 
