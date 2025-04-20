@@ -282,15 +282,15 @@ fun MarkerStatusDialog(
                                 it.idClient == clientId
                             }
                             if (acheteur == null) {
-                                // Create new acheteur and add it to the vendeur
                                 acheteur = _013_Acheteurs().apply {
-                                    id = System.currentTimeMillis() // Generate unique ID
+                                    vid = System.currentTimeMillis() // Generate unique ID
                                     idClient = clientId
                                 }
                                 vendeur.child_013_Acheteurs.add(acheteur)
                             }
 
-                            repo_01_VentsHistoriquesDataBase.notifierDataChange()
+                            repo_01_VentsHistoriquesDataBase.notifierDataChange()    //<--
+                            //TODO(1): cree logs pk fire base ne s update pas
 
                             //----------------------------------------------------------------------------------------/
 

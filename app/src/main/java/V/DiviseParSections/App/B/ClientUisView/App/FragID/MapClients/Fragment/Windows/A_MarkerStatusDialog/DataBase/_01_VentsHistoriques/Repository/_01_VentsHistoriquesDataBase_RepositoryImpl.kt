@@ -289,12 +289,12 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
             val existingAcheteur = vendeur.child_013_Acheteurs.find { it.keyID == acheteur.keyID }
 
             return if (existingAcheteur != null) {
-                val changed = existingAcheteur.id != acheteur.id ||
+                val changed = existingAcheteur.vid != acheteur.vid ||
                         existingAcheteur.startDesignation != acheteur.startDesignation ||
                         existingAcheteur.tempCreationString != acheteur.tempCreationString
 
                 if (changed) {
-                    existingAcheteur.id = acheteur.id
+                    existingAcheteur.vid = acheteur.vid
                     existingAcheteur.startDesignation = acheteur.startDesignation
                     existingAcheteur.tempCreationString = acheteur.tempCreationString
                     true
@@ -427,7 +427,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
         sourceVendeur.child_013_Acheteurs.forEach { sourceAcheteur ->
             val acheteurCopy = _013_Acheteurs().apply {
                 keyID = sourceAcheteur.keyID
-                id = sourceAcheteur.id
+                vid = sourceAcheteur.vid
                 startDesignation = sourceAcheteur.startDesignation
                 tempCreationString = sourceAcheteur.tempCreationString
                 child_14Produits = realmListOf()

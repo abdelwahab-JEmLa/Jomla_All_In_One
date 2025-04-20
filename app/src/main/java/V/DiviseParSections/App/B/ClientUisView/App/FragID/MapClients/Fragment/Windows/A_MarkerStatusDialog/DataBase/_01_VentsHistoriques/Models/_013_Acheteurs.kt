@@ -7,7 +7,7 @@ import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
 
 class _013_Acheteurs : RealmObject {
-    var id: Long = 0L
+    var vid: Long = 0L
 
     var idClient: Long = 0L
 
@@ -15,7 +15,7 @@ class _013_Acheteurs : RealmObject {
     var tempCreationString: String = "yyyy_mm_dd(HH:mm)"
 
     @PrimaryKey
-    var keyID: String = "${id}=${startDesignation.replace(" ", "_")}"
+    var keyID: String = "${vid}=${startDesignation.replace(" ", "_")}"
 
     var child_14Produits: RealmList<_014_Produits> = realmListOf()
 
@@ -25,10 +25,10 @@ class _013_Acheteurs : RealmObject {
 
             for (k in 1..5) {
                 val acheteur = _013_Acheteurs().apply {
-                    id = k.toLong()
+                    vid = k.toLong()
                     startDesignation = "_013_Acheteurs $k"
                     tempCreationString = "2025_04_20(12:00)"
-                    keyID = "$id->$startDesignation"
+                    keyID = "$vid->$startDesignation"
                     child_14Produits = realmListOf()
                 }
 
@@ -47,7 +47,7 @@ class _013_Acheteurs : RealmObject {
         fun mapDatas(datas: List<_013_Acheteurs>): Map<String, Any> {
             return datas.associate { data ->
                 data.keyID to mapOf(
-                    NomsValeursModel.id.name to data.id,
+                    NomsValeursModel.id.name to data.vid,
                     NomsValeursModel.designation.name to data.startDesignation,
                     NomsValeursModel.tempCreationString.name to data.tempCreationString,
                     NomsValeursModel.child_15_Produits.name to _014_Produits.mapDatas(data.child_14Produits)
@@ -60,7 +60,7 @@ class _013_Acheteurs : RealmObject {
 
             val acheteur = _013_Acheteurs().apply {
                 keyID = acheteurKey
-                id = snapshot.child(NomsValeursModel.id.name).getValue(Long::class.java) ?: 0L
+                vid = snapshot.child(NomsValeursModel.id.name).getValue(Long::class.java) ?: 0L
                 startDesignation = snapshot.child(NomsValeursModel.designation.name).getValue(String::class.java) ?: ""
                 tempCreationString = snapshot.child(NomsValeursModel.tempCreationString.name).getValue(String::class.java) ?: "yyyy.mm.dd(HH:mm)"
                 child_14Produits = realmListOf()
