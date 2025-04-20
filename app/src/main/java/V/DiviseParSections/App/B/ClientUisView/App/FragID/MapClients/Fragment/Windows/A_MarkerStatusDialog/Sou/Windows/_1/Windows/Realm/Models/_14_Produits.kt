@@ -7,15 +7,15 @@ import io.realm.kotlin.types.annotations.PrimaryKey
 class _14_Produits : RealmObject {
     var id: Long = 0L
     var startDesignation: String = ""
-    var tempCreationString: String = "yyyy.mm.dd(HH:mm)"
+    var tempCreationString: String = "yyyy_mm_dd(HH:mm)"
 
     @PrimaryKey
-    var keyID: String = "${id}_${startDesignation.replace(" ", "_")}"
+    var keyID: String = "${id}(${startDesignation})"
 
     var quantity: Int = 0
 
     companion object{
-        enum class nomsValeursModel{
+        enum class NomsValeursModel{
             keyID,
             id,
             designation,
@@ -43,6 +43,7 @@ class _14_Produits : RealmObject {
                 data.keyID to mapOf(
                     "id" to data.id,
                     "designation" to data.startDesignation,
+                    NomsValeursModel.quantity.name to data.quantity,
                 )
             }
         }
@@ -54,7 +55,7 @@ class _14_Produits : RealmObject {
                 keyID = produitKey
                 id = snapshot.child("id").getValue(Long::class.java) ?: 0L
                 startDesignation = snapshot.child("designation").getValue(String::class.java) ?: ""
-                quantity = snapshot.child(nomsValeursModel.quantity.name).getValue(Int::class.java) ?: 0
+                quantity = snapshot.child(NomsValeursModel.quantity.name).getValue(Int::class.java) ?: 0
             }
         }
     }
