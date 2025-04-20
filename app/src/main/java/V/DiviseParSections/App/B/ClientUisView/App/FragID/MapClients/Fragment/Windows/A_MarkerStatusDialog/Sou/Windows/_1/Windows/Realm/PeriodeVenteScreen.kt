@@ -334,7 +334,7 @@ fun VendeurItem(vendeur: Vendeur) {
             .padding(16.dp)
     ) {
         Text(
-            text = vendeur.nomVendeur,
+            text = vendeur.keyID,
             style = MaterialTheme.typography.titleSmall
         )
 
