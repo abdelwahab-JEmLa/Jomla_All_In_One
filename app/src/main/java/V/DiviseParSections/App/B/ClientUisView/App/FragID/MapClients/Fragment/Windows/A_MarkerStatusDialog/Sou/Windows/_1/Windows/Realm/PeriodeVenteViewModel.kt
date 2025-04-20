@@ -1,7 +1,5 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Repository
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Repository._01_PeriodesVent
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Repository._01_PeriodesVent_Repository
 import android.util.Log
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
@@ -14,18 +12,13 @@ import kotlinx.coroutines.launch
 
 private const val TAG = "PeriodeVenteViewModel"
 
-open class PeriodeVenteViewModel(             //<--
-//TODO(1): diminue lateille et complicite du code sans changer son fonctionement
-    //-->
-    //TODO(): refactore et donne moi cette function _01_PeriodesVent_RepositoryImpl avec les modification naissaissaire
-
+open class PeriodeVenteViewModel(
     private val repository: _01_PeriodesVent_Repository
 ) : ViewModel() {
-    // Utilisons directement la SnapshotStateList du repository au lieu de créer une copie
-    val periodesVente: SnapshotStateList<_01_PeriodesVent>
-        get() = repository.modelDatasSnapList
+    // Direct access to repository data
+    val periodesVente: SnapshotStateList<_01_PeriodesVent> get() = repository.modelDatasSnapList
 
-    // UI state trigger to force recomposition
+    // UI state flows
     private val _uiState = MutableStateFlow(0)
     val uiState: StateFlow<Int> = _uiState.asStateFlow()
 
@@ -34,58 +27,98 @@ open class PeriodeVenteViewModel(             //<--
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
-    // Add a specific state holder for the monitored product
-    private val _monitoredProductQuantity = MutableStateFlow(0)
-    val monitoredProductQuantity: StateFlow<Int> = _monitoredProductQuantity.asStateFlow()
 
-    // Keep track of the last update time to throttle UI updates
+    // Store a map of product keys to their last known quantities
+    private val _productQuantities = HashMap<String, Int>()
+
+    // Flow to notify about any product changes (includes product key and new quantity)
+    private val _productChanges = MutableStateFlow<Pair<String, Int>?>(null)
+    val productChanges: StateFlow<Pair<String, Int>?> = _productChanges.asStateFlow()
+
+    // Track last update time to throttle UI updates
     private var lastUpdateTime = 0L
 
     init {
+        initViewModel()
+    }
+
+    private fun initViewModel() {
         loadPeriodesVente()
         observeRepoProgress()
-        startProductMonitoring()
-        startMonitoredProductChecker()
-
+        startPeriodicUpdates()
     }
-    private fun startMonitoredProductChecker() {
+
+    private fun startPeriodicUpdates() {
         viewModelScope.launch {
             while (true) {
-                delay(500)
-                checkMonitoredProduct("2025_04_19->11:00->2(Vendeur 2)->2(Produit 2)")
-            }
-        }
-    }
-
-    // Add a function to check and update the monitored product
-    fun checkMonitoredProduct(productKey: String) {
-        viewModelScope.launch {
-            val product = findProductByKey(periodesVente, productKey)
-            if (product != null && product.quantity != _monitoredProductQuantity.value) {
-                _monitoredProductQuantity.value = product.quantity
-                Log.d(TAG, "Monitored product quantity updated to: ${product.quantity}")
-            }
-        }
-    }
-
-    private fun startProductMonitoring() {
-        viewModelScope.launch {
-            while (true) {
-                // Check for updates every 500ms
                 delay(500)
                 updateUiState()
+                checkAllProductChanges()
             }
         }
     }
 
-    // Force UI update
+    // Check for changes in all products across all periods and vendors
+    private fun checkAllProductChanges() {
+        // Flat map all products from all periods and vendors
+        val allProducts = mutableListOf<Pair<String, Produit>>()
+
+        periodesVente.forEach { periode ->
+            periode.vendeurs.forEach { vendeur ->
+                vendeur.produits.forEach { produit ->
+                    allProducts.add(produit.keyID to produit)
+                }
+            }
+        }
+
+        // Check each product for changes
+        allProducts.forEach { (key, product) ->
+            val previousQuantity = _productQuantities[key] ?: run {
+                // First time seeing this product, store its current quantity
+                _productQuantities[key] = product.quantity
+                return@forEach
+            }
+
+            // Check if quantity has changed
+            if (previousQuantity != product.quantity) {
+                // Update stored quantity
+                _productQuantities[key] = product.quantity
+
+                // Notify about the change
+                _productChanges.value = key to product.quantity
+                Log.d(TAG, "Product $key quantity changed: $previousQuantity -> ${product.quantity}")
+            }
+        }
+
+        // Clean up products that no longer exist
+        val currentKeys = allProducts.map { it.first }.toSet()
+        val keysToRemove = _productQuantities.keys.filter { it !in currentKeys }
+        keysToRemove.forEach { _productQuantities.remove(it) }
+    }
+
+    // For backward compatibility or specific monitoring
+    fun checkMonitoredProduct(productKey: String) {
+        findProductByKey(periodesVente, productKey)?.let { product ->
+            val previousQuantity = _productQuantities[productKey] ?: run {
+                // First time seeing this product
+                _productQuantities[productKey] = product.quantity
+                return
+            }
+
+            if (previousQuantity != product.quantity) {
+                _productQuantities[productKey] = product.quantity
+                _productChanges.value = productKey to product.quantity
+                Log.d(TAG, "Monitored product $productKey quantity updated: $previousQuantity -> ${product.quantity}")
+            }
+        }
+    }
+
+    // Force UI update with throttling
     private fun updateUiState() {
-        // Don't update too frequently
         val now = System.currentTimeMillis()
         if (now - lastUpdateTime > 300) {
             lastUpdateTime = now
             _uiState.value += 1
-            Log.d(TAG, "Forcing UI update: ${_uiState.value}")
         }
     }
 
@@ -94,7 +127,6 @@ open class PeriodeVenteViewModel(             //<--
             repository.progressRepo.collect { progress ->
                 _isLoading.value = progress < 1.0f
                 if (progress >= 1.0f) {
-                    // Force UI update when data is loaded
                     updateUiState()
                 }
             }
@@ -105,7 +137,6 @@ open class PeriodeVenteViewModel(             //<--
         viewModelScope.launch {
             _isLoading.value = true
             repository.refreshData()
-            // Force UI update after loading
             updateUiState()
             _isLoading.value = false
         }
@@ -123,4 +154,36 @@ open class PeriodeVenteViewModel(             //<--
             _isLoading.value = false
         }
     }
+
+    // Get the current quantity for a specific product
+    fun getProductQuantity(productKey: String): Int {
+        return _productQuantities[productKey] ?: findProductByKey(periodesVente, productKey)?.quantity ?: 0
+    }
+}
+
+// Helper function to find a product by its key in the list of periods
+fun findProductByKey(periods: List<_01_PeriodesVent>, productKey: String): Produit? {
+    // Extract period, vendor, and product IDs from the key
+    val parts = productKey.split("->")
+    if (parts.size < 3) return null
+
+    val periodKey = "${parts[0]}->${parts[1]}"
+
+    // Find the period
+    val period = periods.find { it.keyID == periodKey } ?: return null
+
+    // Extract vendor info from the product key
+    val vendorPart = parts[2]
+    val vendorId = vendorPart.substringBefore("(").toLongOrNull() ?: return null
+
+    // Find the vendor by ID
+    val vendor = period.vendeurs.find { it.id == vendorId } ?: return null
+
+    // Extract product info from the product key
+    if (parts.size < 4) return null
+    val productPart = parts[3]
+    val productId = productPart.substringBefore("(").toLongOrNull() ?: return null
+
+    // Find and return the product
+    return vendor.produits.find { it.id == productId }
 }

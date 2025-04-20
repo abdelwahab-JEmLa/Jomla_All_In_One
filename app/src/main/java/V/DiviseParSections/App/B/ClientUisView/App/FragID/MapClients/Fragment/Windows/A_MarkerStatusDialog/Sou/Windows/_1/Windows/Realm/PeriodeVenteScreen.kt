@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Repository.PeriodeVenteViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Repository.Produit
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Repository.Vendeur
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Repository._01_PeriodesVent
@@ -75,10 +76,7 @@ fun PeriodeVenteScreen(
         }
     }
 
-    LaunchedEffect(Unit) {
-        viewModel.refreshData()
-        Log.d(TAG, "Initial search for product: $produitKeyALog")
-    }
+
 
 
     Scaffold(
@@ -113,7 +111,11 @@ fun PeriodeVenteScreen(
                         .fillMaxWidth()
                         .height(120.dp)
                         .padding(8.dp)
-                        .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.medium),
+                        .border(
+                            1.dp,
+                            MaterialTheme.colorScheme.outline,
+                            MaterialTheme.shapes.medium
+                        ),
                     contentPadding = PaddingValues(8.dp)
                 ) {
                     items(periodesVente) { periode ->
@@ -269,9 +271,11 @@ fun PeriodeDetail(periode: _01_PeriodesVent) {
 fun VendeurCard(
     vendeur: Vendeur,
     viewModel: PeriodeVenteViewModel = koinViewModel()
-) {
+) {                                      //<--
+//TODO(1): faitque chequ tout lesproduits
     // Observe the monitored product quantity to force recomposition
-    val monitoredProductQuantity by viewModel.monitoredProductQuantity.collectAsStateWithLifecycle()
+    val monitoredProductQuantity by viewModel.monitoredProductQuantity.collectAsStateWithLifecycle()        //->
+    //TODO(FIXME):Fix erreur Unresolved reference: monitoredProductQuantity
 
     Card(
         modifier = Modifier
