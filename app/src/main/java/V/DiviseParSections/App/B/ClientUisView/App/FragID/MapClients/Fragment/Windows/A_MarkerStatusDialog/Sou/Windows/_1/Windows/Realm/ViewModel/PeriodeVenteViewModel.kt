@@ -20,10 +20,20 @@ data class PeriodeVenteUiState(
     val selectedPeriode: _01_PeriodesVent? = null,
     val searchQuery: String = "",
     val filteredPeriodes: List<_01_PeriodesVent> = emptyList(),
-    val viewMode: Int = 0  // Replace the previous integer state with a semantic state
+    val viewMode: ViewMode = ViewMode.LIST,
+    val error: String? = null,
+    val isRefreshing: Boolean = false
 )
 
-open class PeriodeVenteViewModel(
+// Enum for different view modes
+enum class ViewMode {
+    LIST,     // Standard list view of periods
+    DETAIL,   // Detailed view of a single period
+    CALENDAR, // Calendar view showing periods by date
+    ANALYTICS // Analytics/statistics view
+}
+
+class PeriodeVenteViewModel(
     private val repository: _01_PeriodesVent_Repository
 ) : ViewModel() {
     // Direct access to repository data
@@ -72,33 +82,50 @@ open class PeriodeVenteViewModel(
     // Load data function
     private fun loadPeriodesVente() {
         viewModelScope.launch {
-            // Check if we have a selected period and update it if it exists
-            val currentSelection = _uiState.value.selectedPeriode
-            val updatedSelection = if (currentSelection != null) {
-                // Try to find updated version of currently selected period
-                periodesVente.find { it.keyID == currentSelection.keyID }
-            } else {
-                null
-            }
+            try {
+                // Check if we have a selected period and update it if it exists
+                val currentSelection = _uiState.value.selectedPeriode
+                val updatedSelection = if (currentSelection != null) {
+                    // Try to find updated version of currently selected period
+                    periodesVente.find { it.keyID == currentSelection.keyID }
+                } else {
+                    null
+                }
 
-            // Update state with potentially updated selection
-            _uiState.update { currentState ->
-                currentState.copy(selectedPeriode = updatedSelection)
-            }
+                // Update state with potentially updated selection
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        selectedPeriode = updatedSelection,
+                        error = null
+                    )
+                }
 
-            // Update filtered list based on current search query
-            updateFilteredPeriods()
+                // Update filtered list based on current search query
+                updateFilteredPeriods()
+            } catch (e: Exception) {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        error = "Erreur lors du chargement des données: ${e.message}"
+                    )
+                }
+            }
         }
     }
 
     // Function to select a period
     fun selectPeriode(periode: _01_PeriodesVent) {
-        _uiState.update { it.copy(selectedPeriode = periode) }
+        _uiState.update { it.copy(
+            selectedPeriode = periode,
+            viewMode = ViewMode.DETAIL
+        ) }
     }
 
     // Function to clear selection
     fun clearSelection() {
-        _uiState.update { it.copy(selectedPeriode = null) }
+        _uiState.update { it.copy(
+            selectedPeriode = null,
+            viewMode = ViewMode.LIST
+        ) }
     }
 
     // Function to update search query
@@ -107,12 +134,26 @@ open class PeriodeVenteViewModel(
         updateFilteredPeriods()
     }
 
+    // Function to change view mode
+    fun setViewMode(mode: ViewMode) {
+        _uiState.update { it.copy(viewMode = mode) }
+    }
+
+    // Refresh data from repository
+    fun refreshData() {
+        _uiState.update { it.copy(isRefreshing = true) }
+        repository.notifieDataChange()
+    }
+
     // Function to filter periods based on search query
     private fun updateFilteredPeriods() {
         val query = _uiState.value.searchQuery.trim().lowercase()
 
         if (query.isEmpty()) {
-            _uiState.update { it.copy(filteredPeriodes = periodesVente.toList()) }
+            _uiState.update { it.copy(
+                filteredPeriodes = periodesVente.toList(),
+                isRefreshing = false
+            ) }
             return
         }
 
@@ -124,13 +165,20 @@ open class PeriodeVenteViewModel(
                     periode.vendeurs.any { vendeur ->
                         vendeur.nomVendeur.lowercase().contains(query) ||
                                 // Search in products
-                                vendeur.acheteurs.any { produit ->
-                                    produit.nomProduit.lowercase().contains(query)
+                                vendeur.acheteurs.any { acheteur ->
+                                    acheteur.designation.lowercase().contains(query) ||
+                                            // Search in products
+                                            acheteur.child_14Produits.any { produit ->
+                                                produit.designation.lowercase().contains(query)
+                                            }
                                 }
                     }
         }
 
-        _uiState.update { it.copy(filteredPeriodes = filtered) }
+        _uiState.update { it.copy(
+            filteredPeriodes = filtered,
+            isRefreshing = false
+        ) }
     }
 
     fun notifyDataChanged() {
