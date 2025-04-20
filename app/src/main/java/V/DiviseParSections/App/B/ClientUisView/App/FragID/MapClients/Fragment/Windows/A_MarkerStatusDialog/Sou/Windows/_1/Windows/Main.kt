@@ -38,7 +38,7 @@ fun Main(
     viewModel: PeriodesViewModel = koinInject(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val progress by viewModel._00_VentsHistoriquesDataBase_Repository.progressRepo.collectAsState()
+    val progress by viewModel._01_VentsHistoriquesDataBase_Repository.progressRepo.collectAsState()
 
     MainScreen(
         uiState = uiState,

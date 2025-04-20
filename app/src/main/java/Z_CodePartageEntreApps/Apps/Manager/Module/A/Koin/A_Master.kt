@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin
 
-import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository._00_VentsHistoriquesDataBase_Repository
-import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository._00VentsHistoriquesDataBase_RepositoryImpl
+import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_Repository
+import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_RepositoryImpl
 import V.DiviseParSections.App.D.FraitProjet.App.FragID2.VentsHistoriquesDisplayer.Fragment.ViewModel.PeriodeVenteViewModel
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.ViewModel.VendeursViewModel
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
@@ -52,7 +52,7 @@ val commonRepositoriesModule = module {
     single { AppDatabase.DatabaseModule.getDatabase(get()) }
 
 
-    single<_00_VentsHistoriquesDataBase_Repository> { _00VentsHistoriquesDataBase_RepositoryImpl() }
+    single<_01_VentsHistoriquesDataBase_Repository> { _01_VentsHistoriquesDataBase_RepositoryImpl() }
 
     single<_0_0_HeadOfRepositorys_Repository> { _0_0_HeadOfRepositorys_RepositoryImpl(
         get(),

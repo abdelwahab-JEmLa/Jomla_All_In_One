@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
  * Repository interface for managing Periods of Sales data
  */
 
-interface _00_VentsHistoriquesDataBase_Repository {
+interface _01_VentsHistoriquesDataBase_Repository {
     val modelDatasSnapList: SnapshotStateList<_01_VentsHistoriquesDataBase>
     val progressRepo: StateFlow<Float>
     val dataChangedEvent: StateFlow<Long> // New StateFlow to notify data changes

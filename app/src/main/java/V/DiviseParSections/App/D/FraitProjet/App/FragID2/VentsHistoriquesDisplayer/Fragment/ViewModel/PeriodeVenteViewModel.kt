@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.D.FraitProjet.App.FragID2.VentsHistoriquesDisplayer.Fragment.ViewModel
 
 import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase
-import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository._00_VentsHistoriquesDataBase_Repository
-import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository._00VentsHistoriquesDataBase_RepositoryImpl
+import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_Repository
+import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_RepositoryImpl
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -34,7 +34,7 @@ enum class ViewMode {
 }
 
 class PeriodeVenteViewModel(
-    private val repository: _00_VentsHistoriquesDataBase_Repository
+    private val repository: _01_VentsHistoriquesDataBase_Repository
 ) : ViewModel() {
     // Direct access to repository data
     val periodesVente: SnapshotStateList<_01_VentsHistoriquesDataBase> get() = repository.modelDatasSnapList
@@ -160,6 +160,6 @@ class PeriodeVenteViewModel(
     override fun onCleared() {
         super.onCleared()
         // Clean up any resources if needed
-        (repository as? _00VentsHistoriquesDataBase_RepositoryImpl)?.cleanup()
+        (repository as? _01_VentsHistoriquesDataBase_RepositoryImpl)?.cleanup()
     }
 }
