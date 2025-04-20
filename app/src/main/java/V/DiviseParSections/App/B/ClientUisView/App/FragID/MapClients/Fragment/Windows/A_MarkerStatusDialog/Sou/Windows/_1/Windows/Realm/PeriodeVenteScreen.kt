@@ -264,7 +264,6 @@ fun PeriodeDetail(periode: _01_PeriodesVent) {
         }
     }
 }
-// In PeriodeVenteScreen.kt
 
 @Composable
 fun VendeurCard(
@@ -317,9 +316,7 @@ fun VendeurCard(
                     )
                 }
 
-                // Products - force recomposition with monitoredProductQuantity
                 vendeur.produits.forEach { produit ->
-                    // Pass the monitored product quantity to ensure recomposition
                     ProduitRow(
                         produit = produit,
                         monitoredProductKey = "2025_04_19->11:00->2(Vendeur 2)->2(Produit 2)",

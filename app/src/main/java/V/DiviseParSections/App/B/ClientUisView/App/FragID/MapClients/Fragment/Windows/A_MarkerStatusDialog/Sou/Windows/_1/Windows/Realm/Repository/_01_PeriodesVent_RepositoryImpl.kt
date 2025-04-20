@@ -16,7 +16,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
+class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {   //<--
+//TODO(1): diminue lateille et complicite du code sans changer son fonctionement
+     //-->
+     //TODO(): refactore et donne moi cette function _01_PeriodesVent_RepositoryImpl avec les modification naissaissaire
+
     override var modelDatasSnapList: SnapshotStateList<_01_PeriodesVent> = mutableStateListOf()
     var idComptDeCeTelephone: String = "2025_04_19->11:00->1(Vendeur 1)"
 

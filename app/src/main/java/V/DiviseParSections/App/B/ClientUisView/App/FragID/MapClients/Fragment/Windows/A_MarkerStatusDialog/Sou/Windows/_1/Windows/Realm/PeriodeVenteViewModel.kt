@@ -14,7 +14,11 @@ import kotlinx.coroutines.launch
 
 private const val TAG = "PeriodeVenteViewModel"
 
-open class PeriodeVenteViewModel(
+open class PeriodeVenteViewModel(             //<--
+//TODO(1): diminue lateille et complicite du code sans changer son fonctionement
+    //-->
+    //TODO(): refactore et donne moi cette function _01_PeriodesVent_RepositoryImpl avec les modification naissaissaire
+
     private val repository: _01_PeriodesVent_Repository
 ) : ViewModel() {
     // Utilisons directement la SnapshotStateList du repository au lieu de créer une copie
