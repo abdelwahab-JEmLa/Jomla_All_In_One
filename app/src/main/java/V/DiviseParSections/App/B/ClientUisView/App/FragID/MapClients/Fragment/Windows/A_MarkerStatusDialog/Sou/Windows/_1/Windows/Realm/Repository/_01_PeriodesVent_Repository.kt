@@ -10,7 +10,7 @@ interface _01_PeriodesVent_Repository {
 
     val progressRepo: StateFlow<Float>
     suspend fun refreshData()
-
+    fun notifieDataChange ()
     companion object {
         private val _01_HeadOfRepositorys_RepositoryRef = Firebase.database
             .getReference("01_DataPrototype-04-19")

@@ -16,7 +16,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
+class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {     //-->
+//TODO(): refactore et donne moi cette function _01_PeriodesVent_RepositoryImpl avec les modification naissaissaire 
     override var modelDatasSnapList: SnapshotStateList<_01_PeriodesVent> = mutableStateListOf()
     var idComptDeCeTelephone: String = "2025_04_19->11:00->1(Vendeur 1)"
 
@@ -264,17 +265,12 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
 
                 // Update Realm after processing all changes
                 updateRealmSafely()
+                notifieDataChange()
             }
 
             override fun onCancelled(error: DatabaseError) {
                 // Handle error
             }
-        }
-
-        try {
-            firebaseRef.addValueEventListener(productChangeListener!!)
-        } catch (e: Exception) {
-            e.printStackTrace()
         }
     }
 
@@ -309,6 +305,9 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
                 this.quantity = quantity
             })
         }
+
+        // Call notifieDataChange to update UI
+        notifieDataChange()
     }
 
     private fun parseFirebaseSnapshot(snapshot: DataSnapshot) {
@@ -443,6 +442,18 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
         _progressRepo.value = 0f
         loadFromRealmTOmodelDatasSnapList()
         loadFromFirebase()
+    }
+
+    override fun notifieDataChange() {
+        // Create a copy of the current list
+        val currentList = modelDatasSnapList.toList()
+
+        // Clear and re-add all items to trigger UI updates
+        modelDatasSnapList.clear()
+        modelDatasSnapList.addAll(currentList)
+
+        // Update Realm database with the current data
+        updateRealmSafely()
     }
 
     // Cleanup method to close Realm when repository is no longer needed
