@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Repository
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Repository._01_PeriodesVent.Companion.test_01_PeriodesVent
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.firebase.database.DataSnapshot
@@ -90,53 +91,10 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
         val testPeriodes = mutableListOf<_01_PeriodesVent>()
 
         for (i in 1..3) {
-            val date = "2025_04_${18 + i}"
-            val time = "${10 + i}:00"
-            val periodeKey = "{PV}->$date=$time"
-
-            val periode = _01_PeriodesVent().apply {
-                keyID = periodeKey
-                dateDebutDeCettePeriode = date
-                tempDebutDeCettePeriode = time
-                vendeurs = realmListOf()
-            }
-
-            for (j in 1..2) {
-                val vendeurId = j.toLong()
-                val vendeurNom = "Vendeur $j"
-                val vendeurKey = "$periodeKey-<{Ve}->($vendeurId=$vendeurNom)"
-                val vendeur = createVendeur(vendeurId, vendeurNom, vendeurKey)
-                periode.vendeurs.add(vendeur)
-            }
-
-            testPeriodes.add(periode)
+            test_01_PeriodesVent(i, testPeriodes)
         }
 
         return testPeriodes
-    }
-
-    private fun createVendeur(id: Long, nom: String, vendeurKey: String): Vendeur {
-        return Vendeur().apply {
-            keyID = vendeurKey
-            idVendeur = id
-            nomVendeur = nom
-            produits = realmListOf()
-
-            for (k in 1..5) {
-                val produitId = k.toLong()
-                val produitNom = "Produit $k"
-                val produitKey = "$keyID-<{Pr}->($produitId=$produitNom)"
-
-                val produit = Produit().apply {
-                    keyID = produitKey
-                    idProduit = produitId
-                    nomProduit = produitNom
-                    quantity = (k * 5)
-                }
-
-                produits.add(produit)
-            }
-        }
     }
 
     private fun loadFromRealmTOmodelDatasSnapList() {
