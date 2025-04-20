@@ -37,7 +37,7 @@ class PeriodeVenteViewModel(
     private val repository: _01_PeriodesVent_Repository
 ) : ViewModel() {
     // Direct access to repository data
-    private val periodesVente: SnapshotStateList<_01_PeriodesVent> get() = repository.modelDatasSnapList
+    val periodesVente: SnapshotStateList<_01_PeriodesVent> get() = repository.modelDatasSnapList
 
     // Single UI state flow
     private val _uiState = MutableStateFlow(PeriodeVenteUiState())
@@ -50,7 +50,32 @@ class PeriodeVenteViewModel(
     private fun initViewModel() {
         observeRepoProgress()
         observeDataChanges()
-        updateFilteredPeriods()
+    }
+
+    // In PeriodeVenteViewModel.kt, add this function to implement search
+    fun updateSearchQuery(query: String) {
+        viewModelScope.launch {
+            _uiState.update { currentState ->
+                val filtered = if (query.isBlank()) {
+                    emptyList()
+                } else {
+                    repository.modelDatasSnapList.filter {
+                        it.dateDebutDeCettePeriode.contains(query, ignoreCase = true) ||
+                                it.tempDebutDeCettePeriode.contains(query, ignoreCase = true) ||
+                                it.keyID.contains(query, ignoreCase = true)
+                    }
+                }
+                currentState.copy(
+                    searchQuery = query,
+                    filteredPeriodes = filtered
+                )
+            }
+        }
+    }
+
+    // In PeriodeVenteViewModel.kt, add this function to implement view mode switching
+    fun setViewMode(mode: ViewMode) {
+        _uiState.update { it.copy(viewMode = mode) }
     }
 
     private fun observeRepoProgress() {
@@ -100,8 +125,6 @@ class PeriodeVenteViewModel(
                     )
                 }
 
-                // Update filtered list based on current search query
-                updateFilteredPeriods()
             } catch (e: Exception) {
                 _uiState.update { currentState ->
                     currentState.copy(
@@ -128,58 +151,6 @@ class PeriodeVenteViewModel(
         ) }
     }
 
-    // Function to update search query
-    fun updateSearchQuery(query: String) {
-        _uiState.update { it.copy(searchQuery = query) }
-        updateFilteredPeriods()
-    }
-
-    // Function to change view mode
-    fun setViewMode(mode: ViewMode) {
-        _uiState.update { it.copy(viewMode = mode) }
-    }
-
-    // Refresh data from repository
-    fun refreshData() {
-        _uiState.update { it.copy(isRefreshing = true) }
-        repository.notifieDataChange()
-    }
-
-    // Function to filter periods based on search query
-    private fun updateFilteredPeriods() {
-        val query = _uiState.value.searchQuery.trim().lowercase()
-
-        if (query.isEmpty()) {
-            _uiState.update { it.copy(
-                filteredPeriodes = periodesVente.toList(),
-                isRefreshing = false
-            ) }
-            return
-        }
-
-        val filtered = periodesVente.filter { periode ->
-            // Search in date or time
-            periode.dateDebutDeCettePeriode.lowercase().contains(query) ||
-                    periode.tempDebutDeCettePeriode.lowercase().contains(query) ||
-                    // Search in vendors
-                    periode.vendeurs.any { vendeur ->
-                        vendeur.nomVendeur.lowercase().contains(query) ||
-                                // Search in products
-                                vendeur.acheteurs.any { acheteur ->
-                                    acheteur.startDesignation.lowercase().contains(query) ||
-                                            // Search in products
-                                            acheteur.child_14Produits.any { produit ->
-                                                produit.startDesignation.lowercase().contains(query)
-                                            }
-                                }
-                    }
-        }
-
-        _uiState.update { it.copy(
-            filteredPeriodes = filtered,
-            isRefreshing = false
-        ) }
-    }
 
     fun notifyDataChanged() {
         repository.notifieDataChange()

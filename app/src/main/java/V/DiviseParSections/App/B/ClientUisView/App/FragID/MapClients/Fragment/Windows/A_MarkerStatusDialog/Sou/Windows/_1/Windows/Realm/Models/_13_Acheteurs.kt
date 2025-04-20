@@ -9,10 +9,10 @@ import io.realm.kotlin.types.annotations.PrimaryKey
 class _13_Acheteurs : RealmObject {
     var id: Long = 0L
     var startDesignation: String = ""
-    var tempCreationString: String = "yyyy.mm.dd(HH:mm)"
+    var tempCreationString: String = "yyyy_mm_dd(HH:mm)"
 
     @PrimaryKey
-    var keyID: String = "$id->$startDesignation"
+    var keyID: String = "${id}_${startDesignation.replace(" ", "_")}"
 
     var child_14Produits: RealmList<_14_Produits> = realmListOf()
 
@@ -24,7 +24,7 @@ class _13_Acheteurs : RealmObject {
                 val acheteur = _13_Acheteurs().apply {
                     id = k.toLong()
                     startDesignation = "_13_Acheteurs $k"
-                    tempCreationString = "2025.04.20(12:00)"
+                    tempCreationString = "2025_04_20(12:00)"
                     keyID = "$id->$startDesignation"
                     child_14Produits = realmListOf()
                 }

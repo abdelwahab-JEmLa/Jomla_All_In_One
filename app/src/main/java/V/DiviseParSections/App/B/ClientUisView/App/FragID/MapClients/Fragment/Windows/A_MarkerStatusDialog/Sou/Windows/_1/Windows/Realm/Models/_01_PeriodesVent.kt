@@ -10,21 +10,31 @@ import io.realm.kotlin.types.annotations.PrimaryKey
 
 
 class _01_PeriodesVent : RealmObject {
-    var dateDebutDeCettePeriode: String = "yyyy.MM.dd"
+    var id: Long = 0L
+    var dateDebutDeCettePeriode: String = "yyyy_MM_dd"
     var tempDebutDeCettePeriode: String = "HH:mm"
 
     @PrimaryKey
-    var keyID: String =  "{PV}->dateDebutDeCettePeriode=HH:mm"
+    var keyID: String = "${id}_${dateDebutDeCettePeriode.replace(".", "_")}_${tempDebutDeCettePeriode.replace(":", "_")}"
 
     var vendeurs: RealmList<_12_Vendeur> = realmListOf()
+
     companion object {
+        // Enum to define database schema fields
+        enum class NomsValeursModel {
+            keyID,
+            dateDebutDeCettePeriode,
+            tempDebutDeCettePeriode,
+            vendeurs
+        }
+
         fun test_01_PeriodesVent(
             i: Int,
             testPeriodes: MutableList<_01_PeriodesVent>,
         ) {
-            val date = "2025_04_${18 + i}"
-            val time = "${10 + i}:00"
-            val periodeKey = "{PV}->$date=$time"
+            val date = "2025_04_${18 + i}"  // Using underscores instead of periods
+            val time = "${10 + i}_00"       // Using underscores instead of colons
+            val periodeKey = "${i}_${date}_${time}"  // Firebase-safe key
 
             val periode = _01_PeriodesVent().apply {
                 keyID = periodeKey
@@ -36,30 +46,32 @@ class _01_PeriodesVent : RealmObject {
             for (j in 1..2) {
                 val vendeurId = j.toLong()
                 val vendeurNom = "_12_Vendeur $j"
-                val vendeurKey = "$periodeKey-<{Ve}->($vendeurId=$vendeurNom)"
+                val vendeurKey = "$vendeurId->$vendeurNom"
                 val vendeur = createVendeur(vendeurId, vendeurNom, vendeurKey)
                 periode.vendeurs.add(vendeur)
             }
 
             testPeriodes.add(periode)
         }
+
+        // Function to convert model to Firebase format
         fun convertToFirebaseFormat(periodes: List<_01_PeriodesVent>): Map<String, Any> {
             return periodes.associate { periode ->
                 val validPeriodeKey = periode.keyID
                 validPeriodeKey to mapOf(
-                    "dateDebutDeCettePeriode" to periode.dateDebutDeCettePeriode,
-                    "tempDebutDeCettePeriode" to periode.tempDebutDeCettePeriode,
-                    "vendeurs" to mapVendeurs(periode.vendeurs)
+                    NomsValeursModel.dateDebutDeCettePeriode.name to periode.dateDebutDeCettePeriode,
+                    NomsValeursModel.tempDebutDeCettePeriode.name to periode.tempDebutDeCettePeriode,
+                    NomsValeursModel.vendeurs.name to mapVendeurs(periode.vendeurs)
                 )
             }
         }
-        // Add this to the companion object in _01_PeriodesVent.kt
+
+        // Function to parse Firebase snapshot into model
         fun parsePeriodeFromSnapshot(snapshot: DataSnapshot): _01_PeriodesVent? {
             val periodeKey = snapshot.key ?: return null
-            if (!periodeKey.startsWith("{PV}->")) return null
 
-            val date = snapshot.child("dateDebutDeCettePeriode").getValue(String::class.java) ?: return null
-            val time = snapshot.child("tempDebutDeCettePeriode").getValue(String::class.java) ?: return null
+            val date = snapshot.child(NomsValeursModel.dateDebutDeCettePeriode.name).getValue(String::class.java) ?: return null
+            val time = snapshot.child(NomsValeursModel.tempDebutDeCettePeriode.name).getValue(String::class.java) ?: return null
 
             val periode = _01_PeriodesVent().apply {
                 keyID = periodeKey
@@ -68,19 +80,18 @@ class _01_PeriodesVent : RealmObject {
                 vendeurs = realmListOf()
             }
 
-            val vendeursSnapshot = snapshot.child("vendeurs")
+            val vendeursSnapshot = snapshot.child(NomsValeursModel.vendeurs.name)
             vendeursSnapshot.children.forEach { vendeurSnapshot ->
                 val vendeurKey = vendeurSnapshot.key ?: return@forEach
-                if (!vendeurKey.contains("<{Ve}->")) return@forEach
 
                 val vendeur = _12_Vendeur().apply {
                     keyID = vendeurKey
-                    idVendeur = vendeurSnapshot.child("idVendeur").getValue(Long::class.java) ?: 0L
-                    nomVendeur = vendeurSnapshot.child("nomVendeur").getValue(String::class.java) ?: ""
+                    id = vendeurSnapshot.child("idVendeur").getValue(Long::class.java) ?: 0L
+                    startDesignation = vendeurSnapshot.child("nomVendeur").getValue(String::class.java) ?: ""
                     acheteurs = realmListOf()
                 }
 
-                val acheteursSnapshot = vendeurSnapshot.child("acheteurs")
+                val acheteursSnapshot = vendeurSnapshot.child("_13_Acheteurs")
                 acheteursSnapshot.children.forEach { acheteurSnapshot ->
                     val acheteur = _13_Acheteurs.parse_13_AcheteursFromSnapshot(acheteurSnapshot) ?: return@forEach
                     vendeur.acheteurs.add(acheteur)
@@ -91,7 +102,5 @@ class _01_PeriodesVent : RealmObject {
 
             return periode
         }
-
     }
 }
-

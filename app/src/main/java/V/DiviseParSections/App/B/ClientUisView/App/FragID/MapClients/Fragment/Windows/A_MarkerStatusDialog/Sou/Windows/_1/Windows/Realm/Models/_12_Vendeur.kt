@@ -6,19 +6,20 @@ import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
 
 class _12_Vendeur : RealmObject {
-    var idVendeur: Long = 0L
-    var nomVendeur: String = ""
+    var id: Long = 0L
+    var startDesignation: String = ""
 
     @PrimaryKey
-    var keyID: String = "_01_PeriodesVent.keyID-<{Ve}->(idVendeur=nomVendeur)"
+    var keyID: String = "${id}_${startDesignation.replace(" ", "_")}"
+
     var acheteurs: RealmList<_13_Acheteurs> = realmListOf()
 
     companion object{
         fun createVendeur(id: Long, nom: String, vendeurKey: String): _12_Vendeur {
             return _12_Vendeur().apply {
                 keyID = vendeurKey
-                idVendeur = id
-                nomVendeur = nom
+                this.id = id
+                startDesignation = nom
                 acheteurs = realmListOf()
 
                 // Create and add acheteurs
@@ -34,8 +35,8 @@ class _12_Vendeur : RealmObject {
                 val validVendeurKey = vendeur.keyID
 
                 validVendeurKey to mapOf(
-                    "idVendeur" to vendeur.idVendeur,
-                    "nomVendeur" to vendeur.nomVendeur,
+                    "idVendeur" to vendeur.id,
+                    "nomVendeur" to vendeur.startDesignation,
                     "_13_Acheteurs" to _13_Acheteurs.mapDatas(vendeur.acheteurs)
                 )
             }

@@ -305,15 +305,12 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
 
         snapshot.children.forEach { periodeSnapshot ->
             val periodeKey = periodeSnapshot.key ?: return@forEach
-            if (!periodeKey.startsWith("{PV}->")) return@forEach
 
             periodeSnapshot.child("vendeurs").children.forEach { vendeurSnapshot ->
                 val vendeurKey = vendeurSnapshot.key ?: return@forEach
-                if (!vendeurKey.contains("<{Ve}->")) return@forEach
 
                 vendeurSnapshot.child("_13_Acheteurs").children.forEach { acheteurSnapshot ->
                     val acheteurKey = acheteurSnapshot.key ?: return@forEach
-                    if (!acheteurKey.contains("<{BA}->")) return@forEach
 
                     val acheteur = _13_Acheteurs.parse_13_AcheteursFromSnapshot(acheteurSnapshot) ?: return@forEach
                     val updated = updateAcheteurInModel(periodeKey, vendeurKey, acheteur)
@@ -476,8 +473,8 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
     private fun createVendeurCopy(sourceVendeur: _12_Vendeur): _12_Vendeur {
         val vendeurCopy = _12_Vendeur().apply {
             keyID = sourceVendeur.keyID
-            idVendeur = sourceVendeur.idVendeur
-            nomVendeur = sourceVendeur.nomVendeur
+            id = sourceVendeur.id
+            startDesignation = sourceVendeur.startDesignation
             acheteurs = realmListOf()
         }
 
