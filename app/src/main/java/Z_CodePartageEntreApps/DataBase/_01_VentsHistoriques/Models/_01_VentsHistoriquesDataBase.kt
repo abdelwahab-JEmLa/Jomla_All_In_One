@@ -31,7 +31,7 @@ class _01_VentsHistoriquesDataBase : RealmObject {
             i: Int,
             testPeriodes: MutableList<_01_VentsHistoriquesDataBase>,
         ) {
-            val date = "2025_04_${18 + i}"  // Using underscores instead of periods
+            val date = "2025_04_${18 + i}"
             val time = "${10 + i}_00"       // Using underscores instead of colons
             val periodeKey = "${i}_${date}_${time}"  // Firebase-safe key
 
