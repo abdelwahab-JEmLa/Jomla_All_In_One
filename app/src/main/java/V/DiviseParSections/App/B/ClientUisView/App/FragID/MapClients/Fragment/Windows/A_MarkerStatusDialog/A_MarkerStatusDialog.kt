@@ -193,6 +193,8 @@ fun MarkerStatusDialog(
                     ),
                     onClick = {
                         coroutineScope.launch {
+
+
                             val repositorysModel =
                                 _0_0_HeadOfRepositorys_Repository.repositorys_Model
 
@@ -240,6 +242,20 @@ fun MarkerStatusDialog(
                                     repositorysModel.activeId_1_3_BonAchat.value = newVid
                                 }
                             }
+
+                            //----------------------------------------------------------------------------------------/
+                            /**
+                             *  repo_01_VentsHistoriquesDataBase
+                             */
+
+                            val repo_01_VentsHistoriquesDataBase =
+                                viewModel.repo_01_VentsHistoriquesDataBase
+                            val _01_VentsHistoriquesDataBase =
+                                repo_01_VentsHistoriquesDataBase .modelDatasSnapList
+
+
+
+                            //----------------------------------------------------------------------------------------/
 
                             // Update the selected marker ID
                             val selectedMarkedID = selectedMarker.id.toLong()

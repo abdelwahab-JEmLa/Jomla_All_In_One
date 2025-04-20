@@ -1,5 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel
 
+import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase
+import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_Repository
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.B_ClientDataBaseRepository
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
@@ -25,8 +27,10 @@ import java.util.Date
 
 class ViewModel_MapClients_App2FragID1(
     val mainRepositery: B_ClientDataBaseRepository,
-    val _0_0_HeadOfRepositorys_Repository:_0_0_HeadOfRepositorys_Repository
+    val _0_0_HeadOfRepositorys_Repository:_0_0_HeadOfRepositorys_Repository,
+    val repo_01_VentsHistoriquesDataBase :_01_VentsHistoriquesDataBase_Repository
 ) : ViewModel() {
+
     val modelDatasSnapList_1_3_BonAchat=_0_0_HeadOfRepositorys_Repository.repositorys_Model
         ._1_3_BonAchat_Repository.modelDatasSnapList
 
