@@ -19,9 +19,9 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class _01_PeriodesVent_RepositoryImpl(
+class _00VentsHistoriquesDataBase_RepositoryImpl(
     val appDatabase: AppDatabase,
-) : _01_PeriodesVent_Repository {
+) : _00_VentsHistoriquesDataBase_Repository {
     private val TAG = "_01_VentsNoSQl"
 
     override var modelDatasSnapList: SnapshotStateList<_01_VentsNoSQl> =

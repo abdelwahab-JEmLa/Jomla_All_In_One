@@ -9,7 +9,7 @@ import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
 
 
-class _01_PeriodesVent : RealmObject {
+class _00_VentsHistoriquesDataBase : RealmObject {
     var id: Long = 0L
     var dateDebutDeCettePeriode: String = "yyyy_MM_dd"
     var tempDebutDeCettePeriode: String = "HH:mm"
@@ -30,13 +30,13 @@ class _01_PeriodesVent : RealmObject {
 
         fun test_01_PeriodesVent(
             i: Int,
-            testPeriodes: MutableList<_01_PeriodesVent>,
+            testPeriodes: MutableList<_00_VentsHistoriquesDataBase>,
         ) {
             val date = "2025_04_${18 + i}"  // Using underscores instead of periods
             val time = "${10 + i}_00"       // Using underscores instead of colons
             val periodeKey = "${i}_${date}_${time}"  // Firebase-safe key
 
-            val periode = _01_PeriodesVent().apply {
+            val periode = _00_VentsHistoriquesDataBase().apply {
                 keyID = periodeKey
                 dateDebutDeCettePeriode = date
                 tempDebutDeCettePeriode = time
@@ -55,7 +55,7 @@ class _01_PeriodesVent : RealmObject {
         }
 
         // Function to convert model to Firebase format
-        fun convertToFirebaseFormat(periodes: List<_01_PeriodesVent>): Map<String, Any> {
+        fun convertToFirebaseFormat(periodes: List<_00_VentsHistoriquesDataBase>): Map<String, Any> {
             return periodes.associate { periode ->
                 val validPeriodeKey = periode.keyID
                 validPeriodeKey to mapOf(
@@ -67,13 +67,13 @@ class _01_PeriodesVent : RealmObject {
         }
 
         // Function to parse Firebase snapshot into model
-        fun parsePeriodeFromSnapshot(snapshot: DataSnapshot): _01_PeriodesVent? {
+        fun parsePeriodeFromSnapshot(snapshot: DataSnapshot): _00_VentsHistoriquesDataBase? {
             val periodeKey = snapshot.key ?: return null
 
             val date = snapshot.child(NomsValeursModel.dateDebutDeCettePeriode.name).getValue(String::class.java) ?: return null
             val time = snapshot.child(NomsValeursModel.tempDebutDeCettePeriode.name).getValue(String::class.java) ?: return null
 
-            val periode = _01_PeriodesVent().apply {
+            val periode = _00_VentsHistoriquesDataBase().apply {
                 keyID = periodeKey
                 dateDebutDeCettePeriode = date
                 tempDebutDeCettePeriode = time

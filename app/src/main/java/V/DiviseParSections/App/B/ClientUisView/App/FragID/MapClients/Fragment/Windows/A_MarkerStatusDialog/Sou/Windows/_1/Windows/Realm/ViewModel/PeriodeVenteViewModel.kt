@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.ViewModel
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._01_PeriodesVent
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Repository._01_PeriodesVent_Repository
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Repository._01_PeriodesVent_RepositoryImpl
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._00_VentsHistoriquesDataBase
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Repository._00_VentsHistoriquesDataBase_Repository
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Repository._00VentsHistoriquesDataBase_RepositoryImpl
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,9 +17,9 @@ private const val TAG = "PeriodeVenteViewModel"
 // UI State class that contains all UI-related state
 data class PeriodeVenteUiState(
     val isLoading: Boolean = false,
-    val selectedPeriode: _01_PeriodesVent? = null,
+    val selectedPeriode: _00_VentsHistoriquesDataBase? = null,
     val searchQuery: String = "",
-    val filteredPeriodes: List<_01_PeriodesVent> = emptyList(),
+    val filteredPeriodes: List<_00_VentsHistoriquesDataBase> = emptyList(),
     val viewMode: ViewMode = ViewMode.LIST,
     val error: String? = null,
     val isRefreshing: Boolean = false
@@ -34,10 +34,10 @@ enum class ViewMode {
 }
 
 class PeriodeVenteViewModel(
-    private val repository: _01_PeriodesVent_Repository
+    private val repository: _00_VentsHistoriquesDataBase_Repository
 ) : ViewModel() {
     // Direct access to repository data
-    val periodesVente: SnapshotStateList<_01_PeriodesVent> get() = repository.modelDatasSnapList
+    val periodesVente: SnapshotStateList<_00_VentsHistoriquesDataBase> get() = repository.modelDatasSnapList
 
     // Single UI state flow
     private val _uiState = MutableStateFlow(PeriodeVenteUiState())
@@ -136,7 +136,7 @@ class PeriodeVenteViewModel(
     }
 
     // Function to select a period
-    fun selectPeriode(periode: _01_PeriodesVent) {
+    fun selectPeriode(periode: _00_VentsHistoriquesDataBase) {
         _uiState.update { it.copy(
             selectedPeriode = periode,
             viewMode = ViewMode.DETAIL
@@ -160,6 +160,6 @@ class PeriodeVenteViewModel(
     override fun onCleared() {
         super.onCleared()
         // Clean up any resources if needed
-        (repository as? _01_PeriodesVent_RepositoryImpl)?.cleanup()
+        (repository as? _00VentsHistoriquesDataBase_RepositoryImpl)?.cleanup()
     }
 }

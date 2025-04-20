@@ -1,9 +1,9 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Repository
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._01_PeriodesVent
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._01_PeriodesVent.Companion.convertToFirebaseFormat
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._01_PeriodesVent.Companion.parsePeriodeFromSnapshot
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._01_PeriodesVent.Companion.test_01_PeriodesVent
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._00_VentsHistoriquesDataBase
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._00_VentsHistoriquesDataBase.Companion.convertToFirebaseFormat
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._00_VentsHistoriquesDataBase.Companion.parsePeriodeFromSnapshot
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._00_VentsHistoriquesDataBase.Companion.test_01_PeriodesVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._12_Vendeur
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._13_Acheteurs
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._14_Produits
@@ -27,10 +27,10 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.util.concurrent.atomic.AtomicBoolean
 
-class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
+class _00VentsHistoriquesDataBase_RepositoryImpl : _00_VentsHistoriquesDataBase_Repository {
     private val TAG = "_01_PeriodesVent_Repo"
 
-    override var modelDatasSnapList: SnapshotStateList<_01_PeriodesVent> = mutableStateListOf()
+    override var modelDatasSnapList: SnapshotStateList<_00_VentsHistoriquesDataBase> = mutableStateListOf()
 
     var idComptDeCeTelephone: String = ""
 
@@ -39,7 +39,7 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
     private val realmMutex = Mutex()
     private val pendingRealmUpdate = AtomicBoolean(false)
     private val modelUpdateInProgress = AtomicBoolean(false)
-    private val firebaseRef = _01_PeriodesVent_Repository.sonDataBaseRef
+    private val firebaseRef = _00_VentsHistoriquesDataBase_Repository.sonDataBaseRef
     private var valueEventListener: ValueEventListener? = null
     private var acheteursChangeListener: ValueEventListener? = null
 
@@ -56,7 +56,7 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
     private fun createRealm(): Realm {
         val config = RealmConfiguration.create(
             schema = setOf(
-                _01_PeriodesVent::class,
+                _00_VentsHistoriquesDataBase::class,
                 _12_Vendeur::class,
                 _13_Acheteurs::class,
                 _14_Produits::class
@@ -106,9 +106,9 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
         }
     }
 
-    private fun createTestData(): List<_01_PeriodesVent> {
+    private fun createTestData(): List<_00_VentsHistoriquesDataBase> {
         Log.d(TAG, "Creating test data...")
-        val testPeriodes = mutableListOf<_01_PeriodesVent>()
+        val testPeriodes = mutableListOf<_00_VentsHistoriquesDataBase>()
 
         for (i in 1..3) {
             Log.d(TAG, "Creating test period $i")
@@ -179,9 +179,9 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
         }
     }
 
-    private fun parseFirebaseSnapshot(snapshot: DataSnapshot): MutableList<_01_PeriodesVent> {
+    private fun parseFirebaseSnapshot(snapshot: DataSnapshot): MutableList<_00_VentsHistoriquesDataBase> {
         Log.d(TAG, "Parsing Firebase snapshot with ${snapshot.childrenCount} children")
-        val newPeriodesVente = mutableListOf<_01_PeriodesVent>()
+        val newPeriodesVente = mutableListOf<_00_VentsHistoriquesDataBase>()
 
         snapshot.children.forEach { periodeSnapshot ->
             Log.d(TAG, "Parsing period with key: ${periodeSnapshot.key}")
@@ -197,7 +197,7 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
 
     private fun initializeData() {
         Log.d(TAG, "Initializing data...")
-        val isRealmEmpty = realm.query<_01_PeriodesVent>().count().find() == 0L
+        val isRealmEmpty = realm.query<_00_VentsHistoriquesDataBase>().count().find() == 0L
         Log.d(TAG, "Realm database is empty: $isRealmEmpty")
 
         if (isRealmEmpty) {
@@ -212,7 +212,7 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
     }
 
     private fun loadFromRealmTOmodelDatasSnapList() {
-        val allPeriodes = realm.query<_01_PeriodesVent>()
+        val allPeriodes = realm.query<_00_VentsHistoriquesDataBase>()
             .sort("dateDebutDeCettePeriode", Sort.DESCENDING)
             .find()
 
@@ -220,7 +220,7 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
         _progressRepo.value = 1.0f
     }
 
-    private fun updateModelDatasList(periodes: List<_01_PeriodesVent>) {
+    private fun updateModelDatasList(periodes: List<_00_VentsHistoriquesDataBase>) {
         if (modelUpdateInProgress.getAndSet(true)) return
 
         try {
@@ -242,7 +242,7 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
                 try {
                     realm.write {
                         // Clear existing data
-                        query<_01_PeriodesVent>().find().also { delete(it) }
+                        query<_00_VentsHistoriquesDataBase>().find().also { delete(it) }
                         query<_12_Vendeur>().find().also { delete(it) }
                         query<_13_Acheteurs>().find().also { delete(it) }
                         query<_14_Produits>().find().also { delete(it) }
@@ -437,7 +437,7 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
                 try {
                     realm.write {
                         // Clear existing data
-                        query<_01_PeriodesVent>().find().also { delete(it) }
+                        query<_00_VentsHistoriquesDataBase>().find().also { delete(it) }
                         query<_12_Vendeur>().find().also { delete(it) }
                         query<_13_Acheteurs>().find().also { delete(it) }
                         query<_14_Produits>().find().also { delete(it) }
@@ -454,8 +454,8 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
         }
     }
 
-    private fun createDeepCopyForRealm(source: _01_PeriodesVent): _01_PeriodesVent {
-        val copy = _01_PeriodesVent().apply {
+    private fun createDeepCopyForRealm(source: _00_VentsHistoriquesDataBase): _00_VentsHistoriquesDataBase {
+        val copy = _00_VentsHistoriquesDataBase().apply {
             keyID = source.keyID
             dateDebutDeCettePeriode = source.dateDebutDeCettePeriode
             tempDebutDeCettePeriode = source.tempDebutDeCettePeriode

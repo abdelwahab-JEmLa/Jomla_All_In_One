@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Ui
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._01_PeriodesVent
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._00_VentsHistoriquesDataBase
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._12_Vendeur
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._13_Acheteurs
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._14_Produits
@@ -198,7 +198,7 @@ fun PeriodeVenteScreen(
 
 @Composable
 fun PeriodeListItem(
-    periode: _01_PeriodesVent,
+    periode: _00_VentsHistoriquesDataBase,
     onClick: () -> Unit
 ) {
     Card(
@@ -259,7 +259,7 @@ fun PeriodeListItem(
 
 @Composable
 fun PeriodeDetailScreen(
-    periode: _01_PeriodesVent,
+    periode: _00_VentsHistoriquesDataBase,
     onBack: () -> Unit
 ) {
     Column(
