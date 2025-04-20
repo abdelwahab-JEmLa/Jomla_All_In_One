@@ -13,7 +13,7 @@ interface _01_VentsHistoriquesDataBase_Repository {
     val progressRepo: StateFlow<Float>
     val dataChangedEvent: StateFlow<Long> // New StateFlow to notify data changes
 
-    fun notifieDataChange()
+    fun notifierDataChange()
 
     fun addTestVals()
 }

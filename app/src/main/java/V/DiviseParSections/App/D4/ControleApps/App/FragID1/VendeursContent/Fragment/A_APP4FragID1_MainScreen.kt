@@ -131,6 +131,7 @@ fun VendeursContent(
                         onAddPeriode = {
                             // Call a function in the ViewModel to add a new period
                             viewModel.addNewPeriode()
+                            viewModel.addNewPeriodeIn_repo_01_VentsHistoriquesDataBase_Repository()
                         }
                     )
                 }

@@ -449,7 +449,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
         return vendeurCopy
     }
 
-    override fun notifieDataChange() {
+    override fun notifierDataChange() {
         scheduleSafeRealmUpdate()
         notifyUIUpdate()
         _dataChangedEvent.value = System.currentTimeMillis()

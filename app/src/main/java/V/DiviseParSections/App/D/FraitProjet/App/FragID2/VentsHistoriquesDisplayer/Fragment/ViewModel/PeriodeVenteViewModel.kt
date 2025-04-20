@@ -153,7 +153,7 @@ class PeriodeVenteViewModel(
 
 
     fun notifyDataChanged() {
-        repository.notifieDataChange()
+        repository.notifierDataChange()
     }
 
     // Clean up when ViewModel is cleared

@@ -23,8 +23,9 @@ data class VendeursUiState(
 // ViewModel to handle business logic
 open class VendeursViewModel(
     private val repository: _0_0_HeadOfRepositorys_Repository,
-    val repo_01_VentsHistoriquesDataBase_Repository:_01_VentsHistoriquesDataBase_Repository
+    private val repo_01_VentsHistoriquesDataBase_Repository:_01_VentsHistoriquesDataBase_Repository
 ) : ViewModel() {
+    val list_01_VentsHistoriquesDataBase = repo_01_VentsHistoriquesDataBase_Repository.modelDatasSnapList
     private val _uiState = MutableStateFlow(VendeursUiState())
     open val uiState: StateFlow<VendeursUiState> = _uiState.asStateFlow()
 
@@ -73,14 +74,24 @@ open class VendeursViewModel(
             }
         }
     }
+
     fun addNewPeriodeIn_repo_01_VentsHistoriquesDataBase_Repository() {
-
         viewModelScope.launch {
+            // Find the maximum ID in the existing list and add 1, or use 1 if the list is empty
+            val maxId = if (list_01_VentsHistoriquesDataBase.isNotEmpty()) {
+                list_01_VentsHistoriquesDataBase.maxOf { it.id } + 1
+            } else {
+                1L
+            }
 
-
+            list_01_VentsHistoriquesDataBase.add(
+                _01_VentsHistoriquesDataBase().apply {
+                    id = maxId
+                }
+            )
+            repo_01_VentsHistoriquesDataBase_Repository.notifierDataChange()
         }
     }
-
 
     private fun update_1_5_ceComptVendeurStartAffichePeriod(id: Long): Unit {
         val activeIdDe_1_5_Vendeur = repository.repositorys_Model.activeIdDe_1_5_Vendeur
