@@ -3,7 +3,6 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Repository._01_PeriodesVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Repository._01_PeriodesVent_Repository
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Repository._01_PeriodesVent_RepositoryImpl
-import android.util.Log
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -28,7 +27,7 @@ open class PeriodeVenteViewModel(
     private val repository: _01_PeriodesVent_Repository
 ) : ViewModel() {
     // Direct access to repository data
-    val periodesVente: SnapshotStateList<_01_PeriodesVent> get() = repository.modelDatasSnapList
+    private val periodesVente: SnapshotStateList<_01_PeriodesVent> get() = repository.modelDatasSnapList
 
     // Single UI state flow
     private val _uiState = MutableStateFlow(PeriodeVenteUiState())
@@ -60,12 +59,10 @@ open class PeriodeVenteViewModel(
         }
     }
 
-    // New method to observe data changes from repository
     private fun observeDataChanges() {
         viewModelScope.launch {
             repository.dataChangedEvent.collect { timestamp ->
                 if (timestamp > 0) {
-                    Log.d(TAG, "Data change detected from repository at timestamp: $timestamp")
                     loadPeriodesVente()
                 }
             }
@@ -91,14 +88,6 @@ open class PeriodeVenteViewModel(
 
             // Update filtered list based on current search query
             updateFilteredPeriods()
-        }
-    }
-
-    // Refresh data from repository
-    fun refreshData() {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-            repository.refreshData()
         }
     }
 
@@ -144,12 +133,6 @@ open class PeriodeVenteViewModel(
         _uiState.update { it.copy(filteredPeriodes = filtered) }
     }
 
-    // Function to update view mode
-    fun updateViewMode(newMode: Int) {
-        _uiState.update { it.copy(viewMode = newMode) }
-    }
-
-    // Optional: Function to manually trigger data update (if needed elsewhere in UI)
     fun notifyDataChanged() {
         repository.notifieDataChange()
     }

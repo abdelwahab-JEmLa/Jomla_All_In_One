@@ -309,7 +309,7 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
         return object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 try {
-                    var changesMade = processProductChanges(snapshot)
+                    val changesMade = processProductChanges(snapshot)
                     if (changesMade) {
                         scheduleSafeRealmUpdate()
                         notifyUIUpdate()
@@ -561,11 +561,6 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
         return vendeurCopy
     }
 
-    override suspend fun refreshData() {
-        _progressRepo.value = 0f
-        loadFromRealmTOmodelDatasSnapList()
-        loadFromFirebase()
-    }
 
     override fun notifieDataChange() {
         scheduleSafeRealmUpdate()

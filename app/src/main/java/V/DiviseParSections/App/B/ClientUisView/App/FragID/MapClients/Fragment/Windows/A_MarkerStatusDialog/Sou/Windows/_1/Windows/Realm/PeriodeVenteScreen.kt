@@ -21,7 +21,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -87,21 +86,6 @@ fun PeriodeVenteScreen(
                         }
                     }
                 },
-                actions = {
-                    if (uiState.selectedPeriode == null) {
-                        // Only show search if not in details view
-                        IconButton(onClick = { isSearchVisible = !isSearchVisible }) {
-                            Icon(
-                                imageVector = if (isSearchVisible) Icons.Default.Close else Icons.Default.Search,
-                                contentDescription = if (isSearchVisible) "Close Search" else "Search"
-                            )
-                        }
-                    }
-
-                    IconButton(onClick = { viewModel.refreshData() }) {
-                        Icon(Icons.Default.Refresh, contentDescription = "Refresh")
-                    }
-                }
             )
         }
     ) { paddingValues ->
