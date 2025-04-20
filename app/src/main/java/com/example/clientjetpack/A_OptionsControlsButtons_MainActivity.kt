@@ -121,7 +121,6 @@ fun A_OptionsControlsButtons_A1FragID_3(
                             }
                         }
 
-                        // Labels Button - Inlined from LabelsButton function
                         ControlButton(
                             onClick = { showLabels = !showLabels },
                             icon = Icons.Default.Info,
