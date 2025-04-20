@@ -184,6 +184,7 @@ fun ControlButton(
             }
         }
 
+
         if (showLabels) {
             Text(
                 labelText,
