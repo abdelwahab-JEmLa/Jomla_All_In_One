@@ -14,7 +14,7 @@ class _13_Acheteurs : RealmObject {
     @PrimaryKey
     var keyID: String = "parent.keyID-<{BA}->(designation[id])"
 
-    var child_15_Produits: RealmList<_15_Produits> = realmListOf()
+    var child_14Produits: RealmList<_14_Produits> = realmListOf()
 
     companion object {
         fun testData(parentkeyID: String): List<_13_Acheteurs> {
@@ -23,16 +23,16 @@ class _13_Acheteurs : RealmObject {
             for (k in 1..5) {
                 val acheteur = _13_Acheteurs().apply {
                     id = k.toLong()
-                    designation = "_15_Produits $k"
+                    designation = "_14_Produits $k"
                     tempCreationString = "2025.04.20(12:00)"
                     keyID = "$parentkeyID-<{BA}->($designation[$id])"
-                    child_15_Produits = realmListOf()
+                    child_14Produits = realmListOf()
                 }
 
                 // Create and add products
-                val produits = _15_Produits.testData(acheteur.keyID)
+                val produits = _14_Produits.testData(acheteur.keyID)
                 produits.forEach { produit ->
-                    acheteur.child_15_Produits.add(produit)
+                    acheteur.child_14Produits.add(produit)
                 }
 
                 data.add(acheteur)
@@ -44,10 +44,10 @@ class _13_Acheteurs : RealmObject {
         fun mapDatas(datas: List<_13_Acheteurs>): Map<String, Any> {
             return datas.associate { data ->
                 data.keyID to mapOf(
-                    nomsValeursModel.id.name to data.id,
-                    nomsValeursModel.designation.name to data.designation,
-                    nomsValeursModel.tempCreationString.name to data.tempCreationString,
-                    nomsValeursModel.child_15_Produits.name to _15_Produits.mapDatas(data.child_15_Produits)
+                    NomsValeursModel.id.name to data.id,
+                    NomsValeursModel.designation.name to data.designation,
+                    NomsValeursModel.tempCreationString.name to data.tempCreationString,
+                    NomsValeursModel.child_15_Produits.name to _14_Produits.mapDatas(data.child_14Produits)
                 )
             }
         }
@@ -57,27 +57,28 @@ class _13_Acheteurs : RealmObject {
 
             val acheteur = _13_Acheteurs().apply {
                 keyID = acheteurKey
-                id = snapshot.child(nomsValeursModel.id.name).getValue(Long::class.java) ?: 0L
-                designation = snapshot.child(nomsValeursModel.designation.name).getValue(String::class.java) ?: ""
-                tempCreationString = snapshot.child(nomsValeursModel.tempCreationString.name).getValue(String::class.java) ?: "yyyy.mm.dd(HH:mm)"
-                child_15_Produits = realmListOf()
+                id = snapshot.child(NomsValeursModel.id.name).getValue(Long::class.java) ?: 0L
+                designation = snapshot.child(NomsValeursModel.designation.name).getValue(String::class.java) ?: ""
+                tempCreationString = snapshot.child(NomsValeursModel.tempCreationString.name).getValue(String::class.java) ?: "yyyy.mm.dd(HH:mm)"
+                child_14Produits = realmListOf()
             }
 
-            val produitsSnapshot = snapshot.child(nomsValeursModel.child_15_Produits.name)
+            val produitsSnapshot = snapshot.child(NomsValeursModel.child_15_Produits.name)
             produitsSnapshot.children.forEach { produitSnapshot ->
-                val produit = _15_Produits.parse_13_AcheteursFromSnapshot(produitSnapshot) ?: return@forEach
-                acheteur.child_15_Produits.add(produit)
+                val produit = _14_Produits.parseDataFromSnapshot(produitSnapshot) ?: return@forEach
+                acheteur.child_14Produits.add(produit)
             }
 
             return acheteur
         }
         
-        enum class nomsValeursModel{
-            keyID,                      
-            id,
-            designation,
-            tempCreationString,
-            child_15_Produits
-        }
+
+    }
+    enum class NomsValeursModel{
+        keyID,
+        id,
+        designation,
+        tempCreationString,
+        child_15_Produits
     }
 }

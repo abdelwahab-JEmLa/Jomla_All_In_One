@@ -4,7 +4,7 @@ import com.google.firebase.database.DataSnapshot
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
 
-class _15_Produits : RealmObject {
+class _14_Produits : RealmObject {
     var id: Long = 0L
     var designation: String = ""
     var tempCreationString: String = "yyyy.mm.dd(HH:mm)"
@@ -24,13 +24,13 @@ class _15_Produits : RealmObject {
         }
         fun testData(
             parentkeyID: String,
-        ):List<_15_Produits>  {
-            val data = mutableListOf<_15_Produits>()
+        ):List<_14_Produits>  {
+            val data = mutableListOf<_14_Produits>()
 
             for (k in 1..5) {
-                data.add(_15_Produits().apply {
+                data.add(_14_Produits().apply {
                     id = k.toLong()
-                    designation = "_15_Produits $k"
+                    designation = "_14_Produits $k"
                     tempCreationString = "2025.04.20(12:00)"
                     keyID = "$parentkeyID-<{BA}->($designation[$id])"
                     quantity = k * 2
@@ -39,7 +39,7 @@ class _15_Produits : RealmObject {
             return data
         }
 
-        fun mapDatas(datas: List<_15_Produits>): Map<String, Any> {
+        fun mapDatas(datas: List<_14_Produits>): Map<String, Any> {
             return datas.associate { data ->
                 data.keyID to mapOf(
                     "id" to data.id,
@@ -48,10 +48,10 @@ class _15_Produits : RealmObject {
             }
         }
 
-        fun parse_13_AcheteursFromSnapshot(snapshot: DataSnapshot): _15_Produits? {
+        fun parseDataFromSnapshot(snapshot: DataSnapshot): _14_Produits? {
             val produitKey = snapshot.key ?: return null
 
-            return _15_Produits().apply {
+            return _14_Produits().apply {
                 keyID = produitKey
                 id = snapshot.child("id").getValue(Long::class.java) ?: 0L
                 designation = snapshot.child("designation").getValue(String::class.java) ?: ""

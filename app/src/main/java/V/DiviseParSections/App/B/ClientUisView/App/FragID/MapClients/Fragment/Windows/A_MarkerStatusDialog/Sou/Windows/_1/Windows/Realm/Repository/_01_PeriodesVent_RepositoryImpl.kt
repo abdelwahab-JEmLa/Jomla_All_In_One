@@ -1,10 +1,12 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Repository
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._12_Vendeur
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._01_PeriodesVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._01_PeriodesVent.Companion.convertToFirebaseFormat
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._01_PeriodesVent.Companion.parsePeriodeFromSnapshot
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._01_PeriodesVent.Companion.test_01_PeriodesVent
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._12_Vendeur
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._13_Acheteurs
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._14_Produits
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.firebase.database.DataSnapshot
@@ -38,7 +40,7 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
     private val modelUpdateInProgress = AtomicBoolean(false)
     private val firebaseRef = _01_PeriodesVent_Repository.sonDataBaseRef
     private var valueEventListener: ValueEventListener? = null
-    private var productChangeListener: ValueEventListener? = null
+    private var acheteursChangeListener: ValueEventListener? = null
 
     private val _progressRepo = MutableStateFlow(0f)
     override val progressRepo: StateFlow<Float> = _progressRepo
@@ -55,7 +57,8 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
             schema = setOf(
                 _01_PeriodesVent::class,
                 _12_Vendeur::class,
-                _15_Produit::class
+                _13_Acheteurs::class,
+                _14_Produits::class
             )
         )
         return Realm.open(config)
@@ -135,7 +138,8 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
                         // Clear existing data
                         query<_01_PeriodesVent>().find().also { delete(it) }
                         query<_12_Vendeur>().find().also { delete(it) }
-                        query<_15_Produit>().find().also { delete(it) }
+                        query<_13_Acheteurs>().find().also { delete(it) }
+                        query<_14_Produits>().find().also { delete(it) }
 
                         // Save current data
                         modelDatasSnapList.forEach { periode ->
@@ -168,7 +172,7 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
     private fun loadFromFirebase() {
         removeFirebaseListener()
         attachFirebaseListener()
-        attachProductChangeListener()
+        attachAcheteursChangeListener()
     }
 
     private fun attachFirebaseListener() {
@@ -199,20 +203,20 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
         }
     }
 
-    private fun attachProductChangeListener() {
-        productChangeListener = createProductChangeListener()
+    private fun attachAcheteursChangeListener() {
+        acheteursChangeListener = createAcheteursChangeListener()
         try {
-            firebaseRef.addValueEventListener(productChangeListener!!)
+            firebaseRef.addValueEventListener(acheteursChangeListener!!)
         } catch (e: Exception) {
             // Log error if needed
         }
     }
 
-    private fun createProductChangeListener(): ValueEventListener {
+    private fun createAcheteursChangeListener(): ValueEventListener {
         return object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 try {
-                    val changesMade = processProductChanges(snapshot)
+                    val changesMade = processAcheteursChanges(snapshot)
                     if (changesMade) {
                         scheduleSafeRealmUpdate()
                         notifyUIUpdate()
@@ -229,7 +233,7 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
         }
     }
 
-    private fun processProductChanges(snapshot: DataSnapshot): Boolean {
+    private fun processAcheteursChanges(snapshot: DataSnapshot): Boolean {
         var changesMade = false
 
         snapshot.children.forEach { periodeSnapshot ->
@@ -240,13 +244,20 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
                 val vendeurKey = vendeurSnapshot.key ?: return@forEach
                 if (!vendeurKey.contains("<{Ve}->")) return@forEach
 
-                vendeurSnapshot.child("produits").children.forEach { produitSnapshot ->
-                    val produitKey = produitSnapshot.key ?: return@forEach
-                    if (!produitKey.contains("<{Pr}->")) return@forEach
+                vendeurSnapshot.child("_13_Acheteurs").children.forEach { acheteurSnapshot ->
+                    val acheteurKey = acheteurSnapshot.key ?: return@forEach
+                    if (!acheteurKey.contains("<{BA}->")) return@forEach
 
-                    val produit = _15_Produit.parseProduitFromSnapshot(produitSnapshot) ?: return@forEach
-                    val updated = updateProductInModel(periodeKey, vendeurKey, produit)
+                    val acheteur = _13_Acheteurs.parse_13_AcheteursFromSnapshot(acheteurSnapshot) ?: return@forEach
+                    val updated = updateAcheteurInModel(periodeKey, vendeurKey, acheteur)
                     if (updated) changesMade = true
+
+                    // Process products for this acheteur
+                    acheteurSnapshot.child(_13_Acheteurs.NomsValeursModel.child_15_Produits.name).children.forEach { produitSnapshot ->
+                        val produit = _14_Produits.parseDataFromSnapshot(produitSnapshot) ?: return@forEach
+                        val produitUpdated = updateProduitInAcheteur(periodeKey, vendeurKey, acheteurKey, produit)
+                        if (produitUpdated) changesMade = true
+                    }
                 }
             }
         }
@@ -254,33 +265,69 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
         return changesMade
     }
 
-    private fun updateProductInModel(
+    private fun updateAcheteurInModel(
         periodeKey: String,
         vendeurKey: String,
-        produit: _15_Produit
+        acheteur: _13_Acheteurs
     ): Boolean {
         if (modelUpdateInProgress.getAndSet(true)) return false
 
         try {
             val periode = modelDatasSnapList.find { it.keyID == periodeKey } ?: return false
             val vendeur = periode.vendeurs.find { it.keyID == vendeurKey } ?: return false
-            val existingProduit = vendeur.acheteurs.find { it.keyID == produit.keyID }
+            val existingAcheteur = vendeur.acheteurs.find { it.keyID == acheteur.keyID }
 
-            return if (existingProduit != null) {
-                val changed = existingProduit.quantity != produit.quantity ||
-                        existingProduit.idProduit != produit.idProduit ||
-                        existingProduit.nomProduit != produit.nomProduit
+            return if (existingAcheteur != null) {
+                val changed = existingAcheteur.id != acheteur.id ||
+                        existingAcheteur.designation != acheteur.designation ||
+                        existingAcheteur.tempCreationString != acheteur.tempCreationString
 
                 if (changed) {
-                    existingProduit.quantity = produit.quantity
-                    existingProduit.idProduit = produit.idProduit
-                    existingProduit.nomProduit = produit.nomProduit
+                    existingAcheteur.id = acheteur.id
+                    existingAcheteur.designation = acheteur.designation
+                    existingAcheteur.tempCreationString = acheteur.tempCreationString
                     true
                 } else {
                     false
                 }
             } else {
-                vendeur.acheteurs.add(produit)
+                vendeur.acheteurs.add(acheteur)
+                true
+            }
+        } finally {
+            modelUpdateInProgress.set(false)
+        }
+    }
+
+    private fun updateProduitInAcheteur(
+        periodeKey: String,
+        vendeurKey: String,
+        acheteurKey: String,
+        produit: _14_Produits
+    ): Boolean {
+        if (modelUpdateInProgress.getAndSet(true)) return false
+
+        try {
+            val periode = modelDatasSnapList.find { it.keyID == periodeKey } ?: return false
+            val vendeur = periode.vendeurs.find { it.keyID == vendeurKey } ?: return false
+            val acheteur = vendeur.acheteurs.find { it.keyID == acheteurKey } ?: return false
+            val existingProduit = acheteur.child_14Produits.find { it.keyID == produit.keyID }
+
+            return if (existingProduit != null) {
+                val changed = existingProduit.id != produit.id ||
+                        existingProduit.designation != produit.designation ||
+                        existingProduit.quantity != produit.quantity
+
+                if (changed) {
+                    existingProduit.id = produit.id
+                    existingProduit.designation = produit.designation
+                    existingProduit.quantity = produit.quantity
+                    true
+                } else {
+                    false
+                }
+            } else {
+                acheteur.child_14Produits.add(produit)
                 true
             }
         } finally {
@@ -339,7 +386,8 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
                         // Clear existing data
                         query<_01_PeriodesVent>().find().also { delete(it) }
                         query<_12_Vendeur>().find().also { delete(it) }
-                        query<_15_Produit>().find().also { delete(it) }
+                        query<_13_Acheteurs>().find().also { delete(it) }
+                        query<_14_Produits>().find().also { delete(it) }
 
                         // Save current data
                         modelDatasSnapList.forEach { periode ->
@@ -377,13 +425,26 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
             acheteurs = realmListOf()
         }
 
-        sourceVendeur.acheteurs.forEach { sourceProduit ->
-            vendeurCopy.acheteurs.add(_15_Produit().apply {
-                keyID = sourceProduit.keyID
-                idProduit = sourceProduit.idProduit
-                nomProduit = sourceProduit.nomProduit
-                quantity = sourceProduit.quantity
-            })
+        sourceVendeur.acheteurs.forEach { sourceAcheteur ->
+            val acheteurCopy = _13_Acheteurs().apply {
+                keyID = sourceAcheteur.keyID
+                id = sourceAcheteur.id
+                designation = sourceAcheteur.designation
+                tempCreationString = sourceAcheteur.tempCreationString
+                child_14Produits = realmListOf()
+            }
+
+            sourceAcheteur.child_14Produits.forEach { sourceProduit ->
+                acheteurCopy.child_14Produits.add(_14_Produits().apply {
+                    keyID = sourceProduit.keyID
+                    id = sourceProduit.id
+                    designation = sourceProduit.designation
+                    tempCreationString = sourceProduit.tempCreationString
+                    quantity = sourceProduit.quantity
+                })
+            }
+
+            vendeurCopy.acheteurs.add(acheteurCopy)
         }
 
         return vendeurCopy
@@ -410,13 +471,13 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
             valueEventListener = null
         }
 
-        productChangeListener?.let {
+        acheteursChangeListener?.let {
             try {
                 firebaseRef.removeEventListener(it)
             } catch (e: Exception) {
                 // Log error if needed
             }
-            productChangeListener = null
+            acheteursChangeListener = null
         }
     }
 }
