@@ -9,9 +9,11 @@ import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._01_VentsHist
 import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase.Companion.test_01_PeriodesVent
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import com.google.firebase.Firebase
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.database
 import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
 import io.realm.kotlin.ext.query
@@ -26,25 +28,30 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.util.concurrent.atomic.AtomicBoolean
 
-class _01_VentsHistoriquesDataBase_RepositoryImpl : _01_VentsHistoriquesDataBase_Repository {
+class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = false)
+    : _01_VentsHistoriquesDataBase_Repository {
     private val TAG = "_01_PeriodesVent_Repo"
+    var idComptDeCeTelephone: String = ""
 
     override var modelDatasSnapList: SnapshotStateList<_01_VentsHistoriquesDataBase> = mutableStateListOf()
 
-    var idComptDeCeTelephone: String = ""
+    private val _01_HeadRef = Firebase.database.getReference("01_DataPrototype-04-19")
+    private val _1_developingTestRef = _01_HeadRef.child("_1_developingTestRef")
+    private val _2_productionTestRef = _01_HeadRef.child("_2_productionTestRef")
+    private val firebaseRef = if (itsProductionMode)
+        _1_developingTestRef else  _2_productionTestRef
+        .child("_01_VentsHistoriquesDataBase")
+
+    private val _progressRepo = MutableStateFlow(0f)
+    override val progressRepo: StateFlow<Float> = _progressRepo
 
     private val realm: Realm = createRealm()
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
     private val realmMutex = Mutex()
     private val pendingRealmUpdate = AtomicBoolean(false)
     private val modelUpdateInProgress = AtomicBoolean(false)
-    private val firebaseRef = _01_VentsHistoriquesDataBase_Repository.sonDataBaseRef
     private var valueEventListener: ValueEventListener? = null
     private var acheteursChangeListener: ValueEventListener? = null
-
-    private val _progressRepo = MutableStateFlow(0f)
-    override val progressRepo: StateFlow<Float> = _progressRepo
-
     private val _dataChangedEvent = MutableStateFlow(0L)
     override val dataChangedEvent: StateFlow<Long> = _dataChangedEvent
 
