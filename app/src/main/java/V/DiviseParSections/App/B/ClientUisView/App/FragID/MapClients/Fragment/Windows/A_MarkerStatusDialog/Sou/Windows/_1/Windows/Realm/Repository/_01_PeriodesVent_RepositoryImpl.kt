@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Repository
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._13_Produit
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._12_Vendeur
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._01_PeriodesVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._01_PeriodesVent.Companion.convertToFirebaseFormat
@@ -56,7 +55,7 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
             schema = setOf(
                 _01_PeriodesVent::class,
                 _12_Vendeur::class,
-                _13_Produit::class
+                _15_Produit::class
             )
         )
         return Realm.open(config)
@@ -136,7 +135,7 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
                         // Clear existing data
                         query<_01_PeriodesVent>().find().also { delete(it) }
                         query<_12_Vendeur>().find().also { delete(it) }
-                        query<_13_Produit>().find().also { delete(it) }
+                        query<_15_Produit>().find().also { delete(it) }
 
                         // Save current data
                         modelDatasSnapList.forEach { periode ->
@@ -245,7 +244,7 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
                     val produitKey = produitSnapshot.key ?: return@forEach
                     if (!produitKey.contains("<{Pr}->")) return@forEach
 
-                    val produit = _13_Produit.parseProduitFromSnapshot(produitSnapshot) ?: return@forEach
+                    val produit = _15_Produit.parseProduitFromSnapshot(produitSnapshot) ?: return@forEach
                     val updated = updateProductInModel(periodeKey, vendeurKey, produit)
                     if (updated) changesMade = true
                 }
@@ -258,14 +257,14 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
     private fun updateProductInModel(
         periodeKey: String,
         vendeurKey: String,
-        produit: _13_Produit
+        produit: _15_Produit
     ): Boolean {
         if (modelUpdateInProgress.getAndSet(true)) return false
 
         try {
             val periode = modelDatasSnapList.find { it.keyID == periodeKey } ?: return false
             val vendeur = periode.vendeurs.find { it.keyID == vendeurKey } ?: return false
-            val existingProduit = vendeur.produits.find { it.keyID == produit.keyID }
+            val existingProduit = vendeur.acheteurs.find { it.keyID == produit.keyID }
 
             return if (existingProduit != null) {
                 val changed = existingProduit.quantity != produit.quantity ||
@@ -281,7 +280,7 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
                     false
                 }
             } else {
-                vendeur.produits.add(produit)
+                vendeur.acheteurs.add(produit)
                 true
             }
         } finally {
@@ -340,7 +339,7 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
                         // Clear existing data
                         query<_01_PeriodesVent>().find().also { delete(it) }
                         query<_12_Vendeur>().find().also { delete(it) }
-                        query<_13_Produit>().find().also { delete(it) }
+                        query<_15_Produit>().find().also { delete(it) }
 
                         // Save current data
                         modelDatasSnapList.forEach { periode ->
@@ -375,11 +374,11 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
             keyID = sourceVendeur.keyID
             idVendeur = sourceVendeur.idVendeur
             nomVendeur = sourceVendeur.nomVendeur
-            produits = realmListOf()
+            acheteurs = realmListOf()
         }
 
-        sourceVendeur.produits.forEach { sourceProduit ->
-            vendeurCopy.produits.add(_13_Produit().apply {
+        sourceVendeur.acheteurs.forEach { sourceProduit ->
+            vendeurCopy.acheteurs.add(_15_Produit().apply {
                 keyID = sourceProduit.keyID
                 idProduit = sourceProduit.idProduit
                 nomProduit = sourceProduit.nomProduit

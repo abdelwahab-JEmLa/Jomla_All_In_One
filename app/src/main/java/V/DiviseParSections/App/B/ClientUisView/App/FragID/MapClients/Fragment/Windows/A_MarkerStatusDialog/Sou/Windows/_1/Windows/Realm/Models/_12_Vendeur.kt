@@ -11,7 +11,7 @@ class _12_Vendeur : RealmObject {
 
     @PrimaryKey
     var keyID: String = "_01_PeriodesVent.keyID-<{Ve}->(idVendeur=nomVendeur)"
-    var produits: RealmList<_13_Produit> = realmListOf()
+    var acheteurs: RealmList<_13_Acheteurs> = realmListOf()
 
     companion object{
         fun createVendeur(id: Long, nom: String, vendeurKey: String): _12_Vendeur {
@@ -19,28 +19,24 @@ class _12_Vendeur : RealmObject {
                 keyID = vendeurKey
                 idVendeur = id
                 nomVendeur = nom
-                produits = realmListOf()
+                acheteurs = realmListOf()
 
-                for (k in 1..5) {
-                    val produitId = k.toLong()
-                    val produitNom = "_13_Produit $k"
-                    val produitKey = "$keyID-<{Pr}->($produitId=$produitNom)"
-
-                    val produit = _13_Produit.testproduit(produitKey, produitId, produitNom, k)
-
-                    produits.add(produit)
+                // Create and add acheteurs
+                val acheteursList = _13_Acheteurs.testData(vendeurKey)
+                acheteursList.forEach { acheteur ->
+                    acheteurs.add(acheteur)
                 }
             }
         }
 
-        fun mapVendeurs(vendeurs: List<_12_Vendeur>, periodeKey: String): Map<String, Any> {
+        fun mapVendeurs(vendeurs: List<_12_Vendeur>): Map<String, Any> {
             return vendeurs.associate { vendeur ->
                 val validVendeurKey = vendeur.keyID
 
                 validVendeurKey to mapOf(
                     "idVendeur" to vendeur.idVendeur,
                     "nomVendeur" to vendeur.nomVendeur,
-                    "produits" to _13_Produit.mapProduits(vendeur.produits, validVendeurKey)
+                    "_13_Acheteurs" to _13_Acheteurs.mapDatas(vendeur.acheteurs)
                 )
             }
         }

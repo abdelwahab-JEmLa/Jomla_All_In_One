@@ -348,7 +348,7 @@ fun VendeurItem(vendeur: _12_Vendeur) {
 
         Spacer(modifier = Modifier.height(4.dp))
 
-        vendeur.produits.forEach { produit ->
+        vendeur.acheteurs.forEach { produit ->
             Row(
                 modifier = Modifier
                     .fillMaxWidth()

@@ -124,7 +124,7 @@ open class PeriodeVenteViewModel(
                     periode.vendeurs.any { vendeur ->
                         vendeur.nomVendeur.lowercase().contains(query) ||
                                 // Search in products
-                                vendeur.produits.any { produit ->
+                                vendeur.acheteurs.any { produit ->
                                     produit.nomProduit.lowercase().contains(query)
                                 }
                     }

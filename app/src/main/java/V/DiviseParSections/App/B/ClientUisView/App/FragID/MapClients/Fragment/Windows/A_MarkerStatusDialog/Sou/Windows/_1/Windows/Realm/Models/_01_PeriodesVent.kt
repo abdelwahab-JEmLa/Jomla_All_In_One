@@ -49,7 +49,7 @@ class _01_PeriodesVent : RealmObject {
                 validPeriodeKey to mapOf(
                     "dateDebutDeCettePeriode" to periode.dateDebutDeCettePeriode,
                     "tempDebutDeCettePeriode" to periode.tempDebutDeCettePeriode,
-                    "vendeurs" to mapVendeurs(periode.vendeurs, validPeriodeKey)
+                    "vendeurs" to mapVendeurs(periode.vendeurs)
                 )
             }
         }
@@ -77,13 +77,13 @@ class _01_PeriodesVent : RealmObject {
                     keyID = vendeurKey
                     idVendeur = vendeurSnapshot.child("idVendeur").getValue(Long::class.java) ?: 0L
                     nomVendeur = vendeurSnapshot.child("nomVendeur").getValue(String::class.java) ?: ""
-                    produits = realmListOf()
+                    acheteurs = realmListOf()
                 }
 
-                val produitsSnapshot = vendeurSnapshot.child("produits")
-                produitsSnapshot.children.forEach { produitSnapshot ->
-                    val produit = _13_Produit.parseProduitFromSnapshot(produitSnapshot) ?: return@forEach
-                    vendeur.produits.add(produit)
+                val acheteursSnapshot = vendeurSnapshot.child("acheteurs")
+                acheteursSnapshot.children.forEach { acheteurSnapshot ->
+                    val acheteur = _13_Acheteurs.parse_13_AcheteursFromSnapshot(acheteurSnapshot) ?: return@forEach
+                    vendeur.acheteurs.add(acheteur)
                 }
 
                 periode.vendeurs.add(vendeur)
