@@ -16,9 +16,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
-import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.PhoneAndroid
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -135,11 +135,11 @@ fun A_OptionsControlsButtons_A1FragID_3(
                     // Menu Button - Inlined from MenuButton function
                     ControlButton(
                         onClick = { showMenu = !showMenu },
-                        icon = if (showMenu) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                        icon = if (showMenu) Icons.Default.ExpandLess else Icons.Default.Warning,
                         contentDescription = if (showMenu) "Hide menu" else "Show menu",
                         showLabels = showLabels,
-                        labelText = if (showMenu) "Hide" else "Achats Optiones",
-                        containerColor = Color(0xFF3F51B5)
+                        labelText = if (showMenu) "Hide" else "خاص بمدير التطبيق",
+                        containerColor = Color(0xFFF44336)
                     )
                 }
             }
