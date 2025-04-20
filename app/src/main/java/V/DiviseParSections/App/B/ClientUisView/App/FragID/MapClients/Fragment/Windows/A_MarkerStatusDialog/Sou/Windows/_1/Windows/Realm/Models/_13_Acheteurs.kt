@@ -23,7 +23,7 @@ class _13_Acheteurs : RealmObject {
             for (k in 1..5) {
                 val acheteur = _13_Acheteurs().apply {
                     id = k.toLong()
-                    designation = "_14_Produits $k"
+                    designation = "_13_Acheteurs $k"
                     tempCreationString = "2025.04.20(12:00)"
                     keyID = "$parentkeyID-<{BA}->($designation[$id])"
                     child_14Produits = realmListOf()
