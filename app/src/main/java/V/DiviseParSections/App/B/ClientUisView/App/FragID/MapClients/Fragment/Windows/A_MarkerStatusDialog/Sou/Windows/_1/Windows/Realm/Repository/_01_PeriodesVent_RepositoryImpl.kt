@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Repository
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.firebase.database.DataSnapshot
@@ -15,9 +16,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import java.util.concurrent.atomic.AtomicBoolean
 
-class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {     //-->
-//TODO(): refactore et donne moi cette function _01_PeriodesVent_RepositoryImpl avec les modification naissaissaire 
+class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
+    private val TAG = "_01_PeriodesVent_Repo" // Tag for logging
+
     override var modelDatasSnapList: SnapshotStateList<_01_PeriodesVent> = mutableStateListOf()
     var idComptDeCeTelephone: String = "2025_04_19->11:00->1(Vendeur 1)"
 
@@ -35,6 +40,15 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {     //-->
     private val _progressRepo = MutableStateFlow(0f)
     override val progressRepo: StateFlow<Float> = _progressRepo
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
+
+    // Add mutex for synchronizing Realm operations
+    private val realmMutex = Mutex()
+
+    // Flag to track if a batch update is needed
+    private val pendingRealmUpdate = AtomicBoolean(false)
+
+    // Flag to track if model update is in progress
+    private val modelUpdateInProgress = AtomicBoolean(false)
 
     // Firebase reference
     private val firebaseRef = _01_PeriodesVent_Repository.sonDataBaseRef
@@ -124,8 +138,7 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {     //-->
             }
 
             // Add to modelDatasSnapList
-            modelDatasSnapList.clear()
-            modelDatasSnapList.addAll(testPeriodes)
+            updateModelDatasList(testPeriodes)
 
             // Update both Realm and Firebase
             updateRealmAndFirebase()
@@ -137,10 +150,23 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {     //-->
             .sort("dateDebutDeCettePeriode", Sort.DESCENDING)
             .find()
 
-        modelDatasSnapList.clear()
-        modelDatasSnapList.addAll(allPeriodes)
-
+        updateModelDatasList(allPeriodes)
         _progressRepo.value = 1.0f
+    }
+
+    // Thread-safe update of modelDatasSnapList
+    private fun updateModelDatasList(periodes: List<_01_PeriodesVent>) {
+        if (modelUpdateInProgress.getAndSet(true)) {
+            Log.d(TAG, "Model update already in progress, skipping")
+            return
+        }
+
+        try {
+            modelDatasSnapList.clear()
+            modelDatasSnapList.addAll(periodes)
+        } finally {
+            modelUpdateInProgress.set(false)
+        }
     }
 
     private fun updateRealmAndFirebase() {
@@ -151,35 +177,50 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {     //-->
     // Update Realm database with current modelDatasSnapList data
     private fun updateRealm() {
         coroutineScope.launch {
-            try {
-                realm.write {
-                    // Clear existing data
-                    query<_01_PeriodesVent>().find().also { delete(it) }
-                    query<Vendeur>().find().also { delete(it) }
-                    query<Produit>().find().also { delete(it) }
+            realmMutex.withLock {
+                Log.d(TAG, "Starting Realm update with lock acquired")
+                try {
+                    realm.write {
+                        // Clear existing data
+                        query<_01_PeriodesVent>().find().also { delete(it) }
+                        query<Vendeur>().find().also { delete(it) }
+                        query<Produit>().find().also { delete(it) }
 
-                    // Add all items from the list with guaranteed unique keys
-                    modelDatasSnapList.forEach { periode ->
-                        copyToRealm(createDeepCopyForRealm(periode))
+                        // Create a defensive copy to avoid concurrent modification
+                        val dataSnapshot = modelDatasSnapList.toList()
+
+                        // Add all items from the list with guaranteed unique keys
+                        dataSnapshot.forEach { periode ->
+                            copyToRealm(createDeepCopyForRealm(periode))
+                        }
                     }
+                    Log.d(TAG, "Realm update completed successfully")
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error updating Realm: ${e.message}", e)
+                } finally {
+                    _progressRepo.value = 1.0f // Ensure progress completes even on error
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                _progressRepo.value = 1.0f // Ensure progress completes even on error
             }
         }
     }
 
     private fun updateFirebase() {
         coroutineScope.launch {
-            // Convert to a Map structure that Firebase can store
-            val dataToUpdate = convertToFirebaseFormat(modelDatasSnapList)
+            try {
+                // Create a defensive copy to avoid concurrent modification
+                val dataSnapshot = modelDatasSnapList.toList()
 
-            // Update Firebase - temporarily remove listener to avoid duplicate updates
-            removeFirebaseListener()
-            firebaseRef.setValue(dataToUpdate).addOnCompleteListener {
-                // Reattach listener after update is complete
-                attachFirebaseListener()
+                // Convert to a Map structure that Firebase can store
+                val dataToUpdate = convertToFirebaseFormat(dataSnapshot)
+
+                // Update Firebase - temporarily remove listener to avoid duplicate updates
+                removeFirebaseListener()
+                firebaseRef.setValue(dataToUpdate).addOnCompleteListener {
+                    // Reattach listener after update is complete
+                    attachFirebaseListener()
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error updating Firebase: ${e.message}", e)
             }
         }
     }
@@ -218,15 +259,16 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {     //-->
             override fun onDataChange(snapshot: DataSnapshot) {
                 try {
                     parseFirebaseSnapshot(snapshot)
-                    updateRealmSafely()
+                    scheduleSafeRealmUpdate()
                     _progressRepo.value = 1.0f
                 } catch (e: Exception) {
-                    e.printStackTrace()
+                    Log.e(TAG, "Error in Firebase data change: ${e.message}", e)
                     _progressRepo.value = 1.0f
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
+                Log.e(TAG, "Firebase data change cancelled: ${error.message}")
                 _progressRepo.value = 1.0f
             }
         }
@@ -235,7 +277,7 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {     //-->
         try {
             firebaseRef.addValueEventListener(valueEventListener!!)
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e(TAG, "Error attaching Firebase listener: ${e.message}", e)
             _progressRepo.value = 1.0f
         }
     }
@@ -244,33 +286,76 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {     //-->
     private fun attachProductChangeListener() {
         productChangeListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                // Process only changes to products, identified by their path
-                snapshot.children.forEach { periodeSnapshot ->
-                    val periodeKey = periodeSnapshot.key ?: return@forEach
+                // Log product changes
+                Log.d(TAG, "Product change detected in Firebase")
 
-                    periodeSnapshot.child("vendeurs").children.forEach { vendeurSnapshot ->
-                        val vendeurKey = vendeurSnapshot.key ?: return@forEach
+                try {
+                    var changesMade = false
 
-                        vendeurSnapshot.child("produits").children.forEach { produitSnapshot ->
-                            val produitKey = produitSnapshot.key ?: return@forEach
-                            val quantity = produitSnapshot.child("quantity").getValue(Int::class.java) ?: 0
-                            val id = produitSnapshot.child("id").getValue(Long::class.java) ?: 0L
-                            val nom = produitSnapshot.child("nom").getValue(String::class.java) ?: ""
+                    // Process only changes to products, identified by their path
+                    snapshot.children.forEach { periodeSnapshot ->
+                        val periodeKey = periodeSnapshot.key ?: return@forEach
+                        Log.d(TAG, "Processing changes for period: $periodeKey")
 
-                            // Update the corresponding product in modelDatasSnapList
-                            updateProductInModel(periodeKey, vendeurKey, produitKey, id, nom, quantity)
+                        periodeSnapshot.child("vendeurs").children.forEach { vendeurSnapshot ->
+                            val vendeurKey = vendeurSnapshot.key ?: return@forEach
+                            Log.d(TAG, "Processing changes for vendor: $vendeurKey")
+
+                            vendeurSnapshot.child("produits").children.forEach { produitSnapshot ->
+                                val produitKey = produitSnapshot.key ?: return@forEach
+                                val quantity = produitSnapshot.child("quantity").getValue(Int::class.java) ?: 0
+                                val id = produitSnapshot.child("id").getValue(Long::class.java) ?: 0L
+                                val nom = produitSnapshot.child("nom").getValue(String::class.java) ?: ""
+
+                                Log.d(TAG, "Product change: $produitKey (ID: $id, Name: $nom, Quantity: $quantity)")
+
+                                // Update the corresponding product in modelDatasSnapList
+                                val updated = updateProductInModel(periodeKey, vendeurKey, produitKey, id, nom, quantity)
+                                if (updated) changesMade = true
+                            }
                         }
                     }
-                }
 
-                // Update Realm after processing all changes
-                updateRealmSafely()
-                notifieDataChange()
+                    // Only schedule update if changes were actually made
+                    if (changesMade) {
+                        // Schedule a single Realm update after all changes are processed
+                        scheduleSafeRealmUpdate()
+
+                        // Trigger UI update
+                        notifyUIUpdate()
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error processing product changes: ${e.message}", e)
+                }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                // Handle error
+                Log.e(TAG, "Product change listener cancelled: ${error.message}")
             }
+        }
+
+        try {
+            firebaseRef.addValueEventListener(productChangeListener!!)
+            Log.d(TAG, "Product change listener attached successfully")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error attaching product change listener: ${e.message}", e)
+        }
+    }
+
+    // Schedule a Realm update safely to avoid concurrent transactions
+    private fun scheduleSafeRealmUpdate() {
+        if (pendingRealmUpdate.compareAndSet(false, true)) {
+            coroutineScope.launch {
+                try {
+                    // Small delay to batch potential updates
+                    kotlinx.coroutines.delay(100)
+                    updateRealmSafely()
+                } finally {
+                    pendingRealmUpdate.set(false)
+                }
+            }
+        } else {
+            Log.d(TAG, "Realm update already scheduled, skipping")
         }
     }
 
@@ -281,33 +366,84 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {     //-->
         id: Long,
         nom: String,
         quantity: Int
-    ) {
-        // Find periode
-        val periode = modelDatasSnapList.find { it.keyID == periodeKey } ?: return
-
-        // Find vendeur
-        val vendeur = periode.vendeurs.find { it.keyID == vendeurKey } ?: return
-
-        // Find produit
-        val produit = vendeur.produits.find { it.keyID == produitKey }
-
-        if (produit != null) {
-            // Update existing product
-            produit.quantity = quantity
-            produit.id = id
-            produit.nom = nom
-        } else {
-            // Create new product if not found
-            vendeur.produits.add(Produit().apply {
-                keyID = produitKey
-                this.id = id
-                this.nom = nom
-                this.quantity = quantity
-            })
+    ): Boolean {
+        // Synchronized to prevent concurrent modification
+        if (modelUpdateInProgress.getAndSet(true)) {
+            Log.d(TAG, "Model update already in progress, skipping product update")
+            return false
         }
 
-        // Call notifieDataChange to update UI
-        notifieDataChange()
+        try {
+            // Find periode
+            val periode = modelDatasSnapList.find { it.keyID == periodeKey }
+            if (periode == null) {
+                Log.w(TAG, "Period not found for key: $periodeKey")
+                return false
+            }
+
+            // Find vendeur
+            val vendeur = periode.vendeurs.find { it.keyID == vendeurKey }
+            if (vendeur == null) {
+                Log.w(TAG, "Vendor not found for key: $vendeurKey")
+                return false
+            }
+
+            // Find produit
+            val produit = vendeur.produits.find { it.keyID == produitKey }
+
+            if (produit != null) {
+                // Only update if there's an actual change
+                val changed = produit.quantity != quantity ||
+                        produit.id != id ||
+                        produit.nom != nom
+
+                if (changed) {
+                    // Update existing product
+                    Log.d(TAG, "Updating existing product: $produitKey, Quantity: ${produit.quantity} -> $quantity")
+                    produit.quantity = quantity
+                    produit.id = id
+                    produit.nom = nom
+                    return true
+                }
+                return false
+            } else {
+                // Create new product if not found
+                Log.d(TAG, "Creating new product: $produitKey with quantity: $quantity")
+                vendeur.produits.add(Produit().apply {
+                    keyID = produitKey
+                    this.id = id
+                    this.nom = nom
+                    this.quantity = quantity
+                })
+                return true
+            }
+        } finally {
+            modelUpdateInProgress.set(false)
+        }
+    }
+
+    // Trigger UI update without Realm update
+    private fun notifyUIUpdate() {
+        coroutineScope.launch(Dispatchers.Main) {
+            try {
+                if (modelUpdateInProgress.getAndSet(true)) {
+                    Log.d(TAG, "Model update already in progress, skipping UI notification")
+                    return@launch
+                }
+
+                try {
+                    // Force UI update by creating a new snapshot
+                    val currentList = modelDatasSnapList.toList()
+                    modelDatasSnapList.clear()
+                    modelDatasSnapList.addAll(currentList)
+                    Log.d(TAG, "UI update notification sent")
+                } finally {
+                    modelUpdateInProgress.set(false)
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error in UI notification: ${e.message}", e)
+            }
+        }
     }
 
     private fun parseFirebaseSnapshot(snapshot: DataSnapshot) {
@@ -358,16 +494,16 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {     //-->
         }
 
         // Update the model
-        modelDatasSnapList.clear()
-        modelDatasSnapList.addAll(newPeriodesVente)
+        updateModelDatasList(newPeriodesVente)
     }
 
     private fun removeFirebaseListener() {
         valueEventListener?.let {
             try {
                 firebaseRef.removeEventListener(it)
+                Log.d(TAG, "Main Firebase listener removed")
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.e(TAG, "Error removing main Firebase listener: ${e.message}", e)
             }
             valueEventListener = null
         }
@@ -375,8 +511,9 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {     //-->
         productChangeListener?.let {
             try {
                 firebaseRef.removeEventListener(it)
+                Log.d(TAG, "Product change listener removed")
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.e(TAG, "Error removing product change listener: ${e.message}", e)
             }
             productChangeListener = null
         }
@@ -385,20 +522,26 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {     //-->
     // Update only Realm without touching Firebase - with duplicate key handling
     private fun updateRealmSafely() {
         coroutineScope.launch {
-            try {
-                realm.write {
-                    // Clear existing data
-                    query<_01_PeriodesVent>().find().also { delete(it) }
-                    query<Vendeur>().find().also { delete(it) }
-                    query<Produit>().find().also { delete(it) }
+            realmMutex.withLock {
+                try {
+                    // Create a defensive copy to avoid concurrent modification
+                    val dataSnapshot = modelDatasSnapList.toList()
 
-                    // Now add all items from the list with guaranteed unique keys
-                    modelDatasSnapList.forEach { periode ->
-                        copyToRealm(createDeepCopyForRealm(periode))
+                    realm.write {
+                        // Clear existing data
+                        query<_01_PeriodesVent>().find().also { delete(it) }
+                        query<Vendeur>().find().also { delete(it) }
+                        query<Produit>().find().also { delete(it) }
+
+                        // Now add all items from the list with guaranteed unique keys
+                        dataSnapshot.forEach { periode ->
+                            copyToRealm(createDeepCopyForRealm(periode))
+                        }
                     }
+                    Log.d(TAG, "Realm database updated successfully")
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error updating Realm safely: ${e.message}", e)
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
             }
         }
     }
@@ -440,24 +583,22 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {     //-->
 
     override suspend fun refreshData() {
         _progressRepo.value = 0f
+        Log.d(TAG, "Refreshing data from Realm and Firebase")
         loadFromRealmTOmodelDatasSnapList()
         loadFromFirebase()
     }
 
     override fun notifieDataChange() {
-        // Create a copy of the current list
-        val currentList = modelDatasSnapList.toList()
-
-        // Clear and re-add all items to trigger UI updates
-        modelDatasSnapList.clear()
-        modelDatasSnapList.addAll(currentList)
-
-        // Update Realm database with the current data
-        updateRealmSafely()
+        Log.d(TAG, "Notifying data change")
+        // Only schedule Realm update
+        scheduleSafeRealmUpdate()
+        // Trigger UI update
+        notifyUIUpdate()
     }
 
     // Cleanup method to close Realm when repository is no longer needed
     fun cleanup() {
+        Log.d(TAG, "Repository cleanup - removing listeners and closing Realm")
         removeFirebaseListener()
         realm.close()
     }
