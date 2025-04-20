@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models
 
+import com.google.firebase.database.DataSnapshot
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
 
@@ -37,6 +38,18 @@ class _13_Produit : RealmObject {
                     "nomProduit" to produit.nomProduit,
                     "quantity" to produit.quantity
                 )
+            }
+        }
+        // Add this to the companion object in _13_Produit.kt
+        fun parseProduitFromSnapshot(snapshot: DataSnapshot): _13_Produit? {
+            val produitKey = snapshot.key ?: return null
+            if (!produitKey.contains("<{Pr}->")) return null
+
+            return _13_Produit().apply {
+                keyID = produitKey
+                idProduit = snapshot.child("idProduit").getValue(Long::class.java) ?: 0L
+                nomProduit = snapshot.child("nomProduit").getValue(String::class.java) ?: ""
+                quantity = snapshot.child("quantity").getValue(Int::class.java) ?: 0
             }
         }
 

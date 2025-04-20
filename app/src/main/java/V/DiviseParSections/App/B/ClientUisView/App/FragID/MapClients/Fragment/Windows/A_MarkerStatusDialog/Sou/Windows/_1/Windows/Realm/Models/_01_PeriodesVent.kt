@@ -2,6 +2,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._12_Vendeur.Companion.createVendeur
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._12_Vendeur.Companion.mapVendeurs
+import com.google.firebase.database.DataSnapshot
 import io.realm.kotlin.ext.realmListOf
 import io.realm.kotlin.types.RealmList
 import io.realm.kotlin.types.RealmObject
@@ -51,6 +52,44 @@ class _01_PeriodesVent : RealmObject {
                     "vendeurs" to mapVendeurs(periode.vendeurs, validPeriodeKey)
                 )
             }
+        }
+        // Add this to the companion object in _01_PeriodesVent.kt
+        fun parsePeriodeFromSnapshot(snapshot: DataSnapshot): _01_PeriodesVent? {
+            val periodeKey = snapshot.key ?: return null
+            if (!periodeKey.startsWith("{PV}->")) return null
+
+            val date = snapshot.child("dateDebutDeCettePeriode").getValue(String::class.java) ?: return null
+            val time = snapshot.child("tempDebutDeCettePeriode").getValue(String::class.java) ?: return null
+
+            val periode = _01_PeriodesVent().apply {
+                keyID = periodeKey
+                dateDebutDeCettePeriode = date
+                tempDebutDeCettePeriode = time
+                vendeurs = realmListOf()
+            }
+
+            val vendeursSnapshot = snapshot.child("vendeurs")
+            vendeursSnapshot.children.forEach { vendeurSnapshot ->
+                val vendeurKey = vendeurSnapshot.key ?: return@forEach
+                if (!vendeurKey.contains("<{Ve}->")) return@forEach
+
+                val vendeur = _12_Vendeur().apply {
+                    keyID = vendeurKey
+                    idVendeur = vendeurSnapshot.child("idVendeur").getValue(Long::class.java) ?: 0L
+                    nomVendeur = vendeurSnapshot.child("nomVendeur").getValue(String::class.java) ?: ""
+                    produits = realmListOf()
+                }
+
+                val produitsSnapshot = vendeurSnapshot.child("produits")
+                produitsSnapshot.children.forEach { produitSnapshot ->
+                    val produit = _13_Produit.parseProduitFromSnapshot(produitSnapshot) ?: return@forEach
+                    vendeur.produits.add(produit)
+                }
+
+                periode.vendeurs.add(vendeur)
+            }
+
+            return periode
         }
 
     }
