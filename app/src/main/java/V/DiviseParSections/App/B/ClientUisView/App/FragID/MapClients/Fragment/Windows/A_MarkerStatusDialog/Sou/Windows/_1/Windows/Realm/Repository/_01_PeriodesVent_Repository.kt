@@ -14,7 +14,6 @@ interface _01_PeriodesVent_Repository {
     val progressRepo: StateFlow<Float>
     val dataChangedEvent: StateFlow<Long> // New StateFlow to notify data changes
 
-    suspend fun refreshData()
     fun notifieDataChange()
 
     companion object {

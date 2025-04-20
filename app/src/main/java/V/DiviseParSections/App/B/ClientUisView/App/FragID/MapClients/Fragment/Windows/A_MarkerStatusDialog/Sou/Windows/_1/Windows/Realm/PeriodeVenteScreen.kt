@@ -1,50 +1,41 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Repository.Produit
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Repository.Vendeur
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Repository._01_PeriodesVent
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 
@@ -55,291 +46,276 @@ private const val TAG = "PeriodeVenteScreen"
 fun PeriodeVenteScreen(
     viewModel: PeriodeVenteViewModel = koinViewModel()
 ) {
-    // Collect the entire UI state at once
     val uiState by viewModel.uiState.collectAsState()
-
-    // State for search bar visibility
-    var isSearchVisible by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {
-                    if (isSearchVisible) {
-                        SearchBar(
-                            query = uiState.searchQuery,
-                            onQueryChange = { viewModel.updateSearchQuery(it) },
-                            onClose = { isSearchVisible = false }
-                        )
-                    } else {
-                        Text(
-                            text = if (uiState.selectedPeriode != null) "Détails de la période" else "Périodes de Vente",
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
+                title = { Text("Périodes de Vente") },
+                actions = {
+                    IconButton(onClick = { viewModel.notifyDataChanged() }) {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = "Refresh"
                         )
                     }
-                },
-                navigationIcon = {
-                    if (uiState.selectedPeriode != null) {
-                        IconButton(onClick = { viewModel.clearSelection() }) {
-                            Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                        }
-                    }
-                },
+                }
             )
         }
     ) { paddingValues ->
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
+            // Search bar
+            SearchBar(
+                query = uiState.searchQuery,
+                onQueryChange = viewModel::updateSearchQuery,
+                onClearQuery = { viewModel.updateSearchQuery("") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            )
+
+            // Loading indicator
             if (uiState.isLoading) {
-                // Show loading indicator
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center)
-                )
-            } else if (uiState.selectedPeriode != null) {
-                // Show period details
-                PeriodeDetails(uiState.selectedPeriode!!)
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    CircularProgressIndicator()
+                }
             } else {
-                // Show list of periods
-                PeriodesList(
-                    periodes = uiState.filteredPeriodes,
-                    onPeriodeClick = { viewModel.selectPeriode(it) }
-                )
+                // Content area - Split view with list and details
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp)
+                ) {
+                    // List of periods
+                    PeriodesList(
+                        periodes = uiState.filteredPeriodes,
+                        selectedPeriode = uiState.selectedPeriode,
+                        onPeriodeSelected = viewModel::selectPeriode,
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                    )
+
+                    // Detail view
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    uiState.selectedPeriode?.let { periode ->
+                        PeriodeDetail(
+                            periode = periode,
+                            onClearSelection = viewModel::clearSelection,
+                            modifier = Modifier
+                                .weight(1.5f)
+                                .fillMaxHeight()
+                        )
+                    } ?: run {
+                        EmptyDetailState(
+                            modifier = Modifier
+                                .weight(1.5f)
+                                .fillMaxHeight()
+                        )
+                    }
+                }
             }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchBar(
     query: String,
     onQueryChange: (String) -> Unit,
-    onClose: () -> Unit
+    onClearQuery: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    TextField(
+    OutlinedTextField(
         value = query,
         onValueChange = onQueryChange,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier,
         placeholder = { Text("Rechercher...") },
-        leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = "Search"
+            )
+        },
         trailingIcon = {
-            IconButton(onClick = {
-                if (query.isNotEmpty()) {
-                    onQueryChange("")
-                } else {
-                    onClose()
+            if (query.isNotEmpty()) {
+                IconButton(onClick = onClearQuery) {
+                    Icon(
+                        imageVector = Icons.Default.Clear,
+                        contentDescription = "Clear"
+                    )
                 }
-            }) {
-                Icon(Icons.Default.Close, contentDescription = "Clear")
             }
         },
-        singleLine = true,
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = MaterialTheme.colorScheme.surface,
-            unfocusedContainerColor = MaterialTheme.colorScheme.surface
-        )
+        singleLine = true
     )
 }
 
 @Composable
 fun PeriodesList(
     periodes: List<_01_PeriodesVent>,
-    onPeriodeClick: (_01_PeriodesVent) -> Unit
+    selectedPeriode: _01_PeriodesVent?,
+    onPeriodeSelected: (_01_PeriodesVent) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    if (periodes.isEmpty()) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text("Aucune période trouvée")
-        }
-    } else {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(periodes) { periode ->
-                PeriodeCard(periode = periode, onClick = { onPeriodeClick(periode) })
-            }
-        }
-    }
-}
-
-@Composable
-fun PeriodeCard(
-    periode: _01_PeriodesVent,
-    onClick: () -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick),
-        shape = RoundedCornerShape(8.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    Surface(
+        modifier = modifier,
+        shape = MaterialTheme.shapes.medium,
+        tonalElevation = 2.dp
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
+        Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "Date: ${periode.dateDebutDeCettePeriode}",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
+                text = "Périodes (${periodes.size})",
+                style = MaterialTheme.typography.titleMedium
             )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = "Heure: ${periode.tempDebutDeCettePeriode}",
-                style = MaterialTheme.typography.bodyMedium
-            )
+
             Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "Vendeurs: ${periode.vendeurs.size}",
-                style = MaterialTheme.typography.bodySmall
-            )
 
-            // Show first 2 vendors as preview
-            periode.vendeurs.take(2).forEach { vendeur ->
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "• ${vendeur.nomVendeur} (${vendeur.produits.size} produits)",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-
-            // If there are more vendors
-            if (periode.vendeurs.size > 2) {
-                Text(
-                    text = "... et ${periode.vendeurs.size - 2} autres",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun PeriodeDetails(periode: _01_PeriodesVent) {
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        item {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ) {
-                    Text(
-                        text = "Informations de la période",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "Date: ${periode.dateDebutDeCettePeriode}",
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    Text(
-                        text = "Heure: ${periode.tempDebutDeCettePeriode}",
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    Text(
-                        text = "ID: ${periode.keyID}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                items(periodes) { periode ->
+                    val isSelected = selectedPeriode?.keyID == periode.keyID
+
+                    PeriodeItem(
+                        periode = periode,
+                        isSelected = isSelected,
+                        onClick = { onPeriodeSelected(periode) }
                     )
                 }
             }
         }
+    }
+}
 
-        item {
+@Composable
+fun PeriodeItem(
+    periode: _01_PeriodesVent,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    val backgroundColor = if (isSelected) {
+        MaterialTheme.colorScheme.primaryContainer
+    } else {
+        MaterialTheme.colorScheme.surface
+    }
+
+    val textColor = if (isSelected) {
+        MaterialTheme.colorScheme.onPrimaryContainer
+    } else {
+        MaterialTheme.colorScheme.onSurface
+    }
+
+    Surface(
+        shape = MaterialTheme.shapes.small,
+        color = backgroundColor,
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
             Text(
-                text = "Vendeurs (${periode.vendeurs.size})",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
+                text = "Date: ${formatDate(periode.dateDebutDeCettePeriode)}",
+                style = MaterialTheme.typography.bodyLarge,
+                color = textColor
             )
-        }
 
-        items(periode.vendeurs.size) { index ->
-            val vendeur = periode.vendeurs[index]
-            VendeurCard(vendeur = vendeur)
+            Text(
+                text = "Heure: ${periode.tempDebutDeCettePeriode}",
+                style = MaterialTheme.typography.bodyMedium,
+                color = textColor
+            )
+
+            Text(
+                text = "Vendeurs: ${periode.vendeurs.size}",
+                style = MaterialTheme.typography.bodySmall,
+                color = textColor
+            )
         }
     }
 }
 
 @Composable
-fun VendeurCard(vendeur: V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Repository.Vendeur) {
-    var expanded by remember { mutableStateOf(false) }
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { expanded = !expanded },
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+fun PeriodeDetail(
+    periode: _01_PeriodesVent,
+    onClearSelection: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier,
+        shape = MaterialTheme.shapes.medium,
+        tonalElevation = 2.dp
     ) {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
                 .padding(16.dp)
+                .fillMaxSize()
         ) {
+            // Header with clear button
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = vendeur.nomVendeur,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    text = "Détails de la période",
+                    style = MaterialTheme.typography.titleMedium
                 )
-                Text(
-                    text = "${vendeur.produits.size} produits",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
 
-            if (expanded) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Divider()
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Product table header
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = "Produit",
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.weight(2f)
-                    )
-                    Text(
-                        text = "Quantité",
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.weight(1f)
+                IconButton(onClick = onClearSelection) {
+                    Icon(
+                        imageVector = Icons.Default.Clear,
+                        contentDescription = "Clear Selection"
                     )
                 }
+            }
 
-                Spacer(modifier = Modifier.height(4.dp))
+            Divider(modifier = Modifier.padding(vertical = 8.dp))
 
-                // Product list
-                vendeur.produits.forEach { produit ->
-                    ProductRow(produit = produit)
+            // Period details
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    text = "Date: ${formatDate(periode.dateDebutDeCettePeriode)}",
+                    style = MaterialTheme.typography.bodyLarge
+                )
+
+                Text(
+                    text = "Heure: ${periode.tempDebutDeCettePeriode}",
+                    style = MaterialTheme.typography.bodyLarge
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "Vendeurs",
+                    style = MaterialTheme.typography.titleSmall
+                )
+
+                Divider(modifier = Modifier.padding(vertical = 4.dp))
+
+                // List of vendeurs
+                LazyColumn(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    items(periode.vendeurs) { vendeur ->
+                        VendeurItem(vendeur = vendeur)
+                    }
                 }
             }
         }
@@ -347,39 +323,81 @@ fun VendeurCard(vendeur: V.DiviseParSections.App.B.ClientUisView.App.FragID.MapC
 }
 
 @Composable
-fun ProductRow(produit: Produit) {
-    Row(
+fun VendeurItem(vendeur: Vendeur) {
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+            .background(
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                shape = MaterialTheme.shapes.small
+            )
+            .padding(16.dp)
     ) {
         Text(
-            text = produit.nomProduit,
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.weight(2f)
+            text = vendeur.nomVendeur,
+            style = MaterialTheme.typography.titleSmall
         )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = "Produits:",
+            style = MaterialTheme.typography.bodyMedium
+        )
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        vendeur.produits.forEach { produit ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = produit.nomProduit,
+                    style = MaterialTheme.typography.bodySmall
+                )
+
+                Text(
+                    text = "Qté: ${produit.quantity}",
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun EmptyDetailState(modifier: Modifier = Modifier) {
+    Surface(
+        modifier = modifier,
+        shape = MaterialTheme.shapes.medium,
+        tonalElevation = 2.dp
+    ) {
         Box(
-            modifier = Modifier
-                .weight(1f)
-                .background(
-                    color = MaterialTheme.colorScheme.primaryContainer,
-                    shape = RoundedCornerShape(4.dp)
-                )
-                .border(
-                    width = 1.dp,
-                    color = MaterialTheme.colorScheme.primary,
-                    shape = RoundedCornerShape(4.dp)
-                )
-                .padding(horizontal = 8.dp, vertical = 4.dp),
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.fillMaxSize()
         ) {
             Text(
-                text = produit.quantity.toString(),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
+                text = "Sélectionnez une période pour voir les détails",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
+    }
+}
+
+// Helper function to format the date from yyyy_MM_dd to a more readable format
+private fun formatDate(rawDate: String): String {
+    return try {
+        val parts = rawDate.split("_")
+        if (parts.size == 3) {
+            "${parts[2]}/${parts[1]}/${parts[0]}"
+        } else {
+            rawDate
+        }
+    } catch (e: Exception) {
+        rawDate
     }
 }
