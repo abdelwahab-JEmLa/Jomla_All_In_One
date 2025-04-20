@@ -7,6 +7,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Wi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._12_Vendeur
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._13_Acheteurs
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._14_Produits
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.firebase.database.DataSnapshot
@@ -64,45 +65,150 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
         return Realm.open(config)
     }
 
-    private fun initializeData() {
-        val isRealmEmpty = realm.query<_01_PeriodesVent>().count().find() == 0L
 
-        if (isRealmEmpty) {
-            checkFirebaseOrCreateTestData()
-        } else {
-            loadFromRealmTOmodelDatasSnapList()
-            loadFromFirebase()
-        }
-    }
 
     private fun checkFirebaseOrCreateTestData() {
+        Log.d(TAG, "Checking if Firebase data exists...")
         firebaseRef.get().addOnSuccessListener { snapshot ->
             if (!snapshot.exists() || snapshot.childrenCount == 0L) {
-                createTestDataIfEmpty()
+                Log.d(TAG, "Firebase is empty, creating test data...")
+                // Create test data first
+                val testPeriodes = createTestData()
+                Log.d(TAG, "Test data created: ${testPeriodes.size} periods")
+                updateModelDatasList(testPeriodes)
+
+                // Then explicitly update Firebase with this data
+                Log.d(TAG, "Converting test data to Firebase format...")
+                val dataToUpdate = convertToFirebaseFormat(testPeriodes)
+                Log.d(TAG, "Updating Firebase with test data...")
+                firebaseRef.setValue(dataToUpdate).addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        Log.d(TAG, "Firebase successfully updated with test data")
+                    } else {
+                        Log.e(TAG, "Failed to update Firebase: ${task.exception?.message}")
+                    }
+                    // Only after Firebase update completes, update the Realm database
+                    Log.d(TAG, "Updating Realm database...")
+                    updateRealm()
+                    // Then attach listeners to monitor future changes
+                    Log.d(TAG, "Setting up Firebase listeners...")
+                    loadFromFirebase()
+                }
             } else {
+                Log.d(TAG, "Firebase has data (${snapshot.childrenCount} entries), loading existing data...")
                 loadFromFirebase()
             }
-        }.addOnFailureListener {
+        }.addOnFailureListener { exception ->
+            Log.e(TAG, "Failed to check Firebase data: ${exception.message}")
+            // In case of network failure, still try to load what might be in Firebase
+            Log.d(TAG, "Attempting to load from Firebase despite failure...")
             loadFromFirebase()
-        }
-    }
-
-    private fun createTestDataIfEmpty() {
-        coroutineScope.launch {
-            val testPeriodes = createTestData()
-            updateModelDatasList(testPeriodes)
-            updateRealmAndFirebase()
         }
     }
 
     private fun createTestData(): List<_01_PeriodesVent> {
+        Log.d(TAG, "Creating test data...")
         val testPeriodes = mutableListOf<_01_PeriodesVent>()
 
         for (i in 1..3) {
+            Log.d(TAG, "Creating test period $i")
             test_01_PeriodesVent(i, testPeriodes)
         }
 
+        Log.d(TAG, "Test data creation complete: ${testPeriodes.size} periods with keys: ${testPeriodes.map { it.keyID }}")
         return testPeriodes
+    }
+
+    private fun updateFirebase() {
+        coroutineScope.launch {
+            try {
+                Log.d(TAG, "Preparing to update Firebase...")
+                val dataToUpdate = convertToFirebaseFormat(modelDatasSnapList)
+                Log.d(TAG, "Firebase update data prepared, removing listeners...")
+                removeFirebaseListener()
+                Log.d(TAG, "Setting Firebase data...")
+                firebaseRef.setValue(dataToUpdate).addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        Log.d(TAG, "Firebase update successful")
+                    } else {
+                        Log.e(TAG, "Firebase update failed: ${task.exception?.message}")
+                    }
+                    Log.d(TAG, "Re-attaching Firebase listeners...")
+                    attachFirebaseListener()
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error during Firebase update: ${e.message}", e)
+            }
+        }
+    }
+
+    private fun attachFirebaseListener() {
+        Log.d(TAG, "Creating and attaching main Firebase listener...")
+        valueEventListener = createFirebaseValueEventListener()
+        try {
+            firebaseRef.addValueEventListener(valueEventListener!!)
+            Log.d(TAG, "Main Firebase listener attached successfully")
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to attach main Firebase listener: ${e.message}", e)
+            _progressRepo.value = 1.0f
+        }
+    }
+
+    private fun createFirebaseValueEventListener(): ValueEventListener {
+        return object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                try {
+                    Log.d(TAG, "Firebase data changed, snapshot children count: ${snapshot.childrenCount}")
+                    val parsedData = parseFirebaseSnapshot(snapshot)
+                    Log.d(TAG, "Parsed ${parsedData.size} periods from Firebase")
+                    updateModelDatasList(parsedData)
+                    scheduleSafeRealmUpdate()
+                    _progressRepo.value = 1.0f
+                    _dataChangedEvent.value = System.currentTimeMillis()
+                    Log.d(TAG, "Model data updated from Firebase successfully")
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error processing Firebase data change: ${e.message}", e)
+                    _progressRepo.value = 1.0f
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e(TAG, "Firebase data change event cancelled: ${error.message}")
+                _progressRepo.value = 1.0f
+            }
+        }
+    }
+
+    private fun parseFirebaseSnapshot(snapshot: DataSnapshot): MutableList<_01_PeriodesVent> {
+        Log.d(TAG, "Parsing Firebase snapshot with ${snapshot.childrenCount} children")
+        val newPeriodesVente = mutableListOf<_01_PeriodesVent>()
+
+        snapshot.children.forEach { periodeSnapshot ->
+            Log.d(TAG, "Parsing period with key: ${periodeSnapshot.key}")
+            parsePeriodeFromSnapshot(periodeSnapshot)?.let {
+                Log.d(TAG, "Successfully parsed period: ${it.keyID}")
+                newPeriodesVente.add(it)
+            } ?: Log.w(TAG, "Failed to parse period from snapshot: ${periodeSnapshot.key}")
+        }
+
+        Log.d(TAG, "Parsed ${newPeriodesVente.size} periods from Firebase")
+        return newPeriodesVente
+    }
+
+    private fun initializeData() {
+        Log.d(TAG, "Initializing data...")
+        val isRealmEmpty = realm.query<_01_PeriodesVent>().count().find() == 0L
+        Log.d(TAG, "Realm database is empty: $isRealmEmpty")
+
+        if (isRealmEmpty) {
+            Log.d(TAG, "Realm is empty, checking Firebase...")
+            checkFirebaseOrCreateTestData()
+        } else {
+            Log.d(TAG, "Loading data from Realm to model...")
+            loadFromRealmTOmodelDatasSnapList()
+            Log.d(TAG, "Setting up Firebase listeners...")
+            loadFromFirebase()
+        }
     }
 
     private fun loadFromRealmTOmodelDatasSnapList() {
@@ -155,19 +261,6 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
         }
     }
 
-    private fun updateFirebase() {
-        coroutineScope.launch {
-            try {
-                val dataToUpdate = convertToFirebaseFormat(modelDatasSnapList)
-                removeFirebaseListener()
-                firebaseRef.setValue(dataToUpdate).addOnCompleteListener {
-                    attachFirebaseListener()
-                }
-            } catch (e: Exception) {
-                // Error handling would go here
-            }
-        }
-    }
 
     private fun loadFromFirebase() {
         removeFirebaseListener()
@@ -175,33 +268,7 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
         attachAcheteursChangeListener()
     }
 
-    private fun attachFirebaseListener() {
-        valueEventListener = createFirebaseValueEventListener()
-        try {
-            firebaseRef.addValueEventListener(valueEventListener!!)
-        } catch (e: Exception) {
-            _progressRepo.value = 1.0f
-        }
-    }
 
-    private fun createFirebaseValueEventListener(): ValueEventListener {
-        return object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                try {
-                    updateModelDatasList(parseFirebaseSnapshot(snapshot))
-                    scheduleSafeRealmUpdate()
-                    _progressRepo.value = 1.0f
-                    _dataChangedEvent.value = System.currentTimeMillis()
-                } catch (e: Exception) {
-                    _progressRepo.value = 1.0f
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                _progressRepo.value = 1.0f
-            }
-        }
-    }
 
     private fun attachAcheteursChangeListener() {
         acheteursChangeListener = createAcheteursChangeListener()
@@ -366,17 +433,6 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
         }
     }
 
-    private fun parseFirebaseSnapshot(snapshot: DataSnapshot): MutableList<_01_PeriodesVent> {
-        val newPeriodesVente = mutableListOf<_01_PeriodesVent>()
-
-        snapshot.children.forEach { periodeSnapshot ->
-            parsePeriodeFromSnapshot(periodeSnapshot)?.let {
-                newPeriodesVente.add(it)
-            }
-        }
-
-        return newPeriodesVente
-    }
 
     private fun updateRealmSafely() {
         coroutineScope.launch {
