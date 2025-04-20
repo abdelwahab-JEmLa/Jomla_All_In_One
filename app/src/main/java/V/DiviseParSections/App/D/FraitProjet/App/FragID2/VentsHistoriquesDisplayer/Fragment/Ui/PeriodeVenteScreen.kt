@@ -1,9 +1,9 @@
 package V.DiviseParSections.App.D.FraitProjet.App.FragID2.VentsHistoriquesDisplayer.Fragment.Ui
 
-import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase
-import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._012_Vendeur
-import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._013_Acheteurs
-import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._014_Produits
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._012_Vendeurs
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._013_Acheteurs
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._014_Produits
 import V.DiviseParSections.App.D.FraitProjet.App.FragID2.VentsHistoriquesDisplayer.Fragment.ViewModel.PeriodeVenteViewModel
 import V.DiviseParSections.App.D.FraitProjet.App.FragID2.VentsHistoriquesDisplayer.Fragment.ViewModel.ViewMode
 import androidx.compose.animation.AnimatedVisibility
@@ -241,13 +241,13 @@ fun PeriodeListItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "${periode.vendeurs.size} vendeurs",
+                    text = "${periode.child_012_Vendeurs.size} vendeurs",
                     style = MaterialTheme.typography.bodyMedium
                 )
 
                 Spacer(modifier = Modifier.width(16.dp))
 
-                val totalAcheteurs = periode.vendeurs.sumOf { it.acheteurs.size }
+                val totalAcheteurs = periode.child_012_Vendeurs.sumOf { it.child_013_Acheteurs.size }
                 Text(
                     text = "$totalAcheteurs acheteurs",
                     style = MaterialTheme.typography.bodyMedium
@@ -302,7 +302,7 @@ fun PeriodeDetailScreen(
 
         // Vendeurs section
         Text(
-            text = "Vendeurs (${periode.vendeurs.size})",
+            text = "Vendeurs (${periode.child_012_Vendeurs.size})",
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold
         )
@@ -310,7 +310,7 @@ fun PeriodeDetailScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         LazyColumn {
-            items(periode.vendeurs) { vendeur ->
+            items(periode.child_012_Vendeurs) { vendeur ->
                 VendeurItem(vendeur = vendeur)
             }
         }
@@ -318,7 +318,7 @@ fun PeriodeDetailScreen(
 }
 
 @Composable
-fun VendeurItem(vendeur: _012_Vendeur) {
+fun VendeurItem(vendeur: _012_Vendeurs) {
     var expanded by remember { mutableStateOf(false) }
 
     Card(
@@ -366,12 +366,12 @@ fun VendeurItem(vendeur: _012_Vendeur) {
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        text = "Acheteurs (${vendeur.acheteurs.size})",
+                        text = "Acheteurs (${vendeur.child_013_Acheteurs.size})",
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Bold
                     )
 
-                    vendeur.acheteurs.forEach { acheteur ->
+                    vendeur.child_013_Acheteurs.forEach { acheteur ->
                         AcheteurItem(acheteur = acheteur)
                     }
                 }

@@ -1,7 +1,7 @@
-package Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models
 
-import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._012_Vendeur.Companion.createVendeur
-import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._012_Vendeur.Companion.mapVendeurs
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._012_Vendeurs.Companion.createVendeur
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._012_Vendeurs.Companion.mapVendeurs
 import com.google.firebase.database.DataSnapshot
 import io.realm.kotlin.ext.realmListOf
 import io.realm.kotlin.types.RealmList
@@ -21,7 +21,7 @@ class _01_VentsHistoriquesDataBase : RealmObject {
     @PrimaryKey
     var keyID: String = "${id}($tempCreationString)"
 
-    var vendeurs: RealmList<_012_Vendeur> = realmListOf()
+    var child_012_Vendeurs: RealmList<_012_Vendeurs> = realmListOf()
 
     companion object {
 
@@ -53,15 +53,15 @@ class _01_VentsHistoriquesDataBase : RealmObject {
                 keyID = periodeKey
                 dateDebutDeCettePeriode = date
                 tempDebutDeCettePeriode = time
-                vendeurs = realmListOf()
+                child_012_Vendeurs = realmListOf()
             }
 
             for (j in 1..2) {
                 val vendeurId = j.toLong()
-                val vendeurNom = "_012_Vendeur $j"
+                val vendeurNom = "_012_Vendeurs $j"
                 val vendeurKey = "$vendeurId->$vendeurNom"
                 val vendeur = createVendeur(vendeurId, vendeurNom, vendeurKey)
-                periode.vendeurs.add(vendeur)
+                periode.child_012_Vendeurs.add(vendeur)
             }
 
             testPeriodes.add(periode)
@@ -74,7 +74,7 @@ class _01_VentsHistoriquesDataBase : RealmObject {
                 validPeriodeKey to mapOf(
                     NomsValeursModel.dateDebutDeCettePeriode.name to periode.dateDebutDeCettePeriode,
                     NomsValeursModel.tempDebutDeCettePeriode.name to periode.tempDebutDeCettePeriode,
-                    NomsValeursModel.vendeurs.name to mapVendeurs(periode.vendeurs)
+                    NomsValeursModel.vendeurs.name to mapVendeurs(periode.child_012_Vendeurs)
                 )
             }
         }
@@ -90,28 +90,28 @@ class _01_VentsHistoriquesDataBase : RealmObject {
                 keyID = periodeKey
                 dateDebutDeCettePeriode = date
                 tempDebutDeCettePeriode = time
-                vendeurs = realmListOf()
+                child_012_Vendeurs = realmListOf()
             }
 
             val vendeursSnapshot = snapshot.child(NomsValeursModel.vendeurs.name)
             vendeursSnapshot.children.forEach { vendeurSnapshot ->
                 val vendeurKey = vendeurSnapshot.key ?: return@forEach
 
-                val vendeur = _012_Vendeur().apply {
+                val vendeur = _012_Vendeurs().apply {
                     keyID = vendeurKey
                     id = vendeurSnapshot.child("idVendeur").getValue(Long::class.java) ?: 0L
                     startDesignation = vendeurSnapshot.child("nomVendeur").getValue(String::class.java) ?: ""
-                    acheteurs = realmListOf()
+                    child_013_Acheteurs = realmListOf()
                 }
 
                 val acheteursSnapshot = vendeurSnapshot.child("_013_Acheteurs")
                 acheteursSnapshot.children.forEach { acheteurSnapshot ->
                     val acheteur = _013_Acheteurs.parse_13_AcheteursFromSnapshot(acheteurSnapshot)
                         ?: return@forEach
-                    vendeur.acheteurs.add(acheteur)
+                    vendeur.child_013_Acheteurs.add(acheteur)
                 }
 
-                periode.vendeurs.add(vendeur)
+                periode.child_012_Vendeurs.add(vendeur)
             }
 
             return periode

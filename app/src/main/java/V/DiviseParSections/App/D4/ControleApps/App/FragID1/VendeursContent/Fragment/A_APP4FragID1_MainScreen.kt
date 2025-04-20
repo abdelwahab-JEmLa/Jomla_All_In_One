@@ -84,7 +84,7 @@ fun VendeursContent(
                     )
 
                     Text(
-                        text = "Active _012_Vendeur ID: ${uiState.activeVendeurId}",
+                        text = "Active _012_Vendeurs ID: ${uiState.activeVendeurId}",
                         style = MaterialTheme.typography.titleMedium
                     )
 
@@ -210,7 +210,7 @@ fun VendeurItem(
     ) {
         if (isActive) {
             Text(
-                text = "Selected _012_Vendeur",
+                text = "Selected _012_Vendeurs",
                 color = MaterialTheme.colorScheme.primary,
                 style = MaterialTheme.typography.labelMedium
             )

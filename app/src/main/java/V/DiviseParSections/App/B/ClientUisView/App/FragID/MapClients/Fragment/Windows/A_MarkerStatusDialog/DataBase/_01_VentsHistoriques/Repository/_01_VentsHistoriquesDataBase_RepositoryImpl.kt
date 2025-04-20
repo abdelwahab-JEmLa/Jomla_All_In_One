@@ -1,12 +1,12 @@
-package Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Repository
 
-import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._012_Vendeur
-import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._013_Acheteurs
-import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._014_Produits
-import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase
-import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase.Companion.convertToFirebaseFormat
-import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase.Companion.parsePeriodeFromSnapshot
-import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase.Companion.test_01_PeriodesVent
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._012_Vendeurs
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._013_Acheteurs
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._014_Produits
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase.Companion.convertToFirebaseFormat
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase.Companion.parsePeriodeFromSnapshot
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase.Companion.test_01_PeriodesVent
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.firebase.Firebase
@@ -63,7 +63,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
         val config = RealmConfiguration.create(
             schema = setOf(
                 _01_VentsHistoriquesDataBase::class,
-                _012_Vendeur::class,
+                _012_Vendeurs::class,
                 _013_Acheteurs::class,
                 _014_Produits::class
             )
@@ -192,7 +192,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
                     realm.write {
                         // Clear existing data
                         query<_01_VentsHistoriquesDataBase>().find().also { delete(it) }
-                        query<_012_Vendeur>().find().also { delete(it) }
+                        query<_012_Vendeurs>().find().also { delete(it) }
                         query<_013_Acheteurs>().find().also { delete(it) }
                         query<_014_Produits>().find().also { delete(it) }
 
@@ -285,8 +285,8 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
 
         try {
             val periode = modelDatasSnapList.find { it.keyID == periodeKey } ?: return false
-            val vendeur = periode.vendeurs.find { it.keyID == vendeurKey } ?: return false
-            val existingAcheteur = vendeur.acheteurs.find { it.keyID == acheteur.keyID }
+            val vendeur = periode.child_012_Vendeurs.find { it.keyID == vendeurKey } ?: return false
+            val existingAcheteur = vendeur.child_013_Acheteurs.find { it.keyID == acheteur.keyID }
 
             return if (existingAcheteur != null) {
                 val changed = existingAcheteur.id != acheteur.id ||
@@ -302,7 +302,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
                     false
                 }
             } else {
-                vendeur.acheteurs.add(acheteur)
+                vendeur.child_013_Acheteurs.add(acheteur)
                 true
             }
         } finally {
@@ -320,8 +320,8 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
 
         try {
             val periode = modelDatasSnapList.find { it.keyID == periodeKey } ?: return false
-            val vendeur = periode.vendeurs.find { it.keyID == vendeurKey } ?: return false
-            val acheteur = vendeur.acheteurs.find { it.keyID == acheteurKey } ?: return false
+            val vendeur = periode.child_012_Vendeurs.find { it.keyID == vendeurKey } ?: return false
+            val acheteur = vendeur.child_013_Acheteurs.find { it.keyID == acheteurKey } ?: return false
             val existingProduit = acheteur.child_14Produits.find { it.keyID == produit.keyID }
 
             return if (existingProduit != null) {
@@ -384,7 +384,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
                     realm.write {
                         // Clear existing data
                         query<_01_VentsHistoriquesDataBase>().find().also { delete(it) }
-                        query<_012_Vendeur>().find().also { delete(it) }
+                        query<_012_Vendeurs>().find().also { delete(it) }
                         query<_013_Acheteurs>().find().also { delete(it) }
                         query<_014_Produits>().find().also { delete(it) }
 
@@ -405,26 +405,26 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
             keyID = source.keyID
             dateDebutDeCettePeriode = source.dateDebutDeCettePeriode
             tempDebutDeCettePeriode = source.tempDebutDeCettePeriode
-            vendeurs = realmListOf()
+            child_012_Vendeurs = realmListOf()
         }
 
-        source.vendeurs.forEach { sourceVendeur ->
+        source.child_012_Vendeurs.forEach { sourceVendeur ->
             val vendeurCopy = createVendeurCopy(sourceVendeur)
-            copy.vendeurs.add(vendeurCopy)
+            copy.child_012_Vendeurs.add(vendeurCopy)
         }
 
         return copy
     }
 
-    private fun createVendeurCopy(sourceVendeur: _012_Vendeur): _012_Vendeur {
-        val vendeurCopy = _012_Vendeur().apply {
+    private fun createVendeurCopy(sourceVendeur: _012_Vendeurs): _012_Vendeurs {
+        val vendeurCopy = _012_Vendeurs().apply {
             keyID = sourceVendeur.keyID
             id = sourceVendeur.id
             startDesignation = sourceVendeur.startDesignation
-            acheteurs = realmListOf()
+            child_013_Acheteurs = realmListOf()
         }
 
-        sourceVendeur.acheteurs.forEach { sourceAcheteur ->
+        sourceVendeur.child_013_Acheteurs.forEach { sourceAcheteur ->
             val acheteurCopy = _013_Acheteurs().apply {
                 keyID = sourceAcheteur.keyID
                 id = sourceAcheteur.id
@@ -443,7 +443,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
                 })
             }
 
-            vendeurCopy.acheteurs.add(acheteurCopy)
+            vendeurCopy.child_013_Acheteurs.add(acheteurCopy)
         }
 
         return vendeurCopy

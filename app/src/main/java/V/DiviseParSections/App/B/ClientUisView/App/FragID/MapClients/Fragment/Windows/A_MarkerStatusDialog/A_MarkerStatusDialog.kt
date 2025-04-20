@@ -1,6 +1,8 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._012_Vendeurs
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat
@@ -48,6 +50,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
+import org.mongodb.kbson.ObjectId
 import org.osmdroid.views.overlay.Marker
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -250,10 +253,49 @@ fun MarkerStatusDialog(
 
                             val repo_01_VentsHistoriquesDataBase =
                                 viewModel.repo_01_VentsHistoriquesDataBase
-                            val _01_VentsHistoriquesDataBase =
+                            val _01_VentsHistoriquesDataBaseList =
                                 repo_01_VentsHistoriquesDataBase .modelDatasSnapList
 
+                            val existingPeriod = _01_VentsHistoriquesDataBaseList.find { period ->
+                                period.child_012_Vendeurs.any { it.id == repositorysModel.activeIdDe_1_5_Vendeur }
+                            }
+                            val existingVendeur = _01_VentsHistoriquesDataBaseList.find { period ->
+                                period.child_012_Vendeurs.any { it.id == repositorysModel.activeIdDe_1_5_Vendeur }
+                            }
 
+
+
+                            if (existingVendeur != null) {
+                                val vendeurExists = existingVendeur.child_012_Vendeurs.any {
+                                    it.id.toString() == repositorysModel.activeIdDe_1_5_Vendeur.toString()
+                                }
+
+                                if (!vendeurExists) {
+                                    val newVendeur = _012_Vendeurs().apply {
+                                        id = ObjectId() // Generate new ObjectId
+                                        idVendeur = ObjectId.invoke(repositorysModel.activeIdDe_1_5_Vendeur.toString())
+                                        startDesignation = "Vendeur ${repositorysModel.activeIdDe_1_5_Vendeur}"
+                                        keyID = "${id}=${startDesignation.replace(" ", "_")}"
+                                    }
+                                    existingVendeur.child_012_Vendeurs.add(newVendeur)
+                                }
+                            } else {
+                                // Create a new period with this vendor
+                                val newPeriod = _01_VentsHistoriquesDataBase().apply {
+                                    val newVendeur = _012_Vendeurs().apply {
+                                        id = ObjectId() // Generate new ObjectId
+                                        idVendeur = ObjectId.invoke(repositorysModel.activeIdDe_1_5_Vendeur.toString())
+                                        startDesignation = "Vendeur ${repositorysModel.activeIdDe_1_5_Vendeur}"
+                                        keyID = "${id}=${startDesignation.replace(" ", "_")}"
+                                    }
+                                    child_012_Vendeurs.add(newVendeur)
+                                }
+
+                                _01_VentsHistoriquesDataBaseList.add(newPeriod)
+                            }
+
+// Notify that data has changed
+                            repo_01_VentsHistoriquesDataBase.notifierDataChange()
 
                             //----------------------------------------------------------------------------------------/
 

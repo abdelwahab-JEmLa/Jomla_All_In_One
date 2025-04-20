@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.ViewModel
 
-import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase
-import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_Repository
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_Repository
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._1_4_PeriodeVent
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur
@@ -23,7 +23,7 @@ data class VendeursUiState(
 // ViewModel to handle business logic
 open class VendeursViewModel(
     private val repository: _0_0_HeadOfRepositorys_Repository,
-    private val repo_01_VentsHistoriquesDataBase_Repository:_01_VentsHistoriquesDataBase_Repository
+    private val repo_01_VentsHistoriquesDataBase_Repository: _01_VentsHistoriquesDataBase_Repository
 ) : ViewModel() {
     val list_01_VentsHistoriquesDataBase = repo_01_VentsHistoriquesDataBase_Repository.modelDatasSnapList
     private val _uiState = MutableStateFlow(VendeursUiState())

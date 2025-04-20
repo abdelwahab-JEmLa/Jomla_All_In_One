@@ -1,6 +1,6 @@
-package Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Repository
 
-import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import kotlinx.coroutines.flow.StateFlow
 

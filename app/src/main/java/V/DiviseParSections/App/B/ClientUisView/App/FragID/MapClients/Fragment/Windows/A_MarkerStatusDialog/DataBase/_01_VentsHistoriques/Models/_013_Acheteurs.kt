@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models
 
 import com.google.firebase.database.DataSnapshot
 import io.realm.kotlin.ext.realmListOf
