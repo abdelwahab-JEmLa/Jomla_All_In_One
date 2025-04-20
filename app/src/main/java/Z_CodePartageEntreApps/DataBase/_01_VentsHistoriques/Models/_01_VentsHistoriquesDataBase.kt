@@ -8,7 +8,6 @@ import io.realm.kotlin.types.RealmList
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
 
-
 class _01_VentsHistoriquesDataBase : RealmObject {
     var id: Long = 0L
     var dateDebutDeCettePeriode: String = "yyyy_MM_dd"
