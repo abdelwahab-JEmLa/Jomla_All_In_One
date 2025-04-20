@@ -212,8 +212,8 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
                     }
 
                     validVendeurKey to mapOf(
-                        "id" to vendeur.idVendeur,
-                        "nom" to vendeur.nomVendeur,
+                        "idVendeur" to vendeur.idVendeur,
+                        "nomVendeur" to vendeur.nomVendeur,
                         "produits" to vendeur.produits.associate { produit ->
                             // Validate produit key follows format
                             val validProduitKey = if (produit.keyID.contains("<{Pr}->")) {
@@ -223,8 +223,8 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
                             }
 
                             validProduitKey to mapOf(
-                                "id" to produit.idProduit,
-                                "nom" to produit.nomProduit,
+                                "idProduit" to produit.idProduit,
+                                "nomProduit" to produit.nomProduit,
                                 "quantity" to produit.quantity
                             )
                         }
@@ -294,11 +294,11 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
                                     return@forEach
                                 }
 
+                                val idProduit = produitSnapshot.child("idProduit").getValue(Long::class.java) ?: 0L
+                                val nomProduit = produitSnapshot.child("nomProduit").getValue(String::class.java) ?: ""
                                 val quantity = produitSnapshot.child("quantity").getValue(Int::class.java) ?: 0
-                                val id = produitSnapshot.child("id").getValue(Long::class.java) ?: 0L
-                                val nom = produitSnapshot.child("nom").getValue(String::class.java) ?: ""
 
-                                val updated = updateProductInModel(periodeKey, vendeurKey, produitKey, id, nom, quantity)
+                                val updated = updateProductInModel(periodeKey, vendeurKey, produitKey, idProduit, nomProduit, quantity)
                                 if (updated) changesMade = true
                             }
                         }
