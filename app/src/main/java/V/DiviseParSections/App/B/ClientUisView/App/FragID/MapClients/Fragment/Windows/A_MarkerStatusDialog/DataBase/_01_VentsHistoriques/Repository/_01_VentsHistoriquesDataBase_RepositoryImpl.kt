@@ -7,6 +7,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Wi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase.Companion.convertToFirebaseFormat
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase.Companion.parsePeriodeFromSnapshot
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase.Companion.test_01_PeriodesVent
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.firebase.Firebase
@@ -450,9 +451,47 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
     }
 
     override fun notifierDataChange() {
-        scheduleSafeRealmUpdate()
-        notifyUIUpdate()
-        _dataChangedEvent.value = System.currentTimeMillis()
+        Log.d(TAG, "notifierDataChange: Starting Firebase update process")
+
+        try {
+            // Log current data state
+            Log.d(TAG, "notifierDataChange: Current data count: ${modelDatasSnapList.size}")
+            modelDatasSnapList.forEachIndexed { index, periode ->
+                Log.d(TAG, "Period[$index] - keyID: ${periode.keyID}, vendeurs: ${periode.child_012_Compts_Vendeurs.size}")
+                periode.child_012_Compts_Vendeurs.forEachIndexed { vendeurIndex, vendeur ->
+                    Log.d(TAG, "  Vendeur[$vendeurIndex] - keyID: ${vendeur.keyID}, acheteurs: ${vendeur.child_013_Acheteurs.size}")
+                    vendeur.child_013_Acheteurs.forEachIndexed { acheteurIndex, acheteur ->
+                        Log.d(TAG, "    Acheteur[$acheteurIndex] - keyID: ${acheteur.keyID}, produits: ${acheteur.child_14Produits.size}")
+                    }
+                }
+            }
+
+            // Update Firebase
+            val dataToUpdate = convertToFirebaseFormat(modelDatasSnapList)
+            Log.d(TAG, "notifierDataChange: Preparing to update Firebase with ${dataToUpdate.size} items")
+
+            // Remove listeners temporarily to avoid reentrant updates
+            removeFirebaseListener()
+
+            // Execute Firebase update
+            firebaseRef.setValue(dataToUpdate)
+                .addOnSuccessListener {
+                    Log.d(TAG, "notifierDataChange: Firebase update SUCCESSFUL")
+                    attachFirebaseListener() // Re-attach listeners
+                }
+                .addOnFailureListener { exception ->
+                    Log.e(TAG, "notifierDataChange: Firebase update FAILED", exception)
+                    attachFirebaseListener() // Re-attach listeners even on failure
+                }
+
+            // Also update Realm database
+            scheduleSafeRealmUpdate()
+            notifyUIUpdate()
+            _dataChangedEvent.value = System.currentTimeMillis()
+
+        } catch (e: Exception) {
+            Log.e(TAG, "notifierDataChange: Exception during update process", e)
+        }
     }
 
     fun cleanup() {

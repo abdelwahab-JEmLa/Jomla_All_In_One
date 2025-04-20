@@ -281,16 +281,19 @@ fun MarkerStatusDialog(
                             var acheteur = vendeur.child_013_Acheteurs.find {
                                 it.idClient == clientId
                             }
+                            // Replace the section around line 306 with:
                             if (acheteur == null) {
                                 acheteur = _013_Acheteurs().apply {
-                                    vid = System.currentTimeMillis() // Generate unique ID
+                                    vid = System.currentTimeMillis()
                                     idClient = clientId
                                 }
+                                Log.d("MarkerStatusDialog", "Adding new acheteur with id: ${acheteur.vid} for client: $clientId to vendeur: ${vendeur.vid}")
                                 vendeur.child_013_Acheteurs.add(acheteur)
+                                Log.d("MarkerStatusDialog", "After adding: vendeur has ${vendeur.child_013_Acheteurs.size} acheteurs")
                             }
 
-                            repo_01_VentsHistoriquesDataBase.notifierDataChange()    //<--
-                            //TODO(1): cree logs pk fire base ne s update pas
+                            Log.d("MarkerStatusDialog", "Notifying repo_01_VentsHistoriquesDataBase of data change")
+                            repo_01_VentsHistoriquesDataBase.notifierDataChange()
 
                             //----------------------------------------------------------------------------------------/
 
