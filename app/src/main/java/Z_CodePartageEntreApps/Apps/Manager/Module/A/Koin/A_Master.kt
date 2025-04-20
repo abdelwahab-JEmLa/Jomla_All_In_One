@@ -47,7 +47,6 @@ import android.content.Context
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
-// Common repositories that are used by both app types
 val commonRepositoriesModule = module {
     single { AppDatabase.DatabaseModule.getDatabase(get()) }
 
@@ -86,7 +85,6 @@ val commonRepositoriesModule = module {
     single<J_AppInstalleDonTelephoneRepository> { J_AppInstalleDonTelephoneRepositoryImpl() }
     single<SoldArticlesTabelleRepository> { SoldArticlesTabelleRepositoryImpl() }
     single<C_GrossistsDataBaseRepository> { C_GrossistsDataBaseRepositoryImpl() }
-
 }
 
 val viewModelModule = module {
