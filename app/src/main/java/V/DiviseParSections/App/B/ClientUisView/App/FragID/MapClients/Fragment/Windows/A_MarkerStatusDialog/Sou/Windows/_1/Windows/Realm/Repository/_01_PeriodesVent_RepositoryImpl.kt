@@ -26,6 +26,7 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
     private val TAG = "_01_PeriodesVent_Repo"
 
     override var modelDatasSnapList: SnapshotStateList<_01_PeriodesVent> = mutableStateListOf()
+
     var idComptDeCeTelephone: String = ""
 
     private val realm: Realm = createRealm()
