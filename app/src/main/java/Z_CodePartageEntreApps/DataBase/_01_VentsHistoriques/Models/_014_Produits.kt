@@ -10,7 +10,7 @@ class _014_Produits : RealmObject {
     var tempCreationString: String = "yyyy_mm_dd(HH:mm)"
 
     @PrimaryKey
-    var keyID: String = "${id}(${startDesignation})"
+    var keyID: String = "${id}=(${startDesignation})"
 
     var quantity: Int = 0
 

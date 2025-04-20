@@ -16,8 +16,10 @@ class _01_VentsHistoriquesDataBase : RealmObject {
     var dateDebutDeCettePeriode: String = getCurrentDataString()
     var tempDebutDeCettePeriode: String = getCurrentTimeString()
 
+    private var tempCreationString: String = "$dateDebutDeCettePeriode-<$tempDebutDeCettePeriode"
+
     @PrimaryKey
-    var keyID: String = "${id}=${dateDebutDeCettePeriode}(${tempDebutDeCettePeriode})"
+    var keyID: String = "${id}($tempCreationString)"
 
     var vendeurs: RealmList<_012_Vendeur> = realmListOf()
 

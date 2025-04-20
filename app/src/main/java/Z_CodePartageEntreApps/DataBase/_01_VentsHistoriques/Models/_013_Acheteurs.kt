@@ -12,7 +12,7 @@ class _013_Acheteurs : RealmObject {
     var tempCreationString: String = "yyyy_mm_dd(HH:mm)"
 
     @PrimaryKey
-    var keyID: String = "${id}_${startDesignation.replace(" ", "_")}"
+    var keyID: String = "${id}=${startDesignation.replace(" ", "_")}"
 
     var child_14Produits: RealmList<_014_Produits> = realmListOf()
 

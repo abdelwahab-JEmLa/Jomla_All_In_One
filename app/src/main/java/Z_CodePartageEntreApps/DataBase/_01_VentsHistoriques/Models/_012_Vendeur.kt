@@ -10,7 +10,7 @@ class _012_Vendeur : RealmObject {
     var startDesignation: String = ""
 
     @PrimaryKey
-    var keyID: String = "${id}_${startDesignation.replace(" ", "_")}"
+    var keyID: String = "${id}=${startDesignation.replace(" ", "_")}"
 
     var acheteurs: RealmList<_013_Acheteurs> = realmListOf()
 

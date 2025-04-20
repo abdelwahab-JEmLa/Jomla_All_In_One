@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.ViewModel
 
 import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase
+import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_Repository
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._1_4_PeriodeVent
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur
@@ -22,8 +23,8 @@ data class VendeursUiState(
 // ViewModel to handle business logic
 open class VendeursViewModel(
     private val repository: _0_0_HeadOfRepositorys_Repository,
+    val repo_01_VentsHistoriquesDataBase_Repository:_01_VentsHistoriquesDataBase_Repository
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(VendeursUiState())
     open val uiState: StateFlow<VendeursUiState> = _uiState.asStateFlow()
 
@@ -43,7 +44,6 @@ open class VendeursViewModel(
             }
         }
     }
-
 
     private fun loadData() {
         val vendeurs = vendeurRepository.modelDatasSnapList
@@ -73,6 +73,14 @@ open class VendeursViewModel(
             }
         }
     }
+    fun addNewPeriodeIn_repo_01_VentsHistoriquesDataBase_Repository() {
+
+        viewModelScope.launch {
+
+
+        }
+    }
+
 
     private fun update_1_5_ceComptVendeurStartAffichePeriod(id: Long): Unit {
         val activeIdDe_1_5_Vendeur = repository.repositorys_Model.activeIdDe_1_5_Vendeur
