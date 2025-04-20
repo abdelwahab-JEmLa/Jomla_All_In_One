@@ -1,11 +1,11 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Ui
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.VentsHistoriquesDisplayer.Ui
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._00_VentsHistoriquesDataBase
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._12_Vendeur
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._13_Acheteurs
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._14_Produits
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.ViewModel.PeriodeVenteViewModel
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.ViewModel.ViewMode
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.VentsHistoriquesDisplayer._01_VentsHistoriques.DataBase.Models._01_VentsHistoriquesDataBase
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.VentsHistoriquesDisplayer._01_VentsHistoriques.DataBase.Models._012_Vendeur
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.VentsHistoriquesDisplayer._01_VentsHistoriques.DataBase.Models._013_Acheteurs
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.VentsHistoriquesDisplayer._01_VentsHistoriques.DataBase.Models._014_Produits
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.VentsHistoriquesDisplayer.ViewModel.PeriodeVenteViewModel
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.VentsHistoriquesDisplayer.ViewModel.ViewMode
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -198,7 +198,7 @@ fun PeriodeVenteScreen(
 
 @Composable
 fun PeriodeListItem(
-    periode: _00_VentsHistoriquesDataBase,
+    periode: _01_VentsHistoriquesDataBase,
     onClick: () -> Unit
 ) {
     Card(
@@ -259,7 +259,7 @@ fun PeriodeListItem(
 
 @Composable
 fun PeriodeDetailScreen(
-    periode: _00_VentsHistoriquesDataBase,
+    periode: _01_VentsHistoriquesDataBase,
     onBack: () -> Unit
 ) {
     Column(
@@ -318,7 +318,7 @@ fun PeriodeDetailScreen(
 }
 
 @Composable
-fun VendeurItem(vendeur: _12_Vendeur) {
+fun VendeurItem(vendeur: _012_Vendeur) {
     var expanded by remember { mutableStateOf(false) }
 
     Card(
@@ -381,7 +381,7 @@ fun VendeurItem(vendeur: _12_Vendeur) {
 }
 
 @Composable
-fun AcheteurItem(acheteur: _13_Acheteurs) {
+fun AcheteurItem(acheteur: _013_Acheteurs) {
     var expanded by remember { mutableStateOf(false) }
 
     Surface(
@@ -453,7 +453,7 @@ fun AcheteurItem(acheteur: _13_Acheteurs) {
 }
 
 @Composable
-fun ProduitItem(produit: _14_Produits) {
+fun ProduitItem(produit: _014_Produits) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
