@@ -41,6 +41,7 @@ fun A_APP4FragID1_MainScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     VendeursContent(
+        viewModel=viewModel,
         uiState = uiState,
         onVendeurSelected = viewModel::setActiveVendeur,
         onPeriodeSelected = viewModel::setActivePeriode,
@@ -59,6 +60,7 @@ fun VendeursContent(
     onVendeurUpdate: (_1_5_Vendeur) -> Unit,
     modifier: Modifier = Modifier,
     onUpdateceComptVendeurInsertBonsAchatAuPeriodID: (Long) -> Unit,
+    viewModel: VendeursViewModel,
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -74,6 +76,7 @@ fun VendeursContent(
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
+                
                 item {
                     Text(
                         text = "Liste des Vendeurs",
@@ -123,10 +126,53 @@ fun VendeursContent(
                         onUpdateceComptVendeurInsertBonsAchatAuPeriodID = onUpdateceComptVendeurInsertBonsAchatAuPeriodID
                     )
                 }
+                item {
+                    AddPeriodeItem(
+                        onAddPeriode = {
+                            // Call a function in the ViewModel to add a new period
+                            viewModel.addNewPeriode()
+                        }
+                    )
+                }
             }
         }
     }
 }
+// In A_APP4FragID1_MainScreen.kt - Add this new composable function at the end of the file:
+
+@Composable
+fun AddPeriodeItem(
+    onAddPeriode: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onAddPeriode() }
+            .background(
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                shape = MaterialTheme.shapes.medium
+            )
+            .padding(16.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = "Ajouter une période",
+                fontSize = 18.sp,
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.weight(1f)
+            )
+
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = "Ajouter une période",
+                tint = MaterialTheme.colorScheme.primary
+            )
+        }
+    }
+}
+
 
 @Composable
 fun SectionDivider(
@@ -137,40 +183,6 @@ fun SectionDivider(
         modifier = Modifier.height(height.dp),
         color = color
     )
-}
-
-@Composable
-fun VendeursList(
-    vendeurs: List<_1_5_Vendeur>,
-    activeVendeurId: Long,
-    onVendeurSelected: (Long) -> Unit,
-    onVendeurUpdate: (_1_5_Vendeur) -> Unit,
-    uiState: VendeursUiState,
-) {
-    Text(
-        text = "Liste des Vendeurs",
-        style = MaterialTheme.typography.titleLarge
-    )
-    LazyColumn(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        item {
-            Text(
-                text = "Active _012_Vendeur ID: ${uiState.activeVendeurId}",
-                style = MaterialTheme.typography.titleMedium
-            )
-
-            SectionDivider()
-        }
-        items(vendeurs) { vendeur ->
-            VendeurItem(
-                vendeur = vendeur,
-                isActive = vendeur.vid == activeVendeurId,
-                onVendeurSelected = onVendeurSelected,
-                onVendeurUpdate = onVendeurUpdate
-            )
-        }
-    }
 }
 
 @Composable
@@ -247,27 +259,6 @@ fun VendeurItem(
             fontSize = 18.sp,
             style = MaterialTheme.typography.bodyMedium
         )
-    }
-}
-
-@Composable
-fun PeriodesList(
-    periodes: List<_1_4_PeriodeVent>,
-    activePeriodeId: Long,
-    onPeriodeSelected: (Long) -> Unit,
-    onUpdateceComptVendeurInsertBonsAchatAuPeriodID: (Long) -> Unit,
-) {
-    LazyColumn(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        items(periodes) { periode ->
-            PeriodeItem(
-                periode = periode,
-                isActive = periode.vid == activePeriodeId,
-                onPeriodeSelected = onPeriodeSelected,
-                onUpdateceComptVendeurInsertBonsAchatAuPeriodID
-            )
-        }
     }
 }
 

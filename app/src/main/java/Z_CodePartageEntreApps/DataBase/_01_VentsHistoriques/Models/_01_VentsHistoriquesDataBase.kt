@@ -7,18 +7,30 @@ import io.realm.kotlin.ext.realmListOf
 import io.realm.kotlin.types.RealmList
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 class _01_VentsHistoriquesDataBase : RealmObject {
     var id: Long = 0L
-    var dateDebutDeCettePeriode: String = "yyyy_MM_dd"
-    var tempDebutDeCettePeriode: String = "HH:mm"
+    var dateDebutDeCettePeriode: String = getCurrentDataString()
+    var tempDebutDeCettePeriode: String = getCurrentTimeString()
 
     @PrimaryKey
-    var keyID: String = "${id}_${dateDebutDeCettePeriode.replace(".", "_")}_${tempDebutDeCettePeriode.replace(":", "_")}"
+    var keyID: String = "${id}=${dateDebutDeCettePeriode}(${tempDebutDeCettePeriode})"
 
     var vendeurs: RealmList<_012_Vendeur> = realmListOf()
 
     companion object {
+
+        fun getCurrentDataString(): String = LocalDate.now().format(
+            DateTimeFormatter.ofPattern("yyyy_MM_dd")
+        )
+
+        fun getCurrentTimeString(): String = LocalTime.now().format(
+            DateTimeFormatter.ofPattern("HH:mm")
+        )
+
         // Enum to define database schema fields
         enum class NomsValeursModel {
             keyID,

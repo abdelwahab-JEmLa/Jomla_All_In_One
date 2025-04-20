@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.ViewModel
 
+import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._1_4_PeriodeVent
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur
@@ -43,6 +44,7 @@ open class VendeursViewModel(
         }
     }
 
+
     private fun loadData() {
         val vendeurs = vendeurRepository.modelDatasSnapList
         val periodes = periodeVentRepository.modelDatasSnapList
@@ -56,9 +58,26 @@ open class VendeursViewModel(
             activePeriodeId = activePeriodeId
         )
     }
+
+    fun addNewPeriode() {
+        viewModelScope.launch {
+            val newPeriode = _1_4_PeriodeVent(
+                vendeur_ParentVID = uiState.value.activeVendeurId,
+                startDateInString = _01_VentsHistoriquesDataBase.getCurrentDataString(),
+                heurDebutInString = _01_VentsHistoriquesDataBase.getCurrentTimeString()
+            )
+
+            periodeVentRepository.addDataAndReturneItVID(newPeriode) {
+                loadData()
+                setActivePeriode(it)
+            }
+        }
+    }
+
     private fun update_1_5_ceComptVendeurStartAffichePeriod(id: Long): Unit {
         val activeIdDe_1_5_Vendeur = repository.repositorys_Model.activeIdDe_1_5_Vendeur
-        val currentVendeur = vendeurRepository.modelDatasSnapList.find { it.vid == activeIdDe_1_5_Vendeur }
+        val currentVendeur =
+            vendeurRepository.modelDatasSnapList.find { it.vid == activeIdDe_1_5_Vendeur }
 
         // Update only if we found the vendor
         currentVendeur?.let { vendeur ->
@@ -66,8 +85,9 @@ open class VendeursViewModel(
             vendeurRepository.updateUnSeulData(updatedVendeur)
         }
     }
+
     fun update_1_5(data: _1_5_Vendeur): Unit {
-          repository.upsertUneDataEtReturnVID(data)
+        repository.upsertUneDataEtReturnVID(data)
     }
 
 
@@ -79,7 +99,8 @@ open class VendeursViewModel(
 
     fun onUpdateceComptVendeurInsertBonsAchatAuPeriodID(periodId: Long) {
         val activeIdDe_1_5_Vendeur = repository.repositorys_Model.activeIdDe_1_5_Vendeur
-        val currentVendeur = vendeurRepository.modelDatasSnapList.find { it.vid == activeIdDe_1_5_Vendeur }
+        val currentVendeur =
+            vendeurRepository.modelDatasSnapList.find { it.vid == activeIdDe_1_5_Vendeur }
 
         // Update only if we found the vendor
         currentVendeur?.let { vendeur ->
