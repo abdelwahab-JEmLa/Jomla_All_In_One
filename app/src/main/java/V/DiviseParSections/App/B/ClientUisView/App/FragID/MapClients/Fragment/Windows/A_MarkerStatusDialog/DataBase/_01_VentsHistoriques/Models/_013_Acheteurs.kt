@@ -8,6 +8,9 @@ import io.realm.kotlin.types.annotations.PrimaryKey
 
 class _013_Acheteurs : RealmObject {
     var id: Long = 0L
+
+    var idClient: Long = 0L
+
     var startDesignation: String = ""
     var tempCreationString: String = "yyyy_mm_dd(HH:mm)"
 

@@ -83,7 +83,7 @@ class VendeursActiveDonsCettePeriode {
 @Entity
 data class _02_VendeursActiveDonsCettePeriodeRoomSQlModel(
     @PrimaryKey
-    var keyID: String = "0->(_012_Vendeurs nom)",
+    var keyID: String = "0->(_012_ComptsVendeurs nom)",
     var parentkeyID: String = "2025_01_01->(00:00)",
     var startIndex: Int = 0,
     var nom: String = "",
@@ -105,7 +105,7 @@ class ProduitsVenduParLui {
 data class _03_ProduitsVenduParLuiRoomSQlModel(
     @PrimaryKey
     var keyID: String = "0->(_014_Produits 0)",
-    var parentkeyID: String = "0->(_012_Vendeurs 0)",
+    var parentkeyID: String = "0->(_012_ComptsVendeurs 0)",
     var id: Int = 0,
     var nom: String = "",
     var quantity: Int = 0,

@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.D.FraitProjet.App.FragID2.VentsHistoriquesDisplayer.Fragment.Ui
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._012_Vendeurs
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._012_ComptsVendeurs
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._013_Acheteurs
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._014_Produits
 import V.DiviseParSections.App.D.FraitProjet.App.FragID2.VentsHistoriquesDisplayer.Fragment.ViewModel.PeriodeVenteViewModel
@@ -241,13 +241,13 @@ fun PeriodeListItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "${periode.child_012_Vendeurs.size} vendeurs",
+                    text = "${periode.child_012_Compts_Vendeurs.size} vendeurs",
                     style = MaterialTheme.typography.bodyMedium
                 )
 
                 Spacer(modifier = Modifier.width(16.dp))
 
-                val totalAcheteurs = periode.child_012_Vendeurs.sumOf { it.child_013_Acheteurs.size }
+                val totalAcheteurs = periode.child_012_Compts_Vendeurs.sumOf { it.child_013_Acheteurs.size }
                 Text(
                     text = "$totalAcheteurs acheteurs",
                     style = MaterialTheme.typography.bodyMedium
@@ -302,7 +302,7 @@ fun PeriodeDetailScreen(
 
         // Vendeurs section
         Text(
-            text = "Vendeurs (${periode.child_012_Vendeurs.size})",
+            text = "Vendeurs (${periode.child_012_Compts_Vendeurs.size})",
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold
         )
@@ -310,7 +310,7 @@ fun PeriodeDetailScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         LazyColumn {
-            items(periode.child_012_Vendeurs) { vendeur ->
+            items(periode.child_012_Compts_Vendeurs) { vendeur ->
                 VendeurItem(vendeur = vendeur)
             }
         }
@@ -318,7 +318,7 @@ fun PeriodeDetailScreen(
 }
 
 @Composable
-fun VendeurItem(vendeur: _012_Vendeurs) {
+fun VendeurItem(vendeur: _012_ComptsVendeurs) {
     var expanded by remember { mutableStateOf(false) }
 
     Card(
@@ -342,7 +342,7 @@ fun VendeurItem(vendeur: _012_Vendeurs) {
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = "ID: ${vendeur.id}",
+                        text = "ID: ${vendeur.vid}",
                         style = MaterialTheme.typography.bodySmall
                     )
                 }

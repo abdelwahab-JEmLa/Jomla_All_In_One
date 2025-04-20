@@ -5,20 +5,21 @@ import io.realm.kotlin.types.RealmList
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
 
-class _012_Vendeurs : RealmObject {
-    var id: Long = 0L
-    var startDesignation: String = ""
+class _012_ComptsVendeurs : RealmObject {
+    var vid: Long = 0L
+    var idCompt: Long = 0L
+    var startDesignation: String = "_012_ComptsVendeurs $idCompt"
 
     @PrimaryKey
-    var keyID: String = "${id}=${startDesignation.replace(" ", "_")}"
+    var keyID: String = "${vid}=${startDesignation.replace(" ", "_")}"
 
     var child_013_Acheteurs: RealmList<_013_Acheteurs> = realmListOf()
 
     companion object{
-        fun createVendeur(id: Long, nom: String, vendeurKey: String): _012_Vendeurs {
-            return _012_Vendeurs().apply {
+        fun createVendeur(id: Long, nom: String, vendeurKey: String): _012_ComptsVendeurs {
+            return _012_ComptsVendeurs().apply {
                 keyID = vendeurKey
-                this.id = id
+                this.vid = id
                 startDesignation = nom
                 child_013_Acheteurs = realmListOf()
 
@@ -30,12 +31,12 @@ class _012_Vendeurs : RealmObject {
             }
         }
 
-        fun mapVendeurs(vendeurs: List<_012_Vendeurs>): Map<String, Any> {
+        fun mapVendeurs(vendeurs: List<_012_ComptsVendeurs>): Map<String, Any> {
             return vendeurs.associate { vendeur ->
                 val validVendeurKey = vendeur.keyID
 
                 validVendeurKey to mapOf(
-                    "idVendeur" to vendeur.id,
+                    "idVendeur" to vendeur.vid,
                     "nomVendeur" to vendeur.startDesignation,
                     "_013_Acheteurs" to _013_Acheteurs.mapDatas(vendeur.child_013_Acheteurs)
                 )

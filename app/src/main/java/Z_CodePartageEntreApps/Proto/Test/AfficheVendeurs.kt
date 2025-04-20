@@ -120,7 +120,7 @@ fun VendeursContent(
                     .padding(16.dp)
             ) {
                 Text(
-                    text = "Active _012_Vendeurs ID: ${uiState.activeVendeurId}",
+                    text = "Active _012_ComptsVendeurs ID: ${uiState.activeVendeurId}",
                     style = MaterialTheme.typography.titleMedium
                 )
 
@@ -205,7 +205,7 @@ fun VendeurItem(
     ) {
         if (isActive) {
             Text(
-                text = "Selected _012_Vendeurs",
+                text = "Selected _012_ComptsVendeurs",
                 color = MaterialTheme.colorScheme.primary,
                 style = MaterialTheme.typography.labelMedium
             )
@@ -284,8 +284,8 @@ private fun AffichePersonsPV() {
     // Create mock data for preview
     val mockUiState = VendeursUiState(
         vendeurs = listOf(
-            _1_5_Vendeur(vid = 1, nom = "_012_Vendeurs 1"),
-            _1_5_Vendeur(vid = 2, nom = "_012_Vendeurs 2")
+            _1_5_Vendeur(vid = 1, nom = "_012_ComptsVendeurs 1"),
+            _1_5_Vendeur(vid = 2, nom = "_012_ComptsVendeurs 2")
         ),
         periodes = listOf(
             _1_4_PeriodeVent(vid = 1, heurDebutInString = "10:00"),

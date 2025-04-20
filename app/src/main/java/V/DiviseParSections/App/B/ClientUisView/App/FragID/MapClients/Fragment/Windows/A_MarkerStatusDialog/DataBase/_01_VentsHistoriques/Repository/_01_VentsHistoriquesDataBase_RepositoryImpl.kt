@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Repository
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._012_Vendeurs
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._012_ComptsVendeurs
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._013_Acheteurs
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._014_Produits
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase
@@ -63,7 +63,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
         val config = RealmConfiguration.create(
             schema = setOf(
                 _01_VentsHistoriquesDataBase::class,
-                _012_Vendeurs::class,
+                _012_ComptsVendeurs::class,
                 _013_Acheteurs::class,
                 _014_Produits::class
             )
@@ -192,7 +192,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
                     realm.write {
                         // Clear existing data
                         query<_01_VentsHistoriquesDataBase>().find().also { delete(it) }
-                        query<_012_Vendeurs>().find().also { delete(it) }
+                        query<_012_ComptsVendeurs>().find().also { delete(it) }
                         query<_013_Acheteurs>().find().also { delete(it) }
                         query<_014_Produits>().find().also { delete(it) }
 
@@ -285,7 +285,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
 
         try {
             val periode = modelDatasSnapList.find { it.keyID == periodeKey } ?: return false
-            val vendeur = periode.child_012_Vendeurs.find { it.keyID == vendeurKey } ?: return false
+            val vendeur = periode.child_012_Compts_Vendeurs.find { it.keyID == vendeurKey } ?: return false
             val existingAcheteur = vendeur.child_013_Acheteurs.find { it.keyID == acheteur.keyID }
 
             return if (existingAcheteur != null) {
@@ -320,7 +320,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
 
         try {
             val periode = modelDatasSnapList.find { it.keyID == periodeKey } ?: return false
-            val vendeur = periode.child_012_Vendeurs.find { it.keyID == vendeurKey } ?: return false
+            val vendeur = periode.child_012_Compts_Vendeurs.find { it.keyID == vendeurKey } ?: return false
             val acheteur = vendeur.child_013_Acheteurs.find { it.keyID == acheteurKey } ?: return false
             val existingProduit = acheteur.child_14Produits.find { it.keyID == produit.keyID }
 
@@ -384,7 +384,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
                     realm.write {
                         // Clear existing data
                         query<_01_VentsHistoriquesDataBase>().find().also { delete(it) }
-                        query<_012_Vendeurs>().find().also { delete(it) }
+                        query<_012_ComptsVendeurs>().find().also { delete(it) }
                         query<_013_Acheteurs>().find().also { delete(it) }
                         query<_014_Produits>().find().also { delete(it) }
 
@@ -405,21 +405,21 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
             keyID = source.keyID
             dateDebutDeCettePeriode = source.dateDebutDeCettePeriode
             tempDebutDeCettePeriode = source.tempDebutDeCettePeriode
-            child_012_Vendeurs = realmListOf()
+            child_012_Compts_Vendeurs = realmListOf()
         }
 
-        source.child_012_Vendeurs.forEach { sourceVendeur ->
+        source.child_012_Compts_Vendeurs.forEach { sourceVendeur ->
             val vendeurCopy = createVendeurCopy(sourceVendeur)
-            copy.child_012_Vendeurs.add(vendeurCopy)
+            copy.child_012_Compts_Vendeurs.add(vendeurCopy)
         }
 
         return copy
     }
 
-    private fun createVendeurCopy(sourceVendeur: _012_Vendeurs): _012_Vendeurs {
-        val vendeurCopy = _012_Vendeurs().apply {
+    private fun createVendeurCopy(sourceVendeur: _012_ComptsVendeurs): _012_ComptsVendeurs {
+        val vendeurCopy = _012_ComptsVendeurs().apply {
             keyID = sourceVendeur.keyID
-            id = sourceVendeur.id
+            vid = sourceVendeur.vid
             startDesignation = sourceVendeur.startDesignation
             child_013_Acheteurs = realmListOf()
         }
