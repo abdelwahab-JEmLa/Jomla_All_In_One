@@ -1,8 +1,11 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Repository
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Repository._01_PeriodesVent.Companion.convertToFirebaseFormat
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Repository._01_PeriodesVent.Companion.parsePeriodeFromSnapshot
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Repository._01_PeriodesVent.Companion.test_01_PeriodesVent
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._13_Produit
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._12_Vendeur
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._01_PeriodesVent
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._01_PeriodesVent.Companion.convertToFirebaseFormat
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._01_PeriodesVent.Companion.parsePeriodeFromSnapshot
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Models._01_PeriodesVent.Companion.test_01_PeriodesVent
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.firebase.database.DataSnapshot
@@ -52,8 +55,8 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
         val config = RealmConfiguration.create(
             schema = setOf(
                 _01_PeriodesVent::class,
-                Vendeur::class,
-                Produit::class
+                _12_Vendeur::class,
+                _13_Produit::class
             )
         )
         return Realm.open(config)
@@ -132,8 +135,8 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
                     realm.write {
                         // Clear existing data
                         query<_01_PeriodesVent>().find().also { delete(it) }
-                        query<Vendeur>().find().also { delete(it) }
-                        query<Produit>().find().also { delete(it) }
+                        query<_12_Vendeur>().find().also { delete(it) }
+                        query<_13_Produit>().find().also { delete(it) }
 
                         // Save current data
                         modelDatasSnapList.forEach { periode ->
@@ -242,7 +245,7 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
                     val produitKey = produitSnapshot.key ?: return@forEach
                     if (!produitKey.contains("<{Pr}->")) return@forEach
 
-                    val produit = Produit.parseProduitFromSnapshot(produitSnapshot) ?: return@forEach
+                    val produit = _13_Produit.parseProduitFromSnapshot(produitSnapshot) ?: return@forEach
                     val updated = updateProductInModel(periodeKey, vendeurKey, produit)
                     if (updated) changesMade = true
                 }
@@ -255,7 +258,7 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
     private fun updateProductInModel(
         periodeKey: String,
         vendeurKey: String,
-        produit: Produit
+        produit: _13_Produit
     ): Boolean {
         if (modelUpdateInProgress.getAndSet(true)) return false
 
@@ -336,8 +339,8 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
                     realm.write {
                         // Clear existing data
                         query<_01_PeriodesVent>().find().also { delete(it) }
-                        query<Vendeur>().find().also { delete(it) }
-                        query<Produit>().find().also { delete(it) }
+                        query<_12_Vendeur>().find().also { delete(it) }
+                        query<_13_Produit>().find().also { delete(it) }
 
                         // Save current data
                         modelDatasSnapList.forEach { periode ->
@@ -367,8 +370,8 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
         return copy
     }
 
-    private fun createVendeurCopy(sourceVendeur: Vendeur): Vendeur {
-        val vendeurCopy = Vendeur().apply {
+    private fun createVendeurCopy(sourceVendeur: _12_Vendeur): _12_Vendeur {
+        val vendeurCopy = _12_Vendeur().apply {
             keyID = sourceVendeur.keyID
             idVendeur = sourceVendeur.idVendeur
             nomVendeur = sourceVendeur.nomVendeur
@@ -376,7 +379,7 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
         }
 
         sourceVendeur.produits.forEach { sourceProduit ->
-            vendeurCopy.produits.add(Produit().apply {
+            vendeurCopy.produits.add(_13_Produit().apply {
                 keyID = sourceProduit.keyID
                 idProduit = sourceProduit.idProduit
                 nomProduit = sourceProduit.nomProduit

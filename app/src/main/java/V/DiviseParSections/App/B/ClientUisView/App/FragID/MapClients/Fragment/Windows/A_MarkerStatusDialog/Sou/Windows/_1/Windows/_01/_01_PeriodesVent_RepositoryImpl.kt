@@ -103,85 +103,85 @@ class _01_PeriodesVent_RepositoryImpl(
 
                 // Create test data for vendeurs
                 val vendeur1 = _02_VendeursActiveDonsCettePeriodeRoomSQlModel(
-                    keyID = "1->(Vendeur Test 1)",
+                    keyID = "1->(_12_Vendeur Test 1)",
                     parentkeyID = "2023_04_17->(14:30)",
                     startIndex = 1,
-                    nom = "Vendeur Test 1",
+                    nom = "_12_Vendeur Test 1",
                     quantity = 8
                 )
 
                 val vendeur2 = _02_VendeursActiveDonsCettePeriodeRoomSQlModel(
-                    keyID = "2->(Vendeur Test 2)",
+                    keyID = "2->(_12_Vendeur Test 2)",
                     parentkeyID = "2023_04_17->(14:30)",
                     startIndex = 2,
-                    nom = "Vendeur Test 2",
+                    nom = "_12_Vendeur Test 2",
                     quantity = 2
                 )
 
                 val vendeur3 = _02_VendeursActiveDonsCettePeriodeRoomSQlModel(
-                    keyID = "1->(Vendeur Test 3)",
+                    keyID = "1->(_12_Vendeur Test 3)",
                     parentkeyID = "$currentDate->($currentTime)",
                     startIndex = 1,
-                    nom = "Vendeur Test 3",
+                    nom = "_12_Vendeur Test 3",
                     quantity = 5
                 )
 
                 // Add the same vendeur in another period to test related periods
                 val vendeur4 = _02_VendeursActiveDonsCettePeriodeRoomSQlModel(
-                    keyID = "1->(Vendeur Test 1)",
+                    keyID = "1->(_12_Vendeur Test 1)",
                     parentkeyID = "2023_04_17->(18:00)",
                     startIndex = 1,
-                    nom = "Vendeur Test 1",
+                    nom = "_12_Vendeur Test 1",
                     quantity = 7
                 )
 
                 // Create test data for produits
                 val produit1 = _03_ProduitsVenduParLuiRoomSQlModel(
-                    keyID = "1->(Produit Test 1)",
-                    parentkeyID = "1->(Vendeur Test 1)",
+                    keyID = "1->(_13_Produit Test 1)",
+                    parentkeyID = "1->(_12_Vendeur Test 1)",
                     id = 1,
-                    nom = "Produit Test 1",
+                    nom = "_13_Produit Test 1",
                     quantity = 5
                 )
 
                 val produit2 = _03_ProduitsVenduParLuiRoomSQlModel(
-                    keyID = "2->(Produit Test 2)",
-                    parentkeyID = "1->(Vendeur Test 1)",
+                    keyID = "2->(_13_Produit Test 2)",
+                    parentkeyID = "1->(_12_Vendeur Test 1)",
                     id = 2,
-                    nom = "Produit Test 2",
+                    nom = "_13_Produit Test 2",
                     quantity = 3
                 )
 
                 val produit3 = _03_ProduitsVenduParLuiRoomSQlModel(
-                    keyID = "1->(Produit Test 3)",
-                    parentkeyID = "2->(Vendeur Test 2)",
+                    keyID = "1->(_13_Produit Test 3)",
+                    parentkeyID = "2->(_12_Vendeur Test 2)",
                     id = 1,
-                    nom = "Produit Test 3",
+                    nom = "_13_Produit Test 3",
                     quantity = 2
                 )
 
                 val produit4 = _03_ProduitsVenduParLuiRoomSQlModel(
-                    keyID = "1->(Produit Test 4)",
-                    parentkeyID = "1->(Vendeur Test 3)",
+                    keyID = "1->(_13_Produit Test 4)",
+                    parentkeyID = "1->(_12_Vendeur Test 3)",
                     id = 1,
-                    nom = "Produit Test 4",
+                    nom = "_13_Produit Test 4",
                     quantity = 5
                 )
 
                 // Add products for vendeur4
                 val produit5 = _03_ProduitsVenduParLuiRoomSQlModel(
-                    keyID = "1->(Produit Test 1)",
-                    parentkeyID = "1->(Vendeur Test 1)",
+                    keyID = "1->(_13_Produit Test 1)",
+                    parentkeyID = "1->(_12_Vendeur Test 1)",
                     id = 1,
-                    nom = "Produit Test 1",
+                    nom = "_13_Produit Test 1",
                     quantity = 4
                 )
 
                 val produit6 = _03_ProduitsVenduParLuiRoomSQlModel(
-                    keyID = "3->(Produit Test 5)",
-                    parentkeyID = "1->(Vendeur Test 1)",
+                    keyID = "3->(_13_Produit Test 5)",
+                    parentkeyID = "1->(_12_Vendeur Test 1)",
                     id = 3,
-                    nom = "Produit Test 5",
+                    nom = "_13_Produit Test 5",
                     quantity = 3
                 )
 
