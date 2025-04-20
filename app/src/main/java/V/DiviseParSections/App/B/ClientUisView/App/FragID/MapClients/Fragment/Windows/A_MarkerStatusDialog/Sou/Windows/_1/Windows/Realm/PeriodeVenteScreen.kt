@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Repository.PeriodeVenteViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Repository.Produit
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Sou.Windows._1.Windows.Realm.Repository._01_PeriodesVent
 import androidx.compose.foundation.background
@@ -57,11 +56,8 @@ private const val TAG = "PeriodeVenteScreen"
 fun PeriodeVenteScreen(
     viewModel: PeriodeVenteViewModel = koinViewModel()
 ) {
+    // Collect the entire UI state at once
     val uiState by viewModel.uiState.collectAsState()
-    val selectedPeriode by viewModel.selectedPeriode.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
-    val searchQuery by viewModel.searchQuery.collectAsState()
-    val filteredPeriodes by viewModel.filteredPeriodes.collectAsState()
 
     // State for search bar visibility
     var isSearchVisible by remember { mutableStateOf(false) }
@@ -72,27 +68,27 @@ fun PeriodeVenteScreen(
                 title = {
                     if (isSearchVisible) {
                         SearchBar(
-                            query = searchQuery,
+                            query = uiState.searchQuery,
                             onQueryChange = { viewModel.updateSearchQuery(it) },
                             onClose = { isSearchVisible = false }
                         )
                     } else {
                         Text(
-                            text = if (selectedPeriode != null) "Détails de la période" else "Périodes de Vente",
+                            text = if (uiState.selectedPeriode != null) "Détails de la période" else "Périodes de Vente",
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
                     }
                 },
                 navigationIcon = {
-                    if (selectedPeriode != null) {
+                    if (uiState.selectedPeriode != null) {
                         IconButton(onClick = { viewModel.clearSelection() }) {
                             Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                         }
                     }
                 },
                 actions = {
-                    if (selectedPeriode == null) {
+                    if (uiState.selectedPeriode == null) {
                         // Only show search if not in details view
                         IconButton(onClick = { isSearchVisible = !isSearchVisible }) {
                             Icon(
@@ -114,18 +110,18 @@ fun PeriodeVenteScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            if (isLoading) {
+            if (uiState.isLoading) {
                 // Show loading indicator
                 CircularProgressIndicator(
                     modifier = Modifier.align(Alignment.Center)
                 )
-            } else if (selectedPeriode != null) {
+            } else if (uiState.selectedPeriode != null) {
                 // Show period details
-                PeriodeDetails(selectedPeriode!!)
+                PeriodeDetails(uiState.selectedPeriode!!)
             } else {
                 // Show list of periods
                 PeriodesList(
-                    periodes = filteredPeriodes,
+                    periodes = uiState.filteredPeriodes,
                     onPeriodeClick = { viewModel.selectPeriode(it) }
                 )
             }
