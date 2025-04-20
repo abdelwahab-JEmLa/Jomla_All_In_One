@@ -1,6 +1,9 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._012_ComptsVendeurs
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._013_Acheteurs
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat
@@ -182,6 +185,9 @@ fun MarkerStatusDialog(
                     }
                 }
 
+// This code block focuses on fixing the TODOs in the Mode Commande button handler
+// in MarkerStatusDialog.kt
+
                 StatusButton(
                     text = "Mode Commande",
                     icon = Icons.Default.ShoppingCart,
@@ -193,8 +199,6 @@ fun MarkerStatusDialog(
                     ),
                     onClick = {
                         coroutineScope.launch {
-
-
                             val repositorysModel =
                                 _0_0_HeadOfRepositorys_Repository.repositorys_Model
 
@@ -251,23 +255,40 @@ fun MarkerStatusDialog(
                             val repo_01_VentsHistoriquesDataBase =
                                 viewModel.repo_01_VentsHistoriquesDataBase
                             val _01_VentsHistoriquesDataBaseList =
-                                repo_01_VentsHistoriquesDataBase .modelDatasSnapList
+                                repo_01_VentsHistoriquesDataBase.modelDatasSnapList
 
-                            val existingPeriod = _01_VentsHistoriquesDataBaseList.find { period ->
-                                period.id == ceComptVendeurInsertBonsAchatAuPeriodID
-                            }     //<--
-                            //TODO(1): fait que si null add new
+                            var period = _01_VentsHistoriquesDataBaseList.find { it.vid == ceComptVendeurInsertBonsAchatAuPeriodID }
+                            if (period == null) {
+                                // Create new period and add it to the repository
+                                period = _01_VentsHistoriquesDataBase().apply {
+                                    vid = ceComptVendeurInsertBonsAchatAuPeriodID ?: 0L
+                                }
+                                _01_VentsHistoriquesDataBaseList.add(period)
+                            }
 
-                            val existingVendeur = existingPeriod.child_012_Compts_Vendeurs.find {
+                            var vendeur = period.child_012_Compts_Vendeurs.find {
                                 it.idCompt == repositorysModel.activeIdDe_1_5_Vendeur
-                            }     //<--
-                            //TODO(1): fait que si null add new
+                            }
+                            if (vendeur == null) {
+                                // Create new vendeur and add it to the period
+                                vendeur = _012_ComptsVendeurs().apply {
+                                    vid = repositorysModel.activeIdDe_1_5_Vendeur
+                                    idCompt = repositorysModel.activeIdDe_1_5_Vendeur
+                                }
+                                period.child_012_Compts_Vendeurs.add(vendeur)
+                            }
 
-                            val existingAcheteur =  existingVendeur
-                                .child_013_Acheteurs.find {
-                                it.idClient==   existingBonAchat.clientAcheteurID
-                            }      //<--
-                            //TODO(1): fait que si null add new
+                            var acheteur = vendeur.child_013_Acheteurs.find {
+                                it.idClient == clientId
+                            }
+                            if (acheteur == null) {
+                                // Create new acheteur and add it to the vendeur
+                                acheteur = _013_Acheteurs().apply {
+                                    id = System.currentTimeMillis() // Generate unique ID
+                                    idClient = clientId
+                                }
+                                vendeur.child_013_Acheteurs.add(acheteur)
+                            }
 
                             repo_01_VentsHistoriquesDataBase.notifierDataChange()
 
@@ -283,7 +304,6 @@ fun MarkerStatusDialog(
                         }
                     }
                 )
-
                 val CLIENT_ABSENT =
                     B_ClientDataBase.DernierEtatAAffiche.CLIENT_ABSENT
 

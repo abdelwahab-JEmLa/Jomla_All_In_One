@@ -79,14 +79,14 @@ open class VendeursViewModel(
         viewModelScope.launch {
             // Find the maximum ID in the existing list and add 1, or use 1 if the list is empty
             val maxId = if (list_01_VentsHistoriquesDataBase.isNotEmpty()) {
-                list_01_VentsHistoriquesDataBase.maxOf { it.id } + 1
+                list_01_VentsHistoriquesDataBase.maxOf { it.vid } + 1
             } else {
                 1L
             }
 
             list_01_VentsHistoriquesDataBase.add(
                 _01_VentsHistoriquesDataBase().apply {
-                    id = maxId
+                    vid = maxId
                 }
             )
             repo_01_VentsHistoriquesDataBase_Repository.notifierDataChange()

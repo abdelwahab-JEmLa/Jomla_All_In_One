@@ -12,14 +12,14 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 class _01_VentsHistoriquesDataBase : RealmObject {
-    var id: Long = 0L
+    var vid: Long = 0L
     var dateDebutDeCettePeriode: String = getCurrentDataString()
     var tempDebutDeCettePeriode: String = getCurrentTimeString()
 
-    private var tempCreationString: String = "$dateDebutDeCettePeriode-<$tempDebutDeCettePeriode"
+    var tempCreationString: String = "$dateDebutDeCettePeriode-<$tempDebutDeCettePeriode"
 
     @PrimaryKey
-    var keyID: String = "${id}($tempCreationString)"
+    var keyID: String = "${vid}($tempCreationString)"
 
     var child_012_Compts_Vendeurs: RealmList<_012_ComptsVendeurs> = realmListOf()
 
