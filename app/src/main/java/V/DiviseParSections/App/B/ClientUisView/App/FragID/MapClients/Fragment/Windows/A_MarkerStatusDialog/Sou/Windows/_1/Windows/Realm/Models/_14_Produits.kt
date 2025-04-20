@@ -6,11 +6,11 @@ import io.realm.kotlin.types.annotations.PrimaryKey
 
 class _14_Produits : RealmObject {
     var id: Long = 0L
-    var designation: String = ""
+    var startDesignation: String = ""
     var tempCreationString: String = "yyyy.mm.dd(HH:mm)"
 
     @PrimaryKey
-    var keyID: String = "parent.keyID-<{BA}->(designation[id])"
+    var keyID: String = "$startDesignation->$id"
 
     var quantity: Int = 0
 
@@ -23,16 +23,15 @@ class _14_Produits : RealmObject {
             quantity,
         }
         fun testData(
-            parentkeyID: String,
         ):List<_14_Produits>  {
             val data = mutableListOf<_14_Produits>()
 
             for (k in 1..5) {
                 data.add(_14_Produits().apply {
                     id = k.toLong()
-                    designation = "_14_Produits $k"
+                    startDesignation = "_14_Produits $k"
                     tempCreationString = "2025.04.20(12:00)"
-                    keyID = "$parentkeyID-<{BA}->($designation[$id])"
+                    keyID = "$startDesignation->$id"
                     quantity = k * 2
                 })
             }
@@ -43,7 +42,7 @@ class _14_Produits : RealmObject {
             return datas.associate { data ->
                 data.keyID to mapOf(
                     "id" to data.id,
-                    "designation" to data.designation,
+                    "designation" to data.startDesignation,
                 )
             }
         }
@@ -54,7 +53,7 @@ class _14_Produits : RealmObject {
             return _14_Produits().apply {
                 keyID = produitKey
                 id = snapshot.child("id").getValue(Long::class.java) ?: 0L
-                designation = snapshot.child("designation").getValue(String::class.java) ?: ""
+                startDesignation = snapshot.child("designation").getValue(String::class.java) ?: ""
                 quantity = snapshot.child(nomsValeursModel.quantity.name).getValue(Int::class.java) ?: 0
             }
         }

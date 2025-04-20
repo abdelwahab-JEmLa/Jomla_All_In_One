@@ -22,7 +22,7 @@ class _12_Vendeur : RealmObject {
                 acheteurs = realmListOf()
 
                 // Create and add acheteurs
-                val acheteursList = _13_Acheteurs.testData(vendeurKey)
+                val acheteursList = _13_Acheteurs.testData()
                 acheteursList.forEach { acheteur ->
                     acheteurs.add(acheteur)
                 }

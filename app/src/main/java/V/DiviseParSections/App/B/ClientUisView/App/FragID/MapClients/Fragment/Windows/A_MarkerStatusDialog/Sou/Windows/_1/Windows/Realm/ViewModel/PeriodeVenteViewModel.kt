@@ -166,10 +166,10 @@ class PeriodeVenteViewModel(
                         vendeur.nomVendeur.lowercase().contains(query) ||
                                 // Search in products
                                 vendeur.acheteurs.any { acheteur ->
-                                    acheteur.designation.lowercase().contains(query) ||
+                                    acheteur.startDesignation.lowercase().contains(query) ||
                                             // Search in products
                                             acheteur.child_14Produits.any { produit ->
-                                                produit.designation.lowercase().contains(query)
+                                                produit.startDesignation.lowercase().contains(query)
                                             }
                                 }
                     }

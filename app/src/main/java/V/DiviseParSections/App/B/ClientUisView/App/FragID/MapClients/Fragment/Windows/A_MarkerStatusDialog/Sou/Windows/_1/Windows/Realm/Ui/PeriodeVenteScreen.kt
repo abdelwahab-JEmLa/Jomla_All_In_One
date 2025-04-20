@@ -272,7 +272,7 @@ fun PeriodeDetailView(
                             ) {
                                 Column(modifier = Modifier.padding(8.dp)) {
                                     Text(
-                                        text = "${acheteurIndex + 1}. ${acheteur.designation}",
+                                        text = "${acheteurIndex + 1}. ${acheteur.startDesignation}",
                                         style = MaterialTheme.typography.bodyMedium
                                     )
 
@@ -293,7 +293,7 @@ fun PeriodeDetailView(
                                                 horizontalArrangement = Arrangement.SpaceBetween
                                             ) {
                                                 Text(
-                                                    text = produit.designation,
+                                                    text = produit.startDesignation,
                                                     style = MaterialTheme.typography.bodySmall,
                                                     modifier = Modifier.weight(1f)
                                                 )

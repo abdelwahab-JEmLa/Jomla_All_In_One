@@ -8,29 +8,29 @@ import io.realm.kotlin.types.annotations.PrimaryKey
 
 class _13_Acheteurs : RealmObject {
     var id: Long = 0L
-    var designation: String = ""
+    var startDesignation: String = ""
     var tempCreationString: String = "yyyy.mm.dd(HH:mm)"
 
     @PrimaryKey
-    var keyID: String = "parent.keyID-<{BA}->(designation[id])"
+    var keyID: String = "$startDesignation->$id"
 
     var child_14Produits: RealmList<_14_Produits> = realmListOf()
 
     companion object {
-        fun testData(parentkeyID: String): List<_13_Acheteurs> {
+        fun testData(): List<_13_Acheteurs> {
             val data = mutableListOf<_13_Acheteurs>()
 
             for (k in 1..5) {
                 val acheteur = _13_Acheteurs().apply {
                     id = k.toLong()
-                    designation = "_13_Acheteurs $k"
+                    startDesignation = "_13_Acheteurs $k"
                     tempCreationString = "2025.04.20(12:00)"
-                    keyID = "$parentkeyID-<{BA}->($designation[$id])"
+                    keyID = "$startDesignation->$id"
                     child_14Produits = realmListOf()
                 }
 
                 // Create and add products
-                val produits = _14_Produits.testData(acheteur.keyID)
+                val produits = _14_Produits.testData()
                 produits.forEach { produit ->
                     acheteur.child_14Produits.add(produit)
                 }
@@ -45,7 +45,7 @@ class _13_Acheteurs : RealmObject {
             return datas.associate { data ->
                 data.keyID to mapOf(
                     NomsValeursModel.id.name to data.id,
-                    NomsValeursModel.designation.name to data.designation,
+                    NomsValeursModel.designation.name to data.startDesignation,
                     NomsValeursModel.tempCreationString.name to data.tempCreationString,
                     NomsValeursModel.child_15_Produits.name to _14_Produits.mapDatas(data.child_14Produits)
                 )
@@ -58,7 +58,7 @@ class _13_Acheteurs : RealmObject {
             val acheteur = _13_Acheteurs().apply {
                 keyID = acheteurKey
                 id = snapshot.child(NomsValeursModel.id.name).getValue(Long::class.java) ?: 0L
-                designation = snapshot.child(NomsValeursModel.designation.name).getValue(String::class.java) ?: ""
+                startDesignation = snapshot.child(NomsValeursModel.designation.name).getValue(String::class.java) ?: ""
                 tempCreationString = snapshot.child(NomsValeursModel.tempCreationString.name).getValue(String::class.java) ?: "yyyy.mm.dd(HH:mm)"
                 child_14Produits = realmListOf()
             }

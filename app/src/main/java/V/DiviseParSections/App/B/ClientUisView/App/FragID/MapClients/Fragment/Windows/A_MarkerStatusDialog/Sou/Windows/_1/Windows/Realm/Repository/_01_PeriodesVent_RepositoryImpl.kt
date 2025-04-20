@@ -346,12 +346,12 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
 
             return if (existingAcheteur != null) {
                 val changed = existingAcheteur.id != acheteur.id ||
-                        existingAcheteur.designation != acheteur.designation ||
+                        existingAcheteur.startDesignation != acheteur.startDesignation ||
                         existingAcheteur.tempCreationString != acheteur.tempCreationString
 
                 if (changed) {
                     existingAcheteur.id = acheteur.id
-                    existingAcheteur.designation = acheteur.designation
+                    existingAcheteur.startDesignation = acheteur.startDesignation
                     existingAcheteur.tempCreationString = acheteur.tempCreationString
                     true
                 } else {
@@ -382,12 +382,12 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
 
             return if (existingProduit != null) {
                 val changed = existingProduit.id != produit.id ||
-                        existingProduit.designation != produit.designation ||
+                        existingProduit.startDesignation != produit.startDesignation ||
                         existingProduit.quantity != produit.quantity
 
                 if (changed) {
                     existingProduit.id = produit.id
-                    existingProduit.designation = produit.designation
+                    existingProduit.startDesignation = produit.startDesignation
                     existingProduit.quantity = produit.quantity
                     true
                 } else {
@@ -485,7 +485,7 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
             val acheteurCopy = _13_Acheteurs().apply {
                 keyID = sourceAcheteur.keyID
                 id = sourceAcheteur.id
-                designation = sourceAcheteur.designation
+                startDesignation = sourceAcheteur.startDesignation
                 tempCreationString = sourceAcheteur.tempCreationString
                 child_14Produits = realmListOf()
             }
@@ -494,7 +494,7 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
                 acheteurCopy.child_14Produits.add(_14_Produits().apply {
                     keyID = sourceProduit.keyID
                     id = sourceProduit.id
-                    designation = sourceProduit.designation
+                    startDesignation = sourceProduit.startDesignation
                     tempCreationString = sourceProduit.tempCreationString
                     quantity = sourceProduit.quantity
                 })
