@@ -222,7 +222,7 @@ fun PeriodeCard(
             periode.vendeurs.take(2).forEach { vendeur ->
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "• ${vendeur.nom} (${vendeur.produits.size} produits)",
+                    text = "• ${vendeur.nomVendeur} (${vendeur.produits.size} produits)",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -317,7 +317,7 @@ fun VendeurCard(vendeur: V.DiviseParSections.App.B.ClientUisView.App.FragID.MapC
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = vendeur.nom,
+                    text = vendeur.nomVendeur,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -372,7 +372,7 @@ fun ProductRow(produit: Produit) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = produit.nom,
+            text = produit.nomProduit,
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.weight(2f)
         )

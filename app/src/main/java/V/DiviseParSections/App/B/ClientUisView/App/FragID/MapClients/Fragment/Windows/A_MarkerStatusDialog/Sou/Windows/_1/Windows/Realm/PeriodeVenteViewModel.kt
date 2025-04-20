@@ -133,10 +133,10 @@ open class PeriodeVenteViewModel(
                     periode.tempDebutDeCettePeriode.lowercase().contains(query) ||
                     // Search in vendors
                     periode.vendeurs.any { vendeur ->
-                        vendeur.nom.lowercase().contains(query) ||
+                        vendeur.nomVendeur.lowercase().contains(query) ||
                                 // Search in products
                                 vendeur.produits.any { produit ->
-                                    produit.nom.lowercase().contains(query)
+                                    produit.nomProduit.lowercase().contains(query)
                                 }
                     }
         }

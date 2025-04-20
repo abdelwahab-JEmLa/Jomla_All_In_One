@@ -23,7 +23,7 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
     private val TAG = "_01_PeriodesVent_Repo"
 
     override var modelDatasSnapList: SnapshotStateList<_01_PeriodesVent> = mutableStateListOf()
-    var idComptDeCeTelephone: String = "2025_04_19->11:00->1(Vendeur 1)"
+    var idComptDeCeTelephone: String = ""
 
     private var realm: Realm = Realm.open(
         RealmConfiguration.create(
@@ -80,7 +80,7 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
                 val date = "2025_04_${18 + i}"
                 val time = "${10 + i}:00"
 
-                val periodeKey = "$date->$time"
+                val periodeKey = "{PV}->$date=$time"
                 val periode = _01_PeriodesVent().apply {
                     keyID = periodeKey
                     dateDebutDeCettePeriode = date
@@ -91,24 +91,24 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
                 for (j in 1..2) {
                     val vendeurId = j.toLong()
                     val vendeurNom = "Vendeur $j"
-                    val vendeurKey = "${periodeKey}->${vendeurId}($vendeurNom)"
+                    val vendeurKey = "$periodeKey-<{Ve}->($vendeurId=$vendeurNom)"
 
                     val vendeur = Vendeur().apply {
                         keyID = vendeurKey
-                        id = vendeurId
-                        nom = vendeurNom
+                        idVendeur = vendeurId
+                        nomVendeur = vendeurNom
                         produits = realmListOf()
                     }
 
                     for (k in 1..5) {
                         val produitId = k.toLong()
                         val produitNom = "Produit $k"
-                        val produitKey = "${vendeurKey}->${produitId}($produitNom)"
+                        val produitKey = "$vendeurKey-<{Pr}->($produitId=$produitNom)"
 
                         val produit = Produit().apply {
                             keyID = produitKey
-                            id = produitId
-                            nom = produitNom
+                            idProduit = produitId
+                            nomProduit = produitNom
                             quantity = (k * 5)
                         }
 
@@ -193,17 +193,38 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
 
     private fun convertToFirebaseFormat(periodes: List<_01_PeriodesVent>): Map<String, Any> {
         return periodes.associate { periode ->
-            periode.keyID to mapOf(
+            // Make sure we're using the proper key format
+            val validPeriodeKey = if (periode.keyID.startsWith("{PV}->")) {
+                periode.keyID
+            } else {
+                "{PV}->${periode.dateDebutDeCettePeriode}=${periode.tempDebutDeCettePeriode}"
+            }
+
+            validPeriodeKey to mapOf(
                 "dateDebutDeCettePeriode" to periode.dateDebutDeCettePeriode,
                 "tempDebutDeCettePeriode" to periode.tempDebutDeCettePeriode,
                 "vendeurs" to periode.vendeurs.associate { vendeur ->
-                    vendeur.keyID to mapOf(
-                        "id" to vendeur.id,
-                        "nom" to vendeur.nom,
+                    // Validate vendeur key follows format
+                    val validVendeurKey = if (vendeur.keyID.contains("<{Ve}->")) {
+                        vendeur.keyID
+                    } else {
+                        "$validPeriodeKey-<{Ve}->(${vendeur.idVendeur}=${vendeur.nomVendeur})"
+                    }
+
+                    validVendeurKey to mapOf(
+                        "id" to vendeur.idVendeur,
+                        "nom" to vendeur.nomVendeur,
                         "produits" to vendeur.produits.associate { produit ->
-                            produit.keyID to mapOf(
-                                "id" to produit.id,
-                                "nom" to produit.nom,
+                            // Validate produit key follows format
+                            val validProduitKey = if (produit.keyID.contains("<{Pr}->")) {
+                                produit.keyID
+                            } else {
+                                "$validVendeurKey-<{Pr}->(${produit.idProduit}=${produit.nomProduit})"
+                            }
+
+                            validProduitKey to mapOf(
+                                "id" to produit.idProduit,
+                                "nom" to produit.nomProduit,
                                 "quantity" to produit.quantity
                             )
                         }
@@ -212,7 +233,6 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
             )
         }
     }
-
     private fun loadFromFirebase() {
         removeFirebaseListener()
         attachFirebaseListener()
@@ -253,11 +273,27 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
                     snapshot.children.forEach { periodeSnapshot ->
                         val periodeKey = periodeSnapshot.key ?: return@forEach
 
+                        // Verify the periode key format matches our schema
+                        if (!periodeKey.startsWith("{PV}->")) {
+                            return@forEach
+                        }
+
                         periodeSnapshot.child("vendeurs").children.forEach { vendeurSnapshot ->
                             val vendeurKey = vendeurSnapshot.key ?: return@forEach
 
+                            // Verify the vendeur key format matches our schema
+                            if (!vendeurKey.contains("<{Ve}->")) {
+                                return@forEach
+                            }
+
                             vendeurSnapshot.child("produits").children.forEach { produitSnapshot ->
                                 val produitKey = produitSnapshot.key ?: return@forEach
+
+                                // Verify the produit key format matches our schema
+                                if (!produitKey.contains("<{Pr}->")) {
+                                    return@forEach
+                                }
+
                                 val quantity = produitSnapshot.child("quantity").getValue(Int::class.java) ?: 0
                                 val id = produitSnapshot.child("id").getValue(Long::class.java) ?: 0L
                                 val nom = produitSnapshot.child("nom").getValue(String::class.java) ?: ""
@@ -274,19 +310,21 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
                         _dataChangedEvent.value = System.currentTimeMillis()
                     }
                 } catch (e: Exception) {
+                    // Consider logging the exception for debugging
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
+                // Consider logging the error for debugging
             }
         }
 
         try {
             firebaseRef.addValueEventListener(productChangeListener!!)
         } catch (e: Exception) {
+            // Consider logging the exception for debugging
         }
     }
-
     private fun scheduleSafeRealmUpdate() {
         if (pendingRealmUpdate.compareAndSet(false, true)) {
             coroutineScope.launch {
@@ -327,21 +365,21 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
 
             if (produit != null) {
                 val changed = produit.quantity != quantity ||
-                        produit.id != id ||
-                        produit.nom != nom
+                        produit.idProduit != id ||
+                        produit.nomProduit != nom
 
                 if (changed) {
                     produit.quantity = quantity
-                    produit.id = id
-                    produit.nom = nom
+                    produit.idProduit = id
+                    produit.nomProduit = nom
                     return true
                 }
                 return false
             } else {
                 vendeur.produits.add(Produit().apply {
                     keyID = produitKey
-                    this.id = id
-                    this.nom = nom
+                    this.idProduit = id
+                    this.nomProduit = nom
                     this.quantity = quantity
                 })
                 return true
@@ -392,8 +430,8 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
 
                 val vendeur = Vendeur().apply {
                     keyID = vendeurKey
-                    id = vendeurId
-                    nom = vendeurNom
+                    idVendeur = vendeurId
+                    nomVendeur = vendeurNom
                     produits = realmListOf()
                 }
 
@@ -405,8 +443,8 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
 
                     vendeur.produits.add(Produit().apply {
                         keyID = produitKey
-                        id = produitId
-                        nom = produitNom
+                        idProduit = produitId
+                        nomProduit = produitNom
                         this.quantity = quantity
                     })
                 }
@@ -470,16 +508,16 @@ class _01_PeriodesVent_RepositoryImpl : _01_PeriodesVent_Repository {
         source.vendeurs.forEach { sourceVendeur ->
             val vendeurCopy = Vendeur().apply {
                 keyID = sourceVendeur.keyID
-                id = sourceVendeur.id
-                nom = sourceVendeur.nom
+                idVendeur = sourceVendeur.idVendeur
+                nomVendeur = sourceVendeur.nomVendeur
                 produits = realmListOf()
             }
 
             sourceVendeur.produits.forEach { sourceProduit ->
                 val produitCopy = Produit().apply {
                     keyID = sourceProduit.keyID
-                    id = sourceProduit.id
-                    nom = sourceProduit.nom
+                    idProduit = sourceProduit.idProduit
+                    nomProduit = sourceProduit.nomProduit
                     quantity = sourceProduit.quantity
                 }
                 vendeurCopy.produits.add(produitCopy)
