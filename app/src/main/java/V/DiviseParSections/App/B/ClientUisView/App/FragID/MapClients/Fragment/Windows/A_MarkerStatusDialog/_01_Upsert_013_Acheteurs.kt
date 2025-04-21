@@ -67,14 +67,18 @@ fun _01_Upsert_013_Acheteurs(
         // Create new acheteur and add it to the vendeur
         acheteur = _013_Acheteurs().apply {
             idClient = clientId
-            nomClient= nom
+            nomClient = nom
             startDesignation = "client $idClient"
             tempDateCreationStr = _01_VentsHistoriquesDataBase.getCurrentDataTimeString()
             fireBaseKeyID = parse_fireBaseKeyID(idClient)
-            etate = clientEtate  // Now it's clear we're assigning the parameter to the property
+            etate = clientEtate
             child_14Produits = realmListOf()
         }
         vendeur.child_013_Acheteurs.add(acheteur)
+    } else {
+        acheteur.tempDateCreationStr = _01_VentsHistoriquesDataBase.getCurrentDataTimeString()
+        acheteur.etate = clientEtate
+        acheteur.nomClient = nom  // Also update the name to ensure it's current
     }
 
     // Save changes to database

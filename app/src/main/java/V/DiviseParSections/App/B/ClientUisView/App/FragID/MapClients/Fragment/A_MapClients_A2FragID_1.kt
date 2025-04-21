@@ -169,7 +169,7 @@ private fun MapContent(
         val clientsToShow = when (currentFilterMode) {
             ViewModel_MapClients_App2FragID1.VisibleClientsNow.showNonAbsentClientsOnly -> {
                 clientDataBaseSnapList.filter {
-                    it.actuelleEtat != B_ClientDataBase.DernierEtatAAffiche.CLIENT_ABSENT
+                    it.actuelleEtat != B_ClientDataBase.DernierEtatAAffiche.ACHETEUR_NON_DISPO
                 }
             }
             ViewModel_MapClients_App2FragID1.VisibleClientsNow.affichePourCollecteurCommendes -> {
@@ -180,7 +180,7 @@ private fun MapContent(
                             || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.FERME
                             || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.A_EVITE
                             || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.AVEC_MARCHANDISE
-                            || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.CLIENT_ABSENT
+                            || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.ACHETEUR_NON_DISPO
                 }
             }
             ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 -> {
@@ -229,7 +229,7 @@ private fun MapContent(
                             || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.FERME
                             || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.A_EVITE
                             || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.AVEC_MARCHANDISE
-                            || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.CLIENT_ABSENT
+                            || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.ACHETEUR_NON_DISPO
                 }
             }
             else -> {

@@ -270,16 +270,16 @@ fun MarkerStatusDialog(
                 )
 
 
-                val CLIENT_ABSENT =
-                    B_ClientDataBase.DernierEtatAAffiche.CLIENT_ABSENT
+                val ACHETEUR_NON_DISPO =
+                    B_ClientDataBase.DernierEtatAAffiche.ACHETEUR_NON_DISPO
 
                 StatusButton(
-                    text = CLIENT_ABSENT.nomArabe,
+                    text = ACHETEUR_NON_DISPO.nomArabe,
                     icon = Icons.Default.Person,
                     color = Color(
                         ContextCompat.getColor(
                             context,
-                            CLIENT_ABSENT.color
+                            ACHETEUR_NON_DISPO.color
                         )
                     ),
                     onClick = {
@@ -288,7 +288,7 @@ fun MarkerStatusDialog(
                                 "MarkerStatusDialog",
                                 "Setting client ${selectedMarker?.id} to state: ACHETEUR_NON_DISPO"
                             )
-                            relatedClients?.actuelleEtat = CLIENT_ABSENT
+                            relatedClients?.actuelleEtat = ACHETEUR_NON_DISPO
                             viewModel.updateData(relatedClients!!)
                             onDismiss()
 
@@ -369,6 +369,7 @@ fun MarkerStatusDialog(
                         //----------------------------------------------------------------------------------------/
                     }
                 )
+
                 if (ceTelephoneEstDeAbdelwahab) {
                     Spacer(modifier = Modifier.height(16.dp))
 

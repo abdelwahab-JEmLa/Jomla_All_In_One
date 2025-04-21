@@ -218,7 +218,7 @@ class ViewModel_BProto_ClientsDataBase(
             Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.DernierEtatAAffiche.CIBLE_POUR_2 ->
                 _3_ClientsDataBase.DernierEtatAAffiche.CIBLE_POUR_2
 
-            Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.DernierEtatAAffiche.CLIENT_ABSENT ->
+            Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.DernierEtatAAffiche.ACHETEUR_NON_DISPO ->
                 _3_ClientsDataBase.DernierEtatAAffiche.CLIENT_ABSENT
 
             Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.DernierEtatAAffiche.AVEC_MARCHANDISE ->
@@ -258,7 +258,7 @@ class ViewModel_BProto_ClientsDataBase(
                 Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.DernierEtatAAffiche.CIBLE_POUR_2
 
             B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.CLIENT_ABSENT ->
-                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.DernierEtatAAffiche.CLIENT_ABSENT
+                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.DernierEtatAAffiche.ACHETEUR_NON_DISPO
 
             B_ClientsDataBase.GpsLocation.DernierEtatAAffiche.AVEC_MARCHANDISE ->
                 Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.DernierEtatAAffiche.AVEC_MARCHANDISE
