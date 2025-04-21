@@ -22,6 +22,9 @@ class _01_VentsHistoriquesDataBase : RealmObject {
 
     var fireBaseKeyID: String = "${idPeriodDonAncienDataBase}-($tempCreationStr)"
 
+    // Section Etates Mutable
+
+
     var child_012_Compts_Vendeurs: RealmList<_012_ComptsVendeurs> = realmListOf()
 
     companion object {

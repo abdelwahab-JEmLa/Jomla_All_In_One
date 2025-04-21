@@ -75,7 +75,7 @@ fun A_MainScreen_APP2_ID_2(
     val formatter = NumberFormat.getCurrencyInstance(Locale.FRANCE)
     val formattedTotalPrice = formatter.format(totalPrice).replace("€", "دج")
 
-    // Check if the BonAchat is in ON_MODE_COMMEND_ACTUELLEMENT state
+    // Check if the BonAchat is in COMMANDE_LENCE state
     val isOrderMode =
         relativeBonAchate?.etateActuellementEst == _1_3_BonAchat.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
 
@@ -89,7 +89,7 @@ fun A_MainScreen_APP2_ID_2(
             var showOrderSuccess by remember { mutableStateOf(false) }
             val scope = rememberCoroutineScope()
 
-            // Only show the order form if in ON_MODE_COMMEND_ACTUELLEMENT state
+            // Only show the order form if in COMMANDE_LENCE state
             if (isOrderMode) {
                 BonAchatInfos(
                     relativeBonAchate?.clientAcheteurID,

@@ -288,12 +288,23 @@ private fun MapContent(
                         // Get the day name of last purchase if needed
                         title = if (viewModel.afficheLesJoursAuNoms) {
                             // Lookup date of last purchase from historical data
-                            val lastPurchaseDay = findLastPurchaseDayForClient(
+                            val lastPurchaseInfo = findLastPurchaseInfoForClient(
                                 viewModel.repo_01_VentsHistoriquesDataBase.modelDatasSnapList,
                                 client.id
                             )
-                            if (lastPurchaseDay.isNotEmpty()) {
-                                "$lastPurchaseDay\n${client.nom}"
+
+                            if (lastPurchaseInfo.dayName.isNotEmpty()) {
+                                // Get the client's state in Arabic
+                                val clientStateArabic = getClientStateInArabic(
+                                    client.id,
+                                    viewModel.repo_01_VentsHistoriquesDataBase.modelDatasSnapList
+                                )
+
+                                // Format the display with day, time and client state
+                                "${lastPurchaseInfo.dayName} (${lastPurchaseInfo.timeStr})" +
+                                        "\n$clientStateArabic"     +
+                                        "\n${client.nom}"
+
                             } else {
                                 client.nom
                             }

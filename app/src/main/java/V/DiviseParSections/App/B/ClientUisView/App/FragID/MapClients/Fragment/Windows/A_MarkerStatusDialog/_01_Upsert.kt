@@ -68,6 +68,7 @@ fun _01_Upsert(
             startDesignation = "client $idClient"
             tempDateCreationStr = _01_VentsHistoriquesDataBase.getCurrentDataTimeString()
             fireBaseKeyID = parse_fireBaseKeyID(idClient)
+            etate = _013_Acheteurs.Etate.COMMANDE_LENCE
             child_14Produits = realmListOf()
         }
         vendeur.child_013_Acheteurs.add(acheteur)

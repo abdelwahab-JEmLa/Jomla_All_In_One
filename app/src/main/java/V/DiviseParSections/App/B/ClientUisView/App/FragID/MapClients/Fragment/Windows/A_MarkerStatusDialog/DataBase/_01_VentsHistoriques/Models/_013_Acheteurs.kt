@@ -22,6 +22,17 @@ class _013_Acheteurs : RealmObject {
 
     var child_14Produits: RealmList<_014_Produits> = realmListOf()
 
+    // Section Etates Mutable
+    var etate: Etate = Etate.NON_DEFINI
+
+    enum class Etate(val color: Int, val nomArabe: String) {
+        NON_DEFINI(android.R.color.holo_orange_light, "غير محدد"),
+        AVEC_MARCHANDISE(android.R.color.holo_blue_light, "عندو سلعة"),
+        A_EVITE(android.R.color.black, "يتجنب"),
+        COMMANDE_LENCE(android.R.color.holo_green_light, "نشط / متصل"),
+        CLIENT_ABSENT(android.R.color.darker_gray, "غائب الشاري"),
+        FERME(android.R.color.darker_gray, "مغلق")
+    }
 
     companion object {
         // Schema constants for consistency
