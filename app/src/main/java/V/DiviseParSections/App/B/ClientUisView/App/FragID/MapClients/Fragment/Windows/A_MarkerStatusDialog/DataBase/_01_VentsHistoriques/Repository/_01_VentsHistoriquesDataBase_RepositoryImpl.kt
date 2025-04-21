@@ -494,6 +494,67 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
         }
     }
 
+    override fun upsert_01_PeriodesVentEtReturnItVid(
+        period: _01_VentsHistoriquesDataBase,
+        onSuccess: (Long) -> Unit,
+    ) {
+        Log.d(TAG, "upsert_01_PeriodesVentEtReturnItVid: Starting update for period: ${period.keyID}")
+
+        if (modelUpdateInProgress.getAndSet(true)) {
+            Log.d(TAG, "upsert_01_PeriodesVentEtReturnItVid: Update already in progress, aborting")
+            return
+        }
+
+        try {
+            // Find if the period already exists in the list
+            val existingIndex = modelDatasSnapList.indexOfFirst { it.keyID == period.keyID }
+
+            if (existingIndex != -1) {
+                // Update existing period
+                Log.d(TAG, "upsert_01_PeriodesVentEtReturnItVid: Updating existing period at index $existingIndex")
+                modelDatasSnapList[existingIndex] = period
+            } else {
+                // Add new period
+                Log.d(TAG, "upsert_01_PeriodesVentEtReturnItVid: Adding new period")
+                modelDatasSnapList.add(period)
+            }
+
+            // Update Firebase and Realm
+            coroutineScope.launch {
+                // Update Firebase
+                try {
+                    val dataToUpdate = convertToFirebaseFormat(modelDatasSnapList)
+
+                    // Remove listeners temporarily
+                    removeFirebaseListener()
+
+                    firebaseRef.setValue(dataToUpdate)
+                        .addOnSuccessListener {
+                            Log.d(TAG, "upsert_01_PeriodesVentEtReturnItVid: Firebase update successful")
+                            attachFirebaseListener()
+                            onSuccess(period.vid)
+                        }
+                        .addOnFailureListener { exception ->
+                            Log.e(TAG, "upsert_01_PeriodesVentEtReturnItVid: Firebase update failed", exception)
+                            attachFirebaseListener()
+                        }
+
+                    // Update Realm
+                    scheduleSafeRealmUpdate()
+
+                    // Notify UI and trigger change event
+                    notifyUIUpdate()
+                    _dataChangedEvent.value = System.currentTimeMillis()
+
+                } catch (e: Exception) {
+                    Log.e(TAG, "upsert_01_PeriodesVentEtReturnItVid: Exception during update", e)
+                }
+            }
+        } finally {
+            modelUpdateInProgress.set(false)
+        }
+    }
+
     fun cleanup() {
         removeFirebaseListener()
         realm.close()

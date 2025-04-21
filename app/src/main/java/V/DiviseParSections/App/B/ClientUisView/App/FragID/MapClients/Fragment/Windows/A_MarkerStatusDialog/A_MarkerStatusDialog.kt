@@ -1,12 +1,8 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._012_ComptsVendeurs
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._013_Acheteurs
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
-import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.util.Log
 import androidx.compose.foundation.background
@@ -22,7 +18,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -52,9 +47,6 @@ import androidx.core.content.ContextCompat
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import org.osmdroid.views.overlay.Marker
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 @Composable
 fun MarkerStatusDialog(
@@ -188,124 +180,15 @@ fun MarkerStatusDialog(
 // This code block focuses on fixing the TODOs in the Mode Commande button handler
 // in MarkerStatusDialog.kt
 
-                StatusButton(
-                    text = "Mode Commande",
-                    icon = Icons.Default.ShoppingCart,
-                    color = Color(
-                        ContextCompat.getColor(
-                            context,
-                            B_ClientDataBase.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT.color
-                        )
-                    ),
-                    onClick = {
-                        coroutineScope.launch {
-                            val repositorysModel =
-                                _0_0_HeadOfRepositorys_Repository.repositorys_Model
-
-                            val ceComptVendeurInsertBonsAchatAuPeriodID = repositorysModel.repository_1_5_Vendeur.modelDatasSnapList
-                                .find { it.vid== repositorysModel.activeIdDe_1_5_Vendeur}
-                                ?.ceComptVendeurInsertBonsAchatAuPeriodID
-
-                            val clientId = relatedClients?.id ?: 0L
-
-                            // Check if a BonAchat already exists for this client in the active period
-                            val existingBonAchat = viewModel.modelDatasSnapList_1_3_BonAchat.find {
-                                it.clientAcheteurID == clientId && it.parentVID_1_4_PeriodeVent == ceComptVendeurInsertBonsAchatAuPeriodID
-                            }
-
-                            if (existingBonAchat != null) {
-                                // Update the existing BonAchat
-                                val updatedBonAchat = existingBonAchat.copy(
-                                    etateActuellementEst = _1_3_BonAchat.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
-                                    heurDebutInString = SimpleDateFormat(
-                                        "HH:mm",
-                                        Locale.getDefault()
-                                    ).format(Date())
-                                )
-
-                                // Use upsert to update the existing record
-                                repositorysModel._1_3_BonAchat_Repository.upsertUneDataEtReturnVID(
-                                    updatedBonAchat
-                                ) { vid ->
-                                    repositorysModel.activeId_1_3_BonAchat.value = vid
-                                }
-                            } else {
-                                // Create a new BonAchat if none exists
-                                repositorysModel._1_3_BonAchat_Repository.addDataAndReturneItVID(
-                                    _1_3_BonAchat(
-                                        clientAcheteurID = clientId,
-                                        parentVID_1_4_PeriodeVent = ceComptVendeurInsertBonsAchatAuPeriodID!!,
-                                        etateActuellementEst = _1_3_BonAchat.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
-                                        heurDebutInString = SimpleDateFormat(
-                                            "HH:mm",
-                                            Locale.getDefault()
-                                        ).format(Date())
-                                    )
-                                ) { newVid ->
-                                    // Update the MutableStateFlow with the new value
-                                    repositorysModel.activeId_1_3_BonAchat.value = newVid
-                                }
-                            }
-
-                            //----------------------------------------------------------------------------------------/
-                            /**
-                             *  repo_01_VentsHistoriquesDataBase
-                             */
-
-                            val repo_01_VentsHistoriquesDataBase =
-                                viewModel.repo_01_VentsHistoriquesDataBase
-                            val _01_VentsHistoriquesDataBaseList =
-                                repo_01_VentsHistoriquesDataBase.modelDatasSnapList
-
-                            var period = _01_VentsHistoriquesDataBaseList.find { it.vid == ceComptVendeurInsertBonsAchatAuPeriodID }
-                            if (period == null) {
-                                // Create new period and add it to the repository
-                                period = _01_VentsHistoriquesDataBase().apply {
-                                    vid = ceComptVendeurInsertBonsAchatAuPeriodID ?: 0L
-                                }
-                                _01_VentsHistoriquesDataBaseList.add(period)
-                            }
-
-                            var vendeur = period.child_012_Compts_Vendeurs.find {
-                                it.idCompt == repositorysModel.activeIdDe_1_5_Vendeur
-                            }
-                            if (vendeur == null) {
-                                // Create new vendeur and add it to the period
-                                vendeur = _012_ComptsVendeurs().apply {
-                                    vid = repositorysModel.activeIdDe_1_5_Vendeur
-                                    idCompt = repositorysModel.activeIdDe_1_5_Vendeur
-                                }
-                                period.child_012_Compts_Vendeurs.add(vendeur)
-                            }
-
-                            var acheteur = vendeur.child_013_Acheteurs.find {
-                                it.idClient == clientId
-                            }
-                            // Replace the section around line 306 with:
-                            if (acheteur == null) {
-                                acheteur = _013_Acheteurs().apply {
-                                    vid = System.currentTimeMillis()
-                                    idClient = clientId
-                                }
-                                Log.d("MarkerStatusDialog", "Adding new acheteur with id: ${acheteur.vid} for client: $clientId to vendeur: ${vendeur.vid}")
-                                vendeur.child_013_Acheteurs.add(acheteur)
-                                Log.d("MarkerStatusDialog", "After adding: vendeur has ${vendeur.child_013_Acheteurs.size} acheteurs")
-                            }
-
-                            Log.d("MarkerStatusDialog", "Notifying repo_01_VentsHistoriquesDataBase of data change")
-                            repo_01_VentsHistoriquesDataBase.notifierDataChange()
-
-                            //----------------------------------------------------------------------------------------/
-
-                            // Update the selected marker ID
-                            val selectedMarkedID = selectedMarker.id.toLong()
-                            viewModel.updateLongAppSetting(selectedMarkedID)
-
-                            // Finish and dismiss the dialog
-                            onUpdateLongAppSetting()
-                            onDismiss()
-                        }
-                    }
+                CommenadeButton(
+                    context,
+                    coroutineScope,
+                    _0_0_HeadOfRepositorys_Repository,
+                    relatedClients,
+                    viewModel,
+                    selectedMarker,
+                    onUpdateLongAppSetting,
+                    onDismiss
                 )
                 val CLIENT_ABSENT =
                     B_ClientDataBase.DernierEtatAAffiche.CLIENT_ABSENT
@@ -593,7 +476,7 @@ fun MarkerStatusDialog(
 }
 
 @Composable
-private fun StatusButton(
+fun StatusButton(
     text: String,
     icon: ImageVector,
     color: Color,

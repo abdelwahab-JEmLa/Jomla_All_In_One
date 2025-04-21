@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models
 
+import com.google.firebase.database.DataSnapshot
 import io.realm.kotlin.ext.realmListOf
 import io.realm.kotlin.types.RealmList
 import io.realm.kotlin.types.RealmObject
@@ -16,6 +17,40 @@ class _012_ComptsVendeurs : RealmObject {
     var child_013_Acheteurs: RealmList<_013_Acheteurs> = realmListOf()
 
     companion object{
+        fun mapVendeurs(vendeurs: List<_012_ComptsVendeurs>): Map<String, Any> {
+            return vendeurs.associate { vendeur ->
+                val validVendeurKey = vendeur.keyID
+
+                validVendeurKey to mapOf(
+                    "vid" to vendeur.vid,
+                    "idCompt" to vendeur.idCompt,
+                    "startDesignation" to vendeur.startDesignation,
+                    "child_013_Acheteurs" to _013_Acheteurs.mapDatas(vendeur.child_013_Acheteurs)
+                )
+            }
+        }
+
+        fun parse_012_ComptsVendeursFromSnapshot(snapshot: DataSnapshot): _012_ComptsVendeurs? {
+            val vendeurKey = snapshot.key ?: return null
+
+            val vendeur = _012_ComptsVendeurs().apply {
+                keyID = vendeurKey
+                vid = snapshot.child("vid").getValue(Long::class.java) ?: 0L
+                idCompt = snapshot.child("idCompt").getValue(Long::class.java) ?: 0L
+                startDesignation = snapshot.child("startDesignation").getValue(String::class.java) ?: ""
+                child_013_Acheteurs = realmListOf()
+            }
+
+            val acheteursSnapshot = snapshot.child("child_013_Acheteurs")
+            acheteursSnapshot.children.forEach { acheteurSnapshot ->
+                val acheteur = _013_Acheteurs.parse_13_AcheteursFromSnapshot(acheteurSnapshot)
+                    ?: return@forEach
+                vendeur.child_013_Acheteurs.add(acheteur)
+            }
+
+            return vendeur
+        }
+
         fun createVendeur(id: Long, nom: String, vendeurKey: String): _012_ComptsVendeurs {
             return _012_ComptsVendeurs().apply {
                 keyID = vendeurKey
@@ -31,16 +66,5 @@ class _012_ComptsVendeurs : RealmObject {
             }
         }
 
-        fun mapVendeurs(vendeurs: List<_012_ComptsVendeurs>): Map<String, Any> {
-            return vendeurs.associate { vendeur ->
-                val validVendeurKey = vendeur.keyID
-
-                validVendeurKey to mapOf(
-                    "idVendeur" to vendeur.vid,
-                    "nomVendeur" to vendeur.startDesignation,
-                    "_013_Acheteurs" to _013_Acheteurs.mapDatas(vendeur.child_013_Acheteurs)
-                )
-            }
-        }
     }
 }

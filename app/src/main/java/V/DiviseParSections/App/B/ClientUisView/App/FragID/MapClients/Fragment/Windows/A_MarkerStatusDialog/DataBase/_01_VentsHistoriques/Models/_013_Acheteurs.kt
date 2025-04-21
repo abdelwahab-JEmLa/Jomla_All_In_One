@@ -19,6 +19,14 @@ class _013_Acheteurs : RealmObject {
 
     var child_14Produits: RealmList<_014_Produits> = realmListOf()
 
+    enum class NomsValeursModel{
+        idClient,
+        keyID,
+        id,
+        designation,
+        tempCreationString,
+        child_15_Produits
+    }
     companion object {
         fun testData(): List<_013_Acheteurs> {
             val data = mutableListOf<_013_Acheteurs>()
@@ -48,6 +56,7 @@ class _013_Acheteurs : RealmObject {
             return datas.associate { data ->
                 data.keyID to mapOf(
                     NomsValeursModel.id.name to data.vid,
+                    "idClient" to data.idClient,
                     NomsValeursModel.designation.name to data.startDesignation,
                     NomsValeursModel.tempCreationString.name to data.tempCreationString,
                     NomsValeursModel.child_15_Produits.name to _014_Produits.mapDatas(data.child_14Produits)
@@ -77,11 +86,5 @@ class _013_Acheteurs : RealmObject {
         
 
     }
-    enum class NomsValeursModel{
-        keyID,
-        id,
-        designation,
-        tempCreationString,
-        child_15_Produits
-    }
+
 }
