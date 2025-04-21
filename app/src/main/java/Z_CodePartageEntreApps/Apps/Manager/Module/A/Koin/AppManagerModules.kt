@@ -8,6 +8,5 @@ val appManagerModules = module {
 
 //    viewModel { ViewModelW4(get()) }
 
-
     viewModel { ViewModel_A4FragID1(get(), get()) }
 }
