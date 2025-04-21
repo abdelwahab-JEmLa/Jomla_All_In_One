@@ -55,21 +55,7 @@ class PeriodeVenteViewModel(
     // In PeriodeVenteViewModel.kt, add this function to implement search
     fun updateSearchQuery(query: String) {
         viewModelScope.launch {
-            _uiState.update { currentState ->
-                val filtered = if (query.isBlank()) {
-                    emptyList()
-                } else {
-                    repository.modelDatasSnapList.filter {
-                        it.dateDebutDeCettePeriode.contains(query, ignoreCase = true) ||
-                                it.tempDebutDeCettePeriode.contains(query, ignoreCase = true) ||
-                                it.keyID.contains(query, ignoreCase = true)
-                    }
-                }
-                currentState.copy(
-                    searchQuery = query,
-                    filteredPeriodes = filtered
-                )
-            }
+
         }
     }
 
@@ -112,7 +98,7 @@ class PeriodeVenteViewModel(
                 val currentSelection = _uiState.value.selectedPeriode
                 val updatedSelection = if (currentSelection != null) {
                     // Try to find updated version of currently selected period
-                    periodesVente.find { it.keyID == currentSelection.keyID }
+                    periodesVente.find { it.fireBaseKeyID == currentSelection.fireBaseKeyID }
                 } else {
                     null
                 }

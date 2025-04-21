@@ -5,27 +5,38 @@ import io.realm.kotlin.ext.realmListOf
 import io.realm.kotlin.types.RealmList
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
+import org.mongodb.kbson.BsonObjectId
+import org.mongodb.kbson.ObjectId
 
 class _012_ComptsVendeurs : RealmObject {
-    var vid: Long = 0L
+    @PrimaryKey
+    var bsonObjectId: ObjectId = BsonObjectId()
+
     var idCompt: Long = 0L
     var startDesignation: String = "_012_ComptsVendeurs $idCompt"
 
-    @PrimaryKey
-    var keyID: String = "${vid}=${startDesignation}"
+    var fireBaseKeyID: String = "${idCompt}-(${startDesignation})"
 
     var child_013_Acheteurs: RealmList<_013_Acheteurs> = realmListOf()
 
-    companion object{
-        fun mapVendeurs(vendeurs: List<_012_ComptsVendeurs>): Map<String, Any> {
+    companion object {
+        object SchemaFields {
+            const val BSON_OBJECT_ID = "bsonObjectId"
+            const val FIREBASE_KEY_ID = "fireBaseKeyID"  // Corrected to match actual property name
+            const val ID_COMPT = "idCompt"
+            const val START_DESIGNATION = "startDesignation"
+            const val CHILD_ACHETEURS = "child_013_Acheteurs"
+        }
+
+        fun map_012_ComptsVendeurs(vendeurs: List<_012_ComptsVendeurs>): Map<String, Any> {
             return vendeurs.associate { vendeur ->
-                val validVendeurKey = vendeur.keyID
+                val validVendeurKey = vendeur.fireBaseKeyID
 
                 validVendeurKey to mapOf(
-                    "vid" to vendeur.vid,
-                    "idCompt" to vendeur.idCompt,
-                    "startDesignation" to vendeur.startDesignation,
-                    "child_013_Acheteurs" to _013_Acheteurs.mapDatas(vendeur.child_013_Acheteurs)
+                    SchemaFields.BSON_OBJECT_ID to vendeur.bsonObjectId.toString(),
+                    SchemaFields.ID_COMPT to vendeur.idCompt,
+                    SchemaFields.START_DESIGNATION to vendeur.startDesignation,
+                    SchemaFields.CHILD_ACHETEURS to _013_Acheteurs.mapDatas(vendeur.child_013_Acheteurs)
                 )
             }
         }
@@ -33,28 +44,44 @@ class _012_ComptsVendeurs : RealmObject {
         fun parse_012_ComptsVendeursFromSnapshot(snapshot: DataSnapshot): _012_ComptsVendeurs? {
             val vendeurKey = snapshot.key ?: return null
 
-            val vendeur = _012_ComptsVendeurs().apply {
-                keyID = vendeurKey
-                vid = snapshot.child("vid").getValue(Long::class.java) ?: 0L
-                idCompt = snapshot.child("idCompt").getValue(Long::class.java) ?: 0L
-                startDesignation = snapshot.child("startDesignation").getValue(String::class.java) ?: ""
-                child_013_Acheteurs = realmListOf()
-            }
+            try {
+                // Extract ObjectId if available, or create a new one
+                val objectIdStr = snapshot.child(SchemaFields.BSON_OBJECT_ID).getValue(String::class.java)
+                val objectId = if (!objectIdStr.isNullOrEmpty()) {
+                    try {
+                        ObjectId(objectIdStr)
+                    } catch (e: Exception) {
+                        BsonObjectId()
+                    }
+                } else {
+                    BsonObjectId()
+                }
 
-            val acheteursSnapshot = snapshot.child("child_013_Acheteurs")
-            acheteursSnapshot.children.forEach { acheteurSnapshot ->
-                val acheteur = _013_Acheteurs.parse_13_AcheteursFromSnapshot(acheteurSnapshot)
-                    ?: return@forEach
-                vendeur.child_013_Acheteurs.add(acheteur)
-            }
+                val vendeur = _012_ComptsVendeurs().apply {
+                    fireBaseKeyID = vendeurKey
+                    bsonObjectId = objectId
+                    idCompt = snapshot.child(SchemaFields.ID_COMPT).getValue(Long::class.java) ?: 0L
+                    startDesignation = snapshot.child(SchemaFields.START_DESIGNATION).getValue(String::class.java) ?: ""
+                    child_013_Acheteurs = realmListOf()
+                }
 
-            return vendeur
+                val acheteursSnapshot = snapshot.child(SchemaFields.CHILD_ACHETEURS)
+                acheteursSnapshot.children.forEach { acheteurSnapshot ->
+                    val acheteur = _013_Acheteurs.parse_13_AcheteursFromSnapshot(acheteurSnapshot)
+                        ?: return@forEach
+                    vendeur.child_013_Acheteurs.add(acheteur)
+                }
+
+                return vendeur
+            } catch (e: Exception) {
+                return null
+            }
         }
 
         fun createVendeur(id: Long, nom: String, vendeurKey: String): _012_ComptsVendeurs {
             return _012_ComptsVendeurs().apply {
-                keyID = vendeurKey
-                this.vid = id
+                fireBaseKeyID = vendeurKey
+                this.idCompt = id
                 startDesignation = nom
                 child_013_Acheteurs = realmListOf()
 
@@ -65,12 +92,13 @@ class _012_ComptsVendeurs : RealmObject {
                 }
             }
         }
+
         fun deepCopy(source: _012_ComptsVendeurs): _012_ComptsVendeurs {
             return _012_ComptsVendeurs().apply {
-                vid = source.vid
+                bsonObjectId = source.bsonObjectId
                 idCompt = source.idCompt
                 startDesignation = source.startDesignation
-                keyID = source.keyID
+                fireBaseKeyID = source.fireBaseKeyID
 
                 // Deep copy acheteurs
                 child_013_Acheteurs = realmListOf()
@@ -79,6 +107,5 @@ class _012_ComptsVendeurs : RealmObject {
                 }
             }
         }
-
     }
 }

@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._012_ComptsVendeurs.Companion.createVendeur
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._012_ComptsVendeurs.Companion.mapVendeurs
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._012_ComptsVendeurs.Companion.map_012_ComptsVendeurs
 import android.util.Log
 import com.google.firebase.database.DataSnapshot
 import io.realm.kotlin.ext.realmListOf
@@ -15,15 +15,12 @@ import java.time.format.DateTimeFormatter
 
 class _01_VentsHistoriquesDataBase : RealmObject {
     @PrimaryKey
-    var keyID: String = "{vid}(tempCreationString)"
-
-    var vid: ObjectId = ObjectId()
+    var bsonObjectId: ObjectId = ObjectId()
+    var tempCreationStr: String = getCurrentDataTimeString()
 
     var idPeriodDonAncienDataBase: Long = 0
-    var dateDebutDeCettePeriode: String = getCurrentDataString()
-    var tempDebutDeCettePeriode: String = getCurrentTimeString()
 
-    var tempCreationString: String = "$dateDebutDeCettePeriode-<$tempDebutDeCettePeriode"
+    var fireBaseKeyID: String = "${idPeriodDonAncienDataBase}-($tempCreationStr)"
 
     var child_012_Compts_Vendeurs: RealmList<_012_ComptsVendeurs> = realmListOf()
 
@@ -33,39 +30,39 @@ class _01_VentsHistoriquesDataBase : RealmObject {
         // Schema constants - define field names to ensure consistency
         object SchemaFields {
             const val VID = "vid"
-            const val DATE_DEBUT = "dateDebutDeCettePeriode"
-            const val TEMP_DEBUT = "tempDebutDeCettePeriode"
+            const val BSON_OBJECT_ID = "bsonObjectId"
             const val TEMP_CREATION = "tempCreationString"
             const val ID_PERIOD = "idPeriodDonAncienDataBase"
+            const val FIREBASE_KEY_ID = "fireBaseKeyID"
             const val CHILD_VENDEURS = "child_012_Compts_Vendeurs"
         }
 
-        /**
-         * Parses a Firebase DataSnapshot into a _01_VentsHistoriquesDataBase object
-         * Updated to handle the new schema with ObjectId and proper structure
-         */
         fun parsePeriodeFromSnapshot(snapshot: DataSnapshot): _01_VentsHistoriquesDataBase? {
             val periodeKey = snapshot.key ?: return null
 
             try {
                 // Extract data from snapshot
-                val vidValue = snapshot.child(SchemaFields.VID).getValue(String::class.java)
-                val vid = if (vidValue != null) ObjectId(vidValue) else ObjectId()
+                val objectIdStr = snapshot.child(SchemaFields.BSON_OBJECT_ID).getValue(String::class.java)
+                val objectId = if (!objectIdStr.isNullOrEmpty()) {
+                    try {
+                        ObjectId(objectIdStr)
+                    } catch (e: Exception) {
+                        ObjectId()
+                    }
+                } else {
+                    ObjectId()
+                }
 
-                val date = snapshot.child(SchemaFields.DATE_DEBUT).getValue(String::class.java)
-                    ?: return null
-                val time = snapshot.child(SchemaFields.TEMP_DEBUT).getValue(String::class.java)
-                    ?: return null
                 val idPeriod = snapshot.child(SchemaFields.ID_PERIOD).getValue(Long::class.java) ?: 0L
 
                 // Create and populate the periode object
                 val periode = _01_VentsHistoriquesDataBase().apply {
-                    this.vid = vid
+                    this.bsonObjectId = objectId
                     this.idPeriodDonAncienDataBase = idPeriod
-                    dateDebutDeCettePeriode = date
-                    tempDebutDeCettePeriode = time
-                    tempCreationString = "$date-<$time"
-                    keyID = periodeKey
+
+                    val currentDateTime = getCurrentDataTimeString()
+                    tempCreationStr = currentDateTime
+                    fireBaseKeyID = periodeKey
                     child_012_Compts_Vendeurs = realmListOf()
                 }
 
@@ -85,56 +82,24 @@ class _01_VentsHistoriquesDataBase : RealmObject {
             }
         }
 
-        /**
-         * Converts a list of _01_VentsHistoriquesDataBase objects to a Firebase-compatible format
-         * Updated to handle ObjectId and new schema structure
-         */
-        fun convertToFirebaseFormat(periodes: List<_01_VentsHistoriquesDataBase>): Map<String, Any> {
+
+        fun map_01_VentsHistoriquesDataBase(periodes: List<_01_VentsHistoriquesDataBase>): Map<String, Any> {
             return periodes.associate { periode ->
-                val validPeriodeKey = periode.keyID
+                val validPeriodeKey = periode.fireBaseKeyID
                 validPeriodeKey to mapOf(
-                    SchemaFields.VID to periode.vid.toString(),
-                    SchemaFields.DATE_DEBUT to periode.dateDebutDeCettePeriode,
-                    SchemaFields.TEMP_DEBUT to periode.tempDebutDeCettePeriode,
-                    SchemaFields.TEMP_CREATION to periode.tempCreationString,
+                    SchemaFields.BSON_OBJECT_ID to periode.bsonObjectId.toString(),
+                    SchemaFields.TEMP_CREATION to periode.tempCreationStr,
                     SchemaFields.ID_PERIOD to periode.idPeriodDonAncienDataBase,
-                    SchemaFields.CHILD_VENDEURS to mapVendeurs(periode.child_012_Compts_Vendeurs)
+                    SchemaFields.CHILD_VENDEURS to map_012_ComptsVendeurs(periode.child_012_Compts_Vendeurs)
                 )
             }
         }
 
-        /**
-         * Creates a new _01_VentsHistoriquesDataBase instance with the given parameters
-         */
-        fun createPeriode(
-            id: Long,
-            date: String = getCurrentDataString(),
-            time: String = getCurrentTimeString()
-        ): _01_VentsHistoriquesDataBase {
-            val creationTimestamp = "$date-<$time"
-            return _01_VentsHistoriquesDataBase().apply {
-                idPeriodDonAncienDataBase = id
-                dateDebutDeCettePeriode = date
-                tempDebutDeCettePeriode = time
-                tempCreationString = creationTimestamp
-                keyID = "${id}-($creationTimestamp)"
-                child_012_Compts_Vendeurs = realmListOf()
-            }
-        }
 
-        /**
-         * Helper method to get the current date string in the format used by the application
-         */
-        fun getCurrentDataString(): String = LocalDate.now().format(
-            DateTimeFormatter.ofPattern("yyyy_MM_dd")
-        )
+        fun getCurrentDataTimeString(): String =
+            LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy_MM_dd")) +
+                    "(" + LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")) + ")"
 
-        /**
-         * Helper method to get the current time string in the format used by the application
-         */
-        fun getCurrentTimeString(): String = LocalTime.now().format(
-            DateTimeFormatter.ofPattern("HH:mm")
-        )
 
         /**
          * Generates test data for the _01_VentsHistoriquesDataBase
@@ -149,10 +114,8 @@ class _01_VentsHistoriquesDataBase : RealmObject {
 
             val periode = _01_VentsHistoriquesDataBase().apply {
                 idPeriodDonAncienDataBase = i.toLong()
-                keyID = periodeKey
-                dateDebutDeCettePeriode = date
-                tempDebutDeCettePeriode = time
-                tempCreationString = "$date-<$time"
+                fireBaseKeyID = periodeKey
+                tempCreationStr = "$date-<$time"
                 child_012_Compts_Vendeurs = realmListOf()
             }
 
@@ -172,12 +135,10 @@ class _01_VentsHistoriquesDataBase : RealmObject {
          */
         fun deepCopy(source: _01_VentsHistoriquesDataBase): _01_VentsHistoriquesDataBase {
             return _01_VentsHistoriquesDataBase().apply {
-                vid = source.vid
+                bsonObjectId = source.bsonObjectId
                 idPeriodDonAncienDataBase = source.idPeriodDonAncienDataBase
-                keyID = source.keyID
-                dateDebutDeCettePeriode = source.dateDebutDeCettePeriode
-                tempDebutDeCettePeriode = source.tempDebutDeCettePeriode
-                tempCreationString = source.tempCreationString
+                fireBaseKeyID = source.fireBaseKeyID
+                tempCreationStr = source.tempCreationStr
 
                 // Deep copy vendors
                 child_012_Compts_Vendeurs = realmListOf()

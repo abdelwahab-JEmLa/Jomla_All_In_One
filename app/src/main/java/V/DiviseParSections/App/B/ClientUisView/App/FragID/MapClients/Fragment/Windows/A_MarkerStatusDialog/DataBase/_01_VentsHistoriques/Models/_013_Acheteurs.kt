@@ -1,42 +1,110 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase.Companion.getCurrentDataTimeString
 import com.google.firebase.database.DataSnapshot
 import io.realm.kotlin.ext.realmListOf
 import io.realm.kotlin.types.RealmList
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
+import org.mongodb.kbson.BsonObjectId
+import org.mongodb.kbson.ObjectId
 
 class _013_Acheteurs : RealmObject {
-    var vid: Long = 0L
+    @PrimaryKey
+    var bsonObjectId: ObjectId = BsonObjectId()
 
     var idClient: Long = 0L
 
     var startDesignation: String = ""
-    var tempCreationString: String = "yyyy_mm_dd(HH:mm)"
+    var tempDateCreationStr: String = getCurrentDataTimeString()
 
-    @PrimaryKey
-    var keyID: String = "${vid}=${startDesignation}"
+    var fireBaseKeyID: String = "${this.idClient}=${this.tempDateCreationStr}"
 
     var child_14Produits: RealmList<_014_Produits> = realmListOf()
 
-    enum class NomsValeursModel{
-        idClient,
-        keyID,
-        id,
-        designation,
-        tempCreationString,
-        child_15_Produits
-    }
+
     companion object {
+        // Schema constants for consistency
+        object SchemaFields {
+            const val BSON_OBJECT_ID = "bsonObjectId"
+            const val FIREBASE_KEY_ID = "fireBaseKeyID"
+            const val ID_CLIENT = "idClient"
+            const val START_DESIGNATION = "startDesignation"
+            const val TEMP_DATE_CREATION = "tempDateCreationStr"
+            const val CHILD_PRODUITS = "child_14Produits"
+        }
+
+        fun mapDatas(datas: List<_013_Acheteurs>): Map<String, Any> {
+            return datas.associate { data ->
+                data.fireBaseKeyID to mapOf(
+                    SchemaFields.BSON_OBJECT_ID to data.bsonObjectId.toString(),
+                    SchemaFields.ID_CLIENT to data.idClient,
+                    SchemaFields.START_DESIGNATION to data.startDesignation,
+                    SchemaFields.TEMP_DATE_CREATION to data.tempDateCreationStr,
+                    SchemaFields.CHILD_PRODUITS to _014_Produits.mapDatas(data.child_14Produits)
+                )
+            }
+        }
+
+        fun parse_13_AcheteursFromSnapshot(snapshot: DataSnapshot): _013_Acheteurs? {
+            val acheteurKey = snapshot.key ?: return null
+
+            try {
+                // Extract ObjectId if available, or create a new one
+                val objectIdStr = snapshot.child(SchemaFields.BSON_OBJECT_ID).getValue(String::class.java)
+                val objectId = if (!objectIdStr.isNullOrEmpty()) {
+                    try {
+                        ObjectId(objectIdStr)
+                    } catch (e: Exception) {
+                        BsonObjectId()
+                    }
+                } else {
+                    BsonObjectId()
+                }
+
+                val acheteur = _013_Acheteurs().apply {
+                    fireBaseKeyID = acheteurKey
+                    this.bsonObjectId = objectId
+                    idClient = snapshot.child(SchemaFields.ID_CLIENT).getValue(Long::class.java) ?: 0L
+                    startDesignation = snapshot.child(SchemaFields.START_DESIGNATION).getValue(String::class.java) ?: ""
+                    tempDateCreationStr = snapshot.child(SchemaFields.TEMP_DATE_CREATION).getValue(String::class.java) ?: "yyyy.mm.dd(HH:mm)"
+                    child_14Produits = realmListOf()
+                }
+
+                val produitsSnapshot = snapshot.child(SchemaFields.CHILD_PRODUITS)
+                produitsSnapshot.children.forEach { produitSnapshot ->
+                    val produit = _014_Produits.parseDataFromSnapshot(produitSnapshot) ?: return@forEach
+                    acheteur.child_14Produits.add(produit)
+                }
+
+                return acheteur
+            } catch (e: Exception) {
+                return null
+            }
+        }
+        fun deepCopy(source: _013_Acheteurs): _013_Acheteurs {
+            return _013_Acheteurs().apply {
+                this.bsonObjectId = source.bsonObjectId
+                idClient = source.idClient
+                startDesignation = source.startDesignation
+                tempDateCreationStr = source.tempDateCreationStr
+                fireBaseKeyID = source.fireBaseKeyID
+
+                // Deep copy produits
+                child_14Produits = realmListOf()
+                source.child_14Produits.forEach { sourceProduit ->
+                    child_14Produits.add(_014_Produits.deepCopy(sourceProduit))
+                }
+            }
+        }
         fun testData(): List<_013_Acheteurs> {
             val data = mutableListOf<_013_Acheteurs>()
 
             for (k in 1..5) {
                 val acheteur = _013_Acheteurs().apply {
-                    vid = k.toLong()
                     startDesignation = "_013_Acheteurs $k"
-                    tempCreationString = "2025_04_20(12:00)"
-                    keyID = "$vid->$startDesignation"
+                    tempDateCreationStr = "2025_04_20(12:00)"
+                    fireBaseKeyID = "${this.bsonObjectId}->$startDesignation"
                     child_14Produits = realmListOf()
                 }
 
@@ -52,52 +120,6 @@ class _013_Acheteurs : RealmObject {
             return data
         }
 
-        fun mapDatas(datas: List<_013_Acheteurs>): Map<String, Any> {
-            return datas.associate { data ->
-                data.keyID to mapOf(
-                    NomsValeursModel.id.name to data.vid,
-                    "idClient" to data.idClient,
-                    NomsValeursModel.designation.name to data.startDesignation,
-                    NomsValeursModel.tempCreationString.name to data.tempCreationString,
-                    NomsValeursModel.child_15_Produits.name to _014_Produits.mapDatas(data.child_14Produits)
-                )
-            }
-        }
-
-        fun parse_13_AcheteursFromSnapshot(snapshot: DataSnapshot): _013_Acheteurs? {
-            val acheteurKey = snapshot.key ?: return null
-
-            val acheteur = _013_Acheteurs().apply {
-                keyID = acheteurKey
-                vid = snapshot.child(NomsValeursModel.id.name).getValue(Long::class.java) ?: 0L
-                startDesignation = snapshot.child(NomsValeursModel.designation.name).getValue(String::class.java) ?: ""
-                tempCreationString = snapshot.child(NomsValeursModel.tempCreationString.name).getValue(String::class.java) ?: "yyyy.mm.dd(HH:mm)"
-                child_14Produits = realmListOf()
-            }
-
-            val produitsSnapshot = snapshot.child(NomsValeursModel.child_15_Produits.name)
-            produitsSnapshot.children.forEach { produitSnapshot ->
-                val produit = _014_Produits.parseDataFromSnapshot(produitSnapshot) ?: return@forEach
-                acheteur.child_14Produits.add(produit)
-            }
-
-            return acheteur
-        }
-        fun deepCopy(source: _013_Acheteurs): _013_Acheteurs {
-            return _013_Acheteurs().apply {
-                vid = source.vid
-                idClient = source.idClient
-                startDesignation = source.startDesignation
-                tempCreationString = source.tempCreationString
-                keyID = source.keyID
-
-                // Deep copy produits
-                child_14Produits = realmListOf()
-                source.child_14Produits.forEach { sourceProduit ->
-                    child_14Produits.add(_014_Produits.deepCopy(sourceProduit))
-                }
-            }
-        }
 
     }
 

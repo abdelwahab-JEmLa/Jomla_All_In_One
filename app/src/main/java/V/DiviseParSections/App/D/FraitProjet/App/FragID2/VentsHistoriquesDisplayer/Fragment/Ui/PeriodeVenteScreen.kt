@@ -1,9 +1,9 @@
 package V.DiviseParSections.App.D.FraitProjet.App.FragID2.VentsHistoriquesDisplayer.Fragment.Ui
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._012_ComptsVendeurs
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._013_Acheteurs
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._014_Produits
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase
 import V.DiviseParSections.App.D.FraitProjet.App.FragID2.VentsHistoriquesDisplayer.Fragment.ViewModel.PeriodeVenteViewModel
 import V.DiviseParSections.App.D.FraitProjet.App.FragID2.VentsHistoriquesDisplayer.Fragment.ViewModel.ViewMode
 import androidx.compose.animation.AnimatedVisibility
@@ -211,25 +211,12 @@ fun PeriodeListItem(
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = "Période: ${periode.dateDebutDeCettePeriode}",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = periode.tempDebutDeCettePeriode,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
+
 
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "ID: ${periode.keyID}",
+                text = "ID: ${periode.fireBaseKeyID}",
                 style = MaterialTheme.typography.bodySmall,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -281,16 +268,9 @@ fun PeriodeDetailScreen(
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(8.dp))
+
                 Text(
-                    text = "Date: ${periode.dateDebutDeCettePeriode}",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Text(
-                    text = "Heure: ${periode.tempDebutDeCettePeriode}",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Text(
-                    text = "ID: ${periode.keyID}",
+                    text = "ID: ${periode.fireBaseKeyID}",
                     style = MaterialTheme.typography.bodySmall,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -341,10 +321,7 @@ fun VendeurItem(vendeur: _012_ComptsVendeurs) {
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
-                    Text(
-                        text = "ID: ${vendeur.vid}",
-                        style = MaterialTheme.typography.bodySmall
-                    )
+
                 }
 
                 IconButton(onClick = { expanded = !expanded }) {
@@ -407,7 +384,7 @@ fun AcheteurItem(acheteur: _013_Acheteurs) {
                         fontWeight = FontWeight.Medium
                     )
                     Text(
-                        text = "Créé le: ${acheteur.tempCreationString}",
+                        text = "Créé le: ${acheteur.tempDateCreationStr}",
                         style = MaterialTheme.typography.bodySmall
                     )
                 }
@@ -467,7 +444,7 @@ fun ProduitItem(produit: _014_Produits) {
                 style = MaterialTheme.typography.bodyMedium
             )
             Text(
-                text = "ID: ${produit.id}",
+                text = "ID: ${produit.bsonObjectId}",
                 style = MaterialTheme.typography.bodySmall
             )
         }

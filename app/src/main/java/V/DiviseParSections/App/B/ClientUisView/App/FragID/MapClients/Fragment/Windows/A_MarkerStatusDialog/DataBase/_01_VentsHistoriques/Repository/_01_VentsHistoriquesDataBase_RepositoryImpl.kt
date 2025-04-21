@@ -4,7 +4,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Wi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._013_Acheteurs
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._014_Produits
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase.Companion.convertToFirebaseFormat
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase.Companion.map_01_VentsHistoriquesDataBase
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase.Companion.parsePeriodeFromSnapshot
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase.Companion.test_01_PeriodesVent
 import android.util.Log
@@ -18,7 +18,6 @@ import com.google.firebase.database.database
 import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
 import io.realm.kotlin.ext.query
-import io.realm.kotlin.ext.realmListOf
 import io.realm.kotlin.query.Sort
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -87,7 +86,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
         val testPeriodes = createTestData()
         updateModelDatasList(testPeriodes)
 
-        val dataToUpdate = convertToFirebaseFormat(testPeriodes)
+        val dataToUpdate = map_01_VentsHistoriquesDataBase(testPeriodes)
         firebaseRef.setValue(dataToUpdate).addOnCompleteListener { task ->
             updateRealm()
             loadFromFirebase()
@@ -107,7 +106,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
     private fun updateFirebase() {
         coroutineScope.launch {
             try {
-                val dataToUpdate = convertToFirebaseFormat(modelDatasSnapList)
+                val dataToUpdate = map_01_VentsHistoriquesDataBase(modelDatasSnapList)
                 removeFirebaseListener()
                 firebaseRef.setValue(dataToUpdate).addOnCompleteListener { task ->
                     attachFirebaseListener()
@@ -265,7 +264,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
                     if (updated) changesMade = true
 
                     // Process products for this acheteur
-                    acheteurSnapshot.child(_013_Acheteurs.NomsValeursModel.child_15_Produits.name).children.forEach { produitSnapshot ->
+                    acheteurSnapshot.child("child_15_Produits").children.forEach { produitSnapshot ->
                         val produit = _014_Produits.parseDataFromSnapshot(produitSnapshot) ?: return@forEach
                         val produitUpdated = updateProduitInAcheteur(periodeKey, vendeurKey, acheteurKey, produit)
                         if (produitUpdated) changesMade = true
@@ -285,19 +284,19 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
         if (modelUpdateInProgress.getAndSet(true)) return false
 
         try {
-            val periode = modelDatasSnapList.find { it.keyID == periodeKey } ?: return false
-            val vendeur = periode.child_012_Compts_Vendeurs.find { it.keyID == vendeurKey } ?: return false
-            val existingAcheteur = vendeur.child_013_Acheteurs.find { it.keyID == acheteur.keyID }
+            val periode = modelDatasSnapList.find { it.fireBaseKeyID == periodeKey } ?: return false
+            val vendeur = periode.child_012_Compts_Vendeurs.find { it.fireBaseKeyID == vendeurKey } ?: return false
+            val existingAcheteur = vendeur.child_013_Acheteurs.find { it.fireBaseKeyID == acheteur.fireBaseKeyID }
 
             return if (existingAcheteur != null) {
-                val changed = existingAcheteur.vid != acheteur.vid ||
+                val changed = existingAcheteur.bsonObjectId != acheteur.bsonObjectId ||
                         existingAcheteur.startDesignation != acheteur.startDesignation ||
-                        existingAcheteur.tempCreationString != acheteur.tempCreationString
+                        existingAcheteur.tempDateCreationStr != acheteur.tempDateCreationStr
 
                 if (changed) {
-                    existingAcheteur.vid = acheteur.vid
+                    existingAcheteur.bsonObjectId = acheteur.bsonObjectId
                     existingAcheteur.startDesignation = acheteur.startDesignation
-                    existingAcheteur.tempCreationString = acheteur.tempCreationString
+                    existingAcheteur.tempDateCreationStr = acheteur.tempDateCreationStr
                     true
                 } else {
                     false
@@ -320,18 +319,18 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
         if (modelUpdateInProgress.getAndSet(true)) return false
 
         try {
-            val periode = modelDatasSnapList.find { it.keyID == periodeKey } ?: return false
-            val vendeur = periode.child_012_Compts_Vendeurs.find { it.keyID == vendeurKey } ?: return false
-            val acheteur = vendeur.child_013_Acheteurs.find { it.keyID == acheteurKey } ?: return false
-            val existingProduit = acheteur.child_14Produits.find { it.keyID == produit.keyID }
+            val periode = modelDatasSnapList.find { it.fireBaseKeyID == periodeKey } ?: return false
+            val vendeur = periode.child_012_Compts_Vendeurs.find { it.fireBaseKeyID == vendeurKey } ?: return false
+            val acheteur = vendeur.child_013_Acheteurs.find { it.fireBaseKeyID == acheteurKey } ?: return false
+            val existingProduit = acheteur.child_14Produits.find { it.fireBaseKeyID == produit.fireBaseKeyID }
 
             return if (existingProduit != null) {
-                val changed = existingProduit.id != produit.id ||
+                val changed = existingProduit.bsonObjectId != produit.bsonObjectId ||
                         existingProduit.startDesignation != produit.startDesignation ||
                         existingProduit.quantity != produit.quantity
 
                 if (changed) {
-                    existingProduit.id = produit.id
+                    existingProduit.bsonObjectId = produit.bsonObjectId
                     existingProduit.startDesignation = produit.startDesignation
                     existingProduit.quantity = produit.quantity
                     true
@@ -402,52 +401,16 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
     }
 
     private fun createDeepCopyForRealm(source: _01_VentsHistoriquesDataBase): _01_VentsHistoriquesDataBase {
-        val copy = _01_VentsHistoriquesDataBase().apply {
-            keyID = source.keyID
-            dateDebutDeCettePeriode = source.dateDebutDeCettePeriode
-            tempDebutDeCettePeriode = source.tempDebutDeCettePeriode
-            child_012_Compts_Vendeurs = realmListOf()
-        }
+        val copy = _01_VentsHistoriquesDataBase.deepCopy(source)
 
+        // This code is redundant because deepCopy already handles child elements
+        // But keeping it for safety
         source.child_012_Compts_Vendeurs.forEach { sourceVendeur ->
-            val vendeurCopy = createVendeurCopy(sourceVendeur)
+            val vendeurCopy = _012_ComptsVendeurs.deepCopy(sourceVendeur)
             copy.child_012_Compts_Vendeurs.add(vendeurCopy)
         }
 
         return copy
-    }
-
-    private fun createVendeurCopy(sourceVendeur: _012_ComptsVendeurs): _012_ComptsVendeurs {
-        val vendeurCopy = _012_ComptsVendeurs().apply {
-            keyID = sourceVendeur.keyID
-            vid = sourceVendeur.vid
-            startDesignation = sourceVendeur.startDesignation
-            child_013_Acheteurs = realmListOf()
-        }
-
-        sourceVendeur.child_013_Acheteurs.forEach { sourceAcheteur ->
-            val acheteurCopy = _013_Acheteurs().apply {
-                keyID = sourceAcheteur.keyID
-                vid = sourceAcheteur.vid
-                startDesignation = sourceAcheteur.startDesignation
-                tempCreationString = sourceAcheteur.tempCreationString
-                child_14Produits = realmListOf()
-            }
-
-            sourceAcheteur.child_14Produits.forEach { sourceProduit ->
-                acheteurCopy.child_14Produits.add(_014_Produits().apply {
-                    keyID = sourceProduit.keyID
-                    id = sourceProduit.id
-                    startDesignation = sourceProduit.startDesignation
-                    tempCreationString = sourceProduit.tempCreationString
-                    quantity = sourceProduit.quantity
-                })
-            }
-
-            vendeurCopy.child_013_Acheteurs.add(acheteurCopy)
-        }
-
-        return vendeurCopy
     }
 
     override fun notifierDataChange() {
@@ -457,17 +420,17 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
             // Log current data state
             Log.d(TAG, "notifierDataChange: Current data count: ${modelDatasSnapList.size}")
             modelDatasSnapList.forEachIndexed { index, periode ->
-                Log.d(TAG, "Period[$index] - keyID: ${periode.keyID}, vendeurs: ${periode.child_012_Compts_Vendeurs.size}")
+                Log.d(TAG, "Period[$index] - keyID: ${periode.fireBaseKeyID}, vendeurs: ${periode.child_012_Compts_Vendeurs.size}")
                 periode.child_012_Compts_Vendeurs.forEachIndexed { vendeurIndex, vendeur ->
-                    Log.d(TAG, "  Vendeur[$vendeurIndex] - keyID: ${vendeur.keyID}, acheteurs: ${vendeur.child_013_Acheteurs.size}")
+                    Log.d(TAG, "  Vendeur[$vendeurIndex] - keyID: ${vendeur.fireBaseKeyID}, acheteurs: ${vendeur.child_013_Acheteurs.size}")
                     vendeur.child_013_Acheteurs.forEachIndexed { acheteurIndex, acheteur ->
-                        Log.d(TAG, "    Acheteur[$acheteurIndex] - keyID: ${acheteur.keyID}, produits: ${acheteur.child_14Produits.size}")
+                        Log.d(TAG, "    Acheteur[$acheteurIndex] - keyID: ${acheteur.fireBaseKeyID}, produits: ${acheteur.child_14Produits.size}")
                     }
                 }
             }
 
             // Update Firebase
-            val dataToUpdate = convertToFirebaseFormat(modelDatasSnapList)
+            val dataToUpdate = map_01_VentsHistoriquesDataBase(modelDatasSnapList)
             Log.d(TAG, "notifierDataChange: Preparing to update Firebase with ${dataToUpdate.size} items")
 
             // Remove listeners temporarily to avoid reentrant updates
@@ -498,7 +461,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
         period: _01_VentsHistoriquesDataBase,
         onSuccess: (Long) -> Unit,
     ) {
-        Log.d(TAG, "upsert_01_PeriodesVentEtReturnItVid: Starting update for period: ${period.keyID}")
+        Log.d(TAG, "upsert_01_PeriodesVentEtReturnItVid: Starting update for period: ${period.fireBaseKeyID}")
 
         if (modelUpdateInProgress.getAndSet(true)) {
             Log.d(TAG, "upsert_01_PeriodesVentEtReturnItVid: Update already in progress, aborting")
@@ -507,7 +470,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
 
         try {
             // Find if the period already exists in the list
-            val existingIndex = modelDatasSnapList.indexOfFirst { it.keyID == period.keyID }
+            val existingIndex = modelDatasSnapList.indexOfFirst { it.fireBaseKeyID == period.fireBaseKeyID }
 
             if (existingIndex != -1) {
                 // Update existing period
@@ -523,7 +486,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
             coroutineScope.launch {
                 // Update Firebase
                 try {
-                    val dataToUpdate = convertToFirebaseFormat(modelDatasSnapList)
+                    val dataToUpdate = map_01_VentsHistoriquesDataBase(modelDatasSnapList)
 
                     // Remove listeners temporarily
                     removeFirebaseListener()

@@ -64,8 +64,7 @@ open class VendeursViewModel(
         viewModelScope.launch {
             val newPeriode = _1_4_PeriodeVent(
                 vendeur_ParentVID = uiState.value.activeVendeurId,
-                startDateInString = _01_VentsHistoriquesDataBase.getCurrentDataString(),
-                heurDebutInString = _01_VentsHistoriquesDataBase.getCurrentTimeString()
+
             )
 
             periodeVentRepository.addDataAndReturneItVID(newPeriode) {
