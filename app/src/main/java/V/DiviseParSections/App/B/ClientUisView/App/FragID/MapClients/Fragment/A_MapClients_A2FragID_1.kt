@@ -101,7 +101,7 @@ private fun MapContent(
     var showMarkerDialog by remember { mutableStateOf(false) }
     val showMarkerDetails by remember { mutableStateOf(true) }
     var currentFilterMode by remember { mutableStateOf<ViewModel_MapClients_App2FragID1.VisibleClientsNow>(
-        ViewModel_MapClients_App2FragID1.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR) }
+        ViewModel_MapClients_App2FragID1.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX) }
 
     var editingMarkerId by remember { mutableLongStateOf(0L) }
     var showEditMarkerMode by remember { mutableStateOf(false) }

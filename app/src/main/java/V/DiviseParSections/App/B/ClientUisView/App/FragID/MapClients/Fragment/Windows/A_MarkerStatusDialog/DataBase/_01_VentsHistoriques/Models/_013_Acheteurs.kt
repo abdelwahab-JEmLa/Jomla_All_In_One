@@ -15,6 +15,7 @@ class _013_Acheteurs : RealmObject {
     var bsonObjectId: ObjectId = BsonObjectId()
 
     var idClient: Long = 0L
+    var nomClient: String = ""
 
     var startDesignation: String = ""
     var tempDateCreationStr: String = getCurrentDataTimeString()
@@ -43,7 +44,7 @@ class _013_Acheteurs : RealmObject {
         AVEC_MARCHANDISE(android.R.color.holo_blue_light, "عندو سلعة"),
         A_EVITE(android.R.color.black, "يتجنب"),
         COMMANDE_LENCE(android.R.color.holo_green_light, "نشط / متصل"),
-        CLIENT_ABSENT(android.R.color.darker_gray, "غائب الشاري"),
+        ACHETEUR_NON_DISPO(android.R.color.darker_gray, "الشاري غائب"),
         FERME(android.R.color.darker_gray, "مغلق")
     }
 

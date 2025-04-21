@@ -13,7 +13,8 @@ fun _01_Upsert_013_Acheteurs(
     ceComptVendeurInsertBonsAchatAuPeriodID: Long?,
     repositorysModel: _0_0_HeadOfRepositorys_Model,
     clientId: Long,
-    clientEtate: _013_Acheteurs.Etate,  // Renamed the parameter
+    clientEtate: _013_Acheteurs.Etate, // Renamed the parameter
+    nom: String,
 ) {
     // Get repository for periods
     val repo_01_VentsHistoriquesDataBase = viewModel.repo_01_VentsHistoriquesDataBase
@@ -66,6 +67,7 @@ fun _01_Upsert_013_Acheteurs(
         // Create new acheteur and add it to the vendeur
         acheteur = _013_Acheteurs().apply {
             idClient = clientId
+            nomClient= nom
             startDesignation = "client $idClient"
             tempDateCreationStr = _01_VentsHistoriquesDataBase.getCurrentDataTimeString()
             fireBaseKeyID = parse_fireBaseKeyID(idClient)

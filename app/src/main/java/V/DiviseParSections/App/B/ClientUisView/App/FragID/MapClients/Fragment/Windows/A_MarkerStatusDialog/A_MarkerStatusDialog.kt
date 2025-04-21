@@ -257,8 +257,10 @@ fun MarkerStatusDialog(
                                 ceComptVendeurInsertBonsAchatAuPeriodID,
                                 repositorysModel,
                                 clientId,
-                                _013_Acheteurs.Etate.COMMANDE_LENCE
-                            )
+                                _013_Acheteurs.Etate.COMMANDE_LENCE ,
+                                relatedClients?.nom!!,
+
+                                )
                             //----------------------------------------------------------------------------------------/
                         }
                     }
@@ -281,7 +283,7 @@ fun MarkerStatusDialog(
                         coroutineScope.launch {
                             Log.d(
                                 "MarkerStatusDialog",
-                                "Setting client ${selectedMarker?.id} to state: CLIENT_ABSENT"
+                                "Setting client ${selectedMarker?.id} to state: ACHETEUR_NON_DISPO"
                             )
                             relatedClients?.actuelleEtat = CLIENT_ABSENT
                             viewModel.updateData(relatedClients!!)
@@ -293,7 +295,8 @@ fun MarkerStatusDialog(
                                 ceComptVendeurInsertBonsAchatAuPeriodID,
                                 repositorysModel,
                                 clientId,
-                                _013_Acheteurs.Etate.CLIENT_ABSENT
+                                _013_Acheteurs.Etate.ACHETEUR_NON_DISPO,
+                                relatedClients.nom
                             )
                             //----------------------------------------------------------------------------------------/
                         }
