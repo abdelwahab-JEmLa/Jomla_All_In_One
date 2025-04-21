@@ -286,6 +286,7 @@ fun MarkerStatusDialog(
                             relatedClients?.actuelleEtat = CLIENT_ABSENT
                             viewModel.updateData(relatedClients!!)
                             onDismiss()
+
                             //----------------------------------------------------------------------------------------/
                             _01_Upsert_013_Acheteurs(
                                 viewModel,
