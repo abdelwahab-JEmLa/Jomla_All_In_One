@@ -45,7 +45,6 @@ fun _01_Upsert(
     }
 
 
-
     if (vendeur == null) {
         // Create new vendeur and add it to the period
         vendeur = _012_ComptsVendeurs().apply {

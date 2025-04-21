@@ -29,7 +29,6 @@ class ViewModel_MapClients_App2FragID1(
     val _0_0_HeadOfRepositorys_Repository:_0_0_HeadOfRepositorys_Repository,
     val repo_01_VentsHistoriquesDataBase : _01_VentsHistoriquesDataBase_Repository
 ) : ViewModel() {
-
     val modelDatasSnapList_1_3_BonAchat=_0_0_HeadOfRepositorys_Repository.repositorys_Model
         ._1_3_BonAchat_Repository.modelDatasSnapList
 
@@ -40,6 +39,7 @@ class ViewModel_MapClients_App2FragID1(
 
     var auClickeCaUpdateClientPar by mutableStateOf(B_ClientDataBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT)
     var mapReloadTigger by mutableIntStateOf(0)
+    var afficheLesJoursAuNoms by mutableStateOf(true)
 
     fun updateData(client: B_ClientDataBase): Unit {
         viewModelScope.launch {

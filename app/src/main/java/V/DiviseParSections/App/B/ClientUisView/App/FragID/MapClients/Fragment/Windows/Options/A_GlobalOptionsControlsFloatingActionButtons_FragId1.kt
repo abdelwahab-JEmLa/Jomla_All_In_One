@@ -30,6 +30,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material.icons.filled.Fireplace
+import androidx.compose.material.icons.filled.SearchOff
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -119,6 +120,32 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 if (showMenu) {
+
+                    val couleurButton1 = Color(0xFFF44336)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        FloatingActionButton(
+                            onClick = {
+                                viewModel.afficheLesJoursAuNoms = !viewModel.afficheLesJoursAuNoms
+                            },
+                            modifier = Modifier.size(40.dp),
+                            containerColor = couleurButton1
+                        ) {
+                            Icon(Icons.Filled.SearchOff, null)
+                        }
+
+                        if (showLabels) {
+                            Text(
+                                if (viewModel.afficheLesJoursAuNoms) "Masquer les jours" else "Afficher les jours",
+                                modifier = Modifier
+                                    .background(couleurButton1)
+                                    .padding(4.dp),
+                                color = Color.White
+                            )
+                        }
+                    }
 
                     val coloreButton = Color(0xFFF44336)
                     Row(

@@ -254,7 +254,23 @@ private fun MapContent(
                         client.latitude.takeIf { it != 0.0 } ?: DEFAULT_LATITUDE,
                         client.longitude
                     )
-                    title = "${client.nom}"
+
+                    // Get the day name of last purchase if needed
+                    title = if (viewModel.afficheLesJoursAuNoms) {
+                        // Lookup date of last purchase from historical data
+                        val lastPurchaseDay = findLastPurchaseDayForClient(
+                            viewModel.repo_01_VentsHistoriquesDataBase.modelDatasSnapList,
+                            client.id
+                        )
+                        if (lastPurchaseDay.isNotEmpty()) {
+                            "$lastPurchaseDay\n${client.nom}"
+                        } else {
+                            client.nom
+                        }
+                    } else {
+                        client.nom
+                    }
+
                     snippet = if (client.cUnClientTemporaire)
                         "Client temporaire" else "Client permanent"
                     setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
@@ -284,6 +300,7 @@ private fun MapContent(
                             it.setBackgroundColor(backgroundColor)
                         }
                     } catch (e: Exception) {
+                        // Exception handling (empty in original code)
                     }
 
                     setOnMarkerClickListener { clickedMarker, _ ->
@@ -300,9 +317,9 @@ private fun MapContent(
                     marker.showInfoWindow()
                 }
             } catch (_: Exception) {
+                // Exception handling (empty in original code)
             }
         }
-
         mapView.invalidate()
     }
 
