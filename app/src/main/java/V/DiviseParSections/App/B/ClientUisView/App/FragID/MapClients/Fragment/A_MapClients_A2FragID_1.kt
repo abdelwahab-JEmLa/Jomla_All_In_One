@@ -296,8 +296,18 @@ private fun MapContent(
                         container?.let {
                             val backgroundColor = actuelleEtat?.let { statue ->
                                 ContextCompat.getColor(context, statue.color)
-                            } ?: ContextCompat.getColor(context, android.R.color.white)
-                            it.setBackgroundColor(backgroundColor)
+                            }
+                            if (backgroundColor != null) {
+                                it.setBackgroundColor(backgroundColor)
+                            }
+
+                            // Find the title TextView and center it
+                            val titleTextViewId = xmlResources
+                                .find { it.first == "title" }?.second
+                            titleTextViewId?.let { titleId ->
+                                val titleTextView = infoWindow.view.findViewById<android.widget.TextView>(titleId)
+                                titleTextView?.gravity = android.view.Gravity.CENTER
+                            }
                         }
                     } catch (e: Exception) {
                         // Exception handling (empty in original code)
