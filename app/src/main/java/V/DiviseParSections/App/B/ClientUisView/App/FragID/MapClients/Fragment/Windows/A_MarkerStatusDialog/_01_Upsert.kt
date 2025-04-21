@@ -1,10 +1,10 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog
 
-
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._012_ComptsVendeurs
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._013_Acheteurs
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase.Companion.parse_fireBaseKeyID
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import io.realm.kotlin.ext.realmListOf
 
@@ -32,7 +32,7 @@ fun _01_Upsert(
 
             tempCreationStr = currentDateTime
             // Update keyID with proper format
-            fireBaseKeyID = "${idPeriodDonAncienDataBase}-($tempCreationStr)"
+            fireBaseKeyID = parse_fireBaseKeyID(idPeriodDonAncienDataBase)
             // Initialize empty vendor list
             child_012_Compts_Vendeurs = realmListOf()
         }
@@ -49,7 +49,7 @@ fun _01_Upsert(
         vendeur = _012_ComptsVendeurs().apply {
             idCompt = repositorysModel.activeIdDe_1_5_Vendeur
             startDesignation = "_012_ComptsVendeurs $idCompt"
-            fireBaseKeyID = "${idCompt}=${startDesignation}"
+            fireBaseKeyID = parse_fireBaseKeyID(idCompt)
             child_013_Acheteurs = realmListOf()
         }
         period.child_012_Compts_Vendeurs.add(vendeur)
@@ -66,7 +66,7 @@ fun _01_Upsert(
             idClient = clientId
             startDesignation = "client $idClient"
             tempDateCreationStr = _01_VentsHistoriquesDataBase.getCurrentDataTimeString()
-            fireBaseKeyID = "${idClient}=${startDesignation}"
+            fireBaseKeyID = parse_fireBaseKeyID(idClient)
             child_14Produits = realmListOf()
         }
         vendeur.child_013_Acheteurs.add(acheteur)

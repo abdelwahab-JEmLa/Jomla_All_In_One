@@ -100,6 +100,11 @@ class _01_VentsHistoriquesDataBase : RealmObject {
             LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy_MM_dd")) +
                     "(" + LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")) + ")"
 
+        fun parse_fireBaseKeyID(value :Long=0): String {
+            val getCurrentDataTimeString= getCurrentDataTimeString()
+
+            return   "${value}-($getCurrentDataTimeString)"
+        }
 
         /**
          * Generates test data for the _01_VentsHistoriquesDataBase
