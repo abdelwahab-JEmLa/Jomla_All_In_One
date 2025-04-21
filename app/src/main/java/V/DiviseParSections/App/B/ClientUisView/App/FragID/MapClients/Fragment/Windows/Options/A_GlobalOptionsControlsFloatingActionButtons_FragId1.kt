@@ -3,7 +3,6 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 // Importer la nouvelle fonction FilterView au lieu de FilterModesDialog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.C.FilterView
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.DayFilterDialog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.A_ChangeIdColor
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.AddMarkerButton
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.ClearHistoryButton
@@ -308,18 +307,7 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
             )
         }
         if (showDayFilterDialog) {
-            DayFilterDialog(  //<--
-            //TODO(1): cree ce displaye de   val days = listOf(
-                //                    "الأحد",    // Sunday
-                //                    "الإثنين",   // Monday
-                //                    "الثلاثاء",  // Tuesday
-                //                    "الأربعاء",  // Wednesday
-                //                    "الخميس",   // Thursday
-                //                    "الجمعة",   // Friday
-                //                    "السبت"     // Saturday
-                //                ) 
-                //au selection d un fab il ajout au filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList le 
-                //le jour click au deseection de supp 
+            DayFilterDialog(
                 viewModel = viewModel,
                 onDismiss = { showDayFilterDialog = false }
             )

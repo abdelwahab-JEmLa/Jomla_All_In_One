@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Options
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import androidx.compose.foundation.border
@@ -17,13 +17,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -52,10 +55,13 @@ fun DayFilterDialog(
         "الجمعة",   // Friday
         "السبت"     // Saturday
     )
-    
+
     // Create a local state for selected days to provide immediate UI feedback before updating viewModel
     var selectedDays by remember { mutableStateOf(viewModel.filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList) }
-    
+
+    // Local state to track the toggle value of afficheLesJoursAuNoms
+    var showDayNames by remember { mutableStateOf(viewModel.afficheLesJoursAuNoms) }
+
     Dialog(onDismissRequest = onDismiss) {
         Card(
             modifier = Modifier
@@ -84,7 +90,7 @@ fun DayFilterDialog(
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center
                     )
-                    
+
                     IconButton(onClick = onDismiss) {
                         Icon(
                             imageVector = Icons.Default.Close,
@@ -92,47 +98,92 @@ fun DayFilterDialog(
                         )
                     }
                 }
-                
+
                 Spacer(modifier = Modifier.height(16.dp))
-                
+
+                // New: Toggle for showing day names on markers
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp)
+                        .border(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.outlineVariant,
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                        .padding(12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.DateRange,
+                            contentDescription = "Show Day Names",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text(
+                            text = "إظهار أسماء الأيام على العلامات", // "Show day names on markers" in Arabic
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+
+                    Switch(
+                        checked = showDayNames,
+                        onCheckedChange = { isChecked ->
+                            showDayNames = isChecked
+                            viewModel.afficheLesJoursAuNoms = isChecked
+                            // Trigger map reload
+                            viewModel.mapReloadTigger++
+                        }
+                    )
+                }
+
+                Divider(modifier = Modifier.padding(vertical = 8.dp))
+
                 // Button to clear all selections
                 Button(
                     onClick = {
                         selectedDays = emptyList()
                         viewModel.filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList = emptyList()
+                        viewModel.mapReloadTigger++ // Trigger map reload
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("إزالة جميع المرشحات")
                 }
-                
+
                 Spacer(modifier = Modifier.height(16.dp))
-                
+
                 LazyColumn {
                     itemsIndexed(days) { _, day ->
                         val isSelected = selectedDays.contains(day)
-                        
+
                         DayItem(
                             day = day,
                             isSelected = isSelected,
-                            onToggle = { 
+                            onToggle = {
                                 selectedDays = if (isSelected) {
                                     selectedDays - day
                                 } else {
                                     selectedDays + day
                                 }
-                                
+
                                 // Update viewModel's filter list
                                 viewModel.filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList = selectedDays
+                                viewModel.mapReloadTigger++ // Trigger map reload
                             }
                         )
-                        
+
                         Spacer(modifier = Modifier.height(8.dp))
                     }
                 }
-                
+
                 Spacer(modifier = Modifier.height(16.dp))
-                
+
                 Button(
                     onClick = onDismiss,
                     modifier = Modifier.fillMaxWidth()
@@ -155,13 +206,13 @@ private fun DayItem(
     } else {
         MaterialTheme.colorScheme.surface
     }
-    
+
     val textColor = if (isSelected) {
         MaterialTheme.colorScheme.onPrimaryContainer
     } else {
         MaterialTheme.colorScheme.onSurface
     }
-    
+
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -187,7 +238,7 @@ private fun DayItem(
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Medium
             )
-            
+
             if (isSelected) {
                 Icon(
                     imageVector = Icons.Default.Check,

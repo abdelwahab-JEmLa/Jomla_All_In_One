@@ -39,9 +39,8 @@ class ViewModel_MapClients_App2FragID1(
 
     var auClickeCaUpdateClientPar by mutableStateOf(B_ClientDataBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT)
     var mapReloadTigger by mutableIntStateOf(0)
-    var afficheLesJoursAuNoms by mutableStateOf(true)
 
-    // Replace the incorrect line with this:
+    var afficheLesJoursAuNoms by mutableStateOf(true)
     var filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList by mutableStateOf<List<String>>(emptyList())
 
     fun updateData(client: B_ClientDataBase): Unit {
