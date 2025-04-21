@@ -5,6 +5,7 @@ import com.google.firebase.database.DataSnapshot
 import io.realm.kotlin.ext.realmListOf
 import io.realm.kotlin.types.RealmList
 import io.realm.kotlin.types.RealmObject
+import io.realm.kotlin.types.annotations.Ignore
 import io.realm.kotlin.types.annotations.PrimaryKey
 import org.mongodb.kbson.BsonObjectId
 import org.mongodb.kbson.ObjectId
@@ -22,8 +23,20 @@ class _013_Acheteurs : RealmObject {
 
     var child_14Produits: RealmList<_014_Produits> = realmListOf()
 
-    // Section Etates Mutable
-    var etate: Etate = Etate.NON_DEFINI
+
+    var etateValue: String = Etate.NON_DEFINI.name
+
+    // Create a transient property with getter/setter for the enum
+    @Ignore
+    var etate: Etate
+        get() = try {
+            Etate.valueOf(etateValue)
+        } catch (e: Exception) {
+            Etate.NON_DEFINI
+        }
+        set(value) {
+            etateValue = value.name
+        }
 
     enum class Etate(val color: Int, val nomArabe: String) {
         NON_DEFINI(android.R.color.holo_orange_light, "غير محدد"),
@@ -43,6 +56,7 @@ class _013_Acheteurs : RealmObject {
             const val START_DESIGNATION = "startDesignation"
             const val TEMP_DATE_CREATION = "tempDateCreationStr"
             const val CHILD_PRODUITS = "child_14Produits"
+            const val ETATE_VALUE = "etateValue"
         }
 
         fun mapDatas(datas: List<_013_Acheteurs>): Map<String, Any> {
@@ -52,7 +66,8 @@ class _013_Acheteurs : RealmObject {
                     SchemaFields.ID_CLIENT to data.idClient,
                     SchemaFields.START_DESIGNATION to data.startDesignation,
                     SchemaFields.TEMP_DATE_CREATION to data.tempDateCreationStr,
-                    SchemaFields.CHILD_PRODUITS to _014_Produits.mapDatas(data.child_14Produits)
+                    SchemaFields.CHILD_PRODUITS to _014_Produits.mapDatas(data.child_14Produits),
+                    SchemaFields.ETATE_VALUE to data.etateValue
                 )
             }
         }
@@ -80,6 +95,7 @@ class _013_Acheteurs : RealmObject {
                     startDesignation = snapshot.child(SchemaFields.START_DESIGNATION).getValue(String::class.java) ?: ""
                     tempDateCreationStr = snapshot.child(SchemaFields.TEMP_DATE_CREATION).getValue(String::class.java) ?: "yyyy.mm.dd(HH:mm)"
                     child_14Produits = realmListOf()
+                    etateValue = snapshot.child(SchemaFields.ETATE_VALUE).getValue(String::class.java) ?: Etate.NON_DEFINI.name
                 }
 
                 val produitsSnapshot = snapshot.child(SchemaFields.CHILD_PRODUITS)
@@ -93,6 +109,7 @@ class _013_Acheteurs : RealmObject {
                 return null
             }
         }
+
         fun deepCopy(source: _013_Acheteurs): _013_Acheteurs {
             return _013_Acheteurs().apply {
                 this.bsonObjectId = source.bsonObjectId
@@ -100,6 +117,7 @@ class _013_Acheteurs : RealmObject {
                 startDesignation = source.startDesignation
                 tempDateCreationStr = source.tempDateCreationStr
                 fireBaseKeyID = source.fireBaseKeyID
+                etateValue = source.etateValue
 
                 // Deep copy produits
                 child_14Produits = realmListOf()
@@ -108,6 +126,7 @@ class _013_Acheteurs : RealmObject {
                 }
             }
         }
+
         fun testData(): List<_013_Acheteurs> {
             val data = mutableListOf<_013_Acheteurs>()
 
@@ -117,6 +136,8 @@ class _013_Acheteurs : RealmObject {
                     tempDateCreationStr = "2025_04_20(12:00)"
                     fireBaseKeyID = "${this.bsonObjectId}->$startDesignation"
                     child_14Produits = realmListOf()
+                    // Set random etate for test data
+                    etate = Etate.entries.toTypedArray()[(0..5).random()]
                 }
 
                 // Create and add products
@@ -130,8 +151,5 @@ class _013_Acheteurs : RealmObject {
 
             return data
         }
-
-
     }
-
 }
