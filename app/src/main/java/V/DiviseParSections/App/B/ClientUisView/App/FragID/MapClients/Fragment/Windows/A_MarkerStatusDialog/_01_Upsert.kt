@@ -44,6 +44,7 @@ fun _01_Upsert(
         it.idCompt == repositorysModel.activeIdDe_1_5_Vendeur
     }
 
+
     if (vendeur == null) {
         // Create new vendeur and add it to the period
         vendeur = _012_ComptsVendeurs().apply {
