@@ -1,31 +1,35 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
-import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,100 +43,101 @@ fun DayFilterDialog(
     viewModel: ViewModel_MapClients_App2FragID1,
     onDismiss: () -> Unit
 ) {
+    val days = listOf(
+        "الأحد",    // Sunday
+        "الإثنين",   // Monday
+        "الثلاثاء",  // Tuesday
+        "الأربعاء",  // Wednesday
+        "الخميس",   // Thursday
+        "الجمعة",   // Friday
+        "السبت"     // Saturday
+    )
+    
+    // Create a local state for selected days to provide immediate UI feedback before updating viewModel
+    var selectedDays by remember { mutableStateOf(viewModel.filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList) }
+    
     Dialog(onDismissRequest = onDismiss) {
-        Surface(
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
             shape = RoundedCornerShape(16.dp),
-            color = MaterialTheme.colorScheme.surface
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface
+            ),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 8.dp
+            )
         ) {
             Column(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .wrapContentSize(),
+                modifier = Modifier.padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = "فلتر حسب اليوم",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-
-                val days = listOf(
-                    "الأحد",    // Sunday
-                    "الإثنين",   // Monday
-                    "الثلاثاء",  // Tuesday
-                    "الأربعاء",  // Wednesday
-                    "الخميس",   // Thursday
-                    "الجمعة",   // Friday
-                    "السبت"     // Saturday
-                )
-
-                days.chunked(2).forEach { rowDays ->
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    ) {
-                        rowDays.forEach { day ->
-                            DayButton(
-                                day = day,
-                                isSelected = viewModel.filterLesClientsOuLeurDernierAchatsDataStr == day,
-                                onClick = {
-                                    viewModel.filterLesClientsOuLeurDernierAchatsDataStr = day
-                                    viewModel.mapReloadTigger++
-                                }
-                            )
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Clear filter button
-                    Button(
-                        onClick = {
-                            viewModel.filterLesClientsOuLeurDernierAchatsDataStr = null.toString()
-                            viewModel.mapReloadTigger++
-                        }
-                    ) {
+                    Text(
+                        text = "فلتر حسب اليوم",
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center
+                    )
+                    
+                    IconButton(onClick = onDismiss) {
                         Icon(
-                            Icons.Default.Clear,
-                            contentDescription = "Clear filter",
-                            modifier = Modifier.size(20.dp)
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Close"
                         )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text("مسح الفلتر")
-                    }
-
-                    // Toggle day display button
-                    Button(
-                        onClick = {
-                            viewModel.afficheLesJoursAuNoms = !viewModel.afficheLesJoursAuNoms
-                            viewModel.mapReloadTigger++
-                        }
-                    ) {
-                        Icon(
-                            if (viewModel.afficheLesJoursAuNoms) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                            contentDescription = "Toggle day visibility",
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(if (viewModel.afficheLesJoursAuNoms) "إخفاء الأيام" else "إظهار الأيام")
                     }
                 }
-
+                
                 Spacer(modifier = Modifier.height(16.dp))
-
-                TextButton(
+                
+                // Button to clear all selections
+                Button(
+                    onClick = {
+                        selectedDays = emptyList()
+                        viewModel.filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList = emptyList()
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("إزالة جميع المرشحات")
+                }
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                LazyColumn {
+                    itemsIndexed(days) { _, day ->
+                        val isSelected = selectedDays.contains(day)
+                        
+                        DayItem(
+                            day = day,
+                            isSelected = isSelected,
+                            onToggle = { 
+                                selectedDays = if (isSelected) {
+                                    selectedDays - day
+                                } else {
+                                    selectedDays + day
+                                }
+                                
+                                // Update viewModel's filter list
+                                viewModel.filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList = selectedDays
+                            }
+                        )
+                        
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                Button(
                     onClick = onDismiss,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("إغلاق")
+                    Text("موافق")
                 }
             }
         }
@@ -140,32 +145,58 @@ fun DayFilterDialog(
 }
 
 @Composable
-fun DayButton(
+private fun DayItem(
     day: String,
     isSelected: Boolean,
-    onClick: () -> Unit
+    onToggle: () -> Unit
 ) {
-    Card(
+    val backgroundColor = if (isSelected) {
+        MaterialTheme.colorScheme.primaryContainer
+    } else {
+        MaterialTheme.colorScheme.surface
+    }
+    
+    val textColor = if (isSelected) {
+        MaterialTheme.colorScheme.onPrimaryContainer
+    } else {
+        MaterialTheme.colorScheme.onSurface
+    }
+    
+    Surface(
         modifier = Modifier
-            .padding(4.dp)
-            .wrapContentSize(),
-        shape = RoundedCornerShape(8.dp)
+            .fillMaxWidth()
+            .clickable(onClick = onToggle)
+            .border(
+                width = 1.dp,
+                color = if (isSelected) MaterialTheme.colorScheme.primary else Color.LightGray,
+                shape = RoundedCornerShape(8.dp)
+            ),
+        shape = RoundedCornerShape(8.dp),
+        color = backgroundColor
     ) {
-        Box(
+        Row(
             modifier = Modifier
-                .background(
-                    if (isSelected) MaterialTheme.colorScheme.primary
-                    else MaterialTheme.colorScheme.surfaceVariant
-                )
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            contentAlignment = Alignment.Center
+                .fillMaxWidth()
+                .padding(12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = day,
+                color = textColor,
                 style = MaterialTheme.typography.bodyLarge,
-                color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center
+                fontWeight = FontWeight.Medium
             )
+            
+            if (isSelected) {
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    contentDescription = "Selected",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            } else {
+                Spacer(modifier = Modifier.width(24.dp))
+            }
         }
     }
 }

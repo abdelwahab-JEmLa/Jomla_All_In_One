@@ -149,7 +149,7 @@ private fun MapContent(
     val clientDataBaseSnapList = viewModel.bProto_ClientsDataBase
 
     LaunchedEffect(clientDataBaseSnapList.toList(), clientEnCourDeVent, currentFilterMode,
-        viewModel.mapReloadTigger, viewModel.filterLesClientsOuLeurDernierAchatsDataStr
+        viewModel.mapReloadTigger
     ) {
         val existingMarkers = mapView.overlays.filterIsInstance<Marker>()
         existingMarkers.forEach { it.closeInfoWindow() }
@@ -229,118 +229,114 @@ private fun MapContent(
             }
         }
 
-        // Apply the filter based on search text if it's not empty
-        val finalClientsList = if (!viewModel.filterLesClientsOuLeurDernierAchatsDataStr.isNullOrEmpty()) {
-            val searchText = viewModel.filterLesClientsOuLeurDernierAchatsDataStr.lowercase()
-
-            clientsToShow.filter { client ->
-                // Check if client name contains the search text
-                val nameMatches = client.nom.lowercase().contains(searchText)
-
-                // Check if any of the client's purchases contain the search text in date
+        // Process each client that passed the initial filter
+        clientsToShow.forEach { client ->
+            val shouldDisplayClient = if (viewModel.filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList.isEmpty()) {
+                // If filter list is empty, display all clients
+                true
+            } else {
+                // Find the last purchase day for this client
                 val lastPurchaseDay = findLastPurchaseDayForClient(
                     viewModel.repo_01_VentsHistoriquesDataBase.modelDatasSnapList,
                     client.id
                 )
-                val purchaseDayMatches = lastPurchaseDay.lowercase().contains(searchText)
-
-                // Return true if either name or purchase day matches
-                nameMatches || purchaseDayMatches
+                // Only display client if their last purchase day is in the filter list
+                lastPurchaseDay.isNotEmpty() && viewModel.filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList.contains(lastPurchaseDay)  //<--
+                //TODO(1): cree logs pour trouve pk le filter par jour ne marche pas 
             }
-        } else {
-            clientsToShow
-        }
 
-        finalClientsList.forEach { client ->
-            try {
-                val actuelleEtat =
-                    if (client.id == clientEnCourDeVent)
-                        B_ClientDataBase.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT
-                    else client.actuelleEtat
+            // Only proceed with marker creation if the client should be displayed
+            if (shouldDisplayClient) {
+                try {
+                    val actuelleEtat =
+                        if (client.id == clientEnCourDeVent)
+                            B_ClientDataBase.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT
+                        else client.actuelleEtat
 
-                val marker = Marker(mapView).apply {
-                    id = client.id.toString()
-                    position = GeoPoint(
-                        client.latitude.takeIf { it != 0.0 } ?: DEFAULT_LATITUDE,
-                        client.longitude
-                    )
-
-                    // Get the day name of last purchase if needed
-                    title = if (viewModel.afficheLesJoursAuNoms) {
-                        // Lookup date of last purchase from historical data
-                        val lastPurchaseDay = findLastPurchaseDayForClient(
-                            viewModel.repo_01_VentsHistoriquesDataBase.modelDatasSnapList,
-                            client.id
+                    val marker = Marker(mapView).apply {
+                        id = client.id.toString()
+                        position = GeoPoint(
+                            client.latitude.takeIf { it != 0.0 } ?: DEFAULT_LATITUDE,
+                            client.longitude
                         )
 
-                        if (lastPurchaseDay.isNotEmpty()) {
-                            "$lastPurchaseDay\n${client.nom}"
+                        // Get the day name of last purchase if needed
+                        title = if (viewModel.afficheLesJoursAuNoms) {
+                            // Lookup date of last purchase from historical data
+                            val lastPurchaseDay = findLastPurchaseDayForClient(
+                                viewModel.repo_01_VentsHistoriquesDataBase.modelDatasSnapList,
+                                client.id
+                            )
+                            if (lastPurchaseDay.isNotEmpty()) {
+                                "$lastPurchaseDay\n${client.nom}"
+                            } else {
+                                client.nom
+                            }
                         } else {
                             client.nom
                         }
-                    } else {
-                        client.nom
-                    }
 
-                    snippet = if (client.cUnClientTemporaire)
-                        "Client temporaire" else "Client permanent"
-                    setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                        snippet = if (client.cUnClientTemporaire)
+                            "Client temporaire" else "Client permanent"
+                        setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
 
-                    try {
-                        val markerInfoWindowLayout = xmlResources
-                            .find { it.first == "marker_info_window" }?.second
+                        try {
+                            val markerInfoWindowLayout = xmlResources
+                                .find { it.first == "marker_info_window" }?.second
 
-                        if (markerInfoWindowLayout == null) {
-                            throw IllegalStateException("marker_info_window layout not found")
-                        }
-
-                        infoWindow = MarkerInfoWindow(markerInfoWindowLayout, mapView)
-
-                        val containerResourceId = xmlResources
-                            .find { it.first == "info_window_container" }?.second
-
-                        if (containerResourceId == null) {
-                            throw IllegalStateException("info_window_container ID not found")
-                        }
-
-                        val container = infoWindow.view.findViewById<LinearLayout>(containerResourceId)
-                        container?.let {
-                            val backgroundColor = actuelleEtat?.let { statue ->
-                                ContextCompat.getColor(context, statue.color)
-                            }
-                            if (backgroundColor != null) {
-                                it.setBackgroundColor(backgroundColor)
+                            if (markerInfoWindowLayout == null) {
+                                throw IllegalStateException("marker_info_window layout not found")
                             }
 
-                            // Find the title TextView and center it
-                            val titleTextViewId = xmlResources
-                                .find { it.first == "title" }?.second
-                            titleTextViewId?.let { titleId ->
-                                val titleTextView = infoWindow.view.findViewById<android.widget.TextView>(titleId)
-                                titleTextView?.gravity = android.view.Gravity.CENTER
+                            infoWindow = MarkerInfoWindow(markerInfoWindowLayout, mapView)
+
+                            val containerResourceId = xmlResources
+                                .find { it.first == "info_window_container" }?.second
+
+                            if (containerResourceId == null) {
+                                throw IllegalStateException("info_window_container ID not found")
                             }
+
+                            val container = infoWindow.view.findViewById<LinearLayout>(containerResourceId)
+                            container?.let {
+                                val backgroundColor = actuelleEtat?.let { statue ->
+                                    ContextCompat.getColor(context, statue.color)
+                                }
+                                if (backgroundColor != null) {
+                                    it.setBackgroundColor(backgroundColor)
+                                }
+
+                                // Find the title TextView and center it
+                                val titleTextViewId = xmlResources
+                                    .find { it.first == "title" }?.second
+                                titleTextViewId?.let { titleId ->
+                                    val titleTextView = infoWindow.view.findViewById<android.widget.TextView>(titleId)
+                                    titleTextView?.gravity = android.view.Gravity.CENTER
+                                }
+                            }
+                        } catch (e: Exception) {
+                            // Exception handling (empty in original code)
                         }
-                    } catch (e: Exception) {
-                        // Exception handling (empty in original code)
+
+                        setOnMarkerClickListener { clickedMarker, _ ->
+                            selectedMarker = clickedMarker
+                            showMarkerDialog = true
+                            if (showMarkerDetails) clickedMarker.showInfoWindow()
+                            true
+                        }
                     }
 
-                    setOnMarkerClickListener { clickedMarker, _ ->
-                        selectedMarker = clickedMarker
-                        showMarkerDialog = true
-                        if (showMarkerDetails) clickedMarker.showInfoWindow()
-                        true
+                    mapView.overlays.add(marker)
+
+                    if (showMarkerDetails) {
+                        marker.showInfoWindow()
                     }
+                } catch (_: Exception) {
+                    // Exception handling (empty in original code)
                 }
-
-                mapView.overlays.add(marker)
-
-                if (showMarkerDetails) {
-                    marker.showInfoWindow()
-                }
-            } catch (_: Exception) {
-                // Exception handling (empty in original code)
             }
         }
+
         mapView.invalidate()
     }
 
@@ -501,7 +497,6 @@ private fun MapContent(
         }
     }
 }
-
 private class FilterLogger {
     companion object {
         private const val TAG = "FilterChangeLog"

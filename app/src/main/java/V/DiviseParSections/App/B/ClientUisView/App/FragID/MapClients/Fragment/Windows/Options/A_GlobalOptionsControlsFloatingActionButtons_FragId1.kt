@@ -140,8 +140,8 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
 
                         if (showLabels) {
                             Text(
-                                if (viewModel.filterLesClientsOuLeurDernierAchatsDataStr != null)
-                                    "فلتر: ${viewModel.filterLesClientsOuLeurDernierAchatsDataStr}"
+                                if (viewModel.filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList != null)
+                                    "فلتر: ${viewModel.filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList}"
                                 else "فلتر حسب اليوم",
                                 modifier = Modifier
                                     .background(couleurButton1)
@@ -283,12 +283,7 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
             }
         }
 
-        if (showDayFilterDialog) {
-            DayFilterDialog(
-                viewModel = viewModel,
-                onDismiss = { showDayFilterDialog = false }
-            )
-        }
+
 
         // Show DataBaseEditeWindows dialog when showDatabaseEditDialog is true
         if (showDatabaseEditDialog) {
@@ -310,6 +305,23 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                     onPickFilter(selectedMode)
                 },
                 onDismiss = { showFilterDialog = false }
+            )
+        }
+        if (showDayFilterDialog) {
+            DayFilterDialog(  //<--
+            //TODO(1): cree ce displaye de   val days = listOf(
+                //                    "الأحد",    // Sunday
+                //                    "الإثنين",   // Monday
+                //                    "الثلاثاء",  // Tuesday
+                //                    "الأربعاء",  // Wednesday
+                //                    "الخميس",   // Thursday
+                //                    "الجمعة",   // Friday
+                //                    "السبت"     // Saturday
+                //                ) 
+                //au selection d un fab il ajout au filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList le 
+                //le jour click au deseection de supp 
+                viewModel = viewModel,
+                onDismiss = { showDayFilterDialog = false }
             )
         }
     }

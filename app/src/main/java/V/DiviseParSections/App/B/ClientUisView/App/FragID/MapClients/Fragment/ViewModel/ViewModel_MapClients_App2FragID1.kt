@@ -41,7 +41,8 @@ class ViewModel_MapClients_App2FragID1(
     var mapReloadTigger by mutableIntStateOf(0)
     var afficheLesJoursAuNoms by mutableStateOf(true)
 
-    var filterLesClientsOuLeurDernierAchatsDataStr by mutableStateOf("")
+    // Replace the incorrect line with this:
+    var filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList by mutableStateOf<List<String>>(emptyList())
 
     fun updateData(client: B_ClientDataBase): Unit {
         viewModelScope.launch {
