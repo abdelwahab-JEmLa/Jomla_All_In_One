@@ -98,7 +98,6 @@ class _01_VentsHistoriquesDataBase : RealmObject {
             }
         }
 
-
         fun getCurrentDataTimeString(): String =
             LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy_MM_dd")) +
                     "(" + LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")) + ")"

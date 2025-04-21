@@ -29,6 +29,6 @@ class _0_0_HeadOfRepositorys_Model(
     val databaseReference_1_5_Vendeur: DatabaseReference = _1_5_Vendeur_Repository.sonDataBaseRef,
     val databaseReference_1_4_PeriodeVent: DatabaseReference = _1_4_PeriodeVent_Repository.sonDataBaseRef,
 
-    var activeIdDe_1_5_Vendeur: Long = 2L,
+    var activeIdDe_1_5_Vendeur: Long = 1L,
     )
 
