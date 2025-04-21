@@ -58,5 +58,14 @@ class _014_Produits : RealmObject {
                 quantity = snapshot.child(NomsValeursModel.quantity.name).getValue(Int::class.java) ?: 0
             }
         }
+        fun deepCopy(source: _014_Produits): _014_Produits {
+            return _014_Produits().apply {
+                id = source.id
+                startDesignation = source.startDesignation
+                tempCreationString = source.tempCreationString
+                keyID = source.keyID
+                quantity = source.quantity
+            }
+        }
     }
 }

@@ -15,7 +15,7 @@ class _013_Acheteurs : RealmObject {
     var tempCreationString: String = "yyyy_mm_dd(HH:mm)"
 
     @PrimaryKey
-    var keyID: String = "${vid}=${startDesignation.replace(" ", "_")}"
+    var keyID: String = "${vid}=${startDesignation}"
 
     var child_14Produits: RealmList<_014_Produits> = realmListOf()
 
@@ -83,7 +83,21 @@ class _013_Acheteurs : RealmObject {
 
             return acheteur
         }
-        
+        fun deepCopy(source: _013_Acheteurs): _013_Acheteurs {
+            return _013_Acheteurs().apply {
+                vid = source.vid
+                idClient = source.idClient
+                startDesignation = source.startDesignation
+                tempCreationString = source.tempCreationString
+                keyID = source.keyID
+
+                // Deep copy produits
+                child_14Produits = realmListOf()
+                source.child_14Produits.forEach { sourceProduit ->
+                    child_14Produits.add(_014_Produits.deepCopy(sourceProduit))
+                }
+            }
+        }
 
     }
 

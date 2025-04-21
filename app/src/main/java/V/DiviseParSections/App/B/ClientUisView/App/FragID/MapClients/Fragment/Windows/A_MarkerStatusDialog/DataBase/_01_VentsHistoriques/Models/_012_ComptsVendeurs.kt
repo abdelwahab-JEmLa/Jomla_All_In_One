@@ -12,7 +12,7 @@ class _012_ComptsVendeurs : RealmObject {
     var startDesignation: String = "_012_ComptsVendeurs $idCompt"
 
     @PrimaryKey
-    var keyID: String = "${vid}=${startDesignation.replace(" ", "_")}"
+    var keyID: String = "${vid}=${startDesignation}"
 
     var child_013_Acheteurs: RealmList<_013_Acheteurs> = realmListOf()
 
@@ -62,6 +62,20 @@ class _012_ComptsVendeurs : RealmObject {
                 val acheteursList = _013_Acheteurs.testData()
                 acheteursList.forEach { acheteur ->
                     child_013_Acheteurs.add(acheteur)
+                }
+            }
+        }
+        fun deepCopy(source: _012_ComptsVendeurs): _012_ComptsVendeurs {
+            return _012_ComptsVendeurs().apply {
+                vid = source.vid
+                idCompt = source.idCompt
+                startDesignation = source.startDesignation
+                keyID = source.keyID
+
+                // Deep copy acheteurs
+                child_013_Acheteurs = realmListOf()
+                source.child_013_Acheteurs.forEach { sourceAcheteur ->
+                    child_013_Acheteurs.add(_013_Acheteurs.deepCopy(sourceAcheteur))
                 }
             }
         }

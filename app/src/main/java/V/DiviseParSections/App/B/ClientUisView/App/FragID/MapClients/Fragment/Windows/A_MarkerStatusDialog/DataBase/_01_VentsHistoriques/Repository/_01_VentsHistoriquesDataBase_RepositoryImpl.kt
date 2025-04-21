@@ -532,7 +532,6 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
                         .addOnSuccessListener {
                             Log.d(TAG, "upsert_01_PeriodesVentEtReturnItVid: Firebase update successful")
                             attachFirebaseListener()
-                            onSuccess(period.vid)
                         }
                         .addOnFailureListener { exception ->
                             Log.e(TAG, "upsert_01_PeriodesVentEtReturnItVid: Firebase update failed", exception)
