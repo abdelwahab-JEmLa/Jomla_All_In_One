@@ -322,6 +322,16 @@ fun MarkerStatusDialog(
                             viewModel.updateData(relatedClients!!)
                             onDismiss()
                         }
+                        //----------------------------------------------------------------------------------------/
+                        _01_Upsert_013_Acheteurs(
+                            viewModel,
+                            ceComptVendeurInsertBonsAchatAuPeriodID,
+                            repositorysModel,
+                            clientId,
+                            _013_Acheteurs.Etate.AVEC_MARCHANDISE,
+                            relatedClients?.nom!!
+                        )
+                        //----------------------------------------------------------------------------------------/
                     }
                 )
 
@@ -344,6 +354,16 @@ fun MarkerStatusDialog(
                             viewModel.updateData(relatedClients!!)
                             onDismiss()
                         }
+                        //----------------------------------------------------------------------------------------/
+                        _01_Upsert_013_Acheteurs(
+                            viewModel,
+                            ceComptVendeurInsertBonsAchatAuPeriodID,
+                            repositorysModel,
+                            clientId,
+                            _013_Acheteurs.Etate.FERME,
+                            relatedClients?.nom!!
+                        )
+                        //----------------------------------------------------------------------------------------/
                     }
                 )
 
