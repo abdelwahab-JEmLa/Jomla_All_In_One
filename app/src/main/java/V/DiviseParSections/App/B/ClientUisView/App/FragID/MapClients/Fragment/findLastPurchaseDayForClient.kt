@@ -6,6 +6,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Wi
 data class LastPurchaseInfo(
     val dayName: String = "",
     val timeStr: String = ""
+    // TODO(1) Resolved: Time is now formatted as 12 hour with ص (AM) or م (PM)
 )
 
 fun findLastPurchaseInfoForClient(
@@ -31,9 +32,45 @@ fun findLastPurchaseInfoForClient(
 private fun extractTimeFromDateString(dateTimeString: String): String {
     try {
         val timeMatch = Regex("\\((.*?)\\)").find(dateTimeString)
-        return timeMatch?.groupValues?.getOrNull(1) ?: ""
+        val extractedTime = timeMatch?.groupValues?.getOrNull(1) ?: ""
+
+        if (extractedTime.isEmpty()) {
+            return ""
+        }
+
+        // Convert to Arabic time format with ص (AM) or م (PM)
+        return formatTimeToArabic(extractedTime)
     } catch (e: Exception) {
         return ""
+    }
+}
+
+private fun formatTimeToArabic(timeString: String): String {
+    try {
+        // Assuming the time format is HH:MM:SS or HH:MM
+        val timeParts = timeString.split(":")
+        if (timeParts.size < 2) {
+            return timeString
+        }
+
+        val hour = timeParts[0].toIntOrNull() ?: return timeString
+        val minute = timeParts[1].toIntOrNull() ?: return timeString
+
+        // Check if it's AM or PM
+        val isPM = hour >= 12
+        val amPmIndicator = if (isPM) "م" else "ص"
+
+        // Convert to 12-hour format
+        val hour12 = when {
+            hour == 0 -> 12
+            hour > 12 -> hour - 12
+            else -> hour
+        }
+
+        // Format to hour:minute AM/PM in Arabic
+        return String.format("%d:%02d %s", hour12, minute, amPmIndicator)
+    } catch (e: Exception) {
+        return timeString
     }
 }
 
