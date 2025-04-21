@@ -8,11 +8,12 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Wi
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import io.realm.kotlin.ext.realmListOf
 
-fun _01_Upsert(
+fun _01_Upsert_013_Acheteurs(
     viewModel: ViewModel_MapClients_App2FragID1,
     ceComptVendeurInsertBonsAchatAuPeriodID: Long?,
     repositorysModel: _0_0_HeadOfRepositorys_Model,
     clientId: Long,
+    clientEtate: _013_Acheteurs.Etate,  // Renamed the parameter
 ) {
     // Get repository for periods
     val repo_01_VentsHistoriquesDataBase = viewModel.repo_01_VentsHistoriquesDataBase
@@ -68,7 +69,7 @@ fun _01_Upsert(
             startDesignation = "client $idClient"
             tempDateCreationStr = _01_VentsHistoriquesDataBase.getCurrentDataTimeString()
             fireBaseKeyID = parse_fireBaseKeyID(idClient)
-            etate = _013_Acheteurs.Etate.COMMANDE_LENCE
+            etate = clientEtate  // Now it's clear we're assigning the parameter to the property
             child_14Produits = realmListOf()
         }
         vendeur.child_013_Acheteurs.add(acheteur)

@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._013_Acheteurs
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat
@@ -76,6 +77,20 @@ fun MarkerStatusDialog(
         it.id == (selectedMarker?.id?.toLong() ?: 0)
     }
     var clientTypeMode = relatedClients?.clientTypeMode
+    val repositorysModel =
+        _0_0_HeadOfRepositorys_Repository.repositorys_Model
+
+    val ceComptVendeurInsertBonsAchatAuPeriodID =
+        repositorysModel.repository_1_5_Vendeur.modelDatasSnapList
+            .find { it.vid == repositorysModel.activeIdDe_1_5_Vendeur }
+            ?.ceComptVendeurInsertBonsAchatAuPeriodID
+
+    val clientId = relatedClients?.id ?: 0L
+
+    // Check if a BonAchat already exists for this client in the active period
+    val existingBonAchat = viewModel.modelDatasSnapList_1_3_BonAchat.find {
+        it.clientAcheteurID == clientId && it.parentVID_1_4_PeriodeVent == ceComptVendeurInsertBonsAchatAuPeriodID
+    }
 
     if (selectedMarker == null) return
 
@@ -193,20 +208,7 @@ fun MarkerStatusDialog(
                     ),
                     onClick = {
                         coroutineScope.launch {
-                            val repositorysModel =
-                                _0_0_HeadOfRepositorys_Repository.repositorys_Model
 
-                            val ceComptVendeurInsertBonsAchatAuPeriodID =
-                                repositorysModel.repository_1_5_Vendeur.modelDatasSnapList
-                                    .find { it.vid == repositorysModel.activeIdDe_1_5_Vendeur }
-                                    ?.ceComptVendeurInsertBonsAchatAuPeriodID
-
-                            val clientId = relatedClients?.id ?: 0L
-
-                            // Check if a BonAchat already exists for this client in the active period
-                            val existingBonAchat = viewModel.modelDatasSnapList_1_3_BonAchat.find {
-                                it.clientAcheteurID == clientId && it.parentVID_1_4_PeriodeVent == ceComptVendeurInsertBonsAchatAuPeriodID
-                            }
 
                             if (existingBonAchat != null) {
                                 // Update the existing BonAchat
@@ -250,11 +252,12 @@ fun MarkerStatusDialog(
                             onDismiss()
 
                             //----------------------------------------------------------------------------------------/
-                            _01_Upsert(
+                            _01_Upsert_013_Acheteurs(
                                 viewModel,
                                 ceComptVendeurInsertBonsAchatAuPeriodID,
                                 repositorysModel,
-                                clientId
+                                clientId,
+                                _013_Acheteurs.Etate.COMMANDE_LENCE
                             )
                             //----------------------------------------------------------------------------------------/
                         }
@@ -283,6 +286,15 @@ fun MarkerStatusDialog(
                             relatedClients?.actuelleEtat = CLIENT_ABSENT
                             viewModel.updateData(relatedClients!!)
                             onDismiss()
+                            //----------------------------------------------------------------------------------------/
+                            _01_Upsert_013_Acheteurs(
+                                viewModel,
+                                ceComptVendeurInsertBonsAchatAuPeriodID,
+                                repositorysModel,
+                                clientId,
+                                _013_Acheteurs.Etate.CLIENT_ABSENT
+                            )
+                            //----------------------------------------------------------------------------------------/
                         }
                     }
                 )
