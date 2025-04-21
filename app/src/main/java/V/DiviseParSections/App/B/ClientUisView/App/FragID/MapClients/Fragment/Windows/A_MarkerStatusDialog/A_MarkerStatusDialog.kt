@@ -177,9 +177,6 @@ fun MarkerStatusDialog(
                     }
                 }
 
-// This code block focuses on fixing the TODOs in the Mode Commande button handler
-// in MarkerStatusDialog.kt
-
                 CommenadeButton(
                     context,
                     coroutineScope,
@@ -190,6 +187,7 @@ fun MarkerStatusDialog(
                     onUpdateLongAppSetting,
                     onDismiss
                 )
+
                 val CLIENT_ABSENT =
                     B_ClientDataBase.DernierEtatAAffiche.CLIENT_ABSENT
 
