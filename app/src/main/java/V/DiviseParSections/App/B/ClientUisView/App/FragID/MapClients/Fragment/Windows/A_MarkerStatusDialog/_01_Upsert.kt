@@ -49,7 +49,7 @@ fun _01_Upsert(
         vendeur = _012_ComptsVendeurs().apply {
             idCompt = repositorysModel.activeIdDe_1_5_Vendeur
             startDesignation = "_012_ComptsVendeurs $idCompt"
-            fireBaseKeyID = "${idCompt}=${startDesignation.replace(" ", "_")}"
+            fireBaseKeyID = "${idCompt}=${startDesignation}"
             child_013_Acheteurs = realmListOf()
         }
         period.child_012_Compts_Vendeurs.add(vendeur)
@@ -64,9 +64,9 @@ fun _01_Upsert(
         // Create new acheteur and add it to the vendeur
         acheteur = _013_Acheteurs().apply {
             idClient = clientId
-            startDesignation = "_013_Acheteurs for client $idClient"
+            startDesignation = "client $idClient"
             tempDateCreationStr = _01_VentsHistoriquesDataBase.getCurrentDataTimeString()
-            fireBaseKeyID = "${System.currentTimeMillis()}->${startDesignation.replace(" ", "_")}"
+            fireBaseKeyID = "${idClient}=${startDesignation}"
             child_14Produits = realmListOf()
         }
         vendeur.child_013_Acheteurs.add(acheteur)
