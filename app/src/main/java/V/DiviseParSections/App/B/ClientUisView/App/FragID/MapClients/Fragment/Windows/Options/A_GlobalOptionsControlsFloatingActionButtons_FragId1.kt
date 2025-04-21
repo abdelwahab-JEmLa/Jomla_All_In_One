@@ -3,6 +3,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 // Importer la nouvelle fonction FilterView au lieu de FilterModesDialog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.C.FilterView
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.DayFilterDialog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.A_ChangeIdColor
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.AddMarkerButton
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.ClearHistoryButton
@@ -87,6 +88,7 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
     val proximiteMeter = 50.0
     val context = mapView.context
     val packageName = context.packageName
+    var showDayFilterDialog by remember { mutableStateOf(false) }
 
     // Create LocationTracker
     val locationTracker = rememberLocationTracker(
@@ -121,24 +123,26 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
             ) {
                 if (showMenu) {
 
-                    val couleurButton1 = Color(0xFFF44336)
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
+                        val couleurButton1 = Color(0xFFF44336)
                         FloatingActionButton(
                             onClick = {
-                                viewModel.afficheLesJoursAuNoms = !viewModel.afficheLesJoursAuNoms
+                                showDayFilterDialog = true
                             },
                             modifier = Modifier.size(40.dp),
                             containerColor = couleurButton1
                         ) {
-                            Icon(Icons.Filled.SearchOff, null)
+                            Icon(Icons.Filled.SearchOff, "Filter by day")
                         }
 
                         if (showLabels) {
                             Text(
-                                if (viewModel.afficheLesJoursAuNoms) "Masquer les jours" else "Afficher les jours",
+                                if (viewModel.filterLesClientsOuLeurDernierAchatsDataStr != null)
+                                    "فلتر: ${viewModel.filterLesClientsOuLeurDernierAchatsDataStr}"
+                                else "فلتر حسب اليوم",
                                 modifier = Modifier
                                     .background(couleurButton1)
                                     .padding(4.dp),
@@ -277,6 +281,13 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                     onShowMenuChange = { showMenu = it }
                 )
             }
+        }
+
+        if (showDayFilterDialog) {
+            DayFilterDialog(
+                viewModel = viewModel,
+                onDismiss = { showDayFilterDialog = false }
+            )
         }
 
         // Show DataBaseEditeWindows dialog when showDatabaseEditDialog is true

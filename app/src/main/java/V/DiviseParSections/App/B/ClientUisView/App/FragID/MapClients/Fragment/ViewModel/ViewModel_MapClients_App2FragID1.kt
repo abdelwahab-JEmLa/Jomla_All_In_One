@@ -41,6 +41,8 @@ class ViewModel_MapClients_App2FragID1(
     var mapReloadTigger by mutableIntStateOf(0)
     var afficheLesJoursAuNoms by mutableStateOf(true)
 
+    var filterLesClientsOuLeurDernierAchatsDataStr by mutableStateOf("")
+
     fun updateData(client: B_ClientDataBase): Unit {
         viewModelScope.launch {
             mainRepositery.updateUnSeulData(client)

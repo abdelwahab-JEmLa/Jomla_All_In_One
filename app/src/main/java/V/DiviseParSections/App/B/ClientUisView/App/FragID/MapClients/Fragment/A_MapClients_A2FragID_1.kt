@@ -149,7 +149,7 @@ private fun MapContent(
     val clientDataBaseSnapList = viewModel.bProto_ClientsDataBase
 
     LaunchedEffect(clientDataBaseSnapList.toList(), clientEnCourDeVent, currentFilterMode,
-            viewModel.mapReloadTigger
+        viewModel.mapReloadTigger, viewModel.filterLesClientsOuLeurDernierAchatsDataStr
     ) {
         val existingMarkers = mapView.overlays.filterIsInstance<Marker>()
         existingMarkers.forEach { it.closeInfoWindow() }
@@ -175,8 +175,6 @@ private fun MapContent(
                             || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.CLIENT_ABSENT
                 }
             }
-
-
             ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 -> {
                 clientDataBaseSnapList.filter {
                     it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.CIBLE_POUR_2
@@ -192,20 +190,15 @@ private fun MapContent(
                     it.typeDeSonMagasine == B_ClientDataBase.TypeDeSonMagasine.AlIMENTATION_GENERALE
                 }
             }
-
             ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAll -> {
                 clientDataBaseSnapList
             }
-
-            // New case for clients with confirmed products
             ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsWithConfirmedProducts -> {
                 val clientsWithConfirmedProducts = viewModel._0_0_HeadOfRepositorys_Repository.repositorys_Model
                     ._1_3_BonAchat_Repository.modelDatasSnapList
                     .filter { bonAchat ->
                         bonAchat.etateActuellementEst == _1_3_BonAchat.EtateActuellementEst.A_COMMANDE_CONFIRME
-                                ||                        bonAchat.etateActuellementEst == _1_3_BonAchat.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
-
-
+                                || bonAchat.etateActuellementEst == _1_3_BonAchat.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
                     }
                     .map { bonAchat -> bonAchat.clientAcheteurID }
                     .distinct()
@@ -214,20 +207,16 @@ private fun MapContent(
                     clientsWithConfirmedProducts.contains(client.id)
                 }
             }
-
             ViewModel_MapClients_App2FragID1.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR -> {
                 clientDataBaseSnapList.filter {
                     it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.NON_DEFINI
-                            ||it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.Cible
-
+                            || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.Cible
                 }
             }
-
             ViewModel_MapClients_App2FragID1.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX -> {
                 clientDataBaseSnapList.filter {
                     it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.NON_DEFINI
-                            ||it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.Cible
-
+                            || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.Cible
                             || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.VENDU_A_LUI
                             || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.FERME
                             || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.A_EVITE
@@ -235,13 +224,34 @@ private fun MapContent(
                             || it.actuelleEtat == B_ClientDataBase.DernierEtatAAffiche.CLIENT_ABSENT
                 }
             }
-
             else -> {
                 clientDataBaseSnapList
             }
         }
 
-        clientsToShow.forEach { client ->
+        // Apply the filter based on search text if it's not empty
+        val finalClientsList = if (!viewModel.filterLesClientsOuLeurDernierAchatsDataStr.isNullOrEmpty()) {
+            val searchText = viewModel.filterLesClientsOuLeurDernierAchatsDataStr.lowercase()
+
+            clientsToShow.filter { client ->
+                // Check if client name contains the search text
+                val nameMatches = client.nom.lowercase().contains(searchText)
+
+                // Check if any of the client's purchases contain the search text in date
+                val lastPurchaseDay = findLastPurchaseDayForClient(
+                    viewModel.repo_01_VentsHistoriquesDataBase.modelDatasSnapList,
+                    client.id
+                )
+                val purchaseDayMatches = lastPurchaseDay.lowercase().contains(searchText)
+
+                // Return true if either name or purchase day matches
+                nameMatches || purchaseDayMatches
+            }
+        } else {
+            clientsToShow
+        }
+
+        finalClientsList.forEach { client ->
             try {
                 val actuelleEtat =
                     if (client.id == clientEnCourDeVent)
@@ -262,6 +272,7 @@ private fun MapContent(
                             viewModel.repo_01_VentsHistoriquesDataBase.modelDatasSnapList,
                             client.id
                         )
+
                         if (lastPurchaseDay.isNotEmpty()) {
                             "$lastPurchaseDay\n${client.nom}"
                         } else {
@@ -490,6 +501,7 @@ private fun MapContent(
         }
     }
 }
+
 private class FilterLogger {
     companion object {
         private const val TAG = "FilterChangeLog"
