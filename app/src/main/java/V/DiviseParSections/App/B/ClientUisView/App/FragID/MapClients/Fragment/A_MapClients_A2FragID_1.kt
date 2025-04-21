@@ -148,9 +148,16 @@ private fun MapContent(
 
     val clientDataBaseSnapList = viewModel.bProto_ClientsDataBase
 
-    LaunchedEffect(clientDataBaseSnapList.toList(), clientEnCourDeVent, currentFilterMode,
-        viewModel.mapReloadTigger
+    LaunchedEffect(
+        clientDataBaseSnapList.size, // Observe size changes rather than list object reference
+        clientEnCourDeVent,
+        currentFilterMode,
+        viewModel.mapReloadTigger,
+        viewModel.filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList.size // Only recompose on actual changes
     ) {
+        android.util.Log.d("MapClients", "LaunchedEffect triggered: Filter size=${viewModel.filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList.size}")
+
+        // Clear existing markers
         val existingMarkers = mapView.overlays.filterIsInstance<Marker>()
         existingMarkers.forEach { it.closeInfoWindow() }
 
@@ -158,6 +165,7 @@ private fun MapContent(
             .filter { marker -> clientDataBaseSnapList.any { it.id.toString() == marker.id } }
         mapView.overlays.removeAll(markersToRemove)
 
+        // Apply filter modes
         val clientsToShow = when (currentFilterMode) {
             ViewModel_MapClients_App2FragID1.VisibleClientsNow.showNonAbsentClientsOnly -> {
                 clientDataBaseSnapList.filter {
@@ -230,23 +238,40 @@ private fun MapContent(
         }
 
         // Process each client that passed the initial filter
+        var filteredMarkers = 0
+        var totalMarkers = 0
+
         clientsToShow.forEach { client ->
-            val shouldDisplayClient = if (viewModel.filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList.isEmpty()) {
-                // If filter list is empty, display all clients
-                true
-            } else {
-                // Find the last purchase day for this client
-                val lastPurchaseDay = findLastPurchaseDayForClient(
+            totalMarkers++
+
+            // Debugging day filter
+            val dayFilters = viewModel.filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList
+            val shouldApplyDayFilter = dayFilters.isNotEmpty()
+
+            // Find the last purchase day for this client
+            val lastPurchaseDay = if (shouldApplyDayFilter) {
+                findLastPurchaseDayForClient(
                     viewModel.repo_01_VentsHistoriquesDataBase.modelDatasSnapList,
                     client.id
-                )
-                // Only display client if their last purchase day is in the filter list
-                lastPurchaseDay.isNotEmpty() && viewModel.filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList.contains(lastPurchaseDay)  //<--
-                //TODO(1): cree logs pour trouve pk le filter par jour ne marche pas 
+                ).also { day ->
+                    android.util.Log.d("DayFilter", "Client ${client.id} (${client.nom}) last purchase day: '$day'")
+                }
+            } else {
+                ""
+            }
+
+            // Determine if the client should be displayed
+            val shouldDisplayClient = if (!shouldApplyDayFilter) {
+                true
+            } else {
+                val matches = lastPurchaseDay.isNotEmpty() && dayFilters.contains(lastPurchaseDay)
+                android.util.Log.d("DayFilter", "Client ${client.id} day '$lastPurchaseDay' matches filter? $matches. Available filters: $dayFilters")
+                matches
             }
 
             // Only proceed with marker creation if the client should be displayed
             if (shouldDisplayClient) {
+                filteredMarkers++
                 try {
                     val actuelleEtat =
                         if (client.id == clientEnCourDeVent)
@@ -315,7 +340,8 @@ private fun MapContent(
                                 }
                             }
                         } catch (e: Exception) {
-                            // Exception handling (empty in original code)
+                            // Log exceptions when creating marker info window
+                            android.util.Log.e("MapClients", "Error creating marker info window", e)
                         }
 
                         setOnMarkerClickListener { clickedMarker, _ ->
@@ -331,12 +357,13 @@ private fun MapContent(
                     if (showMarkerDetails) {
                         marker.showInfoWindow()
                     }
-                } catch (_: Exception) {
-                    // Exception handling (empty in original code)
+                } catch (e: Exception) {
+                    android.util.Log.e("MapClients", "Error creating marker for client ${client.id}", e)
                 }
             }
         }
 
+        android.util.Log.d("MapClients", "Markers: $filteredMarkers filtered from $totalMarkers total")
         mapView.invalidate()
     }
 
@@ -515,6 +542,21 @@ private class FilterLogger {
     }
 }
 
+object DayFilterDebugger {
+    private const val TAG = "DayFilterDebug"
+
+    fun logHistoricalDataStats(historicalData: List<Any>) {
+        android.util.Log.d(TAG, "Historical data size: ${historicalData.size}")
+    }
+
+    fun logClientPurchaseCheck(clientId: Long, periodId: String, found: Boolean) {
+        android.util.Log.d(TAG, "Client $clientId lookup in period $periodId: $found")
+    }
+
+    fun logDateParsing(dateString: String, parsedDate: String?, success: Boolean) {
+        android.util.Log.d(TAG, "Date parsing: '$dateString' -> '$parsedDate', success: $success")
+    }
+}
 @Composable
 private fun LoadingProgressOverlay(
     progress: Float,
