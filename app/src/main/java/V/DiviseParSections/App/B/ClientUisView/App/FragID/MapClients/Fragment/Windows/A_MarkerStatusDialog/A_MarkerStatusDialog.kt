@@ -65,6 +65,9 @@ fun MarkerStatusDialog(
     onRemoveMark: (Marker?) -> Unit,
     _0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository = koinInject(),
 ) {
+    val ceTelephoneEstDeAbdelwahab =_0_0_HeadOfRepositorys_Repository
+        .repositorys_Model
+        .activeIdDe_1_5_Vendeur  == 2L
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     var showEditDialog by remember { mutableStateOf(false) }
@@ -366,102 +369,103 @@ fun MarkerStatusDialog(
                         //----------------------------------------------------------------------------------------/
                     }
                 )
+                if (ceTelephoneEstDeAbdelwahab) {
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                Spacer(modifier = Modifier.height(16.dp))
+                    val Cible = B_ClientDataBase.DernierEtatAAffiche.Cible
+                    StatusButton(
+                        text = Cible.nomArabe,
+                        icon = Icons.Default.Person,
+                        color = Color(
+                            ContextCompat.getColor(
+                                context,
+                                Cible.color
+                            )
+                        ),
+                        onClick = {
+                            coroutineScope.launch {
+                                relatedClients?.actuelleEtat = Cible
+                                viewModel.updateData(relatedClients!!)
 
-                val Cible = B_ClientDataBase.DernierEtatAAffiche.Cible
-                StatusButton(
-                    text = Cible.nomArabe,
-                    icon = Icons.Default.Person,
-                    color = Color(
-                        ContextCompat.getColor(
-                            context,
-                            Cible.color
-                        )
-                    ),
-                    onClick = {
-                        coroutineScope.launch {
-                            relatedClients?.actuelleEtat = Cible
-                            viewModel.updateData(relatedClients!!)
-
-                            onDismiss()
+                                onDismiss()
+                            }
                         }
-                    }
-                )
+                    )
 
-                val CIBLE_PRIORITE_2 =
-                    B_ClientDataBase.DernierEtatAAffiche.CIBLE_PRIORITE_2
+                    val CIBLE_PRIORITE_2 =
+                        B_ClientDataBase.DernierEtatAAffiche.CIBLE_PRIORITE_2
 
-                StatusButton(
-                    text = CIBLE_PRIORITE_2.nomArabe,
-                    icon = Icons.Default.Person,
-                    color = Color(
-                        ContextCompat.getColor(
-                            context,
-                            CIBLE_PRIORITE_2.color
-                        )
-                    ),
-                    onClick = {
-                        coroutineScope.launch {
+                    StatusButton(
+                        text = CIBLE_PRIORITE_2.nomArabe,
+                        icon = Icons.Default.Person,
+                        color = Color(
+                            ContextCompat.getColor(
+                                context,
+                                CIBLE_PRIORITE_2.color
+                            )
+                        ),
+                        onClick = {
+                            coroutineScope.launch {
 
-                            relatedClients?.actuelleEtat = CIBLE_PRIORITE_2
+                                relatedClients?.actuelleEtat = CIBLE_PRIORITE_2
 
-                            viewModel.updateData(relatedClients!!)
+                                viewModel.updateData(relatedClients!!)
 
-                            onDismiss()
+                                onDismiss()
+                            }
                         }
-                    }
-                )
+                    )
 
 
-                val CIBLE_POUR_2 =
-                    B_ClientDataBase.DernierEtatAAffiche.CIBLE_POUR_2
+                    val CIBLE_POUR_2 =
+                        B_ClientDataBase.DernierEtatAAffiche.CIBLE_POUR_2
 
-                StatusButton(
-                    text = CIBLE_POUR_2.nomArabe,
-                    icon = Icons.Default.Person,
-                    color = Color(
-                        ContextCompat.getColor(
-                            context,
-                            CIBLE_POUR_2.color
-                        )
-                    ),
-                    onClick = {
-                        coroutineScope.launch {
+                    StatusButton(
+                        text = CIBLE_POUR_2.nomArabe,
+                        icon = Icons.Default.Person,
+                        color = Color(
+                            ContextCompat.getColor(
+                                context,
+                                CIBLE_POUR_2.color
+                            )
+                        ),
+                        onClick = {
+                            coroutineScope.launch {
 
-                            relatedClients?.actuelleEtat = CIBLE_POUR_2
+                                relatedClients?.actuelleEtat = CIBLE_POUR_2
 
-                            viewModel.updateData(relatedClients!!)
+                                viewModel.updateData(relatedClients!!)
 
-                            onDismiss()
+                                onDismiss()
+                            }
                         }
-                    }
-                )
+                    )
 
 
-                val A_EVITE =
-                    B_ClientDataBase.DernierEtatAAffiche.A_EVITE
+                    val A_EVITE =
+                        B_ClientDataBase.DernierEtatAAffiche.A_EVITE
 
-                StatusButton(
-                    text = A_EVITE.nomArabe,
-                    icon = Icons.Default.Person,
-                    color = Color(
-                        ContextCompat.getColor(
-                            context,
-                            A_EVITE.color
-                        )
-                    ),
-                    onClick = {
-                        coroutineScope.launch {
+                    StatusButton(
+                        text = A_EVITE.nomArabe,
+                        icon = Icons.Default.Person,
+                        color = Color(
+                            ContextCompat.getColor(
+                                context,
+                                A_EVITE.color
+                            )
+                        ),
+                        onClick = {
+                            coroutineScope.launch {
 
-                            relatedClients?.actuelleEtat = A_EVITE
+                                relatedClients?.actuelleEtat = A_EVITE
 
-                            viewModel.updateData(relatedClients!!)
+                                viewModel.updateData(relatedClients!!)
 
-                            onDismiss()
+                                onDismiss()
+                            }
                         }
-                    }
-                )
+                    )
+                }
             }
         }
     }
