@@ -55,7 +55,7 @@ import org.koin.core.parameter.parametersOf
 fun MainScreen(
     modifier: Modifier = Modifier,
     viewModelInitApp: ViewModelInitApp = koinViewModel(),
-    xmlResources: List<Pair<String, Int>>?=null,
+    xmlResources: List<Pair<String, Int>>? = null,
 ) {
     var showVendeursDialog by remember { mutableStateOf(false) }
 
@@ -82,7 +82,10 @@ fun MainScreen(
             Log.d(TAG, "Repository considered loaded at: ${repositoryProgress * 100}%")
             shouldShowContent = true
         } else {
-            Log.w(TAG, "UI waiting for repository to load. Current progress: ${repositoryProgress * 100}%")
+            Log.w(
+                TAG,
+                "UI waiting for repository to load. Current progress: ${repositoryProgress * 100}%"
+            )
             shouldShowContent = false
         }
     }
@@ -110,7 +113,8 @@ fun MainScreen(
         if (productDisplayController.clientWindowsDisplayedProductId == null
             && productDisplayController.isHostPhone
             && currentRoute != Screen.EditDatabaseWithCreateNewArticles.route
-            && navController.currentDestination != null) {
+            && navController.currentDestination != null
+        ) {
 
             // Navigate to FragmentStartupScreen instead of A_ClientsLocationGps
             navController.navigate(Screen.EditDatabaseWithCreateNewArticles.route) {
@@ -129,7 +133,7 @@ fun MainScreen(
                 .find { it.vid == repositorysModel.activeIdDe_1_5_Vendeur }?.hideAppScreen ?: false
             var isControleFabVisible by remember { mutableStateOf(false) }
 
-            if (!shouldShowContent ) {
+            if (!shouldShowContent) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
@@ -140,9 +144,7 @@ fun MainScreen(
                         trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
                         color = MaterialTheme.colorScheme.primary
                     )
-                    A_OptionsControlsButtons_A1FragID_3() {
-                        showVendeursDialog=true
-                    }
+
                 }
             } else {
 
@@ -157,19 +159,19 @@ fun MainScreen(
                                 && !lockHost
                     ) {
                         ConnexionCard(
-                            headViewModel=headViewModel,
+                            headViewModel = headViewModel,
                             productDisplayController = productDisplayController,
                             onClickToStartAsClient = {
                                 isNavBarVisible = false
                                 isFabVisible = false
-                            } ,
-                            lockHost= lockHost
+                            },
+                            lockHost = lockHost
                         )
                     }
 
                     // Main Content Area
                     Box(modifier = Modifier.weight(1f)) {
-                        if(!hideAppScreen) {
+                        if (!hideAppScreen) {
                             AppNavHost(
                                 navController = navController,
                                 onToggleNavBar = { isNavBarVisible = !isNavBarVisible },
@@ -191,7 +193,6 @@ fun MainScreen(
                                 }
                             )
 
-                            // Disable interactions when not host phone
                             if (!isHostPhone && productDisplayController.isConnected) {
                                 Box(
                                     modifier = Modifier
@@ -200,23 +201,20 @@ fun MainScreen(
                                 )
                             }
                         }
-                            if (isControleFabVisible) {
-                                A_OptionsControlsButtons_A1FragID_3() {
-                                    showVendeursDialog = true
-                                }
+                        if (isControleFabVisible) {
+                            A_OptionsControlsButtons_A1FragID_3() {
+                                showVendeursDialog = true
                             }
+                        }
 
                     }
                     if (showVendeursDialog) {
-                        Log.d("VendeursDialog", "Dialog state is true, preparing to display AlertDialog")
                         AlertDialog(
                             onDismissRequest = {
-                                Log.d("VendeursDialog", "Dialog dismissed by user")
                                 showVendeursDialog = false
                             },
                             title = { Text("Manage Vendeurs") },
                             text = {
-                                Log.d("VendeursDialog", "Rendering A_APP4FragID1_MainScreen content")
                                 A_APP4FragID1_MainScreen(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -225,14 +223,12 @@ fun MainScreen(
                             },
                             confirmButton = {
                                 TextButton(onClick = {
-                                    Log.d("VendeursDialog", "Close button clicked")
                                     showVendeursDialog = false
                                 }) {
                                     Text("Close")
                                 }
                             }
                         )
-                        Log.d("VendeursDialog", "AlertDialog composable called")
                     }
 
                 }
@@ -262,9 +258,9 @@ fun MainScreen(
                         onCatalogSelected = {
                             targetCategoryId.value = it
                         },
-                        navController=navController,
+                        navController = navController,
                         modifier = Modifier.padding(bottom = 8.dp),
-                        viewModelInitApp=viewModelInitApp
+                        viewModelInitApp = viewModelInitApp
                     )
                 }
 
