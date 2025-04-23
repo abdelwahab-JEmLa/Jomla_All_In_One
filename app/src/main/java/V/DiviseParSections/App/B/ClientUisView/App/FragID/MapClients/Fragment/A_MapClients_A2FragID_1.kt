@@ -68,6 +68,7 @@ fun A_MapClients_A2FragID_1(
     clientEnCourDeVent: Long = 0,
     onUpdateLongAppSetting: () -> Unit = {},
     onClear: () -> Unit = {},
+    mapReloadTrigger: Int = 0,
 ) {
     val progress by viewModel.mainRepositery.progressRepo.collectAsState()
 
@@ -80,7 +81,8 @@ fun A_MapClients_A2FragID_1(
                 viewModelInitApp = viewModelInitApp,
                 clientEnCourDeVent = clientEnCourDeVent,
                 onUpdateLongAppSetting = onUpdateLongAppSetting,
-                onClear = onClear
+                onClear = onClear,
+                mapReloadTrigger = mapReloadTrigger // Pass it here
             )
         }
     }
@@ -92,7 +94,8 @@ private fun MapContent(
     viewModelInitApp: ViewModelInitApp,
     clientEnCourDeVent: Long,
     onUpdateLongAppSetting: () -> Unit,
-    onClear: () -> Unit
+    onClear: () -> Unit,
+    mapReloadTrigger: Int = 0 // Add this parameter
 ) {
     val context = LocalContext.current
     val currentZoom by remember { mutableDoubleStateOf(18.2) }
@@ -149,11 +152,12 @@ private fun MapContent(
     val clientDataBaseSnapList = viewModel.bProto_ClientsDataBase
 
     LaunchedEffect(
-        clientDataBaseSnapList.size, // Observe size changes rather than list object reference
+        clientDataBaseSnapList.size,
         clientEnCourDeVent,
         currentFilterMode,
         viewModel.mapReloadTigger,
-        viewModel.filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList.size // Only recompose on actual changes
+        viewModel.filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList.size,
+        mapReloadTrigger // Add this to the LaunchedEffect dependencies
     ) {
         android.util.Log.d("MapClients", "LaunchedEffect triggered: Filter size=${viewModel.filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList.size}")
 

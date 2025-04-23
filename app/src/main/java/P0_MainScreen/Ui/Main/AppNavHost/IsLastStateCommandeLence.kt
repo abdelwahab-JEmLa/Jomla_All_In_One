@@ -120,6 +120,7 @@ class OrderStateManager(
     val repositorysModel: _0_0_HeadOfRepositorys_Model,
     val currentClientId: () -> Long,
     val onShowDialog: () -> Unit,
+    val onReloadMap: () -> Unit = {}, // Add this parameter
 ) {
     var checkedOrderStatus = false
 

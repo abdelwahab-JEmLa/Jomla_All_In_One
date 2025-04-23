@@ -47,13 +47,11 @@ fun NavGraphBuilder.app2(
     navController: NavHostController,
     onClear: () -> Unit,
     orderStateManager: OrderStateManager,
+    mapReloadTrigger: Int = 0, // Add this parameter
 ) {
     composable(Screen.A_ClientsLocationGps.route) {
-        // Use a small delay to ensure client ID is loaded
         LaunchedEffect(Unit) {
-            // Only check if we haven't already dismissed the dialog
             if (!orderStateManager.hasCheckedOrderStatus()) {
-                // Small delay to ensure client ID is properly loaded
                 delay(300)
                 orderStateManager.checkOrderStatus()
             }
@@ -65,7 +63,8 @@ fun NavGraphBuilder.app2(
                 allerAuFragment(navController)
             },
             onClear = onClear,
-        )
+            mapReloadTrigger = mapReloadTrigger
+           )
     }
 }
 
@@ -130,17 +129,19 @@ fun AppNavHost(
                 ?.valueLong ?: 0)
     }
 
-    // 1. Modify how OrderStateManager is created in AppNavHost
+    // Inside AppNavHost
+    val mapReloadTrigger = remember { mutableIntStateOf(0) }
+
     val orderStateManager = remember {
         OrderStateManager(
             repo_01_VentsHistoriquesDataBase_Repository = repo_01_VentsHistoriquesDataBase_Repository,
             repositorysModel = repositorysModel,
-            // Use the stored value from headViewModel instead of the changing state
             currentClientId = {
                 headViewModel._uiState.value.appSettingsSaverModel
                     .find { it.name == "clientBuyerNowId" }?.valueLong ?: 0
             },
-            onShowDialog = { showOrderCompletionDialog = true }
+            onShowDialog = { showOrderCompletionDialog = true },
+            onReloadMap = { mapReloadTrigger.intValue++ } // This will trigger a recomposition
         )
     }
 
@@ -193,7 +194,8 @@ fun AppNavHost(
                             database.getReference("O_SoldArticlesTabelle").removeValue()
                         }
                     },
-                    orderStateManager = orderStateManager, // Pass order state manager
+                    orderStateManager = orderStateManager,
+                    mapReloadTrigger = mapReloadTrigger.intValue // Pass the trigger value
                 )
 
                 composable(Screen.EditDatabaseWithCreateNewArticles.route) {
@@ -304,9 +306,12 @@ fun AppNavHost(
                             repositorysModel = repositorysModel,
                             newState = selectedState
                         )
+                        // Trigger map reload
+                        orderStateManager.onReloadMap()
                     }
                 )
             }
+
             if (showClientSelectionWithoutCondition || (showClientSelection && currentClientId == 0L)) {
                 // Navigate to client map selection screen when no client is selected
                 LaunchedEffect(Unit) {
