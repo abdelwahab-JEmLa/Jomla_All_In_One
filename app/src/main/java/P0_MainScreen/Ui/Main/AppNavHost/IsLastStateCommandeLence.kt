@@ -22,27 +22,22 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 
-// Extension function to check if an acheteur's last state is COMMANDE_LENCE
 fun _013_Acheteurs.isLastStateCommandeLence(): Boolean {
     if (child_14A_HistoriquesDeCetteJour.isEmpty()) {
         return false
     }
 
-    // Sort by date and time to get the most recent entry
     val sortedHistoriques = child_14A_HistoriquesDeCetteJour.sortedWith(
         compareByDescending<_14A_HistoriuesDeCetteJour> { it.dateCreationStr }
             .thenByDescending { it.tempCreationStr }
     )
 
-    // Get the most recent state
     val lastHistorique = sortedHistoriques.firstOrNull()
     val lastState = lastHistorique?.etate
 
-    // Check if the most recent state is COMMANDE_LENCE
     return lastState == _14A_HistoriuesDeCetteJour.Etate.COMMANDE_LENCE
 }
 
-// Update acheteur state to ACHAT_TERMINE
 fun updateAcheteurToAchatTermine(
     viewModelInitApp: ViewModelInitApp,
     clientId: Long,
