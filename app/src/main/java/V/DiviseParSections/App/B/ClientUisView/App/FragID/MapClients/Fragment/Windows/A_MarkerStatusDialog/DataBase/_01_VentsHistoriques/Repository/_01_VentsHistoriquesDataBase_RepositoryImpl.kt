@@ -7,7 +7,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Wi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase.Companion.map_01_VentsHistoriquesDataBase
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase.Companion.parsePeriodeFromSnapshot
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase.Companion.test_01_PeriodesVent
-import android.util.Log
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._14A_HistoriuesDeCetteJour
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.firebase.Firebase
@@ -28,8 +28,9 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.util.concurrent.atomic.AtomicBoolean
 
-class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = false)
+class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode: Boolean)
     : _01_VentsHistoriquesDataBase_Repository {
+
     private val TAG = "_01_PeriodesVent_Repo"
     var idComptDeCeTelephone: String = ""
 
@@ -39,7 +40,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
     private val _1_developingRef = _01_HeadRef.child("_1_developingRef")
     private val _2_productionTestRef = _01_HeadRef.child("_2_productionTestRef")
     private val firebaseRef = if (!itsProductionMode)
-        _1_developingRef else  _2_productionTestRef
+        _1_developingRef else _2_productionTestRef
         .child("_01_VentsHistoriquesDataBase")
 
     private val _progressRepo = MutableStateFlow(0f)
@@ -65,7 +66,8 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
                 _01_VentsHistoriquesDataBase::class,
                 _012_ComptsVendeurs::class,
                 _013_Acheteurs::class,
-                _014_Produits::class
+                _014_Produits::class,
+                _14A_HistoriuesDeCetteJour::class
             )
         )
         return Realm.open(config)
@@ -112,7 +114,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
                     attachFirebaseListener()
                 }
             } catch (e: Exception) {
-                // Error handling would go here
+                _progressRepo.value = 1.0f
             }
         }
     }
@@ -158,8 +160,6 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
         return newPeriodesVente
     }
 
-
-
     private fun loadFromRealmTOmodelDatasSnapList() {
         val allPeriodes = realm.query<_01_VentsHistoriquesDataBase>()
             .sort("dateDebutDeCettePeriode", Sort.DESCENDING)
@@ -195,6 +195,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
                         query<_012_ComptsVendeurs>().find().also { delete(it) }
                         query<_013_Acheteurs>().find().also { delete(it) }
                         query<_014_Produits>().find().also { delete(it) }
+                        query<_14A_HistoriuesDeCetteJour>().find().also { delete(it) }
 
                         // Save current data
                         modelDatasSnapList.forEach { periode ->
@@ -202,14 +203,13 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
                         }
                     }
                 } catch (e: Exception) {
-                    // Error handling would go here
+                    _progressRepo.value = 1.0f
                 } finally {
                     _progressRepo.value = 1.0f
                 }
             }
         }
     }
-
 
     private fun loadFromFirebase() {
         removeFirebaseListener()
@@ -222,7 +222,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
         try {
             firebaseRef.addValueEventListener(acheteursChangeListener!!)
         } catch (e: Exception) {
-            // Error handling would go here
+            // Exception handling without logging
         }
     }
 
@@ -237,12 +237,12 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
                         _dataChangedEvent.value = System.currentTimeMillis()
                     }
                 } catch (e: Exception) {
-                    // Error handling would go here
+                    // Exception handling without logging
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                // Error handling would go here
+                // Error handling without logging
             }
         }
     }
@@ -268,6 +268,13 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
                         val produit = _014_Produits.parseDataFromSnapshot(produitSnapshot) ?: return@forEach
                         val produitUpdated = updateProduitInAcheteur(periodeKey, vendeurKey, acheteurKey, produit)
                         if (produitUpdated) changesMade = true
+                    }
+
+                    // Process historiques for this acheteur
+                    acheteurSnapshot.child("child_14A_HistoriquesDeCetteJour").children.forEach { historiqueSnapshot ->
+                        val historique = _14A_HistoriuesDeCetteJour.parseDataFromSnapshot(historiqueSnapshot) ?: return@forEach
+                        val historiqueUpdated = updateHistoriqueInAcheteur(periodeKey, vendeurKey, acheteurKey, historique)
+                        if (historiqueUpdated) changesMade = true
                     }
                 }
             }
@@ -346,6 +353,46 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
         }
     }
 
+    private fun updateHistoriqueInAcheteur(
+        periodeKey: String,
+        vendeurKey: String,
+        acheteurKey: String,
+        historique: _14A_HistoriuesDeCetteJour
+    ): Boolean {
+        if (modelUpdateInProgress.getAndSet(true)) return false
+
+        try {
+            val periode = modelDatasSnapList.find { it.fireBaseKeyID == periodeKey } ?: return false
+            val vendeur = periode.child_012_Compts_Vendeurs.find { it.fireBaseKeyID == vendeurKey } ?: return false
+            val acheteur = vendeur.child_013_Acheteurs.find { it.fireBaseKeyID == acheteurKey } ?: return false
+            val existingHistorique = acheteur.child_14A_HistoriquesDeCetteJour.find { it.fireBaseKeyID == historique.fireBaseKeyID }
+
+            return if (existingHistorique != null) {
+                val changed = existingHistorique.bsonObjectId != historique.bsonObjectId ||
+                        existingHistorique.etateName != historique.etateName ||
+                        existingHistorique.description != historique.description ||
+                        existingHistorique.dateCreationStr != historique.dateCreationStr ||
+                        existingHistorique.tempCreationStr != historique.tempCreationStr
+
+                if (changed) {
+                    existingHistorique.bsonObjectId = historique.bsonObjectId
+                    existingHistorique.etateName = historique.etateName
+                    existingHistorique.description = historique.description
+                    existingHistorique.dateCreationStr = historique.dateCreationStr
+                    existingHistorique.tempCreationStr = historique.tempCreationStr
+                    true
+                } else {
+                    false
+                }
+            } else {
+                acheteur.child_14A_HistoriquesDeCetteJour.add(historique)
+                true
+            }
+        } finally {
+            modelUpdateInProgress.set(false)
+        }
+    }
+
     private fun scheduleSafeRealmUpdate() {
         if (pendingRealmUpdate.compareAndSet(false, true)) {
             coroutineScope.launch {
@@ -372,7 +419,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
                     modelUpdateInProgress.set(false)
                 }
             } catch (e: Exception) {
-                // Error handling would go here
+                // Exception handling without logging
             }
         }
     }
@@ -387,6 +434,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
                         query<_012_ComptsVendeurs>().find().also { delete(it) }
                         query<_013_Acheteurs>().find().also { delete(it) }
                         query<_014_Produits>().find().also { delete(it) }
+                        query<_14A_HistoriuesDeCetteJour>().find().also { delete(it) }
 
                         // Save current data
                         modelDatasSnapList.forEach { periode ->
@@ -394,7 +442,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
                         }
                     }
                 } catch (e: Exception) {
-                    // Error handling would go here
+                    // Exception handling without logging
                 }
             }
         }
@@ -403,10 +451,22 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
     private fun createDeepCopyForRealm(source: _01_VentsHistoriquesDataBase): _01_VentsHistoriquesDataBase {
         val copy = _01_VentsHistoriquesDataBase.deepCopy(source)
 
-        // This code is redundant because deepCopy already handles child elements
-        // But keeping it for safety
+        // Already handled in deepCopy, but keeping for explicitness and safety
         source.child_012_Compts_Vendeurs.forEach { sourceVendeur ->
             val vendeurCopy = _012_ComptsVendeurs.deepCopy(sourceVendeur)
+
+            // Ensure deep copy of acheteurs and their historiques
+            sourceVendeur.child_013_Acheteurs.forEach { sourceAcheteur ->
+                val acheteurCopy = _013_Acheteurs.deepCopy(sourceAcheteur)
+
+                // Make sure historiques are properly copied
+                sourceAcheteur.child_14A_HistoriquesDeCetteJour.forEach { sourceHistorique ->
+                    acheteurCopy.child_14A_HistoriquesDeCetteJour.add(_14A_HistoriuesDeCetteJour.deepCopy(sourceHistorique))
+                }
+
+                vendeurCopy.child_013_Acheteurs.add(acheteurCopy)
+            }
+
             copy.child_012_Compts_Vendeurs.add(vendeurCopy)
         }
 
@@ -414,24 +474,9 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
     }
 
     override fun notifierDataChange() {
-        Log.d(TAG, "notifierDataChange: Starting Firebase update process")
-
         try {
-            // Log current data state
-            Log.d(TAG, "notifierDataChange: Current data count: ${modelDatasSnapList.size}")
-            modelDatasSnapList.forEachIndexed { index, periode ->
-                Log.d(TAG, "Period[$index] - keyID: ${periode.fireBaseKeyID}, vendeurs: ${periode.child_012_Compts_Vendeurs.size}")
-                periode.child_012_Compts_Vendeurs.forEachIndexed { vendeurIndex, vendeur ->
-                    Log.d(TAG, "  Vendeur[$vendeurIndex] - keyID: ${vendeur.fireBaseKeyID}, acheteurs: ${vendeur.child_013_Acheteurs.size}")
-                    vendeur.child_013_Acheteurs.forEachIndexed { acheteurIndex, acheteur ->
-                        Log.d(TAG, "    Acheteur[$acheteurIndex] - keyID: ${acheteur.fireBaseKeyID}, produits: ${acheteur.child_14Produits.size}")
-                    }
-                }
-            }
-
             // Update Firebase
             val dataToUpdate = map_01_VentsHistoriquesDataBase(modelDatasSnapList)
-            Log.d(TAG, "notifierDataChange: Preparing to update Firebase with ${dataToUpdate.size} items")
 
             // Remove listeners temporarily to avoid reentrant updates
             removeFirebaseListener()
@@ -439,11 +484,9 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
             // Execute Firebase update
             firebaseRef.setValue(dataToUpdate)
                 .addOnSuccessListener {
-                    Log.d(TAG, "notifierDataChange: Firebase update SUCCESSFUL")
                     attachFirebaseListener() // Re-attach listeners
                 }
-                .addOnFailureListener { exception ->
-                    Log.e(TAG, "notifierDataChange: Firebase update FAILED", exception)
+                .addOnFailureListener {
                     attachFirebaseListener() // Re-attach listeners even on failure
                 }
 
@@ -453,7 +496,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
             _dataChangedEvent.value = System.currentTimeMillis()
 
         } catch (e: Exception) {
-            Log.e(TAG, "notifierDataChange: Exception during update process", e)
+            // Exception handling without logging
         }
     }
 
@@ -461,10 +504,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
         period: _01_VentsHistoriquesDataBase,
         onSuccess: (Long) -> Unit,
     ) {
-        Log.d(TAG, "upsert_01_PeriodesVentEtReturnItVid: Starting update for period: ${period.fireBaseKeyID}")
-
         if (modelUpdateInProgress.getAndSet(true)) {
-            Log.d(TAG, "upsert_01_PeriodesVentEtReturnItVid: Update already in progress, aborting")
             return
         }
 
@@ -474,11 +514,9 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
 
             if (existingIndex != -1) {
                 // Update existing period
-                Log.d(TAG, "upsert_01_PeriodesVentEtReturnItVid: Updating existing period at index $existingIndex")
                 modelDatasSnapList[existingIndex] = period
             } else {
                 // Add new period
-                Log.d(TAG, "upsert_01_PeriodesVentEtReturnItVid: Adding new period")
                 modelDatasSnapList.add(period)
             }
 
@@ -493,11 +531,10 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
 
                     firebaseRef.setValue(dataToUpdate)
                         .addOnSuccessListener {
-                            Log.d(TAG, "upsert_01_PeriodesVentEtReturnItVid: Firebase update successful")
                             attachFirebaseListener()
+                            onSuccess(period.idPeriodDonAncienDataBase)
                         }
-                        .addOnFailureListener { exception ->
-                            Log.e(TAG, "upsert_01_PeriodesVentEtReturnItVid: Firebase update failed", exception)
+                        .addOnFailureListener {
                             attachFirebaseListener()
                         }
 
@@ -509,7 +546,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
                     _dataChangedEvent.value = System.currentTimeMillis()
 
                 } catch (e: Exception) {
-                    Log.e(TAG, "upsert_01_PeriodesVentEtReturnItVid: Exception during update", e)
+                    // Exception handling without logging
                 }
             }
         } finally {
@@ -527,7 +564,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
             try {
                 firebaseRef.removeEventListener(it)
             } catch (e: Exception) {
-                // Error handling would go here
+                // Exception handling without logging
             }
             valueEventListener = null
         }
@@ -536,7 +573,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode :Boolean = f
             try {
                 firebaseRef.removeEventListener(it)
             } catch (e: Exception) {
-                // Error handling would go here
+                // Exception handling without logging
             }
             acheteursChangeListener = null
         }

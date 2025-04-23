@@ -7,7 +7,6 @@ import android.annotation.SuppressLint
 data class LastPurchaseInfo(
     val dayName: String = "",
     val timeStr: String = ""
-    // TODO(1) Resolved: Time is now formatted as 12 hour with ص (AM) or م (PM)
 )
 
 fun findLastPurchaseInfoForClient(
@@ -49,7 +48,6 @@ private fun extractTimeFromDateString(dateTimeString: String): String {
 @SuppressLint("DefaultLocale")
 private fun formatTimeToArabic(timeString: String): String {
     try {
-        // Assuming the time format is HH:MM:SS or HH:MM
         val timeParts = timeString.split(":")
         if (timeParts.size < 2) {
             return timeString
