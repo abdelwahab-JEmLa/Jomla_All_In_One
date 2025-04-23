@@ -24,8 +24,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Surface
@@ -41,6 +44,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -147,31 +151,61 @@ fun MainScreen(
 
                 }
             } else {
-
                 // Main content - only display when repository is loaded
                 val isHostPhone = productDisplayController.isHostPhone
-                Column(modifier = Modifier.fillMaxSize()) {
-                    // WiFi Connection Card
-                    AnimatedVisibility(
-                        visible = isDisplayedConnexionWifiVisible
-                                ||
-                                !productDisplayController.isConnected
-                                && !lockHost
-                    ) {
-                        ConnexionCard(
-                            headViewModel = headViewModel,
-                            productDisplayController = productDisplayController,
-                            onClickToStartAsClient = {
-                                isNavBarVisible = false
-                                isFabVisible = false
-                            },
-                            lockHost = lockHost
-                        )
-                    }
 
-                    // Main Content Area
-                    Box(modifier = Modifier.weight(1f)) {
-                        if (!hideAppScreen) {
+                // Handle the TODO: Display maintenance message when hideAppScreen is true
+                if (hideAppScreen) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Build,
+                                contentDescription = "Maintenance",
+                                modifier = Modifier.size(64.dp),
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                            Text(
+                                text = "التطبيق في طور الاصلاحات",
+                                style = MaterialTheme.typography.headlineMedium,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.padding(top = 16.dp)
+                            )
+                            Text(
+                                text = "The application is under maintenance",
+                                style = MaterialTheme.typography.bodyLarge,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.padding(top = 8.dp)
+                            )
+                        }
+                    }
+                } else {
+                    Column(modifier = Modifier.fillMaxSize()) {
+                        // WiFi Connection Card
+                        AnimatedVisibility(
+                            visible = isDisplayedConnexionWifiVisible
+                                    ||
+                                    !productDisplayController.isConnected
+                                    && !lockHost
+                        ) {
+                            ConnexionCard(
+                                headViewModel = headViewModel,
+                                productDisplayController = productDisplayController,
+                                onClickToStartAsClient = {
+                                    isNavBarVisible = false
+                                    isFabVisible = false
+                                },
+                                lockHost = lockHost
+                            )
+                        }
+
+                        // Main Content Area
+                        Box(modifier = Modifier.weight(1f)) {
                             AppNavHost(
                                 navController = navController,
                                 onToggleNavBar = { isNavBarVisible = !isNavBarVisible },
@@ -206,8 +240,8 @@ fun MainScreen(
                                 showVendeursDialog = true
                             }
                         }
-
                     }
+
                     if (showVendeursDialog) {
                         AlertDialog(
                             onDismissRequest = {
@@ -230,12 +264,11 @@ fun MainScreen(
                             }
                         )
                     }
-
                 }
 
-                // Navigation Bar with FAB
+                // Navigation Bar with FAB - only show if app screen is not hidden
                 AnimatedVisibility(
-                    visible = (isHostPhone || !productDisplayController.isConnected) && shouldShowContent,
+                    visible = (isHostPhone || !productDisplayController.isConnected) && shouldShowContent && !hideAppScreen,
                     modifier = Modifier.align(Alignment.BottomCenter)
                 ) {
                     NavigationBarWithFab(
@@ -264,8 +297,8 @@ fun MainScreen(
                     )
                 }
 
-                // Product Display Dialog
-                if (showProductDisplay && shouldShowContent) {
+                // Product Display Dialog - only if app screen is not hidden
+                if (showProductDisplay && shouldShowContent && !hideAppScreen) {
                     val productId = productDisplayController.clientWindowsDisplayedProductId
                     val displayProductDataBase = productId?.let { id ->
                         uiState.articlesBasesStatTables.find { it.idArticle.toLong() == id }
@@ -282,13 +315,13 @@ fun MainScreen(
                     }
                 }
 
-                // Search Display Dialog
-                if (productDisplayController.searchWindowsDisplaye.isNotEmpty() && shouldShowContent) {
+                // Search Display Dialog - only if app screen is not hidden
+                if (productDisplayController.searchWindowsDisplaye.isNotEmpty() && shouldShowContent && !hideAppScreen) {
                     SearchArticle(
                         dsipayeText = productDisplayController.searchWindowsDisplaye
                     )
                 }
-                if (isHostPhone) {
+                if (isHostPhone && !hideAppScreen) {
                     RecordAfficheurFAB()
                 }
 
@@ -306,9 +339,7 @@ fun MainScreen(
                         )
                     }
                 }
-
             }
         }
-
     }
 }
