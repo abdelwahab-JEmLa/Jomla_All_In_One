@@ -260,7 +260,7 @@ fun MarkerStatusDialog(
                                 ceComptVendeurInsertBonsAchatAuPeriodID,
                                 repositorysModel,
                                 clientId,
-                                _013_Acheteurs.Etate.COMMANDE_LENCE ,
+                                _013_Acheteurs.HistoriuesDeCetteJour.COMMANDE_LENCE ,
                                 relatedClients?.nom!!,
 
                                 )
@@ -298,7 +298,7 @@ fun MarkerStatusDialog(
                                 ceComptVendeurInsertBonsAchatAuPeriodID,
                                 repositorysModel,
                                 clientId,
-                                _013_Acheteurs.Etate.ACHETEUR_NON_DISPO,
+                                _013_Acheteurs.HistoriuesDeCetteJour.ACHETEUR_NON_DISPO,
                                 relatedClients.nom
                             )
                             //----------------------------------------------------------------------------------------/
@@ -331,7 +331,7 @@ fun MarkerStatusDialog(
                             ceComptVendeurInsertBonsAchatAuPeriodID,
                             repositorysModel,
                             clientId,
-                            _013_Acheteurs.Etate.AVEC_MARCHANDISE,
+                            _013_Acheteurs.HistoriuesDeCetteJour.AVEC_MARCHANDISE,
                             relatedClients?.nom!!
                         )
                         //----------------------------------------------------------------------------------------/
@@ -363,7 +363,7 @@ fun MarkerStatusDialog(
                             ceComptVendeurInsertBonsAchatAuPeriodID,
                             repositorysModel,
                             clientId,
-                            _013_Acheteurs.Etate.FERME,
+                            _013_Acheteurs.HistoriuesDeCetteJour.FERME,
                             relatedClients?.nom!!
                         )
                         //----------------------------------------------------------------------------------------/

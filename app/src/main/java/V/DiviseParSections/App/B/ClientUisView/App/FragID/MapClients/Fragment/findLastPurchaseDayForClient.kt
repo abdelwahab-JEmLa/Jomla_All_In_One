@@ -85,11 +85,11 @@ fun getClientStateInArabic(
             val clientEntry = vendeur.child_013_Acheteurs.find { it.idClient == clientId }
 
             if (clientEntry != null) {
-                return clientEntry.etate.nomArabe
+                return clientEntry.historiuesDeCetteJour.nomArabe
             }
         }
     }
-    return _013_Acheteurs.Etate.NON_DEFINI.nomArabe
+    return _013_Acheteurs.HistoriuesDeCetteJour.NON_DEFINI.nomArabe
 }
 
 fun findLastPurchaseDayForClient(

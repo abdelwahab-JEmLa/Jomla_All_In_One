@@ -13,7 +13,7 @@ fun _01_Upsert_013_Acheteurs(
     ceComptVendeurInsertBonsAchatAuPeriodID: Long?,
     repositorysModel: _0_0_HeadOfRepositorys_Model,
     clientId: Long,
-    clientEtate: _013_Acheteurs.Etate, // Renamed the parameter
+    clientHistoriuesDeCetteJour: _013_Acheteurs.HistoriuesDeCetteJour, // Renamed the parameter
     nom: String,
 ) {
     // Get repository for periods
@@ -71,13 +71,13 @@ fun _01_Upsert_013_Acheteurs(
             startDesignation = "client $idClient"
             tempDateCreationStr = _01_VentsHistoriquesDataBase.getCurrentDataTimeString()
             fireBaseKeyID = parse_fireBaseKeyID(idClient)
-            etate = clientEtate
+            historiuesDeCetteJour = clientHistoriuesDeCetteJour
             child_14Produits = realmListOf()
         }
         vendeur.child_013_Acheteurs.add(acheteur)
     } else {
         acheteur.tempDateCreationStr = _01_VentsHistoriquesDataBase.getCurrentDataTimeString()
-        acheteur.etate = clientEtate
+        acheteur.historiuesDeCetteJour = clientHistoriuesDeCetteJour
         acheteur.nomClient = nom  // Also update the name to ensure it's current
     }
 
