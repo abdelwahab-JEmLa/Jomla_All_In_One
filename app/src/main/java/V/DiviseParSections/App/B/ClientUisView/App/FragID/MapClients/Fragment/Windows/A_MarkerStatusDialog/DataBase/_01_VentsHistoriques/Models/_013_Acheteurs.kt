@@ -37,6 +37,7 @@ class _013_Acheteurs : RealmObject {
             const val child_14A_HistoriquesDeCetteJour = "child_14A_HistoriquesDeCetteJour"
         }
 
+
         fun mapDatas(datas: List<_013_Acheteurs>): Map<String, Any> {
             return datas.associate { data ->
                 data.fireBaseKeyID to mapOf(
