@@ -1,7 +1,8 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._013_Acheteurs
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._14A_HistoriuesDeCetteJour
+import android.annotation.SuppressLint
 
 data class LastPurchaseInfo(
     val dayName: String = "",
@@ -45,6 +46,7 @@ private fun extractTimeFromDateString(dateTimeString: String): String {
     }
 }
 
+@SuppressLint("DefaultLocale")
 private fun formatTimeToArabic(timeString: String): String {
     try {
         // Assuming the time format is HH:MM:SS or HH:MM
@@ -84,12 +86,21 @@ fun getClientStateInArabic(
         for (vendeur in period.child_012_Compts_Vendeurs) {
             val clientEntry = vendeur.child_013_Acheteurs.find { it.idClient == clientId }
 
-            if (clientEntry != null) {
-                return clientEntry.historiuesDeCetteJour.nomArabe
+            if (clientEntry != null && clientEntry.child_14A_HistoriquesDeCetteJour.isNotEmpty()) {
+                // Sort historical entries by date and time in descending order
+                val sortedHistoricalEntries = clientEntry.child_14A_HistoriquesDeCetteJour.sortedWith(
+                    compareByDescending<_14A_HistoriuesDeCetteJour> { it.dateCreationStr }
+                        .thenByDescending { it.tempCreationStr }
+                )
+
+                // Return the most recent state's Arabic name
+                if (sortedHistoricalEntries.isNotEmpty()) {
+                    return sortedHistoricalEntries.first().etate.nomArabe
+                }
             }
         }
     }
-    return _013_Acheteurs.HistoriuesDeCetteJour.NON_DEFINI.nomArabe
+    return _14A_HistoriuesDeCetteJour.Etate.NON_DEFINI.nomArabe
 }
 
 fun findLastPurchaseDayForClient(

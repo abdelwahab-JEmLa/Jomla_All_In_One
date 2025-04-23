@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._013_Acheteurs
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._14A_HistoriuesDeCetteJour
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat
@@ -260,10 +260,9 @@ fun MarkerStatusDialog(
                                 ceComptVendeurInsertBonsAchatAuPeriodID,
                                 repositorysModel,
                                 clientId,
-                                _013_Acheteurs.HistoriuesDeCetteJour.COMMANDE_LENCE ,
-                                relatedClients?.nom!!,
-
-                                )
+                                _14A_HistoriuesDeCetteJour.Etate.COMMANDE_LENCE,
+                                relatedClients?.nom!!
+                            )
                             //----------------------------------------------------------------------------------------/
                         }
                     }
@@ -298,7 +297,7 @@ fun MarkerStatusDialog(
                                 ceComptVendeurInsertBonsAchatAuPeriodID,
                                 repositorysModel,
                                 clientId,
-                                _013_Acheteurs.HistoriuesDeCetteJour.ACHETEUR_NON_DISPO,
+                                _14A_HistoriuesDeCetteJour.Etate.ACHETEUR_NON_DISPO,
                                 relatedClients.nom
                             )
                             //----------------------------------------------------------------------------------------/
@@ -331,7 +330,7 @@ fun MarkerStatusDialog(
                             ceComptVendeurInsertBonsAchatAuPeriodID,
                             repositorysModel,
                             clientId,
-                            _013_Acheteurs.HistoriuesDeCetteJour.AVEC_MARCHANDISE,
+                            _14A_HistoriuesDeCetteJour.Etate.AVEC_MARCHANDISE,
                             relatedClients?.nom!!
                         )
                         //----------------------------------------------------------------------------------------/
@@ -363,7 +362,7 @@ fun MarkerStatusDialog(
                             ceComptVendeurInsertBonsAchatAuPeriodID,
                             repositorysModel,
                             clientId,
-                            _013_Acheteurs.HistoriuesDeCetteJour.FERME,
+                            _14A_HistoriuesDeCetteJour.Etate.FERME,
                             relatedClients?.nom!!
                         )
                         //----------------------------------------------------------------------------------------/
@@ -416,7 +415,6 @@ fun MarkerStatusDialog(
                             }
                         }
                     )
-
 
                     val CIBLE_POUR_2 =
                         B_ClientDataBase.DernierEtatAAffiche.CIBLE_POUR_2

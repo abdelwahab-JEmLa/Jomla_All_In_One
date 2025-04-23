@@ -118,8 +118,6 @@ class _013_Acheteurs : RealmObject {
                 source.child_14A_HistoriquesDeCetteJour.forEach { sourceProduit ->
                     child_14A_HistoriquesDeCetteJour.add(_14A_HistoriuesDeCetteJour.deepCopy(sourceProduit))
                 }
-
-
             }
         }
 

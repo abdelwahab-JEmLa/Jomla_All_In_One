@@ -20,6 +20,7 @@ class _14A_HistoriuesDeCetteJour : RealmObject {
     var etateName: String = Etate.NON_DEFINI.name
 
     var description: String = ""
+
     @Ignore
     var etate: Etate
         get() = try {

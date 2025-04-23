@@ -47,10 +47,13 @@ import android.content.Context
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
+const val itsProductionMode =  false
+
 val commonRepositoriesModule = module {
     single { AppDatabase.DatabaseModule.getDatabase(get()) }
 
-    single<_01_VentsHistoriquesDataBase_Repository> { _01_VentsHistoriquesDataBase_RepositoryImpl(true) }
+    single<_01_VentsHistoriquesDataBase_Repository> {
+        _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode) }
 
     single<_0_0_HeadOfRepositorys_Repository> { _0_0_HeadOfRepositorys_RepositoryImpl(
         get(),
