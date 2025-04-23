@@ -1,7 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase.Companion.getCurrentDataTimeString
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Repository._14_._14A_HistoriuesDeCetteJour_Repository
 import com.google.firebase.database.DataSnapshot
 import io.realm.kotlin.ext.realmListOf
 import io.realm.kotlin.types.RealmList
@@ -47,8 +46,7 @@ class _013_Acheteurs : RealmObject {
                     SchemaFields.START_DESIGNATION to data.startDesignation,
                     SchemaFields.TEMP_DATE_CREATION to data.tempDateCreationStr,
                     SchemaFields.CHILD_PRODUITS to _014_Produits.mapDatas(data.child_14Produits),
-                    SchemaFields.child_14A_HistoriquesDeCetteJour to _14A_HistoriuesDeCetteJour_Repository
-                        .mapDatas(data.child_14A_HistoriquesDeCetteJour),
+                    SchemaFields.child_14A_HistoriquesDeCetteJour to _14A_HistoriuesDeCetteJour.mapDatas(data.child_14A_HistoriquesDeCetteJour),
                 )
             }
         }
@@ -90,7 +88,7 @@ class _013_Acheteurs : RealmObject {
                 // Parse historiques
                 val historiquesSnapshot = snapshot.child(SchemaFields.child_14A_HistoriquesDeCetteJour)
                 historiquesSnapshot.children.forEach { historiqueSnapshot ->
-                    val historique = _14A_HistoriuesDeCetteJour_Repository.parseDataFromSnapshot(historiqueSnapshot)
+                    val historique = _14A_HistoriuesDeCetteJour.parseDataFromSnapshot(historiqueSnapshot)
                         ?: return@forEach
                     acheteur.child_14A_HistoriquesDeCetteJour.add(historique)
                 }
@@ -118,7 +116,7 @@ class _013_Acheteurs : RealmObject {
                 // Deep copy produits
                 child_14A_HistoriquesDeCetteJour = realmListOf()
                 source.child_14A_HistoriquesDeCetteJour.forEach { sourceProduit ->
-                    child_14A_HistoriquesDeCetteJour.add(_14A_HistoriuesDeCetteJour_Repository.deepCopy(sourceProduit))
+                    child_14A_HistoriquesDeCetteJour.add(_14A_HistoriuesDeCetteJour.deepCopy(sourceProduit))
                 }
             }
         }
@@ -144,7 +142,7 @@ class _013_Acheteurs : RealmObject {
                 }
 
                 // Create and add historiques
-                val historiques = _14A_HistoriuesDeCetteJour_Repository.testData()
+                val historiques = _14A_HistoriuesDeCetteJour.testData()
                 historiques.forEach { historique ->
                     acheteur.child_14A_HistoriquesDeCetteJour.add(historique)
                 }

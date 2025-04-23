@@ -2,8 +2,6 @@ package Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_Repository
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_RepositoryImpl
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Repository._14_._14A_HistoriuesDeCetteJour_Repository
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Repository._14_._14A_HistoriuesDeCetteJour_RepositoryImpl
 import V.DiviseParSections.App.D.FraitProjet.App.FragID2.VentsHistoriquesDisplayer.Fragment.ViewModel.PeriodeVenteViewModel
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.ViewModel.VendeursViewModel
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
@@ -57,8 +55,6 @@ val commonRepositoriesModule = module {
     single<_01_VentsHistoriquesDataBase_Repository> {
         _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode) }
 
-    single<_14A_HistoriuesDeCetteJour_Repository> {
-        _14A_HistoriuesDeCetteJour_RepositoryImpl() }
 
     single<_0_0_HeadOfRepositorys_Repository> { _0_0_HeadOfRepositorys_RepositoryImpl(
         get(),

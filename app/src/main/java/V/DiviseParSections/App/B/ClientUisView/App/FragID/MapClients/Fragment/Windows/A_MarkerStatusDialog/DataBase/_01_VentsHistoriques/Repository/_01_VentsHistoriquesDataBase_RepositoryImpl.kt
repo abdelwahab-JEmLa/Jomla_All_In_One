@@ -8,7 +8,6 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Wi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase.Companion.parsePeriodeFromSnapshot
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase.Companion.test_01_PeriodesVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._14A_HistoriuesDeCetteJour
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Repository._14_._14A_HistoriuesDeCetteJour_Repository
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.firebase.Firebase
@@ -27,12 +26,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
 import java.util.concurrent.atomic.AtomicBoolean
 
-class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode: Boolean=false)
+class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode: Boolean)
     : _01_VentsHistoriquesDataBase_Repository {
 
     private val TAG = "_01_PeriodesVent_Repo"
@@ -43,7 +39,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode: Boolean=fal
     private val _01_HeadRef = Firebase.database.getReference("01_DataPrototype-04-19")
     private val _1_developingRef = _01_HeadRef.child("_1_developingRef")
     private val _2_productionTestRef = _01_HeadRef.child("_2_productionTestRef")
-     val firebaseRef = if (!itsProductionMode)
+    private val firebaseRef = if (!itsProductionMode)
         _1_developingRef else _2_productionTestRef
         .child("_01_VentsHistoriquesDataBase")
 
@@ -75,13 +71,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode: Boolean=fal
             )
         )
         return Realm.open(config)
-    }   
-    override fun getCurrentDateString(): String =
-        LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy_MM_dd"))
-
-    override fun getCurrentTimeString(): String =
-        LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"))
-
+    }
 
     private fun initializeData() {
         val isRealmEmpty = realm.query<_01_VentsHistoriquesDataBase>().count().find() == 0L
@@ -282,7 +272,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode: Boolean=fal
 
                     // Process historiques for this acheteur
                     acheteurSnapshot.child("child_14A_HistoriquesDeCetteJour").children.forEach { historiqueSnapshot ->
-                        val historique = _14A_HistoriuesDeCetteJour_Repository.parseDataFromSnapshot(historiqueSnapshot) ?: return@forEach
+                        val historique = _14A_HistoriuesDeCetteJour.parseDataFromSnapshot(historiqueSnapshot) ?: return@forEach
                         val historiqueUpdated = updateHistoriqueInAcheteur(periodeKey, vendeurKey, acheteurKey, historique)
                         if (historiqueUpdated) changesMade = true
                     }
@@ -471,7 +461,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode: Boolean=fal
 
                 // Make sure historiques are properly copied
                 sourceAcheteur.child_14A_HistoriquesDeCetteJour.forEach { sourceHistorique ->
-                    acheteurCopy.child_14A_HistoriquesDeCetteJour.add(_14A_HistoriuesDeCetteJour_Repository.deepCopy(sourceHistorique))
+                    acheteurCopy.child_14A_HistoriquesDeCetteJour.add(_14A_HistoriuesDeCetteJour.deepCopy(sourceHistorique))
                 }
 
                 vendeurCopy.child_013_Acheteurs.add(acheteurCopy)
@@ -588,5 +578,4 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode: Boolean=fal
             acheteursChangeListener = null
         }
     }
-
 }
