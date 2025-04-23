@@ -135,7 +135,7 @@ fun NavGraphBuilder.app2(
     clientEnCourDeVent: Long,
     navController: NavHostController,
     onClear: () -> Unit,
-    orderStateManager: OrderStateManager, // Added parameter for tracking order state
+    orderStateManager: OrderStateManager,
 ) {
     composable(Screen.A_ClientsLocationGps.route) {
         // Use a small delay to ensure client ID is loaded
