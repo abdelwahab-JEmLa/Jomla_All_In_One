@@ -63,7 +63,6 @@ fun updateAcheteurToAchatTermine(
 fun OrderCompletionDialog(
     clientId: Long,
     clientName: String,
-    onConfirm: () -> Unit,
     onDismiss: () -> Unit,
     onStateChange: (state: _14A_HistoriuesDeCetteJour.Etate) -> Unit,
 ) {
@@ -83,7 +82,10 @@ fun OrderCompletionDialog(
                 _14A_HistoriuesDeCetteJour.Etate.entries.forEach { state ->
                     if (state != _14A_HistoriuesDeCetteJour.Etate.COMMANDE_LENCE) {
                         Button(
-                            onClick = { onStateChange(state) },
+                            onClick = {
+                                onStateChange(state)
+                                onDismiss() // Auto-dismiss after selecting state
+                            },
                             modifier = Modifier.fillMaxWidth(),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = Color(
@@ -103,11 +105,7 @@ fun OrderCompletionDialog(
                 }
             }
         },
-        confirmButton = {
-            Button(onClick = onConfirm) {
-                Text("تم") // "Done" in Arabic
-            }
-        },
+        confirmButton = { },
         dismissButton = {
             TextButton(onClick = onDismiss) {
                 Text("إلغاء") // "Cancel" in Arabic

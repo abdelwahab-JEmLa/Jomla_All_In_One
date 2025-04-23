@@ -294,14 +294,6 @@ fun AppNavHost(
                 OrderCompletionDialog(
                     clientId = currentClientId,
                     clientName = currentClient?.nom ?: "Unknown",
-                    onConfirm = {
-                        updateAcheteurToAchatTermine(
-                            viewModelInitApp,
-                            currentClientId,
-                            repositorysModel,
-                        )
-                        showOrderCompletionDialog = false
-                    },
                     onDismiss = {
                         showOrderCompletionDialog = false
                     },
