@@ -21,4 +21,16 @@ interface _01_VentsHistoriquesDataBase_Repository {
     fun notifierDataChange()
 
     fun addTestVals()
+    fun getCurrentDateString(): String
+    fun getCurrentTimeString(): String
+
+    companion object {
+        fun getCurrentTimeString(): String {
+            return _01_VentsHistoriquesDataBase_RepositoryImpl().getCurrentTimeString()
+        }
+
+        fun getCurrentDateString(): String {
+            return _01_VentsHistoriquesDataBase_RepositoryImpl().getCurrentDateString()
+        }
+    }
 }
