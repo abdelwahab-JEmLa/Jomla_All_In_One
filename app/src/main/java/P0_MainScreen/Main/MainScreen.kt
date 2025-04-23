@@ -154,7 +154,6 @@ fun MainScreen(
                 // Main content - only display when repository is loaded
                 val isHostPhone = productDisplayController.isHostPhone
 
-                // Handle the TODO: Display maintenance message when hideAppScreen is true
                 if (hideAppScreen) {
                     Box(
                         modifier = Modifier.fillMaxSize(),
