@@ -138,14 +138,15 @@ fun NavGraphBuilder.app2(
     orderStateManager: OrderStateManager, // Added parameter for tracking order state
 ) {
     composable(Screen.A_ClientsLocationGps.route) {
-        // Check for active orders only when first entering this screen
+        // Use a small delay to ensure client ID is loaded
         LaunchedEffect(Unit) {
-            // Only check for active orders if we haven't already dismissed the dialog
+            // Only check if we haven't already dismissed the dialog
             if (!orderStateManager.hasCheckedOrderStatus()) {
+                // Small delay to ensure client ID is properly loaded
+                kotlinx.coroutines.delay(300)
                 orderStateManager.checkOrderStatus()
             }
         }
-
         A_MapClients_A2FragID_1(
             viewModelInitApp = viewModelInitApp,
             clientEnCourDeVent = clientEnCourDeVent,
@@ -291,12 +292,16 @@ fun AppNavHost(
                 ?.valueLong ?: 0)
     }
 
-    // Create order state manager to handle order status checks
+    // 1. Modify how OrderStateManager is created in AppNavHost
     val orderStateManager = remember {
         OrderStateManager(
             repo_01_VentsHistoriquesDataBase_Repository = repo_01_VentsHistoriquesDataBase_Repository,
             repositorysModel = repositorysModel,
-            currentClientId = { currentClientId },
+            // Use the stored value from headViewModel instead of the changing state
+            currentClientId = {
+                headViewModel._uiState.value.appSettingsSaverModel
+                    .find { it.name == "clientBuyerNowId" }?.valueLong ?: 0
+            },
             onShowDialog = { showOrderCompletionDialog = true }
         )
     }
