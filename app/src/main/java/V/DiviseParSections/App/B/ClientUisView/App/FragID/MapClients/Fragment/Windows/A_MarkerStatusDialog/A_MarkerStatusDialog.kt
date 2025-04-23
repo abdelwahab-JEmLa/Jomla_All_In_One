@@ -256,12 +256,12 @@ fun MarkerStatusDialog(
 
                             //----------------------------------------------------------------------------------------/
                             _01_Upsert_013_Acheteurs(
-                                viewModel,
                                 ceComptVendeurInsertBonsAchatAuPeriodID,
                                 repositorysModel,
                                 clientId,
                                 _14A_HistoriuesDeCetteJour.Etate.COMMANDE_LENCE,
-                                relatedClients?.nom!!
+                                relatedClients?.nom!!,
+                                viewModel.repo_01_VentsHistoriquesDataBase
                             )
                             //----------------------------------------------------------------------------------------/
                         }
@@ -293,12 +293,12 @@ fun MarkerStatusDialog(
 
                             //----------------------------------------------------------------------------------------/
                             _01_Upsert_013_Acheteurs(
-                                viewModel,
                                 ceComptVendeurInsertBonsAchatAuPeriodID,
                                 repositorysModel,
                                 clientId,
                                 _14A_HistoriuesDeCetteJour.Etate.ACHETEUR_NON_DISPO,
-                                relatedClients.nom
+                                relatedClients.nom,
+                                viewModel.repo_01_VentsHistoriquesDataBase
                             )
                             //----------------------------------------------------------------------------------------/
                         }
@@ -326,12 +326,12 @@ fun MarkerStatusDialog(
                         }
                         //----------------------------------------------------------------------------------------/
                         _01_Upsert_013_Acheteurs(
-                            viewModel,
                             ceComptVendeurInsertBonsAchatAuPeriodID,
                             repositorysModel,
                             clientId,
                             _14A_HistoriuesDeCetteJour.Etate.AVEC_MARCHANDISE,
-                            relatedClients?.nom!!
+                            relatedClients?.nom!!,
+                            viewModel.repo_01_VentsHistoriquesDataBase
                         )
                         //----------------------------------------------------------------------------------------/
                     }
@@ -358,12 +358,12 @@ fun MarkerStatusDialog(
                         }
                         //----------------------------------------------------------------------------------------/
                         _01_Upsert_013_Acheteurs(
-                            viewModel,
                             ceComptVendeurInsertBonsAchatAuPeriodID,
                             repositorysModel,
                             clientId,
                             _14A_HistoriuesDeCetteJour.Etate.FERME,
-                            relatedClients?.nom!!
+                            relatedClients?.nom!!,
+                            viewModel.repo_01_VentsHistoriquesDataBase
                         )
                         //----------------------------------------------------------------------------------------/
                     }

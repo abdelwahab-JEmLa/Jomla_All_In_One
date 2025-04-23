@@ -1,5 +1,6 @@
 package Z_MasterOfApps.Kotlin.ViewModel
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_Repository
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.I_CategoriesRepository
@@ -17,7 +18,6 @@ import Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.A
 import Z_MasterOfApps.Z.Android.Base.App.App._1.GerantAfficheurGrossistCommend.App.NH_5.id3_AfficheurDesProduitsPourLeColecteur.ViewModel.ExtensionVMApp1FragmentId_3
 import Z_MasterOfApps.Z.Android.Main.Screen.Startup.ViewModel.Startup_Extension
 import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.ParamatersAppsModel
-import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -29,7 +29,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 
-@SuppressLint("SuspiciousIndentation")
 class ViewModelInitApp(
     val produitModelRepository: A_ProduitRepository,
     val i_CategoriesRepository: I_CategoriesRepository,
@@ -37,8 +36,9 @@ class ViewModelInitApp(
     val _1_2_ProduitAcheteOperation_Repository: _1_2_ProduitAcheteOperation_Repository,
     val _1_3_BonAchat_Repository: _1_3_BonAchat_Repository,
     val _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository,
-    val _1_5_Vendeur_Repository: _1_5_Vendeur_Repository  ,
-    val _0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository
+    val _1_5_Vendeur_Repository: _1_5_Vendeur_Repository,
+    val repo_0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository,
+    val repo_01_VentsHistoriquesDataBase_Repository: _01_VentsHistoriquesDataBase_Repository
 ) : ViewModel() {
     var _paramatersAppsViewModelModel by mutableStateOf(ParamatersAppsModel())
     var _modelAppsFather by mutableStateOf(_ModelAppsFather())
@@ -93,6 +93,7 @@ class ViewModelInitApp(
             }
         }
     }
+
 
     fun updateStatueClientParID(
         clientId : Long,

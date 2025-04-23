@@ -36,7 +36,9 @@ class _14A_HistoriuesDeCetteJour : RealmObject {
         NON_DEFINI(android.R.color.holo_orange_light, "غير محدد"),
         AVEC_MARCHANDISE(android.R.color.holo_blue_light, "عندو سلعة"),
         A_EVITE(android.R.color.black, "يتجنب"),
-        COMMANDE_LENCE(android.R.color.holo_green_light, "نشط / متصل"),
+        COMMANDE_LENCE(android.R.color.holo_green_light, "في طلب"),       //<--
+        //TODO(1): ajoute un verificateur si un achteur son dernier etate == COMMANDE_LENCE
+        ACHAT_TERMINE(android.R.color.holo_purple,"تم البيع له" ),
         ACHETEUR_NON_DISPO(android.R.color.darker_gray, "الشاري غائب"),
         FERME(android.R.color.darker_gray, "مغلق")
     }
@@ -105,28 +107,11 @@ class _14A_HistoriuesDeCetteJour : RealmObject {
             }
         }
 
-        fun testData(): List<_14A_HistoriuesDeCetteJour> {
-            val data = mutableListOf<_14A_HistoriuesDeCetteJour>()
-
-            for (k in 1..3) {
-                val historique = _14A_HistoriuesDeCetteJour().apply {
-                    dateCreationStr = "2025_04_${20 + k}"
-                    tempCreationStr = "12:${k*10}"
-                    etateName = Etate.values()[(k % Etate.values().size)].name
-                    description = "Historique d'état $k"
-                    fireBaseKeyID = "${etateName}->(${dateCreationStr}${tempCreationStr})"
-                }
-
-                data.add(historique)
-            }
-
-            return data
-        }
-
         fun getCurrentDateString(): String =
             LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy_MM_dd"))
 
         fun getCurrentTimeString(): String =
             LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"))
     }
+
 }

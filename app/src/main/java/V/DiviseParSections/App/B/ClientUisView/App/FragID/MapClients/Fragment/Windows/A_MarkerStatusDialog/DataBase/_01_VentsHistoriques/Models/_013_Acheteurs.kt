@@ -142,11 +142,7 @@ class _013_Acheteurs : RealmObject {
                     acheteur.child_14Produits.add(produit)
                 }
 
-                // Create and add historiques
-                val historiques = _14A_HistoriuesDeCetteJour.testData()
-                historiques.forEach { historique ->
-                    acheteur.child_14A_HistoriquesDeCetteJour.add(historique)
-                }
+
 
                 data.add(acheteur)
             }
