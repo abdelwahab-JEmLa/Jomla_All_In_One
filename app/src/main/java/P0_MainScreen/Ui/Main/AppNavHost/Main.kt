@@ -37,6 +37,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.database.database
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -53,7 +54,7 @@ fun NavGraphBuilder.app2(
             // Only check if we haven't already dismissed the dialog
             if (!orderStateManager.hasCheckedOrderStatus()) {
                 // Small delay to ensure client ID is properly loaded
-                kotlinx.coroutines.delay(300)
+                delay(300)
                 orderStateManager.checkOrderStatus()
             }
         }
@@ -260,7 +261,7 @@ fun AppNavHost(
                                     updateAcheteurToAchatTermine(
                                         viewModelInitApp,
                                         currentClientId,
-                                        repositorysModel
+                                        repositorysModel,
                                     )
                                 }
                                 headViewModel.updateLongAppSetting("clientBuyerNowId", 0)
@@ -288,7 +289,7 @@ fun AppNavHost(
                 }
             }
 
-            // Show order completion dialog if needed
+
             if (showOrderCompletionDialog) {
                 OrderCompletionDialog(
                     clientId = currentClientId,
@@ -297,16 +298,23 @@ fun AppNavHost(
                         updateAcheteurToAchatTermine(
                             viewModelInitApp,
                             currentClientId,
-                            repositorysModel
+                            repositorysModel,
                         )
                         showOrderCompletionDialog = false
                     },
                     onDismiss = {
                         showOrderCompletionDialog = false
+                    },
+                    onStateChange = { selectedState ->
+                        updateAcheteurToAchatTermine(
+                            viewModelInitApp = viewModelInitApp,
+                            clientId = currentClientId,
+                            repositorysModel = repositorysModel,
+                            newState = selectedState
+                        )
                     }
                 )
             }
-
             if (showClientSelectionWithoutCondition || (showClientSelection && currentClientId == 0L)) {
                 // Navigate to client map selection screen when no client is selected
                 LaunchedEffect(Unit) {

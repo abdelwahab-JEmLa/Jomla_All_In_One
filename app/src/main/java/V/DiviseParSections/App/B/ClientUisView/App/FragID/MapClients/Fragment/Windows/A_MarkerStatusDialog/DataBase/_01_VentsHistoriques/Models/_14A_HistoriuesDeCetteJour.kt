@@ -36,8 +36,7 @@ class _14A_HistoriuesDeCetteJour : RealmObject {
         NON_DEFINI(android.R.color.holo_orange_light, "غير محدد"),
         AVEC_MARCHANDISE(android.R.color.holo_blue_light, "عندو سلعة"),
         A_EVITE(android.R.color.black, "يتجنب"),
-        COMMANDE_LENCE(android.R.color.holo_green_light, "في طلب"),       //<--
-        //TODO(1): ajoute un verificateur si un achteur son dernier etate == COMMANDE_LENCE
+        COMMANDE_LENCE(android.R.color.holo_green_light, "في طلب"),
         ACHAT_TERMINE(android.R.color.holo_purple,"تم البيع له" ),
         ACHETEUR_NON_DISPO(android.R.color.darker_gray, "الشاري غائب"),
         FERME(android.R.color.darker_gray, "مغلق")
