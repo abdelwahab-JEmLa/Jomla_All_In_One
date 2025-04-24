@@ -82,7 +82,7 @@ fun A_MapClients_A2FragID_1(
                 clientEnCourDeVent = clientEnCourDeVent,
                 onUpdateLongAppSetting = onUpdateLongAppSetting,
                 onClear = onClear,
-                mapReloadTrigger = mapReloadTrigger // Pass it here
+                mapReloadTrigger = mapReloadTrigger
             )
         }
     }
@@ -95,7 +95,7 @@ private fun MapContent(
     clientEnCourDeVent: Long,
     onUpdateLongAppSetting: () -> Unit,
     onClear: () -> Unit,
-    mapReloadTrigger: Int = 0 // Add this parameter
+    mapReloadTrigger: Int = 0
 ) {
     val context = LocalContext.current
     val currentZoom by remember { mutableDoubleStateOf(18.2) }
@@ -131,7 +131,6 @@ private fun MapContent(
             setTileSource(TileSourceFactory.MAPNIK)
             controller.setZoom(currentZoom)
 
-            // Switch to the Main dispatcher before animating
             withContext(Dispatchers.Main) {
                 controller.animateTo(GeoPoint(initialPosition.latitude, initialPosition.longitude))
             }
@@ -157,11 +156,8 @@ private fun MapContent(
         currentFilterMode,
         viewModel.mapReloadTigger,
         viewModel.filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList.size,
-        mapReloadTrigger // Add this to the LaunchedEffect dependencies
+        mapReloadTrigger
     ) {
-        android.util.Log.d("MapClients", "LaunchedEffect triggered: Filter size=${viewModel.filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList.size}")
-
-        // Clear existing markers
         val existingMarkers = mapView.overlays.filterIsInstance<Marker>()
         existingMarkers.forEach { it.closeInfoWindow() }
 
@@ -169,7 +165,6 @@ private fun MapContent(
             .filter { marker -> clientDataBaseSnapList.any { it.id.toString() == marker.id } }
         mapView.overlays.removeAll(markersToRemove)
 
-        // Apply filter modes
         val clientsToShow = when (currentFilterMode) {
             ViewModel_MapClients_App2FragID1.VisibleClientsNow.showNonAbsentClientsOnly -> {
                 clientDataBaseSnapList.filter {
@@ -241,41 +236,26 @@ private fun MapContent(
             }
         }
 
-        // Process each client that passed the initial filter
-        var filteredMarkers = 0
-        var totalMarkers = 0
-
         clientsToShow.forEach { client ->
-            totalMarkers++
-
-            // Debugging day filter
             val dayFilters = viewModel.filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList
             val shouldApplyDayFilter = dayFilters.isNotEmpty()
 
-            // Find the last purchase day for this client
             val lastPurchaseDay = if (shouldApplyDayFilter) {
                 findLastPurchaseDayForClient(
                     viewModel.repo_01_VentsHistoriquesDataBase.modelDatasSnapList,
                     client.id
-                ).also { day ->
-                    android.util.Log.d("DayFilter", "Client ${client.id} (${client.nom}) last purchase day: '$day'")
-                }
+                )
             } else {
                 ""
             }
 
-            // Determine if the client should be displayed
             val shouldDisplayClient = if (!shouldApplyDayFilter) {
                 true
             } else {
-                val matches = lastPurchaseDay.isNotEmpty() && dayFilters.contains(lastPurchaseDay)
-                android.util.Log.d("DayFilter", "Client ${client.id} day '$lastPurchaseDay' matches filter? $matches. Available filters: $dayFilters")
-                matches
+                lastPurchaseDay.isNotEmpty() && dayFilters.contains(lastPurchaseDay)
             }
 
-            // Only proceed with marker creation if the client should be displayed
             if (shouldDisplayClient) {
-                filteredMarkers++
                 try {
                     val actuelleEtat =
                         if (client.id == clientEnCourDeVent)
@@ -289,26 +269,20 @@ private fun MapContent(
                             client.longitude
                         )
 
-                        // Get the day name of last purchase if needed
                         title = if (viewModel.afficheLesJoursAuNoms) {
-                            // Lookup date of last purchase from historical data
                             val lastPurchaseInfo = findLastPurchaseInfoForClient(
                                 viewModel.repo_01_VentsHistoriquesDataBase.modelDatasSnapList,
                                 client.id
                             )
 
                             if (lastPurchaseInfo.dayName.isNotEmpty()) {
-                                // Get the client's state in Arabic
                                 val clientStateArabic = getClientStateInArabic(
                                     client.id,
                                     viewModel.repo_01_VentsHistoriquesDataBase.modelDatasSnapList
                                 )
-
-                                // Format the display with day, time and client state
                                 "${lastPurchaseInfo.dayName} (${lastPurchaseInfo.timeStr})" +
                                         "\n$clientStateArabic"     +
                                         "\n${client.nom}"
-
                             } else {
                                 client.nom
                             }
@@ -339,14 +313,12 @@ private fun MapContent(
 
                             val container = infoWindow.view.findViewById<LinearLayout>(containerResourceId)
                             container?.let {
-                                val backgroundColor = actuelleEtat?.let { statue ->
+                                val backgroundColor = actuelleEtat.let { statue ->
                                     ContextCompat.getColor(context, statue.color)
                                 }
-                                if (backgroundColor != null) {
-                                    it.setBackgroundColor(backgroundColor)
-                                }
 
-                                // Find the title TextView and center it
+                                it.setBackgroundColor(backgroundColor)
+
                                 val titleTextViewId = xmlResources
                                     .find { it.first == "title" }?.second
                                 titleTextViewId?.let { titleId ->
@@ -354,10 +326,7 @@ private fun MapContent(
                                     titleTextView?.gravity = android.view.Gravity.CENTER
                                 }
                             }
-                        } catch (e: Exception) {
-                            // Log exceptions when creating marker info window
-                            android.util.Log.e("MapClients", "Error creating marker info window", e)
-                        }
+                        } catch (e: Exception) { }
 
                         setOnMarkerClickListener { clickedMarker, _ ->
                             selectedMarker = clickedMarker
@@ -372,13 +341,9 @@ private fun MapContent(
                     if (showMarkerDetails) {
                         marker.showInfoWindow()
                     }
-                } catch (e: Exception) {
-                    android.util.Log.e("MapClients", "Error creating marker for client ${client.id}", e)
-                }
+                } catch (e: Exception) { }
             }
         }
-
-        android.util.Log.d("MapClients", "Markers: $filteredMarkers filtered from $totalMarkers total")
         mapView.invalidate()
     }
 
@@ -407,7 +372,6 @@ private fun MapContent(
                 onFilterMarkers = {
                     mapView.overlays.filterIsInstance<Marker>().forEach { it.closeInfoWindow() }
 
-                    // Log the filter change
                     val previousMode = currentFilterMode
                     val newMode = when (currentFilterMode) {
                         ViewModel_MapClients_App2FragID1.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR ->
@@ -429,8 +393,6 @@ private fun MapContent(
                         ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsWithConfirmedProducts ->
                             ViewModel_MapClients_App2FragID1.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
                     }
-
-                    FilterLogger.logFilterChange(previousMode, newMode)
                     currentFilterMode = newMode
                 },
                 onPickFilter = {
@@ -539,39 +501,7 @@ private fun MapContent(
         }
     }
 }
-private class FilterLogger {
-    companion object {
-        private const val TAG = "FilterChangeLog"
-        private val logs = mutableListOf<String>()
 
-        fun logFilterChange(previousMode: ViewModel_MapClients_App2FragID1.VisibleClientsNow,
-                            newMode: ViewModel_MapClients_App2FragID1.VisibleClientsNow) {
-            val timestamp = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault())
-                .format(java.util.Date())
-            val logMessage = "[$timestamp] Filter changed: $previousMode -> $newMode"
-            logs.add(logMessage)
-            android.util.Log.d(TAG, logMessage)
-        }
-
-        fun getLogs(): List<String> = logs.toList()
-    }
-}
-
-object DayFilterDebugger {
-    private const val TAG = "DayFilterDebug"
-
-    fun logHistoricalDataStats(historicalData: List<Any>) {
-        android.util.Log.d(TAG, "Historical data size: ${historicalData.size}")
-    }
-
-    fun logClientPurchaseCheck(clientId: Long, periodId: String, found: Boolean) {
-        android.util.Log.d(TAG, "Client $clientId lookup in period $periodId: $found")
-    }
-
-    fun logDateParsing(dateString: String, parsedDate: String?, success: Boolean) {
-        android.util.Log.d(TAG, "Date parsing: '$dateString' -> '$parsedDate', success: $success")
-    }
-}
 @Composable
 private fun LoadingProgressOverlay(
     progress: Float,
