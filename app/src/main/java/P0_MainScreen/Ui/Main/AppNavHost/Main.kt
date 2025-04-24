@@ -92,7 +92,6 @@ fun AppNavHost(
     onClickToDisplayeConexionWifi: () -> Unit,
     onToggleLockHost: () -> Unit,
     viewModelInitApp: ViewModelInitApp,
-    onClear: () -> Unit,
     headViewModel: HeadViewModel,
     targetCategoryId: MutableState<Long?> = mutableStateOf(null),
     lockHost: Boolean,
@@ -369,7 +368,6 @@ fun MainApp(
         onClickToDisplayeConexionWifi = { /* Implementation for WiFi connection display */ },
         onToggleLockHost = { lockHost.value = !lockHost.value },
         viewModelInitApp = viewModelInitApp,
-        onClear = { /* Implementation for clear operation */ },
         headViewModel = headViewModel,
         lockHost = lockHost.value,
         onClickImageToShowControles = { /* Implementation for showing controls */ }
