@@ -97,13 +97,15 @@ fun AppNavHost(
     lockHost: Boolean,
     onClickImageToShowControles: () -> Unit
 ) {
-    val repo_01_VentsHistoriquesDataBase_Repository = viewModelInitApp
+    val repo_01_VentsHistoriquesDataBase_Repository =
+        viewModelInitApp
         .repo_01_VentsHistoriquesDataBase_Repository
 
     val uiState by headViewModel.uiState.collectAsState()
     // Get current client from settings
     val currentClientId = uiState.appSettingsSaverModel
         .find { it.name == "clientBuyerNowId" }?.valueLong ?: 0
+
     val currentClient = viewModelInitApp.clientDataBaseSnapList.find { it.id == currentClientId }
 
     // Repository model for accessing data structures
