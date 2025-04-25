@@ -227,14 +227,14 @@ fun MarkerStatusDialog(
                                 )
 
                                 // Use upsert to update the existing record
-                                repositorysModel._1_3_BonAchat_Repository.upsertUneDataEtReturnVID(
+                                repositorysModel.repository_1_3_TransactionCommercial.upsertUneDataEtReturnVID(
                                     updatedBonAchat
                                 ) { vid ->
                                     repositorysModel.activeId_1_3_BonAchat.value = vid
                                 }
                             } else {
                                 // Create a new BonAchat if none exists
-                                repositorysModel._1_3_BonAchat_Repository.addDataAndReturneItVID(
+                                repositorysModel.repository_1_3_TransactionCommercial.addDataAndReturneItVID(
                                     _1_3_TransactionCommercial(
                                         clientAcheteurID = clientId,
                                         parentVID_1_4_PeriodeVent = ceComptVendeurInsertBonsAchatAuPeriodID!!,

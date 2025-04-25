@@ -30,7 +30,7 @@ class ViewModel_MapClients_App2FragID1(
     val repo_01_VentsHistoriquesDataBase : _01_VentsHistoriquesDataBase_Repository
 ) : ViewModel() {
     val modelDatasSnapList_1_3_BonAchat=_0_0_HeadOfRepositorys_Repository.repositorys_Model
-        ._1_3_BonAchat_Repository.modelDatasSnapList
+        .repository_1_3_TransactionCommercial.modelDatasSnapList
 
     val bProto_ClientsDataBase = mainRepositery.modelDatas
     val newClientDataBase = _0_0_HeadOfRepositorys_Repository.repositorys_Model

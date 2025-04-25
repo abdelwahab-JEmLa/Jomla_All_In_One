@@ -36,7 +36,7 @@ data class _1_4_PeriodeVent(
     }
 
     companion object {
-        private fun getMainValeKey(): String {
+        fun getMainValeKey(): String {
             return SimpleDateFormat(
                 "yyyy-MM-dd",
                 Locale.getDefault()

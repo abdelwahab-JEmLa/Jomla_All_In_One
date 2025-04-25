@@ -65,7 +65,7 @@ fun A_APP1FragID3_MainScreen(
 
             // Check BonAchat for product 127
             val bonAchatId = product127.parent_1_3_BonAchat
-            val bonAchat = models._1_3_BonAchat_Repository.modelDatasSnapList.find { it.vid == bonAchatId }
+            val bonAchat = models.repository_1_3_TransactionCommercial.modelDatasSnapList.find { it.vid == bonAchatId }
             if (bonAchat != null) {
                 Log.d(TAG, "BonAchat for product 127: period=${bonAchat.parentVID_1_4_PeriodeVent}, filter=$periodFilter")
             } else {
@@ -80,7 +80,7 @@ fun A_APP1FragID3_MainScreen(
     LaunchedEffect(
         models._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList,
         models._1_1_CouleurAcheteOperation_Repository.modelDatasSnapList,
-        models._1_3_BonAchat_Repository.modelDatasSnapList,
+        models.repository_1_3_TransactionCommercial.modelDatasSnapList,
         periodFilter
     ) {
         withContext(Dispatchers.Default) {
@@ -88,11 +88,11 @@ fun A_APP1FragID3_MainScreen(
             val colorsByProductVid = models._1_1_CouleurAcheteOperation_Repository.modelDatasSnapList
                 .groupBy { it.parentProduitAchateOperationVID }
 
-            val bonAchatsById = models._1_3_BonAchat_Repository.modelDatasSnapList
+            val bonAchatsById = models.repository_1_3_TransactionCommercial.modelDatasSnapList
                 .associateBy { it.vid }
 
             // Debug logging for period filtering
-            val bonAchatsPeriods = models._1_3_BonAchat_Repository.modelDatasSnapList
+            val bonAchatsPeriods = models.repository_1_3_TransactionCommercial.modelDatasSnapList
                 .map { "${it.vid}: ${it.parentVID_1_4_PeriodeVent}" }
             Log.d(TAG, "BonAchats with periods: $bonAchatsPeriods")
 

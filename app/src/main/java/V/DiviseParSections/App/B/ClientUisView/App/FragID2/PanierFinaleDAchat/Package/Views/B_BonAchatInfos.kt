@@ -175,7 +175,7 @@ fun ColumnScope.BonAchatInfos(
                                     .A_COMMANDE_CONFIRME
                             }?.let {
                                 repositorysModel
-                                    ._1_3_BonAchat_Repository
+                                    .repository_1_3_TransactionCommercial
                                     .updateUnSeulData(
                                         it
                                     )

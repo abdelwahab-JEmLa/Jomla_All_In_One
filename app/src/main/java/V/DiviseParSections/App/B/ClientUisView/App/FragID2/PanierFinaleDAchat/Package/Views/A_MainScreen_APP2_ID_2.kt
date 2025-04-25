@@ -39,7 +39,7 @@ fun A_MainScreen_APP2_ID_2(
 
     // Fix 1: Using the collected value directly, which is now a Long
     val relativeBonAchate = _0_HeadOfRepositorys_Repository_Model
-        ._1_3_BonAchat_Repository
+        .repository_1_3_TransactionCommercial
         .modelDatasSnapList.find { it.vid == composeKeyVID }
 
     val produitsBonAchatIDs = _0_HeadOfRepositorys_Repository_Model

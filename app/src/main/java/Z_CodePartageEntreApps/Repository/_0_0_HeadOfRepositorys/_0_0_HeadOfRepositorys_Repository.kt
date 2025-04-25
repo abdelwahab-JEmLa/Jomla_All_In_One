@@ -1,5 +1,6 @@
 package Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys
 
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment._1_3_TransactionCommercial
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur
 import com.google.firebase.Firebase
 import com.google.firebase.database.database
@@ -36,4 +37,12 @@ interface _0_0_HeadOfRepositorys_Repository {
     fun notifyDataChanged_2_1_ProduitsDataBase_Repository()
     fun notifyDataChanged_1_3_BonAchat_Repository()
     fun upsertUneDataEtReturnVID(data: _1_5_Vendeur, onSuccess: (Long) -> Unit={})
+    fun upsertUneDataEtReturnVID_1_3_TransactionCommercial(
+        data: _1_3_TransactionCommercial,
+        onSuccess: (Long) -> Unit={}
+    )
+
+    fun upsertUneDataEtReturnVID_1_4_PeriodeVent(data: _1_4_PeriodeVent,
+                                                 onSuccess: (Long) -> Unit ={}
+    )
 }

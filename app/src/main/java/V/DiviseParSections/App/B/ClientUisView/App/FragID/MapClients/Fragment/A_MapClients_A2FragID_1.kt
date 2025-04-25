@@ -202,7 +202,7 @@ private fun MapContent(
             }
             ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsWithConfirmedProducts -> {
                 val clientsWithConfirmedProducts = viewModel._0_0_HeadOfRepositorys_Repository.repositorys_Model
-                    ._1_3_BonAchat_Repository.modelDatasSnapList
+                    .repository_1_3_TransactionCommercial.modelDatasSnapList
                     .filter { bonAchat ->
                         bonAchat.etateActuellementEst == _1_3_TransactionCommercial.EtateActuellementEst.A_COMMANDE_CONFIRME
                                 || bonAchat.etateActuellementEst == _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
