@@ -4,7 +4,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._14_TransactionStatue
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
-import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment._1_3_TransactionCommercial
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.util.Log
 import androidx.compose.foundation.background
@@ -219,7 +219,7 @@ fun MarkerStatusDialog(
                             if (existingBonAchat != null) {
                                 // Update the existing BonAchat
                                 val updatedBonAchat = existingBonAchat.copy(
-                                    etateActuellementEst = _1_3_BonAchat.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
+                                    etateActuellementEst = _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
                                     heurDebutInString = SimpleDateFormat(
                                         "HH:mm",
                                         Locale.getDefault()
@@ -235,10 +235,10 @@ fun MarkerStatusDialog(
                             } else {
                                 // Create a new BonAchat if none exists
                                 repositorysModel._1_3_BonAchat_Repository.addDataAndReturneItVID(
-                                    _1_3_BonAchat(
+                                    _1_3_TransactionCommercial(
                                         clientAcheteurID = clientId,
                                         parentVID_1_4_PeriodeVent = ceComptVendeurInsertBonsAchatAuPeriodID!!,
-                                        etateActuellementEst = _1_3_BonAchat.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
+                                        etateActuellementEst = _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
                                         heurDebutInString = SimpleDateFormat(
                                             "HH:mm",
                                             Locale.getDefault()

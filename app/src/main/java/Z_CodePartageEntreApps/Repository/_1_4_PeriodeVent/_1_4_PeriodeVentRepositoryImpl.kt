@@ -298,7 +298,39 @@ class _1_4_PeriodeVentRepositoryImpl(
     }
 
     override fun addData(data: _1_4_PeriodeVent) {
-        updatesOperations.addData(data, repositoryScope, appDatabase, modelDatasSnapList)
+        try {
+            // Create a copy of the data to work with
+            val dataToAdd = data.copy()
+
+            // Make sure fireBaseKeyID is correctly set
+            if (dataToAdd.fireBaseKeyID.isEmpty()) {
+                dataToAdd.fireBaseKeyID = "${dataToAdd.vid}->(${dataToAdd.startDateInString})"
+            }
+
+            repositoryScope.launch(Dispatchers.IO) {
+                try {
+                    // Insert into Room
+                    val newVid = appDatabase._1_4_PeriodeVentDao().insertAvecRetureNewVid(dataToAdd)
+
+                    // Update the object with the new vid
+                    dataToAdd.vid = newVid
+                    // Update fireBaseKeyID with new vid if needed
+                    dataToAdd.fireBaseKeyID = "${dataToAdd.vid}->(${dataToAdd.startDateInString})"
+
+                    withContext(Dispatchers.Main) {
+                        modelDatasSnapList.add(dataToAdd)
+                    }
+
+                    // Use fireBaseKeyID as the key in Firebase
+                    _1_4_PeriodeVent_Repository.sonDataBaseRef.child(dataToAdd.fireBaseKeyID).setValue(dataToAdd).await()
+
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error adding data: ${e.message}")
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in addData: ${e.message}")
+        }
     }
 
     override fun addDataAndReturneItVID(
@@ -316,13 +348,15 @@ class _1_4_PeriodeVentRepositoryImpl(
 
                     // Update the object with the new vid
                     dataToAdd.vid = newVid
+                    // Update fireBaseKeyID with new vid
+                    dataToAdd.fireBaseKeyID = "${dataToAdd.vid}->(${dataToAdd.startDateInString})"
 
                     withContext(Dispatchers.Main) {
                         modelDatasSnapList.add(dataToAdd)
                     }
 
-                    // Update Firebase with the new vid
-                    _1_4_PeriodeVent_Repository.sonDataBaseRef.child(newVid.toString()).setValue(dataToAdd).await()
+                    // Use fireBaseKeyID as the key in Firebase instead of vid
+                    _1_4_PeriodeVent_Repository.sonDataBaseRef.child(dataToAdd.fireBaseKeyID).setValue(dataToAdd).await()
 
                     // Call the success callback with the new vid
                     onAddSuccess(newVid)
@@ -334,7 +368,7 @@ class _1_4_PeriodeVentRepositoryImpl(
             Log.e(TAG, "Error in addDataAndReturnItVID: ${e.message}")
         }
     }
-   
+
 
     override suspend fun updateMultiDatas(datas: SnapshotStateList<_1_4_PeriodeVent>) {
         updatesOperations.updateMultiDatas(

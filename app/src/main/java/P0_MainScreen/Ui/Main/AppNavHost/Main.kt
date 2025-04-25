@@ -5,7 +5,6 @@ import V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Pack
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.A_MapClients_A2FragID_1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.A_MainScreen_APP2_ID_2
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.A_APP3FragID1_MainScreen
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID1.VentHistoriques.Fragment.Ui.PeriodeVenteScreen
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.A_VendeurAfficheurInfosProduit_FragmentMainId3
 import Views.P1._ArticlesStartFacade.FragmentStartupScreen
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
@@ -260,7 +259,6 @@ fun AppNavHost(
 
                 composable(Screen.NewFragTest.route) {
                     Box(modifier = Modifier.fillMaxSize()) {
-                        PeriodeVenteScreen()
                     }
                 }
             }

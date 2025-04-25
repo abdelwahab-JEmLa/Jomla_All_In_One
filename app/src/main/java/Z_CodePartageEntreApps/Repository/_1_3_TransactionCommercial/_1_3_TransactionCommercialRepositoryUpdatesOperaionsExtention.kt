@@ -1,5 +1,6 @@
-package Z_CodePartageEntreApps.Repository._1_3_BonAchat
+package Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial
 
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment._1_3_TransactionCommercial
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import android.util.Log
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -11,17 +12,17 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
 
-class _1_3_BonAchatRepositoryUpdatesOperaionsExtention(
-    private val repositoryImpl: _1_3_BonAchatRepositoryImpl
+class _1_3_TransactionCommercialRepositoryUpdatesOperaionsExtention(
+    private val repositoryImpl: _1_3_TransactionCommercialRepositoryImpl
 ) {
-    private val TAG = _1_3_BonAchat_Repository.TAG
-    private val logOperations = _1_3_BonAchatRepositoryLogOperationsExtention(repositoryImpl)
+    private val TAG = _1_3_TransactionCommercial_Repository.TAG
+    private val logOperations = _1_3_TransactionCommercialRepositoryLogOperationsExtention(repositoryImpl)
 
     fun updateUnSeulData(
-        data: _1_3_BonAchat,
+        data: _1_3_TransactionCommercial,
         repositoryScope: CoroutineScope,
         appDatabase: AppDatabase,
-        modelDatasSnapList: SnapshotStateList<_1_3_BonAchat>
+        modelDatasSnapList: SnapshotStateList<_1_3_TransactionCommercial>
     ) {
         repositoryScope.launch(Dispatchers.Main) {
             val recordIndex = modelDatasSnapList.indexOfFirst { it.vid == data.vid }
@@ -32,7 +33,7 @@ class _1_3_BonAchatRepositoryUpdatesOperaionsExtention(
 
         repositoryScope.launch(Dispatchers.IO) {
             try {
-                appDatabase._1_3_BonAchatDao().insert(data)
+                appDatabase._1_3_TransactionCommercialDao().insert(data)
                 firebaseUpdateData(data)
             } catch (e: Exception) {
                 Log.e(TAG, "Error updating data: ${e.message}")
@@ -41,10 +42,10 @@ class _1_3_BonAchatRepositoryUpdatesOperaionsExtention(
     }
 
     fun deleteUnSeulData(
-        data: _1_3_BonAchat,
+        data: _1_3_TransactionCommercial,
         repositoryScope: CoroutineScope,
         appDatabase: AppDatabase,
-        modelDatasSnapList: SnapshotStateList<_1_3_BonAchat>
+        modelDatasSnapList: SnapshotStateList<_1_3_TransactionCommercial>
     ) {
         try {
             repositoryScope.launch(Dispatchers.Main) {
@@ -56,8 +57,8 @@ class _1_3_BonAchatRepositoryUpdatesOperaionsExtention(
 
             repositoryScope.launch(Dispatchers.IO) {
                 try {
-                    _1_3_BonAchat_Repository.sonDataBaseRef.child(data.vid.toString()).removeValue().await()
-                    appDatabase._1_3_BonAchatDao().delete(data)
+                    _1_3_TransactionCommercial_Repository.sonDataBaseRef.child(data.vid.toString()).removeValue().await()
+                    appDatabase._1_3_TransactionCommercialDao().delete(data)
                 } catch (e: Exception) {
                     Log.e(TAG, "Error deleting data: ${e.message}")
                 }
@@ -68,10 +69,10 @@ class _1_3_BonAchatRepositoryUpdatesOperaionsExtention(
     }
 
     fun addData(
-        data: _1_3_BonAchat,
+        data: _1_3_TransactionCommercial,
         repositoryScope: CoroutineScope,
         appDatabase: AppDatabase,
-        modelDatasSnapList: SnapshotStateList<_1_3_BonAchat>
+        modelDatasSnapList: SnapshotStateList<_1_3_TransactionCommercial>
     ) {
         try {
             // Log the data addition
@@ -83,8 +84,8 @@ class _1_3_BonAchatRepositoryUpdatesOperaionsExtention(
 
             repositoryScope.launch(Dispatchers.IO) {
                 try {
-                    _1_3_BonAchat_Repository.sonDataBaseRef.child(data.vid.toString()).setValue(data).await()
-                    appDatabase._1_3_BonAchatDao().insert(data)
+                    _1_3_TransactionCommercial_Repository.sonDataBaseRef.child(data.vid.toString()).setValue(data).await()
+                    appDatabase._1_3_TransactionCommercialDao().insert(data)
                 } catch (e: Exception) {
                     Log.e(TAG, "Error adding data: ${e.message}")
                 }
@@ -94,19 +95,19 @@ class _1_3_BonAchatRepositoryUpdatesOperaionsExtention(
         }
     }
 
-    private suspend fun firebaseUpdateData(data: _1_3_BonAchat) {
+    private suspend fun firebaseUpdateData(data: _1_3_TransactionCommercial) {
         try {
-            _1_3_BonAchat_Repository.sonDataBaseRef.child(data.vid.toString()).setValue(data).await()
+            _1_3_TransactionCommercial_Repository.sonDataBaseRef.child(data.vid.toString()).setValue(data).await()
         } catch (e: Exception) {
             Log.e(TAG, "Error updating Firebase data: ${e.message}")
         }
     }
 
     suspend fun updateMultiDatas(
-        datas: SnapshotStateList<_1_3_BonAchat>,
+        datas: SnapshotStateList<_1_3_TransactionCommercial>,
         isUpdating: AtomicBoolean,
         appDatabase: AppDatabase,
-        modelDatasSnapList: SnapshotStateList<_1_3_BonAchat>,
+        modelDatasSnapList: SnapshotStateList<_1_3_TransactionCommercial>,
         valueEventListener: ValueEventListener?,
         flowValueEventListener: ValueEventListener?,
         listenerLock: Any,
@@ -123,8 +124,8 @@ class _1_3_BonAchatRepositoryUpdatesOperaionsExtention(
 
             withContext(Dispatchers.IO) {
                 try {
-                    appDatabase._1_3_BonAchatDao().deleteAll()
-                    appDatabase._1_3_BonAchatDao().insertAll(datasList)
+                    appDatabase._1_3_TransactionCommercialDao().deleteAll()
+                    appDatabase._1_3_TransactionCommercialDao().insertAll(datasList)
                 } catch (e: Exception) {
                     Log.e(TAG, "Error updating Room database: ${e.message}")
                 }
@@ -137,7 +138,7 @@ class _1_3_BonAchatRepositoryUpdatesOperaionsExtention(
                 try {
                     synchronized(listenerLock) {
                         valueEventListener?.let {
-                            _1_3_BonAchat_Repository.sonDataBaseRef.removeEventListener(
+                            _1_3_TransactionCommercial_Repository.sonDataBaseRef.removeEventListener(
                                 it
                             )
                         }
@@ -146,7 +147,7 @@ class _1_3_BonAchatRepositoryUpdatesOperaionsExtention(
 
                     synchronized(flowListenerLock) {
                         flowValueEventListener?.let {
-                            _1_3_BonAchat_Repository.sonDataBaseRef.removeEventListener(
+                            _1_3_TransactionCommercial_Repository.sonDataBaseRef.removeEventListener(
                                 it
                             )
                         }
@@ -160,7 +161,7 @@ class _1_3_BonAchatRepositoryUpdatesOperaionsExtention(
                 } finally {
                     synchronized(listenerLock) {
                         if (!isListenerActive.get() && tempListener != null) {
-                            _1_3_BonAchat_Repository.sonDataBaseRef.addValueEventListener(
+                            _1_3_TransactionCommercial_Repository.sonDataBaseRef.addValueEventListener(
                                 tempListener
                             )
                             isListenerActive.set(true)
@@ -169,7 +170,7 @@ class _1_3_BonAchatRepositoryUpdatesOperaionsExtention(
 
                     synchronized(flowListenerLock) {
                         if (!isFlowListenerActive.get() && tempFlowListener != null) {
-                            _1_3_BonAchat_Repository.sonDataBaseRef.addValueEventListener(
+                            _1_3_TransactionCommercial_Repository.sonDataBaseRef.addValueEventListener(
                                 tempFlowListener
                             )
                             isFlowListenerActive.set(true)
@@ -189,9 +190,9 @@ class _1_3_BonAchatRepositoryUpdatesOperaionsExtention(
         }
     }
 
-    private fun batchFireBaseSet(datas: List<_1_3_BonAchat>) {
+    private fun batchFireBaseSet(datas: List<_1_3_TransactionCommercial>) {
         try {
-            val reference = _1_3_BonAchat_Repository.sonDataBaseRef
+            val reference = _1_3_TransactionCommercial_Repository.sonDataBaseRef
             val batchUpdates = HashMap<String, Any>()
 
             for (data in datas) {

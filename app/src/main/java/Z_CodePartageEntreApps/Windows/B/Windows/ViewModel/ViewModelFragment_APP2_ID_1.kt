@@ -8,9 +8,9 @@ import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_Couleu
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperationRepositoryImpl
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
-import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat
-import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchatRepositoryImpl
-import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat_Repository
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment._1_3_TransactionCommercial
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial._1_3_BonAchatRepositoryImpl
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial._1_3_BonAchat_Repository
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVentRepositoryImpl
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
 import androidx.compose.runtime.mutableStateListOf
@@ -25,7 +25,7 @@ import kotlinx.coroutines.launch
 data class UiState_StartUpScreen(
     var _1_1_CouleurAcheteOperationList: SnapshotStateList<_1_1_CouleurAcheteOperation> = mutableStateListOf(),
     var _1_2_ProduitAcheteOperationList: SnapshotStateList<_1_2_ProduitAcheteOperation> = mutableStateListOf(),
-    var _1_3_BonAchatList: SnapshotStateList<_1_3_BonAchat> = mutableStateListOf(),
+    var _1_3_TransactionCommercialList: SnapshotStateList<_1_3_TransactionCommercial> = mutableStateListOf(),
     var _1_4_PeriodeVentList: SnapshotStateList<_1_4_PeriodeVent> = mutableStateListOf(),
 
     var bonAchetOnCourseMntID: Long = 1,

@@ -13,7 +13,7 @@ interface _01_PeriodesVentRoomSQlModelDao {
     suspend fun insertAllAndReturnVids(items: List<_01_PeriodesVentRoomSQl>): List<Long>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAvecRetureNewVid(item: _01_PeriodesVentRoomSQl): Long
+    suspend fun insertAvecReturnNewVid(item: _01_PeriodesVentRoomSQl): Long
 
     @Query("SELECT * FROM _01_PeriodesVentRoomSQl")
     suspend fun getAll(): MutableList<_01_PeriodesVentRoomSQl>

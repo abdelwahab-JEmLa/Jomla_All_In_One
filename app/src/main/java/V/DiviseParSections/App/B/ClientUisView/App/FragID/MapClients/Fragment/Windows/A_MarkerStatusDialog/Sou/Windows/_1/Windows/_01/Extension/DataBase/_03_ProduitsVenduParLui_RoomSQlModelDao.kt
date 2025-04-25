@@ -14,7 +14,7 @@ interface _03_ProduitsVenduParLui_RoomSQlModelDao {
     fun getAllAsFlow(): Flow<List<_03_ProduitsVenduParLuiRoomSQlModel>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAvecRetureNewVid(item: _03_ProduitsVenduParLuiRoomSQlModel): Long
+    suspend fun insertAvecReturnNewVid(item: _03_ProduitsVenduParLuiRoomSQlModel): Long
 
     @Query("SELECT * FROM _03_ProduitsVenduParLuiRoomSQlModel")
     suspend fun getAll(): MutableList<_03_ProduitsVenduParLuiRoomSQlModel>

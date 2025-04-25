@@ -8,7 +8,7 @@ import Z_CodePartageEntreApps.Modules.printReceipt
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
-import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment._1_3_TransactionCommercial
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -46,7 +46,7 @@ import org.koin.compose.koinInject
 fun ColumnScope.BonAchatInfos(
     composeKeyVID: Long?,
     _0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository,
-    relativeBonAchate: _1_3_BonAchat?,
+    relativeBonAchate: _1_3_TransactionCommercial?,
     itemCount: Int,
     formattedTotalPrice: String,
     showOrderSuccess: Boolean,
@@ -170,7 +170,7 @@ fun ColumnScope.BonAchatInfos(
                             delay(1500)
                             onShowOrderSuccessChange(false)
                             relativeBonAchate?.apply {
-                                etateActuellementEst = _1_3_BonAchat
+                                etateActuellementEst = _1_3_TransactionCommercial
                                     .EtateActuellementEst
                                     .A_COMMANDE_CONFIRME
                             }?.let {

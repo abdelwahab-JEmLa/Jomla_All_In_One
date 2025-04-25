@@ -2,7 +2,7 @@ package Z_CodePartageEntreApps.Proto.B.ParSections.Fragment.A.AchatsManager.App.
 
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
-import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat_Repository
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial._1_3_BonAchat_Repository
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
 
 suspend fun addHardcodedDataToFirebase(
@@ -37,52 +37,52 @@ suspend fun addHardcodedDataToFirebase(
             )
         )
 
-        // Create _1_3_BonAchat test data with relations to _1_4_PeriodeVent
+        // Create _1_3_TransactionCommercial test data with relations to _1_4_PeriodeVent
         val bonAchatTestData = listOf(
             // Original entries
-            _1_3_BonAchat(
+            _1_3_TransactionCommercial(
                 vid = 501L,
                 clientAchteurID = 301L,
                 parent_1_4_PeriodeVentVid = 601L,
                 heurDebutInString = "08:00",
                 heurFinInString = "17:00"
             ),
-            _1_3_BonAchat(
+            _1_3_TransactionCommercial(
                 vid = 502L,
                 clientAchteurID = 302L,
                 parent_1_4_PeriodeVentVid = 602L,
                 heurDebutInString = "09:00",
                 heurFinInString = "18:00"
             ),
-            _1_3_BonAchat(
+            _1_3_TransactionCommercial(
                 vid = 503L,
                 clientAchteurID = 303L,
                 parent_1_4_PeriodeVentVid = 602L,
                 heurDebutInString = "10:00",
                 heurFinInString = "19:00"
             ),
-            _1_3_BonAchat(
+            _1_3_TransactionCommercial(
                 vid = 504L,
                 clientAchteurID = 304L,
                 parent_1_4_PeriodeVentVid = 603L,
                 heurDebutInString = "08:30",
                 heurFinInString = "16:30"
             ),
-            _1_3_BonAchat(
+            _1_3_TransactionCommercial(
                 vid = 505L,
                 clientAchteurID = 305L,
                 parent_1_4_PeriodeVentVid = 604L,
                 heurDebutInString = "09:30",
                 heurFinInString = "17:30"
             ),
-            _1_3_BonAchat(
+            _1_3_TransactionCommercial(
                 vid = 506L,
                 clientAchteurID = 306L,
                 parent_1_4_PeriodeVentVid = 604L,
                 heurDebutInString = "07:00",
                 heurFinInString = "15:00"
             ),
-            _1_3_BonAchat(
+            _1_3_TransactionCommercial(
                 vid = 507L,
                 clientAchteurID = 307L,
                 parent_1_4_PeriodeVentVid = 604L,
@@ -91,7 +91,7 @@ suspend fun addHardcodedDataToFirebase(
             )
         )
 
-        // Create _1_2_ProduitAcheteOperation test data with relations to _1_3_BonAchat
+        // Create _1_2_ProduitAcheteOperation test data with relations to _1_3_TransactionCommercial
         val produitTestData = listOf(
             // Original entries
             _1_2_ProduitAcheteOperation(
@@ -266,9 +266,9 @@ suspend fun addHardcodedDataToFirebase(
                 )
             }
 
-            // Then _1_3_BonAchat (depends on _1_4_PeriodeVent)
+            // Then _1_3_TransactionCommercial (depends on _1_4_PeriodeVent)
             withContext(Dispatchers.IO) {
-                val snapListBonAchat = mutableStateListOf<_1_3_BonAchat>()
+                val snapListBonAchat = mutableStateListOf<_1_3_TransactionCommercial>()
                 snapListBonAchat.addAll(bonAchatTestData)
                 _1_3_BonAchat_Repository.updateMultiDatas(snapListBonAchat)
                 Log.d(
@@ -277,7 +277,7 @@ suspend fun addHardcodedDataToFirebase(
                 )
             }
 
-            // Then _1_2_ProduitAcheteOperation (depends on _1_3_BonAchat)
+            // Then _1_2_ProduitAcheteOperation (depends on _1_3_TransactionCommercial)
             withContext(Dispatchers.IO) {
                 val snapListProduit = mutableStateListOf<_1_2_ProduitAcheteOperation>()
                 snapListProduit.addAll(produitTestData)

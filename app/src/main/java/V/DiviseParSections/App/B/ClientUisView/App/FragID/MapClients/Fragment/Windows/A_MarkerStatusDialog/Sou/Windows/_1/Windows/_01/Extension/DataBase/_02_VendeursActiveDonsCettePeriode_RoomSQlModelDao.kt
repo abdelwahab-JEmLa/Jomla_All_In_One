@@ -14,7 +14,7 @@ interface _02_VendeursActiveDonsCettePeriode_RoomSQlModelDao {
     fun getAllAsFlow(): Flow<List<_02_VendeursActiveDonsCettePeriodeRoomSQlModel>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAvecRetureNewVid(item: _02_VendeursActiveDonsCettePeriodeRoomSQlModel): Long
+    suspend fun insertAvecReturnNewVid(item: _02_VendeursActiveDonsCettePeriodeRoomSQlModel): Long
 
     @Query("SELECT * FROM _02_VendeursActiveDonsCettePeriodeRoomSQlModel")
     suspend fun getAll(): MutableList<_02_VendeursActiveDonsCettePeriodeRoomSQlModel>

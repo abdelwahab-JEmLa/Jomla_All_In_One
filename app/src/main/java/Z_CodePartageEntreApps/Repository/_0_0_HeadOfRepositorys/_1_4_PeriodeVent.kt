@@ -21,6 +21,9 @@ data class _1_4_PeriodeVent(
     var etateActuellementEst: EtateActuellementEst =
         EtateActuellementEst.ENTRE_MAIS_PAS_CONFIRME,
 
+    // Section fireBaseKeyID
+    var fireBaseKeyID: String = "$vid->($startDateInString)",
+
     ) {
     enum class EtateActuellementEst {
         ENTRE_MAIS_PAS_CONFIRME,

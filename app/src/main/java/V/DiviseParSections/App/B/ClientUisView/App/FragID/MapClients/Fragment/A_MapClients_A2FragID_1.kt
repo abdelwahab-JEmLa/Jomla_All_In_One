@@ -7,7 +7,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Wi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.DEFAULT_LONGITUDE
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.getCurrentLocation
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
-import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment._1_3_TransactionCommercial
 import Z_CodePartageEntreApps.Windows.B.Windows.Options.A_OptionsControlsButtons_Main
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Resources.XmlsFilesHandler.Companion.xmlResources
@@ -204,8 +204,8 @@ private fun MapContent(
                 val clientsWithConfirmedProducts = viewModel._0_0_HeadOfRepositorys_Repository.repositorys_Model
                     ._1_3_BonAchat_Repository.modelDatasSnapList
                     .filter { bonAchat ->
-                        bonAchat.etateActuellementEst == _1_3_BonAchat.EtateActuellementEst.A_COMMANDE_CONFIRME
-                                || bonAchat.etateActuellementEst == _1_3_BonAchat.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+                        bonAchat.etateActuellementEst == _1_3_TransactionCommercial.EtateActuellementEst.A_COMMANDE_CONFIRME
+                                || bonAchat.etateActuellementEst == _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
                     }
                     .map { bonAchat -> bonAchat.clientAcheteurID }
                     .distinct()

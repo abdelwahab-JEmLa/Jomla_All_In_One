@@ -4,6 +4,7 @@ import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragm
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID1.VentHistoriques.Fragment.ViewModel.PeriodeVenteViewModel
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_Repository
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_RepositoryImpl
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.SecID5FragID2ViewModel
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepositoryImpl
@@ -29,8 +30,8 @@ import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_Couleu
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperationRepositoryImpl
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
-import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchatRepositoryImpl
-import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat_Repository
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial._1_3_BonAchatRepositoryImpl
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial._1_3_BonAchat_Repository
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVentRepositoryImpl
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_VendeurRepositoryImpl
@@ -47,14 +48,13 @@ import android.content.Context
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
-const val itsProductionMode =  true
+const val itsProductionMode =  false
 
 val commonRepositoriesModule = module {
     single { AppDatabase.DatabaseModule.getDatabase(get()) }
 
     single<_01_VentsHistoriquesDataBase_Repository> {
         _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode) }
-
 
     single<_0_0_HeadOfRepositorys_Repository> { _0_0_HeadOfRepositorys_RepositoryImpl(
         get(),
@@ -116,6 +116,10 @@ val viewModelModule = module {
 
     viewModel { VendeursViewModel(
         get(),
+        get(),
+    ) }
+
+    viewModel { SecID5FragID2ViewModel(
         get(),
     ) }
 }

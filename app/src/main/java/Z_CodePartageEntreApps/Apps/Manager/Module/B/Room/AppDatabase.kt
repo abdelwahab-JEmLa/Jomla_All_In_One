@@ -1,5 +1,7 @@
 package Z_CodePartageEntreApps.Apps.Manager.Module.B.Room
 
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment._1_3_2_TransactionCommercial
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment._1_3_2_TransactionCommercialDao
 import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.Extension.A_ProduitDao
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
@@ -19,8 +21,9 @@ import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation.Z.Dao._1_1_
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation.Dao._1_2_ProduitAcheteOperationDao
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
-import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat
-import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchatDao
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment._1_3_TransactionCommercial
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial._1_3_BonAchatDao
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial._1_3_TransactionCommercialDao
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVentDao
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur.Extension.DataBase._1_5_VendeurDao
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur
@@ -56,7 +59,7 @@ import java.util.Date
         A_Produit::class,
         _1_1_CouleurAcheteOperation::class,
         _1_2_ProduitAcheteOperation::class,
-        _1_3_BonAchat::class,
+        _1_3_TransactionCommercial::class,
         _1_4_PeriodeVent::class,
         _1_5_Vendeur::class,
 
@@ -88,13 +91,14 @@ abstract class AppDatabase : RoomDatabase() {
 
     abstract fun _1_1_CouleurAcheteOperationDao(): _1_1_CouleurAcheteOperationDao
     abstract fun _1_2_ProduitAcheteOperationDao(): _1_2_ProduitAcheteOperationDao
-    abstract fun _1_3_BonAchatDao(): _1_3_BonAchatDao
+    abstract fun _1_3_TransactionCommercialDao(): _1_3_TransactionCommercialDao
     abstract fun _1_4_PeriodeVentDao(): _1_4_PeriodeVentDao
     abstract fun _1_5_VendeurDao(): _1_5_VendeurDao
 
     abstract fun _2_1_ProduitsDataBaseDao(): _2_1_ProduitsDataBaseDao
     abstract fun _3_ClientsDataBaseDao(): _3_ClientsDataBaseDao
     abstract fun _4_CouleurOperationCommandDao(): _4_CouleurOperationCommandDao
+
 
 
     object DatabaseModule {

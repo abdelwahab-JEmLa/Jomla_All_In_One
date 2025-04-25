@@ -36,7 +36,7 @@ override fun upsertUnSeulDataEtReturnVID(data: _01_VentsNoSQl, onSuccess: (Long)
                         onSuccess(dataToUpsert.vid)
                     } else {
                         // If no valid vid, insert as new (same as addDataAndReturneItVID)
-                        val newVid = appDatabase._01_PeriodesVentRoomSQlModelDao().insertAvecRetureNewVid(dataToUpsert)
+                        val newVid = appDatabase._01_PeriodesVentRoomSQlModelDao().insertAvecReturnNewVid(dataToUpsert)
 
                         // Update the object with the new vid
                         dataToUpsert.vid = newVid

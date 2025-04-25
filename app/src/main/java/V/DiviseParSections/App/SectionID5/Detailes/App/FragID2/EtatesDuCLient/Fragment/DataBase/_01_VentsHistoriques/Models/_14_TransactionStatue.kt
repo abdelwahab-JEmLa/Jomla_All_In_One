@@ -42,7 +42,7 @@ class _14_TransactionStatue : RealmObject {
         FERME(android.R.color.darker_gray, "مغلق")
     }
 
-    var fireBaseKeyID: String = "${etateTransactionName}->(${dateCreationStr}${tempCreationStr})"
+    var fireBaseKeyID: String = "${etateTransactionName}->(${dateCreationStr}(${tempCreationStr}))"
 
     companion object {
         // Schema constants for consistency

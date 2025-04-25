@@ -1,5 +1,6 @@
-package Z_CodePartageEntreApps.Repository._1_3_BonAchat
+package Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial
 
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment._1_3_TransactionCommercial
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
@@ -17,12 +18,12 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
 
-class _1_3_BonAchatRepositoryImpl(
-     val appDatabase: AppDatabase
-) : _1_3_BonAchat_Repository {
-    private val TAG = _1_3_BonAchat_Repository.TAG
+class _1_3_TransactionCommercialRepositoryImpl(
+    val appDatabase: AppDatabase
+) : _1_3_TransactionCommercial_Repository {
+    private val TAG = _1_3_TransactionCommercial_Repository.TAG
 
-    override var modelDatasSnapList: SnapshotStateList<_1_3_BonAchat> =
+    override var modelDatasSnapList: SnapshotStateList<_1_3_TransactionCommercial> =
         mutableStateListOf()
 
     override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
@@ -40,16 +41,16 @@ class _1_3_BonAchatRepositoryImpl(
     private val listenerLock = Any()
     private val flowListenerLock = Any()
 
-    private val updatesOperations = _1_3_BonAchatRepositoryUpdatesOperaionsExtention(this)
-    private val logOperations = _1_3_BonAchatRepositoryLogOperationsExtention(this)
+    private val updatesOperations = _1_3_TransactionCommercialRepositoryUpdatesOperaionsExtention(this)
+    private val logOperations = _1_3_TransactionCommercialRepositoryLogOperationsExtention(this)
 
     init {
         repositoryScope.launch {
-            initialize_1_3_BonAchatRepository()
+            initialize_1_3_TransactionCommercialRepository()
         }
     }
 
-    override fun upsertUneDataEtReturnVID(data: _1_3_BonAchat, onSuccess: (Long) -> Unit): Unit {
+    override fun upsertUneDataEtReturnVID(data: _1_3_TransactionCommercial, onSuccess: (Long) -> Unit): Unit {
         try {
             // Create a copy of the data to work with
             val dataToUpsert = data.copy()
@@ -59,7 +60,7 @@ class _1_3_BonAchatRepositoryImpl(
                     // Check if the data already exists (if it has a valid vid)
                     if (dataToUpsert.vid > 0) {
                         // Update existing data
-                        appDatabase._1_3_BonAchatDao().insert(dataToUpsert)
+                        appDatabase._1_3_TransactionCommercialDao().insert(dataToUpsert)
 
                         // Update in snapshot list
                         withContext(Dispatchers.Main) {
@@ -71,25 +72,28 @@ class _1_3_BonAchatRepositoryImpl(
                             }
                         }
 
-                        // Update in Firebase
-                        _1_3_BonAchat_Repository.sonDataBaseRef.child(dataToUpsert.vid.toString())
+                        // Update in Firebase using fireBaseKeyID as the key
+                        _1_3_TransactionCommercial_Repository.sonDataBaseRef.child(dataToUpsert.fireBaseKeyID)
                             .setValue(dataToUpsert).await()
 
                         // Call the success callback with the existing vid
                         onSuccess(dataToUpsert.vid)
                     } else {
                         // If no valid vid, insert as new (same as addDataAndReturneItVID)
-                        val newVid = appDatabase._1_3_BonAchatDao().insertAvecRetureNewVid(dataToUpsert)
+                        val newVid = appDatabase._1_3_TransactionCommercialDao().insertAvecRetureNewVid(dataToUpsert)
 
                         // Update the object with the new vid
                         dataToUpsert.vid = newVid
+
+                        // Make sure the fireBaseKeyID is updated
+                        dataToUpsert.fireBaseKeyID = "${dataToUpsert.parentVID_1_4_PeriodeVent}->(${dataToUpsert.clientAcheteurID}->(${dataToUpsert.etateActuellementEst})"
 
                         withContext(Dispatchers.Main) {
                             modelDatasSnapList.add(dataToUpsert)
                         }
 
-                        // Update Firebase with the new vid
-                        _1_3_BonAchat_Repository.sonDataBaseRef.child(newVid.toString())
+                        // Update Firebase with the fireBaseKeyID
+                        _1_3_TransactionCommercial_Repository.sonDataBaseRef.child(dataToUpsert.fireBaseKeyID)
                             .setValue(dataToUpsert).await()
 
                         // Call the success callback with the new vid
@@ -105,7 +109,7 @@ class _1_3_BonAchatRepositoryImpl(
     }
 
     override fun addDataAndReturneItVID(
-        data: _1_3_BonAchat,
+        data: _1_3_TransactionCommercial,
         onAddSuccess: (Long) -> Unit
     ) {
         try {
@@ -115,17 +119,20 @@ class _1_3_BonAchatRepositoryImpl(
             repositoryScope.launch(Dispatchers.IO) {
                 try {
                     // Insert into Room and get the new vid
-                    val newVid = appDatabase._1_3_BonAchatDao().insertAvecRetureNewVid(dataToAdd)
+                    val newVid = appDatabase._1_3_TransactionCommercialDao().insertAvecRetureNewVid(dataToAdd)
 
                     // Update the object with the new vid
                     dataToAdd.vid = newVid
+
+                    // Make sure fireBaseKeyID is properly set
+                    dataToAdd.fireBaseKeyID = "${dataToAdd.parentVID_1_4_PeriodeVent}->(${dataToAdd.clientAcheteurID}->(${dataToAdd.etateActuellementEst}))"
 
                     withContext(Dispatchers.Main) {
                         modelDatasSnapList.add(dataToAdd)
                     }
 
-                    // Update Firebase with the new vid
-                    _1_3_BonAchat_Repository.sonDataBaseRef.child(newVid.toString()).setValue(dataToAdd).await()
+                    // Update Firebase using fireBaseKeyID as the key
+                    _1_3_TransactionCommercial_Repository.sonDataBaseRef.child(dataToAdd.fireBaseKeyID).setValue(dataToAdd).await()
 
                     // Call the success callback with the new vid
                     onAddSuccess(newVid)
@@ -137,6 +144,7 @@ class _1_3_BonAchatRepositoryImpl(
             Log.e(TAG, "Error in addDataAndReturnItVID: ${e.message}")
         }
     }
+
     override suspend fun ensureDataIsInitialized() {
         try {
             if (!initialDataLoaded) {
@@ -155,15 +163,14 @@ class _1_3_BonAchatRepositoryImpl(
         }
     }
 
-    override fun updateUnSeulData(data: _1_3_BonAchat) {
+    override fun updateUnSeulData(data: _1_3_TransactionCommercial) {
         updatesOperations.updateUnSeulData(data, repositoryScope, appDatabase, modelDatasSnapList)
     }
 
-    private suspend fun initialize_1_3_BonAchatRepository() {
+    private suspend fun initialize_1_3_TransactionCommercialRepository() {
         try {
             loadDepuitRoom()
-                checkDataConsistency()
-
+            checkDataConsistency()
 
             if (TAG.isNotEmpty()) {
                 log()
@@ -173,13 +180,12 @@ class _1_3_BonAchatRepositoryImpl(
         }
     }
 
-
     private suspend fun loadDepuitRoom() {
         try {
             progressRepo.value = 0.2f
             withContext(Dispatchers.IO) {
                 val dataList = try {
-                    appDatabase._1_3_BonAchatDao().getAll()
+                    appDatabase._1_3_TransactionCommercialDao().getAll()
                 } catch (e: Exception) {
                     Log.e(TAG, "Error loading from Room: ${e.message}")
                     emptyList()
@@ -204,7 +210,7 @@ class _1_3_BonAchatRepositoryImpl(
         try {
             val roomCount = withContext(Dispatchers.IO) {
                 try {
-                    appDatabase._1_3_BonAchatDao().getCount()
+                    appDatabase._1_3_TransactionCommercialDao().getCount()
                 } catch (e: Exception) {
                     Log.e(TAG, "Error getting Room count: ${e.message}")
                     0
@@ -213,7 +219,7 @@ class _1_3_BonAchatRepositoryImpl(
 
             val firebaseSnapshot = try {
                 withContext(Dispatchers.IO) {
-                    val task = _1_3_BonAchat_Repository.sonDataBaseRef.get()
+                    val task = _1_3_TransactionCommercial_Repository.sonDataBaseRef.get()
                     Tasks.await(task)
                 }
             } catch (e: Exception) {
@@ -248,9 +254,9 @@ class _1_3_BonAchatRepositoryImpl(
                 flowValueEventListener = object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         try {
-                            val updatedList = mutableListOf<_1_3_BonAchat>()
+                            val updatedList = mutableListOf<_1_3_TransactionCommercial>()
                             for (dataSnapshot in snapshot.children) {
-                                val data = dataSnapshot.getValue(_1_3_BonAchat::class.java)
+                                val data = dataSnapshot.getValue(_1_3_TransactionCommercial::class.java)
                                 data?.let {
                                     updatedList.add(it)
                                 }
@@ -265,8 +271,8 @@ class _1_3_BonAchatRepositoryImpl(
 
                             repositoryScope.launch(Dispatchers.IO) {
                                 try {
-                                    appDatabase._1_3_BonAchatDao().deleteAll()
-                                    appDatabase._1_3_BonAchatDao().insertAll(updatedList)
+                                    appDatabase._1_3_TransactionCommercialDao().deleteAll()
+                                    appDatabase._1_3_TransactionCommercialDao().insertAll(updatedList)
                                 } catch (e: Exception) {
                                     Log.e(
                                         TAG,
@@ -284,7 +290,7 @@ class _1_3_BonAchatRepositoryImpl(
                     }
                 }
 
-                _1_3_BonAchat_Repository.sonDataBaseRef.addValueEventListener(flowValueEventListener!!)
+                _1_3_TransactionCommercial_Repository.sonDataBaseRef.addValueEventListener(flowValueEventListener!!)
                 isFlowListenerActive.set(true)
             }
         }
@@ -294,7 +300,7 @@ class _1_3_BonAchatRepositoryImpl(
         synchronized(flowListenerLock) {
             if (isFlowListenerActive.get() && flowValueEventListener != null) {
                 try {
-                    _1_3_BonAchat_Repository.sonDataBaseRef.removeEventListener(flowValueEventListener!!)
+                    _1_3_TransactionCommercial_Repository.sonDataBaseRef.removeEventListener(flowValueEventListener!!)
                 } catch (e: Exception) {
                     Log.e(TAG, "Error removing flow listener: ${e.message}")
                 } finally {
@@ -314,20 +320,20 @@ class _1_3_BonAchatRepositoryImpl(
 
             viewModelScope.launch(Dispatchers.IO) {
                 try {
-                    val task = _1_3_BonAchat_Repository.sonDataBaseRef.get()
+                    val task = _1_3_TransactionCommercial_Repository.sonDataBaseRef.get()
                     val snapshot = Tasks.await(task)
 
                     try {
-                        appDatabase._1_3_BonAchatDao().deleteAll()
+                        appDatabase._1_3_TransactionCommercialDao().deleteAll()
                     } catch (e: Exception) {
                         Log.e(TAG, "Error deleting Room data: ${e.message}")
                     }
 
-                    val dataList = mutableListOf<_1_3_BonAchat>()
+                    val dataList = mutableListOf<_1_3_TransactionCommercial>()
 
                     for (dataSnapshot in snapshot.children) {
                         try {
-                            val data = dataSnapshot.getValue(_1_3_BonAchat::class.java)
+                            val data = dataSnapshot.getValue(_1_3_TransactionCommercial::class.java)
                             data?.let {
                                 dataList.add(it)
                             }
@@ -338,7 +344,7 @@ class _1_3_BonAchatRepositoryImpl(
 
                     if (dataList.isNotEmpty()) {
                         try {
-                            appDatabase._1_3_BonAchatDao().insertAll(dataList)
+                            appDatabase._1_3_TransactionCommercialDao().insertAll(dataList)
 
                             withContext(Dispatchers.Main) {
                                 modelDatasSnapList.addAll(dataList)
@@ -365,7 +371,7 @@ class _1_3_BonAchatRepositoryImpl(
         synchronized(listenerLock) {
             if (isListenerActive.get() && valueEventListener != null) {
                 try {
-                    _1_3_BonAchat_Repository.sonDataBaseRef.removeEventListener(valueEventListener!!)
+                    _1_3_TransactionCommercial_Repository.sonDataBaseRef.removeEventListener(valueEventListener!!)
                 } catch (e: Exception) {
                     Log.e(TAG, "Error removing data listener: ${e.message}")
                 } finally {
@@ -376,15 +382,54 @@ class _1_3_BonAchatRepositoryImpl(
         }
     }
 
-    override fun deleteUnSeulData(data: _1_3_BonAchat) {
-        updatesOperations.deleteUnSeulData(data, repositoryScope, appDatabase, modelDatasSnapList)
+    override fun deleteUnSeulData(data: _1_3_TransactionCommercial) {
+        // Also need to modify this method in updatesOperations
+        repositoryScope.launch(Dispatchers.IO) {
+            try {
+                // Remove from Room
+                appDatabase._1_3_TransactionCommercialDao().delete(data)
+
+                // Remove from Firebase using fireBaseKeyID
+                _1_3_TransactionCommercial_Repository.sonDataBaseRef.child(data.fireBaseKeyID).removeValue().await()
+
+                // Remove from snapshots list
+                withContext(Dispatchers.Main) {
+                    val index = modelDatasSnapList.indexOfFirst { it.vid == data.vid }
+                    if (index >= 0) {
+                        modelDatasSnapList.removeAt(index)
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error deleting data: ${e.message}")
+            }
+        }
     }
 
-    override fun addData(data: _1_3_BonAchat) {
-        updatesOperations.addData(data, repositoryScope, appDatabase, modelDatasSnapList)
+    override fun addData(data: _1_3_TransactionCommercial) {
+        // Also need to modify this method in updatesOperations
+        repositoryScope.launch(Dispatchers.IO) {
+            try {
+                // Update fireBaseKeyID before adding
+                data.fireBaseKeyID = "${data.parentVID_1_4_PeriodeVent}->(${data.clientAcheteurID}->(${data.etateActuellementEst}))"
+
+                // Add to Room
+                val newId = appDatabase._1_3_TransactionCommercialDao().insertAvecRetureNewVid(data)
+                data.vid = newId
+
+                // Add to Firebase using fireBaseKeyID
+                _1_3_TransactionCommercial_Repository.sonDataBaseRef.child(data.fireBaseKeyID).setValue(data).await()
+
+                // Add to snapshots list
+                withContext(Dispatchers.Main) {
+                    modelDatasSnapList.add(data)
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error adding data: ${e.message}")
+            }
+        }
     }
 
-    override suspend fun updateMultiDatas(datas: SnapshotStateList<_1_3_BonAchat>) {
+    override suspend fun updateMultiDatas(datas: SnapshotStateList<_1_3_TransactionCommercial>) {
         updatesOperations.updateMultiDatas(
             datas,
             isUpdating,
