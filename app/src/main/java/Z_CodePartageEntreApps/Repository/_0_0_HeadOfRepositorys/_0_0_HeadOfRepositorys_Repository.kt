@@ -35,7 +35,7 @@ interface _0_0_HeadOfRepositorys_Repository {
     }
     fun updateActiveIdDe_1_5_Vendeur(id: Long = -1L)
     fun notifyDataChanged_2_1_ProduitsDataBase_Repository()
-    fun notifyDataChanged_1_3_BonAchat_Repository()
+    fun notifyDataChanged_1_3_TransactionCommercial_Repository()
     fun upsertUneDataEtReturnVID(data: _1_5_Vendeur, onSuccess: (Long) -> Unit={})
     fun upsertUneDataEtReturnVID_1_3_TransactionCommercial(
         data: _1_3_TransactionCommercial,

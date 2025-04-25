@@ -264,7 +264,7 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
         }
     }
 
-    override fun notifyDataChanged_1_3_BonAchat_Repository() {
+    override fun notifyDataChanged_1_3_TransactionCommercial_Repository() {
         repositoryScope.launch {
             try {
                 // Reload the products database data
@@ -290,7 +290,7 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                 // (This will cause connected components to recompose)
                 progressRepo.value = progressRepo.value  // Trigger a small update to force recomposition
             } catch (e: Exception) {
-                Log.e(TAG, "Error in notifyDataChanged_1_3_BonAchat_Repository: ${e.message}")
+                Log.e(TAG, "Error in notifyDataChanged_1_3_TransactionCommercial_Repository: ${e.message}")
             }
         }
     }

@@ -184,7 +184,7 @@ fun ColumnScope.BonAchatInfos(
                             repositorysModel.activeId_1_3_BonAchat.value = 0L
 
                             onConfirmOrder()
-                            _0_0_HeadOfRepositorys_Repository.notifyDataChanged_1_3_BonAchat_Repository()
+                            _0_0_HeadOfRepositorys_Repository.notifyDataChanged_1_3_TransactionCommercial_Repository()
 
                             _01_Upsert_013_Acheteurs(
                                 repositorysModel = repositorysModel,
