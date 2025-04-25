@@ -41,33 +41,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-fun NavGraphBuilder.app2(
-    viewModelInitApp: ViewModelInitApp,
-    clientEnCourDeVent: Long,
-    navController: NavHostController,
-    onClear: () -> Unit,
-    orderStateManager: OrderStateManager,
-    mapReloadTrigger: Int = 0, // Add this parameter
-) {
-    composable(Screen.A_ClientsLocationGps.route) {
-        LaunchedEffect(Unit) {
-            if (!orderStateManager.hasCheckedOrderStatus()) {
-                delay(300)
-                orderStateManager.checkOrderStatus()
-            }
-        }
-        A_MapClients_A2FragID_1(
-            viewModelInitApp = viewModelInitApp,
-            clientEnCourDeVent = clientEnCourDeVent,
-            onUpdateLongAppSetting = {
-                allerAuFragment(navController)
-            },
-            onClear = onClear,
-            mapReloadTrigger = mapReloadTrigger
-           )
-    }
-}
-
 private fun allerAuFragment(navController: NavHostController) {
     navController.navigate(Screen.EditDatabaseWithCreateNewArticles.route) {
         // Pop the current fragment off the back stack
@@ -374,4 +347,31 @@ fun MainApp(
         lockHost = lockHost.value,
         onClickImageToShowControles = { /* Implementation for showing controls */ }
     )
+}
+
+fun NavGraphBuilder.app2(
+    viewModelInitApp: ViewModelInitApp,
+    clientEnCourDeVent: Long,
+    navController: NavHostController,
+    onClear: () -> Unit,
+    orderStateManager: OrderStateManager,
+    mapReloadTrigger: Int = 0, // Add this parameter
+) {
+    composable(Screen.A_ClientsLocationGps.route) {
+        LaunchedEffect(Unit) {
+            if (!orderStateManager.hasCheckedOrderStatus()) {
+                delay(300)
+                orderStateManager.checkOrderStatus()
+            }
+        }
+        A_MapClients_A2FragID_1(
+            viewModelInitApp = viewModelInitApp,
+            clientEnCourDeVent = clientEnCourDeVent,
+            onUpdateLongAppSetting = {
+                allerAuFragment(navController)
+            },
+            onClear = onClear,
+            mapReloadTrigger = mapReloadTrigger
+        )
+    }
 }
