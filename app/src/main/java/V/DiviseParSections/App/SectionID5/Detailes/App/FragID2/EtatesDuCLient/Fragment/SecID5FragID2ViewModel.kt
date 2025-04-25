@@ -71,9 +71,7 @@ class SecID5FragID2ViewModel(
         }
     }
 
-    private fun addTestDataToFireBaseIfEmpty() {     //<--
-    //TODO(1): cree d  autre 6> _1_3_TransactionCommercial  du client id 2 avec diffrents 
-    //etates et periodes
+    private fun addTestDataToFireBaseIfEmpty() {
         viewModelScope.launch(Dispatchers.IO) {
             // Add test period if needed
             if (r_0_0_HeadOfRepositorys_Repository.repositorys_Model.repository_1_4_PeriodeVent.modelDatasSnapList.isEmpty()) {
@@ -135,6 +133,29 @@ class SecID5FragID2ViewModel(
                         vid = 0L
                     )
                     r_0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID_1_3_TransactionCommercial(testTransaction)
+
+                    // Add additional transaction for client ID 2 - different states, same period (today)
+                    val transaction1 = _1_3_TransactionCommercial(
+                        parentVID_1_4_PeriodeVent = periodVid,
+                        clientAcheteurID = 2L,
+                        heurDebutInString = "08:30",
+                        heurFinInString = "09:45",
+                        etateActuellementEst = _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
+                        fireBaseKeyID = "$periodVid->(2->(ON_MODE_COMMEND_ACTUELLEMENT))",
+                        vid = 0L
+                    )
+                    r_0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID_1_3_TransactionCommercial(transaction1)
+
+                    val transaction2 = _1_3_TransactionCommercial(
+                        parentVID_1_4_PeriodeVent = periodVid,
+                        clientAcheteurID = 2L,
+                        heurDebutInString = "11:00",
+                        heurFinInString = "12:15",
+                        etateActuellementEst = _1_3_TransactionCommercial.EtateActuellementEst.A_COMMANDE_CONFIRME,
+                        fireBaseKeyID = "$periodVid->(2->(A_COMMANDE_CONFIRME))",
+                        vid = 0L
+                    )
+                    r_0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID_1_3_TransactionCommercial(transaction2)
                 }
 
                 // Add remaining periods
@@ -149,10 +170,58 @@ class SecID5FragID2ViewModel(
                         vid = 0L
                     )
                     r_0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID_1_3_TransactionCommercial(transaction)
+
+                    // Add additional transaction for client ID 2 - yesterday period with different state
+                    val transaction3 = _1_3_TransactionCommercial(
+                        parentVID_1_4_PeriodeVent = periodVid,
+                        clientAcheteurID = 2L,
+                        heurDebutInString = "14:00",
+                        heurFinInString = "15:30",
+                        etateActuellementEst = _1_3_TransactionCommercial.EtateActuellementEst.AVEC_MARCHANDISE,
+                        fireBaseKeyID = "$periodVid->(2->(AVEC_MARCHANDISE))",
+                        vid = 0L
+                    )
+                    r_0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID_1_3_TransactionCommercial(transaction3)
                 }
 
-                r_0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID_1_4_PeriodeVent(testPeriod3)
-                r_0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID_1_4_PeriodeVent(testPeriod4)
+                r_0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID_1_4_PeriodeVent(testPeriod3) { periodVid ->
+                    // Add transactions for client ID 2 - day before yesterday with different states
+                    val transaction4 = _1_3_TransactionCommercial(
+                        parentVID_1_4_PeriodeVent = periodVid,
+                        clientAcheteurID = 2L,
+                        heurDebutInString = "09:30",
+                        heurFinInString = "11:00",
+                        etateActuellementEst = _1_3_TransactionCommercial.EtateActuellementEst.ACHETEUR_NON_DISPO,
+                        fireBaseKeyID = "$periodVid->(2->(ACHETEUR_NON_DISPO))",
+                        vid = 0L
+                    )
+                    r_0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID_1_3_TransactionCommercial(transaction4)
+                }
+
+                r_0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID_1_4_PeriodeVent(testPeriod4) { periodVid ->
+                    // Add transactions for client ID 2 - tomorrow with different states
+                    val transaction5 = _1_3_TransactionCommercial(
+                        parentVID_1_4_PeriodeVent = periodVid,
+                        clientAcheteurID = 2L,
+                        heurDebutInString = "10:30",
+                        heurFinInString = "Non Defini",
+                        etateActuellementEst = _1_3_TransactionCommercial.EtateActuellementEst.COMMANDE_LENCE,
+                        fireBaseKeyID = "$periodVid->(2->(COMMANDE_LENCE))",
+                        vid = 0L
+                    )
+                    r_0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID_1_3_TransactionCommercial(transaction5)
+
+                    val transaction6 = _1_3_TransactionCommercial(
+                        parentVID_1_4_PeriodeVent = periodVid,
+                        clientAcheteurID = 2L,
+                        heurDebutInString = "16:00",
+                        heurFinInString = "Non Defini",
+                        etateActuellementEst = _1_3_TransactionCommercial.EtateActuellementEst.FERME,
+                        fireBaseKeyID = "$periodVid->(2->(FERME))",
+                        vid = 0L
+                    )
+                    r_0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID_1_3_TransactionCommercial(transaction6)
+                }
             }
         }
     }
