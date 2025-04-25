@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._14A_HistoriuesDeCetteJour
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._14_HistoriquesTransactionsDeCetteJour
 import android.annotation.SuppressLint
 
 data class LastPurchaseInfo(
@@ -87,18 +87,18 @@ fun getClientStateInArabic(
             if (clientEntry != null && clientEntry.child_14A_HistoriquesDeCetteJour.isNotEmpty()) {
                 // Sort historical entries by date and time in descending order
                 val sortedHistoricalEntries = clientEntry.child_14A_HistoriquesDeCetteJour.sortedWith(
-                    compareByDescending<_14A_HistoriuesDeCetteJour> { it.dateCreationStr }
+                    compareByDescending<_14_HistoriquesTransactionsDeCetteJour> { it.dateCreationStr }
                         .thenByDescending { it.tempCreationStr }
                 )
 
                 // Return the most recent state's Arabic name
                 if (sortedHistoricalEntries.isNotEmpty()) {
-                    return sortedHistoricalEntries.first().etate.nomArabe
+                    return sortedHistoricalEntries.first().etateTransaction.nomArabe
                 }
             }
         }
     }
-    return _14A_HistoriuesDeCetteJour.Etate.NON_DEFINI.nomArabe
+    return _14_HistoriquesTransactionsDeCetteJour.EtateTransaction.NON_DEFINI.nomArabe
 }
 
 fun findLastPurchaseDayForClient(

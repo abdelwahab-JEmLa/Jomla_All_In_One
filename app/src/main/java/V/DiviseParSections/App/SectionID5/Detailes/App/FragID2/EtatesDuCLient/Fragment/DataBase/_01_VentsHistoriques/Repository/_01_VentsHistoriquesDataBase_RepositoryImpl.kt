@@ -1,13 +1,13 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Repository
+package V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Repository
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._012_ComptsVendeurs
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._013_Acheteurs
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._014_Produits
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase.Companion.map_01_VentsHistoriquesDataBase
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase.Companion.parsePeriodeFromSnapshot
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase.Companion.test_01_PeriodesVent
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._14A_HistoriuesDeCetteJour
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._012_ComptsVendeurs
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._013_Acheteurs
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._015_Produits
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase.Companion.map_01_VentsHistoriquesDataBase
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase.Companion.parsePeriodeFromSnapshot
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase.Companion.test_01_PeriodesVent
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._14_HistoriquesTransactionsDeCetteJour
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.firebase.Firebase
@@ -66,8 +66,8 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode: Boolean)
                 _01_VentsHistoriquesDataBase::class,
                 _012_ComptsVendeurs::class,
                 _013_Acheteurs::class,
-                _014_Produits::class,
-                _14A_HistoriuesDeCetteJour::class
+                _015_Produits::class,
+                _14_HistoriquesTransactionsDeCetteJour::class
             )
         )
         return Realm.open(config)
@@ -194,8 +194,8 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode: Boolean)
                         query<_01_VentsHistoriquesDataBase>().find().also { delete(it) }
                         query<_012_ComptsVendeurs>().find().also { delete(it) }
                         query<_013_Acheteurs>().find().also { delete(it) }
-                        query<_014_Produits>().find().also { delete(it) }
-                        query<_14A_HistoriuesDeCetteJour>().find().also { delete(it) }
+                        query<_015_Produits>().find().also { delete(it) }
+                        query<_14_HistoriquesTransactionsDeCetteJour>().find().also { delete(it) }
 
                         // Save current data
                         modelDatasSnapList.forEach { periode ->
@@ -265,14 +265,14 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode: Boolean)
 
                     // Process products for this acheteur
                     acheteurSnapshot.child("child_15_Produits").children.forEach { produitSnapshot ->
-                        val produit = _014_Produits.parseDataFromSnapshot(produitSnapshot) ?: return@forEach
+                        val produit = _015_Produits.parseDataFromSnapshot(produitSnapshot) ?: return@forEach
                         val produitUpdated = updateProduitInAcheteur(periodeKey, vendeurKey, acheteurKey, produit)
                         if (produitUpdated) changesMade = true
                     }
 
                     // Process historiques for this acheteur
                     acheteurSnapshot.child("child_14A_HistoriquesDeCetteJour").children.forEach { historiqueSnapshot ->
-                        val historique = _14A_HistoriuesDeCetteJour.parseDataFromSnapshot(historiqueSnapshot) ?: return@forEach
+                        val historique = _14_HistoriquesTransactionsDeCetteJour.parseDataFromSnapshot(historiqueSnapshot) ?: return@forEach
                         val historiqueUpdated = updateHistoriqueInAcheteur(periodeKey, vendeurKey, acheteurKey, historique)
                         if (historiqueUpdated) changesMade = true
                     }
@@ -321,7 +321,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode: Boolean)
         periodeKey: String,
         vendeurKey: String,
         acheteurKey: String,
-        produit: _014_Produits
+        produit: _015_Produits
     ): Boolean {
         if (modelUpdateInProgress.getAndSet(true)) return false
 
@@ -357,7 +357,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode: Boolean)
         periodeKey: String,
         vendeurKey: String,
         acheteurKey: String,
-        historique: _14A_HistoriuesDeCetteJour
+        historique: _14_HistoriquesTransactionsDeCetteJour
     ): Boolean {
         if (modelUpdateInProgress.getAndSet(true)) return false
 
@@ -369,14 +369,14 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode: Boolean)
 
             return if (existingHistorique != null) {
                 val changed = existingHistorique.bsonObjectId != historique.bsonObjectId ||
-                        existingHistorique.etateName != historique.etateName ||
+                        existingHistorique.etateTransactionName != historique.etateTransactionName ||
                         existingHistorique.description != historique.description ||
                         existingHistorique.dateCreationStr != historique.dateCreationStr ||
                         existingHistorique.tempCreationStr != historique.tempCreationStr
 
                 if (changed) {
                     existingHistorique.bsonObjectId = historique.bsonObjectId
-                    existingHistorique.etateName = historique.etateName
+                    existingHistorique.etateTransactionName = historique.etateTransactionName
                     existingHistorique.description = historique.description
                     existingHistorique.dateCreationStr = historique.dateCreationStr
                     existingHistorique.tempCreationStr = historique.tempCreationStr
@@ -433,8 +433,8 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode: Boolean)
                         query<_01_VentsHistoriquesDataBase>().find().also { delete(it) }
                         query<_012_ComptsVendeurs>().find().also { delete(it) }
                         query<_013_Acheteurs>().find().also { delete(it) }
-                        query<_014_Produits>().find().also { delete(it) }
-                        query<_14A_HistoriuesDeCetteJour>().find().also { delete(it) }
+                        query<_015_Produits>().find().also { delete(it) }
+                        query<_14_HistoriquesTransactionsDeCetteJour>().find().also { delete(it) }
 
                         // Save current data
                         modelDatasSnapList.forEach { periode ->
@@ -461,7 +461,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode: Boolean)
 
                 // Make sure historiques are properly copied
                 sourceAcheteur.child_14A_HistoriquesDeCetteJour.forEach { sourceHistorique ->
-                    acheteurCopy.child_14A_HistoriquesDeCetteJour.add(_14A_HistoriuesDeCetteJour.deepCopy(sourceHistorique))
+                    acheteurCopy.child_14A_HistoriquesDeCetteJour.add(_14_HistoriquesTransactionsDeCetteJour.deepCopy(sourceHistorique))
                 }
 
                 vendeurCopy.child_013_Acheteurs.add(acheteurCopy)

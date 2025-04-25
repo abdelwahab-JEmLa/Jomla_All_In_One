@@ -1,18 +1,18 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._012_ComptsVendeurs
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._013_Acheteurs
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase.Companion.parse_fireBaseKeyID
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._14A_HistoriuesDeCetteJour
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_Repository
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._012_ComptsVendeurs
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._013_Acheteurs
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase.Companion.parse_fireBaseKeyID
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._14_HistoriquesTransactionsDeCetteJour
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_Repository
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import io.realm.kotlin.ext.realmListOf
 
 fun _01_Upsert_013_Acheteurs(
     repositorysModel: _0_0_HeadOfRepositorys_Model,
     clientId: Long,
-    historiqueState: _14A_HistoriuesDeCetteJour.Etate=_14A_HistoriuesDeCetteJour.Etate.ACHAT_TERMINE,
+    historiqueState: _14_HistoriquesTransactionsDeCetteJour.EtateTransaction= _14_HistoriquesTransactionsDeCetteJour.EtateTransaction.ACHAT_TERMINE,
     nom: String,
     repo_01_VentsHistoriquesDataBase: _01_VentsHistoriquesDataBase_Repository,
 ) {
@@ -66,10 +66,10 @@ fun _01_Upsert_013_Acheteurs(
     }
 
     // Create new historical entry
-    val newHistorique = _14A_HistoriuesDeCetteJour().apply {
-        etate = historiqueState
-        description = "État mis à jour à ${_14A_HistoriuesDeCetteJour.getCurrentTimeString()}"
-        fireBaseKeyID = "${etate.name}->(${dateCreationStr}${tempCreationStr})"
+    val newHistorique = _14_HistoriquesTransactionsDeCetteJour().apply {
+        etateTransaction = historiqueState
+        description = "État mis à jour à ${_14_HistoriquesTransactionsDeCetteJour.getCurrentTimeString()}"
+        fireBaseKeyID = "${etateTransaction.name}->(${dateCreationStr}${tempCreationStr})"
     }
 
     if (acheteur == null) {

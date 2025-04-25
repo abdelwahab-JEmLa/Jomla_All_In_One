@@ -64,7 +64,7 @@ fun printReceipt(
                 .modelDatasSnapList
                 .find { it.vid == product.produitAcheterID }
 
-            val productName = productDetails?.nom ?: "_014_Produits"
+            val productName = productDetails?.nom ?: "_015_Produits"
 
             // Use provisional price if available, otherwise use the default price
             val productPrice = if (product.provisoireMonPrix > 0.0) {

@@ -1,13 +1,13 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models
+package V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase.Companion.getCurrentDataTimeString
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase.Companion.getCurrentDataTimeString
 import com.google.firebase.database.DataSnapshot
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
 import org.mongodb.kbson.BsonObjectId
 import org.mongodb.kbson.ObjectId
 
-class _014_Produits : RealmObject {
+class _015_Produits : RealmObject {
     @PrimaryKey
     var bsonObjectId: ObjectId = BsonObjectId()
 
@@ -30,12 +30,12 @@ class _014_Produits : RealmObject {
             const val QUANTITY = "quantity"
         }
 
-        fun testData(): List<_014_Produits> {
-            val data = mutableListOf<_014_Produits>()
+        fun testData(): List<_015_Produits> {
+            val data = mutableListOf<_015_Produits>()
 
             for (k in 1..5) {
-                data.add(_014_Produits().apply {
-                    startDesignation = "_014_Produits $k"
+                data.add(_015_Produits().apply {
+                    startDesignation = "_015_Produits $k"
                     this.tempDateCreationStr = "2025_04_20(12:00)"
                     fireBaseKeyID = "${this.bsonObjectId}->${startDesignation}"
                     quantity = k * 2
@@ -44,7 +44,7 @@ class _014_Produits : RealmObject {
             return data
         }
 
-        fun mapDatas(datas: List<_014_Produits>): Map<String, Any> {
+        fun mapDatas(datas: List<_015_Produits>): Map<String, Any> {
             return datas.associate { data ->
                 data.fireBaseKeyID to mapOf(
                     SchemaFields.BSON_OBJECT_ID to data.bsonObjectId.toString(),
@@ -56,7 +56,7 @@ class _014_Produits : RealmObject {
             }
         }
 
-        fun parseDataFromSnapshot(snapshot: DataSnapshot): _014_Produits? {
+        fun parseDataFromSnapshot(snapshot: DataSnapshot): _015_Produits? {
             val produitKey = snapshot.key ?: return null
 
             try {
@@ -72,7 +72,7 @@ class _014_Produits : RealmObject {
                     BsonObjectId()
                 }
 
-                return _014_Produits().apply {
+                return _015_Produits().apply {
                     fireBaseKeyID = produitKey
                     this.bsonObjectId = objectId
                     startDesignation = snapshot.child(SchemaFields.START_DESIGNATION).getValue(String::class.java) ?: ""
@@ -84,8 +84,8 @@ class _014_Produits : RealmObject {
                 return null
             }
         }
-        fun deepCopy(source: _014_Produits): _014_Produits {
-            return _014_Produits().apply {
+        fun deepCopy(source: _015_Produits): _015_Produits {
+            return _015_Produits().apply {
                 this.bsonObjectId = source.bsonObjectId
                 startDesignation = source.startDesignation
                 this.tempDateCreationStr = source.tempDateCreationStr

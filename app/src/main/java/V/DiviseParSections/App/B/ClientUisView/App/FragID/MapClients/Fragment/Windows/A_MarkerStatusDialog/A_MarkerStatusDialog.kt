@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._14A_HistoriuesDeCetteJour
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._14_HistoriquesTransactionsDeCetteJour
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_CodePartageEntreApps.Repository._1_3_BonAchat._1_3_BonAchat
@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -97,17 +98,18 @@ fun MarkerStatusDialog(
 
     if (selectedMarker == null) return
 
-    Dialog(   //<--
-    //TODO(1): fait ue ce dialoge prondre tout l ecrane 
+    Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(
             usePlatformDefaultWidth = false,
-            decorFitsSystemWindows = true
+            dismissOnBackPress = true,
+            dismissOnClickOutside = true,
         )
     ) {
         ElevatedCard(
             modifier = Modifier
                 .fillMaxWidth()
+                .fillMaxHeight(0.95f)
                 .padding(16.dp)
         ) {
 
@@ -259,7 +261,7 @@ fun MarkerStatusDialog(
                             _01_Upsert_013_Acheteurs(
                                 repositorysModel,
                                 clientId,
-                                _14A_HistoriuesDeCetteJour.Etate.COMMANDE_LENCE,
+                                _14_HistoriquesTransactionsDeCetteJour.EtateTransaction.COMMANDE_LENCE,
                                 relatedClients?.nom!!,
                                 viewModel.repo_01_VentsHistoriquesDataBase
                             )
@@ -295,7 +297,7 @@ fun MarkerStatusDialog(
                             _01_Upsert_013_Acheteurs(
                                 repositorysModel,
                                 clientId,
-                                _14A_HistoriuesDeCetteJour.Etate.ACHETEUR_NON_DISPO,
+                                _14_HistoriquesTransactionsDeCetteJour.EtateTransaction.ACHETEUR_NON_DISPO,
                                 relatedClients.nom,
                                 viewModel.repo_01_VentsHistoriquesDataBase
                             )
@@ -327,7 +329,7 @@ fun MarkerStatusDialog(
                         _01_Upsert_013_Acheteurs(
                             repositorysModel,
                             clientId,
-                            _14A_HistoriuesDeCetteJour.Etate.AVEC_MARCHANDISE,
+                            _14_HistoriquesTransactionsDeCetteJour.EtateTransaction.AVEC_MARCHANDISE,
                             relatedClients?.nom!!,
                             viewModel.repo_01_VentsHistoriquesDataBase
                         )
@@ -358,7 +360,7 @@ fun MarkerStatusDialog(
                         _01_Upsert_013_Acheteurs(
                             repositorysModel,
                             clientId,
-                            _14A_HistoriuesDeCetteJour.Etate.FERME,
+                            _14_HistoriquesTransactionsDeCetteJour.EtateTransaction.FERME,
                             relatedClients?.nom!!,
                             viewModel.repo_01_VentsHistoriquesDataBase
                         )

@@ -1,6 +1,6 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models
+package V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase.Companion.getCurrentDataTimeString
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase.Companion.getCurrentDataTimeString
 import com.google.firebase.database.DataSnapshot
 import io.realm.kotlin.ext.realmListOf
 import io.realm.kotlin.types.RealmList
@@ -21,9 +21,9 @@ class _013_Acheteurs : RealmObject {
 
     var fireBaseKeyID: String = "${idClient}=${tempDateCreationStr}"
 
-    var child_14Produits: RealmList<_014_Produits> = realmListOf()
+    var child_14Produits: RealmList<_015_Produits> = realmListOf()
 
-    var child_14A_HistoriquesDeCetteJour: RealmList<_14A_HistoriuesDeCetteJour> = realmListOf()
+    var child_14A_HistoriquesDeCetteJour: RealmList<_14_HistoriquesTransactionsDeCetteJour> = realmListOf()
 
     companion object {
         // Schema constants for consistency
@@ -46,8 +46,10 @@ class _013_Acheteurs : RealmObject {
                     SchemaFields.NOM_CLIENT to data.nomClient,
                     SchemaFields.START_DESIGNATION to data.startDesignation,
                     SchemaFields.TEMP_DATE_CREATION to data.tempDateCreationStr,
-                    SchemaFields.CHILD_PRODUITS to _014_Produits.mapDatas(data.child_14Produits),
-                    SchemaFields.child_14A_HistoriquesDeCetteJour to _14A_HistoriuesDeCetteJour.mapDatas(data.child_14A_HistoriquesDeCetteJour),
+                    SchemaFields.CHILD_PRODUITS to _015_Produits.mapDatas(data.child_14Produits),
+                    SchemaFields.child_14A_HistoriquesDeCetteJour to _14_HistoriquesTransactionsDeCetteJour.mapDatas(
+                        data.child_14A_HistoriquesDeCetteJour
+                    ),
                 )
             }
         }
@@ -82,14 +84,16 @@ class _013_Acheteurs : RealmObject {
                 // Parse produits
                 val produitsSnapshot = snapshot.child(SchemaFields.CHILD_PRODUITS)
                 produitsSnapshot.children.forEach { produitSnapshot ->
-                    val produit = _014_Produits.parseDataFromSnapshot(produitSnapshot) ?: return@forEach
+                    val produit = _015_Produits.parseDataFromSnapshot(produitSnapshot) ?: return@forEach
                     acheteur.child_14Produits.add(produit)
                 }
 
                 // Parse historiques
                 val historiquesSnapshot = snapshot.child(SchemaFields.child_14A_HistoriquesDeCetteJour)
                 historiquesSnapshot.children.forEach { historiqueSnapshot ->
-                    val historique = _14A_HistoriuesDeCetteJour.parseDataFromSnapshot(historiqueSnapshot)
+                    val historique = _14_HistoriquesTransactionsDeCetteJour.parseDataFromSnapshot(
+                        historiqueSnapshot
+                    )
                         ?: return@forEach
                     acheteur.child_14A_HistoriquesDeCetteJour.add(historique)
                 }
@@ -112,12 +116,16 @@ class _013_Acheteurs : RealmObject {
                 // Deep copy produits
                 child_14Produits = realmListOf()
                 source.child_14Produits.forEach { sourceProduit ->
-                    child_14Produits.add(_014_Produits.deepCopy(sourceProduit))
+                    child_14Produits.add(_015_Produits.deepCopy(sourceProduit))
                 }
                 // Deep copy produits
                 child_14A_HistoriquesDeCetteJour = realmListOf()
                 source.child_14A_HistoriquesDeCetteJour.forEach { sourceProduit ->
-                    child_14A_HistoriquesDeCetteJour.add(_14A_HistoriuesDeCetteJour.deepCopy(sourceProduit))
+                    child_14A_HistoriquesDeCetteJour.add(
+                        _14_HistoriquesTransactionsDeCetteJour.deepCopy(
+                            sourceProduit
+                        )
+                    )
                 }
             }
         }
@@ -137,7 +145,7 @@ class _013_Acheteurs : RealmObject {
                 }
 
                 // Create and add products
-                val produits = _014_Produits.testData()
+                val produits = _015_Produits.testData()
                 produits.forEach { produit ->
                     acheteur.child_14Produits.add(produit)
                 }

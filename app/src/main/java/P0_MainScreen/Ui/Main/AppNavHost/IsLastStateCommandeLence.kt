@@ -1,8 +1,8 @@
 package P0_MainScreen.Ui.Main.AppNavHost
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._013_Acheteurs
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._14A_HistoriuesDeCetteJour
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_Repository
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._013_Acheteurs
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._14_HistoriquesTransactionsDeCetteJour
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_Repository
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog._01_Upsert_013_Acheteurs
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
@@ -28,21 +28,21 @@ fun _013_Acheteurs.isLastStateCommandeLence(): Boolean {
     }
 
     val sortedHistoriques = child_14A_HistoriquesDeCetteJour.sortedWith(
-        compareByDescending<_14A_HistoriuesDeCetteJour> { it.dateCreationStr }
+        compareByDescending<_14_HistoriquesTransactionsDeCetteJour> { it.dateCreationStr }
             .thenByDescending { it.tempCreationStr }
     )
 
     val lastHistorique = sortedHistoriques.firstOrNull()
-    val lastState = lastHistorique?.etate
+    val lastState = lastHistorique?.etateTransaction
 
-    return lastState == _14A_HistoriuesDeCetteJour.Etate.COMMANDE_LENCE
+    return lastState == V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._14_HistoriquesTransactionsDeCetteJour.EtateTransaction.COMMANDE_LENCE
 }
 
 fun updateAcheteurToAchatTermine(
     viewModelInitApp: ViewModelInitApp,
     clientId: Long,
     repositorysModel: _0_0_HeadOfRepositorys_Model,
-    newState: _14A_HistoriuesDeCetteJour.Etate = _14A_HistoriuesDeCetteJour.Etate.ACHAT_TERMINE,
+    newState: _14_HistoriquesTransactionsDeCetteJour.EtateTransaction = _14_HistoriquesTransactionsDeCetteJour.EtateTransaction.ACHAT_TERMINE,
 ) {
     val ceComptVendeurInsertBonsAchatAuPeriodID =
         repositorysModel.repository_1_5_Vendeur.modelDatasSnapList
@@ -63,7 +63,7 @@ fun OrderCompletionDialog(
     clientId: Long,
     clientName: String,
     onDismiss: () -> Unit,
-    onStateChange: (state: _14A_HistoriuesDeCetteJour.Etate) -> Unit,
+    onStateChange: (state: _14_HistoriquesTransactionsDeCetteJour.EtateTransaction) -> Unit,
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -77,8 +77,8 @@ fun OrderCompletionDialog(
             ) {
                 Text("حدد حالة العميل $clientName (ID: $clientId)")
 
-                _14A_HistoriuesDeCetteJour.Etate.entries.forEach { state ->
-                    if (state != _14A_HistoriuesDeCetteJour.Etate.COMMANDE_LENCE) {
+                _14_HistoriquesTransactionsDeCetteJour.EtateTransaction.entries.forEach { state ->
+                    if (state != _14_HistoriquesTransactionsDeCetteJour.EtateTransaction.COMMANDE_LENCE) {
                         Button(
                             onClick = {
                                 onStateChange(state)
@@ -96,7 +96,7 @@ fun OrderCompletionDialog(
                         ) {
                             Text(
                                 text = state.nomArabe,
-                                color = if (state == _14A_HistoriuesDeCetteJour.Etate.A_EVITE) Color.White else Color.Black
+                                color = if (state == _14_HistoriquesTransactionsDeCetteJour.EtateTransaction.A_EVITE) Color.White else Color.Black
                             )
                         }
                     }

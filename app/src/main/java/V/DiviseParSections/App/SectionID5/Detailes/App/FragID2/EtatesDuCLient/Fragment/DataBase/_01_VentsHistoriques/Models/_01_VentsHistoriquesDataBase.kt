@@ -1,7 +1,7 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models
+package V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._012_ComptsVendeurs.Companion.createVendeur
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Models._012_ComptsVendeurs.Companion.map_012_ComptsVendeurs
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._012_ComptsVendeurs.Companion.createVendeur
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._012_ComptsVendeurs.Companion.map_012_ComptsVendeurs
 import android.util.Log
 import com.google.firebase.database.DataSnapshot
 import io.realm.kotlin.ext.realmListOf
@@ -72,7 +72,8 @@ class _01_VentsHistoriquesDataBase : RealmObject {
                 // Parse vendeurs if they exist
                 val vendeursSnapshot = snapshot.child(SchemaFields.CHILD_VENDEURS)
                 vendeursSnapshot.children.forEach { vendeurSnapshot ->
-                    val vendeur = _012_ComptsVendeurs.parse_012_ComptsVendeursFromSnapshot(vendeurSnapshot)
+                    val vendeur =
+                        _012_ComptsVendeurs.parse_012_ComptsVendeursFromSnapshot(vendeurSnapshot)
                     if (vendeur != null) {
                         periode.child_012_Compts_Vendeurs.add(vendeur)
                     }
