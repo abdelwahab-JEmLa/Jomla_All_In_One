@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment
+package V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
