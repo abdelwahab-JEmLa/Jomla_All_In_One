@@ -1,5 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_Repository
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog._01_Upsert_013_Acheteurs
 import Views.Package_4.SoldCartScreen.Components.OrderSuccessMessage
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Modules.printReceipt
@@ -52,7 +54,9 @@ fun ColumnScope.BonAchatInfos(
     onConfirmOrder: () -> Unit,
     onShowOrderSuccessChange: (Boolean) -> Unit,
     database: AppDatabase = koinInject(),
-) {
+    repo_01_VentsHistoriquesDataBase: _01_VentsHistoriquesDataBase_Repository = koinInject(),
+
+    ) {
     val repositorysModel = _0_0_HeadOfRepositorys_Repository.repositorys_Model
     val relativeClientDataBase =
         repositorysModel._3_ClientsDataBase_Repository
@@ -181,6 +185,13 @@ fun ColumnScope.BonAchatInfos(
 
                             onConfirmOrder()
                             _0_0_HeadOfRepositorys_Repository.notifyDataChanged_1_3_BonAchat_Repository()
+
+                            _01_Upsert_013_Acheteurs(
+                                repositorysModel = repositorysModel,
+                                clientId = relativeClientDataBase?.vid!!,
+                                nom = relativeClientDataBase.nom,
+                                repo_01_VentsHistoriquesDataBase = repo_01_VentsHistoriquesDataBase
+                            )
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),

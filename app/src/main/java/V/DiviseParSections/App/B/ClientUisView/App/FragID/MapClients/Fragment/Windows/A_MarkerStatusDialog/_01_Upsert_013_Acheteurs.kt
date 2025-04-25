@@ -10,13 +10,16 @@ import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepos
 import io.realm.kotlin.ext.realmListOf
 
 fun _01_Upsert_013_Acheteurs(
-    ceComptVendeurInsertBonsAchatAuPeriodID: Long?,
     repositorysModel: _0_0_HeadOfRepositorys_Model,
     clientId: Long,
-    historiqueState: _14A_HistoriuesDeCetteJour.Etate,
+    historiqueState: _14A_HistoriuesDeCetteJour.Etate=_14A_HistoriuesDeCetteJour.Etate.ACHAT_TERMINE,
     nom: String,
     repo_01_VentsHistoriquesDataBase: _01_VentsHistoriquesDataBase_Repository,
 ) {
+    val ceComptVendeurInsertBonsAchatAuPeriodID =
+        repositorysModel.repository_1_5_Vendeur.modelDatasSnapList
+            .find { it.vid == repositorysModel.activeIdDe_1_5_Vendeur }
+            ?.ceComptVendeurInsertBonsAchatAuPeriodID
     // Get repository for periods
     val _01_VentsHistoriquesDataBaseList = repo_01_VentsHistoriquesDataBase.modelDatasSnapList
 

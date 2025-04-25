@@ -50,7 +50,6 @@ fun updateAcheteurToAchatTermine(
             ?.ceComptVendeurInsertBonsAchatAuPeriodID
 
     _01_Upsert_013_Acheteurs(
-        ceComptVendeurInsertBonsAchatAuPeriodID = ceComptVendeurInsertBonsAchatAuPeriodID,
         repositorysModel = repositorysModel,
         clientId = clientId,
         historiqueState = newState,
@@ -76,9 +75,8 @@ fun OrderCompletionDialog(
                     .padding(vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Text("حدد حالة العميل $clientName (ID: $clientId)") // Select status for client
+                Text("حدد حالة العميل $clientName (ID: $clientId)")
 
-                // Add buttons for all possible states
                 _14A_HistoriuesDeCetteJour.Etate.entries.forEach { state ->
                     if (state != _14A_HistoriuesDeCetteJour.Etate.COMMANDE_LENCE) {
                         Button(

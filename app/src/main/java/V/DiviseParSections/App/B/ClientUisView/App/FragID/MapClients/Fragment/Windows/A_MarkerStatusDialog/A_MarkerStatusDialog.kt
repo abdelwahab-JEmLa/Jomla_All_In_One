@@ -97,7 +97,8 @@ fun MarkerStatusDialog(
 
     if (selectedMarker == null) return
 
-    Dialog(
+    Dialog(   //<--
+    //TODO(1): fait ue ce dialoge prondre tout l ecrane 
         onDismissRequest = onDismiss,
         properties = DialogProperties(
             usePlatformDefaultWidth = false,
@@ -256,7 +257,6 @@ fun MarkerStatusDialog(
 
                             //----------------------------------------------------------------------------------------/
                             _01_Upsert_013_Acheteurs(
-                                ceComptVendeurInsertBonsAchatAuPeriodID,
                                 repositorysModel,
                                 clientId,
                                 _14A_HistoriuesDeCetteJour.Etate.COMMANDE_LENCE,
@@ -293,7 +293,6 @@ fun MarkerStatusDialog(
 
                             //----------------------------------------------------------------------------------------/
                             _01_Upsert_013_Acheteurs(
-                                ceComptVendeurInsertBonsAchatAuPeriodID,
                                 repositorysModel,
                                 clientId,
                                 _14A_HistoriuesDeCetteJour.Etate.ACHETEUR_NON_DISPO,
@@ -326,7 +325,6 @@ fun MarkerStatusDialog(
                         }
                         //----------------------------------------------------------------------------------------/
                         _01_Upsert_013_Acheteurs(
-                            ceComptVendeurInsertBonsAchatAuPeriodID,
                             repositorysModel,
                             clientId,
                             _14A_HistoriuesDeCetteJour.Etate.AVEC_MARCHANDISE,
@@ -358,7 +356,6 @@ fun MarkerStatusDialog(
                         }
                         //----------------------------------------------------------------------------------------/
                         _01_Upsert_013_Acheteurs(
-                            ceComptVendeurInsertBonsAchatAuPeriodID,
                             repositorysModel,
                             clientId,
                             _14A_HistoriuesDeCetteJour.Etate.FERME,
