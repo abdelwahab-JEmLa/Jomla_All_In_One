@@ -1,8 +1,8 @@
 package P0_MainScreen.Ui.Main.AppNavHost
 
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._013_ClientTransaction
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._14_TransactionStatue
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_Repository
+import V.DiviseParSections.App.SectionID5.Detailes.App.DataBase._01_VentsHistoriques.Models._013_ClientTransaction
+import V.DiviseParSections.App.SectionID5.Detailes.App.DataBase._01_VentsHistoriques.Models._14_TransactionStatue
+import V.DiviseParSections.App.SectionID5.Detailes.App.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_Repository
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog._01_Upsert_013_Acheteurs
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
@@ -35,7 +35,7 @@ fun _013_ClientTransaction.isLastStateCommandeLence(): Boolean {
     val lastHistorique = sortedHistoriques.firstOrNull()
     val lastState = lastHistorique?.etateTransaction
 
-    return lastState == V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._14_TransactionStatue.EtateTransaction.COMMANDE_LENCE
+    return lastState == V.DiviseParSections.App.SectionID5.Detailes.App.DataBase._01_VentsHistoriques.Models._14_TransactionStatue.EtateTransaction.COMMANDE_LENCE
 }
 
 fun updateAcheteurToAchatTermine(

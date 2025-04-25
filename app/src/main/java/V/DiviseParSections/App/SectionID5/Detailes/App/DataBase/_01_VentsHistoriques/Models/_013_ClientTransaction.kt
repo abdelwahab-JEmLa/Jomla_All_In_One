@@ -1,8 +1,8 @@
-package V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models
+package V.DiviseParSections.App.SectionID5.Detailes.App.DataBase._01_VentsHistoriques.Models
 
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._01_PeriodVentHistorique.Companion.getCurrentDataTimeString
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._14_TransactionStatue.Companion.getCurrentDateString
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._14_TransactionStatue.Companion.getCurrentTimeString
+import V.DiviseParSections.App.SectionID5.Detailes.App.DataBase._01_VentsHistoriques.Models._01_PeriodVentHistorique.Companion.getCurrentDataTimeString
+import V.DiviseParSections.App.SectionID5.Detailes.App.DataBase._01_VentsHistoriques.Models._14_TransactionStatue.Companion.getCurrentDateString
+import V.DiviseParSections.App.SectionID5.Detailes.App.DataBase._01_VentsHistoriques.Models._14_TransactionStatue.Companion.getCurrentTimeString
 import com.google.firebase.database.DataSnapshot
 import io.realm.kotlin.ext.realmListOf
 import io.realm.kotlin.types.RealmList

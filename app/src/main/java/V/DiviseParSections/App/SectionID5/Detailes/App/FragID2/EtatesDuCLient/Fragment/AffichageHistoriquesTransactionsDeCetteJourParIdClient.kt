@@ -1,5 +1,7 @@
 package V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment
 
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.ViewModel.SecID5FragID2ViewModel
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -20,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -28,6 +31,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
+
+private const val TAG = "AffichageHistoriquesTag"
 
 @Preview
 @Composable
@@ -44,15 +49,34 @@ fun AffichageHistoriquesTransactionsDeCetteJourParIdClient(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    // Filter transactions by client ID
-    val filteredGroupedTransactions = uiState.transactionsDateToList_1_3_TransactionCommercial
-        .map { (period, transactions) ->
-            Pair(
-                period,
-                transactions.filter { transaction -> transaction.clientAcheteurID == idClient }
-            )
-        }
-        .filter { (_, transactions) -> transactions.isNotEmpty() }
+    // Debug the data
+    val originalSize = uiState.transactionsDateToList_1_3_TransactionCommercial.size
+    val transactionsCount = uiState.sl_1_3_TransactionCommercial.size
+    val periodsCount = uiState.sl_1_4_PeriodeVent.size
+
+    // Log debug info
+    Log.d(TAG, "Periods count: $periodsCount")
+    Log.d(TAG, "Transactions count: $transactionsCount")
+    Log.d(TAG, "Grouped transactions: $originalSize")
+
+    // Check if data is loaded before filtering
+    if (originalSize == 0 && transactionsCount > 0 && periodsCount > 0) {
+        // Force a refresh of the grouped data
+        viewModel.notifyDataChanged()
+    }
+
+    // Filter transactions by client ID with debugging
+    val filteredGroupedTransactions = remember(uiState.transactionsDateToList_1_3_TransactionCommercial, idClient) {
+        uiState.transactionsDateToList_1_3_TransactionCommercial
+            .map { (period, transactions) ->
+                val filteredTransactions = transactions.filter { it.clientAcheteurID == idClient }
+                Log.d(TAG, "Period ${period.vid} has ${filteredTransactions.size} transactions for client $idClient")
+                Pair(period, filteredTransactions)
+            }
+            .filter { (_, transactions) -> transactions.isNotEmpty() }
+    }
+
+    Log.d(TAG, "Filtered transactions count: ${filteredGroupedTransactions.size}")
 
     LazyColumn(modifier = modifier.fillMaxWidth()) {
         filteredGroupedTransactions.forEach { (period, transactions) ->
@@ -86,7 +110,9 @@ fun AffichageHistoriquesTransactionsDeCetteJourParIdClient(
         if (filteredGroupedTransactions.isEmpty()) {
             item {
                 Text(
-                    text = "Pas de transactions pour ce client",
+                    text = if (originalSize > 0)
+                        "Pas de transactions pour le client $idClient"
+                    else "Chargement des données...",
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),

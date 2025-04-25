@@ -1,13 +1,13 @@
-package V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Repository
+package V.DiviseParSections.App.SectionID5.Detailes.App.DataBase._01_VentsHistoriques.Repository
 
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._012_ComptsVendeurs
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._013_ClientTransaction
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._015_Produits
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._01_PeriodVentHistorique
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._01_PeriodVentHistorique.Companion.map_01_VentsHistoriquesDataBase
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._01_PeriodVentHistorique.Companion.parsePeriodeFromSnapshot
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._01_PeriodVentHistorique.Companion.test_01_PeriodesVent
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._14_TransactionStatue
+import V.DiviseParSections.App.SectionID5.Detailes.App.DataBase._01_VentsHistoriques.Models._012_ComptsVendeurs
+import V.DiviseParSections.App.SectionID5.Detailes.App.DataBase._01_VentsHistoriques.Models._013_ClientTransaction
+import V.DiviseParSections.App.SectionID5.Detailes.App.DataBase._01_VentsHistoriques.Models._015_Produits
+import V.DiviseParSections.App.SectionID5.Detailes.App.DataBase._01_VentsHistoriques.Models._01_PeriodVentHistorique
+import V.DiviseParSections.App.SectionID5.Detailes.App.DataBase._01_VentsHistoriques.Models._01_PeriodVentHistorique.Companion.map_01_VentsHistoriquesDataBase
+import V.DiviseParSections.App.SectionID5.Detailes.App.DataBase._01_VentsHistoriques.Models._01_PeriodVentHistorique.Companion.parsePeriodeFromSnapshot
+import V.DiviseParSections.App.SectionID5.Detailes.App.DataBase._01_VentsHistoriques.Models._01_PeriodVentHistorique.Companion.test_01_PeriodesVent
+import V.DiviseParSections.App.SectionID5.Detailes.App.DataBase._01_VentsHistoriques.Models._14_TransactionStatue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.firebase.Firebase

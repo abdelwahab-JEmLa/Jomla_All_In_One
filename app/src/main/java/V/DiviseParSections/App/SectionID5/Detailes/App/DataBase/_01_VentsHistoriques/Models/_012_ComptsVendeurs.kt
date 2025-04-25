@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models
+package V.DiviseParSections.App.SectionID5.Detailes.App.DataBase._01_VentsHistoriques.Models
 
 import com.google.firebase.database.DataSnapshot
 import io.realm.kotlin.ext.realmListOf
@@ -67,7 +67,9 @@ class _012_ComptsVendeurs : RealmObject {
 
                 val acheteursSnapshot = snapshot.child(SchemaFields.CHILD_ACHETEURS)
                 acheteursSnapshot.children.forEach { acheteurSnapshot ->
-                    val acheteur = _013_ClientTransaction.parse_13_AcheteursFromSnapshot(acheteurSnapshot)
+                    val acheteur = _013_ClientTransaction.parse_13_AcheteursFromSnapshot(
+                        acheteurSnapshot
+                    )
                         ?: return@forEach
                     vendeur.child_013_Acheteurs.add(acheteur)
                 }

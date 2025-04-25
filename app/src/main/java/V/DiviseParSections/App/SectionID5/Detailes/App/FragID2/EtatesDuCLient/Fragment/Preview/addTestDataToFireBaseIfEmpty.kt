@@ -1,77 +1,19 @@
-package V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment
+package V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Preview
 
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment._1_3_TransactionCommercial
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment._1_4_PeriodeVent
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
-import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-private const val TAG = "SecID5FragID2ViewModel"
-
-data class SecID5FragID2UiState(
-    val sl_1_4_PeriodeVent: SnapshotStateList<_1_4_PeriodeVent> = SnapshotStateList(),
-    val sl_1_3_TransactionCommercial: SnapshotStateList<_1_3_TransactionCommercial> = SnapshotStateList(),
-    val transactionsDateToList_1_3_TransactionCommercial:
-    List<Pair<_1_4_PeriodeVent, List<_1_3_TransactionCommercial>>> = emptyList(),
-)
-
-class SecID5FragID2ViewModel(
-    private val r_0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository,
-) : ViewModel() {
-
-    private val _uiState = MutableStateFlow(SecID5FragID2UiState())
-    val uiState: StateFlow<SecID5FragID2UiState> = _uiState.asStateFlow()
-
-    init {
-        viewModelScope.launch {
-            loadCollectSnapshotStateList()
-        }
-    }
-
-    private fun loadCollectSnapshotStateList() {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                // Ensure repositories are initialized
-                r_0_0_HeadOfRepositorys_Repository.repositorys_Model.repository_1_4_PeriodeVent.ensureDataIsInitialized()
-                r_0_0_HeadOfRepositorys_Repository.repositorys_Model.repository_1_3_TransactionCommercial.ensureDataIsInitialized()
-
-                // Get the snapshot state lists
-                val periods = r_0_0_HeadOfRepositorys_Repository.repositorys_Model.repository_1_4_PeriodeVent.modelDatasSnapList
-                val transactions = r_0_0_HeadOfRepositorys_Repository.repositorys_Model.repository_1_3_TransactionCommercial.modelDatasSnapList
-
-                withContext(Dispatchers.Main) {
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            sl_1_4_PeriodeVent = periods,
-                            sl_1_3_TransactionCommercial = transactions,
-                        )
-                    }
-                }
-
-                // Load the grouped transactions after loading the lists
-                loadCollecttransactionsDateToList_1_3_TransactionCommercial()
-
-                // Add test data if the repositories are empty
-                if (periods.isEmpty() || transactions.isEmpty()) {
-                    addTestDataToFireBaseIfEmpty()
-                }
-            } catch (e: Exception) {
-                // Handle errors
-                e.printStackTrace()
-            }
-        }
-    }
-
-    private fun addTestDataToFireBaseIfEmpty() {
+fun addTestDataToFireBaseIfEmpty(
+    viewModelScope: CoroutineScope,
+    r_0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository
+) {
         viewModelScope.launch(Dispatchers.IO) {
             // Add test period if needed
             if (r_0_0_HeadOfRepositorys_Repository.repositorys_Model.repository_1_4_PeriodeVent.modelDatasSnapList.isEmpty()) {
@@ -225,37 +167,3 @@ class SecID5FragID2ViewModel(
             }
         }
     }
-    private fun loadCollecttransactionsDateToList_1_3_TransactionCommercial() {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val periods = _uiState.value.sl_1_4_PeriodeVent
-                val transactions = _uiState.value.sl_1_3_TransactionCommercial
-
-                // Group transactions by period
-                val groupedTransactions = periods.map { period ->
-                    val periodTransactions = transactions.filter { transaction ->
-                        transaction.parentVID_1_4_PeriodeVent == period.vid
-                    }
-                    Pair(period, periodTransactions)
-                }
-
-                withContext(Dispatchers.Main) {
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            transactionsDateToList_1_3_TransactionCommercial = groupedTransactions
-                        )
-                    }
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-    }
-
-    fun notifyDataChanged() {
-        // Launch a coroutine to reload the data
-        viewModelScope.launch {
-            loadCollectSnapshotStateList()
-        }
-    }
-}
