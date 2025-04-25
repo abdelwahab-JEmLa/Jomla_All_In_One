@@ -168,14 +168,17 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                         withContext(Dispatchers.Main) {
                             val index = _1_4_Repository.modelDatasSnapList.indexOfFirst { it.vid == dataToUpsert.vid }
                             if (index >= 0) {
-                                _1_4_Repository. modelDatasSnapList[index] = dataToUpsert
+                                _1_4_Repository.modelDatasSnapList[index] = dataToUpsert
                             } else {
                                 _1_4_Repository.modelDatasSnapList.add(dataToUpsert)
                             }
                         }
 
-                        // Update in Firebase
-                        repositorys_Model.databaseReference_1_4_PeriodeVent.child(dataToUpsert.vid.toString())
+                        // Update dataToUpsert.fireBaseKeyID to ensure it's current
+                        dataToUpsert.fireBaseKeyID = "${dataToUpsert.vid}->(${dataToUpsert.startDateInString})"
+
+                        // Update in Firebase using fireBaseKeyID as the key
+                        repositorys_Model.databaseReference_1_4_PeriodeVent.child(dataToUpsert.fireBaseKeyID)
                             .setValue(dataToUpsert).await()
 
                         // Call the success callback with the existing vid
@@ -187,12 +190,15 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                         // Update the object with the new vid
                         dataToUpsert.vid = newVid
 
+                        // Update fireBaseKeyID with new vid
+                        dataToUpsert.fireBaseKeyID = "${dataToUpsert.vid}->(${dataToUpsert.startDateInString})"
+
                         withContext(Dispatchers.Main) {
                             _1_4_Repository.modelDatasSnapList.add(dataToUpsert)
                         }
 
-                        // Update Firebase with the new vid
-                        repositorys_Model.databaseReference_1_4_PeriodeVent.child(newVid.toString())
+                        // Update Firebase using fireBaseKeyID as the key
+                        repositorys_Model.databaseReference_1_4_PeriodeVent.child(dataToUpsert.fireBaseKeyID)
                             .setValue(dataToUpsert).await()
 
                         // Call the success callback with the new vid
@@ -206,6 +212,7 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
             Log.e(TAG, "Error in upsertUnSeulDataEtReturnVID: ${e.message}")
         }
     }
+
     override fun upsertUneDataEtReturnVID_1_3_TransactionCommercial(
         data: _1_3_TransactionCommercial,
         onSuccess: (Long) -> Unit
@@ -225,14 +232,17 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                         withContext(Dispatchers.Main) {
                             val index = repo_1_3_TransactionCommercial.modelDatasSnapList.indexOfFirst { it.vid == dataToUpsert.vid }
                             if (index >= 0) {
-                                repo_1_3_TransactionCommercial. modelDatasSnapList[index] = dataToUpsert
+                                repo_1_3_TransactionCommercial.modelDatasSnapList[index] = dataToUpsert
                             } else {
                                 repo_1_3_TransactionCommercial.modelDatasSnapList.add(dataToUpsert)
                             }
                         }
 
-                        // Update in Firebase
-                        repositorys_Model.databaseReference_1_3_TransactionCommercial.child(dataToUpsert.vid.toString())
+                        // Update dataToUpsert.fireBaseKeyID to ensure it's current
+                        dataToUpsert.fireBaseKeyID = "${dataToUpsert.parentVID_1_4_PeriodeVent}->(${dataToUpsert.clientAcheteurID}->($dataToUpsert.etateActuellementEst))"
+
+                        // Update in Firebase using fireBaseKeyID as the key
+                        repositorys_Model.databaseReference_1_3_TransactionCommercial.child(dataToUpsert.fireBaseKeyID)
                             .setValue(dataToUpsert).await()
 
                         // Call the success callback with the existing vid
@@ -244,12 +254,15 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                         // Update the object with the new vid
                         dataToUpsert.vid = newVid
 
+                        // Update fireBaseKeyID with new parameters
+                        dataToUpsert.fireBaseKeyID = "${dataToUpsert.parentVID_1_4_PeriodeVent}->(${dataToUpsert.clientAcheteurID}->($dataToUpsert.etateActuellementEst))"
+
                         withContext(Dispatchers.Main) {
                             repo_1_3_TransactionCommercial.modelDatasSnapList.add(dataToUpsert)
                         }
 
-                        // Update Firebase with the new vid
-                        repositorys_Model.databaseReference_1_3_TransactionCommercial.child(newVid.toString())
+                        // Update Firebase using fireBaseKeyID as the key
+                        repositorys_Model.databaseReference_1_3_TransactionCommercial.child(dataToUpsert.fireBaseKeyID)
                             .setValue(dataToUpsert).await()
 
                         // Call the success callback with the new vid
