@@ -24,8 +24,7 @@ data class _1_3_TransactionCommercial(
     var etateActuellementEst: EtateActuellementEst =
         EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
 
-    var fireBaseKeyID: String = "$parentVID_1_4_PeriodeVent->(${clientAcheteurID}->($etateActuellementEst))",
-
+    var fireBaseKeyID: String = "$parentVID_1_4_PeriodeVent->($clientAcheteurID->(${etateActuellementEst.name}))"
     ) {
 
     @IgnoreExtraProperties

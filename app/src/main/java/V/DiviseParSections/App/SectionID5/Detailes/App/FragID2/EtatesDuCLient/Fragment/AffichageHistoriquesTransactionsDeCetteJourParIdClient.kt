@@ -40,7 +40,7 @@ private fun AffichageHistoriquesTransactionsDeCetteJourParIdClientPRV() {
 fun AffichageHistoriquesTransactionsDeCetteJourParIdClient(
     modifier: Modifier = Modifier,
     viewModel: SecID5FragID2ViewModel = koinViewModel(),
-    idClient: Long = 4
+    idClient: Long = 2
 ) {
     val uiState by viewModel.uiState.collectAsState()
 

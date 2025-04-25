@@ -238,8 +238,8 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                             }
                         }
 
-                        // Update dataToUpsert.fireBaseKeyID to ensure it's current
-                        dataToUpsert.fireBaseKeyID = "${dataToUpsert.parentVID_1_4_PeriodeVent}->(${dataToUpsert.clientAcheteurID}->($dataToUpsert.etateActuellementEst))"
+                        // Properly format the Firebase key using enum name
+                        dataToUpsert.fireBaseKeyID = "${dataToUpsert.parentVID_1_4_PeriodeVent}->(${dataToUpsert.clientAcheteurID}->(${dataToUpsert.etateActuellementEst.name}))"
 
                         // Update in Firebase using fireBaseKeyID as the key
                         repositorys_Model.databaseReference_1_3_TransactionCommercial.child(dataToUpsert.fireBaseKeyID)
@@ -254,8 +254,8 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                         // Update the object with the new vid
                         dataToUpsert.vid = newVid
 
-                        // Update fireBaseKeyID with new parameters
-                        dataToUpsert.fireBaseKeyID = "${dataToUpsert.parentVID_1_4_PeriodeVent}->(${dataToUpsert.clientAcheteurID}->($dataToUpsert.etateActuellementEst))"
+                        // Update fireBaseKeyID with new parameters - FIXED: use enum name properly
+                        dataToUpsert.fireBaseKeyID = "${dataToUpsert.parentVID_1_4_PeriodeVent}->(${dataToUpsert.clientAcheteurID}->(${dataToUpsert.etateActuellementEst.name}))"
 
                         withContext(Dispatchers.Main) {
                             repo_1_3_TransactionCommercial.modelDatasSnapList.add(dataToUpsert)
@@ -270,6 +270,9 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                     }
                 } catch (e: Exception) {
                     Log.e(TAG, "Error upserting data: ${e.message}")
+                    // Add more detailed error logging
+                    Log.e(TAG, "Transaction data: $dataToUpsert")
+                    Log.e(TAG, "Firebase key attempted: ${dataToUpsert.fireBaseKeyID}")
                 }
             }
         } catch (e: Exception) {
