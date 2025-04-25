@@ -1,6 +1,6 @@
 package Z_CodePartageEntreApps.Repository._1_4_PeriodeVent
 
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._1_4_PeriodeVent
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment._1_4_PeriodeVent
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert

@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys
+package V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

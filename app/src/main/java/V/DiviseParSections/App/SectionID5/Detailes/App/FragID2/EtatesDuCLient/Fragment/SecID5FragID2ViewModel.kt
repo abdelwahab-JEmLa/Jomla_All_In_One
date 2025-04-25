@@ -1,7 +1,6 @@
 package V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment
 
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._1_4_PeriodeVent
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -72,7 +71,9 @@ class SecID5FragID2ViewModel(
         }
     }
 
-    private fun addTestDataToFireBaseIfEmpty() {
+    private fun addTestDataToFireBaseIfEmpty() {     //<--
+    //TODO(1): cree d  autre 6> _1_3_TransactionCommercial  du client id 2 avec diffrents 
+    //etates et periodes
         viewModelScope.launch(Dispatchers.IO) {
             // Add test period if needed
             if (r_0_0_HeadOfRepositorys_Repository.repositorys_Model.repository_1_4_PeriodeVent.modelDatasSnapList.isEmpty()) {
