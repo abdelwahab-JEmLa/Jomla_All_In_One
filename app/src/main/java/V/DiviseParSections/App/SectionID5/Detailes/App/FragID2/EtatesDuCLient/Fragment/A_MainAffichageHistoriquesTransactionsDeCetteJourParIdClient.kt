@@ -38,12 +38,12 @@ private const val TAG = "AffichageHistoriquesTag"
 @Preview
 @Composable
 private fun AffichageHistoriquesTransactionsDeCetteJourParIdClientPRV() {
-    AffichageHistoriquesTransactionsDeCetteJourParIdClient()
+    A_MainAffichageHistoriquesTransactionsDeCetteJourParIdClient()
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun AffichageHistoriquesTransactionsDeCetteJourParIdClient(
+fun A_MainAffichageHistoriquesTransactionsDeCetteJourParIdClient(
     modifier: Modifier = Modifier,
     viewModel: SecID5FragID2ViewModel = koinViewModel(),
     idClient: Long = 2
