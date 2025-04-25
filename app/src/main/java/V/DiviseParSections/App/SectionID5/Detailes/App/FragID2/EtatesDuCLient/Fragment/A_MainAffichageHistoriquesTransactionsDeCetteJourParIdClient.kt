@@ -47,7 +47,8 @@ fun A_MainAffichageHistoriquesTransactionsDeCetteJourParIdClient(
     modifier: Modifier = Modifier,
     viewModel: SecID5FragID2ViewModel = koinViewModel(),
     idClient: Long = 2
-) {
+) {           //<--
+//TODO(1): enleve logs
     val uiState by viewModel.uiState.collectAsState()
 
     // Debug the data

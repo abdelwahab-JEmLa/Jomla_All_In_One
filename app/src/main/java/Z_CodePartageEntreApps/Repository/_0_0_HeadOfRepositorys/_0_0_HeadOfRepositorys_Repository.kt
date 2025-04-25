@@ -23,8 +23,6 @@ interface _0_0_HeadOfRepositorys_Repository {
 
 
     companion object {
-
-
         const val TAG = "_0_0_HeadOfRepositorys"
 
         val _0_0_HeadOfRepositorys_RepositoryRef = Firebase.database
