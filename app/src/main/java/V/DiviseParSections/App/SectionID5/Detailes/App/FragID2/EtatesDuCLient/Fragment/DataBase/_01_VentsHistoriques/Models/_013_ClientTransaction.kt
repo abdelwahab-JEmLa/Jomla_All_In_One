@@ -1,6 +1,8 @@
 package V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models
 
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase.Companion.getCurrentDataTimeString
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._01_PeriodVentHistorique.Companion.getCurrentDataTimeString
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._14_TransactionStatue.Companion.getCurrentDateString
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._14_TransactionStatue.Companion.getCurrentTimeString
 import com.google.firebase.database.DataSnapshot
 import io.realm.kotlin.ext.realmListOf
 import io.realm.kotlin.types.RealmList
@@ -9,7 +11,7 @@ import io.realm.kotlin.types.annotations.PrimaryKey
 import org.mongodb.kbson.BsonObjectId
 import org.mongodb.kbson.ObjectId
 
-class _013_Acheteurs : RealmObject {
+class _013_ClientTransaction : RealmObject {
     @PrimaryKey
     var bsonObjectId: ObjectId = BsonObjectId()
 
@@ -19,11 +21,14 @@ class _013_Acheteurs : RealmObject {
     var startDesignation: String = ""
     var tempDateCreationStr: String = getCurrentDataTimeString()
 
+    var dateCreationStr: String = getCurrentDateString()
+    var tempCreationStr: String = getCurrentTimeString()
+
     var fireBaseKeyID: String = "${idClient}=${tempDateCreationStr}"
 
     var child_14Produits: RealmList<_015_Produits> = realmListOf()
 
-    var child_14A_HistoriquesDeCetteJour: RealmList<_14_HistoriquesTransactionsDeCetteJour> = realmListOf()
+    var child_14A_HistoriquesDeCetteJour: RealmList<_14_TransactionStatue> = realmListOf()
 
     companion object {
         // Schema constants for consistency
@@ -38,7 +43,7 @@ class _013_Acheteurs : RealmObject {
         }
 
 
-        fun mapDatas(datas: List<_013_Acheteurs>): Map<String, Any> {
+        fun mapDatas(datas: List<_013_ClientTransaction>): Map<String, Any> {
             return datas.associate { data ->
                 data.fireBaseKeyID to mapOf(
                     SchemaFields.BSON_OBJECT_ID to data.bsonObjectId.toString(),
@@ -47,14 +52,14 @@ class _013_Acheteurs : RealmObject {
                     SchemaFields.START_DESIGNATION to data.startDesignation,
                     SchemaFields.TEMP_DATE_CREATION to data.tempDateCreationStr,
                     SchemaFields.CHILD_PRODUITS to _015_Produits.mapDatas(data.child_14Produits),
-                    SchemaFields.child_14A_HistoriquesDeCetteJour to _14_HistoriquesTransactionsDeCetteJour.mapDatas(
+                    SchemaFields.child_14A_HistoriquesDeCetteJour to _14_TransactionStatue.mapDatas(
                         data.child_14A_HistoriquesDeCetteJour
                     ),
                 )
             }
         }
 
-        fun parse_13_AcheteursFromSnapshot(snapshot: DataSnapshot): _013_Acheteurs? {
+        fun parse_13_AcheteursFromSnapshot(snapshot: DataSnapshot): _013_ClientTransaction? {
             val acheteurKey = snapshot.key ?: return null
 
             try {
@@ -70,7 +75,7 @@ class _013_Acheteurs : RealmObject {
                     BsonObjectId()
                 }
 
-                val acheteur = _013_Acheteurs().apply {
+                val acheteur = _013_ClientTransaction().apply {
                     fireBaseKeyID = acheteurKey
                     this.bsonObjectId = objectId
                     idClient = snapshot.child(SchemaFields.ID_CLIENT).getValue(Long::class.java) ?: 0L
@@ -91,7 +96,7 @@ class _013_Acheteurs : RealmObject {
                 // Parse historiques
                 val historiquesSnapshot = snapshot.child(SchemaFields.child_14A_HistoriquesDeCetteJour)
                 historiquesSnapshot.children.forEach { historiqueSnapshot ->
-                    val historique = _14_HistoriquesTransactionsDeCetteJour.parseDataFromSnapshot(
+                    val historique = _14_TransactionStatue.parseDataFromSnapshot(
                         historiqueSnapshot
                     )
                         ?: return@forEach
@@ -104,8 +109,8 @@ class _013_Acheteurs : RealmObject {
             }
         }
 
-        fun deepCopy(source: _013_Acheteurs): _013_Acheteurs {
-            return _013_Acheteurs().apply {
+        fun deepCopy(source: _013_ClientTransaction): _013_ClientTransaction {
+            return _013_ClientTransaction().apply {
                 this.bsonObjectId = source.bsonObjectId
                 idClient = source.idClient
                 nomClient = source.nomClient
@@ -122,7 +127,7 @@ class _013_Acheteurs : RealmObject {
                 child_14A_HistoriquesDeCetteJour = realmListOf()
                 source.child_14A_HistoriquesDeCetteJour.forEach { sourceProduit ->
                     child_14A_HistoriquesDeCetteJour.add(
-                        _14_HistoriquesTransactionsDeCetteJour.deepCopy(
+                        _14_TransactionStatue.deepCopy(
                             sourceProduit
                         )
                     )
@@ -130,14 +135,14 @@ class _013_Acheteurs : RealmObject {
             }
         }
 
-        fun testData(): List<_013_Acheteurs> {
-            val data = mutableListOf<_013_Acheteurs>()
+        fun testData(): List<_013_ClientTransaction> {
+            val data = mutableListOf<_013_ClientTransaction>()
 
             for (k in 1..5) {
-                val acheteur = _013_Acheteurs().apply {
+                val acheteur = _013_ClientTransaction().apply {
                     idClient = k.toLong()
                     nomClient = "Client $k"
-                    startDesignation = "_013_Acheteurs $k"
+                    startDesignation = "_013_ClientTransaction $k"
                     tempDateCreationStr = "2025_04_20(12:00)"
                     fireBaseKeyID = "${bsonObjectId}->$startDesignation"
                     child_14Produits = realmListOf()

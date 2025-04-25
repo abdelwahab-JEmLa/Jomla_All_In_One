@@ -1,13 +1,13 @@
 package V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Repository
 
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._012_ComptsVendeurs
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._013_Acheteurs
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._013_ClientTransaction
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._015_Produits
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase.Companion.map_01_VentsHistoriquesDataBase
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase.Companion.parsePeriodeFromSnapshot
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase.Companion.test_01_PeriodesVent
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._14_HistoriquesTransactionsDeCetteJour
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._01_PeriodVentHistorique
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._01_PeriodVentHistorique.Companion.map_01_VentsHistoriquesDataBase
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._01_PeriodVentHistorique.Companion.parsePeriodeFromSnapshot
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._01_PeriodVentHistorique.Companion.test_01_PeriodesVent
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._14_TransactionStatue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.firebase.Firebase
@@ -34,14 +34,14 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode: Boolean)
     private val TAG = "_01_PeriodesVent_Repo"
     var idComptDeCeTelephone: String = ""
 
-    override var modelDatasSnapList: SnapshotStateList<_01_VentsHistoriquesDataBase> = mutableStateListOf()
+    override var modelDatasSnapList: SnapshotStateList<_01_PeriodVentHistorique> = mutableStateListOf()
 
     private val _01_HeadRef = Firebase.database.getReference("01_DataPrototype-04-19")
     private val _1_developingRef = _01_HeadRef.child("_1_developingRef")
     private val _2_productionTestRef = _01_HeadRef.child("_2_productionTestRef")
     private val firebaseRef = if (!itsProductionMode)
         _1_developingRef else _2_productionTestRef
-        .child("_01_VentsHistoriquesDataBase")
+        .child("_01_PeriodVentHistorique")
 
     private val _progressRepo = MutableStateFlow(0f)
     override val progressRepo: StateFlow<Float> = _progressRepo
@@ -63,18 +63,18 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode: Boolean)
     private fun createRealm(): Realm {
         val config = RealmConfiguration.create(
             schema = setOf(
-                _01_VentsHistoriquesDataBase::class,
+                _01_PeriodVentHistorique::class,
                 _012_ComptsVendeurs::class,
-                _013_Acheteurs::class,
+                _013_ClientTransaction::class,
                 _015_Produits::class,
-                _14_HistoriquesTransactionsDeCetteJour::class
+                _14_TransactionStatue::class
             )
         )
         return Realm.open(config)
     }
 
     private fun initializeData() {
-        val isRealmEmpty = realm.query<_01_VentsHistoriquesDataBase>().count().find() == 0L
+        val isRealmEmpty = realm.query<_01_PeriodVentHistorique>().count().find() == 0L
 
         if (isRealmEmpty) {
             loadFromFirebase()
@@ -95,8 +95,37 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode: Boolean)
         }
     }
 
-    private fun createTestData(): List<_01_VentsHistoriquesDataBase> {
-        val testPeriodes = mutableListOf<_01_VentsHistoriquesDataBase>()
+
+    override fun getClientTransactionsHistoriques(idClient: Long):
+            List<Pair<_01_PeriodVentHistorique, List<_013_ClientTransaction>>> {
+        val result = mutableListOf<Pair<_01_PeriodVentHistorique, List<_013_ClientTransaction>>>()
+
+        for (period in modelDatasSnapList) {
+            val clientTransactions = mutableListOf<_013_ClientTransaction>()
+
+            // For each period, loop through all vendors
+            for (vendeur in period.child_012_Compts_Vendeurs) {
+                // For each vendor, find transactions of the specified client
+                val transactions = vendeur.child_013_Acheteurs.filter {
+                    it.idClient == idClient
+                }
+
+                // Add all matching transactions to our list
+                clientTransactions.addAll(transactions)
+            }
+
+            // If we found any transactions for this client in this period
+            if (clientTransactions.isNotEmpty()) {
+                // Create a pair with the period and its matching transactions
+                result.add(Pair(period, clientTransactions))
+            }
+        }
+
+        return result
+    }
+
+    private fun createTestData(): List<_01_PeriodVentHistorique> {
+        val testPeriodes = mutableListOf<_01_PeriodVentHistorique>()
 
         for (i in 1..3) {
             test_01_PeriodesVent(i, testPeriodes)
@@ -148,8 +177,8 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode: Boolean)
         }
     }
 
-    private fun parseFirebaseSnapshot(snapshot: DataSnapshot): MutableList<_01_VentsHistoriquesDataBase> {
-        val newPeriodesVente = mutableListOf<_01_VentsHistoriquesDataBase>()
+    private fun parseFirebaseSnapshot(snapshot: DataSnapshot): MutableList<_01_PeriodVentHistorique> {
+        val newPeriodesVente = mutableListOf<_01_PeriodVentHistorique>()
 
         snapshot.children.forEach { periodeSnapshot ->
             parsePeriodeFromSnapshot(periodeSnapshot)?.let {
@@ -161,7 +190,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode: Boolean)
     }
 
     private fun loadFromRealmTOmodelDatasSnapList() {
-        val allPeriodes = realm.query<_01_VentsHistoriquesDataBase>()
+        val allPeriodes = realm.query<_01_PeriodVentHistorique>()
             .sort("dateDebutDeCettePeriode", Sort.DESCENDING)
             .find()
 
@@ -169,7 +198,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode: Boolean)
         _progressRepo.value = 1.0f
     }
 
-    private fun updateModelDatasList(periodes: List<_01_VentsHistoriquesDataBase>) {
+    private fun updateModelDatasList(periodes: List<_01_PeriodVentHistorique>) {
         if (modelUpdateInProgress.getAndSet(true)) return
 
         try {
@@ -191,11 +220,11 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode: Boolean)
                 try {
                     realm.write {
                         // Clear existing data
-                        query<_01_VentsHistoriquesDataBase>().find().also { delete(it) }
+                        query<_01_PeriodVentHistorique>().find().also { delete(it) }
                         query<_012_ComptsVendeurs>().find().also { delete(it) }
-                        query<_013_Acheteurs>().find().also { delete(it) }
+                        query<_013_ClientTransaction>().find().also { delete(it) }
                         query<_015_Produits>().find().also { delete(it) }
-                        query<_14_HistoriquesTransactionsDeCetteJour>().find().also { delete(it) }
+                        query<_14_TransactionStatue>().find().also { delete(it) }
 
                         // Save current data
                         modelDatasSnapList.forEach { periode ->
@@ -256,10 +285,10 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode: Boolean)
             periodeSnapshot.child("vendeurs").children.forEach { vendeurSnapshot ->
                 val vendeurKey = vendeurSnapshot.key ?: return@forEach
 
-                vendeurSnapshot.child("_013_Acheteurs").children.forEach { acheteurSnapshot ->
+                vendeurSnapshot.child("_013_ClientTransaction").children.forEach { acheteurSnapshot ->
                     val acheteurKey = acheteurSnapshot.key ?: return@forEach
 
-                    val acheteur = _013_Acheteurs.parse_13_AcheteursFromSnapshot(acheteurSnapshot) ?: return@forEach
+                    val acheteur = _013_ClientTransaction.parse_13_AcheteursFromSnapshot(acheteurSnapshot) ?: return@forEach
                     val updated = updateAcheteurInModel(periodeKey, vendeurKey, acheteur)
                     if (updated) changesMade = true
 
@@ -272,7 +301,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode: Boolean)
 
                     // Process historiques for this acheteur
                     acheteurSnapshot.child("child_14A_HistoriquesDeCetteJour").children.forEach { historiqueSnapshot ->
-                        val historique = _14_HistoriquesTransactionsDeCetteJour.parseDataFromSnapshot(historiqueSnapshot) ?: return@forEach
+                        val historique = _14_TransactionStatue.parseDataFromSnapshot(historiqueSnapshot) ?: return@forEach
                         val historiqueUpdated = updateHistoriqueInAcheteur(periodeKey, vendeurKey, acheteurKey, historique)
                         if (historiqueUpdated) changesMade = true
                     }
@@ -286,7 +315,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode: Boolean)
     private fun updateAcheteurInModel(
         periodeKey: String,
         vendeurKey: String,
-        acheteur: _013_Acheteurs
+        acheteur: _013_ClientTransaction
     ): Boolean {
         if (modelUpdateInProgress.getAndSet(true)) return false
 
@@ -357,7 +386,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode: Boolean)
         periodeKey: String,
         vendeurKey: String,
         acheteurKey: String,
-        historique: _14_HistoriquesTransactionsDeCetteJour
+        historique: _14_TransactionStatue
     ): Boolean {
         if (modelUpdateInProgress.getAndSet(true)) return false
 
@@ -430,11 +459,11 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode: Boolean)
                 try {
                     realm.write {
                         // Clear existing data
-                        query<_01_VentsHistoriquesDataBase>().find().also { delete(it) }
+                        query<_01_PeriodVentHistorique>().find().also { delete(it) }
                         query<_012_ComptsVendeurs>().find().also { delete(it) }
-                        query<_013_Acheteurs>().find().also { delete(it) }
+                        query<_013_ClientTransaction>().find().also { delete(it) }
                         query<_015_Produits>().find().also { delete(it) }
-                        query<_14_HistoriquesTransactionsDeCetteJour>().find().also { delete(it) }
+                        query<_14_TransactionStatue>().find().also { delete(it) }
 
                         // Save current data
                         modelDatasSnapList.forEach { periode ->
@@ -448,8 +477,8 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode: Boolean)
         }
     }
 
-    private fun createDeepCopyForRealm(source: _01_VentsHistoriquesDataBase): _01_VentsHistoriquesDataBase {
-        val copy = _01_VentsHistoriquesDataBase.deepCopy(source)
+    private fun createDeepCopyForRealm(source: _01_PeriodVentHistorique): _01_PeriodVentHistorique {
+        val copy = _01_PeriodVentHistorique.deepCopy(source)
 
         // Already handled in deepCopy, but keeping for explicitness and safety
         source.child_012_Compts_Vendeurs.forEach { sourceVendeur ->
@@ -457,11 +486,11 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode: Boolean)
 
             // Ensure deep copy of acheteurs and their historiques
             sourceVendeur.child_013_Acheteurs.forEach { sourceAcheteur ->
-                val acheteurCopy = _013_Acheteurs.deepCopy(sourceAcheteur)
+                val acheteurCopy = _013_ClientTransaction.deepCopy(sourceAcheteur)
 
                 // Make sure historiques are properly copied
                 sourceAcheteur.child_14A_HistoriquesDeCetteJour.forEach { sourceHistorique ->
-                    acheteurCopy.child_14A_HistoriquesDeCetteJour.add(_14_HistoriquesTransactionsDeCetteJour.deepCopy(sourceHistorique))
+                    acheteurCopy.child_14A_HistoriquesDeCetteJour.add(_14_TransactionStatue.deepCopy(sourceHistorique))
                 }
 
                 vendeurCopy.child_013_Acheteurs.add(acheteurCopy)
@@ -501,7 +530,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode: Boolean)
     }
 
     override fun upsert_01_PeriodesVentEtReturnItVid(
-        period: _01_VentsHistoriquesDataBase,
+        period: _01_PeriodVentHistorique,
         onSuccess: (Long) -> Unit,
     ) {
         if (modelUpdateInProgress.getAndSet(true)) {

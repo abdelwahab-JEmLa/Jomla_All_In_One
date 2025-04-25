@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment
 
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._14_HistoriquesTransactionsDeCetteJour
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._01_PeriodVentHistorique
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._14_TransactionStatue
 import android.annotation.SuppressLint
 
 data class LastPurchaseInfo(
@@ -10,7 +10,7 @@ data class LastPurchaseInfo(
 )
 
 fun findLastPurchaseInfoForClient(
-    historicalData: List<_01_VentsHistoriquesDataBase>,
+    historicalData: List<_01_PeriodVentHistorique>,
     clientId: Long
 ): LastPurchaseInfo {
     val sortedPeriods = historicalData.sortedByDescending { it.tempCreationStr }
@@ -76,7 +76,7 @@ private fun formatTimeToArabic(timeString: String): String {
 
 fun getClientStateInArabic(
     clientId: Long,
-    historicalData: List<_01_VentsHistoriquesDataBase>
+    historicalData: List<_01_PeriodVentHistorique>
 ): String {
     val sortedPeriods = historicalData.sortedByDescending { it.tempCreationStr }
 
@@ -87,7 +87,7 @@ fun getClientStateInArabic(
             if (clientEntry != null && clientEntry.child_14A_HistoriquesDeCetteJour.isNotEmpty()) {
                 // Sort historical entries by date and time in descending order
                 val sortedHistoricalEntries = clientEntry.child_14A_HistoriquesDeCetteJour.sortedWith(
-                    compareByDescending<_14_HistoriquesTransactionsDeCetteJour> { it.dateCreationStr }
+                    compareByDescending<_14_TransactionStatue> { it.dateCreationStr }
                         .thenByDescending { it.tempCreationStr }
                 )
 
@@ -98,11 +98,11 @@ fun getClientStateInArabic(
             }
         }
     }
-    return _14_HistoriquesTransactionsDeCetteJour.EtateTransaction.NON_DEFINI.nomArabe
+    return _14_TransactionStatue.EtateTransaction.NON_DEFINI.nomArabe
 }
 
 fun findLastPurchaseDayForClient(
-    historicalData: List<_01_VentsHistoriquesDataBase>,
+    historicalData: List<_01_PeriodVentHistorique>,
     clientId: Long
 ): String {
     return findLastPurchaseInfoForClient(historicalData, clientId).dayName

@@ -13,7 +13,8 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
-class _01_VentsHistoriquesDataBase : RealmObject {
+class _01_PeriodVentHistorique : RealmObject {
+
     @PrimaryKey
     var bsonObjectId: ObjectId = ObjectId()
     var tempCreationStr: String = getCurrentDataTimeString()
@@ -40,7 +41,7 @@ class _01_VentsHistoriquesDataBase : RealmObject {
             const val CHILD_VENDEURS = "child_012_Compts_Vendeurs"
         }
 
-        fun parsePeriodeFromSnapshot(snapshot: DataSnapshot): _01_VentsHistoriquesDataBase? {
+        fun parsePeriodeFromSnapshot(snapshot: DataSnapshot): _01_PeriodVentHistorique? {
             val periodeKey = snapshot.key ?: return null
 
             try {
@@ -59,7 +60,7 @@ class _01_VentsHistoriquesDataBase : RealmObject {
                 val idPeriod = snapshot.child(SchemaFields.ID_PERIOD).getValue(Long::class.java) ?: 0L
 
                 // Create and populate the periode object
-                val periode = _01_VentsHistoriquesDataBase().apply {
+                val periode = _01_PeriodVentHistorique().apply {
                     this.bsonObjectId = objectId
                     this.idPeriodDonAncienDataBase = idPeriod
 
@@ -87,7 +88,7 @@ class _01_VentsHistoriquesDataBase : RealmObject {
         }
 
 
-        fun map_01_VentsHistoriquesDataBase(periodes: List<_01_VentsHistoriquesDataBase>): Map<String, Any> {
+        fun map_01_VentsHistoriquesDataBase(periodes: List<_01_PeriodVentHistorique>): Map<String, Any> {
             return periodes.associate { periode ->
                 val validPeriodeKey = periode.fireBaseKeyID
                 validPeriodeKey to mapOf(
@@ -110,17 +111,17 @@ class _01_VentsHistoriquesDataBase : RealmObject {
         }
 
         /**
-         * Generates test data for the _01_VentsHistoriquesDataBase
+         * Generates test data for the _01_PeriodVentHistorique
          */
         fun test_01_PeriodesVent(
             i: Int,
-            testPeriodes: MutableList<_01_VentsHistoriquesDataBase>,
+            testPeriodes: MutableList<_01_PeriodVentHistorique>,
         ) {
             val date = "2025_04_${18 + i}"
             val time = "${10 + i}_00"       // Using underscores instead of colons
             val periodeKey = "${i}_${date}_${time}"  // Firebase-safe key
 
-            val periode = _01_VentsHistoriquesDataBase().apply {
+            val periode = _01_PeriodVentHistorique().apply {
                 idPeriodDonAncienDataBase = i.toLong()
                 fireBaseKeyID = periodeKey
                 tempCreationStr = "$date-<$time"
@@ -139,10 +140,10 @@ class _01_VentsHistoriquesDataBase : RealmObject {
         }
 
         /**
-         * Deep clones a _01_VentsHistoriquesDataBase instance
+         * Deep clones a _01_PeriodVentHistorique instance
          */
-        fun deepCopy(source: _01_VentsHistoriquesDataBase): _01_VentsHistoriquesDataBase {
-            return _01_VentsHistoriquesDataBase().apply {
+        fun deepCopy(source: _01_PeriodVentHistorique): _01_PeriodVentHistorique {
+            return _01_PeriodVentHistorique().apply {
                 bsonObjectId = source.bsonObjectId
                 idPeriodDonAncienDataBase = source.idPeriodDonAncienDataBase
                 fireBaseKeyID = source.fireBaseKeyID

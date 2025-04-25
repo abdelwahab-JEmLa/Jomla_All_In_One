@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID5.Detailes.App.FragID1.VentHistoriques.Fragment.ViewModel
 
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._01_PeriodVentHistorique
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_Repository
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_RepositoryImpl
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -17,9 +17,9 @@ private const val TAG = "PeriodeVenteViewModel"
 // UI State class that contains all UI-related state
 data class PeriodeVenteUiState(
     val isLoading: Boolean = false,
-    val selectedPeriode: _01_VentsHistoriquesDataBase? = null,
+    val selectedPeriode: _01_PeriodVentHistorique? = null,
     val searchQuery: String = "",
-    val filteredPeriodes: List<_01_VentsHistoriquesDataBase> = emptyList(),
+    val filteredPeriodes: List<_01_PeriodVentHistorique> = emptyList(),
     val viewMode: ViewMode = ViewMode.LIST,
     val error: String? = null,
     val isRefreshing: Boolean = false
@@ -37,7 +37,7 @@ class PeriodeVenteViewModel(
     private val repository: _01_VentsHistoriquesDataBase_Repository
 ) : ViewModel() {
     // Direct access to repository data
-    val periodesVente: SnapshotStateList<_01_VentsHistoriquesDataBase> get() = repository.modelDatasSnapList
+    val periodesVente: SnapshotStateList<_01_PeriodVentHistorique> get() = repository.modelDatasSnapList
 
     // Single UI state flow
     private val _uiState = MutableStateFlow(PeriodeVenteUiState())
@@ -122,7 +122,7 @@ class PeriodeVenteViewModel(
     }
 
     // Function to select a period
-    fun selectPeriode(periode: _01_VentsHistoriquesDataBase) {
+    fun selectPeriode(periode: _01_PeriodVentHistorique) {
         _uiState.update { it.copy(
             selectedPeriode = periode,
             viewMode = ViewMode.DETAIL

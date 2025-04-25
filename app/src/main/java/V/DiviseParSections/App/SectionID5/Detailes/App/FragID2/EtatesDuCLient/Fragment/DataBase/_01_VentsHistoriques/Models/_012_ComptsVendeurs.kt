@@ -17,7 +17,7 @@ class _012_ComptsVendeurs : RealmObject {
 
     var fireBaseKeyID: String = "${idCompt}-(${startDesignation})"
 
-    var child_013_Acheteurs: RealmList<_013_Acheteurs> = realmListOf()
+    var child_013_Acheteurs: RealmList<_013_ClientTransaction> = realmListOf()
 
     companion object {
         object SchemaFields {
@@ -36,7 +36,7 @@ class _012_ComptsVendeurs : RealmObject {
                     SchemaFields.BSON_OBJECT_ID to vendeur.bsonObjectId.toString(),
                     SchemaFields.ID_COMPT to vendeur.idCompt,
                     SchemaFields.START_DESIGNATION to vendeur.startDesignation,
-                    SchemaFields.CHILD_ACHETEURS to _013_Acheteurs.mapDatas(vendeur.child_013_Acheteurs)
+                    SchemaFields.CHILD_ACHETEURS to _013_ClientTransaction.mapDatas(vendeur.child_013_Acheteurs)
                 )
             }
         }
@@ -67,7 +67,7 @@ class _012_ComptsVendeurs : RealmObject {
 
                 val acheteursSnapshot = snapshot.child(SchemaFields.CHILD_ACHETEURS)
                 acheteursSnapshot.children.forEach { acheteurSnapshot ->
-                    val acheteur = _013_Acheteurs.parse_13_AcheteursFromSnapshot(acheteurSnapshot)
+                    val acheteur = _013_ClientTransaction.parse_13_AcheteursFromSnapshot(acheteurSnapshot)
                         ?: return@forEach
                     vendeur.child_013_Acheteurs.add(acheteur)
                 }
@@ -86,7 +86,7 @@ class _012_ComptsVendeurs : RealmObject {
                 child_013_Acheteurs = realmListOf()
 
                 // Create and add acheteurs
-                val acheteursList = _013_Acheteurs.testData()
+                val acheteursList = _013_ClientTransaction.testData()
                 acheteursList.forEach { acheteur ->
                     child_013_Acheteurs.add(acheteur)
                 }
@@ -103,7 +103,7 @@ class _012_ComptsVendeurs : RealmObject {
                 // Deep copy acheteurs
                 child_013_Acheteurs = realmListOf()
                 source.child_013_Acheteurs.forEach { sourceAcheteur ->
-                    child_013_Acheteurs.add(_013_Acheteurs.deepCopy(sourceAcheteur))
+                    child_013_Acheteurs.add(_013_ClientTransaction.deepCopy(sourceAcheteur))
                 }
             }
         }

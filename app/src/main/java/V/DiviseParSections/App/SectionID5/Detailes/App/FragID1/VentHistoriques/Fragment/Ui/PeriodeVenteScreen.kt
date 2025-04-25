@@ -1,9 +1,9 @@
 package V.DiviseParSections.App.SectionID5.Detailes.App.FragID1.VentHistoriques.Fragment.Ui
 
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._012_ComptsVendeurs
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._013_Acheteurs
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._013_ClientTransaction
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._015_Produits
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._01_PeriodVentHistorique
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID1.VentHistoriques.Fragment.ViewModel.PeriodeVenteViewModel
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID1.VentHistoriques.Fragment.ViewModel.ViewMode
 import androidx.compose.animation.AnimatedVisibility
@@ -198,7 +198,7 @@ fun PeriodeVenteScreen(
 
 @Composable
 fun PeriodeListItem(
-    periode: _01_VentsHistoriquesDataBase,
+    periode: _01_PeriodVentHistorique,
     onClick: () -> Unit
 ) {
     Card(
@@ -246,7 +246,7 @@ fun PeriodeListItem(
 
 @Composable
 fun PeriodeDetailScreen(
-    periode: _01_VentsHistoriquesDataBase,
+    periode: _01_PeriodVentHistorique,
     onBack: () -> Unit
 ) {
     Column(
@@ -358,7 +358,7 @@ fun VendeurItem(vendeur: _012_ComptsVendeurs) {
 }
 
 @Composable
-fun AcheteurItem(acheteur: _013_Acheteurs) {
+fun AcheteurItem(acheteur: _013_ClientTransaction) {
     var expanded by remember { mutableStateOf(false) }
 
     Surface(

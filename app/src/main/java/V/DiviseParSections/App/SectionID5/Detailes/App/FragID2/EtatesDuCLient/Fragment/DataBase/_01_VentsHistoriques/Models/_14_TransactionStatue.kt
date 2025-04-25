@@ -10,7 +10,7 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
-class _14_HistoriquesTransactionsDeCetteJour : RealmObject {
+class _14_TransactionStatue : RealmObject {
     @PrimaryKey
     var bsonObjectId: ObjectId = BsonObjectId()
 
@@ -54,7 +54,7 @@ class _14_HistoriquesTransactionsDeCetteJour : RealmObject {
             const val DESCRIPTION = "description"
         }
 
-        fun mapDatas(datas: List<_14_HistoriquesTransactionsDeCetteJour>): Map<String, Any> {
+        fun mapDatas(datas: List<_14_TransactionStatue>): Map<String, Any> {
             return datas.associate { data ->
                 data.fireBaseKeyID to mapOf(
                     SchemaFields.BSON_OBJECT_ID to data.bsonObjectId.toString(),
@@ -66,7 +66,7 @@ class _14_HistoriquesTransactionsDeCetteJour : RealmObject {
             }
         }
 
-        fun parseDataFromSnapshot(snapshot: DataSnapshot): _14_HistoriquesTransactionsDeCetteJour? {
+        fun parseDataFromSnapshot(snapshot: DataSnapshot): _14_TransactionStatue? {
             val historiqueKey = snapshot.key ?: return null
 
             try {
@@ -82,7 +82,7 @@ class _14_HistoriquesTransactionsDeCetteJour : RealmObject {
                     BsonObjectId()
                 }
 
-                return _14_HistoriquesTransactionsDeCetteJour().apply {
+                return _14_TransactionStatue().apply {
                     fireBaseKeyID = historiqueKey
                     this.bsonObjectId = objectId
                     dateCreationStr = snapshot.child(SchemaFields.DATE_CREATION).getValue(String::class.java) ?: getCurrentDateString()
@@ -95,8 +95,8 @@ class _14_HistoriquesTransactionsDeCetteJour : RealmObject {
             }
         }
 
-        fun deepCopy(source: _14_HistoriquesTransactionsDeCetteJour): _14_HistoriquesTransactionsDeCetteJour {
-            return _14_HistoriquesTransactionsDeCetteJour().apply {
+        fun deepCopy(source: _14_TransactionStatue): _14_TransactionStatue {
+            return _14_TransactionStatue().apply {
                 this.bsonObjectId = source.bsonObjectId
                 dateCreationStr = source.dateCreationStr
                 tempCreationStr = source.tempCreationStr

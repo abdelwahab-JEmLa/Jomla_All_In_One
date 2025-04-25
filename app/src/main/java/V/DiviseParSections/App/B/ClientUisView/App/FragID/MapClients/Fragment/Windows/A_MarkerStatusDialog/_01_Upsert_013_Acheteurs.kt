@@ -1,10 +1,10 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog
 
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._012_ComptsVendeurs
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._013_Acheteurs
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._01_VentsHistoriquesDataBase.Companion.parse_fireBaseKeyID
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._14_HistoriquesTransactionsDeCetteJour
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._013_ClientTransaction
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._01_PeriodVentHistorique
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._01_PeriodVentHistorique.Companion.parse_fireBaseKeyID
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Models._14_TransactionStatue
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_Repository
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import io.realm.kotlin.ext.realmListOf
@@ -12,7 +12,7 @@ import io.realm.kotlin.ext.realmListOf
 fun _01_Upsert_013_Acheteurs(
     repositorysModel: _0_0_HeadOfRepositorys_Model,
     clientId: Long,
-    historiqueState: _14_HistoriquesTransactionsDeCetteJour.EtateTransaction= _14_HistoriquesTransactionsDeCetteJour.EtateTransaction.ACHAT_TERMINE,
+    historiqueState: _14_TransactionStatue.EtateTransaction= _14_TransactionStatue.EtateTransaction.ACHAT_TERMINE,
     nom: String,
     repo_01_VentsHistoriquesDataBase: _01_VentsHistoriquesDataBase_Repository,
 ) {
@@ -30,10 +30,10 @@ fun _01_Upsert_013_Acheteurs(
 
     if (period == null) {
         // Create new period and add it to the repository
-        period = _01_VentsHistoriquesDataBase().apply {
+        period = _01_PeriodVentHistorique().apply {
             idPeriodDonAncienDataBase = ceComptVendeurInsertBonsAchatAuPeriodID ?: 0L
 
-            val currentDateTime = _01_VentsHistoriquesDataBase.getCurrentDataTimeString()
+            val currentDateTime = _01_PeriodVentHistorique.getCurrentDataTimeString()
 
             tempCreationStr = currentDateTime
             // Update keyID with proper format
@@ -66,19 +66,19 @@ fun _01_Upsert_013_Acheteurs(
     }
 
     // Create new historical entry
-    val newHistorique = _14_HistoriquesTransactionsDeCetteJour().apply {
+    val newHistorique = _14_TransactionStatue().apply {
         etateTransaction = historiqueState
-        description = "État mis à jour à ${_14_HistoriquesTransactionsDeCetteJour.getCurrentTimeString()}"
+        description = "État mis à jour à ${_14_TransactionStatue.getCurrentTimeString()}"
         fireBaseKeyID = "${etateTransaction.name}->(${dateCreationStr}${tempCreationStr})"
     }
 
     if (acheteur == null) {
         // Create new acheteur with the historical entry
-        acheteur = _013_Acheteurs().apply {
+        acheteur = _013_ClientTransaction().apply {
             idClient = clientId
             nomClient = nom
             startDesignation = "client $idClient"
-            tempDateCreationStr = _01_VentsHistoriquesDataBase.getCurrentDataTimeString()
+            tempDateCreationStr = _01_PeriodVentHistorique.getCurrentDataTimeString()
             fireBaseKeyID = parse_fireBaseKeyID(idClient)
             child_14Produits = realmListOf()
             child_14A_HistoriquesDeCetteJour = realmListOf(newHistorique)
@@ -86,7 +86,7 @@ fun _01_Upsert_013_Acheteurs(
         vendeur.child_013_Acheteurs.add(acheteur)
     } else {
         // Update existing acheteur and add the new historical entry
-        acheteur.tempDateCreationStr = _01_VentsHistoriquesDataBase.getCurrentDataTimeString()
+        acheteur.tempDateCreationStr = _01_PeriodVentHistorique.getCurrentDataTimeString()
         acheteur.nomClient = nom
 
         // Add new historical entry to existing acheteur
