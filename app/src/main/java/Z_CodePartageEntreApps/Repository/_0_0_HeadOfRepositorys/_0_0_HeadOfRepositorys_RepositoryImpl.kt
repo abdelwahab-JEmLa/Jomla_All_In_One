@@ -271,9 +271,15 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
             else -> data // Fallback to original object if not a known data class
         }
 
+        // Access the vid field with proper accessibility
+        val vidField = dataToUpsert.javaClass.getDeclaredField("vid").apply {
+            isAccessible = true  // Make field accessible
+        }
+
+        val currentVid = vidField.getLong(dataToUpsert)
+
         val vid = when {
-            ((dataToUpsert as? Any)?.javaClass?.getDeclaredField("vid")?.get(dataToUpsert) as? Long
-                ?: 0L) > 0 -> {
+            currentVid > 0 -> {
                 // Update existing data
                 when (databaseDao) {
                     is _1_3_TransactionCommercialDao -> databaseDao.insert(dataToUpsert as _1_3_TransactionCommercial)
@@ -282,9 +288,8 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
 
                 withContext(Dispatchers.Main) {
                     val index = snapshotList.indexOfFirst {
-                        (it as? Any)?.javaClass?.getDeclaredField("vid")?.get(it) ==
-                                (dataToUpsert as? Any)?.javaClass?.getDeclaredField("vid")
-                                    ?.get(dataToUpsert)
+                        val itemVidField = it.javaClass.getDeclaredField("vid").apply { isAccessible = true }
+                        itemVidField.getLong(it) == currentVid
                     }
                     if (index >= 0) {
                         snapshotList[index] = dataToUpsert
@@ -298,8 +303,7 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                     .setValue(dataToUpsert).await()
 
                 // Return existing vid
-                (dataToUpsert as? Any)?.javaClass?.getDeclaredField("vid")
-                    ?.get(dataToUpsert) as? Long ?: -1L
+                currentVid
             }
 
             else -> {
@@ -316,11 +320,8 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                     else -> -1L
                 }
 
-                // Set the new vid on the object
-                dataToUpsert.javaClass.getDeclaredField("vid").apply {
-                    isAccessible = true
-                    set(dataToUpsert, newVid)
-                }
+                // Set the new vid on the object with proper accessibility
+                vidField.set(dataToUpsert, newVid)
 
                 withContext(Dispatchers.Main) {
                     snapshotList.add(dataToUpsert)
