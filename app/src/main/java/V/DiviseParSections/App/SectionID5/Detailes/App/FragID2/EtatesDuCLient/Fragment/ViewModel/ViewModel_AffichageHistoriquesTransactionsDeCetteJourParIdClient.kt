@@ -21,7 +21,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-private const val TAG = "SecID5FragID2ViewModel"
+private const val TAG = "ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient"
 
 data class SecID5FragID2UiState(
     val sl_1_4_PeriodeVent: SnapshotStateList<_1_4_PeriodeVent> = SnapshotStateList(),
@@ -32,7 +32,7 @@ data class SecID5FragID2UiState(
     List<Pair<_1_4_PeriodeVent, List<_1_3_TransactionCommercial>>> = emptyList(),
 )
 
-class SecID5FragID2ViewModel(
+class ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
     private val r_0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository,
 ) : ViewModel() {
 
