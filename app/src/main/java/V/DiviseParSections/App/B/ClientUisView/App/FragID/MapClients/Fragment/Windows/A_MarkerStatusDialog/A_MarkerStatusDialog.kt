@@ -5,16 +5,18 @@ import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fr
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.View.A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -39,7 +41,6 @@ import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import org.osmdroid.views.overlay.Marker
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun MarkerStatusDialog(
     viewModel: ViewModel_MapClients_App2FragID1,
@@ -198,9 +199,6 @@ fun MarkerStatusDialog(
                 }
 
                 item {
-                    // Replace the LazyVerticalGrid with a FlowRow layout
-// In the card where you define the LazyVerticalGrid:
-
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -212,51 +210,52 @@ fun MarkerStatusDialog(
                                 .fillMaxWidth()
                                 .padding(16.dp)
                         ) {
-                            // Replace LazyVerticalGrid with FlowRow
-                            FlowRow(
-                                modifier = Modifier.fillMaxWidth(),
+                            // Use a LazyVerticalGrid with 2 columns
+                            LazyVerticalGrid(
+                                columns = GridCells.Fixed(2),
+                                contentPadding = PaddingValues(vertical = 4.dp),
+                                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                verticalArrangement = Arrangement.spacedBy(4.dp),
+                                modifier = Modifier.fillMaxWidth()
+                                    .heightIn(max = 600.dp)
                             ) {
-                                // CommandButton with modifier for size
-                                CommandButton(
-                                    modifier = Modifier
-                                        .weight(0.5f)
-                                        .height(60.dp),
-                                    relatedClients = relatedClients,
-                                    coroutineScope = coroutineScope,
-                                    existingBonAchat = existingBonAchat,
-                                    repositorysModel = repositorysModel,
-                                    clientId = clientId,
-                                    ceComptVendeurInsertBonsAchatAuPeriodID = ceComptVendeurInsertBonsAchatAuPeriodID,
-                                    selectedMarker = selectedMarker,
-                                    viewModel = viewModel,
-                                    onUpdateLongAppSetting = onUpdateLongAppSetting,
-                                    onDismiss = onDismiss,
-                                    context = context,
-                                    initetateActuellementEst1 = _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
-                                    cJustPourVoirPanie = true,
-                                )
+                                item {
+                                    CommandButton(
+                                        modifier = Modifier.height(60.dp),
+                                        relatedClients = relatedClients,
+                                        coroutineScope = coroutineScope,
+                                        existingBonAchat = existingBonAchat,
+                                        repositorysModel = repositorysModel,
+                                        clientId = clientId,
+                                        ceComptVendeurInsertBonsAchatAuPeriodID = ceComptVendeurInsertBonsAchatAuPeriodID,
+                                        selectedMarker = selectedMarker,
+                                        viewModel = viewModel,
+                                        onUpdateLongAppSetting = onUpdateLongAppSetting,
+                                        onDismiss = onDismiss,
+                                        context = context,
+                                        initetateActuellementEst1 = _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
+                                        cJustPourVoirPanie = true,
+                                    )
+                                }
 
-                                // Add other buttons with the same pattern
-                                CommandButton(
-                                    modifier = Modifier
-                                        .weight(0.5f)
-                                        .height(60.dp),
-                                    relatedClients = relatedClients,
-                                    coroutineScope = coroutineScope,
-                                    existingBonAchat = existingBonAchat,
-                                    repositorysModel = repositorysModel,
-                                    clientId = clientId,
-                                    ceComptVendeurInsertBonsAchatAuPeriodID = ceComptVendeurInsertBonsAchatAuPeriodID,
-                                    selectedMarker = selectedMarker,
-                                    viewModel = viewModel,
-                                    onUpdateLongAppSetting = onUpdateLongAppSetting,
-                                    onDismiss = onDismiss,
-                                    context = context,
-                                    initetateActuellementEst1 = _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
-                                )
-
-                                // Status buttons
-                                Box(modifier = Modifier.weight(0.5f)) {
+                                item {
+                                    CommandButton(
+                                        modifier = Modifier.height(60.dp),
+                                        relatedClients = relatedClients,
+                                        coroutineScope = coroutineScope,
+                                        existingBonAchat = existingBonAchat,
+                                        repositorysModel = repositorysModel,
+                                        clientId = clientId,
+                                        ceComptVendeurInsertBonsAchatAuPeriodID = ceComptVendeurInsertBonsAchatAuPeriodID,
+                                        selectedMarker = selectedMarker,
+                                        viewModel = viewModel,
+                                        onUpdateLongAppSetting = onUpdateLongAppSetting,
+                                        onDismiss = onDismiss,
+                                        context = context,
+                                        initetateActuellementEst1 = _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
+                                    )
+                                }
+                                item {
                                     _1_3_TransactionCommercial.EtateActuellementEst.AVEC_MARCHANDISE
                                         .Button(
                                             coroutineScope = coroutineScope,
@@ -265,8 +264,7 @@ fun MarkerStatusDialog(
                                             context = context
                                         )
                                 }
-
-                                Box(modifier = Modifier.weight(0.5f)) {
+                                item {
                                     _1_3_TransactionCommercial.EtateActuellementEst.FERME
                                         .Button(
                                             coroutineScope = coroutineScope,
@@ -275,8 +273,7 @@ fun MarkerStatusDialog(
                                             context = context
                                         )
                                 }
-
-                                Box(modifier = Modifier.weight(0.5f)) {
+                                item {
                                     _1_3_TransactionCommercial.EtateActuellementEst.ACHETEUR_NON_DISPO
                                         .Button(
                                             coroutineScope = coroutineScope,
@@ -285,9 +282,8 @@ fun MarkerStatusDialog(
                                             context = context
                                         )
                                 }
-
                                 if (ceTelephoneEstDeAbdelwahab) {
-                                    Box(modifier = Modifier.weight(0.5f)) {
+                                    item {
                                         _1_3_TransactionCommercial.EtateActuellementEst.Cible
                                             .Button(
                                                 coroutineScope = coroutineScope,
@@ -296,8 +292,7 @@ fun MarkerStatusDialog(
                                                 context = context
                                             )
                                     }
-
-                                    Box(modifier = Modifier.weight(0.5f)) {
+                                    item {
                                         _1_3_TransactionCommercial.EtateActuellementEst.CIBLE_POUR_2
                                             .Button(
                                                 coroutineScope = coroutineScope,
