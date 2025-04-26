@@ -1,0 +1,11 @@
+package V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Preview
+
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.View.A_MainAffichageHistoriquesTransactionsDeCetteJourParIdClient
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
+
+@Preview
+@Composable
+private fun AffichageHistoriquesTransactionsDeCetteJourParIdClientPRV() {
+    A_MainAffichageHistoriquesTransactionsDeCetteJourParIdClient()
+}
