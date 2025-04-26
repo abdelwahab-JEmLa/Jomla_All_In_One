@@ -1,10 +1,10 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_3_TransactionCommercial
 import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._14_TransactionStatue
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_3_TransactionCommercial
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.util.Log
 import androidx.compose.foundation.background
@@ -66,9 +66,9 @@ fun MarkerStatusDialog(
     onRemoveMark: (Marker?) -> Unit,
     _0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository = koinInject(),
 ) {
-    val ceTelephoneEstDeAbdelwahab =_0_0_HeadOfRepositorys_Repository
+    val ceTelephoneEstDeAbdelwahab = _0_0_HeadOfRepositorys_Repository
         .repositorys_Model
-        .activeIdDe_1_5_Vendeur  == 2L
+        .activeIdDe_1_5_Vendeur == 2L
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     var showEditDialog by remember { mutableStateOf(false) }
@@ -187,7 +187,7 @@ fun MarkerStatusDialog(
                 ) {
                     Column {
                         Text(
-                            text = selectedMarker.title ?: "Client",
+                            text = relatedClients?.nom ?: "Client",
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold
                         )
@@ -203,19 +203,9 @@ fun MarkerStatusDialog(
                     }
                 }
 
-                StatusButton(
-                    text = "Mode Commande",
-                    icon = Icons.Default.ShoppingCart,
-                    color = Color(
-                        ContextCompat.getColor(
-                            context,
-                            B_ClientDataBase.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT.color
-                        )
-                    ),
+                FilledTonalButton(
                     onClick = {
                         coroutineScope.launch {
-
-
                             if (existingBonAchat != null) {
                                 // Update the existing BonAchat
                                 val updatedBonAchat = existingBonAchat.copy(
@@ -267,22 +257,40 @@ fun MarkerStatusDialog(
                             )
                             //----------------------------------------------------------------------------------------/
                         }
-                    }
-                )
-
-
-                val ACHETEUR_NON_DISPO =
-                    B_ClientDataBase.DernierEtatAAffiche.ACHETEUR_NON_DISPO
-
-                StatusButton(
-                    text = ACHETEUR_NON_DISPO.nomArabe,
-                    icon = Icons.Default.Person,
-                    color = Color(
-                        ContextCompat.getColor(
-                            context,
-                            ACHETEUR_NON_DISPO.color
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.filledTonalButtonColors(
+                        containerColor = Color(
+                            ContextCompat.getColor(
+                                context,
+                                B_ClientDataBase.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT.color
+                            )
+                        ).copy(alpha = 0.2f),
+                        contentColor = Color(
+                            ContextCompat.getColor(
+                                context,
+                                B_ClientDataBase.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT.color
+                            )
                         )
-                    ),
+                    )
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ShoppingCart,
+                            contentDescription = "Mode Commande",
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
+                        Text("Mode Commande")
+                    }
+                }
+
+// Second StatusButton replacement (ACHETEUR_NON_DISPO)
+                val ACHETEUR_NON_DISPO = B_ClientDataBase.DernierEtatAAffiche.ACHETEUR_NON_DISPO
+                FilledTonalButton(
                     onClick = {
                         coroutineScope.launch {
                             Log.d(
@@ -303,22 +311,42 @@ fun MarkerStatusDialog(
                             )
                             //----------------------------------------------------------------------------------------/
                         }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.filledTonalButtonColors(
+                        containerColor = Color(
+                            ContextCompat.getColor(
+                                context,
+                                ACHETEUR_NON_DISPO.color
+                            )
+                        ).copy(alpha = 0.2f),
+                        contentColor = Color(
+                            ContextCompat.getColor(
+                                context,
+                                ACHETEUR_NON_DISPO.color
+                            )
+                        )
+                    )
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = ACHETEUR_NON_DISPO.nomArabe,
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
+                        Text(ACHETEUR_NON_DISPO.nomArabe)
                     }
-                )
+                }
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                val AVEC_MARCHANDISE =
-                    B_ClientDataBase.DernierEtatAAffiche.AVEC_MARCHANDISE
-                StatusButton(
-                    text = AVEC_MARCHANDISE.nomArabe,
-                    icon = Icons.Default.Person,
-                    color = Color(
-                        ContextCompat.getColor(
-                            context,
-                            AVEC_MARCHANDISE.color
-                        )
-                    ),
+// Third StatusButton replacement (AVEC_MARCHANDISE)
+                val AVEC_MARCHANDISE = B_ClientDataBase.DernierEtatAAffiche.AVEC_MARCHANDISE
+                FilledTonalButton(
                     onClick = {
                         coroutineScope.launch {
                             relatedClients?.actuelleEtat = AVEC_MARCHANDISE
@@ -334,22 +362,41 @@ fun MarkerStatusDialog(
                             viewModel.repo_01_VentsHistoriquesDataBase
                         )
                         //----------------------------------------------------------------------------------------/
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.filledTonalButtonColors(
+                        containerColor = Color(
+                            ContextCompat.getColor(
+                                context,
+                                AVEC_MARCHANDISE.color
+                            )
+                        ).copy(alpha = 0.2f),
+                        contentColor = Color(
+                            ContextCompat.getColor(
+                                context,
+                                AVEC_MARCHANDISE.color
+                            )
+                        )
+                    )
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = AVEC_MARCHANDISE.nomArabe,
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
+                        Text(AVEC_MARCHANDISE.nomArabe)
                     }
-                )
+                }
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                val FERME =
-                    B_ClientDataBase.DernierEtatAAffiche.FERME
-                StatusButton(
-                    text = FERME.nomArabe,
-                    icon = Icons.Default.Person,
-                    color = Color(
-                        ContextCompat.getColor(
-                            context,
-                            FERME.color
-                        )
-                    ),
+                val FERME = B_ClientDataBase.DernierEtatAAffiche.FERME
+                FilledTonalButton(
                     onClick = {
                         coroutineScope.launch {
                             relatedClients?.actuelleEtat = FERME
@@ -365,107 +412,203 @@ fun MarkerStatusDialog(
                             viewModel.repo_01_VentsHistoriquesDataBase
                         )
                         //----------------------------------------------------------------------------------------/
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.filledTonalButtonColors(
+                        containerColor = Color(
+                            ContextCompat.getColor(
+                                context,
+                                FERME.color
+                            )
+                        ).copy(alpha = 0.2f),
+                        contentColor = Color(
+                            ContextCompat.getColor(
+                                context,
+                                FERME.color
+                            )
+                        )
+                    )
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = FERME.nomArabe,
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
+                        Text(FERME.nomArabe)
                     }
-                )
+                }
 
                 if (ceTelephoneEstDeAbdelwahab) {
                     Spacer(modifier = Modifier.height(16.dp))
 
+                    // Cible button
                     val Cible = B_ClientDataBase.DernierEtatAAffiche.Cible
-                    StatusButton(
-                        text = Cible.nomArabe,
-                        icon = Icons.Default.Person,
-                        color = Color(
-                            ContextCompat.getColor(
-                                context,
-                                Cible.color
-                            )
-                        ),
+                    FilledTonalButton(
                         onClick = {
                             coroutineScope.launch {
                                 relatedClients?.actuelleEtat = Cible
                                 viewModel.updateData(relatedClients!!)
-
                                 onDismiss()
                             }
-                        }
-                    )
-
-                    val CIBLE_PRIORITE_2 =
-                        B_ClientDataBase.DernierEtatAAffiche.CIBLE_PRIORITE_2
-
-                    StatusButton(
-                        text = CIBLE_PRIORITE_2.nomArabe,
-                        icon = Icons.Default.Person,
-                        color = Color(
-                            ContextCompat.getColor(
-                                context,
-                                CIBLE_PRIORITE_2.color
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.filledTonalButtonColors(
+                            containerColor = Color(
+                                ContextCompat.getColor(
+                                    context,
+                                    Cible.color
+                                )
+                            ).copy(alpha = 0.2f),
+                            contentColor = Color(
+                                ContextCompat.getColor(
+                                    context,
+                                    Cible.color
+                                )
                             )
-                        ),
+                        )
+                    ) {
+                        Row(
+                            horizontalArrangement = Arrangement.Start,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = Cible.nomArabe,
+                                modifier = Modifier.padding(end = 8.dp)
+                            )
+                            Text(Cible.nomArabe)
+                        }
+                    }
+
+                    // CIBLE_PRIORITE_2 button
+                    val CIBLE_PRIORITE_2 = B_ClientDataBase.DernierEtatAAffiche.CIBLE_PRIORITE_2
+                    FilledTonalButton(
                         onClick = {
                             coroutineScope.launch {
-
                                 relatedClients?.actuelleEtat = CIBLE_PRIORITE_2
-
                                 viewModel.updateData(relatedClients!!)
-
                                 onDismiss()
                             }
-                        }
-                    )
-
-                    val CIBLE_POUR_2 =
-                        B_ClientDataBase.DernierEtatAAffiche.CIBLE_POUR_2
-
-                    StatusButton(
-                        text = CIBLE_POUR_2.nomArabe,
-                        icon = Icons.Default.Person,
-                        color = Color(
-                            ContextCompat.getColor(
-                                context,
-                                CIBLE_POUR_2.color
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.filledTonalButtonColors(
+                            containerColor = Color(
+                                ContextCompat.getColor(
+                                    context,
+                                    CIBLE_PRIORITE_2.color
+                                )
+                            ).copy(alpha = 0.2f),
+                            contentColor = Color(
+                                ContextCompat.getColor(
+                                    context,
+                                    CIBLE_PRIORITE_2.color
+                                )
                             )
-                        ),
+                        )
+                    ) {
+                        Row(
+                            horizontalArrangement = Arrangement.Start,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = CIBLE_PRIORITE_2.nomArabe,
+                                modifier = Modifier.padding(end = 8.dp)
+                            )
+                            Text(CIBLE_PRIORITE_2.nomArabe)
+                        }
+                    }
+
+                    // CIBLE_POUR_2 button
+                    val CIBLE_POUR_2 = B_ClientDataBase.DernierEtatAAffiche.CIBLE_POUR_2
+                    FilledTonalButton(
                         onClick = {
                             coroutineScope.launch {
-
                                 relatedClients?.actuelleEtat = CIBLE_POUR_2
-
                                 viewModel.updateData(relatedClients!!)
-
                                 onDismiss()
                             }
-                        }
-                    )
-
-
-                    val A_EVITE =
-                        B_ClientDataBase.DernierEtatAAffiche.A_EVITE
-
-                    StatusButton(
-                        text = A_EVITE.nomArabe,
-                        icon = Icons.Default.Person,
-                        color = Color(
-                            ContextCompat.getColor(
-                                context,
-                                A_EVITE.color
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.filledTonalButtonColors(
+                            containerColor = Color(
+                                ContextCompat.getColor(
+                                    context,
+                                    CIBLE_POUR_2.color
+                                )
+                            ).copy(alpha = 0.2f),
+                            contentColor = Color(
+                                ContextCompat.getColor(
+                                    context,
+                                    CIBLE_POUR_2.color
+                                )
                             )
-                        ),
+                        )
+                    ) {
+                        Row(
+                            horizontalArrangement = Arrangement.Start,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = CIBLE_POUR_2.nomArabe,
+                                modifier = Modifier.padding(end = 8.dp)
+                            )
+                            Text(CIBLE_POUR_2.nomArabe)
+                        }
+                    }
+
+                    // A_EVITE button
+                    val A_EVITE = B_ClientDataBase.DernierEtatAAffiche.A_EVITE
+                    FilledTonalButton(
                         onClick = {
                             coroutineScope.launch {
-
                                 relatedClients?.actuelleEtat = A_EVITE
-
                                 viewModel.updateData(relatedClients!!)
-
                                 onDismiss()
                             }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.filledTonalButtonColors(
+                            containerColor = Color(
+                                ContextCompat.getColor(
+                                    context,
+                                    A_EVITE.color
+                                )
+                            ).copy(alpha = 0.2f),
+                            contentColor = Color(
+                                ContextCompat.getColor(
+                                    context,
+                                    A_EVITE.color
+                                )
+                            )
+                        )
+                    ) {
+                        Row(
+                            horizontalArrangement = Arrangement.Start,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = A_EVITE.nomArabe,
+                                modifier = Modifier.padding(end = 8.dp)
+                            )
+                            Text(A_EVITE.nomArabe)
                         }
-                    )
+                    }
                 }
             }
         }
+
     }
 
     if (showEditDialog) {
@@ -582,35 +725,5 @@ fun MarkerStatusDialog(
                 }
             }
         )
-    }
-}
-
-@Composable
-fun StatusButton(
-    text: String,
-    icon: ImageVector,
-    color: Color,
-    onClick: () -> Unit,
-) {
-    FilledTonalButton(
-        onClick = onClick,
-        modifier = Modifier.fillMaxWidth(),
-        colors = ButtonDefaults.filledTonalButtonColors(
-            containerColor = color.copy(alpha = 0.2f),
-            contentColor = color
-        )
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.Start,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = text,
-                modifier = Modifier.padding(end = 8.dp)
-            )
-            Text(text)
-        }
     }
 }
