@@ -25,8 +25,9 @@ data class _1_3_TransactionCommercial(
     var heurFinInString: String = "Non Defini",
 
     // Section StatuesMutable
+
     var etateActuellementEst: EtateActuellementEst =
-        EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
+        EtateActuellementEst.NON_DEFINI,
 ) {
     // Generate Firebase key automatically based on properties
     val fireBaseKeyID_1_3_TransactionCommercial: String
@@ -36,6 +37,7 @@ data class _1_3_TransactionCommercial(
     enum class EtateActuellementEst(val color: Int, val nomArabe: String) {
         NON_DEFINI(android.R.color.white, "غير محدد"),
         ON_MODE_COMMEND_ACTUELLEMENT(android.R.color.holo_green_light, "في طلب"),
+        ON_MODE_VOIRE_PANIE_ARTICLES(android.R.color.holo_blue_dark, "في معاينة السلة"),
         A_COMMANDE_CONFIRME(android.R.color.holo_purple, "تم البيع له"),
         AVEC_MARCHANDISE(android.R.color.holo_blue_light, "عندو سلعة"),
         A_EVITE(android.R.color.black, "يتجنب"),

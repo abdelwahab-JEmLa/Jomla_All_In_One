@@ -1,11 +1,11 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views
 
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_2_ProduitAcheteOperation
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_3_TransactionCommercial
 import Z_CodePartageEntreApps.Proto.B.ParSections.Fragment.A.AchatsManager.App._1.Shared.Views.LoadingContent
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_2_ProduitAcheteOperation
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_3_TransactionCommercial
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,7 +26,7 @@ import java.text.NumberFormat
 import java.util.Locale
 
 @Composable
-fun A_MainScreen_APP2_ID_2(
+fun A_MainScreen_APP2_ID_2PanierFinaleDAchat(
     modifier: Modifier = Modifier,
     onConfirmOrder: () -> Unit,
     _0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository = koinInject(),
@@ -77,7 +77,11 @@ fun A_MainScreen_APP2_ID_2(
 
     // Check if the BonAchat is in COMMANDE_LENCE state
     val isOrderMode =
-        relativeBonAchate?.etateActuellementEst == _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+        relativeBonAchate?.etateActuellementEst ==
+                _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+                ||       relativeBonAchate?.etateActuellementEst ==
+                _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_VOIRE_PANIE_ARTICLES
+
 
     Box(modifier = modifier.fillMaxSize()) {
         Column(
@@ -125,7 +129,7 @@ fun A_MainScreen_APP2_ID_2(
                                     .repositorys_Model,
                                 onQuantitySelected = {
                                 },
-                                // FIX: In A_MainScreen_APP2_ID_2.kt - properly upsert_1_3_TransactionCommercial totalPrice when price changes
+                                // FIX: In A_MainScreen_APP2_ID_2PanierFinaleDAchat.kt - properly upsert_1_3_TransactionCommercial totalPrice when price changes
                                 onDoneupdatePrice = { colorOperations ->
                                     _0_HeadOfRepositorys_Repository_Model._1_1_CouleurAcheteOperation_Repository.notifyDataChanged()
                                 }

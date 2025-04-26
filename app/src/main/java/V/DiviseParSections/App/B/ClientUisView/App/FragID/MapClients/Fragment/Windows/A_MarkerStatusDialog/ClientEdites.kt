@@ -1,7 +1,9 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_3_TransactionCommercial
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,7 +25,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.osmdroid.views.overlay.Marker
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun ClientEdites(
@@ -40,7 +47,12 @@ fun ClientEdites(
     onClientTypeModeChange: (B_ClientDataBase.ClientTypeMode?) -> Unit = {},
     onShowEditDialogChange: (Boolean) -> Unit = {},
     onShowPhoneDialogChange: (Boolean) -> Unit = {},
-    onUpdateLongAppSetting: () -> Unit = {}
+    onUpdateLongAppSetting: () -> Unit = {},
+    coroutineScope: CoroutineScope,
+    existingBonAchat: _1_3_TransactionCommercial?,
+    repositorysModel: _0_0_HeadOfRepositorys_Model,
+    clientId: Long,
+    ceComptVendeurInsertBonsAchatAuPeriodID: Long?,
 ) {
     Row(
         modifier = Modifier
@@ -80,10 +92,48 @@ fun ClientEdites(
             modifier = Modifier
                 .padding(end = 8.dp)
                 .clickable {
-                    val selectedMarkedID = selectedMarker.id.toLong()
-                    viewModel.updateLongAppSetting(selectedMarkedID)
-                    onUpdateLongAppSetting()
-                    onDismiss()
+                    coroutineScope.launch {
+                        val etateActuellementEst =
+                            _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+                        if (existingBonAchat != null) {
+                            // Update the existing BonAchat
+                            val updatedBonAchat = existingBonAchat.copy(
+                                etateActuellementEst = etateActuellementEst,
+                                heurDebutInString = SimpleDateFormat(
+                                    "HH:mm",
+                                    Locale.getDefault()
+                                ).format(Date())
+                            )
+                            viewModel._0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID(
+                                updatedBonAchat
+                            ) { vid ->
+                                repositorysModel.activeId_1_3_BonAchat.value = vid
+                            }
+
+                        } else {
+                            viewModel._0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID(
+                                _1_3_TransactionCommercial(
+                                    clientAcheteurID = clientId,
+                                    nomClientConcerned = relatedClients?.nom!!,
+                                    parentVID_1_4_PeriodeVent = ceComptVendeurInsertBonsAchatAuPeriodID!!,
+                                    etateActuellementEst = etateActuellementEst,
+                                    heurDebutInString = SimpleDateFormat(
+                                        "HH:mm",
+                                        Locale.getDefault()
+                                    ).format(Date())
+                                )
+                            ) { vid ->
+                                repositorysModel.activeId_1_3_BonAchat.value = vid
+                            }
+
+                        }
+
+                        val selectedMarkedID = selectedMarker.id.toLong()
+
+                        viewModel.updateLongAppSetting(selectedMarkedID)
+                        onUpdateLongAppSetting()
+                        onDismiss()
+                    }
                 }
         ) {
             Icon(

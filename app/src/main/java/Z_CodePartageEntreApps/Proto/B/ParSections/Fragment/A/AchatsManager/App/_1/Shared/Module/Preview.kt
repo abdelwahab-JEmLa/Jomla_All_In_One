@@ -14,7 +14,7 @@ fun MainScreenPreview_APP2() {
     MaterialTheme {
 
         KoinAndroidContext {
-           // A_MainScreen_APP2_ID_2()
+           // A_MainScreen_APP2_ID_2PanierFinaleDAchat()
           //  A_MainScreenApp2FragID_1()
             A_APP1FragID3_MainScreen()
         }

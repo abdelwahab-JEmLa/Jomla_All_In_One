@@ -2,7 +2,7 @@ package V.DiviseParSections.App._0.Navigation
 
 import V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package.A_APP1FragID3_MainScreen
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.A_MapClients_A2FragID_1
-import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.A_MainScreen_APP2_ID_2
+import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.A_MainScreen_APP2_ID_2PanierFinaleDAchat
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.A_APP3FragID1_MainScreen
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.A_VendeurAfficheurInfosProduit_FragmentMainId3
 import Views.P1._ArticlesStartFacade.FragmentStartupScreen
@@ -216,7 +216,7 @@ fun AppNavHost(
                     }
 
                     Box(modifier = Modifier.fillMaxSize()) {
-                        A_MainScreen_APP2_ID_2(
+                        A_MainScreen_APP2_ID_2PanierFinaleDAchat(
                             onConfirmOrder = {
                                 // Update state to ACHAT_TERMINE when order is confirmed
                                 if (currentClientId > 0) {

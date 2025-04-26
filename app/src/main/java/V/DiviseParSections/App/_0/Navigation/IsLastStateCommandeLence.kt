@@ -44,10 +44,6 @@ fun updateAcheteurToAchatTermine(
     repositorysModel: _0_0_HeadOfRepositorys_Model,
     newState: _14_TransactionStatue.EtateTransaction = _14_TransactionStatue.EtateTransaction.ACHAT_TERMINE,
 ) {
-    val ceComptVendeurInsertBonsAchatAuPeriodID =
-        repositorysModel.repository_1_5_Vendeur.modelDatasSnapList
-            .find { it.vid == repositorysModel.activeIdDe_1_5_Vendeur }
-            ?.ceComptVendeurInsertBonsAchatAuPeriodID
 
     _01_Upsert_013_Acheteurs(
         repositorysModel = repositorysModel,

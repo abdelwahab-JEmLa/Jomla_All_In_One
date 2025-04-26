@@ -2,7 +2,6 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_3_TransactionCommercial
-import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._14_TransactionStatue
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import android.content.Context
@@ -154,6 +153,7 @@ fun CommandButton(
     onUpdateLongAppSetting: () -> Unit,
     onDismiss: () -> Unit,
     context: Context,
+    etateActuellementEst1: _1_3_TransactionCommercial.EtateActuellementEst,
 ) {
     FilledTonalButton(
         onClick = {
@@ -161,7 +161,7 @@ fun CommandButton(
                 if (existingBonAchat != null) {
                     // Update the existing BonAchat
                     val updatedBonAchat = existingBonAchat.copy(
-                        etateActuellementEst = _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
+                        etateActuellementEst = etateActuellementEst1,
                         heurDebutInString = SimpleDateFormat(
                             "HH:mm",
                             Locale.getDefault()
@@ -179,7 +179,7 @@ fun CommandButton(
                             clientAcheteurID = clientId,
                             nomClientConcerned = relatedClients?.nom!!,
                             parentVID_1_4_PeriodeVent = ceComptVendeurInsertBonsAchatAuPeriodID!!,
-                            etateActuellementEst = _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
+                            etateActuellementEst = etateActuellementEst1,
                             heurDebutInString = SimpleDateFormat(
                                 "HH:mm",
                                 Locale.getDefault()
@@ -198,29 +198,20 @@ fun CommandButton(
                 onUpdateLongAppSetting()
                 onDismiss()
 
-                //----------------------------------------------------------------------------------------/
-                _01_Upsert_013_Acheteurs(
-                    repositorysModel,
-                    clientId,
-                    _14_TransactionStatue.EtateTransaction.COMMANDE_LENCE,
-                    relatedClients?.nom!!,
-                    viewModel.repo_01_VentsHistoriquesDataBase
-                )
-                //----------------------------------------------------------------------------------------/
-            }
+             }
         },
         modifier = modifier.fillMaxWidth(),
         colors = ButtonDefaults.filledTonalButtonColors(
             containerColor = Color(
                 ContextCompat.getColor(
                     context,
-                    B_ClientDataBase.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT.color
+                    etateActuellementEst1.color
                 )
             ).copy(alpha = 0.2f),
             contentColor = Color(
                 ContextCompat.getColor(
                     context,
-                    B_ClientDataBase.DernierEtatAAffiche.ON_MODE_COMMEND_ACTUELLEMENT.color
+                    etateActuellementEst1.color
                 )
             )
         )
@@ -235,7 +226,7 @@ fun CommandButton(
                 contentDescription = "Mode Commande",
                 modifier = Modifier.padding(end = 8.dp)
             )
-            Text("Mode Commande")
+            Text(etateActuellementEst1.name)
         }
     }
 }

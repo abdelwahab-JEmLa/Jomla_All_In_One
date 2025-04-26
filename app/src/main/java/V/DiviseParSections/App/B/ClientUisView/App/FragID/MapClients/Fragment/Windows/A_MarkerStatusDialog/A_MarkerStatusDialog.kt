@@ -168,6 +168,12 @@ fun MarkerStatusDialog(
                 }
 
                 ClientEdites(
+                    ceComptVendeurInsertBonsAchatAuPeriodID = ceComptVendeurInsertBonsAchatAuPeriodID,
+
+                    repositorysModel = repositorysModel,
+                    clientId = clientId,
+                    coroutineScope = coroutineScope,
+                    existingBonAchat = existingBonAchat,
                     showDeleteConfirmationDialog = showDeleteConfirmationDialog,
                     onClickToEditeMarquerPosition = onClickToEditeMarquerPosition,
                     selectedMarker = selectedMarker,
@@ -206,17 +212,9 @@ fun MarkerStatusDialog(
                         ) {
 
                             item {
-                                _1_3_TransactionCommercial.EtateActuellementEst.ACHETEUR_NON_DISPO
-                                    .Button(
-                                        coroutineScope = coroutineScope,
-                                        viewModel = viewModel,
-                                        clientId = clientId,
-                                        context = context
-                                    )
-                            }
-                            item {
                                 CommandButton(
                                     modifier = Modifier.height(60.dp),
+                                    relatedClients = relatedClients,
                                     coroutineScope = coroutineScope,
                                     existingBonAchat = existingBonAchat,
                                     repositorysModel = repositorysModel,
@@ -226,8 +224,26 @@ fun MarkerStatusDialog(
                                     viewModel = viewModel,
                                     onUpdateLongAppSetting = onUpdateLongAppSetting,
                                     onDismiss = onDismiss,
-                                    relatedClients = relatedClients,
                                     context = context,
+                                    etateActuellementEst1 = _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_VOIRE_PANIE_ARTICLES,
+                                )
+                            }
+
+                            item {
+                                CommandButton(
+                                    modifier = Modifier.height(60.dp),
+                                    relatedClients = relatedClients,
+                                    coroutineScope = coroutineScope,
+                                    existingBonAchat = existingBonAchat,
+                                    repositorysModel = repositorysModel,
+                                    clientId = clientId,
+                                    ceComptVendeurInsertBonsAchatAuPeriodID = ceComptVendeurInsertBonsAchatAuPeriodID,
+                                    selectedMarker = selectedMarker,
+                                    viewModel = viewModel,
+                                    onUpdateLongAppSetting = onUpdateLongAppSetting,
+                                    onDismiss = onDismiss,
+                                    context = context,
+                                    etateActuellementEst1 = _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
                                 )
                             }
                             item {
@@ -241,6 +257,15 @@ fun MarkerStatusDialog(
                             }
                             item {
                                 _1_3_TransactionCommercial.EtateActuellementEst.FERME
+                                    .Button(
+                                        coroutineScope = coroutineScope,
+                                        viewModel = viewModel,
+                                        clientId = clientId,
+                                        context = context
+                                    )
+                            }
+                            item {
+                                _1_3_TransactionCommercial.EtateActuellementEst.ACHETEUR_NON_DISPO
                                     .Button(
                                         coroutineScope = coroutineScope,
                                         viewModel = viewModel,
