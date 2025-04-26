@@ -1,7 +1,7 @@
-package V.DiviseParSections.App.SectionID5.Detailes.App.DataBase._01_VentsHistoriques.Models
+package Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models
 
-import V.DiviseParSections.App.SectionID5.Detailes.App.DataBase._01_VentsHistoriques.Models._012_ComptsVendeurs.Companion.createVendeur
-import V.DiviseParSections.App.SectionID5.Detailes.App.DataBase._01_VentsHistoriques.Models._012_ComptsVendeurs.Companion.map_012_ComptsVendeurs
+import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._012_ComptsVendeurs.Companion.createVendeur
+import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._012_ComptsVendeurs.Companion.map_012_ComptsVendeurs
 import android.util.Log
 import com.google.firebase.database.DataSnapshot
 import io.realm.kotlin.ext.realmListOf

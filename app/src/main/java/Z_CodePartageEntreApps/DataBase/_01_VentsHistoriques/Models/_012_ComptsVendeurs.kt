@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionID5.Detailes.App.DataBase._01_VentsHistoriques.Models
+package Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models
 
 import com.google.firebase.database.DataSnapshot
 import io.realm.kotlin.ext.realmListOf
