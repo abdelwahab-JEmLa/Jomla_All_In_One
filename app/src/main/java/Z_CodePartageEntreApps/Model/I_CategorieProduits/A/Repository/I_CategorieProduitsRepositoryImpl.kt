@@ -46,7 +46,7 @@ class I_CategorieProduitsRepositoryImpl(
         try {
             Log.d(TAG, "Starting repository initialization")
             loadDepuitRoom() // Always load from Room first for faster UI response
-            checkDataConsistency() // Then checkADD_1_4_PeriodeVent and update if necessary
+            checkDataConsistency() // Then checkADD_1_4_PeriodeVent and upsert_1_3_TransactionCommercial if necessary
             Log.d(TAG, "Repository initialization completed successfully")
         } catch (e: Exception) {
             Log.e(TAG, "Failed to initialize repository: ${e.message}", e)
@@ -366,7 +366,7 @@ class I_CategorieProduitsRepositoryImpl(
         try {
             val datasList = datas.toList()
 
-            // First, handle Room database update
+            // First, handle Room database upsert_1_3_TransactionCommercial
             withContext(Dispatchers.IO) {
                 try {
                     appDatabase.I_CategorieProduitsDao().deleteAll()
@@ -376,7 +376,7 @@ class I_CategorieProduitsRepositoryImpl(
                 }
             }
 
-            // Then update Firebase (temporarily remove listener to avoid cycles)
+            // Then upsert_1_3_TransactionCommercial Firebase (temporarily remove listener to avoid cycles)
             withContext(Dispatchers.IO) {
                 val tempListener = valueEventListener
 
@@ -410,7 +410,7 @@ class I_CategorieProduitsRepositoryImpl(
                 }
             }
 
-            // Finally update UI
+            // Finally upsert_1_3_TransactionCommercial UI
             withContext(Dispatchers.Main) {
                 modelDatas.clear()
                 modelDatas.addAll(datas)

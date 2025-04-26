@@ -126,14 +126,14 @@ class K_TempTravailleRepositoryImpl :
 
                 // Update the Firebase database with the updated record
                 try {
-                    // Check connectivity before trying to update Firebase
+                    // Check connectivity before trying to upsert_1_3_TransactionCommercial Firebase
                     checkConnectivityAndSync()
 
                     // Update Firebase database with the updated record
                     updateDataUnSeulDataInFirebase(record)
                 } catch (e: Exception) {
                     // Log the error or handle it appropriately
-                    println("Firebase update failed in updateOnPasseData: ${e.message}")
+                    println("Firebase upsert_1_3_TransactionCommercial failed in updateOnPasseData: ${e.message}")
                 }
             }
         }
@@ -147,7 +147,7 @@ class K_TempTravailleRepositoryImpl :
         ) { recordId ->
             // Update Firebase after local changes
             try {
-                // Check connectivity before trying to update Firebase
+                // Check connectivity before trying to upsert_1_3_TransactionCommercial Firebase
                 checkConnectivityAndSync()
 
                 // Sanitize the record ID
@@ -204,7 +204,7 @@ class K_TempTravailleRepositoryImpl :
         endTime: String?,
         typeTemp: K_TempTravaille.IntervalesDeTravaille.TypeTemp?
     ) {
-        // Use the BonAchatInfos_FragID3 handler to update an existing interval
+        // Use the BonAchatInfos_FragID3 handler to upsert_1_3_TransactionCommercial an existing interval
         IntervalesEtJoursHandler.updateExistingInterval(
             modelDatas = modelDatas,
             recordId = recordId,
@@ -238,15 +238,15 @@ class K_TempTravailleRepositoryImpl :
                 modelDatas.add(recordIndex, record)
 
                 try {
-                    // Check connectivity before trying to update Firebase
+                    // Check connectivity before trying to upsert_1_3_TransactionCommercial Firebase
                     checkConnectivityAndSync()
 
-                    // Call the Firebase update method with proper error handling
+                    // Call the Firebase upsert_1_3_TransactionCommercial method with proper error handling
                     updateDataUnSeulDataInFirebase(record)
                 } catch (e: Exception) {
                     // Log the error or handle it appropriately
-                    println("Firebase update failed: ${e.message}")
-                    // You might want to queue this update for retry later
+                    println("Firebase upsert_1_3_TransactionCommercial failed: ${e.message}")
+                    // You might want to queue this upsert_1_3_TransactionCommercial for retry later
                 }
             }
         }
@@ -264,10 +264,10 @@ class K_TempTravailleRepositoryImpl :
             val dateRef = K_TempTravailleRepository.caReference.child(sanitizedKey)
             dateRef.updateChildren(firebaseData)
                 .addOnSuccessListener {
-                    println("Firebase update successful for record: ${tempTravaille.vid} with ${tempTravaille.intervalesDeTravaille.size} intervals")
+                    println("Firebase upsert_1_3_TransactionCommercial successful for record: ${tempTravaille.vid} with ${tempTravaille.intervalesDeTravaille.size} intervals")
                 }
                 .addOnFailureListener { e ->
-                    println("Firebase update failed: ${e.message}")
+                    println("Firebase upsert_1_3_TransactionCommercial failed: ${e.message}")
                 }
         } catch (e: Exception) {
             println("Failed to prepare data: ${e.message}")
@@ -364,7 +364,7 @@ class K_TempTravailleRepositoryImpl :
 
             stopDatabaseListener()
 
-            // Check connectivity before trying to update
+            // Check connectivity before trying to upsert_1_3_TransactionCommercial
             checkConnectivityAndSync()
 
             datas.forEach { tempTravaille ->
@@ -388,7 +388,7 @@ class K_TempTravailleRepositoryImpl :
             progressRepo.value = 1.0f
         } catch (e: Exception) {
             progressRepo.value = 0f
-            println("Failed to update data batch: ${e.message}")
+            println("Failed to upsert_1_3_TransactionCommercial data batch: ${e.message}")
         } finally {
             isUpdating = false
             startDatabaseListener() // Restart the database listener

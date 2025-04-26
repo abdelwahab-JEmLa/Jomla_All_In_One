@@ -251,7 +251,7 @@ class Startup_Extension(
         // Add to local state first
         viewModelInitApp._modelAppsFather.f_PrototypseDeProgramationInfos.add(newPrototype)
 
-        // Then update Firebase
+        // Then upsert_1_3_TransactionCommercial Firebase
         E_AppsOptionsStates.F_PrototypseDeProgramationInfos.caReference
             .child(newPrototype.vid.toString())
             .setValue(newPrototype)
@@ -265,7 +265,7 @@ class Startup_Extension(
             viewModelInitApp._modelAppsFather.f_PrototypseDeProgramationInfos[index] = prototype
         }
 
-        // Then update Firebase
+        // Then upsert_1_3_TransactionCommercial Firebase
         E_AppsOptionsStates.F_PrototypseDeProgramationInfos.caReference
             .child(prototype.vid.toString())
             .setValue(prototype)

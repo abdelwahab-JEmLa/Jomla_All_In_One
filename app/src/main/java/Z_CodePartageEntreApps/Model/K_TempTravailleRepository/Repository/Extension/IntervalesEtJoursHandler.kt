@@ -141,7 +141,7 @@ object IntervalesEtJoursHandler {
                 val formattedStartTime = formatTimeInput(startTime)
                 println("DEBUG: Updating start time from ${existingInterval.tempDepart} to $formattedStartTime")
                 existingInterval.tempDepart = formattedStartTime
-                println("DEBUG: After update, start time is: ${existingInterval.tempDepart}")
+                println("DEBUG: After upsert_1_3_TransactionCommercial, start time is: ${existingInterval.tempDepart}")
             }
 
             // Update end time if provided
@@ -152,17 +152,17 @@ object IntervalesEtJoursHandler {
                 println("DEBUG: Formatted endTime: $formattedEndTime")
                 println("DEBUG: Updating end time from ${existingInterval.temparrete} to $formattedEndTime")
 
-                // Perform the update
+                // Perform the upsert_1_3_TransactionCommercial
                 existingInterval.temparrete = formattedEndTime
 
-                // Verify the update happened
-                println("DEBUG: After update, end time is: ${existingInterval.temparrete}")
+                // Verify the upsert_1_3_TransactionCommercial happened
+                println("DEBUG: After upsert_1_3_TransactionCommercial, end time is: ${existingInterval.temparrete}")
 
                 // If end time is set to a valid time, the interval is no longer recording
                 if (formattedEndTime != "HH:mm") {
                     println("DEBUG: Setting recording state to false")
                     existingInterval.enCoureDEnregestrement = false
-                    println("DEBUG: After update, recording state is: ${existingInterval.enCoureDEnregestrement}")
+                    println("DEBUG: After upsert_1_3_TransactionCommercial, recording state is: ${existingInterval.enCoureDEnregestrement}")
                 }
             }
 
@@ -170,7 +170,7 @@ object IntervalesEtJoursHandler {
             if (typeTemp != null) {
                 println("DEBUG: Updating type from ${existingInterval.typeTemp} to $typeTemp")
                 existingInterval.typeTemp = typeTemp
-                println("DEBUG: After update, type is: ${existingInterval.typeTemp}")
+                println("DEBUG: After upsert_1_3_TransactionCommercial, type is: ${existingInterval.typeTemp}")
             }
 
             println("DEBUG: Final interval state - start: ${existingInterval.tempDepart}, end: ${existingInterval.temparrete}")
@@ -192,7 +192,7 @@ object IntervalesEtJoursHandler {
                     val formattedStartTime = formatTimeInput(startTime)
                     println("DEBUG: Updating start time from ${recordingInterval.tempDepart} to $formattedStartTime")
                     recordingInterval.tempDepart = formattedStartTime
-                    println("DEBUG: After update, start time is: ${recordingInterval.tempDepart}")
+                    println("DEBUG: After upsert_1_3_TransactionCommercial, start time is: ${recordingInterval.tempDepart}")
                 }
 
                 // Update end time if provided
@@ -203,17 +203,17 @@ object IntervalesEtJoursHandler {
                     println("DEBUG: Formatted endTime: $formattedEndTime")
                     println("DEBUG: Updating end time from ${recordingInterval.temparrete} to $formattedEndTime")
 
-                    // Perform the update
+                    // Perform the upsert_1_3_TransactionCommercial
                     recordingInterval.temparrete = formattedEndTime
 
-                    // Verify the update happened
-                    println("DEBUG: After update, end time is: ${recordingInterval.temparrete}")
+                    // Verify the upsert_1_3_TransactionCommercial happened
+                    println("DEBUG: After upsert_1_3_TransactionCommercial, end time is: ${recordingInterval.temparrete}")
 
                     // If end time is set to a valid time, the interval is no longer recording
                     if (formattedEndTime != "HH:mm") {
                         println("DEBUG: Setting recording state to false")
                         recordingInterval.enCoureDEnregestrement = false
-                        println("DEBUG: After update, recording state is: ${recordingInterval.enCoureDEnregestrement}")
+                        println("DEBUG: After upsert_1_3_TransactionCommercial, recording state is: ${recordingInterval.enCoureDEnregestrement}")
                     }
                 }
 
@@ -221,7 +221,7 @@ object IntervalesEtJoursHandler {
                 if (typeTemp != null) {
                     println("DEBUG: Updating type from ${recordingInterval.typeTemp} to $typeTemp")
                     recordingInterval.typeTemp = typeTemp
-                    println("DEBUG: After update, type is: ${recordingInterval.typeTemp}")
+                    println("DEBUG: After upsert_1_3_TransactionCommercial, type is: ${recordingInterval.typeTemp}")
                 }
 
                 println("DEBUG: Final interval state - start: ${recordingInterval.tempDepart}, end: ${recordingInterval.temparrete}")
@@ -285,7 +285,7 @@ object IntervalesEtJoursHandler {
                 // Update the database
                 callback(newRecord.vid)
             } else {
-                // If record already exists, just update it to ensure UI refreshes
+                // If record already exists, just upsert_1_3_TransactionCommercial it to ensure UI refreshes
                 callback(existingRecord.vid)
             }
         } catch (e: Exception) {
@@ -315,7 +315,7 @@ object IntervalesEtJoursHandler {
             }
         }
 
-        // If found record to update
+        // If found record to upsert_1_3_TransactionCommercial
         if (recordToUpdate != null && callback != null) {
             callback(recordToUpdate!!.vid)
         }

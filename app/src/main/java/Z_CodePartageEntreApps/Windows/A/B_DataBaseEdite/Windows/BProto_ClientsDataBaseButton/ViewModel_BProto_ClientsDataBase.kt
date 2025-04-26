@@ -33,7 +33,7 @@ class ViewModel_BProto_ClientsDataBase(
                             actuelleEtat = B_ClientDataBase.DernierEtatAAffiche.NON_DEFINI
                         )
                     } else {
-                        // Just update the state for other clients
+                        // Just upsert_1_3_TransactionCommercial the state for other clients
                         client.copy(
                             actuelleEtat = B_ClientDataBase.DernierEtatAAffiche.NON_DEFINI
                         )

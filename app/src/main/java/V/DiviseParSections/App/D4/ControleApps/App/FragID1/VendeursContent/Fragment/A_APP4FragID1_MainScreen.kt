@@ -228,7 +228,7 @@ fun VendeurItem(
 
             IconButton(
                 onClick = {
-                    // Toggle hideAppScreen property and update the vendeur
+                    // Toggle hideAppScreen property and upsert_1_3_TransactionCommercial the vendeur
                     val updatedVendeur = vendeur.copy(hideAppScreen = !vendeur.hideAppScreen)
                     onVendeurUpdate(updatedVendeur)
                 }
@@ -314,7 +314,7 @@ fun PeriodeItem(
 
             IconButton(
                 onClick = {
-                    // Call function to update comptVendeurInsertBonsAchatAuPeriodID
+                    // Call function to upsert_1_3_TransactionCommercial comptVendeurInsertBonsAchatAuPeriodID
                     onUpdateceComptVendeurInsertBonsAchatAuPeriodID(periode.vid)
                 }
             ) {

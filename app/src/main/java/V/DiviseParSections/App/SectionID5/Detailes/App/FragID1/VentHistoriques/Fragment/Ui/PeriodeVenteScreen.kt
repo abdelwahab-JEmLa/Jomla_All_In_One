@@ -118,7 +118,7 @@ fun PeriodeVenteScreen(
             // View mode tabs
             if (uiState.viewMode != ViewMode.DETAIL) {
                 val viewModes = listOf(ViewMode.LIST, ViewMode.CALENDAR, ViewMode.ANALYTICS)
-                // And update the TabRow in PeriodeVenteScreen.kt:
+                // And upsert_1_3_TransactionCommercial the TabRow in PeriodeVenteScreen.kt:
                 TabRow(
                     selectedTabIndex = viewModes.indexOf(uiState.viewMode)
                 ) {

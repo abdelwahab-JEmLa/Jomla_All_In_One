@@ -512,7 +512,7 @@ open class HeadViewModel(
                 _onNavigateToSellerProduct(updatedSale.vid)
 
             } catch (e: Exception) {
-                _uiState.update { it.copy(error = "Failed to update sale: ${e.message}") }
+                _uiState.update { it.copy(error = "Failed to upsert_1_3_TransactionCommercial sale: ${e.message}") }
             }
         }
     }
@@ -523,7 +523,7 @@ open class HeadViewModel(
                 val article = _uiState.value.articlesBasesStatTables
                     .find { it.idArticle.toLong() == sale.idArticle }
 
-                // Find which color slot to update by searching through colorIdPicked fields
+                // Find which color slot to upsert_1_3_TransactionCommercial by searching through colorIdPicked fields
                 val updatedSale = when (colorId) {
                     sale.color1IdPicked -> sale.copy(color1SoldQuantity = quantity)
                     sale.color2IdPicked -> sale.copy(color2SoldQuantity = quantity)
@@ -553,7 +553,7 @@ open class HeadViewModel(
                             )
 
                             else -> {
-                                // If no empty slots, update first slot as fallback
+                                // If no empty slots, upsert_1_3_TransactionCommercial first slot as fallback
                                 sale.copy(
                                     color1IdPicked = colorId,
                                     color1SoldQuantity = quantity
@@ -576,7 +576,7 @@ open class HeadViewModel(
                         _currentSaleInWindows.value = updatedSale
                     }
                 } catch (e: Exception) {
-                    _uiState.update { it.copy(error = "Failed to update sale: ${e.message}") }
+                    _uiState.update { it.copy(error = "Failed to upsert_1_3_TransactionCommercial sale: ${e.message}") }
                 }
             }
         }
@@ -604,7 +604,7 @@ open class HeadViewModel(
 //                } else {
 //                    _currentSaleInWindows.value = updatedSale
 //                    // Update UI state to reflect changes
-//                    _uiState.update { currentState ->
+//                    _uiState.upsert_1_3_TransactionCommercial { currentState ->
 //                        currentState.copy(
 //                            selectedColorId = colorId,
 //                            lastUpdatedQuantity = quantity
@@ -612,7 +612,7 @@ open class HeadViewModel(
 //                    }
 //                }
 //            } catch (e: Exception) {
-//                _uiState.update { it.copy(error = "Failed to update sale: ${e.message}") }
+//                _uiState.upsert_1_3_TransactionCommercial { it.copy(error = "Failed to upsert_1_3_TransactionCommercial sale: ${e.message}") }
 //            }
 //        }
 //    }

@@ -110,7 +110,7 @@ class A_ProduitRepositoryImpl(
             if (!isFlowListenerActive.get()) {
                 flowValueEventListener = object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
-                        // If there are any items in the flow update list, process them
+                        // If there are any items in the flow upsert_1_3_TransactionCommercial list, process them
                         if (snapshot.exists() && snapshot.childrenCount > 0) {
                             // Process flow updates directly here instead of calling another function
                             repositoryScope.launch {
@@ -129,7 +129,7 @@ class A_ProduitRepositoryImpl(
                                                 updateUnSeulData(product)
                                             }
 
-                                            // Remove this ID from the flow update list after processing
+                                            // Remove this ID from the flow upsert_1_3_TransactionCommercial list after processing
                                             withContext(Dispatchers.IO) {
                                                 A_ProduitRepository.iDsDatasFlowUpdateRef.child(dataSnapshot.key!!).removeValue()
                                             }
@@ -316,7 +316,7 @@ class A_ProduitRepositoryImpl(
         try {
             val datasList = datas.toList()
 
-            // First, handle Room database update
+            // First, handle Room database upsert_1_3_TransactionCommercial
             withContext(Dispatchers.IO) {
                 try {
                     appDatabase.a_ProduiteDao().deleteAll()
@@ -326,7 +326,7 @@ class A_ProduitRepositoryImpl(
                 }
             }
 
-            // Then update Firebase (temporarily remove listener to avoid cycles)
+            // Then upsert_1_3_TransactionCommercial Firebase (temporarily remove listener to avoid cycles)
             withContext(Dispatchers.IO) {
                 val tempListener = valueEventListener
                 val tempFlowListener = flowValueEventListener
@@ -349,7 +349,7 @@ class A_ProduitRepositoryImpl(
                         isFlowListenerActive.set(false)
                     }
 
-                    // Use the batch update method instead of individual updates
+                    // Use the batch upsert_1_3_TransactionCommercial method instead of individual updates
                     batchFireBaseSet(datasList)
 
                 } catch (e: Exception) {
@@ -376,7 +376,7 @@ class A_ProduitRepositoryImpl(
                 }
             }
 
-            // Finally update UI
+            // Finally upsert_1_3_TransactionCommercial UI
             withContext(Dispatchers.Main) {
                 modelDatas.clear()
                 modelDatas.addAll(datas)

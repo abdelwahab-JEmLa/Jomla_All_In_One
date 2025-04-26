@@ -69,7 +69,7 @@ object FromAncienDataBase {
                             val product = productDbSnapshot.getValue(A_ProduitModel::class.java)
 
                             if (product != null) {
-                                // Existing product update logic
+                                // Existing product upsert_1_3_TransactionCommercial logic
                                 var updated = false
 
                                 if (colorsChanged) {
@@ -114,7 +114,7 @@ object FromAncienDataBase {
                                     // Set colors from old database
                                     statuesBase.coloursEtGoutsIds = newColors
 
-                                    // Mark as needing update for any potential missing fields
+                                    // Mark as needing upsert_1_3_TransactionCommercial for any potential missing fields
                                     besoinToBeUpdated = true
                                 }
 
@@ -262,7 +262,7 @@ object FromAncienDataBase {
             currentColors.removeAt(currentColors.lastIndex)
         }
 
-        // Convert to SnapshotStateList and update the product
+        // Convert to SnapshotStateList and upsert_1_3_TransactionCommercial the product
         product.statuesBase.coloursEtGoutsIds = currentColors
 
         return product

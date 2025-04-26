@@ -65,7 +65,7 @@ data class C_GrossistsDataBase(
                             .setValue(currentState)
                             .await()
                     } catch (e: Exception) {
-                        // Revert local state if Firebase update fails
+                        // Revert local state if Firebase upsert_1_3_TransactionCommercial fails
                         grossistsList.clear()
                         grossistsList.addAll(
                             if (index != -1) updatedList.toMutableList().apply { this[index] = this@updateGrossistDataBase }
@@ -75,7 +75,7 @@ data class C_GrossistsDataBase(
                     }
 
                 } catch (e: Exception) {
-                    Log.e("C_GrossistsDataBase", "Failed to update grossist", e)
+                    Log.e("C_GrossistsDataBase", "Failed to upsert_1_3_TransactionCommercial grossist", e)
                 }
             }
         }

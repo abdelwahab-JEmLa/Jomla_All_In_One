@@ -105,7 +105,7 @@ class RecordingHandler(
         })
     }
 
-    // Method to update the recording state in Firebase
+    // Method to upsert_1_3_TransactionCommercial the recording state in Firebase
     private fun updateRecordingState(isRecording: Boolean) {
         val recordingStateRef = K_TempTravailleRepository.caReference.child("_isRecording")
         recordingStateRef.setValue(isRecording)
@@ -113,7 +113,7 @@ class RecordingHandler(
                 println("Recording state updated successfully")
             }
             .addOnFailureListener { e ->
-                println("Failed to update recording state: ${e.message}")
+                println("Failed to upsert_1_3_TransactionCommercial recording state: ${e.message}")
             }
     }
 

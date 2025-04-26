@@ -127,10 +127,10 @@ class ViewModel_I_CategorieProduits(
                 Log.d(TAG, "Created SnapshotStateList with ${snapshotList.size} items")
 
                 // Update repository with new data structure
-                Log.d(TAG, "Starting repository update with transformed data")
+                Log.d(TAG, "Starting repository upsert_1_3_TransactionCommercial with transformed data")
                 try {
                     I_CategorieProduitsRepository.updateMultiDatas(snapshotList)
-                    Log.d(TAG, "Repository update successful")
+                    Log.d(TAG, "Repository upsert_1_3_TransactionCommercial successful")
                 } catch (e: Exception) {
                     Log.e(TAG, "Error updating repository: ${e.message}", e)
                     throw e

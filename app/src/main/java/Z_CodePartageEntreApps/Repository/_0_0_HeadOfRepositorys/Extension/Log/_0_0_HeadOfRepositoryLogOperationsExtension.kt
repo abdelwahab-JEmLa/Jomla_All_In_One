@@ -32,7 +32,7 @@ class _0_0_HeadOfRepositoryLogOperationsExtension(
         Log.d(TAG, "- Data count: $dataCount")
         Log.d(TAG, "- Initial data loaded: $initialDataLoaded")
         Log.d(TAG, "- Progress value: ${String.format("%.2f", progressValue * 100)}%")
-        Log.d(TAG, "- Last update timestamp: $formattedDate")
+        Log.d(TAG, "- Last upsert_1_3_TransactionCommercial timestamp: $formattedDate")
         Log.d(
             TAG,
             "- Listeners active: isListenerActive=$isListenerActive, isFlowListenerActive=$isFlowListenerActive"

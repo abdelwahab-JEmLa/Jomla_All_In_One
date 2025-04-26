@@ -510,7 +510,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode: Boolean)
             // Remove listeners temporarily to avoid reentrant updates
             removeFirebaseListener()
 
-            // Execute Firebase update
+            // Execute Firebase upsert_1_3_TransactionCommercial
             firebaseRef.setValue(dataToUpdate)
                 .addOnSuccessListener {
                     attachFirebaseListener() // Re-attach listeners
@@ -519,7 +519,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode: Boolean)
                     attachFirebaseListener() // Re-attach listeners even on failure
                 }
 
-            // Also update Realm database
+            // Also upsert_1_3_TransactionCommercial Realm database
             scheduleSafeRealmUpdate()
             notifyUIUpdate()
             _dataChangedEvent.value = System.currentTimeMillis()

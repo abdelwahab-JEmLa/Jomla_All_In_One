@@ -31,6 +31,114 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+fun upsert_1_3_TransactionCommercial(
+    viewModel: ViewModel_MapClients_App2FragID1,
+    relatedClientID: Long,
+    etateActuellementEst: _1_3_TransactionCommercial.EtateActuellementEst
+): Unit {
+    val _0_0_HeadOfRepositorys_Repository= viewModel._0_0_HeadOfRepositorys_Repository
+
+    val relatedClients = viewModel.bProto_ClientsDataBase.find {
+        it.id == (relatedClientID)
+    }
+    val repositorysModel =
+        _0_0_HeadOfRepositorys_Repository.repositorys_Model
+
+    val ceComptVendeurInsertBonsAchatAuPeriodID =
+        repositorysModel.repository_1_5_Vendeur.modelDatasSnapList
+            .find { it.vid == repositorysModel.activeIdDe_1_5_Vendeur }
+            ?.ceComptVendeurInsertBonsAchatAuPeriodID
+
+    val clientId = relatedClients?.id ?: 0L
+    // Check if a BonAchat already exists for this client in the active period
+    val existingBonAchat = viewModel.modelDatasSnapList_1_3_BonAchat.find {
+        it.clientAcheteurID == clientId && it.parentVID_1_4_PeriodeVent == ceComptVendeurInsertBonsAchatAuPeriodID
+    }
+
+    if (existingBonAchat != null) {
+        // Update the existing BonAchat
+        val updatedBonAchat = existingBonAchat.copy(
+            etateActuellementEst = etateActuellementEst,
+            heurDebutInString = SimpleDateFormat(
+                "HH:mm",
+                Locale.getDefault()
+            ).format(Date())
+        )
+        viewModel._0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID_1_3_TransactionCommercial(
+            updatedBonAchat
+        ) { vid ->
+            repositorysModel.activeId_1_3_BonAchat.value = vid
+        }
+
+    } else {
+        viewModel._0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID_1_3_TransactionCommercial(
+            _1_3_TransactionCommercial(
+                clientAcheteurID = clientId,
+                nomClientConcerned = relatedClients?.nom!!,
+                parentVID_1_4_PeriodeVent = ceComptVendeurInsertBonsAchatAuPeriodID!!,
+                etateActuellementEst = etateActuellementEst,
+                heurDebutInString = SimpleDateFormat(
+                    "HH:mm",
+                    Locale.getDefault()
+                ).format(Date())
+            )
+        ) { vid ->
+            repositorysModel.activeId_1_3_BonAchat.value = vid
+        }
+
+    }
+
+
+}
+@Composable
+fun _1_3_TransactionCommercial.EtateActuellementEst.Button(
+    coroutineScope: CoroutineScope,
+    viewModel: ViewModel_MapClients_App2FragID1,
+    clientId: Long,
+    context: Context,
+) {
+    val Etate =
+        this
+    FilledTonalButton(
+        onClick = {
+            coroutineScope.launch {
+                upsert_1_3_TransactionCommercial(
+                    viewModel,
+                    clientId,
+                    Etate
+                )
+            }
+        },
+        modifier = Modifier.fillMaxWidth(),
+        colors = ButtonDefaults.filledTonalButtonColors(
+            containerColor = Color(
+                ContextCompat.getColor(
+                    context,
+                    Etate.color
+                )
+            ).copy(alpha = 0.2f),
+            contentColor = Color(
+                ContextCompat.getColor(
+                    context,
+                    Etate.color
+                )
+            )
+        )
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Icon(
+                imageVector = Icons.Default.Person,
+                contentDescription = Etate.nomArabe,
+                modifier = Modifier.padding(end = 8.dp)
+            )
+            Text(Etate.nomArabe)
+        }
+    }
+}
 @Composable
 fun FERME(
     coroutineScope: CoroutineScope,

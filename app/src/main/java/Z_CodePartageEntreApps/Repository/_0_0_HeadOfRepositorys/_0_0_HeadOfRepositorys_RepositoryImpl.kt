@@ -333,7 +333,7 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
 
                     // Update the snapshot list
                     withContext(Dispatchers.Main) {
-                        // Clear and update on the main thread
+                        // Clear and upsert_1_3_TransactionCommercial on the main thread
                         repo_1_3_TransactionCommercial.modelDatasSnapList.clear()
                         repo_1_3_TransactionCommercial.modelDatasSnapList.addAll(refreshedData)
                     }
@@ -342,9 +342,9 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                 // Log the refresh operation
                 Log.d(TAG, "ProduitsDataBase refreshed: ${repo_1_3_TransactionCommercial.modelDatasSnapList.size} items")
 
-                // Notify any observers that may need to update UI based on this change
+                // Notify any observers that may need to upsert_1_3_TransactionCommercial UI based on this change
                 // (This will cause connected components to recompose)
-                progressRepo.value = progressRepo.value  // Trigger a small update to force recomposition
+                progressRepo.value = progressRepo.value  // Trigger a small upsert_1_3_TransactionCommercial to force recomposition
             } catch (e: Exception) {
                 Log.e(TAG, "Error in notifyDataChanged_1_3_TransactionCommercial_Repository: ${e.message}")
             }
@@ -368,7 +368,7 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
 
                     // Update the snapshot list
                     withContext(Dispatchers.Main) {
-                        // Clear and update on the main thread
+                        // Clear and upsert_1_3_TransactionCommercial on the main thread
                         _2_1_Repository.modelDatasSnapList.clear()
                         _2_1_Repository.modelDatasSnapList.addAll(refreshedData)
                     }
@@ -377,9 +377,9 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                 // Log the refresh operation
                 Log.d(TAG, "ProduitsDataBase refreshed: ${_2_1_Repository.modelDatasSnapList.size} items")
 
-                // Notify any observers that may need to update UI based on this change
+                // Notify any observers that may need to upsert_1_3_TransactionCommercial UI based on this change
                 // (This will cause connected components to recompose)
-                progressRepo.value = progressRepo.value  // Trigger a small update to force recomposition
+                progressRepo.value = progressRepo.value  // Trigger a small upsert_1_3_TransactionCommercial to force recomposition
             } catch (e: Exception) {
                 Log.e(TAG, "Error in notifyDataChanged_2_1_ProduitsDataBase_Repository: ${e.message}")
             }

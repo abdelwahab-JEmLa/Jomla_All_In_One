@@ -15,14 +15,14 @@ class FunctionsPartageEntreFragment(
     fun upButton(index: Int) {
         if (index <= 0 || index >= grossistsDataBase.size) return
 
-        // Swap elements and update their indices
+        // Swap elements and upsert_1_3_TransactionCommercial their indices
         grossistsDataBase[index].let { current ->
             grossistsDataBase[index - 1].let { prev ->
                 // Update indices
                 current.statueDeBase.itIndexInParentList = index - 1
                 prev.statueDeBase.itIndexInParentList = index
 
-                // Swap positions and update database
+                // Swap positions and upsert_1_3_TransactionCommercial database
                 grossistsDataBase[index] = prev
                 grossistsDataBase[index - 1] = current
                 current.updateGrossistDataBase(viewModel)
@@ -88,7 +88,7 @@ class FunctionsPartageEntreFragment(
                         updates["/${newRecordRef.key}"] = record
                     }
 
-                    // Perform the update
+                    // Perform the upsert_1_3_TransactionCommercial
                     soldArticlesRef.updateChildren(updates)
                         .addOnFailureListener { exception ->
                             // Handle any errors

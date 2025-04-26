@@ -98,13 +98,13 @@ class SoldArticlesTabelleRepositoryImpl :
             modelDatas[recordIndex] = data
 
             try {
-                // Check connectivity before trying to update Firebase
+                // Check connectivity before trying to upsert_1_3_TransactionCommercial Firebase
                 checkConnectivityAndSync()
 
                 // Update Firebase database with the updated record
                 firebaseUpdateData(data)
             } catch (e: Exception) {
-                println("Firebase update failed in updateUnSeulData: ${e.message}")
+                println("Firebase upsert_1_3_TransactionCommercial failed in updateUnSeulData: ${e.message}")
             }
         }
     }
@@ -118,7 +118,7 @@ class SoldArticlesTabelleRepositoryImpl :
 
             // Update the data in Firebase
             SoldArticlesTabelleRepository.caReference.child(sanitizedKey).updateChildren(firebaseData)
-                .addOnFailureListener { e -> println("Firebase update failed: ${e.message}") }
+                .addOnFailureListener { e -> println("Firebase upsert_1_3_TransactionCommercial failed: ${e.message}") }
         } catch (e: Exception) {
             println("Failed to prepare data: ${e.message}")
         }
@@ -140,7 +140,7 @@ class SoldArticlesTabelleRepositoryImpl :
 
             stopDatabaseListener()
 
-            // Check connectivity before trying to update
+            // Check connectivity before trying to upsert_1_3_TransactionCommercial
             checkConnectivityAndSync()
 
             datas.forEach { data ->
@@ -161,7 +161,7 @@ class SoldArticlesTabelleRepositoryImpl :
             progressRepo.value = 1.0f
         } catch (e: Exception) {
             progressRepo.value = 0f
-            println("Failed to update data batch: ${e.message}")
+            println("Failed to upsert_1_3_TransactionCommercial data batch: ${e.message}")
         } finally {
             isUpdating = false
             startDatabaseListener() // Restart the database listener

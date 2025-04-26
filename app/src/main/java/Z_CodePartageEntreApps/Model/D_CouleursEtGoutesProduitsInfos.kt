@@ -61,7 +61,7 @@ data class D_CouleursEtGoutesProduitsInfos(
                             .setValue(currentState)
                             .await()
                     } catch (e: Exception) {
-                        // Revert local state if Firebase update fails
+                        // Revert local state if Firebase upsert_1_3_TransactionCommercial fails
                         grossistsList.clear()
                         grossistsList.addAll(
                             if (index != -1) updatedList.toMutableList().apply { this[index] = this@update }
@@ -71,7 +71,7 @@ data class D_CouleursEtGoutesProduitsInfos(
                     }
 
                 } catch (e: Exception) {
-                    Log.e("D_CouleursEtGoutesProduitsInfos", "Failed to update ", e)
+                    Log.e("D_CouleursEtGoutesProduitsInfos", "Failed to upsert_1_3_TransactionCommercial ", e)
                 }
             }
         }

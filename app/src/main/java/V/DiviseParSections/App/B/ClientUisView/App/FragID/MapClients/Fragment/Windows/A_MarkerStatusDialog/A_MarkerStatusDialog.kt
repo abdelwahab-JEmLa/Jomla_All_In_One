@@ -15,9 +15,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -60,7 +60,6 @@ fun MarkerStatusDialog(
     var editedPhone by remember { mutableStateOf("") }
     var showPhoneDialog by remember { mutableStateOf(false) }
     var showDeleteConfirmationDialog by remember { mutableStateOf(false) }
-    val scrollState = rememberScrollState()
 
     val relatedClients = viewModel.bProto_ClientsDataBase.find {
         it.id == (selectedMarker?.id?.toLong() ?: 0)
@@ -75,6 +74,10 @@ fun MarkerStatusDialog(
             ?.ceComptVendeurInsertBonsAchatAuPeriodID
 
     val clientId = relatedClients?.id ?: 0L
+    // Check if a BonAchat already exists for this client in the active period
+    val existingBonAchat = viewModel.modelDatasSnapList_1_3_BonAchat.find {
+        it.clientAcheteurID == clientId && it.parentVID_1_4_PeriodeVent == ceComptVendeurInsertBonsAchatAuPeriodID
+    }
 
     val hasOngoingTransaction = repositorysModel
         .repository_1_3_TransactionCommercial.modelDatasSnapList
@@ -89,10 +92,7 @@ fun MarkerStatusDialog(
         editedPhone = relatedClients.numTelephone ?: ""
     }
 
-    // Check if a BonAchat already exists for this client in the active period
-    val existingBonAchat = viewModel.modelDatasSnapList_1_3_BonAchat.find {
-        it.clientAcheteurID == clientId && it.parentVID_1_4_PeriodeVent == ceComptVendeurInsertBonsAchatAuPeriodID
-    }
+
 
     if (selectedMarker == null) return
 
@@ -127,7 +127,7 @@ fun MarkerStatusDialog(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 16.dp),
-                        elevation = androidx.compose.material3.CardDefaults.cardElevation(defaultElevation = 2.dp)
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                     ) {
                         Column(
                             modifier = Modifier
@@ -146,6 +146,13 @@ fun MarkerStatusDialog(
                             Text(
                                 text = "الحالة الحالية: ${transaction?.etateActuellementEst?.nomArabe ?: ""}",
                                 style = MaterialTheme.typography.bodyMedium
+                            )
+                            _1_3_TransactionCommercial.EtateActuellementEst.A_COMMANDE_CONFIRME
+                                .Button(
+                                coroutineScope = coroutineScope,
+                                viewModel = viewModel,
+                                clientId = clientId,
+                                context = context
                             )
                         }
                     }
@@ -166,12 +173,12 @@ fun MarkerStatusDialog(
                     onShowEditDialogChange = { showEditDialog = it },
                     onShowPhoneDialogChange = { showPhoneDialog = it }
                 )
-                // In the MarkerStatusDialog composable, replace the linear button section with this:
+
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 4.dp),
-                    elevation = androidx.compose.material3.CardDefaults.cardElevation(defaultElevation = 2.dp)
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
                     Column(
                         modifier = Modifier
@@ -190,16 +197,13 @@ fun MarkerStatusDialog(
                         ) {
 
                             item {
-                                ACHETEUR_NON_DISPO(
-                                    coroutineScope = coroutineScope,
-                                    selectedMarker = selectedMarker,
-                                    relatedClients = relatedClients,
-                                    viewModel = viewModel,
-                                    onDismiss = onDismiss,
-                                    repositorysModel = repositorysModel,
-                                    clientId = clientId,
-                                    context = context,
-                                )
+                                _1_3_TransactionCommercial.EtateActuellementEst.ACHETEUR_NON_DISPO
+                                    .Button(
+                                        coroutineScope = coroutineScope,
+                                        viewModel = viewModel,
+                                        clientId = clientId,
+                                        context = context
+                                    )
                             }
                             item {
                                 CommandButton(
@@ -218,42 +222,50 @@ fun MarkerStatusDialog(
                                 )
                             }
                             item {
-                                AVEC_MARCHANDISE(
-                                    coroutineScope = coroutineScope,
-                                    relatedClients = relatedClients,
-                                    viewModel = viewModel,
-                                    onDismiss = onDismiss,
-                                    repositorysModel = repositorysModel,
-                                    clientId = clientId,
-                                    context = context,
-                                )
+                                _1_3_TransactionCommercial.EtateActuellementEst.AVEC_MARCHANDISE
+                                    .Button(
+                                        coroutineScope = coroutineScope,
+                                        viewModel = viewModel,
+                                        clientId = clientId,
+                                        context = context
+                                    )
                             }
                             item {
-                                FERME(
-                                    coroutineScope = coroutineScope,
-                                    relatedClients = relatedClients,
-                                    viewModel = viewModel,
-                                    onDismiss = onDismiss,
-                                    repositorysModel = repositorysModel,
-                                    clientId = clientId,
-                                    context = context,
-                                )
+                                _1_3_TransactionCommercial.EtateActuellementEst.FERME
+                                    .Button(
+                                        coroutineScope = coroutineScope,
+                                        viewModel = viewModel,
+                                        clientId = clientId,
+                                        context = context
+                                    )
                             }
+                            if (ceTelephoneEstDeAbdelwahab) {
+
+                            item {
+                                _1_3_TransactionCommercial.EtateActuellementEst.Cible
+                                    .Button(
+                                        coroutineScope = coroutineScope,
+                                        viewModel = viewModel,
+                                        clientId = clientId,
+                                        context = context
+                                    )
+                            }
+                            item {
+                                _1_3_TransactionCommercial.EtateActuellementEst.CIBLE_POUR_2
+                                    .Button(
+                                        coroutineScope = coroutineScope,
+                                        viewModel = viewModel,
+                                        clientId = clientId,
+                                        context = context
+                                    )
+                            }
+
+                        }
                         }
                     }
                 }
 
-                if (ceTelephoneEstDeAbdelwahab) {
-                    Spacer(modifier = Modifier.height(16.dp))
 
-                    CeTelephoneEstDeAbdelwahabButtons(
-                        coroutineScope = coroutineScope,
-                        relatedClients = relatedClients,
-                        viewModel = viewModel,
-                        onDismiss = onDismiss,
-                        context = context
-                    )
-                }
 
                 Spacer(modifier = Modifier.height(16.dp))
 

@@ -199,10 +199,10 @@ class _3_ClientsDataBaseRepositoryUpdatesOperationsExtension(
 
             reference.updateChildren(batchUpdates)
                 .addOnSuccessListener {
-                    Log.d(TAG, "Batch update successful for ${datas.size} items")
+                    Log.d(TAG, "Batch upsert_1_3_TransactionCommercial successful for ${datas.size} items")
                 }
                 .addOnFailureListener { exception ->
-                    Log.e(TAG, "Batch update failed: ${exception.message}")
+                    Log.e(TAG, "Batch upsert_1_3_TransactionCommercial failed: ${exception.message}")
                 }
         } catch (e: Exception) {
             Log.e(TAG, "Error in batchFireBaseSet: ${e.message}")

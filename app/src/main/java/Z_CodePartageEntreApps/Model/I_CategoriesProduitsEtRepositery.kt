@@ -250,7 +250,7 @@ class CategoriesRepositoryImpl : I_CategoriesRepository {
 
     // Fix 2: A_ProduitModel.kt - Fixing the updateUneSeulData method
     override fun updateUneSeulData(data: I_CategoriesProduits) {
-        // Find and update the item in the modelDatas list if it exists
+        // Find and upsert_1_3_TransactionCommercial the item in the modelDatas list if it exists
         val index = modelDatas.indexOfFirst { it.id == data.id }
         if (index >= 0) {
             modelDatas[index] = data

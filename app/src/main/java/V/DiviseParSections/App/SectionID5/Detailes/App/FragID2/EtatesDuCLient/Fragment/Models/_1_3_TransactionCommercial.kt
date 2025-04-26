@@ -38,5 +38,10 @@ data class _1_3_TransactionCommercial(
         A_EVITE(android.R.color.black, "يتجنب"),
         ACHETEUR_NON_DISPO(android.R.color.darker_gray, "الشاري غائب"),
         FERME(android.R.color.darker_gray, "مغلق"),
+
+        Cible(android.R.color.holo_red_light, "Cible"),
+        CIBLE_PRIORITE_2(android.R.color.holo_orange_dark, "CIBLE_PRIORITE_2"),
+        CIBLE_PRIORITE_3(android.R.color.holo_green_light, "CIBLE_PRIORITE_3"),
+        CIBLE_POUR_2(android.R.color.holo_blue_dark, "CIBLE_POUR_2"),
     }
 }

@@ -114,7 +114,7 @@ open class _ModelAppsFather(
                     viewModelProduits._modelAppsFather.produitsMainDataBase.clear()
                     viewModelProduits._modelAppsFather.produitsMainDataBase.addAll(updatedProducts)
 
-                    // Then update Firebase in chunks to prevent overwhelming the connection
+                    // Then upsert_1_3_TransactionCommercial Firebase in chunks to prevent overwhelming the connection
                     UpdateFireBase(updatedProducts)
                 } catch (e: Exception) {
                     Log.e("Firebase", "Error updating products", e)
@@ -130,7 +130,7 @@ open class _ModelAppsFather(
                         .await()
                     Log.d("Firebase", "Successfully updated product ${product.id}")
                 } catch (e: Exception) {
-                    Log.e("Firebase", "Failed to update product ${product.id}", e)
+                    Log.e("Firebase", "Failed to upsert_1_3_TransactionCommercial product ${product.id}", e)
                 }
             }
         }
@@ -151,7 +151,7 @@ open class _ModelAppsFather(
 
                     produitsFireBaseRef.child(product.id.toString()).setValue(product).await()
                 } catch (e: Exception) {
-                    Log.e("ViewModelInitApp", "Failed to update product ${product.id}", e)
+                    Log.e("ViewModelInitApp", "Failed to upsert_1_3_TransactionCommercial product ${product.id}", e)
                 }
             }
         }

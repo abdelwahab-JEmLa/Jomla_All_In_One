@@ -47,13 +47,13 @@ class C_GrossistsDataBaseRepositoryImpl : C_GrossistsDataBaseRepository {
             modelDatas[recordIndex] = data
 
             try {
-                // Check connectivity before trying to update Firebase
+                // Check connectivity before trying to upsert_1_3_TransactionCommercial Firebase
                 checkConnectivityAndSync()
 
                 // Update Firebase database with the updated record
                 firebaseUpdateData(data)
             } catch (e: Exception) {
-                println("Firebase update failed in updateUnSeulData: ${e.message}")
+                println("Firebase upsert_1_3_TransactionCommercial failed in updateUnSeulData: ${e.message}")
             }
         }
     }
@@ -68,7 +68,7 @@ class C_GrossistsDataBaseRepositoryImpl : C_GrossistsDataBaseRepository {
                 // Add the data to the local list if it doesn't exist
                 modelDatas.add(data)
 
-                // Check connectivity before trying to update Firebase
+                // Check connectivity before trying to upsert_1_3_TransactionCommercial Firebase
                 checkConnectivityAndSync()
 
                 // Add the data to Firebase
@@ -81,7 +81,7 @@ class C_GrossistsDataBaseRepositoryImpl : C_GrossistsDataBaseRepository {
                 C_GrossistsDataBaseRepository.caReference.child(sanitizedKey).setValue(firebaseData)
                     .addOnFailureListener { e -> println("Firebase add failed: ${e.message}") }
             } else {
-                // If it already exists, update it instead
+                // If it already exists, upsert_1_3_TransactionCommercial it instead
                 updateData(data)
             }
         } catch (e: Exception) {
@@ -98,7 +98,7 @@ class C_GrossistsDataBaseRepositoryImpl : C_GrossistsDataBaseRepository {
 
             // Update the data in Firebase
             C_GrossistsDataBaseRepository.caReference.child(sanitizedKey).updateChildren(firebaseData)
-                .addOnFailureListener { e -> println("Firebase update failed: ${e.message}") }
+                .addOnFailureListener { e -> println("Firebase upsert_1_3_TransactionCommercial failed: ${e.message}") }
         } catch (e: Exception) {
             println("Failed to prepare data: ${e.message}")
         }
@@ -120,7 +120,7 @@ class C_GrossistsDataBaseRepositoryImpl : C_GrossistsDataBaseRepository {
 
             stopDatabaseListener()
 
-            // Check connectivity before trying to update
+            // Check connectivity before trying to upsert_1_3_TransactionCommercial
             checkConnectivityAndSync()
 
             datas.forEach { data ->
@@ -141,7 +141,7 @@ class C_GrossistsDataBaseRepositoryImpl : C_GrossistsDataBaseRepository {
             progressRepo.value = 1.0f
         } catch (e: Exception) {
             progressRepo.value = 0f
-            println("Failed to update data batch: ${e.message}")
+            println("Failed to upsert_1_3_TransactionCommercial data batch: ${e.message}")
         } finally {
             isUpdating = false
             startDatabaseListener() // Restart the database listener

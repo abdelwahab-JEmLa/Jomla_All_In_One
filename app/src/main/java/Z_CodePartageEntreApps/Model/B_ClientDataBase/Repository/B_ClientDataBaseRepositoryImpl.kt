@@ -43,7 +43,7 @@ class B_ClientDataBaseRepositoryImpl(
     private suspend fun initializeRepository() {
         try {
             loadDepuitRoom() // Always load from Room first for faster UI response
-            checkDataConsistency() // Then checkADD_1_4_PeriodeVent and update if necessary
+            checkDataConsistency() // Then checkADD_1_4_PeriodeVent and upsert_1_3_TransactionCommercial if necessary
         } catch (e: Exception) {
             // Log error
         }
@@ -294,7 +294,7 @@ class B_ClientDataBaseRepositoryImpl(
         try {
             val datasList = datas.toList()
 
-            // First, handle Room database update
+            // First, handle Room database upsert_1_3_TransactionCommercial
             withContext(Dispatchers.IO) {
                 try {
                     appDatabase.b_ClientDataBaseDao().deleteAll()
@@ -304,7 +304,7 @@ class B_ClientDataBaseRepositoryImpl(
                 }
             }
 
-            // Then update Firebase (temporarily remove listener to avoid cycles)
+            // Then upsert_1_3_TransactionCommercial Firebase (temporarily remove listener to avoid cycles)
             withContext(Dispatchers.IO) {
                 val tempListener = valueEventListener
 
@@ -338,7 +338,7 @@ class B_ClientDataBaseRepositoryImpl(
                 }
             }
 
-            // Finally update UI
+            // Finally upsert_1_3_TransactionCommercial UI
             withContext(Dispatchers.Main) {
                 modelDatas.clear()
                 modelDatas.addAll(datas)

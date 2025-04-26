@@ -173,7 +173,7 @@ fun But1B_NearbyMarkersDialog(
                             // Update marker title
                             marker.title = editedName
 
-                            // Find and update the corresponding client in the database
+                            // Find and upsert_1_3_TransactionCommercial the corresponding client in the database
                             val client = viewModelInitApp._modelAppsFather.clientDataBase
                                 .find {
                                     it.gpsLocation.latitude == marker.position.latitude

@@ -156,7 +156,7 @@ fun C_MainItem_APP2_ID_2(
                                                 nom = newName
                                             )
 
-                                            // Use upsertUnSeulDataEtReturnVID to update the product
+                                            // Use upsertUnSeulDataEtReturnVID to upsert_1_3_TransactionCommercial the product
                                             _0_HeadOfRepositorys_Repository_Model._2_1_ProduitsDataBase_Repository
                                                 .upsertUneDataEtReturnVID(updatedProduct) { _ ->
                                                     headRepository.notifyDataChanged_2_1_ProduitsDataBase_Repository()
@@ -442,7 +442,7 @@ fun C_MainItem_APP2_ID_2(
     }
 }
 
-// Helper function to update the price
+// Helper function to upsert_1_3_TransactionCommercial the price
 private fun updatePrice(
     priceText: String,
     defaultPrice: Double,

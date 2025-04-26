@@ -46,7 +46,7 @@ fun RecordAfficheurFAB(
     val isRecording by viewModel.isRecording.collectAsState()
     val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
 
-    // Set up a timer to update the elapsed time every second when recording
+    // Set up a timer to upsert_1_3_TransactionCommercial the elapsed time every second when recording
     DisposableEffect(isRecording) {
         var job: Job? = null
         val coroutineScope = CoroutineScope(Dispatchers.Main)

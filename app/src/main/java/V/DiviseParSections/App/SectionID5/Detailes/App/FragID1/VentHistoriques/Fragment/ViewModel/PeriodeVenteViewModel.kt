@@ -94,7 +94,7 @@ class PeriodeVenteViewModel(
     private fun loadPeriodesVente() {
         viewModelScope.launch {
             try {
-                // Check if we have a selected period and update it if it exists
+                // Check if we have a selected period and upsert_1_3_TransactionCommercial it if it exists
                 val currentSelection = _uiState.value.selectedPeriode
                 val updatedSelection = if (currentSelection != null) {
                     // Try to find updated version of currently selected period

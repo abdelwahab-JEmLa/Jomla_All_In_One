@@ -139,7 +139,7 @@ class ViewModelInitApp(
                         .setValue(currentState)
                         .await()
                 } catch (e: Exception) {
-                    // Revert local state if Firebase update fails
+                    // Revert local state if Firebase upsert_1_3_TransactionCommercial fails
                     clientsList.clear()
                     clientsList.addAll(
                         if (index != -1) updatedList.toMutableList().apply { this[index] = data }
@@ -149,7 +149,7 @@ class ViewModelInitApp(
                 }
 
             } catch (e: Exception) {
-                Log.e("B_ClientsDataBase", "Failed to update client", e)
+                Log.e("B_ClientsDataBase", "Failed to upsert_1_3_TransactionCommercial client", e)
             }
         }
     }

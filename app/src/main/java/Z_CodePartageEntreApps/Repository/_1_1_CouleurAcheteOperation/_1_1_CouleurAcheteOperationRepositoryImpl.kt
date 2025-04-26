@@ -546,10 +546,10 @@ class _1_1_CouleurAcheteOperationRepositoryImpl(
 
             reference.updateChildren(batchUpdates)
                 .addOnSuccessListener {
-                    Log.d(TAG, "Batch update successful for ${datas.size} items")
+                    Log.d(TAG, "Batch upsert_1_3_TransactionCommercial successful for ${datas.size} items")
                 }
                 .addOnFailureListener { exception ->
-                    Log.e(TAG, "Batch update failed: ${exception.message}")
+                    Log.e(TAG, "Batch upsert_1_3_TransactionCommercial failed: ${exception.message}")
                 }
         } catch (e: Exception) {
             Log.e(TAG, "Error in batchFireBaseSet: ${e.message}")
@@ -572,7 +572,7 @@ class _1_1_CouleurAcheteOperationRepositoryImpl(
         Log.d(TAG, "- Data count: ${modelDatasSnapList.size}")
         Log.d(TAG, "- Initial data loaded: $initialDataLoaded")
         Log.d(TAG, "- Progress value: ${progressRepo.value}")
-        Log.d(TAG, "- Last update timestamp: $lastUpdateTimestamp")
+        Log.d(TAG, "- Last upsert_1_3_TransactionCommercial timestamp: $lastUpdateTimestamp")
         Log.d(
             TAG,
             "- Listeners active: isListenerActive=${isListenerActive.get()}, isFlowListenerActive=${isFlowListenerActive.get()}"

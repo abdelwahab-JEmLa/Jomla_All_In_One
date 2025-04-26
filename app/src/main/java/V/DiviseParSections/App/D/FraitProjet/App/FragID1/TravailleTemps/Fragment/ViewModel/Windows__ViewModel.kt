@@ -86,7 +86,7 @@ class Windows__ViewModel(
         val existingRecord = dateList.find { it.vid == recordId }
 
         if (existingRecord != null) {
-            // If we have an active interval, update it
+            // If we have an active interval, upsert_1_3_TransactionCommercial it
             val activeInterval = existingRecord.intervalesDeTravaille.find { it.enCoureDEnregestrement }
 
             if (activeInterval != null) {
