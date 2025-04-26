@@ -17,6 +17,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -42,6 +43,13 @@ fun A_MainAffichageHistoriquesTransactionsDeCetteJourParIdClient(
             .filter { (_, transactions) -> transactions.isNotEmpty() }
     }
 
+    // Group periods by week
+    val groupedByWeek = remember(filteredGroupedTransactions) {
+        filteredGroupedTransactions.groupBy { (period, _) ->
+            dateStringName.getDistanceSemainParDateStr(period.startDateInString)
+        }
+    }
+
     // Find client data by ID
     val clientData = remember(uiState.sl_3_ClientsDataBase, idClient) {
         uiState.sl_3_ClientsDataBase.find { it.vid == idClient }
@@ -51,40 +59,66 @@ fun A_MainAffichageHistoriquesTransactionsDeCetteJourParIdClient(
         ClientHeaderSection(clientData)
 
         LazyColumn(modifier = Modifier.fillMaxWidth()) {
-            filteredGroupedTransactions.forEach { (period, transactions) ->
-                stickyHeader {
-                    // Period header
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(MaterialTheme.colorScheme.primaryContainer)
-                            .padding(horizontal = 16.dp, vertical = 8.dp)
-                    ) {
-                        Text(
-                            text = "Période: ${dateStringName.getNomJourArabParDateStr(period.startDateInString)}",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = "De ${period.heurDebutInString} à ${if (period.endDateInString.isNotEmpty()) period.endDateInString else "maintenant"}",
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                        Divider(modifier = Modifier.padding(top = 4.dp))
+            if (filteredGroupedTransactions.isNotEmpty()) {
+                // Iterate through each week group
+                groupedByWeek.forEach { (weekString, periodsInWeek) ->
+                    // Week header
+                    stickyHeader {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(MaterialTheme.colorScheme.secondary)
+                                .padding(horizontal = 16.dp, vertical = 12.dp)
+                        ) {
+                            Text(
+                                text = weekString,
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                            Divider(
+                                modifier = Modifier.padding(top = 4.dp),
+                                color = Color.White.copy(alpha = 0.5f)
+                            )
+                        }
+                    }
+
+                    // Display transactions for each period in this week
+                    periodsInWeek.forEach { (period, transactions) ->
+                        // Period header
+                        stickyHeader {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(MaterialTheme.colorScheme.primaryContainer)
+                                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                            ) {
+                                Text(
+                                    text = "يوم: ${dateStringName.getNomJourArabParDateStr(period.startDateInString)}",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    text = "من ${period.heurDebutInString} إلى ${if (period.endDateInString.isNotEmpty()) period.endDateInString else "الآن"}",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                                Divider(modifier = Modifier.padding(top = 4.dp))
+                            }
+                        }
+
+                        // Transactions for this period
+                        items(transactions) { transaction ->
+                            TransactionItem(transaction)
+                        }
                     }
                 }
-
-                items(transactions) { transaction ->
-                    TransactionItem(transaction)
-                }
-            }
-
-            // Show a message if no transactions are found
-            if (filteredGroupedTransactions.isEmpty()) {
+            } else {
+                // Show a message if no transactions are found
                 item {
                     Text(
                         text = if (uiState.transactionsDateToList_1_3_TransactionCommercial.isNotEmpty())
-                            "Pas de transactions pour le client $idClient"
-                        else "Chargement des données...",
+                            "لا توجد معاملات للعميل $idClient"
+                        else "جاري تحميل البيانات...",
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp),
@@ -96,4 +130,3 @@ fun A_MainAffichageHistoriquesTransactionsDeCetteJourParIdClient(
         }
     }
 }
-
