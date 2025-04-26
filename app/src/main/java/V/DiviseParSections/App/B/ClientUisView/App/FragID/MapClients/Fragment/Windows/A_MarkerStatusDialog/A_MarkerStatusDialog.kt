@@ -126,7 +126,7 @@ fun MarkerStatusDialog(
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 8.dp),
+                        .padding(vertical = 4.dp),
                     elevation = androidx.compose.material3.CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
                     Column(
@@ -137,15 +137,15 @@ fun MarkerStatusDialog(
                         Text(
                             text = "حالة العميل",
                             style = MaterialTheme.typography.titleMedium,
-                            modifier = Modifier.padding(bottom = 8.dp)
+                            modifier = Modifier.padding(bottom = 4.dp)
                         )
 
                         // Use a LazyVerticalGrid with 2 columns
                         LazyVerticalGrid(
                             columns = GridCells.Fixed(2),
                             contentPadding = PaddingValues(vertical = 4.dp),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            verticalArrangement = Arrangement.spacedBy(4.dp),
                             modifier = Modifier.fillMaxWidth()
                         ) {
 
@@ -163,7 +163,7 @@ fun MarkerStatusDialog(
                             }
                             item {
                                 CommandButton(
-                                    modifier = Modifier.height(30.dp),
+                                    modifier = Modifier.height(60.dp),
                                     coroutineScope = coroutineScope,
                                     existingBonAchat = existingBonAchat,
                                     repositorysModel = repositorysModel,

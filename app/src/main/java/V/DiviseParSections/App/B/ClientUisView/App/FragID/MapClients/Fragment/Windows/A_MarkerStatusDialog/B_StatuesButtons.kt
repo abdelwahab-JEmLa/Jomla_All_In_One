@@ -283,7 +283,7 @@ fun CommandButton(
                 //----------------------------------------------------------------------------------------/
             }
         },
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         colors = ButtonDefaults.filledTonalButtonColors(
             containerColor = Color(
                 ContextCompat.getColor(
