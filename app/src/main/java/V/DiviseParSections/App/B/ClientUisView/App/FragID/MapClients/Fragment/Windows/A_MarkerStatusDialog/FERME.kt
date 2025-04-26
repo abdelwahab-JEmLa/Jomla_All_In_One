@@ -240,16 +240,14 @@ fun CommandButton(
                             Locale.getDefault()
                         ).format(Date())
                     )
+                     viewModel._0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID_1_3_TransactionCommercial(
+                         updatedBonAchat
+                     )      { vid ->
+                         repositorysModel.activeId_1_3_BonAchat.value = vid
+                     }
 
-                    // Use upsert to update the existing record
-                    repositorysModel.repository_1_3_TransactionCommercial.upsertUneDataEtReturnVID(
-                        updatedBonAchat
-                    ) { vid ->
-                        repositorysModel.activeId_1_3_BonAchat.value = vid
-                    }
                 } else {
-                    // Create a new BonAchat if none exists
-                    repositorysModel.repository_1_3_TransactionCommercial.addDataAndReturneItVID(
+                    viewModel._0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID_1_3_TransactionCommercial(
                         _1_3_TransactionCommercial(
                             clientAcheteurID = clientId,
                             parentVID_1_4_PeriodeVent = ceComptVendeurInsertBonsAchatAuPeriodID!!,
@@ -259,10 +257,10 @@ fun CommandButton(
                                 Locale.getDefault()
                             ).format(Date())
                         )
-                    ) { newVid ->
-                        // Update the MutableStateFlow with the new value
-                        repositorysModel.activeId_1_3_BonAchat.value = newVid
+                    )      { vid ->
+                        repositorysModel.activeId_1_3_BonAchat.value = vid
                     }
+
                 }
 
                 val selectedMarkedID = selectedMarker.id.toLong()

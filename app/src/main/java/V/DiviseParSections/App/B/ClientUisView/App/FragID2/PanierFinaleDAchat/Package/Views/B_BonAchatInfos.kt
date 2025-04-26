@@ -1,14 +1,14 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views
 
-import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_Repository
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog._01_Upsert_013_Acheteurs
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_3_TransactionCommercial
 import Views.Package_4.SoldCartScreen.Components.OrderSuccessMessage
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
+import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_Repository
 import Z_CodePartageEntreApps.Modules.printReceipt
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_3_TransactionCommercial
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -174,11 +174,10 @@ fun ColumnScope.BonAchatInfos(
                                     .EtateActuellementEst
                                     .A_COMMANDE_CONFIRME
                             }?.let {
-                                repositorysModel
-                                    .repository_1_3_TransactionCommercial
-                                    .updateUnSeulData(
-                                        it
-                                    )
+                                _0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID_1_3_TransactionCommercial(
+                                    it
+                                )
+
                             }
 
                             repositorysModel.activeId_1_3_BonAchat.value = 0L

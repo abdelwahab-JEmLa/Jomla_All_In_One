@@ -176,10 +176,10 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                         }
 
                         // Update dataToUpsert.fireBaseKeyID to ensure it's current
-                        dataToUpsert.fireBaseKeyID = "${dataToUpsert.vid}->(${dataToUpsert.startDateInString})"
+                        dataToUpsert.fireBaseKeyID_1_4_PeriodeVent = "${dataToUpsert.vid}->(${dataToUpsert.startDateInString})"
 
                         // Update in Firebase using fireBaseKeyID as the key
-                        repositorys_Model.databaseReference_1_4_PeriodeVent.child(dataToUpsert.fireBaseKeyID)
+                        repositorys_Model.databaseReference_1_4_PeriodeVent.child(dataToUpsert.fireBaseKeyID_1_4_PeriodeVent)
                             .setValue(dataToUpsert).await()
 
                         // Call the success callback with the existing vid
@@ -192,14 +192,14 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                         dataToUpsert.vid = newVid
 
                         // Update fireBaseKeyID with new vid
-                        dataToUpsert.fireBaseKeyID = "${dataToUpsert.vid}->(${dataToUpsert.startDateInString})"
+                        dataToUpsert.fireBaseKeyID_1_4_PeriodeVent = "${dataToUpsert.vid}->(${dataToUpsert.startDateInString})"
 
                         withContext(Dispatchers.Main) {
                             _1_4_Repository.modelDatasSnapList.add(dataToUpsert)
                         }
 
                         // Update Firebase using fireBaseKeyID as the key
-                        repositorys_Model.databaseReference_1_4_PeriodeVent.child(dataToUpsert.fireBaseKeyID)
+                        repositorys_Model.databaseReference_1_4_PeriodeVent.child(dataToUpsert.fireBaseKeyID_1_4_PeriodeVent)
                             .setValue(dataToUpsert).await()
 
                         // Call the success callback with the new vid
@@ -239,11 +239,12 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                             }
                         }
 
-                        // Properly format the Firebase key using enum name
-                        dataToUpsert.fireBaseKeyID = "${dataToUpsert.parentVID_1_4_PeriodeVent}->(${dataToUpsert.clientAcheteurID}->(${dataToUpsert.etateActuellementEst.name}))"
+                        // Firebase key is now automatically generated via the getter property
+                        // No need to manually set it here
 
                         // Update in Firebase using fireBaseKeyID as the key
-                        repositorys_Model.databaseReference_1_3_TransactionCommercial.child(dataToUpsert.fireBaseKeyID)
+                        repositorys_Model.databaseReference_1_3_TransactionCommercial
+                            .child(dataToUpsert.fireBaseKeyID_1_3_TransactionCommercial)
                             .setValue(dataToUpsert).await()
 
                         // Call the success callback with the existing vid
@@ -255,15 +256,15 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                         // Update the object with the new vid
                         dataToUpsert.vid = newVid
 
-                        // Update fireBaseKeyID with new parameters - FIXED: use enum name properly
-                        dataToUpsert.fireBaseKeyID = "${dataToUpsert.parentVID_1_4_PeriodeVent}->(${dataToUpsert.clientAcheteurID}->(${dataToUpsert.etateActuellementEst.name}))"
+                        // Firebase key will be automatically generated after vid is set
 
                         withContext(Dispatchers.Main) {
                             repo_1_3_TransactionCommercial.modelDatasSnapList.add(dataToUpsert)
                         }
 
                         // Update Firebase using fireBaseKeyID as the key
-                        repositorys_Model.databaseReference_1_3_TransactionCommercial.child(dataToUpsert.fireBaseKeyID)
+                        repositorys_Model.databaseReference_1_3_TransactionCommercial
+                            .child(dataToUpsert.fireBaseKeyID_1_3_TransactionCommercial)
                             .setValue(dataToUpsert).await()
 
                         // Call the success callback with the new vid
@@ -273,15 +274,53 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                     Log.e(TAG, "Error upserting data: ${e.message}")
                     // Add more detailed error logging
                     Log.e(TAG, "Transaction data: $dataToUpsert")
-                    Log.e(TAG, "Firebase key attempted: ${dataToUpsert.fireBaseKeyID}")
+                    Log.e(TAG, "Firebase key attempted: ${dataToUpsert.fireBaseKeyID_1_3_TransactionCommercial}")
                 }
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error in upsertUnSeulDataEtReturnVID: ${e.message}")
         }
     }
+    override fun deleteUnSeulData_1_3_TransactionCommercial(data: _1_3_TransactionCommercial) {
+        try {
+            // Create a copy of the data to work with
+            val dataToDelete = data.copy()
 
-    override fun notifyDataChanged_1_3_TransactionCommercial_Repository() {
+            repositoryScope.launch(Dispatchers.IO) {
+                try {
+                    // First, delete from Room database
+                    appDatabase._1_3_TransactionCommercialDao().delete(dataToDelete)
+
+                    // Remove from snapshot list
+                    withContext(Dispatchers.Main) {
+                        val index = repo_1_3_TransactionCommercial.modelDatasSnapList.indexOfFirst { it.vid == dataToDelete.vid }
+                        if (index >= 0) {
+                            repo_1_3_TransactionCommercial.modelDatasSnapList.removeAt(index)
+                        }
+                    }
+
+                    // Delete from Firebase
+                    // Using fireBaseKeyID property which is automatically generated
+                    repositorys_Model.databaseReference_1_3_TransactionCommercial
+                        .child(dataToDelete.fireBaseKeyID_1_3_TransactionCommercial)
+                        .removeValue()
+                        .await()
+
+                    Log.d(TAG, "Successfully deleted transaction with ID: ${dataToDelete.vid}")
+
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error deleting transaction data: ${e.message}")
+                    Log.e(TAG, "Transaction data: $dataToDelete")
+                    Log.e(TAG, "Firebase key attempted: ${dataToDelete.fireBaseKeyID_1_3_TransactionCommercial}")
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in deleteUnSeulData_1_3_TransactionCommercial: ${e.message}")
+        }
+    }
+
+
+        override fun notifyDataChanged_1_3_TransactionCommercial_Repository() {
         repositoryScope.launch {
             try {
                 // Reload the products database data

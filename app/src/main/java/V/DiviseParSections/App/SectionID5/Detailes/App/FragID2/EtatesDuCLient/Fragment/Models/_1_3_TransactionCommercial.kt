@@ -15,6 +15,7 @@ data class _1_3_TransactionCommercial(
     // Section Related Parents Foreign Key IDs
     var parentVID_1_4_PeriodeVent: Long = 0L,
     var clientAcheteurID: Long = 0L,
+    var nomClientConcerned: String = "Non Defini",
 
     // Section InfosDeBase
     var heurDebutInString: String = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date()),
@@ -23,9 +24,10 @@ data class _1_3_TransactionCommercial(
     // Section StatuesMutable
     var etateActuellementEst: EtateActuellementEst =
         EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
-
-    var fireBaseKeyID: String = "$parentVID_1_4_PeriodeVent->($clientAcheteurID->(${etateActuellementEst.name}))"
-    ) {
+) {
+    // Generate Firebase key automatically based on properties
+    val fireBaseKeyID_1_3_TransactionCommercial: String
+        get() = "$parentVID_1_4_PeriodeVent->(${clientAcheteurID}_$nomClientConcerned->(${etateActuellementEst.name}))"
 
     @IgnoreExtraProperties
     enum class EtateActuellementEst(val color: Int, val nomArabe: String) {

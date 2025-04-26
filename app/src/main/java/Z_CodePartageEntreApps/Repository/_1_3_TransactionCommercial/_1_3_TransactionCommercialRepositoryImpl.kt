@@ -14,7 +14,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -41,7 +40,6 @@ class _1_3_TransactionCommercialRepositoryImpl(
     private val listenerLock = Any()
     private val flowListenerLock = Any()
 
-    private val updatesOperations = _1_3_TransactionCommercialRepositoryUpdatesOperaionsExtention(this)
     private val logOperations = _1_3_TransactionCommercialRepositoryLogOperationsExtention(this)
 
     init {
@@ -50,100 +48,7 @@ class _1_3_TransactionCommercialRepositoryImpl(
         }
     }
 
-    override fun upsertUneDataEtReturnVID(data: _1_3_TransactionCommercial, onSuccess: (Long) -> Unit): Unit {
-        try {
-            // Create a copy of the data to work with
-            val dataToUpsert = data.copy()
 
-            repositoryScope.launch(Dispatchers.IO) {
-                try {
-                    // Check if the data already exists (if it has a valid vid)
-                    if (dataToUpsert.vid > 0) {
-                        // Update existing data
-                        appDatabase._1_3_TransactionCommercialDao().insert(dataToUpsert)
-
-                        // Update in snapshot list
-                        withContext(Dispatchers.Main) {
-                            val index = modelDatasSnapList.indexOfFirst { it.vid == dataToUpsert.vid }
-                            if (index >= 0) {
-                                modelDatasSnapList[index] = dataToUpsert
-                            } else {
-                                modelDatasSnapList.add(dataToUpsert)
-                            }
-                        }
-
-                        // Update in Firebase using fireBaseKeyID as the key
-                        _1_3_TransactionCommercial_Repository.sonDataBaseRef.child(dataToUpsert.fireBaseKeyID)
-                            .setValue(dataToUpsert).await()
-
-                        // Call the success callback with the existing vid
-                        onSuccess(dataToUpsert.vid)
-                    } else {
-                        // If no valid vid, insert as new (same as addDataAndReturneItVID)
-                        val newVid = appDatabase._1_3_TransactionCommercialDao().insertAvecRetureNewVid(dataToUpsert)
-
-                        // Update the object with the new vid
-                        dataToUpsert.vid = newVid
-
-                        // Make sure the fireBaseKeyID is updated
-                        dataToUpsert.fireBaseKeyID = "${dataToUpsert.parentVID_1_4_PeriodeVent}->(${dataToUpsert.clientAcheteurID}->(${dataToUpsert.etateActuellementEst})"
-
-                        withContext(Dispatchers.Main) {
-                            modelDatasSnapList.add(dataToUpsert)
-                        }
-
-                        // Update Firebase with the fireBaseKeyID
-                        _1_3_TransactionCommercial_Repository.sonDataBaseRef.child(dataToUpsert.fireBaseKeyID)
-                            .setValue(dataToUpsert).await()
-
-                        // Call the success callback with the new vid
-                        onSuccess(newVid)
-                    }
-                } catch (e: Exception) {
-                    Log.e(TAG, "Error upserting data: ${e.message}")
-                }
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error in upsertUnSeulDataEtReturnVID: ${e.message}")
-        }
-    }
-
-    override fun addDataAndReturneItVID(
-        data: _1_3_TransactionCommercial,
-        onAddSuccess: (Long) -> Unit
-    ) {
-        try {
-            // Create a copy of the data to work with
-            val dataToAdd = data.copy()
-
-            repositoryScope.launch(Dispatchers.IO) {
-                try {
-                    // Insert into Room and get the new vid
-                    val newVid = appDatabase._1_3_TransactionCommercialDao().insertAvecRetureNewVid(dataToAdd)
-
-                    // Update the object with the new vid
-                    dataToAdd.vid = newVid
-
-                    // Make sure fireBaseKeyID is properly set
-                    dataToAdd.fireBaseKeyID = "${dataToAdd.parentVID_1_4_PeriodeVent}->(${dataToAdd.clientAcheteurID}->(${dataToAdd.etateActuellementEst}))"
-
-                    withContext(Dispatchers.Main) {
-                        modelDatasSnapList.add(dataToAdd)
-                    }
-
-                    // Update Firebase using fireBaseKeyID as the key
-                    _1_3_TransactionCommercial_Repository.sonDataBaseRef.child(dataToAdd.fireBaseKeyID).setValue(dataToAdd).await()
-
-                    // Call the success callback with the new vid
-                    onAddSuccess(newVid)
-                } catch (e: Exception) {
-                    Log.e(TAG, "Error adding data: ${e.message}")
-                }
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error in addDataAndReturnItVID: ${e.message}")
-        }
-    }
 
     override suspend fun ensureDataIsInitialized() {
         try {
@@ -163,9 +68,7 @@ class _1_3_TransactionCommercialRepositoryImpl(
         }
     }
 
-    override fun updateUnSeulData(data: _1_3_TransactionCommercial) {
-        updatesOperations.updateUnSeulData(data, repositoryScope, appDatabase, modelDatasSnapList)
-    }
+
 
     private suspend fun initialize_1_3_TransactionCommercialRepository() {
         try {
@@ -382,67 +285,8 @@ class _1_3_TransactionCommercialRepositoryImpl(
         }
     }
 
-    override fun deleteUnSeulData(data: _1_3_TransactionCommercial) {
-        // Also need to modify this method in updatesOperations
-        repositoryScope.launch(Dispatchers.IO) {
-            try {
-                // Remove from Room
-                appDatabase._1_3_TransactionCommercialDao().delete(data)
 
-                // Remove from Firebase using fireBaseKeyID
-                _1_3_TransactionCommercial_Repository.sonDataBaseRef.child(data.fireBaseKeyID).removeValue().await()
 
-                // Remove from snapshots list
-                withContext(Dispatchers.Main) {
-                    val index = modelDatasSnapList.indexOfFirst { it.vid == data.vid }
-                    if (index >= 0) {
-                        modelDatasSnapList.removeAt(index)
-                    }
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "Error deleting data: ${e.message}")
-            }
-        }
-    }
-
-    override fun addData(data: _1_3_TransactionCommercial) {
-        // Also need to modify this method in updatesOperations
-        repositoryScope.launch(Dispatchers.IO) {
-            try {
-                // Update fireBaseKeyID before adding
-                data.fireBaseKeyID = "${data.parentVID_1_4_PeriodeVent}->(${data.clientAcheteurID}->(${data.etateActuellementEst}))"
-
-                // Add to Room
-                val newId = appDatabase._1_3_TransactionCommercialDao().insertAvecRetureNewVid(data)
-                data.vid = newId
-
-                // Add to Firebase using fireBaseKeyID
-                _1_3_TransactionCommercial_Repository.sonDataBaseRef.child(data.fireBaseKeyID).setValue(data).await()
-
-                // Add to snapshots list
-                withContext(Dispatchers.Main) {
-                    modelDatasSnapList.add(data)
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "Error adding data: ${e.message}")
-            }
-        }
-    }
-
-    override suspend fun updateMultiDatas(datas: SnapshotStateList<_1_3_TransactionCommercial>) {
-        updatesOperations.updateMultiDatas(
-            datas,
-            isUpdating,
-            appDatabase,
-            modelDatasSnapList,
-            valueEventListener,
-            flowValueEventListener,
-            listenerLock,
-            flowListenerLock,
-            isListenerActive,
-            isFlowListenerActive
-        )
-    }
 
     fun cleanup() {
         repositoryScope.launch {

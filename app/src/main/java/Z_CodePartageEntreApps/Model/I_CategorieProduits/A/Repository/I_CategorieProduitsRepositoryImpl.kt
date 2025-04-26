@@ -228,7 +228,7 @@ class I_CategorieProduitsRepositoryImpl(
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Exception in deleteUnSeulData: ${e.message}", e)
+            Log.e(TAG, "Exception in deleteUnSeulData_1_3_TransactionCommercial: ${e.message}", e)
         }
     }
 

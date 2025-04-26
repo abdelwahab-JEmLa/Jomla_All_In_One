@@ -61,7 +61,7 @@ class _1_2_ProduitAcheteOperationRepositoryUpdatesOperaionsExtention {
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error in deleteUnSeulData: ${e.message}")
+            Log.e(TAG, "Error in deleteUnSeulData_1_3_TransactionCommercial: ${e.message}")
         }
     }
 

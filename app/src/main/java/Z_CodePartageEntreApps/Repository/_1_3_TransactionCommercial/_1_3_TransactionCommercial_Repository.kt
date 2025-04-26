@@ -13,10 +13,7 @@ interface _1_3_TransactionCommercial_Repository {
 
     suspend fun ensureDataIsInitialized()
 
-    fun addData(data: _1_3_TransactionCommercial)
-    fun updateUnSeulData(data: _1_3_TransactionCommercial)
-    suspend fun updateMultiDatas(datas: SnapshotStateList<_1_3_TransactionCommercial>)
-    fun deleteUnSeulData(data: _1_3_TransactionCommercial)
+
 
     companion object {
         const val TAG = "_1_3_TransactionCommercial"
@@ -26,6 +23,5 @@ interface _1_3_TransactionCommercial_Repository {
             .child("3")
     }
 
-    fun addDataAndReturneItVID(data: _1_3_TransactionCommercial, onAddSuccess: (Long) -> Unit = {})
-    fun upsertUneDataEtReturnVID(data: _1_3_TransactionCommercial, onSuccess: (Long) -> Unit = {})
+
 }

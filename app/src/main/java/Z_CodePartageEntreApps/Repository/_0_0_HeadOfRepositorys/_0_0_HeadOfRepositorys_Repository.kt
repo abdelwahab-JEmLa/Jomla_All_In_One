@@ -36,12 +36,17 @@ interface _0_0_HeadOfRepositorys_Repository {
     fun notifyDataChanged_2_1_ProduitsDataBase_Repository()
     fun notifyDataChanged_1_3_TransactionCommercial_Repository()
     fun upsertUneDataEtReturnVID(data: _1_5_Vendeur, onSuccess: (Long) -> Unit={})
-    fun upsertUneDataEtReturnVID_1_3_TransactionCommercial(
-        data: _1_3_TransactionCommercial,
-        onSuccess: (Long) -> Unit={}
-    )
+
 
     fun upsertUneDataEtReturnVID_1_4_PeriodeVent(data: _1_4_PeriodeVent,
                                                  onSuccess: (Long) -> Unit ={}
     )
+
+    //  _1_3_TransactionCommercial
+    fun upsertUneDataEtReturnVID_1_3_TransactionCommercial(
+        data: _1_3_TransactionCommercial,
+        onSuccess: (Long) -> Unit={}
+    )
+    fun deleteUnSeulData_1_3_TransactionCommercial(data: _1_3_TransactionCommercial)
+
 }

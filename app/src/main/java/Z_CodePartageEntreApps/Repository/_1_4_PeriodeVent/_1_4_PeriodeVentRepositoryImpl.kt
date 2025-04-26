@@ -303,8 +303,8 @@ class _1_4_PeriodeVentRepositoryImpl(
             val dataToAdd = data.copy()
 
             // Make sure fireBaseKeyID is correctly set
-            if (dataToAdd.fireBaseKeyID.isEmpty()) {
-                dataToAdd.fireBaseKeyID = "${dataToAdd.vid}->(${dataToAdd.startDateInString})"
+            if (dataToAdd.fireBaseKeyID_1_4_PeriodeVent.isEmpty()) {
+                dataToAdd.fireBaseKeyID_1_4_PeriodeVent = "${dataToAdd.vid}->(${dataToAdd.startDateInString})"
             }
 
             repositoryScope.launch(Dispatchers.IO) {
@@ -315,14 +315,14 @@ class _1_4_PeriodeVentRepositoryImpl(
                     // Update the object with the new vid
                     dataToAdd.vid = newVid
                     // Update fireBaseKeyID with new vid if needed
-                    dataToAdd.fireBaseKeyID = "${dataToAdd.vid}->(${dataToAdd.startDateInString})"
+                    dataToAdd.fireBaseKeyID_1_4_PeriodeVent = "${dataToAdd.vid}->(${dataToAdd.startDateInString})"
 
                     withContext(Dispatchers.Main) {
                         modelDatasSnapList.add(dataToAdd)
                     }
 
                     // Use fireBaseKeyID as the key in Firebase
-                    _1_4_PeriodeVent_Repository.sonDataBaseRef.child(dataToAdd.fireBaseKeyID).setValue(dataToAdd).await()
+                    _1_4_PeriodeVent_Repository.sonDataBaseRef.child(dataToAdd.fireBaseKeyID_1_4_PeriodeVent).setValue(dataToAdd).await()
 
                 } catch (e: Exception) {
                     Log.e(TAG, "Error adding data: ${e.message}")
@@ -349,14 +349,14 @@ class _1_4_PeriodeVentRepositoryImpl(
                     // Update the object with the new vid
                     dataToAdd.vid = newVid
                     // Update fireBaseKeyID with new vid
-                    dataToAdd.fireBaseKeyID = "${dataToAdd.vid}->(${dataToAdd.startDateInString})"
+                    dataToAdd.fireBaseKeyID_1_4_PeriodeVent = "${dataToAdd.vid}->(${dataToAdd.startDateInString})"
 
                     withContext(Dispatchers.Main) {
                         modelDatasSnapList.add(dataToAdd)
                     }
 
                     // Use fireBaseKeyID as the key in Firebase instead of vid
-                    _1_4_PeriodeVent_Repository.sonDataBaseRef.child(dataToAdd.fireBaseKeyID).setValue(dataToAdd).await()
+                    _1_4_PeriodeVent_Repository.sonDataBaseRef.child(dataToAdd.fireBaseKeyID_1_4_PeriodeVent).setValue(dataToAdd).await()
 
                     // Call the success callback with the new vid
                     onAddSuccess(newVid)
