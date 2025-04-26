@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -19,11 +18,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
- fun C_2_Header_TransactionItem(transaction: _1_3_TransactionCommercial) {
+ fun B_Item_TransactionItem(transaction: _1_3_TransactionCommercial) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -43,13 +41,6 @@ import androidx.compose.ui.unit.dp
         Spacer(modifier = Modifier.width(12.dp))
 
         Column {
-            Text(
-                text = "Transaction #${transaction.vid}",
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Medium
-            )
-
-            Spacer(modifier = Modifier.height(4.dp))
 
             Row {
                 Text(

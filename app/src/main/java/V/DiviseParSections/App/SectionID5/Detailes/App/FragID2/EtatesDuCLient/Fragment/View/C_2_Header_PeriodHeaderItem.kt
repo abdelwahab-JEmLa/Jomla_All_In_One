@@ -13,7 +13,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun B_Item_PeriodHeaderItem(dayName: String, startTime: String, endTime: String) {
+fun C_2_Header_PeriodHeaderItem(dayName: String, startTime: String, endTime: String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
