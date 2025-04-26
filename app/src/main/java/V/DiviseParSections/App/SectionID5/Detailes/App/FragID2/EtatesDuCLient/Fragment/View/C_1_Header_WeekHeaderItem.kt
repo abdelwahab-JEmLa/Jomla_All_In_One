@@ -14,7 +14,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun WeekHeaderItem(weekString: String) {
+fun C_1_Header_WeekHeaderItem(weekString: String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()

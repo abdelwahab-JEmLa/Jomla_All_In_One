@@ -53,14 +53,14 @@ fun A_MainAffichageHistoriquesTransactionsDeCetteJourParIdClient(
                 groupedByWeek.forEach { (weekString, periodsInWeek) ->
                     // Week header (extracted to a separate composable)
                     stickyHeader {
-                        WeekHeaderItem(weekString)
+                        C_1_Header_WeekHeaderItem(weekString)
                     }
 
                     // Display transactions for each period in this week
                     periodsInWeek.forEach { (period, transactions) ->
                         // Period header (now as a regular item instead of stickyHeader)
                         item {
-                            PeriodHeaderItem(
+                            B_Item_PeriodHeaderItem(
                                 dayName = dateStringName.getNomJourArabParDateStr(period.startDateInString),
                                 startTime = period.heurDebutInString,
                                 endTime = if (period.endDateInString.isNotEmpty()) period.endDateInString else "الآن"
@@ -69,7 +69,7 @@ fun A_MainAffichageHistoriquesTransactionsDeCetteJourParIdClient(
 
                         // Transactions for this period
                         items(transactions) { transaction ->
-                            TransactionItem(transaction)
+                            C_2_Header_TransactionItem(transaction)
                         }
                     }
                 }

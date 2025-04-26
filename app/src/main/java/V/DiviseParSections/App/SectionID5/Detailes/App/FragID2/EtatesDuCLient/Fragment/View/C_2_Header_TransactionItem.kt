@@ -23,7 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
- fun TransactionItem(transaction: _1_3_TransactionCommercial) {
+ fun C_2_Header_TransactionItem(transaction: _1_3_TransactionCommercial) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
