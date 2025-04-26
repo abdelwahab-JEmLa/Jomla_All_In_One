@@ -6,7 +6,7 @@ import java.util.Calendar
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
-class GetDateStringName {
+class DateFormatter {
     fun getNomJourArabParDateStr(dataStr: String): String {
         try {
             // Parse the input date string (expected format: "yyyy-MM-dd")

@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.View
 
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.ViewModel.ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient
-import Z_CodePartageEntreApps.Modules.GetDateStringName
+import Z_CodePartageEntreApps.Modules.DateFormatter
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,7 +27,7 @@ fun A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
     idClient: Long = 0
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val dateStringName = GetDateStringName()
+    val dateStringName = DateFormatter()
 
     // Filter transactions by client ID
     val filteredGroupedTransactions = remember(uiState.transactionsDateToList_1_3_TransactionCommercial, idClient) {

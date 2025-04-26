@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.View
 
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_3_TransactionCommercial
-import Z_CodePartageEntreApps.Modules.GetDateStringName
+import Z_CodePartageEntreApps.Modules.DateFormatter
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,7 +14,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -22,8 +21,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun B_Item_TransactionItem(transaction: _1_3_TransactionCommercial) {
-    val context = LocalContext.current
-    val dateFormatter = GetDateStringName()
+    val dateFormatter = DateFormatter()
 
     // Card with background color based on transaction state
     Card(
