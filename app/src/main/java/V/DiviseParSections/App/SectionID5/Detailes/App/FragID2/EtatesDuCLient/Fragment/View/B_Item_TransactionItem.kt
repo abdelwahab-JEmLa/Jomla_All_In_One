@@ -36,7 +36,8 @@ fun B_Item_TransactionItem(transaction: _1_3_TransactionCommercial) {
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth()
+                .padding( 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
 
