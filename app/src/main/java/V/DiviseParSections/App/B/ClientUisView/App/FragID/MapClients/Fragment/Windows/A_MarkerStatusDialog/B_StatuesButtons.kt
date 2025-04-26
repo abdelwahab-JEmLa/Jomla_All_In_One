@@ -35,7 +35,7 @@ fun upsert_1_3_TransactionCommercial(
     newEtate: _1_3_TransactionCommercial.EtateActuellementEst,
     cJustPourVoirPanie: Boolean = false,
 ): Unit {
-    val _0_0_HeadOfRepositorys_Repository = viewModel._0_0_HeadOfRepositorys_Repository
+    val _0_0_HeadOfRepositorys_Repository = viewModel.repo_0_0_HeadOfRepositorys_Repository
 
     val relatedClients = viewModel.bProto_ClientsDataBase.find {
         it.id == (relatedClientID)
@@ -53,9 +53,7 @@ fun upsert_1_3_TransactionCommercial(
     val existingBonAchat = viewModel.modelDatasSnapList_1_3_BonAchat.find {
         it.clientAcheteurID == clientId
                 && it.parentVID_1_4_PeriodeVent == ceComptVendeurInsertBonsAchatAuPeriodID
-                && (it.etateActuellementEst == newEtate
-                && it.cJustPourVoirPanie != cJustPourVoirPanie
-                )
+                && it.etateActuellementEst == newEtate
     }
 
     if (existingBonAchat != null) {
@@ -63,14 +61,14 @@ fun upsert_1_3_TransactionCommercial(
         val updatedBonAchat = existingBonAchat.copy(
             cJustPourVoirPanie = cJustPourVoirPanie,
         )
-        viewModel._0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID(
+        viewModel.repo_0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID(
             updatedBonAchat
         ) { vid ->
             repositorysModel.activeVId_1_3_TransactionCommercial.value = updatedBonAchat.vid
         }
 
     } else {
-        viewModel._0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID(
+        viewModel.repo_0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID(
             _1_3_TransactionCommercial(
                 cJustPourVoirPanie = cJustPourVoirPanie,
                 clientAcheteurID = clientId,
@@ -83,7 +81,11 @@ fun upsert_1_3_TransactionCommercial(
                 ).format(Date())
             )
         ) { vid ->
-            repositorysModel.activeVId_1_3_TransactionCommercial.value = vid
+            if (newEtate == _1_3_TransactionCommercial.EtateActuellementEst.COMMANDE_LIVRAI
+                || newEtate == _1_3_TransactionCommercial.EtateActuellementEst.A_COMMANDE_CONFIRME
+            ) repositorysModel.activeVId_1_3_TransactionCommercial.value = 0
+            else
+                repositorysModel.activeVId_1_3_TransactionCommercial.value = vid
         }
 
     }

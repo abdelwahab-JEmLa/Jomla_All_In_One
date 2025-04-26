@@ -26,6 +26,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,7 +52,7 @@ fun MarkerStatusDialog(
     onClickToEditeMarquerPosition: (Long) -> Unit,
     onRemoveMark: (Marker?) -> Unit,
     _0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository = koinInject(),
-) {
+) {            //<--
     val ceTelephoneEstDeAbdelwahab = _0_0_HeadOfRepositorys_Repository
         .repositorys_Model
         .activeIdDe_1_5_Vendeur == 2L
@@ -81,6 +82,7 @@ fun MarkerStatusDialog(
         it.clientAcheteurID == clientId
                 && it.parentVID_1_4_PeriodeVent == ceComptVendeurInsertBonsAchatAuPeriodID
     }
+
     fun getLatestTransactionForClient(clientId: Long): _1_3_TransactionCommercial? {
         return repositorysModel
             .repository_1_3_TransactionCommercial.modelDatasSnapList
@@ -91,6 +93,7 @@ fun MarkerStatusDialog(
     val latestTransaction = getLatestTransactionForClient(clientId)
     val hasOngoingTransaction = latestTransaction?.etateActuellementEst ==
             _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+    val activeTransactionId by viewModel.repo_0_0_HeadOfRepositorys_Repository.repositorys_Model.activeVId_1_3_TransactionCommercial.collectAsState()
 
 
     // Initialize editedName and editedPhone with current values
@@ -120,6 +123,28 @@ fun MarkerStatusDialog(
                 modifier = Modifier.padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                // First show client info regardless of transaction status
+                item {
+                    ClientEdites(
+                        onClickToEditeMarquerPosition = onClickToEditeMarquerPosition,
+                        selectedMarker = selectedMarker,
+                        onDismiss = onDismiss,
+                        clientTypeMode = clientTypeMode,
+                        relatedClients = relatedClients,
+                        viewModel = viewModel,
+                        onShowDeleteConfirmationChange = { showDeleteConfirmationDialog = it },
+                        onClientTypeModeChange = { clientTypeMode = it },
+                        onShowEditDialogChange = { showEditDialog = it },
+                        onShowPhoneDialogChange = { showPhoneDialog = it },
+                        coroutineScope = coroutineScope,
+                        existingBonAchat = existingBonAchat,
+                        repositorysModel = repositorysModel,
+                        clientId = clientId,
+                        ceComptVendeurInsertBonsAchatAuPeriodID = ceComptVendeurInsertBonsAchatAuPeriodID
+                    )
+                }
+
+                // Show ongoing transaction info if exists
                 if (hasOngoingTransaction) {
                     item {
                         android.util.Log.d(
@@ -147,58 +172,50 @@ fun MarkerStatusDialog(
                                     .fillMaxWidth()
                                     .padding(12.dp)
                             ) {
-                                Text(
-                                    text = "ماهو تقرير الزبون السابق ${relatedClients?.nom ?: ""}",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    modifier = Modifier.padding(bottom = 8.dp)
-                                )
-                                Text(
-                                    text = "وقت البدء: ${transaction?.heurDebutInString ?: ""}",
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                                Text(
-                                    text = "الحالة الحالية: ${transaction?.etateActuellementEst?.nomArabe ?: ""}",
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                                _1_3_TransactionCommercial.EtateActuellementEst.A_COMMANDE_CONFIRME
-                                    .Button(
-                                        coroutineScope = coroutineScope,
-                                        viewModel = viewModel,
-                                        clientId = clientId,
-                                        context = context
+                                // Check if there's an active transaction
+                                if (activeTransactionId != 0L) {
+                                    val relatedClientactiveTransaction =
+                                        viewModel.bProto_ClientsDataBase.find {
+                                            it.id == activeTransactionId
+                                        }
+                                    Text(
+                                        text = "ماهو تقرير الزبون السابق ${
+                                            relatedClients?.nom
+                                                ?: relatedClientactiveTransaction?.nom
+                                                ?: ""
+                                        }",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        modifier = Modifier.padding(bottom = 8.dp)
                                     )
-                                _1_3_TransactionCommercial.EtateActuellementEst.COMMANDE_LIVRAI
-                                    .Button(
-                                        coroutineScope = coroutineScope,
-                                        viewModel = viewModel,
-                                        clientId = clientId,
-                                        context = context
+                                    Text(
+                                        text = "وقت البدء: ${transaction?.heurDebutInString ?: ""}",
+                                        style = MaterialTheme.typography.bodyMedium
                                     )
+                                    Text(
+                                        text = "الحالة الحالية: ${transaction?.etateActuellementEst?.nomArabe ?: ""}",
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                    _1_3_TransactionCommercial.EtateActuellementEst.A_COMMANDE_CONFIRME
+                                        .Button(
+                                            coroutineScope = coroutineScope,
+                                            viewModel = viewModel,
+                                            clientId = clientId,
+                                            context = context
+                                        )
+                                    _1_3_TransactionCommercial.EtateActuellementEst.COMMANDE_LIVRAI
+                                        .Button(
+                                            coroutineScope = coroutineScope,
+                                            viewModel = viewModel,
+                                            clientId = clientId,
+                                            context = context
+                                        )
+                                }
                             }
                         }
                     }
                 }
 
-                item {
-                    ClientEdites(
-                        onClickToEditeMarquerPosition = onClickToEditeMarquerPosition,
-                        selectedMarker = selectedMarker,
-                        onDismiss = onDismiss,
-                        clientTypeMode = clientTypeMode,
-                        relatedClients = relatedClients,
-                        viewModel = viewModel,
-                        onShowDeleteConfirmationChange = { showDeleteConfirmationDialog = it },
-                        onClientTypeModeChange = { clientTypeMode = it },
-                        onShowEditDialogChange = { showEditDialog = it },
-                        onShowPhoneDialogChange = { showPhoneDialog = it },
-                        coroutineScope = coroutineScope,
-                        existingBonAchat = existingBonAchat,
-                        repositorysModel = repositorysModel,
-                        clientId = clientId,
-                        ceComptVendeurInsertBonsAchatAuPeriodID = ceComptVendeurInsertBonsAchatAuPeriodID
-                    )
-                }
-
+                // Always show transaction buttons
                 item {
                     Card(
                         modifier = Modifier
@@ -217,25 +234,19 @@ fun MarkerStatusDialog(
                                 contentPadding = PaddingValues(vertical = 4.dp),
                                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                                 verticalArrangement = Arrangement.spacedBy(4.dp),
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier
+                                    .fillMaxWidth()
                                     .heightIn(max = 600.dp)
                             ) {
+
                                 item {
-                                    CommandButton(
-                                        modifier = Modifier.height(60.dp),
-                                        relatedClients = relatedClients,
-                                        coroutineScope = coroutineScope,
-                                        existingBonAchat = existingBonAchat,
-                                        repositorysModel = repositorysModel,
-                                        clientId = clientId,
-                                        ceComptVendeurInsertBonsAchatAuPeriodID = ceComptVendeurInsertBonsAchatAuPeriodID,
-                                        selectedMarker = selectedMarker,
-                                        viewModel = viewModel,
-                                        onUpdateLongAppSetting = onUpdateLongAppSetting,
-                                        onDismiss = onDismiss,
-                                        context = context,
-                                        etateActuellementEst1 = _1_3_TransactionCommercial.EtateActuellementEst.PourVoirPanie,
-                                    )
+                                    _1_3_TransactionCommercial.EtateActuellementEst.AVEC_MARCHANDISE
+                                        .Button(
+                                            coroutineScope = coroutineScope,
+                                            viewModel = viewModel,
+                                            clientId = clientId,
+                                            context = context
+                                        )
                                 }
 
                                 item {
@@ -255,15 +266,7 @@ fun MarkerStatusDialog(
                                         etateActuellementEst1 = _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
                                     )
                                 }
-                                item {
-                                    _1_3_TransactionCommercial.EtateActuellementEst.AVEC_MARCHANDISE
-                                        .Button(
-                                            coroutineScope = coroutineScope,
-                                            viewModel = viewModel,
-                                            clientId = clientId,
-                                            context = context
-                                        )
-                                }
+
                                 item {
                                     _1_3_TransactionCommercial.EtateActuellementEst.FERME
                                         .Button(
@@ -307,6 +310,7 @@ fun MarkerStatusDialog(
                     }
                 }
 
+                // Always show transaction history
                 item {
                     Spacer(modifier = Modifier.height(16.dp))
 
@@ -323,125 +327,125 @@ fun MarkerStatusDialog(
                 }
             }
         }
-    }
 
-    // Edit Dialog
-    if (showEditDialog) {
-        AlertDialog(
-            onDismissRequest = { showEditDialog = false },
-            title = { Text("Modifier les informations") },
-            text = {
-                Column {
-                    OutlinedTextField(
-                        value = editedName,
-                        onValueChange = { editedName = it },
-                        label = { Text("Nom du client") },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 8.dp)
-                    )
-                    OutlinedTextField(
-                        value = editedPhone,
-                        onValueChange = { editedPhone = it },
-                        label = { Text("Numéro de téléphone") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        coroutineScope.launch {
-                            relatedClients?.apply {
-                                nom = editedName
-                                numTelephone = editedPhone
-                            }
-
-                            relatedClients?.let { client ->
-                                viewModel.updateData(client)
-                            }
-
-                            showEditDialog = false
-                        }
+        // Edit Dialog
+        if (showEditDialog) {
+            AlertDialog(
+                onDismissRequest = { showEditDialog = false },
+                title = { Text("Modifier les informations") },
+                text = {
+                    Column {
+                        OutlinedTextField(
+                            value = editedName,
+                            onValueChange = { editedName = it },
+                            label = { Text("Nom du client") },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 8.dp)
+                        )
+                        OutlinedTextField(
+                            value = editedPhone,
+                            onValueChange = { editedPhone = it },
+                            label = { Text("Numéro de téléphone") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
                     }
-                ) {
-                    Text("OK")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showEditDialog = false }) {
-                    Text("Annuler")
-                }
-            }
-        )
-    }
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            coroutineScope.launch {
+                                relatedClients?.apply {
+                                    nom = editedName
+                                    numTelephone = editedPhone
+                                }
 
-    // Phone Dialog
-    if (showPhoneDialog) {
-        val client = viewModelInitApp._modelAppsFather.clientDataBase.find {
-            it.id.toString() == selectedMarker.id
+                                relatedClients?.let { client ->
+                                    viewModel.updateData(client)
+                                }
+
+                                showEditDialog = false
+                            }
+                        }
+                    ) {
+                        Text("OK")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showEditDialog = false }) {
+                        Text("Annuler")
+                    }
+                }
+            )
         }
-        AlertDialog(
-            onDismissRequest = { showPhoneDialog = false },
-            title = { Text("Numéro de téléphone") },
-            text = {
-                Text(
-                    text = client?.statueDeBase?.numTelephone ?: "",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-            },
-            confirmButton = {
-                TextButton(onClick = { showPhoneDialog = false }) {
-                    Text("OK")
-                }
+
+        // Phone Dialog
+        if (showPhoneDialog) {
+            val client = viewModelInitApp._modelAppsFather.clientDataBase.find {
+                it.id.toString() == selectedMarker.id
             }
-        )
-    }
-
-    // Delete confirmation dialog
-    if (showDeleteConfirmationDialog) {
-        AlertDialog(
-            onDismissRequest = { showDeleteConfirmationDialog = false },
-            title = { Text("Confirmer la suppression") },
-            text = {
-                Text("Êtes-vous sûr de vouloir supprimer ce client ? Cette action est irréversible.")
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        coroutineScope.launch {
-                            val clientToDelete =
-                                viewModelInitApp._modelAppsFather.clientDataBase.find {
-                                    it.id.toString() == selectedMarker.id
-                                }
-
-                            clientToDelete?.let { client ->
-                                // Find and delete the corresponding B_ClientDataBase object
-                                val relatedClient = viewModel.bProto_ClientsDataBase.find {
-                                    it.id == client.id
-                                }
-
-                                // Delete the client from repository
-                                relatedClient?.let {
-                                    viewModel.deleteUnSeulData(it)
-                                }
-
-                                // Remove the marker from the map
-                                onRemoveMark(selectedMarker)
-                                onDismiss()
-                            }
-                            showDeleteConfirmationDialog = false
-                        }
+            AlertDialog(
+                onDismissRequest = { showPhoneDialog = false },
+                title = { Text("Numéro de téléphone") },
+                text = {
+                    Text(
+                        text = client?.statueDeBase?.numTelephone ?: "",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                },
+                confirmButton = {
+                    TextButton(onClick = { showPhoneDialog = false }) {
+                        Text("OK")
                     }
-                ) {
-                    Text("Supprimer", color = MaterialTheme.colorScheme.error)
                 }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDeleteConfirmationDialog = false }) {
-                    Text("Annuler")
+            )
+        }
+
+        // Delete confirmation dialog
+        if (showDeleteConfirmationDialog) {
+            AlertDialog(
+                onDismissRequest = { showDeleteConfirmationDialog = false },
+                title = { Text("Confirmer la suppression") },
+                text = {
+                    Text("Êtes-vous sûr de vouloir supprimer ce client ? Cette action est irréversible.")
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            coroutineScope.launch {
+                                val clientToDelete =
+                                    viewModelInitApp._modelAppsFather.clientDataBase.find {
+                                        it.id.toString() == selectedMarker.id
+                                    }
+
+                                clientToDelete?.let { client ->
+                                    // Find and delete the corresponding B_ClientDataBase object
+                                    val relatedClient = viewModel.bProto_ClientsDataBase.find {
+                                        it.id == client.id
+                                    }
+
+                                    // Delete the client from repository
+                                    relatedClient?.let {
+                                        viewModel.deleteUnSeulData(it)
+                                    }
+
+                                    // Remove the marker from the map
+                                    onRemoveMark(selectedMarker)
+                                    onDismiss()
+                                }
+                                showDeleteConfirmationDialog = false
+                            }
+                        }
+                    ) {
+                        Text("Supprimer", color = MaterialTheme.colorScheme.error)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDeleteConfirmationDialog = false }) {
+                        Text("Annuler")
+                    }
                 }
-            }
-        )
+            )
+        }
     }
 }

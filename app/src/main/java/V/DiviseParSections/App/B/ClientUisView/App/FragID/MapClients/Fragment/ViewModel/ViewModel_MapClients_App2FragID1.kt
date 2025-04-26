@@ -26,14 +26,14 @@ import java.util.Date
 
 class ViewModel_MapClients_App2FragID1(
     val mainRepositery: B_ClientDataBaseRepository,
-    val _0_0_HeadOfRepositorys_Repository:_0_0_HeadOfRepositorys_Repository,
+    val repo_0_0_HeadOfRepositorys_Repository:_0_0_HeadOfRepositorys_Repository,
     val repo_01_VentsHistoriquesDataBase : _01_VentsHistoriquesDataBase_Repository
 ) : ViewModel() {
-    val modelDatasSnapList_1_3_BonAchat=_0_0_HeadOfRepositorys_Repository.repositorys_Model
+    val modelDatasSnapList_1_3_BonAchat=repo_0_0_HeadOfRepositorys_Repository.repositorys_Model
         .repository_1_3_TransactionCommercial.modelDatasSnapList
 
     val bProto_ClientsDataBase = mainRepositery.modelDatas
-    val newClientDataBase = _0_0_HeadOfRepositorys_Repository.repositorys_Model
+    val newClientDataBase = repo_0_0_HeadOfRepositorys_Repository.repositorys_Model
         .repository_3_ClientsDataBase
         .modelDatasSnapList
 

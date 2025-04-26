@@ -115,7 +115,37 @@ private fun MapContent(
 
     var editingMarkerId by remember { mutableLongStateOf(0L) }
     var showEditMarkerMode by remember { mutableStateOf(false) }
+    val activeTransactionId = viewModel.repo_0_0_HeadOfRepositorys_Repository.repositorys_Model.activeVId_1_3_TransactionCommercial.collectAsState().value
 
+
+    // In A_MapClients_A2FragID_1.kt, inside the MapContent function
+// After the LaunchedEffect block that sets up markers, add this code:
+
+    LaunchedEffect(viewModel.repo_0_0_HeadOfRepositorys_Repository.repositorys_Model.activeVId_1_3_TransactionCommercial.collectAsState().value) {
+
+        if (activeTransactionId != 0L) {
+            // Find the transaction to get the client ID
+            val activeTransaction = viewModel.repo_0_0_HeadOfRepositorys_Repository.repositorys_Model
+                .repository_1_3_TransactionCommercial.modelDatasSnapList
+                .find { it.vid == activeTransactionId }
+
+            activeTransaction?.let { transaction ->
+                // Find the marker for this client
+                val clientMarker = mapView.overlays.filterIsInstance<Marker>()
+                    .find { it.id == transaction.clientAcheteurID.toString() }
+
+                clientMarker?.let { marker ->
+                    // Select the marker and show its information
+                    selectedMarker = marker
+                    showMarkerDialog = true
+                    marker.showInfoWindow()
+
+                    // Animate to the marker position
+                    mapView.controller.animateTo(marker.position)
+                }
+            }
+        }
+    }
     // Initialize map with current location or default position
     LaunchedEffect(Unit) {
         val location = getCurrentLocation(context)
@@ -212,7 +242,7 @@ private fun MapContent(
                 clientDataBaseSnapList
             }
             ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsWithConfirmedProducts -> {
-                val clientsWithConfirmedProducts = viewModel._0_0_HeadOfRepositorys_Repository.repositorys_Model
+                val clientsWithConfirmedProducts = viewModel.repo_0_0_HeadOfRepositorys_Repository.repositorys_Model
                     .repository_1_3_TransactionCommercial.modelDatasSnapList
                     .filter { bonAchat ->
                         bonAchat.etateActuellementEst == _1_3_TransactionCommercial.EtateActuellementEst.A_COMMANDE_CONFIRME
@@ -359,7 +389,7 @@ private fun MapContent(
         mapView.invalidate()
 
         // Find latest transactions for each client
-        val latestTransactionsMap = viewModel._0_0_HeadOfRepositorys_Repository.repositorys_Model
+        val latestTransactionsMap = viewModel.repo_0_0_HeadOfRepositorys_Repository.repositorys_Model
             .repository_1_3_TransactionCommercial.modelDatasSnapList
             .groupBy { it.clientAcheteurID }
             .mapValues { (_, transactions) ->
@@ -530,6 +560,7 @@ private fun MapContent(
 
         // Marker status dialog
         if (showMarkerDialog && selectedMarker != null) {
+
             MarkerStatusDialog(
                 viewModel = viewModel,
                 viewModelInitApp = viewModelInitApp,

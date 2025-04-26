@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -26,11 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import org.osmdroid.views.overlay.Marker
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 @Composable
 fun ClientEdites(
@@ -86,59 +81,7 @@ fun ClientEdites(
                 contentDescription = "Edit location"
             )
         }
-        Card(
-            modifier = Modifier
-                .padding(end = 8.dp)
-                .clickable {
-                    coroutineScope.launch {
-                        val etateActuellementEst =
-                            _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
-                        if (existingBonAchat != null) {
-                            // Update the existing BonAchat
-                            val updatedBonAchat = existingBonAchat.copy(
-                                etateActuellementEst = etateActuellementEst,
-                                heurDebutInString = SimpleDateFormat(
-                                    "HH:mm",
-                                    Locale.getDefault()
-                                ).format(Date())
-                            )
-                            viewModel._0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID(
-                                updatedBonAchat
-                            ) { vid ->
-                                repositorysModel.activeVId_1_3_TransactionCommercial.value = vid
-                            }
 
-                        } else {
-                            viewModel._0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID(
-                                _1_3_TransactionCommercial(
-                                    clientAcheteurID = clientId,
-                                    nomClientConcerned = relatedClients?.nom!!,
-                                    parentVID_1_4_PeriodeVent = ceComptVendeurInsertBonsAchatAuPeriodID!!,
-                                    etateActuellementEst = etateActuellementEst,
-                                    heurDebutInString = SimpleDateFormat(
-                                        "HH:mm",
-                                        Locale.getDefault()
-                                    ).format(Date())
-                                )
-                            ) { vid ->
-                                repositorysModel.activeVId_1_3_TransactionCommercial.value = vid
-                            }
-
-                        }
-
-                        val selectedMarkedID = selectedMarker.id.toLong()
-
-                        viewModel.updateLongAppSetting(selectedMarkedID)
-                        onUpdateLongAppSetting()
-                        onDismiss()
-                    }
-                }
-        ) {
-            Icon(
-                imageVector = Icons.Default.ShoppingCart,
-                contentDescription = "Start Command Mode"
-            )
-        }
         // Client Type Mode Toggle
         Card(
             modifier = Modifier
