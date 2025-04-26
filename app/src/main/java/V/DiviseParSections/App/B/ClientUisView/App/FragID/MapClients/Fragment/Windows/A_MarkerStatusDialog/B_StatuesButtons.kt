@@ -216,6 +216,7 @@ fun ACHETEUR_NON_DISPO(
 
 @Composable
 fun CommandButton(
+    modifier: Modifier = Modifier,
     relatedClients: B_ClientDataBase?,
     coroutineScope: CoroutineScope,
     existingBonAchat: _1_3_TransactionCommercial?,
@@ -240,11 +241,11 @@ fun CommandButton(
                             Locale.getDefault()
                         ).format(Date())
                     )
-                     viewModel._0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID_1_3_TransactionCommercial(
-                         updatedBonAchat
-                     )      { vid ->
-                         repositorysModel.activeId_1_3_BonAchat.value = vid
-                     }
+                    viewModel._0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID_1_3_TransactionCommercial(
+                        updatedBonAchat
+                    ) { vid ->
+                        repositorysModel.activeId_1_3_BonAchat.value = vid
+                    }
 
                 } else {
                     viewModel._0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID_1_3_TransactionCommercial(
@@ -258,7 +259,7 @@ fun CommandButton(
                                 Locale.getDefault()
                             ).format(Date())
                         )
-                    )      { vid ->
+                    ) { vid ->
                         repositorysModel.activeId_1_3_BonAchat.value = vid
                     }
 

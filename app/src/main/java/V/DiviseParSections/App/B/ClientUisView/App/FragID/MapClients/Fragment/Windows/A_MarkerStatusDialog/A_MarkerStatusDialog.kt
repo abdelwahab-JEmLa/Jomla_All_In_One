@@ -4,14 +4,19 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.View.A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -117,55 +122,86 @@ fun MarkerStatusDialog(
                     onShowEditDialogChange = { showEditDialog = it },
                     onShowPhoneDialogChange = { showPhoneDialog = it }
                 )
+                // In the MarkerStatusDialog composable, replace the linear button section with this:
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    elevation = androidx.compose.material3.CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
+                        Text(
+                            text = "حالة العميل",
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
 
-                CommandButton(
-                    coroutineScope = coroutineScope,
-                    existingBonAchat = existingBonAchat,
-                    repositorysModel = repositorysModel,
-                    clientId = clientId,
-                    ceComptVendeurInsertBonsAchatAuPeriodID = ceComptVendeurInsertBonsAchatAuPeriodID,
-                    selectedMarker = selectedMarker,
-                    viewModel = viewModel,
-                    onUpdateLongAppSetting = onUpdateLongAppSetting,
-                    onDismiss = onDismiss,
-                    relatedClients = relatedClients,
-                    context = context
-                )
+                        // Use a LazyVerticalGrid with 2 columns
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(2),
+                            contentPadding = PaddingValues(vertical = 4.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
 
-                ACHETEUR_NON_DISPO(
-                    coroutineScope = coroutineScope,
-                    selectedMarker = selectedMarker,
-                    relatedClients = relatedClients,
-                    viewModel = viewModel,
-                    onDismiss = onDismiss,
-                    repositorysModel = repositorysModel,
-                    clientId = clientId,
-                    context = context
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                AVEC_MARCHANDISE(
-                    coroutineScope = coroutineScope,
-                    relatedClients = relatedClients,
-                    viewModel = viewModel,
-                    onDismiss = onDismiss,
-                    repositorysModel = repositorysModel,
-                    clientId = clientId,
-                    context = context
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                FERME(
-                    coroutineScope = coroutineScope,
-                    relatedClients = relatedClients,
-                    viewModel = viewModel,
-                    onDismiss = onDismiss,
-                    repositorysModel = repositorysModel,
-                    clientId = clientId,
-                    context = context
-                )
+                            item {
+                                ACHETEUR_NON_DISPO(
+                                    coroutineScope = coroutineScope,
+                                    selectedMarker = selectedMarker,
+                                    relatedClients = relatedClients,
+                                    viewModel = viewModel,
+                                    onDismiss = onDismiss,
+                                    repositorysModel = repositorysModel,
+                                    clientId = clientId,
+                                    context = context,
+                                )
+                            }
+                            item {
+                                CommandButton(
+                                    modifier = Modifier.height(30.dp),
+                                    coroutineScope = coroutineScope,
+                                    existingBonAchat = existingBonAchat,
+                                    repositorysModel = repositorysModel,
+                                    clientId = clientId,
+                                    ceComptVendeurInsertBonsAchatAuPeriodID = ceComptVendeurInsertBonsAchatAuPeriodID,
+                                    selectedMarker = selectedMarker,
+                                    viewModel = viewModel,
+                                    onUpdateLongAppSetting = onUpdateLongAppSetting,
+                                    onDismiss = onDismiss,
+                                    relatedClients = relatedClients,
+                                    context = context,
+                                )
+                            }
+                            item {
+                                AVEC_MARCHANDISE(
+                                    coroutineScope = coroutineScope,
+                                    relatedClients = relatedClients,
+                                    viewModel = viewModel,
+                                    onDismiss = onDismiss,
+                                    repositorysModel = repositorysModel,
+                                    clientId = clientId,
+                                    context = context,
+                                )
+                            }
+                            item {
+                                FERME(
+                                    coroutineScope = coroutineScope,
+                                    relatedClients = relatedClients,
+                                    viewModel = viewModel,
+                                    onDismiss = onDismiss,
+                                    repositorysModel = repositorysModel,
+                                    clientId = clientId,
+                                    context = context,
+                                )
+                            }
+                        }
+                    }
+                }
 
                 if (ceTelephoneEstDeAbdelwahab) {
                     Spacer(modifier = Modifier.height(16.dp))
