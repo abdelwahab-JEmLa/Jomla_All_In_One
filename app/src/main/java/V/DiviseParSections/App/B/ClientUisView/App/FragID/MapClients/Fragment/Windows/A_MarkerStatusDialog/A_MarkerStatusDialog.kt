@@ -81,6 +81,7 @@ fun MarkerStatusDialog(
 
     val hasOngoingTransaction = repositorysModel
         .repository_1_3_TransactionCommercial.modelDatasSnapList
+        .sortedByDescending { it.heurDebutInString } // Sort by date/time in descending order
         .any {
             it.clientAcheteurID == clientId &&
                     it.etateActuellementEst == _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
@@ -91,8 +92,6 @@ fun MarkerStatusDialog(
         editedName = relatedClients.nom ?: ""
         editedPhone = relatedClients.numTelephone ?: ""
     }
-
-
 
     if (selectedMarker == null) return
 
@@ -116,8 +115,10 @@ fun MarkerStatusDialog(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 if (hasOngoingTransaction) {
+                    // And also update the find method for displaying transaction details
                     val transaction = repositorysModel
                         .repository_1_3_TransactionCommercial.modelDatasSnapList
+                        .sortedByDescending { it.heurDebutInString } // Sort by date/time in descending order
                         .find {
                             it.clientAcheteurID == clientId &&
                                     it.etateActuellementEst == _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT

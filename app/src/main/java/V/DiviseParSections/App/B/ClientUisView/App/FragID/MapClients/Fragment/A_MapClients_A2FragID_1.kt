@@ -96,7 +96,8 @@ private fun MapContent(
     onUpdateLongAppSetting: () -> Unit,
     onClear: () -> Unit,
     mapReloadTrigger: Int = 0
-) {
+) {          //<--
+    //TODO(1): fait que si le derner etate on ordron des par date est on commande daffiche le cheque de update
     val context = LocalContext.current
     val currentZoom by remember { mutableDoubleStateOf(18.2) }
     val mapView = remember { MapView(context) }
@@ -346,9 +347,27 @@ private fun MapContent(
         }
         mapView.invalidate()
 
+        // In the MapContent function, after retrieving transactionOnCommandMode
         val transactionOnCommandMode = viewModel._0_0_HeadOfRepositorys_Repository.repositorys_Model
             .repository_1_3_TransactionCommercial.modelDatasSnapList
+            .sortedByDescending { it.heurDebutInString } // Sort transactions by date/time in descending order
             .find { it.etateActuellementEst == _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT }
+
+        transactionOnCommandMode?.let { transaction ->
+            val clientId = transaction.clientAcheteurID
+            val relatedClient = viewModel.bProto_ClientsDataBase.find { it.id == clientId }
+
+            val marker = mapView.overlays.filterIsInstance<Marker>()
+                .find { it.id == clientId.toString() }
+
+            marker?.let {
+                selectedMarker = it
+                showMarkerDialog = true
+                // Highlight the marker for update
+                it.setIcon(ContextCompat.getDrawable(context, android.R.drawable.ic_menu_edit))
+                it.showInfoWindow()
+            }
+        }
 
         transactionOnCommandMode?.let { transaction ->
             val clientId = transaction.clientAcheteurID
