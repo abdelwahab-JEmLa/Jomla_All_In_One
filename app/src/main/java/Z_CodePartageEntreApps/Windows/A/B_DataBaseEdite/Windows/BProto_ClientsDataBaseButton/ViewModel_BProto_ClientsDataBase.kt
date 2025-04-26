@@ -115,7 +115,7 @@ class ViewModel_BProto_ClientsDataBase(
                 snapshotList.addAll(convertedData)
 
                 // Update repository with new data structure
-                _0_0_HeadOfRepositorys_Repository.repositorys_Model._3_ClientsDataBase_Repository.addMultiDATAsEtReturnVIDsList(
+                _0_0_HeadOfRepositorys_Repository.repositorys_Model.repository_3_ClientsDataBase.addMultiDATAsEtReturnVIDsList(
                     convertedData
                 ) { vids ->
                     // Update the snapshotList with new VIDs if needed
@@ -128,7 +128,7 @@ class ViewModel_BProto_ClientsDataBase(
                     // Update the repository with the updated objects
                     viewModelScope.launch {
                         try {
-                            _0_0_HeadOfRepositorys_Repository.repositorys_Model._3_ClientsDataBase_Repository.updateMultiDatas(
+                            _0_0_HeadOfRepositorys_Repository.repositorys_Model.repository_3_ClientsDataBase.updateMultiDatas(
                                 snapshotList
                             )
                             Log.d(

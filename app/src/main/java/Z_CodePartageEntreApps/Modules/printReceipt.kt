@@ -38,7 +38,7 @@ fun printReceipt(
 
     val printFunction = {
         // Get client information
-        val client = repositorysModel._3_ClientsDataBase_Repository
+        val client = repositorysModel.repository_3_ClientsDataBase
             .modelDatasSnapList.find { it.vid == bonAchat.clientAcheteurID }
 
         // Generate current date string

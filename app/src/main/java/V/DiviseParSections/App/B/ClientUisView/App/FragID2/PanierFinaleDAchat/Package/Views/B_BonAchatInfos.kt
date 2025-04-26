@@ -59,7 +59,7 @@ fun ColumnScope.BonAchatInfos(
     ) {
     val repositorysModel = _0_0_HeadOfRepositorys_Repository.repositorys_Model
     val relativeClientDataBase =
-        repositorysModel._3_ClientsDataBase_Repository
+        repositorysModel.repository_3_ClientsDataBase
             .modelDatasSnapList.find { it.vid == relativeBonAchate?.clientAcheteurID }
 
     val context = LocalContext.current

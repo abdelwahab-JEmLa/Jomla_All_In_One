@@ -23,7 +23,7 @@ class _0_0_HeadOfRepositorys_Model(
     val repository_1_5_Vendeur: _1_5_Vendeur_Repository,
 
     val _2_1_ProduitsDataBase_Repository: _2_1_ProduitsDataBase_Repository,
-    val _3_ClientsDataBase_Repository: _3_ClientsDataBase_Repository,
+    val repository_3_ClientsDataBase: _3_ClientsDataBase_Repository,
 
     val _4_CouleurOperationCommand_Repository: _4_CouleurOperationCommand_Repository,
     val databaseReference_1_5_Vendeur: DatabaseReference = _1_5_Vendeur_Repository.sonDataBaseRef,

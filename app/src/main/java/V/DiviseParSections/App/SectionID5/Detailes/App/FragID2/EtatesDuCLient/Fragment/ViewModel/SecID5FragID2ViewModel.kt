@@ -1,9 +1,10 @@
 package V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.ViewModel
 
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Preview.addTestDataToFireBaseIfEmpty
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_3_TransactionCommercial
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_4_PeriodeVent
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Preview.addTestDataToFireBaseIfEmpty
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
+import Z_CodePartageEntreApps.Repository._3_ClientsDataBase._3_ClientsDataBase
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
@@ -22,6 +23,8 @@ private const val TAG = "SecID5FragID2ViewModel"
 data class SecID5FragID2UiState(
     val sl_1_4_PeriodeVent: SnapshotStateList<_1_4_PeriodeVent> = SnapshotStateList(),
     val sl_1_3_TransactionCommercial: SnapshotStateList<_1_3_TransactionCommercial> = SnapshotStateList(),
+    val sl_3_ClientsDataBase: SnapshotStateList<_3_ClientsDataBase> = SnapshotStateList(),
+
     val transactionsDateToList_1_3_TransactionCommercial:
     List<Pair<_1_4_PeriodeVent, List<_1_3_TransactionCommercial>>> = emptyList(),
 )
@@ -45,10 +48,14 @@ class SecID5FragID2ViewModel(
                 // Ensure repositories are initialized
                 r_0_0_HeadOfRepositorys_Repository.repositorys_Model.repository_1_4_PeriodeVent.ensureDataIsInitialized()
                 r_0_0_HeadOfRepositorys_Repository.repositorys_Model.repository_1_3_TransactionCommercial.ensureDataIsInitialized()
+                r_0_0_HeadOfRepositorys_Repository.repositorys_Model.repository_3_ClientsDataBase.ensureDataIsInitialized()
 
                 // Add test data if the repositories are empty - check more reliably
                 if (r_0_0_HeadOfRepositorys_Repository.repositorys_Model.repository_1_4_PeriodeVent.modelDatasSnapList.isEmpty() ||
-                    r_0_0_HeadOfRepositorys_Repository.repositorys_Model.repository_1_3_TransactionCommercial.modelDatasSnapList.isEmpty()) {
+                    r_0_0_HeadOfRepositorys_Repository.repositorys_Model.repository_1_3_TransactionCommercial.modelDatasSnapList.isEmpty()   ||
+                    r_0_0_HeadOfRepositorys_Repository.repositorys_Model.repository_3_ClientsDataBase.modelDatasSnapList.isEmpty()
+
+                    ) {
                     addTestDataToFireBaseIfEmpty(viewModelScope, r_0_0_HeadOfRepositorys_Repository)
                     // Wait briefly for data to be saved
                     delay(1000)
@@ -59,7 +66,10 @@ class SecID5FragID2ViewModel(
                     _uiState.update { currentState ->
                         currentState.copy(
                             sl_1_4_PeriodeVent = r_0_0_HeadOfRepositorys_Repository.repositorys_Model.repository_1_4_PeriodeVent.modelDatasSnapList,
-                            sl_1_3_TransactionCommercial = r_0_0_HeadOfRepositorys_Repository.repositorys_Model.repository_1_3_TransactionCommercial.modelDatasSnapList
+                            sl_1_3_TransactionCommercial = r_0_0_HeadOfRepositorys_Repository.repositorys_Model
+                                .repository_1_3_TransactionCommercial.modelDatasSnapList,
+                            sl_3_ClientsDataBase = r_0_0_HeadOfRepositorys_Repository.repositorys_Model
+                                .repository_3_ClientsDataBase.modelDatasSnapList
                         )
                     }
                 }
@@ -87,6 +97,19 @@ class SecID5FragID2ViewModel(
                             withContext(Dispatchers.Main) {
                                 _uiState.update { currentState ->
                                     currentState.copy(sl_1_3_TransactionCommercial = repo.modelDatasSnapList)
+                                }
+                            }
+                            loadCollecttransactionsDateToList_1_3_TransactionCommercial()
+                        }
+                    }
+                }
+
+                launch {
+                    r_0_0_HeadOfRepositorys_Repository.repositorys_Model.repository_3_ClientsDataBase.let { repo ->
+                        snapshotFlow { repo.modelDatasSnapList.toList() }.collect {
+                            withContext(Dispatchers.Main) {
+                                _uiState.update { currentState ->
+                                    currentState.copy(sl_3_ClientsDataBase = repo.modelDatasSnapList)
                                 }
                             }
                             loadCollecttransactionsDateToList_1_3_TransactionCommercial()

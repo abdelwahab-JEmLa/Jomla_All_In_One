@@ -431,7 +431,7 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                     repository_1_5_Vendeur = _1_5_Repository,
 
                     _2_1_ProduitsDataBase_Repository = _2_1_Repository,
-                    _3_ClientsDataBase_Repository = _2_2_Repository,
+                    repository_3_ClientsDataBase = _2_2_Repository,
                     _4_CouleurOperationCommand_Repository = _4_CouleurOperationCommand_Repository,
                 )
 
