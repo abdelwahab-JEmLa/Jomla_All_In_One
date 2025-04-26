@@ -168,25 +168,22 @@ fun MarkerStatusDialog(
                 }
 
                 ClientEdites(
-                    ceComptVendeurInsertBonsAchatAuPeriodID = ceComptVendeurInsertBonsAchatAuPeriodID,
-
-                    repositorysModel = repositorysModel,
-                    clientId = clientId,
-                    coroutineScope = coroutineScope,
-                    existingBonAchat = existingBonAchat,
-                    showDeleteConfirmationDialog = showDeleteConfirmationDialog,
                     onClickToEditeMarquerPosition = onClickToEditeMarquerPosition,
+
                     selectedMarker = selectedMarker,
                     onDismiss = onDismiss,
                     clientTypeMode = clientTypeMode,
                     relatedClients = relatedClients,
                     viewModel = viewModel,
-                    showEditDialog = showEditDialog,
-                    showPhoneDialog = showPhoneDialog,
                     onShowDeleteConfirmationChange = { showDeleteConfirmationDialog = it },
                     onClientTypeModeChange = { clientTypeMode = it },
                     onShowEditDialogChange = { showEditDialog = it },
-                    onShowPhoneDialogChange = { showPhoneDialog = it }
+                    onShowPhoneDialogChange = { showPhoneDialog = it },
+                    coroutineScope = coroutineScope,
+                    existingBonAchat = existingBonAchat,
+                    repositorysModel = repositorysModel,
+                    clientId = clientId,
+                    ceComptVendeurInsertBonsAchatAuPeriodID = ceComptVendeurInsertBonsAchatAuPeriodID
                 )
 
                 Card(

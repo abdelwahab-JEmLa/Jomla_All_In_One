@@ -34,15 +34,13 @@ import java.util.Locale
 
 @Composable
 fun ClientEdites(
-    showDeleteConfirmationDialog: Boolean,
     onClickToEditeMarquerPosition: (Long) -> Unit,
     selectedMarker: Marker,
     onDismiss: () -> Unit,
     clientTypeMode: B_ClientDataBase.ClientTypeMode?,
     relatedClients: B_ClientDataBase?,
     viewModel: ViewModel_MapClients_App2FragID1,
-    showEditDialog: Boolean,
-    showPhoneDialog: Boolean,
+
     onShowDeleteConfirmationChange: (Boolean) -> Unit = {},
     onClientTypeModeChange: (B_ClientDataBase.ClientTypeMode?) -> Unit = {},
     onShowEditDialogChange: (Boolean) -> Unit = {},
