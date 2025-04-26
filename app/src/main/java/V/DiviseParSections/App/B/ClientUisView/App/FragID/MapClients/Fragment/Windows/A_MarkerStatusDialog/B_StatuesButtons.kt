@@ -216,6 +216,7 @@ fun ACHETEUR_NON_DISPO(
 
 @Composable
 fun CommandButton(
+    relatedClients: B_ClientDataBase?,
     coroutineScope: CoroutineScope,
     existingBonAchat: _1_3_TransactionCommercial?,
     repositorysModel: _0_0_HeadOfRepositorys_Model,
@@ -225,7 +226,6 @@ fun CommandButton(
     viewModel: ViewModel_MapClients_App2FragID1,
     onUpdateLongAppSetting: () -> Unit,
     onDismiss: () -> Unit,
-    relatedClients: B_ClientDataBase?,
     context: Context,
 ) {
     FilledTonalButton(
@@ -250,6 +250,7 @@ fun CommandButton(
                     viewModel._0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID_1_3_TransactionCommercial(
                         _1_3_TransactionCommercial(
                             clientAcheteurID = clientId,
+                            nomClientConcerned = relatedClients?.nom!!,
                             parentVID_1_4_PeriodeVent = ceComptVendeurInsertBonsAchatAuPeriodID!!,
                             etateActuellementEst = _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
                             heurDebutInString = SimpleDateFormat(
