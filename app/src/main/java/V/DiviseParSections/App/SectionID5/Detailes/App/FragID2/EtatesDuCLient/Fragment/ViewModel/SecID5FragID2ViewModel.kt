@@ -42,7 +42,8 @@ class SecID5FragID2ViewModel(
         }
     }
 
-    private fun loadCollectSnapshotStateList() {
+    private fun loadCollectSnapshotStateList() {   //<--
+    //TODO(1): trie tout par date dec 
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 // Ensure repositories are initialized
