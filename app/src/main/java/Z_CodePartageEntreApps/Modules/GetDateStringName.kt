@@ -1,5 +1,6 @@
-package Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.Modules
+package Z_CodePartageEntreApps.Modules
 
+import android.annotation.SuppressLint
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -80,6 +81,35 @@ class GetDateStringName {
         } catch (e: Exception) {
             // Return current week if parsing fails
             return "هذا الأسبوع"
+        }
+    }
+
+    @SuppressLint("DefaultLocale")
+    fun formatTimeToArabic(timeString: String): String {  // Changed from private to public
+        try {
+            val timeParts = timeString.split(":")
+            if (timeParts.size < 2) {
+                return timeString
+            }
+
+            val hour = timeParts[0].toIntOrNull() ?: return timeString
+            val minute = timeParts[1].toIntOrNull() ?: return timeString
+
+            // Check if it's AM or PM
+            val isPM = hour >= 12
+            val amPmIndicator = if (isPM) "م" else "ص"
+
+            // Convert to 12-hour format
+            val hour12 = when {
+                hour == 0 -> 12
+                hour > 12 -> hour - 12
+                else -> hour
+            }
+
+            // Format to hour:minute AM/PM in Arabic
+            return String.format("%d:%02d %s", hour12, minute, amPmIndicator)
+        } catch (e: Exception) {
+            return timeString
         }
     }
 }

@@ -32,7 +32,7 @@ data class _1_3_TransactionCommercial(
     @IgnoreExtraProperties
     enum class EtateActuellementEst(val color: Int, val nomArabe: String) {
         NON_DEFINI(android.R.color.white, "غير محدد"),
-        ON_MODE_COMMEND_ACTUELLEMENT(android.R.color.holo_green_light, ""),
+        ON_MODE_COMMEND_ACTUELLEMENT(android.R.color.holo_green_light, "في طلب"),
         A_COMMANDE_CONFIRME(android.R.color.holo_purple, "تم البيع له"),
         AVEC_MARCHANDISE(android.R.color.holo_blue_light, "عندو سلعة"),
         A_EVITE(android.R.color.black, "يتجنب"),

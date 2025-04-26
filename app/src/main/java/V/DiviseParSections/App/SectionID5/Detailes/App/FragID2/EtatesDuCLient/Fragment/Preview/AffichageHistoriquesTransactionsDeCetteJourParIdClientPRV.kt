@@ -7,5 +7,5 @@ import androidx.compose.ui.tooling.preview.Preview
 @Preview
 @Composable
 private fun AffichageHistoriquesTransactionsDeCetteJourParIdClientPRV() {
-    A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient()
+    A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient(idClient = 4)
 }

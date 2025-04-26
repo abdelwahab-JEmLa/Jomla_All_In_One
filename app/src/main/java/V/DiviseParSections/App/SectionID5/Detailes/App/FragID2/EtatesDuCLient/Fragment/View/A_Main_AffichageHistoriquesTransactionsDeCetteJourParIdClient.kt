@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.View
 
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.ViewModel.ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.Modules.GetDateStringName
+import Z_CodePartageEntreApps.Modules.GetDateStringName
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,7 +24,7 @@ import org.koin.androidx.compose.koinViewModel
 fun A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
     modifier: Modifier = Modifier,
     viewModel: ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient = koinViewModel(),
-    idClient: Long = 2
+    idClient: Long = 0
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val dateStringName = GetDateStringName()
@@ -63,7 +63,7 @@ fun A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
                             C_2_Header_PeriodHeaderItem(
                                 dayName = dateStringName.getNomJourArabParDateStr(period.startDateInString),
                                 startTime = period.heurDebutInString,
-                                endTime = if (period.endDateInString.isNotEmpty()) period.endDateInString else "الآن"
+                                endTime = period.endDateInString.ifEmpty { "الآن" }
                             )
                         }
 
