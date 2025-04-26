@@ -158,15 +158,11 @@ private fun calcule_totalPrice(
     }
 
     // If colorOperations is provided, filter from that list, otherwise use repository data
-    val productTotalQuantity = if (colorOperations != null) {
-        colorOperations
-            .filter {
-                it.parentProduitAchateOperationVID == produitOpe.vid &&
-                        it.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
-            }
-            .sumOf { it.totaleQuantity }
-    } else {
-        _0_HeadOfRepositorys_Repository_Model
+    val productTotalQuantity = colorOperations?.filter {
+        it.parentProduitAchateOperationVID == produitOpe.vid &&
+                it.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
+    }?.sumOf { it.totaleQuantity }
+        ?: _0_HeadOfRepositorys_Repository_Model
             ._1_1_CouleurAcheteOperation_Repository
             .modelDatasSnapList
             .filter {
@@ -174,7 +170,6 @@ private fun calcule_totalPrice(
                         it.etateActuellementEst == _1_1_CouleurAcheteOperation.EtateActuellementEst.QUANTITY_CHOISI
             }
             .sumOf { it.totaleQuantity }
-    }
 
     // Multiply the quantity by the price for this product
     productTotalQuantity * productPrice

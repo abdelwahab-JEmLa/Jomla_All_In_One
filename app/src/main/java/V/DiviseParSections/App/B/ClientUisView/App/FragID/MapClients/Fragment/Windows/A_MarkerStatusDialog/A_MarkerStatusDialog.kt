@@ -222,7 +222,8 @@ fun MarkerStatusDialog(
                                     onUpdateLongAppSetting = onUpdateLongAppSetting,
                                     onDismiss = onDismiss,
                                     context = context,
-                                    etateActuellementEst1 = _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_VOIRE_PANIE_ARTICLES,
+                                    initetateActuellementEst1 = _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
+                                    cJustPourVoirPanie=true,
                                 )
                             }
 
@@ -240,7 +241,7 @@ fun MarkerStatusDialog(
                                     onUpdateLongAppSetting = onUpdateLongAppSetting,
                                     onDismiss = onDismiss,
                                     context = context,
-                                    etateActuellementEst1 = _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
+                                    initetateActuellementEst1 = _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
                                 )
                             }
                             item {

@@ -25,13 +25,25 @@ data class _1_3_TransactionCommercial(
     var heurFinInString: String = "Non Defini",
 
     // Section StatuesMutable
+    var cJustPourVoirPanie: Boolean = false,
 
     var etateActuellementEst: EtateActuellementEst =
         EtateActuellementEst.NON_DEFINI,
 ) {
-    // Generate Firebase key automatically based on properties
     val fireBaseKeyID_1_3_TransactionCommercial: String
-        get() = "$parentVID_1_4_PeriodeVent->(${clientAcheteurID}_$nomClientConcerned->(${etateActuellementEst.name}))"
+        get() {
+            val parent = "(${parentVID_1_4_PeriodeVent})"
+            val thisVal = "->(${clientAcheteurID}_($nomClientConcerned))"
+
+            val name = if (cJustPourVoirPanie)
+                "cJustPourVoirPanie"
+            else
+                etateActuellementEst.nomArabe
+
+            val autre = "->($name)"
+
+            return "$parent$thisVal$autre"
+        }
 
     @IgnoreExtraProperties
     enum class EtateActuellementEst(val color: Int, val nomArabe: String) {

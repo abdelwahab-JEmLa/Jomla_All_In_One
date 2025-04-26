@@ -32,9 +32,9 @@ import java.util.Locale
 fun upsert_1_3_TransactionCommercial(
     viewModel: ViewModel_MapClients_App2FragID1,
     relatedClientID: Long,
-    etateActuellementEst: _1_3_TransactionCommercial.EtateActuellementEst
+    etateActuellementEst: _1_3_TransactionCommercial.EtateActuellementEst,
 ): Unit {
-    val _0_0_HeadOfRepositorys_Repository= viewModel._0_0_HeadOfRepositorys_Repository
+    val _0_0_HeadOfRepositorys_Repository = viewModel._0_0_HeadOfRepositorys_Repository
 
     val relatedClients = viewModel.bProto_ClientsDataBase.find {
         it.id == (relatedClientID)
@@ -88,6 +88,7 @@ fun upsert_1_3_TransactionCommercial(
 
 
 }
+
 @Composable
 fun _1_3_TransactionCommercial.EtateActuellementEst.Button(
     coroutineScope: CoroutineScope,
@@ -153,19 +154,27 @@ fun CommandButton(
     onUpdateLongAppSetting: () -> Unit,
     onDismiss: () -> Unit,
     context: Context,
-    etateActuellementEst1: _1_3_TransactionCommercial.EtateActuellementEst,
+    initetateActuellementEst1: _1_3_TransactionCommercial.EtateActuellementEst,
+    cJustPourVoirPanie: Boolean = false,
 ) {
+    val etateActuellementEst1 =
+        if (cJustPourVoirPanie) _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_VOIRE_PANIE_ARTICLES
+        else
+            initetateActuellementEst1
+
     FilledTonalButton(
         onClick = {
             coroutineScope.launch {
                 if (existingBonAchat != null) {
                     // Update the existing BonAchat
                     val updatedBonAchat = existingBonAchat.copy(
-                        etateActuellementEst = etateActuellementEst1,
+                        etateActuellementEst = initetateActuellementEst1,
+
                         heurDebutInString = SimpleDateFormat(
                             "HH:mm",
                             Locale.getDefault()
-                        ).format(Date())
+                        ).format(Date()),
+                        cJustPourVoirPanie = cJustPourVoirPanie
                     )
                     viewModel._0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID(
                         updatedBonAchat
@@ -176,14 +185,16 @@ fun CommandButton(
                 } else {
                     viewModel._0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID(
                         _1_3_TransactionCommercial(
+                            etateActuellementEst = initetateActuellementEst1,
+
                             clientAcheteurID = clientId,
                             nomClientConcerned = relatedClients?.nom!!,
                             parentVID_1_4_PeriodeVent = ceComptVendeurInsertBonsAchatAuPeriodID!!,
-                            etateActuellementEst = etateActuellementEst1,
                             heurDebutInString = SimpleDateFormat(
                                 "HH:mm",
                                 Locale.getDefault()
-                            ).format(Date())
+                            ).format(Date()),
+                            cJustPourVoirPanie = cJustPourVoirPanie
                         )
                     ) { vid ->
                         repositorysModel.activeId_1_3_BonAchat.value = vid
@@ -198,7 +209,7 @@ fun CommandButton(
                 onUpdateLongAppSetting()
                 onDismiss()
 
-             }
+            }
         },
         modifier = modifier.fillMaxWidth(),
         colors = ButtonDefaults.filledTonalButtonColors(

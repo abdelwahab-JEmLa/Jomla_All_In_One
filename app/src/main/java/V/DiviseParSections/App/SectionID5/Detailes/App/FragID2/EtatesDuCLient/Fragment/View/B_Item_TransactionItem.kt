@@ -23,13 +23,20 @@ import androidx.compose.ui.unit.dp
 fun B_Item_TransactionItem(transaction: _1_3_TransactionCommercial) {
     val datesHandler = DatesHandler()
 
+    val etateActuellementEst =
+        if (
+            transaction.cJustPourVoirPanie) _1_3_TransactionCommercial.EtateActuellementEst
+                .ON_MODE_VOIRE_PANIE_ARTICLES
+        else
+            transaction.etateActuellementEst
+
     // Card with background color based on transaction state
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 8.dp, vertical = 4.dp),
         colors = CardDefaults.cardColors(
-            containerColor = colorResource(id = transaction.etateActuellementEst.color)
+            containerColor = colorResource(id = etateActuellementEst.color)
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
@@ -45,7 +52,7 @@ fun B_Item_TransactionItem(transaction: _1_3_TransactionCommercial) {
             )
 
             Text(
-                text = transaction.etateActuellementEst.nomArabe,
+                text = etateActuellementEst.nomArabe,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.End,  // Right-aligned for Arabic

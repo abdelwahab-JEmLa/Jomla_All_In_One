@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog._01_Upsert_013_Acheteurs
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_2_ProduitAcheteOperation
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_3_TransactionCommercial
 import Views.Package_4.SoldCartScreen.Components.OrderSuccessMessage
@@ -25,7 +24,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Print
-import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
@@ -38,7 +36,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
@@ -160,43 +157,6 @@ fun ColumnScope.BonAchatInfos(
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.primary
                     )
-                }
-
-                Button(
-                    onClick = {
-                        onShowOrderSuccessChange(true)
-                        scope.launch {
-                            // Delay to show success animation before navigating
-                            delay(1500)
-                            onShowOrderSuccessChange(false)
-                            relativeBonAchate?.apply {
-                                etateActuellementEst = _1_3_TransactionCommercial
-                                    .EtateActuellementEst
-                                    .A_COMMANDE_CONFIRME
-                            }?.let {
-                                _0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID(
-                                    it
-                                )
-
-                            }
-
-                            repositorysModel.activeId_1_3_BonAchat.value = 0L
-
-                            onConfirmOrder()
-                            _0_0_HeadOfRepositorys_Repository.notifyDataChanged_1_3_TransactionCommercial_Repository()
-
-                            _01_Upsert_013_Acheteurs(
-                                repositorysModel = repositorysModel,
-                                clientId = relativeClientDataBase?.vid!!,
-                                nom = relativeClientDataBase.nom,
-                                repo_01_VentsHistoriquesDataBase = repo_01_VentsHistoriquesDataBase
-                            )
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = itemCount > 0
-                ) {
-                    Text("تأكيد الطلب")
                 }
             }
         }
