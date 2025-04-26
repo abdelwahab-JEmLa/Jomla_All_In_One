@@ -26,7 +26,7 @@ fun B_Item_TransactionItem(transaction: _1_3_TransactionCommercial) {
     val etateActuellementEst =
         if (
             transaction.cJustPourVoirPanie) _1_3_TransactionCommercial.EtateActuellementEst
-                .ON_MODE_VOIRE_PANIE_ARTICLES
+                .COMMANDE_LIVRAI
         else
             transaction.etateActuellementEst
 

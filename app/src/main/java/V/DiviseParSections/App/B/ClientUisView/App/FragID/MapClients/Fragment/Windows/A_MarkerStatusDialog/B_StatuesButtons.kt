@@ -33,7 +33,8 @@ fun upsert_1_3_TransactionCommercial(
     viewModel: ViewModel_MapClients_App2FragID1,
     relatedClientID: Long,
     etateActuellementEst: _1_3_TransactionCommercial.EtateActuellementEst,
-): Unit {
+    cJustPourVoirPanie: Boolean = false,
+    ): Unit {
     val _0_0_HeadOfRepositorys_Repository = viewModel._0_0_HeadOfRepositorys_Repository
 
     val relatedClients = viewModel.bProto_ClientsDataBase.find {
@@ -57,6 +58,7 @@ fun upsert_1_3_TransactionCommercial(
         // Update the existing BonAchat
         val updatedBonAchat = existingBonAchat.copy(
             etateActuellementEst = etateActuellementEst,
+            cJustPourVoirPanie=cJustPourVoirPanie,
             heurDebutInString = SimpleDateFormat(
                 "HH:mm",
                 Locale.getDefault()
@@ -71,6 +73,7 @@ fun upsert_1_3_TransactionCommercial(
     } else {
         viewModel._0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID(
             _1_3_TransactionCommercial(
+                cJustPourVoirPanie=cJustPourVoirPanie,
                 clientAcheteurID = clientId,
                 nomClientConcerned = relatedClients?.nom!!,
                 parentVID_1_4_PeriodeVent = ceComptVendeurInsertBonsAchatAuPeriodID!!,
@@ -85,8 +88,6 @@ fun upsert_1_3_TransactionCommercial(
         }
 
     }
-
-
 }
 
 @Composable
@@ -95,6 +96,7 @@ fun _1_3_TransactionCommercial.EtateActuellementEst.Button(
     viewModel: ViewModel_MapClients_App2FragID1,
     clientId: Long,
     context: Context,
+    modifier: Modifier,
 ) {
     val Etate =
         this
@@ -158,7 +160,7 @@ fun CommandButton(
     cJustPourVoirPanie: Boolean = false,
 ) {
     val etateActuellementEst1 =
-        if (cJustPourVoirPanie) _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_VOIRE_PANIE_ARTICLES
+        if (cJustPourVoirPanie) _1_3_TransactionCommercial.EtateActuellementEst.COMMANDE_LIVRAI
         else
             initetateActuellementEst1
 

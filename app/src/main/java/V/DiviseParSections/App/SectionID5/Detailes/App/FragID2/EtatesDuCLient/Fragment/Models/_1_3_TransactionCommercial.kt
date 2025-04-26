@@ -48,13 +48,17 @@ data class _1_3_TransactionCommercial(
     @IgnoreExtraProperties
     enum class EtateActuellementEst(val color: Int, val nomArabe: String) {
         NON_DEFINI(android.R.color.white, "غير محدد"),
+
         ON_MODE_COMMEND_ACTUELLEMENT(android.R.color.holo_green_light, "في طلب"),
-        ON_MODE_VOIRE_PANIE_ARTICLES(android.R.color.holo_blue_dark, "في معاينة السلة"),
-        A_COMMANDE_CONFIRME(android.R.color.holo_purple, "تم البيع له"),
-        AVEC_MARCHANDISE(android.R.color.holo_blue_light, "عندو سلعة"),
+        A_COMMANDE_CONFIRME(android.R.color.holo_purple, "تم تاكيد الطلبية"),
+        COMMANDE_LIVRAI(android.R.color.holo_blue_dark, "تم أيصال منتجاته"),
+
+        AVEC_MARCHANDISE(android.R.color.holo_blue_bright, "عندو سلعة"),
         A_EVITE(android.R.color.black, "يتجنب"),
         ACHETEUR_NON_DISPO(android.R.color.darker_gray, "الشاري غائب"),
         FERME(android.R.color.darker_gray, "مغلق"),
+
+        ON_MODE_VOIRE_PANIE_ARTICLES(android.R.color.holo_blue_dark, "في معاينة السلة"),
 
         Cible(android.R.color.holo_red_light, "Cible"),
         CIBLE_PRIORITE_2(android.R.color.holo_orange_dark, "CIBLE_PRIORITE_2"),

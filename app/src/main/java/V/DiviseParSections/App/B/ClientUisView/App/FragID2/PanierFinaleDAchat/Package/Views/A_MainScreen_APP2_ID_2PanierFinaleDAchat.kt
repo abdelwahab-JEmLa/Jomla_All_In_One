@@ -80,7 +80,7 @@ fun A_MainScreen_APP2_ID_2PanierFinaleDAchat(
         relativeBonAchate?.etateActuellementEst ==
                 _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
                 ||       relativeBonAchate?.etateActuellementEst ==
-                _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_VOIRE_PANIE_ARTICLES
+                _1_3_TransactionCommercial.EtateActuellementEst.COMMANDE_LIVRAI
 
 
     Box(modifier = modifier.fillMaxSize()) {

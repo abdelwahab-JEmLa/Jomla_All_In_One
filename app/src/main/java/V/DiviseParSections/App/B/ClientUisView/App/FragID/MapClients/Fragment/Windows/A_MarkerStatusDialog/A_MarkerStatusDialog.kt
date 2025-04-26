@@ -7,14 +7,13 @@ import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepos
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -78,6 +77,7 @@ fun MarkerStatusDialog(
     val existingBonAchat = viewModel.modelDatasSnapList_1_3_BonAchat.find {
         it.clientAcheteurID == clientId && it.parentVID_1_4_PeriodeVent == ceComptVendeurInsertBonsAchatAuPeriodID
     }
+
     fun getLatestTransactionForClient(clientId: Long): _1_3_TransactionCommercial? {
         return repositorysModel
             .repository_1_3_TransactionCommercial.modelDatasSnapList
@@ -112,105 +112,115 @@ fun MarkerStatusDialog(
                 .fillMaxHeight(0.95f)
                 .padding(16.dp)
         ) {
-            Column(
-                modifier = Modifier
-                    .padding(16.dp),
+            // Replaced Column with LazyColumn for scrollable content
+            LazyColumn(
+                modifier = Modifier.padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 if (hasOngoingTransaction) {
-                    android.util.Log.d(
-                        "TransactionCommercial",
-                        "Client $clientId has ongoing transaction: ${latestTransaction?.timestamps}, " +
-                                "État: ${latestTransaction?.etateActuellementEst?.nomArabe}, " +
-                                "Heure: ${latestTransaction?.heurDebutInString}"
-                    )
+                    item {
+                        android.util.Log.d(
+                            "TransactionCommercial",
+                            "Client $clientId has ongoing transaction: ${latestTransaction?.timestamps}, " +
+                                    "État: ${latestTransaction?.etateActuellementEst?.nomArabe}, " +
+                                    "Heure: ${latestTransaction?.heurDebutInString}"
+                        )
 
-                    val transaction = repositorysModel
-                        .repository_1_3_TransactionCommercial.modelDatasSnapList
-                        .find {
-                            it.clientAcheteurID == clientId &&
-                                    it.etateActuellementEst == _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+                        val transaction = repositorysModel
+                            .repository_1_3_TransactionCommercial.modelDatasSnapList
+                            .find {
+                                it.clientAcheteurID == clientId &&
+                                        it.etateActuellementEst == _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+                            }
+
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 16.dp),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(12.dp)
+                            ) {
+                                Text(
+                                    text = "ماهو تقرير الزبون السابق ${relatedClients?.nom ?: ""}",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    modifier = Modifier.padding(bottom = 8.dp)
+                                )
+                                Text(
+                                    text = "وقت البدء: ${transaction?.heurDebutInString ?: ""}",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                                Text(
+                                    text = "الحالة الحالية: ${transaction?.etateActuellementEst?.nomArabe ?: ""}",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                                Row {
+                                    _1_3_TransactionCommercial.EtateActuellementEst.COMMANDE_LIVRAI
+                                        .Button(
+                                            coroutineScope = coroutineScope,
+                                            viewModel = viewModel,
+                                            clientId = clientId,
+                                            context = context,
+                                            modifier = Modifier.weight(1f)
+                                        )
+                                    _1_3_TransactionCommercial.EtateActuellementEst.A_COMMANDE_CONFIRME
+                                        .Button(
+                                            coroutineScope = coroutineScope,
+                                            viewModel = viewModel,
+                                            clientId = clientId,
+                                            context = context,
+                                            modifier = Modifier.weight(1f)
+                                        )
+                                }
+                            }
                         }
+                    }
+                }
 
+                item {
+                    ClientEdites(
+                        onClickToEditeMarquerPosition = onClickToEditeMarquerPosition,
+                        selectedMarker = selectedMarker,
+                        onDismiss = onDismiss,
+                        clientTypeMode = clientTypeMode,
+                        relatedClients = relatedClients,
+                        viewModel = viewModel,
+                        onShowDeleteConfirmationChange = { showDeleteConfirmationDialog = it },
+                        onClientTypeModeChange = { clientTypeMode = it },
+                        onShowEditDialogChange = { showEditDialog = it },
+                        onShowPhoneDialogChange = { showPhoneDialog = it },
+                        coroutineScope = coroutineScope,
+                        existingBonAchat = existingBonAchat,
+                        repositorysModel = repositorysModel,
+                        clientId = clientId,
+                        ceComptVendeurInsertBonsAchatAuPeriodID = ceComptVendeurInsertBonsAchatAuPeriodID
+                    )
+                }
+
+                item {
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(bottom = 16.dp),
+                            .padding(vertical = 4.dp),
                         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                     ) {
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(12.dp)
+                                .padding(16.dp)
                         ) {
-                            Text(
-                                text = "ماهو تقرير الزبون السابق ${relatedClients?.nom ?: ""}",
-                                style = MaterialTheme.typography.titleMedium,
-                                modifier = Modifier.padding(bottom = 8.dp)
-                            )
-                            Text(
-                                text = "وقت البدء: ${transaction?.heurDebutInString ?: ""}",
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                            Text(
-                                text = "الحالة الحالية: ${transaction?.etateActuellementEst?.nomArabe ?: ""}",
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                            _1_3_TransactionCommercial.EtateActuellementEst.A_COMMANDE_CONFIRME
-                                .Button(
-                                coroutineScope = coroutineScope,
-                                viewModel = viewModel,
-                                clientId = clientId,
-                                context = context
-                            )
-                        }
-                    }
-                }
-
-                ClientEdites(
-                    onClickToEditeMarquerPosition = onClickToEditeMarquerPosition,
-
-                    selectedMarker = selectedMarker,
-                    onDismiss = onDismiss,
-                    clientTypeMode = clientTypeMode,
-                    relatedClients = relatedClients,
-                    viewModel = viewModel,
-                    onShowDeleteConfirmationChange = { showDeleteConfirmationDialog = it },
-                    onClientTypeModeChange = { clientTypeMode = it },
-                    onShowEditDialogChange = { showEditDialog = it },
-                    onShowPhoneDialogChange = { showPhoneDialog = it },
-                    coroutineScope = coroutineScope,
-                    existingBonAchat = existingBonAchat,
-                    repositorysModel = repositorysModel,
-                    clientId = clientId,
-                    ceComptVendeurInsertBonsAchatAuPeriodID = ceComptVendeurInsertBonsAchatAuPeriodID
-                )
-
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                    ) {
-
-
-                        // Use a LazyVerticalGrid with 2 columns
-                        LazyVerticalGrid(
-                            columns = GridCells.Fixed(2),
-                            contentPadding = PaddingValues(vertical = 4.dp),
-                            horizontalArrangement = Arrangement.spacedBy(4.dp),
-                            verticalArrangement = Arrangement.spacedBy(4.dp),
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-
-                            item {
+                            // First row with two CommandButtons
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
                                 CommandButton(
-                                    modifier = Modifier.height(60.dp),
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(60.dp),
                                     relatedClients = relatedClients,
                                     coroutineScope = coroutineScope,
                                     existingBonAchat = existingBonAchat,
@@ -223,13 +233,13 @@ fun MarkerStatusDialog(
                                     onDismiss = onDismiss,
                                     context = context,
                                     initetateActuellementEst1 = _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
-                                    cJustPourVoirPanie=true,
+                                    cJustPourVoirPanie = true,
                                 )
-                            }
 
-                            item {
                                 CommandButton(
-                                    modifier = Modifier.height(60.dp),
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(60.dp),
                                     relatedClients = relatedClients,
                                     coroutineScope = coroutineScope,
                                     existingBonAchat = existingBonAchat,
@@ -244,73 +254,100 @@ fun MarkerStatusDialog(
                                     initetateActuellementEst1 = _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
                                 )
                             }
-                            item {
+
+                            Spacer(modifier = Modifier.height(4.dp))
+
+                            // Second row with AVEC_MARCHANDISE and FERME
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
                                 _1_3_TransactionCommercial.EtateActuellementEst.AVEC_MARCHANDISE
                                     .Button(
                                         coroutineScope = coroutineScope,
                                         viewModel = viewModel,
                                         clientId = clientId,
-                                        context = context
+                                        context = context,
+                                        modifier = Modifier.weight(1f)
                                     )
-                            }
-                            item {
+
                                 _1_3_TransactionCommercial.EtateActuellementEst.FERME
                                     .Button(
                                         coroutineScope = coroutineScope,
                                         viewModel = viewModel,
                                         clientId = clientId,
-                                        context = context
+                                        context = context,
+                                        modifier = Modifier.weight(1f)
                                     )
                             }
-                            item {
+
+                            Spacer(modifier = Modifier.height(4.dp))
+
+                            // Third row with ACHETEUR_NON_DISPO and conditionally Cible
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
                                 _1_3_TransactionCommercial.EtateActuellementEst.ACHETEUR_NON_DISPO
                                     .Button(
                                         coroutineScope = coroutineScope,
                                         viewModel = viewModel,
                                         clientId = clientId,
-                                        context = context
+                                        context = context,
+                                        modifier = Modifier.weight(1f)
                                     )
+
+                                if (ceTelephoneEstDeAbdelwahab) {
+                                    _1_3_TransactionCommercial.EtateActuellementEst.Cible
+                                        .Button(
+                                            coroutineScope = coroutineScope,
+                                            viewModel = viewModel,
+                                            clientId = clientId,
+                                            context = context,
+                                            modifier = Modifier.weight(1f)
+                                        )
+                                }
                             }
+
+                            // Fourth row with CIBLE_POUR_2 if condition is met
                             if (ceTelephoneEstDeAbdelwahab) {
+                                Spacer(modifier = Modifier.height(4.dp))
 
-                            item {
-                                _1_3_TransactionCommercial.EtateActuellementEst.Cible
-                                    .Button(
-                                        coroutineScope = coroutineScope,
-                                        viewModel = viewModel,
-                                        clientId = clientId,
-                                        context = context
-                                    )
-                            }
-                            item {
-                                _1_3_TransactionCommercial.EtateActuellementEst.CIBLE_POUR_2
-                                    .Button(
-                                        coroutineScope = coroutineScope,
-                                        viewModel = viewModel,
-                                        clientId = clientId,
-                                        context = context
-                                    )
-                            }
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    _1_3_TransactionCommercial.EtateActuellementEst.CIBLE_POUR_2
+                                        .Button(
+                                            coroutineScope = coroutineScope,
+                                            viewModel = viewModel,
+                                            clientId = clientId,
+                                            context = context,
+                                            modifier = Modifier.weight(1f)
+                                        )
 
-                        }
+                                    // Add an empty spacer for the second column to maintain layout
+                                    Spacer(modifier = Modifier.weight(1f))
+                                }
+                            }
                         }
                     }
                 }
 
+                item {
+                    Spacer(modifier = Modifier.height(16.dp))
 
+                    Text(
+                        text = "سجل المعاملات",
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Text(
-                    text = "سجل المعاملات",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(vertical = 8.dp)
-                )
-
-                A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
-                    modifier = Modifier.fillMaxWidth(),
-                    idClient = clientId
-                )
+                    A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
+                        modifier = Modifier.fillMaxWidth(),
+                        idClient = clientId
+                    )
+                }
             }
         }
     }
