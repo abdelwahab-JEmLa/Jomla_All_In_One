@@ -3,7 +3,7 @@ package Z_CodePartageEntreApps.Modules
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
-import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_2_ProduitAcheteOperation
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_3_TransactionCommercial
 import android.content.Context
 import android.content.Intent
@@ -46,10 +46,10 @@ fun printReceipt(
             .format(Date())
 
         // Get all confirmed products in this receipt
-        val products = repositorysModel._1_2_ProduitAcheteOperation_Repository
+        val products = repositorysModel.repository_1_2_ProduitAcheteOperation
             .modelDatasSnapList
             .filter {
-                it.parent_1_3_BonAchat == bonAchat.vid &&
+                it.parent_1_3_TransactionCommercial == bonAchat.vid &&
                         it.etateActuellementEst == _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME
             }
 

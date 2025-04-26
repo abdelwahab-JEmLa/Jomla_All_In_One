@@ -10,7 +10,7 @@ import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
-import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_2_ProduitAcheteOperation
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Package_3._DisplayeProductInfosToSeller
 import androidx.compose.foundation.layout.Box
@@ -116,13 +116,13 @@ fun MainUi(
     ) {
         val produitActuelle = currentSale.idArticle
         val existing_1_2_ProduitAcheteOperation =
-            repositorysModel._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList.find {
+            repositorysModel.repository_1_2_ProduitAcheteOperation.modelDatasSnapList.find {
                 it.produitAcheterID == produitActuelle
-                        && it.parent_1_3_BonAchat == parentCompose_1_3_BonAchatVid
+                        && it.parent_1_3_TransactionCommercial == parentCompose_1_3_BonAchatVid
             }
         parentCompose_1_2_ProduitAcheteOperationVid =
             if (existing_1_2_ProduitAcheteOperation != null) {
-                repositorysModel._1_2_ProduitAcheteOperation_Repository.updateUnSeulData(
+                repositorysModel.repository_1_2_ProduitAcheteOperation.updateUnSeulData(
                     existing_1_2_ProduitAcheteOperation.apply {
                         etateActuellementEst = _1_2_ProduitAcheteOperation.EtateActuellementEst.PRESENTATION
                     }
@@ -130,16 +130,16 @@ fun MainUi(
                 existing_1_2_ProduitAcheteOperation.vid
             } else {
                 val newVid =
-                    repositorysModel._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList.maxOfOrNull { it.vid }
+                    repositorysModel.repository_1_2_ProduitAcheteOperation.modelDatasSnapList.maxOfOrNull { it.vid }
                         ?.plus(1) ?: 1
 
                 // No need for null check since we're using 'by' to unwrap the State
                 _1_2_ProduitAcheteOperation(
                     vid = newVid,
                     produitAcheterID = produitActuelle,
-                    parent_1_3_BonAchat = parentCompose_1_3_BonAchatVid
+                    parent_1_3_TransactionCommercial = parentCompose_1_3_BonAchatVid
                 ).let {
-                    repositorysModel._1_2_ProduitAcheteOperation_Repository.addDataAndReturneItVID(
+                    repositorysModel.repository_1_2_ProduitAcheteOperation.addDataAndReturneItVID(
                         it
                     )
                 }

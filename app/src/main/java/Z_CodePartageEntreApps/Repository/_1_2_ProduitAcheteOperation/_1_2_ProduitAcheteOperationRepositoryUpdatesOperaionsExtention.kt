@@ -1,5 +1,6 @@
 package Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation
 
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import android.util.Log
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -61,7 +62,7 @@ class _1_2_ProduitAcheteOperationRepositoryUpdatesOperaionsExtention {
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error in deleteUnSeulData_1_3_TransactionCommercial: ${e.message}")
+            Log.e(TAG, "Error in upsertUneDataEtReturnVID: ${e.message}")
         }
     }
 

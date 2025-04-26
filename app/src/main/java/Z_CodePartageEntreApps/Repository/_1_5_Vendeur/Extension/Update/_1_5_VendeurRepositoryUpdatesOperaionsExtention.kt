@@ -65,7 +65,7 @@ class _1_5_VendeurRepositoryUpdatesOperaionsExtention(
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error in deleteUnSeulData_1_3_TransactionCommercial: ${e.message}")
+            Log.e(TAG, "Error in upsertUneDataEtReturnVID: ${e.message}")
         }
     }
 

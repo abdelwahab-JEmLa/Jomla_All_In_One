@@ -99,7 +99,7 @@ open class VendeursViewModel(
     }
 
     fun update_1_5(data: _1_5_Vendeur): Unit {
-        repository.upsertUneDataEtReturnVID(data)
+        repository.upsertUneDataEtReturnVID_1_5_Vendeur(data)
     }
 
 

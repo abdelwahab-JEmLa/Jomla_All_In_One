@@ -4,7 +4,7 @@ import Z_CodePartageEntreApps.Proto.B.ParSections.Fragment.A.AchatsManager.App._
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
-import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_2_ProduitAcheteOperation
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_3_TransactionCommercial
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -43,10 +43,10 @@ fun A_MainScreen_APP2_ID_2(
         .modelDatasSnapList.find { it.vid == composeKeyVID }
 
     val produitsBonAchatIDs = _0_HeadOfRepositorys_Repository_Model
-        ._1_2_ProduitAcheteOperation_Repository
+        .repository_1_2_ProduitAcheteOperation
         .modelDatasSnapList
         .filter { produitOpe ->
-            produitOpe.parent_1_3_BonAchat == composeKeyVID
+            produitOpe.parent_1_3_TransactionCommercial == composeKeyVID
                     && produitOpe.etateActuellementEst == _1_2_ProduitAcheteOperation
                 .EtateActuellementEst
                 .CONFIRME

@@ -1,5 +1,6 @@
 package Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation
 
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation.Dao._1_2_ProduitAcheteOperationRepositoryLogOperationsExtention
 import android.util.Log

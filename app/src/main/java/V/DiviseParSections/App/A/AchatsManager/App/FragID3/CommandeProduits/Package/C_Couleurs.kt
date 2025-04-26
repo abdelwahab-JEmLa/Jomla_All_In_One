@@ -5,7 +5,7 @@ import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.B_ClientDataBaseRepository
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
-import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.View.A_GlideDisplayImageByKeyId_Proto_4_11
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -62,7 +62,7 @@ fun Couleurs(
     var articlesBasesStatsModel by remember { mutableStateOf<List<Any>?>(null) }
 
     LaunchedEffect(Produit.vid) {
-        models._1_2_ProduitAcheteOperation_Repository
+        models.repository_1_2_ProduitAcheteOperation
             .repositoryScope
             .launch {
                 articlesBasesStatsModel = database.articlesBasesStatsModelDao().getAll()
@@ -107,10 +107,10 @@ fun Couleurs(
             if (periodFilter == null) return@filter true
 
             // If period filter is set, check if this color belongs to a product in the specified period
-            val parentProduct = models._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList
+            val parentProduct = models.repository_1_2_ProduitAcheteOperation.modelDatasSnapList
                 .firstOrNull { it.vid == color.parentProduitAchateOperationVID }
 
-            val bonAchatId = parentProduct?.parent_1_3_BonAchat
+            val bonAchatId = parentProduct?.parent_1_3_TransactionCommercial
 
             val bonAchatPeriod = bonAchatId?.let { id ->
                 models.repository_1_3_TransactionCommercial.modelDatasSnapList
@@ -164,10 +164,10 @@ fun Couleurs(
                         if (periodFilter == null) return@filter true
 
                         // If period filter exists, check if this color belongs to the filtered period
-                        val parentProduct = models._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList
+                        val parentProduct = models.repository_1_2_ProduitAcheteOperation.modelDatasSnapList
                             .firstOrNull { it.vid == color.parentProduitAchateOperationVID }
 
-                        val bonAchatId = parentProduct?.parent_1_3_BonAchat
+                        val bonAchatId = parentProduct?.parent_1_3_TransactionCommercial
 
                         val bonAchatPeriod = bonAchatId?.let { id ->
                             models.repository_1_3_TransactionCommercial.modelDatasSnapList
@@ -185,11 +185,11 @@ fun Couleurs(
                 individualQuantities.forEach { colorEntry ->
                     // Find the parent product
                     val parentProduct =
-                        models._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList
+                        models.repository_1_2_ProduitAcheteOperation.modelDatasSnapList
                             .firstOrNull { it.vid == colorEntry.parentProduitAchateOperationVID }
 
                     // Find the bonAchat
-                    val bonAchatVid = parentProduct?.parent_1_3_BonAchat
+                    val bonAchatVid = parentProduct?.parent_1_3_TransactionCommercial
 
                     // Find the client
                     if (bonAchatVid != null) {

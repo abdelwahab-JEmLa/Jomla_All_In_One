@@ -1,6 +1,6 @@
 package Views.FragId3_DialogVendeurAfficheurInfosProduit.Ui.Objects
 import Views.FragId3_DialogVendeurAfficheurInfosProduit.updateState
-import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_2_ProduitAcheteOperation
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row

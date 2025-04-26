@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog._01_Upsert_013_Acheteurs
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_2_ProduitAcheteOperation
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_3_TransactionCommercial
 import Views.Package_4.SoldCartScreen.Components.OrderSuccessMessage
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
@@ -8,7 +9,6 @@ import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository._01_Vents
 import Z_CodePartageEntreApps.Modules.printReceipt
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
-import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -106,12 +106,12 @@ fun ColumnScope.BonAchatInfos(
                             repositorysModel._2_1_ProduitsDataBase_Repository.addDataAndReturnItVID(tempProduct) { productId ->
                                 val produitOperation = _1_2_ProduitAcheteOperation(
                                     produitAcheterID = productId,
-                                    parent_1_3_BonAchat = relativeBonAchate?.vid ?: 0L,
+                                    parent_1_3_TransactionCommercial = relativeBonAchate?.vid ?: 0L,
                                     etateActuellementEst = _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME
                                 )
 
                                 // Add the product operation and get its ID
-                                repositorysModel._1_2_ProduitAcheteOperation_Repository.addDataAndReturneItVID(produitOperation) { produitOperationId ->
+                                repositorysModel.repository_1_2_ProduitAcheteOperation.addDataAndReturneItVID(produitOperation) { produitOperationId ->
                                     // Finally add a color operation with quantity 1
                                     val couleurOperation = _1_1_CouleurAcheteOperation(
                                         couleurIndex_ParentVID = 0L,
@@ -174,7 +174,7 @@ fun ColumnScope.BonAchatInfos(
                                     .EtateActuellementEst
                                     .A_COMMANDE_CONFIRME
                             }?.let {
-                                _0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID_1_3_TransactionCommercial(
+                                _0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID(
                                     it
                                 )
 

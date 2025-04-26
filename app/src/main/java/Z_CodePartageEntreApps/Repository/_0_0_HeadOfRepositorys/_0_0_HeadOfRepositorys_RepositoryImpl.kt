@@ -1,11 +1,14 @@
 package Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys
 
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_2_ProduitAcheteOperation
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_3_TransactionCommercial
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_4_PeriodeVent
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.Extension.Log._0_0_HeadOfRepositoryLogOperationsExtension
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
+import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation.Dao._1_2_ProduitAcheteOperationDao
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial._1_3_TransactionCommercialDao
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial._1_3_TransactionCommercial_Repository
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur
@@ -14,6 +17,7 @@ import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsData
 import Z_CodePartageEntreApps.Repository._3_ClientsDataBase._3_ClientsDataBase_Repository
 import Z_CodePartageEntreApps.Repository._4_2_._4_CouleurOperationCommand._4_CouleurOperationCommand_Repository
 import android.util.Log
+import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -92,9 +96,9 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
         }
     }
 
-    override fun upsertUneDataEtReturnVID(
+    override fun upsertUneDataEtReturnVID_1_5_Vendeur(
         data: _1_5_Vendeur,
-        onSuccess: (Long) -> Unit
+        onSuccess: (Long) -> Unit,
     ): Unit {
         try {
             // Create a copy of the data to work with
@@ -109,9 +113,10 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
 
                         // Update in snapshot list
                         withContext(Dispatchers.Main) {
-                            val index = _1_5_Repository.modelDatasSnapList.indexOfFirst { it.vid == dataToUpsert.vid }
+                            val index =
+                                _1_5_Repository.modelDatasSnapList.indexOfFirst { it.vid == dataToUpsert.vid }
                             if (index >= 0) {
-                                _1_5_Repository. modelDatasSnapList[index] = dataToUpsert
+                                _1_5_Repository.modelDatasSnapList[index] = dataToUpsert
                             } else {
                                 _1_5_Repository.modelDatasSnapList.add(dataToUpsert)
                             }
@@ -125,7 +130,8 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                         onSuccess(dataToUpsert.vid)
                     } else {
                         // If no valid vid, insert as new (same as addDataAndReturneItVID)
-                        val newVid = appDatabase._1_5_VendeurDao().insertAvecRetureNewVid(dataToUpsert)
+                        val newVid =
+                            appDatabase._1_5_VendeurDao().insertAvecRetureNewVid(dataToUpsert)
 
                         // Update the object with the new vid
                         dataToUpsert.vid = newVid
@@ -152,22 +158,19 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
 
     override fun upsertUneDataEtReturnVID_1_4_PeriodeVent(
         data: _1_4_PeriodeVent,
-        onSuccess: (Long) -> Unit
+        onSuccess: (Long) -> Unit,
     ): Unit {
         try {
-            // Create a copy of the data to work with
             val dataToUpsert = data.copy()
 
             repositoryScope.launch(Dispatchers.IO) {
                 try {
-                    // Check if the data already exists (if it has a valid vid)
                     if (dataToUpsert.vid > 0) {
-                        // Update existing data
                         appDatabase._1_4_PeriodeVentDao().insert(dataToUpsert)
 
-                        // Update in snapshot list
                         withContext(Dispatchers.Main) {
-                            val index = _1_4_Repository.modelDatasSnapList.indexOfFirst { it.vid == dataToUpsert.vid }
+                            val index =
+                                _1_4_Repository.modelDatasSnapList.indexOfFirst { it.vid == dataToUpsert.vid }
                             if (index >= 0) {
                                 _1_4_Repository.modelDatasSnapList[index] = dataToUpsert
                             } else {
@@ -175,24 +178,21 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                             }
                         }
 
-                        // Update dataToUpsert.fireBaseKeyID to ensure it's current
-                        dataToUpsert.fireBaseKeyID_1_4_PeriodeVent = "${dataToUpsert.vid}->(${dataToUpsert.startDateInString})"
+                        dataToUpsert.fireBaseKeyID_1_4_PeriodeVent =
+                            "${dataToUpsert.vid}->(${dataToUpsert.startDateInString})"
 
-                        // Update in Firebase using fireBaseKeyID as the key
                         repositorys_Model.databaseReference_1_4_PeriodeVent.child(dataToUpsert.fireBaseKeyID_1_4_PeriodeVent)
                             .setValue(dataToUpsert).await()
 
-                        // Call the success callback with the existing vid
                         onSuccess(dataToUpsert.vid)
                     } else {
-                        // If no valid vid, insert as new (same as addDataAndReturneItVID)
-                        val newVid = appDatabase._1_4_PeriodeVentDao().insertAvecRetureNewVid(dataToUpsert)
+                        val newVid =
+                            appDatabase._1_4_PeriodeVentDao().insertAvecRetureNewVid(dataToUpsert)
 
-                        // Update the object with the new vid
                         dataToUpsert.vid = newVid
 
-                        // Update fireBaseKeyID with new vid
-                        dataToUpsert.fireBaseKeyID_1_4_PeriodeVent = "${dataToUpsert.vid}->(${dataToUpsert.startDateInString})"
+                        dataToUpsert.fireBaseKeyID_1_4_PeriodeVent =
+                            "${dataToUpsert.vid}->(${dataToUpsert.startDateInString})"
 
                         withContext(Dispatchers.Main) {
                             _1_4_Repository.modelDatasSnapList.add(dataToUpsert)
@@ -214,113 +214,131 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
         }
     }
 
-    override fun upsertUneDataEtReturnVID_1_3_TransactionCommercial(
-        data: _1_3_TransactionCommercial,
-        onSuccess: (Long) -> Unit
+    override fun <T> upsertUneDataEtReturnVID(
+        data: T,
+        onSuccess: (Long) -> Unit,
     ): Unit {
         try {
-            // Create a copy of the data to work with
-            val dataToUpsert = data.copy()
-
             repositoryScope.launch(Dispatchers.IO) {
                 try {
-                    // Check if the data already exists (if it has a valid vid)
-                    if (dataToUpsert.vid > 0) {
-                        // Update existing data
-                        appDatabase._1_3_TransactionCommercialDao().insert(dataToUpsert)
+                    when (data) {
+                        is _1_3_TransactionCommercial -> processUpsertOperation(
+                            data = data,
+                            databaseDao = appDatabase._1_3_TransactionCommercialDao(),
+                            snapshotList = repo_1_3_TransactionCommercial.modelDatasSnapList,
+                            databaseRef = repositorys_Model.databaseReference_1_3_TransactionCommercial,
+                            getFirebaseKey = { it.fireBaseKeyID_1_3_TransactionCommercial },
+                            onSuccess = onSuccess
+                        )
 
-                        // Update in snapshot list
-                        withContext(Dispatchers.Main) {
-                            val index = repo_1_3_TransactionCommercial.modelDatasSnapList.indexOfFirst { it.vid == dataToUpsert.vid }
-                            if (index >= 0) {
-                                repo_1_3_TransactionCommercial.modelDatasSnapList[index] = dataToUpsert
-                            } else {
-                                repo_1_3_TransactionCommercial.modelDatasSnapList.add(dataToUpsert)
-                            }
+                        is _1_2_ProduitAcheteOperation -> processUpsertOperation(
+                            data = data,
+                            databaseDao = appDatabase._1_2_ProduitAcheteOperationDao(),
+                            snapshotList = _1_2_ProduitAcheteOperation_Repository.modelDatasSnapList,
+                            databaseRef = repositorys_Model.databaseReference_1_2_ProduitAcheteOperation,
+                            getFirebaseKey = { it.fireBaseKeyID },
+                            onSuccess = onSuccess
+                        )
+
+                        else -> {
+                            onSuccess(-1L)
                         }
-
-                        // Firebase key is now automatically generated via the getter property
-                        // No need to manually set it here
-
-                        // Update in Firebase using fireBaseKeyID as the key
-                        repositorys_Model.databaseReference_1_3_TransactionCommercial
-                            .child(dataToUpsert.fireBaseKeyID_1_3_TransactionCommercial)
-                            .setValue(dataToUpsert).await()
-
-                        // Call the success callback with the existing vid
-                        onSuccess(dataToUpsert.vid)
-                    } else {
-                        // If no valid vid, insert as new (same as addDataAndReturneItVID)
-                        val newVid = appDatabase._1_3_TransactionCommercialDao().insertAvecRetureNewVid(dataToUpsert)
-
-                        // Update the object with the new vid
-                        dataToUpsert.vid = newVid
-
-                        // Firebase key will be automatically generated after vid is set
-
-                        withContext(Dispatchers.Main) {
-                            repo_1_3_TransactionCommercial.modelDatasSnapList.add(dataToUpsert)
-                        }
-
-                        // Update Firebase using fireBaseKeyID as the key
-                        repositorys_Model.databaseReference_1_3_TransactionCommercial
-                            .child(dataToUpsert.fireBaseKeyID_1_3_TransactionCommercial)
-                            .setValue(dataToUpsert).await()
-
-                        // Call the success callback with the new vid
-                        onSuccess(newVid)
                     }
                 } catch (e: Exception) {
                     Log.e(TAG, "Error upserting data: ${e.message}")
-                    // Add more detailed error logging
-                    Log.e(TAG, "Transaction data: $dataToUpsert")
-                    Log.e(TAG, "Firebase key attempted: ${dataToUpsert.fireBaseKeyID_1_3_TransactionCommercial}")
+                    Log.e(TAG, "Data: $data")
+                    onSuccess(-1L)
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error in upsertUnSeulDataEtReturnVID: ${e.message}")
+            Log.e(TAG, "Error in upsertUneDataEtReturnVID_1_5_Vendeur: ${e.message}")
+            onSuccess(-1L)
         }
     }
-    override fun deleteUnSeulData_1_3_TransactionCommercial(data: _1_3_TransactionCommercial) {
-        try {
-            // Create a copy of the data to work with
-            val dataToDelete = data.copy()
 
-            repositoryScope.launch(Dispatchers.IO) {
-                try {
-                    // First, delete from Room database
-                    appDatabase._1_3_TransactionCommercialDao().delete(dataToDelete)
+    private suspend inline fun <reified T> processUpsertOperation(
+        data: T,
+        databaseDao: Any,
+        snapshotList: MutableList<T>,
+        databaseRef: DatabaseReference,
+        crossinline getFirebaseKey: (T) -> String,
+        onSuccess: (Long) -> Unit,
+    ) where T : Any {
+        // Create proper copy based on data type
+        val dataToUpsert = when (data) {
+            is _1_3_TransactionCommercial -> data.copy() as T
+            is _1_2_ProduitAcheteOperation -> data.copy() as T
+            else -> data // Fallback to original object if not a known data class
+        }
 
-                    // Remove from snapshot list
-                    withContext(Dispatchers.Main) {
-                        val index = repo_1_3_TransactionCommercial.modelDatasSnapList.indexOfFirst { it.vid == dataToDelete.vid }
-                        if (index >= 0) {
-                            repo_1_3_TransactionCommercial.modelDatasSnapList.removeAt(index)
-                        }
+        val vid = when {
+            ((dataToUpsert as? Any)?.javaClass?.getDeclaredField("vid")?.get(dataToUpsert) as? Long
+                ?: 0L) > 0 -> {
+                // Update existing data
+                when (databaseDao) {
+                    is _1_3_TransactionCommercialDao -> databaseDao.insert(dataToUpsert as _1_3_TransactionCommercial)
+                    is _1_2_ProduitAcheteOperationDao -> databaseDao.insert(dataToUpsert as _1_2_ProduitAcheteOperation)
+                }
+
+                withContext(Dispatchers.Main) {
+                    val index = snapshotList.indexOfFirst {
+                        (it as? Any)?.javaClass?.getDeclaredField("vid")?.get(it) ==
+                                (dataToUpsert as? Any)?.javaClass?.getDeclaredField("vid")
+                                    ?.get(dataToUpsert)
                     }
-
-                    // Delete from Firebase
-                    // Using fireBaseKeyID property which is automatically generated
-                    repositorys_Model.databaseReference_1_3_TransactionCommercial
-                        .child(dataToDelete.fireBaseKeyID_1_3_TransactionCommercial)
-                        .removeValue()
-                        .await()
-
-                    Log.d(TAG, "Successfully deleted transaction with ID: ${dataToDelete.vid}")
-
-                } catch (e: Exception) {
-                    Log.e(TAG, "Error deleting transaction data: ${e.message}")
-                    Log.e(TAG, "Transaction data: $dataToDelete")
-                    Log.e(TAG, "Firebase key attempted: ${dataToDelete.fireBaseKeyID_1_3_TransactionCommercial}")
+                    if (index >= 0) {
+                        snapshotList[index] = dataToUpsert
+                    } else {
+                        snapshotList.add(dataToUpsert)
+                    }
                 }
+
+                // Update in Firebase
+                databaseRef.child(getFirebaseKey(dataToUpsert))
+                    .setValue(dataToUpsert).await()
+
+                // Return existing vid
+                (dataToUpsert as? Any)?.javaClass?.getDeclaredField("vid")
+                    ?.get(dataToUpsert) as? Long ?: -1L
             }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error in deleteUnSeulData_1_3_TransactionCommercial: ${e.message}")
+
+            else -> {
+                // Insert as new
+                val newVid = when (databaseDao) {
+                    is _1_3_TransactionCommercialDao -> databaseDao.insertAvecRetureNewVid(
+                        dataToUpsert as _1_3_TransactionCommercial
+                    )
+
+                    is _1_2_ProduitAcheteOperationDao -> databaseDao.insertAvecRetureNewVid(
+                        dataToUpsert as _1_2_ProduitAcheteOperation
+                    )
+
+                    else -> -1L
+                }
+
+                // Set the new vid on the object
+                dataToUpsert.javaClass.getDeclaredField("vid").apply {
+                    isAccessible = true
+                    set(dataToUpsert, newVid)
+                }
+
+                withContext(Dispatchers.Main) {
+                    snapshotList.add(dataToUpsert)
+                }
+
+                // Update Firebase with the new vid
+                databaseRef.child(getFirebaseKey(dataToUpsert))
+                    .setValue(dataToUpsert).await()
+
+                newVid
+            }
         }
+
+        onSuccess(vid)
     }
 
 
-        override fun notifyDataChanged_1_3_TransactionCommercial_Repository() {
+    override fun notifyDataChanged_1_3_TransactionCommercial_Repository() {
         repositoryScope.launch {
             try {
                 // Reload the products database data
@@ -340,19 +358,26 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                 }
 
                 // Log the refresh operation
-                Log.d(TAG, "ProduitsDataBase refreshed: ${repo_1_3_TransactionCommercial.modelDatasSnapList.size} items")
+                Log.d(
+                    TAG,
+                    "ProduitsDataBase refreshed: ${repo_1_3_TransactionCommercial.modelDatasSnapList.size} items"
+                )
 
                 // Notify any observers that may need to upsert_1_3_TransactionCommercial UI based on this change
                 // (This will cause connected components to recompose)
-                progressRepo.value = progressRepo.value  // Trigger a small upsert_1_3_TransactionCommercial to force recomposition
+                progressRepo.value =
+                    progressRepo.value  // Trigger a small upsert_1_3_TransactionCommercial to force recomposition
             } catch (e: Exception) {
-                Log.e(TAG, "Error in notifyDataChanged_1_3_TransactionCommercial_Repository: ${e.message}")
+                Log.e(
+                    TAG,
+                    "Error in notifyDataChanged_1_3_TransactionCommercial_Repository: ${e.message}"
+                )
             }
         }
     }
 
     override fun updateActiveIdDe_1_5_Vendeur(id: Long): Unit {
-        repositorys_Model.activeIdDe_1_5_Vendeur= id
+        repositorys_Model.activeIdDe_1_5_Vendeur = id
     }
 
     override fun notifyDataChanged_2_1_ProduitsDataBase_Repository() {
@@ -375,13 +400,20 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                 }
 
                 // Log the refresh operation
-                Log.d(TAG, "ProduitsDataBase refreshed: ${_2_1_Repository.modelDatasSnapList.size} items")
+                Log.d(
+                    TAG,
+                    "ProduitsDataBase refreshed: ${_2_1_Repository.modelDatasSnapList.size} items"
+                )
 
                 // Notify any observers that may need to upsert_1_3_TransactionCommercial UI based on this change
                 // (This will cause connected components to recompose)
-                progressRepo.value = progressRepo.value  // Trigger a small upsert_1_3_TransactionCommercial to force recomposition
+                progressRepo.value =
+                    progressRepo.value  // Trigger a small upsert_1_3_TransactionCommercial to force recomposition
             } catch (e: Exception) {
-                Log.e(TAG, "Error in notifyDataChanged_2_1_ProduitsDataBase_Repository: ${e.message}")
+                Log.e(
+                    TAG,
+                    "Error in notifyDataChanged_2_1_ProduitsDataBase_Repository: ${e.message}"
+                )
             }
         }
     }
@@ -435,7 +467,7 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                 repositoryScope.launch { _1_5_Repository.ensureDataIsInitialized() },
 
                 repositoryScope.launch { _2_1_Repository.ensureDataIsInitialized() },
-                repositoryScope.launch { _2_2_Repository.ensureDataIsInitialized() } ,
+                repositoryScope.launch { _2_2_Repository.ensureDataIsInitialized() },
                 repositoryScope.launch { _4_CouleurOperationCommand_Repository.ensureDataIsInitialized() }
             )
 
@@ -463,7 +495,7 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                 // Create a repository head with all repositories
                 repositorys_Model = _0_0_HeadOfRepositorys_Model(
                     _1_1_CouleurAcheteOperation_Repository = _1_1_Repository,
-                    _1_2_ProduitAcheteOperation_Repository = _1_2_ProduitAcheteOperation_Repository,
+                    repository_1_2_ProduitAcheteOperation = _1_2_ProduitAcheteOperation_Repository,
                     repository_1_3_TransactionCommercial = repo_1_3_TransactionCommercial,
                     activeId_1_3_BonAchat = activeId_1_3_BonAchat, // Include it here as well
                     repository_1_4_PeriodeVent = _1_4_Repository,
@@ -498,7 +530,7 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                 _1_5_Repository.progressRepo,
 
                 _2_1_Repository.progressRepo,
-                _2_2_Repository.progressRepo ,
+                _2_2_Repository.progressRepo,
                 _4_CouleurOperationCommand_Repository.progressRepo
             ) { flowValues ->
                 // flowValues is an Array<Float> containing all the progress values
@@ -506,12 +538,15 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
 
                 // Log the combined progress and possible reasons if not complete
                 if (combinedProgress < 1.0f) {
-                    Log.d(TAG, "Combined progress: ${String.format("%.2f", combinedProgress * 100)}%")
+                    Log.d(
+                        TAG,
+                        "Combined progress: ${String.format("%.2f", combinedProgress * 100)}%"
+                    )
                     Log.d(TAG, "Possible reasons for incomplete progress:")
 
                     flowValues.forEachIndexed { index, progress ->
                         if (progress < 1.0f) {
-                            val repoName = when(index) {
+                            val repoName = when (index) {
                                 0 -> "_1_1_Repository"
                                 1 -> "_1_2_Repository"
                                 2 -> "_1_3_Repository"

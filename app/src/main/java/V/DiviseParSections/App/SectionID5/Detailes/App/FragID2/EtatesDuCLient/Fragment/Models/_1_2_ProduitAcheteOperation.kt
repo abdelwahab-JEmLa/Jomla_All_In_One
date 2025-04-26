@@ -1,5 +1,6 @@
-package Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation
+package V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models
 
+import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -8,10 +9,13 @@ data class _1_2_ProduitAcheteOperation(
     @PrimaryKey(autoGenerate = true)
     var vid: Long = 0L,
     var produitAcheterID: Long = 0L,
+    var nomProduitConcerned: Long = 0L,
     // Section Related Parents Foreign Key IDs
-    var parent_1_3_BonAchat: Long = 0L,
+    var parent_1_3_TransactionCommercial: Long = 0L,
+    var nomParentMainValue: String = "Non Defini",
 
     // Section InfosDeBase
+    var timestamps: Long = DatesHandler().getCurrentTimestamps(),
 
     // Section StatuesMutable
     var provisoireMonPrix: Double = 0.0,
@@ -20,6 +24,14 @@ data class _1_2_ProduitAcheteOperation(
         EtateActuellementEst.PRESENTATION,
 
     ) {
+
+    val fireBaseKeyID: String
+        get() {
+            val parent = "${parent_1_3_TransactionCommercial}_$nomParentMainValue"
+            val thisVal = "${vid}_$nomProduitConcerned"
+            return "($parent)->($thisVal))"
+        }
+
     enum class EtateActuellementEst {
         PRESENTATION,
         CONFIRME,

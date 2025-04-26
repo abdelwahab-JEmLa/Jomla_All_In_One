@@ -3,7 +3,7 @@ package V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Pac
 
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
-import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_2_ProduitAcheteOperation
 import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
@@ -43,7 +43,7 @@ fun B_ProduitCommande(
 
     // Find all product instances with the same produitAcheterID (same base product)
     val allProductInstances = remember(Produit.produitAcheterID) {
-        models._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList
+        models.repository_1_2_ProduitAcheteOperation.modelDatasSnapList
             .filter {
                 it.produitAcheterID == Produit.produitAcheterID &&
                         it.etateActuellementEst == _1_2_ProduitAcheteOperation.EtateActuellementEst.CONFIRME
@@ -54,7 +54,7 @@ fun B_ProduitCommande(
     val relevantProductInstances = remember(allProductInstances, periodFilter) {
         if (periodFilter != null) {
             allProductInstances.filter { product ->
-                val bonAchatPeriod = bonAchatPeriods[product.parent_1_3_BonAchat]
+                val bonAchatPeriod = bonAchatPeriods[product.parent_1_3_TransactionCommercial]
                 bonAchatPeriod == periodFilter
             }
         } else {
@@ -101,7 +101,7 @@ fun B_ProduitCommande(
 
     val buyerIds = remember {
         // Find all BonAchat IDs associated with filtered product instances
-        val bonAchatIds = relevantProductInstances.map { it.parent_1_3_BonAchat }.distinct()
+        val bonAchatIds = relevantProductInstances.map { it.parent_1_3_TransactionCommercial }.distinct()
 
         // Get all client IDs from those BonAchat entries
         models.repository_1_3_TransactionCommercial.modelDatasSnapList

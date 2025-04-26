@@ -3,7 +3,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.P
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
-import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_2_ProduitAcheteOperation
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -53,7 +53,7 @@ fun C_MainItem_APP2_ID_2(
     headRepository: _0_0_HeadOfRepositorys_Repository= koinInject()
 ) {
     val relative_1_2_ProduitAcheteOperation = _0_HeadOfRepositorys_Repository_Model
-        ._1_2_ProduitAcheteOperation_Repository
+        .repository_1_2_ProduitAcheteOperation
         .modelDatasSnapList.find { it.vid == composeKeyVID }
 
     val relative_2_1_ProduitsDataBase =
@@ -255,7 +255,7 @@ fun C_MainItem_APP2_ID_2(
                                                     onDoneupdatePrice(priceText)
 
                                                     // Fixed: Properly notify data changes
-                                                    _0_HeadOfRepositorys_Repository_Model._1_2_ProduitAcheteOperation_Repository.notifyDataChanged()
+                                                    _0_HeadOfRepositorys_Repository_Model.repository_1_2_ProduitAcheteOperation.notifyDataChanged()
                                                 }
                                             ),
                                             singleLine = true,
@@ -355,7 +355,7 @@ fun C_MainItem_APP2_ID_2(
                                             onDoneupdatePrice(priceText)
 
                                             // Fixed: Properly notify data changes
-                                            _0_HeadOfRepositorys_Repository_Model._1_2_ProduitAcheteOperation_Repository.notifyDataChanged()
+                                            _0_HeadOfRepositorys_Repository_Model.repository_1_2_ProduitAcheteOperation.notifyDataChanged()
                                         }
                                     ),
                                     singleLine = true,
@@ -430,7 +430,7 @@ fun C_MainItem_APP2_ID_2(
                                     _0_HeadOfRepositorys_Repository_Model = _0_HeadOfRepositorys_Repository_Model,
                                     relative_2_1_ProduitsDataBase_vid = relative_2_1_ProduitsDataBase?.vid,
                                     onQuantitySelected = { _ ->
-                                        _0_HeadOfRepositorys_Repository_Model._1_2_ProduitAcheteOperation_Repository.notifyDataChanged()
+                                        _0_HeadOfRepositorys_Repository_Model.repository_1_2_ProduitAcheteOperation.notifyDataChanged()
                                     },
                                 )
                             }
@@ -456,7 +456,7 @@ private fun updatePrice(
             provisoireMonPrix = newPrice
         )
         repositoryModel
-            ._1_2_ProduitAcheteOperation_Repository
+            .repository_1_2_ProduitAcheteOperation
             .updateUnSeulData(updatedProduct)
     }
 }

@@ -424,7 +424,7 @@ class _1_1_CouleurAcheteOperationRepositoryImpl(
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error in deleteUnSeulData_1_3_TransactionCommercial: ${e.message}")
+            Log.e(TAG, "Error in upsertUneDataEtReturnVID: ${e.message}")
         }
     }
 

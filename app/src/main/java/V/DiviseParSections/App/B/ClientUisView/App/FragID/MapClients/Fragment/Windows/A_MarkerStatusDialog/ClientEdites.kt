@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -38,7 +39,8 @@ fun ClientEdites(
     onShowDeleteConfirmationChange: (Boolean) -> Unit = {},
     onClientTypeModeChange: (B_ClientDataBase.ClientTypeMode?) -> Unit = {},
     onShowEditDialogChange: (Boolean) -> Unit = {},
-    onShowPhoneDialogChange: (Boolean) -> Unit = {}
+    onShowPhoneDialogChange: (Boolean) -> Unit = {},
+    onUpdateLongAppSetting: () -> Unit = {}
 ) {
     Row(
         modifier = Modifier
@@ -72,6 +74,21 @@ fun ClientEdites(
             Icon(
                 imageVector = Icons.Default.LocationOn,
                 contentDescription = "Edit location"
+            )
+        }
+        Card(
+            modifier = Modifier
+                .padding(end = 8.dp)
+                .clickable {
+                    val selectedMarkedID = selectedMarker.id.toLong()
+                    viewModel.updateLongAppSetting(selectedMarkedID)
+                    onUpdateLongAppSetting()
+                    onDismiss()
+                }
+        ) {
+            Icon(
+                imageVector = Icons.Default.ShoppingCart,
+                contentDescription = "Start Command Mode"
             )
         }
         // Client Type Mode Toggle

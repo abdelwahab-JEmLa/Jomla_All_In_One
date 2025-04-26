@@ -63,14 +63,14 @@ fun upsert_1_3_TransactionCommercial(
                 Locale.getDefault()
             ).format(Date())
         )
-        viewModel._0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID_1_3_TransactionCommercial(
+        viewModel._0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID(
             updatedBonAchat
         ) { vid ->
             repositorysModel.activeId_1_3_BonAchat.value = vid
         }
 
     } else {
-        viewModel._0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID_1_3_TransactionCommercial(
+        viewModel._0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID(
             _1_3_TransactionCommercial(
                 clientAcheteurID = clientId,
                 nomClientConcerned = relatedClients?.nom!!,
@@ -167,14 +167,14 @@ fun CommandButton(
                             Locale.getDefault()
                         ).format(Date())
                     )
-                    viewModel._0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID_1_3_TransactionCommercial(
+                    viewModel._0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID(
                         updatedBonAchat
                     ) { vid ->
                         repositorysModel.activeId_1_3_BonAchat.value = vid
                     }
 
                 } else {
-                    viewModel._0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID_1_3_TransactionCommercial(
+                    viewModel._0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID(
                         _1_3_TransactionCommercial(
                             clientAcheteurID = clientId,
                             nomClientConcerned = relatedClients?.nom!!,

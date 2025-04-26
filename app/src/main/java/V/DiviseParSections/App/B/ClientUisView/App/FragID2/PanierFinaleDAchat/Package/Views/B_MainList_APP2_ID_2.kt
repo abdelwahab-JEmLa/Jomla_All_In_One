@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views
 
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
-import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -57,7 +57,7 @@ fun B_MainList_APP2_ID_2(
                             provisoireMonPrix = price
                         )
                         _0_HeadOfRepositorys_Repository_Model
-                            ._1_2_ProduitAcheteOperation_Repository
+                            .repository_1_2_ProduitAcheteOperation
                             .updateUnSeulData(updatedProduct)
 
 
@@ -75,10 +75,10 @@ private fun produitsBonAchatIDs(
     composeKeyVID: Long?,
     validColorOperations: List<_1_1_CouleurAcheteOperation>,
 ) = _0_HeadOfRepositorys_Repository_Model
-    ._1_2_ProduitAcheteOperation_Repository
+    .repository_1_2_ProduitAcheteOperation
     .modelDatasSnapList
     .filter { produitOpe ->
-        val condition1 = produitOpe.parent_1_3_BonAchat == composeKeyVID
+        val condition1 = produitOpe.parent_1_3_TransactionCommercial == composeKeyVID
         val condition2 = produitOpe.etateActuellementEst == _1_2_ProduitAcheteOperation
             .EtateActuellementEst
             .CONFIRME

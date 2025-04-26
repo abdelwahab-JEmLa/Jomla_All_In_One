@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 class _0_0_HeadOfRepositorys_Model(
     val _1_1_CouleurAcheteOperation_Repository: _1_1_CouleurAcheteOperation_Repository,
-    val _1_2_ProduitAcheteOperation_Repository: _1_2_ProduitAcheteOperation_Repository,
+    val repository_1_2_ProduitAcheteOperation: _1_2_ProduitAcheteOperation_Repository,
 
     val repository_1_3_TransactionCommercial: _1_3_TransactionCommercial_Repository,
     var activeId_1_3_BonAchat: MutableStateFlow<Long>,
@@ -26,6 +26,8 @@ class _0_0_HeadOfRepositorys_Model(
     val repository_3_ClientsDataBase: _3_ClientsDataBase_Repository,
 
     val _4_CouleurOperationCommand_Repository: _4_CouleurOperationCommand_Repository,
+
+    val databaseReference_1_2_ProduitAcheteOperation: DatabaseReference = _1_2_ProduitAcheteOperation_Repository.sonDataBaseRef,
     val databaseReference_1_5_Vendeur: DatabaseReference = _1_5_Vendeur_Repository.sonDataBaseRef,
     val databaseReference_1_4_PeriodeVent: DatabaseReference = _1_4_PeriodeVent_Repository.sonDataBaseRef,
     val databaseReference_1_3_TransactionCommercial: DatabaseReference = _1_3_TransactionCommercial_Repository.sonDataBaseRef,

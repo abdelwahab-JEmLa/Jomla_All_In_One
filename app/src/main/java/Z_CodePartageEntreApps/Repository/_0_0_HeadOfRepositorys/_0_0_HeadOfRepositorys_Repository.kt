@@ -1,6 +1,5 @@
 package Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys
 
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_3_TransactionCommercial
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_4_PeriodeVent
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur
 import com.google.firebase.Firebase
@@ -35,18 +34,14 @@ interface _0_0_HeadOfRepositorys_Repository {
     fun updateActiveIdDe_1_5_Vendeur(id: Long = -1L)
     fun notifyDataChanged_2_1_ProduitsDataBase_Repository()
     fun notifyDataChanged_1_3_TransactionCommercial_Repository()
-    fun upsertUneDataEtReturnVID(data: _1_5_Vendeur, onSuccess: (Long) -> Unit={})
+    fun upsertUneDataEtReturnVID_1_5_Vendeur(data: _1_5_Vendeur, onSuccess: (Long) -> Unit={})
 
 
     fun upsertUneDataEtReturnVID_1_4_PeriodeVent(data: _1_4_PeriodeVent,
                                                  onSuccess: (Long) -> Unit ={}
     )
 
-    //  _1_3_TransactionCommercial
-    fun upsertUneDataEtReturnVID_1_3_TransactionCommercial(
-        data: _1_3_TransactionCommercial,
-        onSuccess: (Long) -> Unit={}
-    )
-    fun deleteUnSeulData_1_3_TransactionCommercial(data: _1_3_TransactionCommercial)
 
+
+    fun <T> upsertUneDataEtReturnVID(data: T, onSuccess: (Long) -> Unit= {})
 }

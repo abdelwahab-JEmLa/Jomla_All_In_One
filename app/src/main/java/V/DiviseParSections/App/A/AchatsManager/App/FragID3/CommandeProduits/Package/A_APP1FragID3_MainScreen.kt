@@ -2,7 +2,7 @@ package V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Pac
 
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
-import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_2_ProduitAcheteOperation
 import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -49,8 +49,8 @@ fun A_APP1FragID3_MainScreen(
     }
 
     // Add specific logging for product with vid == 127
-    LaunchedEffect(models._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList) {
-        val product127 = models._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList.find { it.vid == 127L }
+    LaunchedEffect(models.repository_1_2_ProduitAcheteOperation.modelDatasSnapList) {
+        val product127 = models.repository_1_2_ProduitAcheteOperation.modelDatasSnapList.find { it.vid == 127L }
         if (product127 != null) {
             Log.d(TAG, "Product 127 found: status=${product127.etateActuellementEst}, produitAcheterID=${product127.produitAcheterID}")
 
@@ -64,7 +64,7 @@ fun A_APP1FragID3_MainScreen(
             }
 
             // Check BonAchat for product 127
-            val bonAchatId = product127.parent_1_3_BonAchat
+            val bonAchatId = product127.parent_1_3_TransactionCommercial
             val bonAchat = models.repository_1_3_TransactionCommercial.modelDatasSnapList.find { it.vid == bonAchatId }
             if (bonAchat != null) {
                 Log.d(TAG, "BonAchat for product 127: period=${bonAchat.parentVID_1_4_PeriodeVent}, filter=$periodFilter")
@@ -78,7 +78,7 @@ fun A_APP1FragID3_MainScreen(
 
     // Move heavy computation to LaunchedEffect with Dispatchers.Default
     LaunchedEffect(
-        models._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList,
+        models.repository_1_2_ProduitAcheteOperation.modelDatasSnapList,
         models._1_1_CouleurAcheteOperation_Repository.modelDatasSnapList,
         models.repository_1_3_TransactionCommercial.modelDatasSnapList,
         periodFilter
@@ -97,7 +97,7 @@ fun A_APP1FragID3_MainScreen(
             Log.d(TAG, "BonAchats with periods: $bonAchatsPeriods")
 
             // First pass: find all products that meet the criteria
-            val confirmedProducts = models._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList
+            val confirmedProducts = models.repository_1_2_ProduitAcheteOperation.modelDatasSnapList
                 .filter { product ->
                     // Add specific logging for product 127 in the filtering process
                     val isProduct127 = product.vid == 127L
@@ -135,7 +135,7 @@ fun A_APP1FragID3_MainScreen(
 
                     // 3. Period filter - only if a period filter is set
                     if (periodFilter != null) {
-                        val bonAchat = bonAchatsById[product.parent_1_3_BonAchat]
+                        val bonAchat = bonAchatsById[product.parent_1_3_TransactionCommercial]
                         val productPeriod = bonAchat?.parentVID_1_4_PeriodeVent
 
                         // Debug logging for this specific product's period
@@ -144,9 +144,9 @@ fun A_APP1FragID3_MainScreen(
                         }
 
                         // Check if ANY associated BonAchats match the period filter (fixed logic)
-                        val allBonAchats = models._1_2_ProduitAcheteOperation_Repository.modelDatasSnapList
+                        val allBonAchats = models.repository_1_2_ProduitAcheteOperation.modelDatasSnapList
                             .filter { it.produitAcheterID == product.produitAcheterID }
-                            .map { it.parent_1_3_BonAchat }
+                            .map { it.parent_1_3_TransactionCommercial }
                             .distinct()
 
                         // Get all periods for these BonAchats
