@@ -17,6 +17,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 private const val TAG = "SecID5FragID2ViewModel"
 
@@ -42,8 +45,7 @@ class SecID5FragID2ViewModel(
         }
     }
 
-    private fun loadCollectSnapshotStateList() {   //<--
-    //TODO(1): trie tout par date dec 
+    private fun loadCollectSnapshotStateList() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 // Ensure repositories are initialized
@@ -56,7 +58,7 @@ class SecID5FragID2ViewModel(
                     r_0_0_HeadOfRepositorys_Repository.repositorys_Model.repository_1_3_TransactionCommercial.modelDatasSnapList.isEmpty()   ||
                     r_0_0_HeadOfRepositorys_Repository.repositorys_Model.repository_3_ClientsDataBase.modelDatasSnapList.isEmpty()
 
-                    ) {
+                ) {
                     addTestDataToFireBaseIfEmpty(viewModelScope, r_0_0_HeadOfRepositorys_Repository)
                     // Wait briefly for data to be saved
                     delay(1000)
@@ -126,13 +128,31 @@ class SecID5FragID2ViewModel(
     private fun loadCollecttransactionsDateToList_1_3_TransactionCommercial() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val periods = _uiState.value.sl_1_4_PeriodeVent
-                val transactions = _uiState.value.sl_1_3_TransactionCommercial
+                val periods = _uiState.value.sl_1_4_PeriodeVent.toList()
+                val transactions = _uiState.value.sl_1_3_TransactionCommercial.toList()
 
-                // Group transactions by period
-                val groupedTransactions = periods.map { period ->
+                // Sort periods by date in descending order (newest first)
+                val sortedPeriods = periods.sortedByDescending { period ->
+                    try {
+                        SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(period.startDateInString)
+                    } catch (e: Exception) {
+                        // Handle parsing errors by using a default old date
+                        Date(0)
+                    }
+                }
+
+                // Group transactions by period, maintaining the sorted order
+                val groupedTransactions = sortedPeriods.map { period ->
                     val periodTransactions = transactions.filter { transaction ->
                         transaction.parentVID_1_4_PeriodeVent == period.vid
+                    }.sortedByDescending { transaction ->
+                        // For transactions in the same period, sort by transaction time if available
+                        try {
+                            SimpleDateFormat("HH:mm", Locale.getDefault()).parse(transaction.heurDebutInString)
+                        } catch (e: Exception) {
+                            // Handle parsing errors
+                            Date(0)
+                        }
                     }
                     Pair(period, periodTransactions)
                 }
