@@ -12,7 +12,6 @@ import Z_CodePartageEntreApps.Windows.B.Windows.Options.A_OptionsControlsButtons
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Resources.XmlsFilesHandler.Companion.xmlResources
 import android.content.Context
-import android.util.Log
 import android.widget.LinearLayout
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -117,12 +116,8 @@ private fun MapContent(
     var showEditMarkerMode by remember { mutableStateOf(false) }
     val activeTransactionId = viewModel.repo_0_0_HeadOfRepositorys_Repository.repositorys_Model.activeVId_1_3_TransactionCommercial.collectAsState().value
 
-
-    // In A_MapClients_A2FragID_1.kt, inside the MapContent function
-// After the LaunchedEffect block that sets up markers, add this code:
-
     LaunchedEffect(viewModel.repo_0_0_HeadOfRepositorys_Repository.repositorys_Model.activeVId_1_3_TransactionCommercial.collectAsState().value) {
-
+         
         if (activeTransactionId != 0L) {
             // Find the transaction to get the client ID
             val activeTransaction = viewModel.repo_0_0_HeadOfRepositorys_Repository.repositorys_Model
@@ -396,19 +391,9 @@ private fun MapContent(
                 transactions.maxByOrNull { it.timestamps }
             }
 
-        // Highlight clients with active commands based on latest transaction
         latestTransactionsMap.forEach { (clientId, latestTransaction) ->
-            if (latestTransaction?.etateActuellementEst == _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT) {
-                // Log the active transaction
-                Log.d(
-                    "MapClients",
-                    "Found client $clientId with active order based on latest timestamp. " +
-                            "Timestamp: ${latestTransaction.timestamps}, " +
-                            "État: ${latestTransaction.etateActuellementEst.nomArabe}, " +
-                            "Heure: ${latestTransaction.heurDebutInString}"
-                )
-
-                // Find and select the marker for this client
+            if (latestTransaction?.etateActuellementEst == _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT ||
+                latestTransaction?.ouvert == true) {
                 val marker = mapView.overlays.filterIsInstance<Marker>()
                     .find { it.id == clientId.toString() }
 
@@ -559,9 +544,9 @@ private fun MapContent(
         }
 
         // Marker status dialog
-        if (showMarkerDialog && selectedMarker != null) {
-
+        if (showMarkerDialog && selectedMarker != null ) {
             MarkerStatusDialog(
+
                 viewModel = viewModel,
                 viewModelInitApp = viewModelInitApp,
                 selectedMarker = selectedMarker,
