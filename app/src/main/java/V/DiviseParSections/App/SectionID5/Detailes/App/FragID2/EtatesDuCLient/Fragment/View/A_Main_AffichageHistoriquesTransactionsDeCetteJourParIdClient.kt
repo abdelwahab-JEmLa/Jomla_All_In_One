@@ -82,7 +82,9 @@ fun A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
 
                         // Transactions for this period
                         transactions.forEach { transaction ->
-                            B_Item_TransactionItem(transaction)
+                            B_Item_TransactionItem(
+                                viewModel=viewModel,
+                                transaction=transaction)
                         }
                     }
                 }

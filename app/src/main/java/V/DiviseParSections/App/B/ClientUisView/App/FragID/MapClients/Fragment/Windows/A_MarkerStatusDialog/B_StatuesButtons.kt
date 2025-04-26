@@ -66,7 +66,7 @@ fun upsert_1_3_TransactionCommercial(
         viewModel._0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID(
             updatedBonAchat
         ) { vid ->
-            repositorysModel.activeId_1_3_BonAchat.value = updatedBonAchat.vid
+            repositorysModel.activeVId_1_3_TransactionCommercial.value = updatedBonAchat.vid
         }
 
     } else {
@@ -83,7 +83,7 @@ fun upsert_1_3_TransactionCommercial(
                 ).format(Date())
             )
         ) { vid ->
-            repositorysModel.activeId_1_3_BonAchat.value = vid
+            repositorysModel.activeVId_1_3_TransactionCommercial.value = vid
         }
 
     }

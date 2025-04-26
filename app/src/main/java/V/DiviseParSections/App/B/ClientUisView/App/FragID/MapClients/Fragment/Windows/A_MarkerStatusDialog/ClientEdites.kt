@@ -105,7 +105,7 @@ fun ClientEdites(
                             viewModel._0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID(
                                 updatedBonAchat
                             ) { vid ->
-                                repositorysModel.activeId_1_3_BonAchat.value = vid
+                                repositorysModel.activeVId_1_3_TransactionCommercial.value = vid
                             }
 
                         } else {
@@ -121,7 +121,7 @@ fun ClientEdites(
                                     ).format(Date())
                                 )
                             ) { vid ->
-                                repositorysModel.activeId_1_3_BonAchat.value = vid
+                                repositorysModel.activeVId_1_3_TransactionCommercial.value = vid
                             }
 
                         }

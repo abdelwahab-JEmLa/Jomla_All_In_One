@@ -16,7 +16,7 @@ class _0_0_HeadOfRepositorys_Model(
     val repository_1_2_ProduitAcheteOperation: _1_2_ProduitAcheteOperation_Repository,
 
     val repository_1_3_TransactionCommercial: _1_3_TransactionCommercial_Repository,
-    var activeId_1_3_BonAchat: MutableStateFlow<Long>,
+    var activeVId_1_3_TransactionCommercial: MutableStateFlow<Long>,
 
     val repository_1_4_PeriodeVent: _1_4_PeriodeVent_Repository,
 

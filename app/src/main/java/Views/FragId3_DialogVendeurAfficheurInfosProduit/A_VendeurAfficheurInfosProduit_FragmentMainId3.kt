@@ -107,7 +107,7 @@ fun MainUi(
 
     // Get the active BonAchat ID from the repository
     val parentCompose_1_3_BonAchatVid by
-    _0_0_HeadOfRepositorys_Repository.repositorys_Model.activeId_1_3_BonAchat.collectAsState()
+    _0_0_HeadOfRepositorys_Repository.repositorys_Model.activeVId_1_3_TransactionCommercial.collectAsState()
 
     var parentCompose_1_2_ProduitAcheteOperationVid by remember { mutableLongStateOf(0L) }
 

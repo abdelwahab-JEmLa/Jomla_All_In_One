@@ -35,7 +35,7 @@ fun A_MainScreen_APP2_ID_2PanierFinaleDAchat(
     val _0_HeadOfRepositorys_Repository_Model = _0_0_HeadOfRepositorys_Repository
         .repositorys_Model
 
-    val composeKeyVID by _0_0_HeadOfRepositorys_Repository.repositorys_Model.activeId_1_3_BonAchat.collectAsState()
+    val composeKeyVID by _0_0_HeadOfRepositorys_Repository.repositorys_Model.activeVId_1_3_TransactionCommercial.collectAsState()
 
     // Fix 1: Using the collected value directly, which is now a Long
     val relativeBonAchate = _0_HeadOfRepositorys_Repository_Model

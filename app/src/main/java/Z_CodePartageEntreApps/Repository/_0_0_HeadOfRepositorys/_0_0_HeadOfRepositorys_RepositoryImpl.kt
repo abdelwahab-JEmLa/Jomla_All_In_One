@@ -547,7 +547,7 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                     _1_1_CouleurAcheteOperation_Repository = _1_1_Repository,
                     repository_1_2_ProduitAcheteOperation = _1_2_ProduitAcheteOperation_Repository,
                     repository_1_3_TransactionCommercial = repo_1_3_TransactionCommercial,
-                    activeId_1_3_BonAchat = activeId_1_3_BonAchat, // Include it here as well
+                    activeVId_1_3_TransactionCommercial = activeId_1_3_BonAchat, // Include it here as well
                     repository_1_4_PeriodeVent = _1_4_Repository,
                     repository_1_5_Vendeur = _1_5_Repository,
 
