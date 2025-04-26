@@ -2,10 +2,10 @@ package P0_MainScreen.Main
 
 import P0_MainScreen.Main.Windows.RecordAfficheurFAB
 import P0_MainScreen.Modules.HandleFullscreenMode
-import P0_MainScreen.Ui.Main.AppNavHost.AppNavHost
-import P0_MainScreen.Ui.Main.AppNavHost.NavigationBarWithFab
-import P0_MainScreen.Ui.Main.AppNavHost.NavigationItems
-import P0_MainScreen.Ui.Main.AppNavHost.Screen
+import V.DiviseParSections.App._0.Navigation.AppNavHost
+import V.DiviseParSections.App._0.Navigation.NavigationBarWithFab
+import V.DiviseParSections.App._0.Navigation.NavigationItems
+import V.DiviseParSections.App._0.Navigation.Screen
 import P0_MainScreen.Ui.Objects.ConnexionCard
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.A_APP4FragID1_MainScreen
 import Views.FragId4_EStorePresentationToClient.FragmentDisplayeInfoProductToClient7

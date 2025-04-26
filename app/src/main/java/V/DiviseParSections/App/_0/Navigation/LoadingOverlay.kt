@@ -1,4 +1,4 @@
-package P0_MainScreen.Ui.Objects
+package V.DiviseParSections.App._0.Navigation
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat

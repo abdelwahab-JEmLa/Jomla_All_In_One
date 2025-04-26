@@ -1,6 +1,5 @@
-package P0_MainScreen.Ui.Main.AppNavHost
+package V.DiviseParSections.App._0.Navigation
 
-import P0_MainScreen.Ui.Objects.LoadingOverlay
 import V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package.A_APP1FragID3_MainScreen
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.A_MapClients_A2FragID_1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views.A_MainScreen_APP2_ID_2
@@ -40,19 +39,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-private fun allerAuFragment(navController: NavHostController) {
-    navController.navigate(Screen.EditDatabaseWithCreateNewArticles.route) {
-        // Pop the current fragment off the back stack
-        popUpTo(Screen.A_ClientsLocationGps.route) {
-            inclusive = true
-        }
-        launchSingleTop = true
-    }
-}
 
-object ScreensApp2 {
-    val A_ClientsLocationGps = Screen.A_ClientsLocationGps
-}
 
 @Composable
 fun AppNavHost(
@@ -372,4 +359,17 @@ fun NavGraphBuilder.app2(
             mapReloadTrigger = mapReloadTrigger
         )
     }
+}
+private fun allerAuFragment(navController: NavHostController) {
+    navController.navigate(Screen.EditDatabaseWithCreateNewArticles.route) {
+        // Pop the current fragment off the back stack
+        popUpTo(Screen.A_ClientsLocationGps.route) {
+            inclusive = true
+        }
+        launchSingleTop = true
+    }
+}
+
+object ScreensApp2 {
+    val A_ClientsLocationGps = Screen.A_ClientsLocationGps
 }

@@ -1,6 +1,6 @@
 package Views.P1._ArticlesStartFacade
 
-import P0_MainScreen.Ui.Objects.LoadingOverlay
+import V.DiviseParSections.App._0.Navigation.LoadingOverlay
 import Views.P1.Ui.ArticlesGrid.ArticleGridWithScrollbar
 import Views.P1.Ui.Objects.SearchFilterPB
 import Views.P1._ArticlesStartFacade.FloatingActionButtonGroup.FloatingActionButtonGroup

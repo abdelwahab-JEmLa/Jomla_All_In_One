@@ -1,4 +1,4 @@
-package P0_MainScreen.Ui.Main.AppNavHost
+package V.DiviseParSections.App._0.Navigation
 
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.Image
