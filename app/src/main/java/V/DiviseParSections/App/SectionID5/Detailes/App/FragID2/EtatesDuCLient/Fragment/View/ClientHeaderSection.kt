@@ -29,7 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 @Composable
- fun ClientHeaderSection(clientData: _3_ClientsDataBase?) {
+fun ClientHeaderSection(clientData: _3_ClientsDataBase?) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
