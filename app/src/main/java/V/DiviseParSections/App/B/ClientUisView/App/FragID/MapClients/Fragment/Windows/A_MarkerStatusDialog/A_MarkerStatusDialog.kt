@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.View.A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Column
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
@@ -52,6 +54,7 @@ fun MarkerStatusDialog(
     var editedPhone by remember { mutableStateOf("") }
     var showPhoneDialog by remember { mutableStateOf(false) }
     var showDeleteConfirmationDialog by remember { mutableStateOf(false) }
+    val scrollState = rememberScrollState()
 
     val relatedClients = viewModel.bProto_ClientsDataBase.find {
         it.id == (selectedMarker?.id?.toLong() ?: 0)
@@ -95,7 +98,8 @@ fun MarkerStatusDialog(
                 .padding(16.dp)
         ) {
             Column(
-                modifier = Modifier.padding(16.dp),
+                modifier = Modifier
+                    .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 ClientEdites(
@@ -174,8 +178,20 @@ fun MarkerStatusDialog(
                         context = context
                     )
                 }
-                //<--
-                //TODO(1): affiche ici 
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+
+                Text(
+                    text = "سجل المعاملات",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+
+                A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
+                    modifier = Modifier.fillMaxWidth(),
+                    idClient = clientId
+                )
             }
         }
     }
