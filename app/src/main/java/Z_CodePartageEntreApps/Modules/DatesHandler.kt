@@ -6,7 +6,11 @@ import java.util.Calendar
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
-class DateFormatter {
+class DatesHandler {
+    fun getCurrentTimestamps(): Long {
+        return System.currentTimeMillis()
+    }
+
     fun getNomJourArabParDateStr(dataStr: String): String {
         try {
             // Parse the input date string (expected format: "yyyy-MM-dd")
@@ -112,4 +116,5 @@ class DateFormatter {
             return timeString
         }
     }
+
 }

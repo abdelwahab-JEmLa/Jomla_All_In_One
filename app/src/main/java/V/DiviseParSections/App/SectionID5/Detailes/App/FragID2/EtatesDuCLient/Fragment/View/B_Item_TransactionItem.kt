@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.View
 
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_3_TransactionCommercial
-import Z_CodePartageEntreApps.Modules.DateFormatter
+import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun B_Item_TransactionItem(transaction: _1_3_TransactionCommercial) {
-    val dateFormatter = DateFormatter()
+    val datesHandler = DatesHandler()
 
     // Card with background color based on transaction state
     Card(
@@ -40,7 +40,7 @@ fun B_Item_TransactionItem(transaction: _1_3_TransactionCommercial) {
         ) {
 
             Text(
-                text = " الوقت: ${dateFormatter.formatTimeToArabic(transaction.heurDebutInString)}",
+                text = " الوقت: ${datesHandler.formatTimeToArabic(transaction.heurDebutInString)}",
                 style = MaterialTheme.typography.bodyMedium
             )
 
@@ -59,7 +59,7 @@ fun B_Item_TransactionItem(transaction: _1_3_TransactionCommercial) {
             if (transaction.heurFinInString != "Non Defini") {
                 Spacer(modifier = Modifier.padding(top = 4.dp))
                 Text(
-                    text = "Fin: ${dateFormatter.formatTimeToArabic(transaction.heurFinInString)}",
+                    text = "Fin: ${datesHandler.formatTimeToArabic(transaction.heurFinInString)}",
                     style = MaterialTheme.typography.bodySmall
                 )
             }

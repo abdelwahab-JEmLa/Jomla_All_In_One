@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models
 
+import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.firebase.database.IgnoreExtraProperties
@@ -18,7 +19,9 @@ data class _1_3_TransactionCommercial(
     var nomClientConcerned: String = "Non Defini",
 
     // Section InfosDeBase
+    var timestamps: Long = DatesHandler().getCurrentTimestamps(),
     var heurDebutInString: String = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date()),
+
     var heurFinInString: String = "Non Defini",
 
     // Section StatuesMutable

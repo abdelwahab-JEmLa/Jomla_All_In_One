@@ -78,14 +78,17 @@ fun MarkerStatusDialog(
     val existingBonAchat = viewModel.modelDatasSnapList_1_3_BonAchat.find {
         it.clientAcheteurID == clientId && it.parentVID_1_4_PeriodeVent == ceComptVendeurInsertBonsAchatAuPeriodID
     }
+    fun getLatestTransactionForClient(clientId: Long): _1_3_TransactionCommercial? {
+        return repositorysModel
+            .repository_1_3_TransactionCommercial.modelDatasSnapList
+            .filter { it.clientAcheteurID == clientId }
+            .maxByOrNull { it.timestamps }
+    }
+    // Replace the existing hasOngoingTransaction calculation with this code:
+    val latestTransaction = getLatestTransactionForClient(clientId)
+    val hasOngoingTransaction = latestTransaction?.etateActuellementEst ==
+            _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
 
-    val hasOngoingTransaction = repositorysModel
-        .repository_1_3_TransactionCommercial.modelDatasSnapList
-        .sortedByDescending { it.heurDebutInString } // Sort by date/time in descending order
-        .any {
-            it.clientAcheteurID == clientId &&
-                    it.etateActuellementEst == _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
-        }
 
     // Initialize editedName and editedPhone with current values
     if (editedName.isEmpty() && relatedClients != null) {
@@ -115,10 +118,15 @@ fun MarkerStatusDialog(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 if (hasOngoingTransaction) {
-                    // And also update the find method for displaying transaction details
+                    android.util.Log.d(
+                        "TransactionCommercial",
+                        "Client $clientId has ongoing transaction: ${latestTransaction?.timestamps}, " +
+                                "État: ${latestTransaction?.etateActuellementEst?.nomArabe}, " +
+                                "Heure: ${latestTransaction?.heurDebutInString}"
+                    )
+
                     val transaction = repositorysModel
                         .repository_1_3_TransactionCommercial.modelDatasSnapList
-                        .sortedByDescending { it.heurDebutInString } // Sort by date/time in descending order
                         .find {
                             it.clientAcheteurID == clientId &&
                                     it.etateActuellementEst == _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT

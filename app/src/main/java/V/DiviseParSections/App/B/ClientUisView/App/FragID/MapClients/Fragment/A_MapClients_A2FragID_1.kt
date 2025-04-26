@@ -12,6 +12,7 @@ import Z_CodePartageEntreApps.Windows.B.Windows.Options.A_OptionsControlsButtons
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Resources.XmlsFilesHandler.Companion.xmlResources
 import android.content.Context
+import android.util.Log
 import android.widget.LinearLayout
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -60,6 +61,9 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow
 
+/**
+ * Main composable function for the Map Clients view
+ */
 @Composable
 fun A_MapClients_A2FragID_1(
     modifier: Modifier = Modifier,
@@ -88,6 +92,9 @@ fun A_MapClients_A2FragID_1(
     }
 }
 
+/**
+ * Main content of the map with all client markers
+ */
 @Composable
 private fun MapContent(
     viewModel: ViewModel_MapClients_App2FragID1,
@@ -96,8 +103,7 @@ private fun MapContent(
     onUpdateLongAppSetting: () -> Unit,
     onClear: () -> Unit,
     mapReloadTrigger: Int = 0
-) {          //<--
-    //TODO(1): fait que si le derner etate on ordron des par date est on commande daffiche le cheque de update
+) {
     val context = LocalContext.current
     val currentZoom by remember { mutableDoubleStateOf(18.2) }
     val mapView = remember { MapView(context) }
@@ -110,6 +116,7 @@ private fun MapContent(
     var editingMarkerId by remember { mutableLongStateOf(0L) }
     var showEditMarkerMode by remember { mutableStateOf(false) }
 
+    // Initialize map with current location or default position
     LaunchedEffect(Unit) {
         val location = getCurrentLocation(context)
 
@@ -138,6 +145,7 @@ private fun MapContent(
         }
     }
 
+    // Configure OSMDroid
     DisposableEffect(context) {
         Configuration.getInstance()
             .load(context, context.getSharedPreferences("osmdroid", Context.MODE_PRIVATE))
@@ -151,6 +159,7 @@ private fun MapContent(
 
     val clientDataBaseSnapList = viewModel.bProto_ClientsDataBase
 
+    // Main effect for updating markers on the map when data changes
     LaunchedEffect(
         clientDataBaseSnapList.size,
         clientEnCourDeVent,
@@ -166,6 +175,7 @@ private fun MapContent(
             .filter { marker -> clientDataBaseSnapList.any { it.id.toString() == marker.id } }
         mapView.overlays.removeAll(markersToRemove)
 
+        // Filter clients based on the current mode
         val clientsToShow = when (currentFilterMode) {
             ViewModel_MapClients_App2FragID1.VisibleClientsNow.showNonAbsentClientsOnly -> {
                 clientDataBaseSnapList.filter {
@@ -237,6 +247,7 @@ private fun MapContent(
             }
         }
 
+        // Add markers for filtered clients
         clientsToShow.forEach { client ->
             val dayFilters = viewModel.filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList
             val shouldApplyDayFilter = dayFilters.isNotEmpty()
@@ -347,48 +358,47 @@ private fun MapContent(
         }
         mapView.invalidate()
 
-        // In the MapContent function, after retrieving transactionOnCommandMode
-        val transactionOnCommandMode = viewModel._0_0_HeadOfRepositorys_Repository.repositorys_Model
+        // Find latest transactions for each client
+        val latestTransactionsMap = viewModel._0_0_HeadOfRepositorys_Repository.repositorys_Model
             .repository_1_3_TransactionCommercial.modelDatasSnapList
-            .sortedByDescending { it.heurDebutInString } // Sort transactions by date/time in descending order
-            .find { it.etateActuellementEst == _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT }
-
-        transactionOnCommandMode?.let { transaction ->
-            val clientId = transaction.clientAcheteurID
-            val relatedClient = viewModel.bProto_ClientsDataBase.find { it.id == clientId }
-
-            val marker = mapView.overlays.filterIsInstance<Marker>()
-                .find { it.id == clientId.toString() }
-
-            marker?.let {
-                selectedMarker = it
-                showMarkerDialog = true
-                // Highlight the marker for update
-                it.setIcon(ContextCompat.getDrawable(context, android.R.drawable.ic_menu_edit))
-                it.showInfoWindow()
+            .groupBy { it.clientAcheteurID }
+            .mapValues { (_, transactions) ->
+                transactions.maxByOrNull { it.timestamps }
             }
-        }
 
-        transactionOnCommandMode?.let { transaction ->
-            val clientId = transaction.clientAcheteurID
-            val relatedClient = viewModel.bProto_ClientsDataBase.find { it.id == clientId }
+        // Highlight clients with active commands based on latest transaction
+        latestTransactionsMap.forEach { (clientId, latestTransaction) ->
+            if (latestTransaction?.etateActuellementEst == _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT) {
+                // Log the active transaction
+                Log.d(
+                    "MapClients",
+                    "Found client $clientId with active order based on latest timestamp. " +
+                            "Timestamp: ${latestTransaction.timestamps}, " +
+                            "État: ${latestTransaction.etateActuellementEst.nomArabe}, " +
+                            "Heure: ${latestTransaction.heurDebutInString}"
+                )
 
-            val marker = mapView.overlays.filterIsInstance<Marker>()
-                .find { it.id == clientId.toString() }
+                // Find and select the marker for this client
+                val marker = mapView.overlays.filterIsInstance<Marker>()
+                    .find { it.id == clientId.toString() }
 
-            marker?.let {
-                selectedMarker = it
-                showMarkerDialog = true
+                marker?.let {
+                    selectedMarker = it
+                    showMarkerDialog = true
+                }
             }
         }
     }
 
+    // Main UI layout with map and controls
     Box(modifier = Modifier.fillMaxSize()) {
+        // Map view
         AndroidView(
             modifier = Modifier.fillMaxSize(),
             factory = { mapView }
         )
 
+        // Center marker indicator
         Box(
             modifier = Modifier
                 .size(8.dp)
@@ -396,8 +406,10 @@ private fun MapContent(
                 .align(Alignment.Center)
         )
 
+        // Main controls
         A_OptionsControlsButtons_Main()
 
+        // Floating action buttons for map controls
         if (viewModelInitApp._paramatersAppsViewModelModel.fabsVisibility) {
             A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                 viewModel = viewModel,
@@ -437,6 +449,7 @@ private fun MapContent(
             )
         }
 
+        // Marker edit mode overlay
         if (showEditMarkerMode) {
             Box(
                 modifier = Modifier
@@ -515,6 +528,7 @@ private fun MapContent(
             }
         }
 
+        // Marker status dialog
         if (showMarkerDialog && selectedMarker != null) {
             MarkerStatusDialog(
                 viewModel = viewModel,
@@ -538,6 +552,9 @@ private fun MapContent(
     }
 }
 
+/**
+ * Loading progress overlay
+ */
 @Composable
 private fun LoadingProgressOverlay(
     progress: Float,
@@ -578,11 +595,11 @@ private fun LoadingProgressOverlay(
     }
 }
 
+/**
+ * Helper data class for map positioning
+ */
 private data class MapPosition(
     val latitude: Double,
     val longitude: Double,
     val isInitialized: Boolean
 )
-
-
-
