@@ -96,7 +96,6 @@ fun _1_3_TransactionCommercial.EtateActuellementEst.Button(
     viewModel: ViewModel_MapClients_App2FragID1,
     clientId: Long,
     context: Context,
-    modifier: Modifier,
 ) {
     val Etate =
         this

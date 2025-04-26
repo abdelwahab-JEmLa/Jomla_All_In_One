@@ -5,9 +5,10 @@ import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fr
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.View.A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -38,6 +39,7 @@ import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import org.osmdroid.views.overlay.Marker
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun MarkerStatusDialog(
     viewModel: ViewModel_MapClients_App2FragID1,
@@ -77,7 +79,6 @@ fun MarkerStatusDialog(
     val existingBonAchat = viewModel.modelDatasSnapList_1_3_BonAchat.find {
         it.clientAcheteurID == clientId && it.parentVID_1_4_PeriodeVent == ceComptVendeurInsertBonsAchatAuPeriodID
     }
-
     fun getLatestTransactionForClient(clientId: Long): _1_3_TransactionCommercial? {
         return repositorysModel
             .repository_1_3_TransactionCommercial.modelDatasSnapList
@@ -157,24 +158,20 @@ fun MarkerStatusDialog(
                                     text = "الحالة الحالية: ${transaction?.etateActuellementEst?.nomArabe ?: ""}",
                                     style = MaterialTheme.typography.bodyMedium
                                 )
-                                Row {
-                                    _1_3_TransactionCommercial.EtateActuellementEst.COMMANDE_LIVRAI
-                                        .Button(
-                                            coroutineScope = coroutineScope,
-                                            viewModel = viewModel,
-                                            clientId = clientId,
-                                            context = context,
-                                            modifier = Modifier.weight(1f)
-                                        )
-                                    _1_3_TransactionCommercial.EtateActuellementEst.A_COMMANDE_CONFIRME
-                                        .Button(
-                                            coroutineScope = coroutineScope,
-                                            viewModel = viewModel,
-                                            clientId = clientId,
-                                            context = context,
-                                            modifier = Modifier.weight(1f)
-                                        )
-                                }
+                                _1_3_TransactionCommercial.EtateActuellementEst.A_COMMANDE_CONFIRME
+                                    .Button(
+                                        coroutineScope = coroutineScope,
+                                        viewModel = viewModel,
+                                        clientId = clientId,
+                                        context = context
+                                    )
+                                _1_3_TransactionCommercial.EtateActuellementEst.COMMANDE_LIVRAI
+                                    .Button(
+                                        coroutineScope = coroutineScope,
+                                        viewModel = viewModel,
+                                        clientId = clientId,
+                                        context = context
+                                    )
                             }
                         }
                     }
@@ -201,6 +198,9 @@ fun MarkerStatusDialog(
                 }
 
                 item {
+                    // Replace the LazyVerticalGrid with a FlowRow layout
+// In the card where you define the LazyVerticalGrid:
+
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -212,14 +212,14 @@ fun MarkerStatusDialog(
                                 .fillMaxWidth()
                                 .padding(16.dp)
                         ) {
-                            // First row with two CommandButtons
-                            Row(
+                            // Replace LazyVerticalGrid with FlowRow
+                            FlowRow(
                                 modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(4.dp)
                             ) {
+                                // CommandButton with modifier for size
                                 CommandButton(
                                     modifier = Modifier
-                                        .weight(1f)
+                                        .weight(0.5f)
                                         .height(60.dp),
                                     relatedClients = relatedClients,
                                     coroutineScope = coroutineScope,
@@ -236,9 +236,10 @@ fun MarkerStatusDialog(
                                     cJustPourVoirPanie = true,
                                 )
 
+                                // Add other buttons with the same pattern
                                 CommandButton(
                                     modifier = Modifier
-                                        .weight(1f)
+                                        .weight(0.5f)
                                         .height(60.dp),
                                     relatedClients = relatedClients,
                                     coroutineScope = coroutineScope,
@@ -253,81 +254,58 @@ fun MarkerStatusDialog(
                                     context = context,
                                     initetateActuellementEst1 = _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
                                 )
-                            }
 
-                            Spacer(modifier = Modifier.height(4.dp))
-
-                            // Second row with AVEC_MARCHANDISE and FERME
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(4.dp)
-                            ) {
-                                _1_3_TransactionCommercial.EtateActuellementEst.AVEC_MARCHANDISE
-                                    .Button(
-                                        coroutineScope = coroutineScope,
-                                        viewModel = viewModel,
-                                        clientId = clientId,
-                                        context = context,
-                                        modifier = Modifier.weight(1f)
-                                    )
-
-                                _1_3_TransactionCommercial.EtateActuellementEst.FERME
-                                    .Button(
-                                        coroutineScope = coroutineScope,
-                                        viewModel = viewModel,
-                                        clientId = clientId,
-                                        context = context,
-                                        modifier = Modifier.weight(1f)
-                                    )
-                            }
-
-                            Spacer(modifier = Modifier.height(4.dp))
-
-                            // Third row with ACHETEUR_NON_DISPO and conditionally Cible
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(4.dp)
-                            ) {
-                                _1_3_TransactionCommercial.EtateActuellementEst.ACHETEUR_NON_DISPO
-                                    .Button(
-                                        coroutineScope = coroutineScope,
-                                        viewModel = viewModel,
-                                        clientId = clientId,
-                                        context = context,
-                                        modifier = Modifier.weight(1f)
-                                    )
-
-                                if (ceTelephoneEstDeAbdelwahab) {
-                                    _1_3_TransactionCommercial.EtateActuellementEst.Cible
+                                // Status buttons
+                                Box(modifier = Modifier.weight(0.5f)) {
+                                    _1_3_TransactionCommercial.EtateActuellementEst.AVEC_MARCHANDISE
                                         .Button(
                                             coroutineScope = coroutineScope,
                                             viewModel = viewModel,
                                             clientId = clientId,
-                                            context = context,
-                                            modifier = Modifier.weight(1f)
+                                            context = context
                                         )
                                 }
-                            }
 
-                            // Fourth row with CIBLE_POUR_2 if condition is met
-                            if (ceTelephoneEstDeAbdelwahab) {
-                                Spacer(modifier = Modifier.height(4.dp))
-
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                                ) {
-                                    _1_3_TransactionCommercial.EtateActuellementEst.CIBLE_POUR_2
+                                Box(modifier = Modifier.weight(0.5f)) {
+                                    _1_3_TransactionCommercial.EtateActuellementEst.FERME
                                         .Button(
                                             coroutineScope = coroutineScope,
                                             viewModel = viewModel,
                                             clientId = clientId,
-                                            context = context,
-                                            modifier = Modifier.weight(1f)
+                                            context = context
                                         )
+                                }
 
-                                    // Add an empty spacer for the second column to maintain layout
-                                    Spacer(modifier = Modifier.weight(1f))
+                                Box(modifier = Modifier.weight(0.5f)) {
+                                    _1_3_TransactionCommercial.EtateActuellementEst.ACHETEUR_NON_DISPO
+                                        .Button(
+                                            coroutineScope = coroutineScope,
+                                            viewModel = viewModel,
+                                            clientId = clientId,
+                                            context = context
+                                        )
+                                }
+
+                                if (ceTelephoneEstDeAbdelwahab) {
+                                    Box(modifier = Modifier.weight(0.5f)) {
+                                        _1_3_TransactionCommercial.EtateActuellementEst.Cible
+                                            .Button(
+                                                coroutineScope = coroutineScope,
+                                                viewModel = viewModel,
+                                                clientId = clientId,
+                                                context = context
+                                            )
+                                    }
+
+                                    Box(modifier = Modifier.weight(0.5f)) {
+                                        _1_3_TransactionCommercial.EtateActuellementEst.CIBLE_POUR_2
+                                            .Button(
+                                                coroutineScope = coroutineScope,
+                                                viewModel = viewModel,
+                                                clientId = clientId,
+                                                context = context
+                                            )
+                                    }
                                 }
                             }
                         }

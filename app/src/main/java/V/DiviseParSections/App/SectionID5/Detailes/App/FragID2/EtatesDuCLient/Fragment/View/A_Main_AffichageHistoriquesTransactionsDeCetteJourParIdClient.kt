@@ -6,8 +6,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -46,49 +44,61 @@ fun A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
         }
     }
 
-    Column(modifier = modifier.fillMaxWidth()) {
-        LazyColumn(modifier = Modifier.fillMaxWidth()) {
+    // Main Column container - removed heightIn constraint
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+    ) {
+        // Title or header for the transactions section
+        Text(
+            text = "معاملات العميل",
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp),
+            style = MaterialTheme.typography.headlineSmall,
+            textAlign = TextAlign.Start
+        )
+
+        // Regular Column without scrolling behavior
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
             if (filteredGroupedTransactions.isNotEmpty()) {
                 // Iterate through each week group
                 groupedByWeek.forEach { (weekString, periodsInWeek) ->
-                    // Week header (extracted to a separate composable)
-                    stickyHeader {
-                        C_1_Header_WeekHeaderItem(weekString)
-                    }
+                    // Week header
+                    C_1_Header_WeekHeaderItem(weekString)
 
                     // Display transactions for each period in this week
                     periodsInWeek.forEach { (period, transactions) ->
-                        // Period header (now as a regular item instead of stickyHeader)
-                        item {
-                            C_2_Header_PeriodHeaderItem(
-                                dayName = dateStringName.getNomJourArabParDateStr(period.startDateInString),
-                                startTime = period.heurDebutInString,
-                                endTime = period.endDateInString.ifEmpty { "الآن" }
-                            )
-                        }
+                        // Period header
+                        C_2_Header_PeriodHeaderItem(
+                            dayName = dateStringName.getNomJourArabParDateStr(period.startDateInString),
+                            startTime = period.heurDebutInString,
+                            endTime = period.endDateInString.ifEmpty { "الآن" }
+                        )
 
                         // Transactions for this period
-                        items(transactions) { transaction ->
+                        transactions.forEach { transaction ->
                             B_Item_TransactionItem(transaction)
                         }
                     }
                 }
             } else {
                 // Show a message if no transactions are found
-                item {
-                    Text(
-                        text = if (uiState.transactionsDateToList_1_3_TransactionCommercial.isNotEmpty())
-                            "لا توجد معاملات للعميل $idClient"
-                        else "جاري تحميل البيانات...",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                }
+                Text(
+                    text = if (uiState.transactionsDateToList_1_3_TransactionCommercial.isNotEmpty())
+                        "لا توجد معاملات للعميل $idClient"
+                    else "جاري تحميل البيانات...",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyLarge
+                )
             }
         }
     }
 }
-
