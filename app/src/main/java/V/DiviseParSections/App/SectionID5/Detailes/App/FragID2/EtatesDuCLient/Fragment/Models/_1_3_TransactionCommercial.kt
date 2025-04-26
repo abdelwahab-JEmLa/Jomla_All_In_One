@@ -36,7 +36,7 @@ data class _1_3_TransactionCommercial(
             val thisVal = "->(${clientAcheteurID}_($nomClientConcerned))"
 
             val name = if (cJustPourVoirPanie)
-                "cJustPourVoirPanie"
+                "PourVoirPanie"
             else
                 etateActuellementEst.nomArabe
 
@@ -51,6 +51,7 @@ data class _1_3_TransactionCommercial(
 
         ON_MODE_COMMEND_ACTUELLEMENT(android.R.color.holo_green_light, "في طلب"),
         A_COMMANDE_CONFIRME(android.R.color.holo_purple, "تم تاكيد الطلبية"),
+        PourVoirPanie(android.R.color.holo_red_light, "للنظر"),
         COMMANDE_LIVRAI(android.R.color.holo_blue_dark, "تم أيصال منتجاته"),
 
         AVEC_MARCHANDISE(android.R.color.holo_blue_bright, "عندو سلعة"),

@@ -228,7 +228,13 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                             snapshotList = repo_1_3_TransactionCommercial.modelDatasSnapList,
                             databaseRef = repositorys_Model.databaseReference_1_3_TransactionCommercial,
                             getFirebaseKey = { it.fireBaseKeyID_1_3_TransactionCommercial },
-                            onSuccess = onSuccess
+                            onSuccess = { resultVid ->
+                                Log.d(TAG, "Upsert completed for _1_3_TransactionCommercial with VID: $resultVid")
+                                if (resultVid <= 0) {
+                                    Log.e(TAG, "No VID increment occurred. Check database insertion or key generation.")
+                                }
+                                onSuccess(resultVid)
+                            }
                         )
 
                         is _1_2_ProduitAcheteOperation -> processUpsertOperation(
@@ -237,7 +243,13 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                             snapshotList = _1_2_ProduitAcheteOperation_Repository.modelDatasSnapList,
                             databaseRef = repositorys_Model.databaseReference_1_2_ProduitAcheteOperation,
                             getFirebaseKey = { it.fireBaseKeyID },
-                            onSuccess = onSuccess
+                            onSuccess = { resultVid ->
+                                Log.d(TAG, "Upsert completed for _1_2_ProduitAcheteOperation with VID: $resultVid")
+                                if (resultVid <= 0) {
+                                    Log.e(TAG, "No VID increment occurred. Check database insertion or key generation.")
+                                }
+                                onSuccess(resultVid)
+                            }
                         )
 
                         else -> {
@@ -247,11 +259,14 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                 } catch (e: Exception) {
                     Log.e(TAG, "Error upserting data: ${e.message}")
                     Log.e(TAG, "Data: $data")
+                    // Additional logging for debugging the VID issue
+                    Log.e(TAG, "Stack trace: ", e)
                     onSuccess(-1L)
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error in upsertUneDataEtReturnVID_1_5_Vendeur: ${e.message}")
+            Log.e(TAG, "Error in upsertUneDataEtReturnVID: ${e.message}")
+            Log.e(TAG, "Stack trace: ", e)
             onSuccess(-1L)
         }
     }
@@ -277,13 +292,29 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
         }
 
         val currentVid = vidField.getLong(dataToUpsert)
+        Log.d(TAG, "Processing ${dataToUpsert.javaClass.simpleName} with current VID: $currentVid")
 
         val vid = when {
             currentVid > 0 -> {
+                // Log that we're updating an existing record
+                Log.d(TAG, "Updating existing record with VID: $currentVid")
+
                 // Update existing data
                 when (databaseDao) {
-                    is _1_3_TransactionCommercialDao -> databaseDao.insert(dataToUpsert as _1_3_TransactionCommercial)
-                    is _1_2_ProduitAcheteOperationDao -> databaseDao.insert(dataToUpsert as _1_2_ProduitAcheteOperation)
+                    is _1_3_TransactionCommercialDao -> {
+                        val result = databaseDao.insertAvecRetureNewVid(dataToUpsert as _1_3_TransactionCommercial)
+                        Log.d(TAG, "Update result for _1_3_TransactionCommercial: $result")
+                        result
+                    }
+                    is _1_2_ProduitAcheteOperationDao -> {
+                        val result = databaseDao.insertAvecRetureNewVid(dataToUpsert as _1_2_ProduitAcheteOperation)
+                        Log.d(TAG, "Update result for _1_2_ProduitAcheteOperation: $result")
+                        result
+                    }
+                    else -> {
+                        Log.e(TAG, "Unsupported DAO type: ${databaseDao.javaClass.simpleName}")
+                        -1L
+                    }
                 }
 
                 withContext(Dispatchers.Main) {
@@ -292,13 +323,16 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
                         itemVidField.getLong(it) == currentVid
                     }
                     if (index >= 0) {
+                        Log.d(TAG, "Updated item at index $index in snapshot list")
                         snapshotList[index] = dataToUpsert
                     } else {
+                        Log.d(TAG, "Item not found in snapshot list, adding as new")
                         snapshotList.add(dataToUpsert)
                     }
                 }
 
                 // Update in Firebase
+                Log.d(TAG, "Updating in Firebase with key: ${getFirebaseKey(dataToUpsert)}")
                 databaseRef.child(getFirebaseKey(dataToUpsert))
                     .setValue(dataToUpsert).await()
 
@@ -307,27 +341,42 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
             }
 
             else -> {
+                // Log that we're inserting a new record
+                Log.d(TAG, "Inserting new record")
+
                 // Insert as new
                 val newVid = when (databaseDao) {
-                    is _1_3_TransactionCommercialDao -> databaseDao.insertAvecRetureNewVid(
-                        dataToUpsert as _1_3_TransactionCommercial
-                    )
+                    is _1_3_TransactionCommercialDao -> {
+                        val result = databaseDao.insertAvecRetureNewVid(dataToUpsert as _1_3_TransactionCommercial)
+                        Log.d(TAG, "New VID for _1_3_TransactionCommercial: $result")
+                        result
+                    }
+                    is _1_2_ProduitAcheteOperationDao -> {
+                        val result = databaseDao.insertAvecRetureNewVid(dataToUpsert as _1_2_ProduitAcheteOperation)
+                        Log.d(TAG, "New VID for _1_2_ProduitAcheteOperation: $result")
+                        result
+                    }
+                    else -> {
+                        Log.e(TAG, "Unsupported DAO type: ${databaseDao.javaClass.simpleName}")
+                        -1L
+                    }
+                }
 
-                    is _1_2_ProduitAcheteOperationDao -> databaseDao.insertAvecRetureNewVid(
-                        dataToUpsert as _1_2_ProduitAcheteOperation
-                    )
-
-                    else -> -1L
+                if (newVid <= 0) {
+                    Log.e(TAG, "Failed to generate new VID. Check database insertion or key generation logic.")
                 }
 
                 // Set the new vid on the object with proper accessibility
+                Log.d(TAG, "Setting new VID on object: $newVid")
                 vidField.set(dataToUpsert, newVid)
 
                 withContext(Dispatchers.Main) {
+                    Log.d(TAG, "Adding new item to snapshot list")
                     snapshotList.add(dataToUpsert)
                 }
 
                 // Update Firebase with the new vid
+                Log.d(TAG, "Adding to Firebase with key: ${getFirebaseKey(dataToUpsert)}")
                 databaseRef.child(getFirebaseKey(dataToUpsert))
                     .setValue(dataToUpsert).await()
 

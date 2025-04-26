@@ -32,9 +32,9 @@ import java.util.Locale
 fun upsert_1_3_TransactionCommercial(
     viewModel: ViewModel_MapClients_App2FragID1,
     relatedClientID: Long,
-    etateActuellementEst: _1_3_TransactionCommercial.EtateActuellementEst,
+    newEtate: _1_3_TransactionCommercial.EtateActuellementEst,
     cJustPourVoirPanie: Boolean = false,
-    ): Unit {
+): Unit {
     val _0_0_HeadOfRepositorys_Repository = viewModel._0_0_HeadOfRepositorys_Repository
 
     val relatedClients = viewModel.bProto_ClientsDataBase.find {
@@ -51,14 +51,16 @@ fun upsert_1_3_TransactionCommercial(
     val clientId = relatedClients?.id ?: 0L
     // Check if a BonAchat already exists for this client in the active period
     val existingBonAchat = viewModel.modelDatasSnapList_1_3_BonAchat.find {
-        it.clientAcheteurID == clientId && it.parentVID_1_4_PeriodeVent == ceComptVendeurInsertBonsAchatAuPeriodID
+        it.clientAcheteurID == clientId
+                && it.parentVID_1_4_PeriodeVent == ceComptVendeurInsertBonsAchatAuPeriodID
+                && it.etateActuellementEst == newEtate
     }
 
     if (existingBonAchat != null) {
         // Update the existing BonAchat
         val updatedBonAchat = existingBonAchat.copy(
-            etateActuellementEst = etateActuellementEst,
-            cJustPourVoirPanie=cJustPourVoirPanie,
+            etateActuellementEst = newEtate,
+            cJustPourVoirPanie = cJustPourVoirPanie,
             heurDebutInString = SimpleDateFormat(
                 "HH:mm",
                 Locale.getDefault()
@@ -73,11 +75,11 @@ fun upsert_1_3_TransactionCommercial(
     } else {
         viewModel._0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID(
             _1_3_TransactionCommercial(
-                cJustPourVoirPanie=cJustPourVoirPanie,
+                cJustPourVoirPanie = cJustPourVoirPanie,
                 clientAcheteurID = clientId,
                 nomClientConcerned = relatedClients?.nom!!,
                 parentVID_1_4_PeriodeVent = ceComptVendeurInsertBonsAchatAuPeriodID!!,
-                etateActuellementEst = etateActuellementEst,
+                etateActuellementEst = newEtate,
                 heurDebutInString = SimpleDateFormat(
                     "HH:mm",
                     Locale.getDefault()
@@ -155,53 +157,18 @@ fun CommandButton(
     onUpdateLongAppSetting: () -> Unit,
     onDismiss: () -> Unit,
     context: Context,
-    initetateActuellementEst1: _1_3_TransactionCommercial.EtateActuellementEst,
+    etateActuellementEst1: _1_3_TransactionCommercial.EtateActuellementEst,
     cJustPourVoirPanie: Boolean = false,
 ) {
-    val etateActuellementEst1 =
-        if (cJustPourVoirPanie) _1_3_TransactionCommercial.EtateActuellementEst.COMMANDE_LIVRAI
-        else
-            initetateActuellementEst1
 
     FilledTonalButton(
         onClick = {
             coroutineScope.launch {
-                if (existingBonAchat != null) {
-                    // Update the existing BonAchat
-                    val updatedBonAchat = existingBonAchat.copy(
-                        etateActuellementEst = initetateActuellementEst1,
-
-                        heurDebutInString = SimpleDateFormat(
-                            "HH:mm",
-                            Locale.getDefault()
-                        ).format(Date()),
-                        cJustPourVoirPanie = cJustPourVoirPanie
-                    )
-                    viewModel._0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID(
-                        updatedBonAchat
-                    ) { vid ->
-                        repositorysModel.activeId_1_3_BonAchat.value = vid
-                    }
-
-                } else {
-                    viewModel._0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID(
-                        _1_3_TransactionCommercial(
-                            etateActuellementEst = initetateActuellementEst1,
-
-                            clientAcheteurID = clientId,
-                            nomClientConcerned = relatedClients?.nom!!,
-                            parentVID_1_4_PeriodeVent = ceComptVendeurInsertBonsAchatAuPeriodID!!,
-                            heurDebutInString = SimpleDateFormat(
-                                "HH:mm",
-                                Locale.getDefault()
-                            ).format(Date()),
-                            cJustPourVoirPanie = cJustPourVoirPanie
-                        )
-                    ) { vid ->
-                        repositorysModel.activeId_1_3_BonAchat.value = vid
-                    }
-
-                }
+                upsert_1_3_TransactionCommercial(
+                    viewModel,
+                    clientId,
+                    etateActuellementEst1
+                )
 
                 val selectedMarkedID = selectedMarker.id.toLong()
                 viewModel.updateLongAppSetting(selectedMarkedID)

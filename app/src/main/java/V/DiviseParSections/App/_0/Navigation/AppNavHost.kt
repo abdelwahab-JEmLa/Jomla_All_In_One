@@ -35,10 +35,8 @@ import androidx.navigation.compose.rememberNavController
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.database.database
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-
 
 
 @Composable
@@ -54,11 +52,11 @@ fun AppNavHost(
     headViewModel: HeadViewModel,
     targetCategoryId: MutableState<Long?> = mutableStateOf(null),
     lockHost: Boolean,
-    onClickImageToShowControles: () -> Unit
+    onClickImageToShowControles: () -> Unit,
 ) {
     val repo_01_VentsHistoriquesDataBase_Repository =
         viewModelInitApp
-        .repo_01_VentsHistoriquesDataBase_Repository
+            .repo_01_VentsHistoriquesDataBase_Repository
 
     val uiState by headViewModel.uiState.collectAsState()
     // Get current client from settings
@@ -92,35 +90,6 @@ fun AppNavHost(
     // Inside AppNavHost
     val mapReloadTrigger = remember { mutableIntStateOf(0) }
 
-    val orderStateManager = remember {
-        OrderStateManager(
-            repo_01_VentsHistoriquesDataBase_Repository = repo_01_VentsHistoriquesDataBase_Repository,
-            repositorysModel = repositorysModel,
-            currentClientId = {
-                headViewModel._uiState.value.appSettingsSaverModel
-                    .find { it.name == "clientBuyerNowId" }?.valueLong ?: 0
-            },
-            onShowDialog = { showOrderCompletionDialog = true },
-            onReloadMap = { mapReloadTrigger.intValue++ } // This will trigger a recomposition
-        )
-    }
-
-    // Track current route to handle route changes
-    var currentRoute by remember { mutableStateOf("") }
-    LaunchedEffect(navController) {
-        navController.currentBackStackEntryFlow.collect { backStackEntry ->
-            val previousRoute = currentRoute
-            currentRoute = backStackEntry.destination.route ?: ""
-
-            // Reset order status check when navigating away from A_ClientsLocationGps
-            if (previousRoute == Screen.A_ClientsLocationGps.route &&
-                currentRoute != Screen.A_ClientsLocationGps.route) {
-                orderStateManager.resetOrderStatusCheck()
-            }
-        }
-    }
-
-    // Calculate the bottom padding to ensure content doesn't get hidden by the navigation bar
     val bottomNavHeight = 80.dp
     val bottomPadding = 8.dp // Additional padding for the navigation bar
 
@@ -154,7 +123,6 @@ fun AppNavHost(
                             database.getReference("O_SoldArticlesTabelle").removeValue()
                         }
                     },
-                    orderStateManager = orderStateManager,
                     mapReloadTrigger = mapReloadTrigger.intValue // Pass the trigger value
                 )
 
@@ -218,14 +186,7 @@ fun AppNavHost(
                     Box(modifier = Modifier.fillMaxSize()) {
                         A_MainScreen_APP2_ID_2PanierFinaleDAchat(
                             onConfirmOrder = {
-                                // Update state to ACHAT_TERMINE when order is confirmed
-                                if (currentClientId > 0) {
-                                    updateAcheteurToAchatTermine(
-                                        viewModelInitApp,
-                                        currentClientId,
-                                        repositorysModel,
-                                    )
-                                }
+
                                 headViewModel.updateLongAppSetting("clientBuyerNowId", 0)
                             }
                         )
@@ -251,25 +212,6 @@ fun AppNavHost(
             }
 
 
-            if (showOrderCompletionDialog) {
-                OrderCompletionDialog(
-                    clientId = currentClientId,
-                    clientName = currentClient?.nom ?: "Unknown",
-                    onDismiss = {
-                        showOrderCompletionDialog = false
-                    },
-                    onStateChange = { selectedState ->
-                        updateAcheteurToAchatTermine(
-                            viewModelInitApp = viewModelInitApp,
-                            clientId = currentClientId,
-                            repositorysModel = repositorysModel,
-                            newState = selectedState
-                        )
-                        // Trigger map reload
-                        orderStateManager.onReloadMap()
-                    }
-                )
-            }
 
             if (showClientSelectionWithoutCondition || (showClientSelection && currentClientId == 0L)) {
                 // Navigate to client map selection screen when no client is selected
@@ -314,7 +256,7 @@ fun AppNavHost(
 @Composable
 fun MainApp(
     headViewModel: HeadViewModel,
-    viewModelInitApp: ViewModelInitApp
+    viewModelInitApp: ViewModelInitApp,
 ) {
     val navController = rememberNavController()
     val isFabVisible = remember { mutableStateOf(true) }
@@ -339,16 +281,10 @@ fun NavGraphBuilder.app2(
     clientEnCourDeVent: Long,
     navController: NavHostController,
     onClear: () -> Unit,
-    orderStateManager: OrderStateManager,
     mapReloadTrigger: Int = 0, // Add this parameter
 ) {
     composable(Screen.A_ClientsLocationGps.route) {
-        LaunchedEffect(Unit) {
-            if (!orderStateManager.hasCheckedOrderStatus()) {
-                delay(300)
-                orderStateManager.checkOrderStatus()
-            }
-        }
+
         A_MapClients_A2FragID_1(
             viewModelInitApp = viewModelInitApp,
             clientEnCourDeVent = clientEnCourDeVent,
@@ -360,6 +296,7 @@ fun NavGraphBuilder.app2(
         )
     }
 }
+
 private fun allerAuFragment(navController: NavHostController) {
     navController.navigate(Screen.EditDatabaseWithCreateNewArticles.route) {
         // Pop the current fragment off the back stack

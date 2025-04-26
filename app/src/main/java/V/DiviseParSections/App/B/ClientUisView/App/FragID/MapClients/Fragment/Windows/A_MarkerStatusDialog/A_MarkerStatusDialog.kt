@@ -78,7 +78,8 @@ fun MarkerStatusDialog(
     val clientId = relatedClients?.id ?: 0L
     // Check if a BonAchat already exists for this client in the active period
     val existingBonAchat = viewModel.modelDatasSnapList_1_3_BonAchat.find {
-        it.clientAcheteurID == clientId && it.parentVID_1_4_PeriodeVent == ceComptVendeurInsertBonsAchatAuPeriodID
+        it.clientAcheteurID == clientId
+                && it.parentVID_1_4_PeriodeVent == ceComptVendeurInsertBonsAchatAuPeriodID
     }
     fun getLatestTransactionForClient(clientId: Long): _1_3_TransactionCommercial? {
         return repositorysModel
@@ -233,8 +234,7 @@ fun MarkerStatusDialog(
                                         onUpdateLongAppSetting = onUpdateLongAppSetting,
                                         onDismiss = onDismiss,
                                         context = context,
-                                        initetateActuellementEst1 = _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
-                                        cJustPourVoirPanie = true,
+                                        etateActuellementEst1 = _1_3_TransactionCommercial.EtateActuellementEst.PourVoirPanie,
                                     )
                                 }
 
@@ -252,7 +252,7 @@ fun MarkerStatusDialog(
                                         onUpdateLongAppSetting = onUpdateLongAppSetting,
                                         onDismiss = onDismiss,
                                         context = context,
-                                        initetateActuellementEst1 = _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
+                                        etateActuellementEst1 = _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT,
                                     )
                                 }
                                 item {
