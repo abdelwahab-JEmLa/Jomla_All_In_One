@@ -134,11 +134,7 @@ fun MarkerStatusDialog(
                             .fillMaxWidth()
                             .padding(16.dp)
                     ) {
-                        Text(
-                            text = "حالة العميل",
-                            style = MaterialTheme.typography.titleMedium,
-                            modifier = Modifier.padding(bottom = 4.dp)
-                        )
+
 
                         // Use a LazyVerticalGrid with 2 columns
                         LazyVerticalGrid(
