@@ -6,8 +6,8 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Wi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.DEFAULT_LATITUDE
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.DEFAULT_LONGITUDE
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.getCurrentLocation
-import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_3_TransactionCommercial
+import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import Z_CodePartageEntreApps.Windows.B.Windows.Options.A_OptionsControlsButtons_Main
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Resources.XmlsFilesHandler.Companion.xmlResources
@@ -345,6 +345,23 @@ private fun MapContent(
             }
         }
         mapView.invalidate()
+
+        val transactionOnCommandMode = viewModel._0_0_HeadOfRepositorys_Repository.repositorys_Model
+            .repository_1_3_TransactionCommercial.modelDatasSnapList
+            .find { it.etateActuellementEst == _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT }
+
+        transactionOnCommandMode?.let { transaction ->
+            val clientId = transaction.clientAcheteurID
+            val relatedClient = viewModel.bProto_ClientsDataBase.find { it.id == clientId }
+
+            val marker = mapView.overlays.filterIsInstance<Marker>()
+                .find { it.id == clientId.toString() }
+
+            marker?.let {
+                selectedMarker = it
+                showMarkerDialog = true
+            }
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -547,3 +564,6 @@ private data class MapPosition(
     val longitude: Double,
     val isInitialized: Boolean
 )
+
+
+

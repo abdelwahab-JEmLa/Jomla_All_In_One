@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_3_TransactionCommercial
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.View.A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
@@ -75,6 +76,13 @@ fun MarkerStatusDialog(
 
     val clientId = relatedClients?.id ?: 0L
 
+    val hasOngoingTransaction = repositorysModel
+        .repository_1_3_TransactionCommercial.modelDatasSnapList
+        .any {
+            it.clientAcheteurID == clientId &&
+                    it.etateActuellementEst == _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+        }
+
     // Initialize editedName and editedPhone with current values
     if (editedName.isEmpty() && relatedClients != null) {
         editedName = relatedClients.nom ?: ""
@@ -107,6 +115,42 @@ fun MarkerStatusDialog(
                     .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                if (hasOngoingTransaction) {
+                    val transaction = repositorysModel
+                        .repository_1_3_TransactionCommercial.modelDatasSnapList
+                        .find {
+                            it.clientAcheteurID == clientId &&
+                                    it.etateActuellementEst == _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+                        }
+
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp),
+                        elevation = androidx.compose.material3.CardDefaults.cardElevation(defaultElevation = 2.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(12.dp)
+                        ) {
+                            Text(
+                                text = "ماهو تقرير الزبون السابق ${relatedClients?.nom ?: ""}",
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier.padding(bottom = 8.dp)
+                            )
+                            Text(
+                                text = "وقت البدء: ${transaction?.heurDebutInString ?: ""}",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            Text(
+                                text = "الحالة الحالية: ${transaction?.etateActuellementEst?.nomArabe ?: ""}",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    }
+                }
+
                 ClientEdites(
                     showDeleteConfirmationDialog = showDeleteConfirmationDialog,
                     onClickToEditeMarquerPosition = onClickToEditeMarquerPosition,

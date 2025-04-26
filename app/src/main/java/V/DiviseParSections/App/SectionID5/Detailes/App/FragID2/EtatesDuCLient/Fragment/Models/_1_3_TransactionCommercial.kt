@@ -36,7 +36,6 @@ data class _1_3_TransactionCommercial(
         A_COMMANDE_CONFIRME(android.R.color.holo_purple, "تم البيع له"),
         AVEC_MARCHANDISE(android.R.color.holo_blue_light, "عندو سلعة"),
         A_EVITE(android.R.color.black, "يتجنب"),
-        COMMANDE_LENCE(android.R.color.holo_green_light, "في طلب"),
         ACHETEUR_NON_DISPO(android.R.color.darker_gray, "الشاري غائب"),
         FERME(android.R.color.darker_gray, "مغلق"),
     }
