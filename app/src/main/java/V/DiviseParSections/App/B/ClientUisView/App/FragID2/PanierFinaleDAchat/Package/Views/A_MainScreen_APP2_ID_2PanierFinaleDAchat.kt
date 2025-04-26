@@ -40,7 +40,8 @@ fun A_MainScreen_APP2_ID_2PanierFinaleDAchat(
     // Fix 1: Using the collected value directly, which is now a Long
     val relativeBonAchate = _0_HeadOfRepositorys_Repository_Model
         .repository_1_3_TransactionCommercial
-        .modelDatasSnapList.find { it.vid == composeKeyVID }
+        .modelDatasSnapList.find { it.vid == composeKeyVID } //<--
+        //TODO(1): cree log pk c -1 
 
     val produitsBonAchatIDs = _0_HeadOfRepositorys_Repository_Model
         .repository_1_2_ProduitAcheteOperation
@@ -80,7 +81,7 @@ fun A_MainScreen_APP2_ID_2PanierFinaleDAchat(
         relativeBonAchate?.etateActuellementEst ==
                 _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
                 ||       relativeBonAchate?.etateActuellementEst ==
-                _1_3_TransactionCommercial.EtateActuellementEst.COMMANDE_LIVRAI
+                _1_3_TransactionCommercial.EtateActuellementEst.PourVoirPanie
 
 
     Box(modifier = modifier.fillMaxSize()) {

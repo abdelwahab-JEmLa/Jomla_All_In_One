@@ -53,23 +53,20 @@ fun upsert_1_3_TransactionCommercial(
     val existingBonAchat = viewModel.modelDatasSnapList_1_3_BonAchat.find {
         it.clientAcheteurID == clientId
                 && it.parentVID_1_4_PeriodeVent == ceComptVendeurInsertBonsAchatAuPeriodID
-                && it.etateActuellementEst == newEtate
+                && (it.etateActuellementEst == newEtate
+                && it.cJustPourVoirPanie != cJustPourVoirPanie
+                )
     }
 
     if (existingBonAchat != null) {
         // Update the existing BonAchat
         val updatedBonAchat = existingBonAchat.copy(
-            etateActuellementEst = newEtate,
             cJustPourVoirPanie = cJustPourVoirPanie,
-            heurDebutInString = SimpleDateFormat(
-                "HH:mm",
-                Locale.getDefault()
-            ).format(Date())
         )
         viewModel._0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID(
             updatedBonAchat
         ) { vid ->
-            repositorysModel.activeId_1_3_BonAchat.value = vid
+            repositorysModel.activeId_1_3_BonAchat.value = updatedBonAchat.vid
         }
 
     } else {
