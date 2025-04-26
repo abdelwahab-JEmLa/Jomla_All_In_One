@@ -181,7 +181,6 @@ fun MarkerStatusDialog(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-
                 Text(
                     text = "سجل المعاملات",
                     style = MaterialTheme.typography.titleMedium,
