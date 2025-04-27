@@ -3,6 +3,7 @@ package V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.F
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.example.clientjetpack.R
 import com.google.firebase.database.IgnoreExtraProperties
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -47,15 +48,15 @@ data class _1_3_TransactionCommercial(
         }
 
     @IgnoreExtraProperties
-    enum class EtateActuellementEst(val color: Int, val nomArabe: String) {
+    enum class EtateActuellementEst(val color: Int, val nomArabe: String,) {
         NON_DEFINI(android.R.color.white, "غير محدد"),
 
-        ON_MODE_COMMEND_ACTUELLEMENT(android.R.color.holo_green_light, "في طلب"),
+        ON_MODE_COMMEND_ACTUELLEMENT(android.R.color.holo_green_light, "تم تنفيذ المطلوب في "),
         A_COMMANDE_CONFIRME(android.R.color.holo_purple, "تم تاكيد الطلبية"),
         PourVoirPanie(android.R.color.holo_red_light, "للنظر"),
         COMMANDE_LIVRAI(android.R.color.holo_blue_dark, "تم أيصال منتجاته"),
 
-        AVEC_MARCHANDISE(android.R.color.holo_blue_bright, "عندو سلعة"),
+        AVEC_MARCHANDISE(R.color.couleur1, "عندو سلعة"),
         A_EVITE(android.R.color.black, "يتجنب"),
         ACHETEUR_NON_DISPO(android.R.color.darker_gray, "الشاري غائب"),
         FERME(android.R.color.darker_gray, "مغلق"),
