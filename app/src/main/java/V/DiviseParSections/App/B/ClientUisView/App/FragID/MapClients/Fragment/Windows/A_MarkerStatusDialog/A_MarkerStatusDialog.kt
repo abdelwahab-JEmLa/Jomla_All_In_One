@@ -230,6 +230,11 @@ fun MarkerStatusDialog(
                                                 context = context
                                             )
                                     }
+                                    item {
+                                        EnregestrementMessageVocaleEtLeMetreAuStorageGoogle(
+
+                                        )
+                                    }
                                 }
                             }
                         }
