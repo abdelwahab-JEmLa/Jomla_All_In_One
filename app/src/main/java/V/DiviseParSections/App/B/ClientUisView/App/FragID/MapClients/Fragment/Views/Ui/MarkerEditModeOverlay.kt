@@ -1,5 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.Ui
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
+import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import org.osmdroid.views.MapView
 
 @Composable
 fun MarkerEditModeOverlay(
@@ -65,5 +68,41 @@ fun MarkerEditModeOverlay(
                 Icon(Icons.Default.Check, "Confirm")
             }
         }
+    }
+}
+
+fun handleMarkerPositionUpdate(
+    clientDataBaseSnapList: List<B_ClientDataBase>,
+    editingMarkerId: Long,
+    mapView: MapView,
+    viewModel: ViewModel_MapClients_App2FragID1,
+) {
+    val clientToUpdate = clientDataBaseSnapList.find {
+        it.id == editingMarkerId
+    }
+
+    clientToUpdate?.let { client ->
+        val centerPoint = mapView.mapCenter
+        val updatedClient = B_ClientDataBase().apply {
+            id = client.id
+            nom = client.nom
+            numTelephone = client.numTelephone
+            couleur = client.couleur
+            bonDuClientsSu = client.bonDuClientsSu
+            currentCreditBalance = client.currentCreditBalance
+            positionDonClientsList = client.positionDonClientsList
+            cUnClientTemporaire = client.cUnClientTemporaire
+            auFilterFAB = client.auFilterFAB
+            typeDeSonMagasine = client.typeDeSonMagasine
+            clientTypeMode = client.clientTypeMode
+
+            latitude = centerPoint.latitude
+            longitude = centerPoint.longitude
+            title = client.title
+            snippet = client.snippet
+            actuelleEtat = client.actuelleEtat
+        }
+
+        viewModel.updateData(updatedClient)
     }
 }
