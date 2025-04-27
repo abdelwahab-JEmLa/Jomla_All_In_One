@@ -6,7 +6,7 @@ import Views.Package_4.SoldCartScreen.Components.OrderSuccessMessage
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_Repository
 import Z_CodePartageEntreApps.Modules.printReceipt
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase
 import androidx.compose.animation.AnimatedVisibility
@@ -42,7 +42,7 @@ import org.koin.compose.koinInject
 @Composable
 fun ColumnScope.BonAchatInfos(
     composeKeyVID: Long?,
-    _0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository,
+    _0_0_HeadSQLRepositorys: _0_0_HeadSQLRepositorys,
     relativeBonAchate: _1_3_TransactionCommercial?,
     itemCount: Int,
     formattedTotalPrice: String,
@@ -54,7 +54,7 @@ fun ColumnScope.BonAchatInfos(
     repo_01_VentsHistoriquesDataBase: _01_VentsHistoriquesDataBase_Repository = koinInject(),
 
     ) {
-    val repositorysModel = _0_0_HeadOfRepositorys_Repository.repositorys_Model
+    val repositorysModel = _0_0_HeadSQLRepositorys.repositorys_Model
     val relativeClientDataBase =
         repositorysModel.repository_3_ClientsDataBase
             .modelDatasSnapList.find { it.vid == relativeBonAchate?.clientAcheteurID }

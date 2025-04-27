@@ -13,7 +13,7 @@ fun handleActiveTransaction(
 ) {
     if (activeTransactionId != 0L) {
         // Find the transaction to get the client ID
-        val activeTransaction = viewModel.repo_0_0_HeadOfRepositorys_Repository.repositorys_Model
+        val activeTransaction = viewModel.repo_0_0_HeadSQLRepositorys.repositorys_Model
             .repository_1_3_TransactionCommercial.modelDatasSnapList
             .find { it.vid == activeTransactionId }
 

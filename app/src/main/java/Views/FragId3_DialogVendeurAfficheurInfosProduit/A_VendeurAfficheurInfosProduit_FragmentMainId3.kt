@@ -9,7 +9,7 @@ import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_2_ProduitAcheteOperation
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Z.Android.Base.App.App3_Client_JetPack.Package_3._DisplayeProductInfosToSeller
@@ -96,18 +96,18 @@ fun MainUi(
     onToggleLockExpandedPricex: () -> Unit,
     currentClient: B_ClientsDataBase?,
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
-    _0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository = koinInject(),
+    _0_0_HeadSQLRepositorys: _0_0_HeadSQLRepositorys = koinInject(),
     clickedCouleurIndex: Int
 ) {
     // Fixed access to progress value
-    val progressValue by _0_0_HeadOfRepositorys_Repository.progressRepo.collectAsState()
+    val progressValue by _0_0_HeadSQLRepositorys.progressRepo.collectAsState()
     val isLoading = progressValue < 1.0f
 
-    val repositorysModel = _0_0_HeadOfRepositorys_Repository.repositorys_Model
+    val repositorysModel = _0_0_HeadSQLRepositorys.repositorys_Model
 
     // Get the active BonAchat ID from the repository
     val parentCompose_1_3_BonAchatVid by
-    _0_0_HeadOfRepositorys_Repository.repositorys_Model.activeVId_1_3_TransactionCommercial.collectAsState()
+    _0_0_HeadSQLRepositorys.repositorys_Model.activeVId_1_3_TransactionCommercial.collectAsState()
 
     var parentCompose_1_2_ProduitAcheteOperationVid by remember { mutableLongStateOf(0L) }
 

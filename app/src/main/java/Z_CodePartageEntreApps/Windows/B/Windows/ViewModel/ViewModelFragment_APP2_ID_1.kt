@@ -1,7 +1,7 @@
 package Z_CodePartageEntreApps.Windows.B.Windows.ViewModel
 
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_3_TransactionCommercial
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_4_PeriodeVent
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperationRepositoryImpl
@@ -38,14 +38,14 @@ data class UiState_StartUpScreen(
 )
 
 class ViewModelFragment_StartUpScreen(
-    val _0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository,
+    val _0_0_HeadSQLRepositorys: _0_0_HeadSQLRepositorys,
     val _1_1_CouleurAcheteOperation_Repository: _1_1_CouleurAcheteOperation_Repository,
     val _1_2_ProduitAcheteOperation_Repository: _1_2_ProduitAcheteOperation_Repository,
     val _1_3_TransactionCommercial_Repository: _1_3_TransactionCommercial_Repository,
     val _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository
 ) : ViewModel() {
     private val TAG = "ViewModelFragment_StartUpScreen"
-    val headModel= _0_0_HeadOfRepositorys_Repository.repositorys_Model
+    val headModel= _0_0_HeadSQLRepositorys.repositorys_Model
     private val _uiState = MutableStateFlow(UiState_StartUpScreen())
     val uiStateFlow: StateFlow<UiState_StartUpScreen> = _uiState.asStateFlow()
 

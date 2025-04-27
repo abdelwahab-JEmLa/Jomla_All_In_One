@@ -134,7 +134,7 @@ fun MainScreen(
         color = MaterialTheme.colorScheme.background
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            val repositorysModel = viewModelInitApp.repo_0_0_HeadOfRepositorys_Repository
+            val repositorysModel = viewModelInitApp.repo_0_0_HeadOfRepositorys_SQL_Repository
                 .repositorys_Model
             val hideAppScreen = repositorysModel.repository_1_5_Vendeur.modelDatasSnapList
                 .find { it.vid == repositorysModel.activeIdDe_1_5_Vendeur }?.hideAppScreen ?: false

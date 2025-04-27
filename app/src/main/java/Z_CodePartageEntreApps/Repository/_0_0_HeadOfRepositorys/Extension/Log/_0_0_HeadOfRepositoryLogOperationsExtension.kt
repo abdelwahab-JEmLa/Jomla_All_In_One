@@ -1,16 +1,16 @@
 package Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.Extension.Log
 
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_RepositoryImpl
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_Head_SQL_RepositorysImpl
 import android.util.Log
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 class _0_0_HeadOfRepositoryLogOperationsExtension(
-    private val repositoryImpl: _0_0_HeadOfRepositorys_RepositoryImpl
+    private val repositoryImpl: _0_0_Head_SQL_RepositorysImpl
 ) {
-    private val TAG = _0_0_HeadOfRepositorys_Repository.TAG
+    private val TAG = _0_0_HeadSQLRepositorys.TAG
 
 
     fun log(

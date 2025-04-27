@@ -3,7 +3,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_3_TransactionCommercial
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.View.A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -51,9 +51,9 @@ fun MarkerStatusDialog(
     onUpdateLongAppSetting: () -> Unit = {},
     onClickToEditeMarquerPosition: (Long) -> Unit,
     onRemoveMark: (Marker?) -> Unit,
-    _0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository = koinInject(),
+    _0_0_HeadSQLRepositorys: _0_0_HeadSQLRepositorys = koinInject(),
 ) {            //<--
-    val ceTelephoneEstDeAbdelwahab = _0_0_HeadOfRepositorys_Repository
+    val ceTelephoneEstDeAbdelwahab = _0_0_HeadSQLRepositorys
         .repositorys_Model
         .activeIdDe_1_5_Vendeur == 2L
     val context = LocalContext.current
@@ -69,7 +69,7 @@ fun MarkerStatusDialog(
     }
     var clientTypeMode by remember { mutableStateOf(relatedClients?.clientTypeMode) }
     val repositorysModel =
-        _0_0_HeadOfRepositorys_Repository.repositorys_Model
+        _0_0_HeadSQLRepositorys.repositorys_Model
 
     val ceComptVendeurInsertBonsAchatAuPeriodID =
         repositorysModel.repository_1_5_Vendeur.modelDatasSnapList
@@ -83,7 +83,7 @@ fun MarkerStatusDialog(
                 && it.parentVID_1_4_PeriodeVent == ceComptVendeurInsertBonsAchatAuPeriodID
     }
 
-    val activeTransactionId by viewModel.repo_0_0_HeadOfRepositorys_Repository.repositorys_Model.activeVId_1_3_TransactionCommercial.collectAsState()
+    val activeTransactionId by viewModel.repo_0_0_HeadSQLRepositorys.repositorys_Model.activeVId_1_3_TransactionCommercial.collectAsState()
 
     // Initialize editedName and editedPhone with current values
     if (editedName.isEmpty() && relatedClients != null) {

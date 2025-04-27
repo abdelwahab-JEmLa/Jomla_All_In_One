@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID2.PanierFinaleDAchat.Package.Views
 
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_2_ProduitAcheteOperation
 import androidx.compose.foundation.background
@@ -50,7 +50,7 @@ fun C_MainItem_APP2_ID_2(
     _0_HeadOfRepositorys_Repository_Model: _0_0_HeadOfRepositorys_Model,
     onQuantitySelected: () -> Unit,
     onDoneupdatePrice: (String) -> Unit,
-    headRepository: _0_0_HeadOfRepositorys_Repository= koinInject()
+    headRepository: _0_0_HeadSQLRepositorys= koinInject()
 ) {
     val relative_1_2_ProduitAcheteOperation = _0_HeadOfRepositorys_Repository_Model
         .repository_1_2_ProduitAcheteOperation

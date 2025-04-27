@@ -4,7 +4,7 @@ import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.B_ClientDataBaseRepository
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.Z.Archive._ModelAppsFather.Companion.ref_HeadOfModels
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
 import Z_CodePartageEntreApps.Repository._3_ClientsDataBase._3_ClientsDataBase
 import android.util.Log
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -17,7 +17,7 @@ import kotlinx.coroutines.withContext
 
 class ViewModel_BProto_ClientsDataBase(
     val mainRepo: B_ClientDataBaseRepository,
-    val _0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository,
+    val _0_0_HeadSQLRepositorys: _0_0_HeadSQLRepositorys,
     ) : ViewModel() {
     fun changeToutLesclientStateAuCIBLE_PRIORITE_2() {
         viewModelScope.launch {
@@ -115,7 +115,7 @@ class ViewModel_BProto_ClientsDataBase(
                 snapshotList.addAll(convertedData)
 
                 // Update repository with new data structure
-                _0_0_HeadOfRepositorys_Repository.repositorys_Model.repository_3_ClientsDataBase.addMultiDATAsEtReturnVIDsList(
+                _0_0_HeadSQLRepositorys.repositorys_Model.repository_3_ClientsDataBase.addMultiDATAsEtReturnVIDsList(
                     convertedData
                 ) { vids ->
                     // Update the snapshotList with new VIDs if needed
@@ -128,7 +128,7 @@ class ViewModel_BProto_ClientsDataBase(
                     // Update the repository with the updated objects
                     viewModelScope.launch {
                         try {
-                            _0_0_HeadOfRepositorys_Repository.repositorys_Model.repository_3_ClientsDataBase.updateMultiDatas(
+                            _0_0_HeadSQLRepositorys.repositorys_Model.repository_3_ClientsDataBase.updateMultiDatas(
                                 snapshotList
                             )
                             Log.d(

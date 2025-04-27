@@ -31,9 +31,9 @@ import kotlinx.coroutines.withContext
  * way inject
  *
  *     ,
- *     _0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository = koinInject()
+ *     _0_0_HeadSQLRepositorys: _0_0_HeadSQLRepositorys = koinInject()
  */
-class _0_0_HeadOfRepositorys_RepositoryImpl(
+class _0_0_Head_SQL_RepositorysImpl(
     val appDatabase: AppDatabase,
 
     private val _1_1_Repository: _1_1_CouleurAcheteOperation_Repository,
@@ -45,8 +45,8 @@ class _0_0_HeadOfRepositorys_RepositoryImpl(
     private val _2_1_Repository: _2_1_ProduitsDataBase_Repository,
     private val _2_2_Repository: _3_ClientsDataBase_Repository,
     private val _4_CouleurOperationCommand_Repository: _4_CouleurOperationCommand_Repository,
-) : _0_0_HeadOfRepositorys_Repository {
-    private val TAG = _0_0_HeadOfRepositorys_Repository.TAG
+) : _0_0_HeadSQLRepositorys {
+    private val TAG = _0_0_HeadSQLRepositorys.TAG
 
     // Create a MutableStateFlow for activeId_1_3_BonAchat
     private val activeId_1_3_BonAchat = MutableStateFlow<Long>(-1L)

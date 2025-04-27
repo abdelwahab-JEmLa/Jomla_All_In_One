@@ -10,7 +10,7 @@ suspend fun displayLatestTransactions(
     viewModel: ViewModel_MapClients_App2FragID1,
     onMarkerSelected: (Marker) -> Unit,
 ) {
-    val latestTransactionsMap = viewModel.repo_0_0_HeadOfRepositorys_Repository.repositorys_Model
+    val latestTransactionsMap = viewModel.repo_0_0_HeadSQLRepositorys.repositorys_Model
         .repository_1_3_TransactionCommercial.modelDatasSnapList
         .groupBy { it.clientAcheteurID }
         .mapValues { (_, transactions) ->
@@ -36,7 +36,7 @@ suspend fun displayOpenTransactions(
     viewModel: ViewModel_MapClients_App2FragID1,
     onMarkerSelected: (Marker) -> Unit,
 ) {
-    viewModel.repo_0_0_HeadOfRepositorys_Repository.repositorys_Model
+    viewModel.repo_0_0_HeadSQLRepositorys.repositorys_Model
         .repository_1_3_TransactionCommercial.modelDatasSnapList
         .filter { it.ouvert }
         .forEach { transaction ->

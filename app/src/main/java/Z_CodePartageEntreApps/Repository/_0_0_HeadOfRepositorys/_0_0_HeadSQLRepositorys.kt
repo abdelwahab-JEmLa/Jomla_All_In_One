@@ -6,7 +6,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.database.database
 import kotlinx.coroutines.flow.MutableStateFlow
 
-interface _0_0_HeadOfRepositorys_Repository {
+interface _0_0_HeadSQLRepositorys {
     var repositorys_Model: _0_0_HeadOfRepositorys_Model
 
     // Added properties

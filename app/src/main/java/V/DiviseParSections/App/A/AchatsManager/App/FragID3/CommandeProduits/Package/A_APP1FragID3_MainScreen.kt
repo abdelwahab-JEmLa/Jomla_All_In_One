@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package
 
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_2_ProduitAcheteOperation
 import android.util.Log
@@ -25,20 +25,20 @@ import org.koin.compose.koinInject
 @Composable
 fun A_APP1FragID3_MainScreen(
     modifier: Modifier = Modifier,
-    _0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository = koinInject(),
+    _0_0_HeadSQLRepositorys: _0_0_HeadSQLRepositorys = koinInject(),
 ) {
     val TAG = "APP2_FragID3_MainScreen"
 
     // Get the active vendor ID
-    val activeIdDe_1_5_Vendeur = _0_0_HeadOfRepositorys_Repository.repositorys_Model.activeIdDe_1_5_Vendeur
+    val activeIdDe_1_5_Vendeur = _0_0_HeadSQLRepositorys.repositorys_Model.activeIdDe_1_5_Vendeur
 
     // Get the period filter from the active vendor
-    val periodFilter = _0_0_HeadOfRepositorys_Repository
+    val periodFilter = _0_0_HeadSQLRepositorys
         .repositorys_Model.repository_1_5_Vendeur
         .modelDatasSnapList.find { it.vid == activeIdDe_1_5_Vendeur }
         ?.ceComptVendeurStartAffichePeriod
 
-    val models = _0_0_HeadOfRepositorys_Repository.repositorys_Model
+    val models = _0_0_HeadSQLRepositorys.repositorys_Model
 
     // State to hold filtered products
     var displayableProducts by remember { mutableStateOf<List<_1_2_ProduitAcheteOperation>>(emptyList()) }

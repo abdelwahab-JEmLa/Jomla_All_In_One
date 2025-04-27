@@ -3,7 +3,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.V
 import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_Repository
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.B_ClientDataBaseRepository
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
 import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.Parent.AppSettingsSaverModel
 import androidx.compose.material.icons.Icons
@@ -26,14 +26,14 @@ import java.util.Date
 
 class ViewModel_MapClients_App2FragID1(
     val mainRepositery: B_ClientDataBaseRepository,
-    val repo_0_0_HeadOfRepositorys_Repository:_0_0_HeadOfRepositorys_Repository,
+    val repo_0_0_HeadSQLRepositorys:_0_0_HeadSQLRepositorys,
     val repo_01_VentsHistoriquesDataBase : _01_VentsHistoriquesDataBase_Repository
 ) : ViewModel() {
-    val modelDatasSnapList_1_3_BonAchat=repo_0_0_HeadOfRepositorys_Repository.repositorys_Model
+    val modelDatasSnapList_1_3_BonAchat=repo_0_0_HeadSQLRepositorys.repositorys_Model
         .repository_1_3_TransactionCommercial.modelDatasSnapList
 
     val bProto_ClientsDataBase = mainRepositery.modelDatas
-    val newClientDataBase = repo_0_0_HeadOfRepositorys_Repository.repositorys_Model
+    val newClientDataBase = repo_0_0_HeadSQLRepositorys.repositorys_Model
         .repository_3_ClientsDataBase
         .modelDatasSnapList
 

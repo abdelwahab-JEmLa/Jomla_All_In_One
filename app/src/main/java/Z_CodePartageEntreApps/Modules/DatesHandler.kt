@@ -7,8 +7,60 @@ import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 class DatesHandler {
+
     fun getCurrentTimestamps(): Long {
         return System.currentTimeMillis()
+    }
+
+    fun getArabicDayNameFromTimestamp(timestamp: Long): String {
+        try {
+            val calendar = Calendar.getInstance()
+            calendar.timeInMillis = timestamp
+
+            val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
+
+            return when (dayOfWeek) {
+                Calendar.SUNDAY -> "الأحد"
+                Calendar.MONDAY -> "الإثنين"
+                Calendar.TUESDAY -> "الثلاثاء"
+                Calendar.WEDNESDAY -> "الأربعاء"
+                Calendar.THURSDAY -> "الخميس"
+                Calendar.FRIDAY -> "الجمعة"
+                Calendar.SATURDAY -> "السبت"
+                else -> ""
+            }
+        } catch (e: Exception) {
+            return ""
+        }
+    }
+
+    // Added implementation for getDateStrFromTimestamps
+    fun getDateStrFromTimestamps(timestamp: Long?): String {
+        if (timestamp == null) return ""
+        try {
+            val calendar = Calendar.getInstance()
+            calendar.timeInMillis = timestamp
+
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            return dateFormat.format(calendar.time)
+        } catch (e: Exception) {
+            return ""
+        }
+    }
+
+    // Added implementation for getTimeStrFromeTimestamps
+    fun getTimeStrFromeTimestamps(timestamp: Long?): String {
+        if (timestamp == null) return ""
+        try {
+            val calendar = Calendar.getInstance()
+            calendar.timeInMillis = timestamp
+
+            val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+            val timeStr = timeFormat.format(calendar.time)
+            return formatTimeToArabic(timeStr)
+        } catch (e: Exception) {
+            return ""
+        }
     }
 
     fun getNomJourArabParDateStr(dataStr: String): String {
@@ -89,7 +141,7 @@ class DatesHandler {
     }
 
     @SuppressLint("DefaultLocale")
-    fun formatTimeToArabic(timeString: String): String {  // Changed from private to public
+    fun formatTimeToArabic(timeString: String): String {
         try {
             val timeParts = timeString.split(":")
             if (timeParts.size < 2) {
@@ -116,5 +168,4 @@ class DatesHandler {
             return timeString
         }
     }
-
 }

@@ -33,7 +33,7 @@ fun upsert_1_3_TransactionCommercial(
     newEtate: _1_3_TransactionCommercial.EtateActuellementEst,
     cJustPourVoirPanie: Boolean = false,
 ): Unit {
-    val _0_0_HeadOfRepositorys_Repository = viewModel.repo_0_0_HeadOfRepositorys_Repository
+    val _0_0_HeadOfRepositorys_Repository = viewModel.repo_0_0_HeadSQLRepositorys
 
     val relatedClients = viewModel.bProto_ClientsDataBase.find {
         it.id == (relatedClientID)
@@ -59,14 +59,14 @@ fun upsert_1_3_TransactionCommercial(
         val updatedBonAchat = existingBonAchat.copy(
             cJustPourVoirPanie = cJustPourVoirPanie,
         )
-        viewModel.repo_0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID(
+        viewModel.repo_0_0_HeadSQLRepositorys.upsertUneDataEtReturnVID(
             updatedBonAchat
         ) { vid ->
             repositorysModel.activeVId_1_3_TransactionCommercial.value = updatedBonAchat.vid
         }
 
     } else {
-        viewModel.repo_0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID(
+        viewModel.repo_0_0_HeadSQLRepositorys.upsertUneDataEtReturnVID(
             _1_3_TransactionCommercial(
                 cJustPourVoirPanie = cJustPourVoirPanie,
                 clientAcheteurID = clientId,
@@ -106,11 +106,11 @@ fun _1_3_TransactionCommercial.EtateActuellementEst.Button(
                     clientId,
                     Etate
                 )
-                val data = viewModel.repo_0_0_HeadOfRepositorys_Repository
+                val data = viewModel.repo_0_0_HeadSQLRepositorys
                     .repositorys_Model
                     .repository_1_3_TransactionCommercial
                     .getOuvert_1_3_TransactionCommercial()
-                viewModel.repo_0_0_HeadOfRepositorys_Repository
+                viewModel.repo_0_0_HeadSQLRepositorys
                     .upsertUneDataEtReturnVID(
                         data?.copy(ouvert = false)
                     )

@@ -62,11 +62,11 @@ fun MapContent(
     var editingMarkerId by remember { mutableLongStateOf(0L) }
     var showEditMarkerMode by remember { mutableStateOf(false) }
     val activeTransactionId =
-        viewModel.repo_0_0_HeadOfRepositorys_Repository.repositorys_Model.activeVId_1_3_TransactionCommercial.collectAsState().value
+        viewModel.repo_0_0_HeadSQLRepositorys.repositorys_Model.activeVId_1_3_TransactionCommercial.collectAsState().value
     val clientDataBaseSnapList = viewModel.bProto_ClientsDataBase
 
     // Handle active transaction by showing the relevant marker
-    LaunchedEffect(viewModel.repo_0_0_HeadOfRepositorys_Repository.repositorys_Model.activeVId_1_3_TransactionCommercial.collectAsState().value) {
+    LaunchedEffect(viewModel.repo_0_0_HeadSQLRepositorys.repositorys_Model.activeVId_1_3_TransactionCommercial.collectAsState().value) {
         handleActiveTransaction(activeTransactionId, viewModel, mapView) { marker ->
             selectedMarker = marker
             showMarkerDialog = true

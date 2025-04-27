@@ -2,13 +2,12 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.V
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.filterClientsBasedOnMode
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.findLastPurchaseDayForClient
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.findLastPurchaseInfoForClient
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.getClientStateInArabic
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.displayLatestTransactions
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.displayOpenTransactions
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.DEFAULT_LATITUDE
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
+import Z_CodePartageEntreApps.Modules.DatesHandler
 import Z_MasterOfApps.Resources.XmlsFilesHandler.Companion.xmlResources
 import android.content.Context
 import android.widget.LinearLayout
@@ -66,10 +65,12 @@ fun addMarkersForFilteredClients(
 
     clientsToShow.forEach { client ->
         val lastPurchaseDay = if (shouldApplyDayFilter) {
-            findLastPurchaseDayForClient(
-                viewModel.repo_01_VentsHistoriquesDataBase.modelDatasSnapList,
-                client.id
-            )
+            findLastPurchaseInfoForClient(
+                viewModel.repo_0_0_HeadSQLRepositorys.repositorys_Model
+                    .repository_1_3_TransactionCommercial
+                    .modelDatasSnapList, client.id
+            ).dayName
+
         } else {
             ""
         }
@@ -151,18 +152,23 @@ private fun Marker.title(
 ) {
 
     title = if (viewModel.afficheLesJoursAuNoms) {
-        val lastPurchaseInfo = findLastPurchaseInfoForClient(
-            viewModel.repo_01_VentsHistoriquesDataBase.modelDatasSnapList,
-            client.id
-        )
+        val historicalData = viewModel.repo_0_0_HeadSQLRepositorys
+            .repositorys_Model
+            .repository_1_3_TransactionCommercial
+            .modelDatasSnapList
 
-        if (lastPurchaseInfo.dayName.isNotEmpty()) {
-            val clientStateArabic = getClientStateInArabic(
-                client.id,
-                viewModel.repo_01_VentsHistoriquesDataBase.modelDatasSnapList
-            )
-            "${lastPurchaseInfo.dayName} (${lastPurchaseInfo.timeStr})" +
-                    "\n$clientStateArabic" +
+        val lastTransaction = historicalData
+            .filter { it.clientAcheteurID == client.id }
+            .maxByOrNull { it.timestamps }
+
+        val dateHandler = DatesHandler()
+        val dateStr = dateHandler.getDateStrFromTimestamps(lastTransaction?.timestamps)
+        val timeStr = dateHandler.getTimeStrFromeTimestamps(lastTransaction?.timestamps)
+        val dayName = dateHandler.getArabicDayNameFromTimestamp(lastTransaction?.timestamps ?: 0)
+
+        if (lastTransaction != null) {
+            "$dayName $dateStr(${timeStr})" +
+                    "\n${lastTransaction.etateActuellementEst?.nomArabe}" +
                     "\n${client.nom}"
         } else {
             client.nom

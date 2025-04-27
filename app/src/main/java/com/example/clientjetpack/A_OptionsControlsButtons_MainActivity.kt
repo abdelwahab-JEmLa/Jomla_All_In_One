@@ -1,7 +1,7 @@
 package com.example.clientjetpack
 
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.ControlButton
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
 import Z_CodePartageEntreApps.Windows.B.Windows.UI.LoadingContent
 import Z_CodePartageEntreApps.Windows.B.Windows.ViewModel.ViewModelFragment_StartUpScreen
 import androidx.compose.foundation.background
@@ -42,7 +42,7 @@ import kotlin.math.roundToInt
 @Composable
 fun A_OptionsControlsButtons_A1FragID_3(
     viewModel: ViewModelFragment_StartUpScreen = koinViewModel(),
-    _0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository = koinInject(),
+    _0_0_HeadSQLRepositorys: _0_0_HeadSQLRepositorys = koinInject(),
     onShoControleurApps: () -> Unit,
 ) {
      val TAG = "A_OptionsControlsButtons_Main"

@@ -4,7 +4,7 @@ import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fr
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_3_TransactionCommercial
 import Z_CodePartageEntreApps.Proto.B.ParSections.Fragment.A.AchatsManager.App._1.Shared.Views.LoadingContent
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,13 +29,13 @@ import java.util.Locale
 fun A_MainScreen_APP2_ID_2PanierFinaleDAchat(
     modifier: Modifier = Modifier,
     onConfirmOrder: () -> Unit,
-    _0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository = koinInject(),
+    _0_0_HeadSQLRepositorys: _0_0_HeadSQLRepositorys = koinInject(),
 ) {
-    val progressValue by _0_0_HeadOfRepositorys_Repository.progressRepo.collectAsState()
-    val _0_HeadOfRepositorys_Repository_Model = _0_0_HeadOfRepositorys_Repository
+    val progressValue by _0_0_HeadSQLRepositorys.progressRepo.collectAsState()
+    val _0_HeadOfRepositorys_Repository_Model = _0_0_HeadSQLRepositorys
         .repositorys_Model
 
-    val composeKeyVID by _0_0_HeadOfRepositorys_Repository.repositorys_Model.activeVId_1_3_TransactionCommercial.collectAsState()
+    val composeKeyVID by _0_0_HeadSQLRepositorys.repositorys_Model.activeVId_1_3_TransactionCommercial.collectAsState()
 
     // Fix 1: Using the collected value directly, which is now a Long
     val relativeBonAchate = _0_HeadOfRepositorys_Repository_Model
@@ -98,7 +98,7 @@ fun A_MainScreen_APP2_ID_2PanierFinaleDAchat(
             if (isOrderMode) {
                 BonAchatInfos(
                     relativeBonAchate?.clientAcheteurID,
-                    _0_0_HeadOfRepositorys_Repository,
+                    _0_0_HeadSQLRepositorys,
                     relativeBonAchate,
                     itemCount,
                     formattedTotalPrice,
@@ -126,7 +126,7 @@ fun A_MainScreen_APP2_ID_2PanierFinaleDAchat(
                             // Always show the list of items, regardless of order mode
                             B_MainList_APP2_ID_2(
                                 composeKeyVID = composeKeyVID,
-                                _0_HeadOfRepositorys_Repository_Model = _0_0_HeadOfRepositorys_Repository
+                                _0_HeadOfRepositorys_Repository_Model = _0_0_HeadSQLRepositorys
                                     .repositorys_Model,
                                 onQuantitySelected = {
                                 },

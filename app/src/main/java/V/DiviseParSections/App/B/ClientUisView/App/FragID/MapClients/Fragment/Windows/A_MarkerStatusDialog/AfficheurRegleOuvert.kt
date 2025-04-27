@@ -39,7 +39,7 @@ import kotlinx.coroutines.launch
     val latestTransaction = getLatestTransactionForClient(clientId)
     val hasOngoingTransaction = latestTransaction?.etateActuellementEst ==
             _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
-    val ouvertTransaction = viewModel.repo_0_0_HeadOfRepositorys_Repository.repositorys_Model
+    val ouvertTransaction = viewModel.repo_0_0_HeadSQLRepositorys.repositorys_Model
         .repository_1_3_TransactionCommercial.getOuvert_1_3_TransactionCommercial()
 
     if (hasOngoingTransaction || ouvertTransaction != null) {
@@ -105,7 +105,7 @@ import kotlinx.coroutines.launch
                             coroutineScope.launch {
                                 ouvertTransaction?.let { tx ->
                                     val updatedTransaction = tx.copy(ouvert = false)
-                                    viewModel.repo_0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID(
+                                    viewModel.repo_0_0_HeadSQLRepositorys.upsertUneDataEtReturnVID(
                                         updatedTransaction
                                     )
 

@@ -5,7 +5,7 @@ import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
 import Z_CodePartageEntreApps.View.A_GlideDisplayImageByKeyId_Proto_4_11
@@ -81,7 +81,7 @@ fun B_CouleurAfficheur(
     colorsArticlesTabelleModele: List<ColorsArticlesTabelle>,
     parentCompose_1_2_ProduitAcheteOperationVid: Long,
     clickedCouleurIndex: Int,
-    _0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository = koinInject(),
+    _0_0_HeadSQLRepositorys: _0_0_HeadSQLRepositorys = koinInject(),
 ) {
     // Using a simpler approach for visibility tracking
     var compose_1_1_CouleurAcheteOperationVid by remember { mutableLongStateOf(0L) }
@@ -162,7 +162,7 @@ fun B_CouleurAfficheur(
     var isSelected by remember { mutableStateOf(false) }
 
     // Get all color operations for the current product
-    val _1_1_CouleurAcheteOperations = _0_0_HeadOfRepositorys_Repository
+    val _1_1_CouleurAcheteOperations = _0_0_HeadSQLRepositorys
         .repositorys_Model
         ._1_1_CouleurAcheteOperation_Repository
         .modelDatasSnapList

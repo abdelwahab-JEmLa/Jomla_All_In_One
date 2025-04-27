@@ -4,6 +4,7 @@ import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fr
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.ViewModel.ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.compose.foundation.layout.Box
+
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -39,7 +40,7 @@ fun B_Item_TransactionItem(
 ) {
     val datesHandler = DatesHandler()
     val etateActuellementEst = transaction.etateActuellementEst
-    val activeTransactionId by viewModel.r_0_0_HeadOfRepositorys_Repository.repositorys_Model.activeVId_1_3_TransactionCommercial.collectAsState()
+    val activeTransactionId by viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.activeVId_1_3_TransactionCommercial.collectAsState()
 
     // For blinking effect when not active
     val blinkState = remember { mutableStateOf(false) }
@@ -80,12 +81,12 @@ fun B_Item_TransactionItem(
                 if (etateActuellementEst == _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT) {
                     IconButton(
                         onClick = {
-                            viewModel.r_0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID(
+                            viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.upsertUneDataEtReturnVID(
                                 transaction.copy(
                                     ouvert = !transaction.ouvert
                                 )
                             ) {
-                                viewModel.r_0_0_HeadOfRepositorys_Repository.repositorys_Model.activeVId_1_3_TransactionCommercial.value =
+                                viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.activeVId_1_3_TransactionCommercial.value =
                                     transaction.vid
 
                                 // Navigate to the cart screen after selecting a transaction

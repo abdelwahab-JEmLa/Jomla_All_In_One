@@ -4,7 +4,7 @@ import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fr
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_4_PeriodeVent
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Preview.addTestDataToFireBaseIfEmpty
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
 import Z_CodePartageEntreApps.Repository._3_ClientsDataBase._3_ClientsDataBase
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -34,7 +34,7 @@ data class SecID5FragID2UiState(
 )
 
 class ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
-    val r_0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository,
+    val r_0_0_HeadOfRepositorys_SQL_Repository: _0_0_HeadSQLRepositorys,
     private val navigationHandler: FragmentNavigationHandler
 
 ) : ViewModel() {
@@ -60,17 +60,17 @@ class ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 // Ensure repositories are initialized
-                r_0_0_HeadOfRepositorys_Repository.repositorys_Model.repository_1_4_PeriodeVent.ensureDataIsInitialized()
-                r_0_0_HeadOfRepositorys_Repository.repositorys_Model.repository_1_3_TransactionCommercial.ensureDataIsInitialized()
-                r_0_0_HeadOfRepositorys_Repository.repositorys_Model.repository_3_ClientsDataBase.ensureDataIsInitialized()
+                r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.repository_1_4_PeriodeVent.ensureDataIsInitialized()
+                r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.repository_1_3_TransactionCommercial.ensureDataIsInitialized()
+                r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.repository_3_ClientsDataBase.ensureDataIsInitialized()
 
                 // Add test data if the repositories are empty - check more reliably
-                if (r_0_0_HeadOfRepositorys_Repository.repositorys_Model.repository_1_4_PeriodeVent.modelDatasSnapList.isEmpty() ||
-                    r_0_0_HeadOfRepositorys_Repository.repositorys_Model.repository_1_3_TransactionCommercial.modelDatasSnapList.isEmpty()   ||
-                    r_0_0_HeadOfRepositorys_Repository.repositorys_Model.repository_3_ClientsDataBase.modelDatasSnapList.isEmpty()
+                if (r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.repository_1_4_PeriodeVent.modelDatasSnapList.isEmpty() ||
+                    r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.repository_1_3_TransactionCommercial.modelDatasSnapList.isEmpty()   ||
+                    r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.repository_3_ClientsDataBase.modelDatasSnapList.isEmpty()
 
                 ) {
-                    addTestDataToFireBaseIfEmpty(viewModelScope, r_0_0_HeadOfRepositorys_Repository)
+                    addTestDataToFireBaseIfEmpty(viewModelScope, r_0_0_HeadOfRepositorys_SQL_Repository)
                     // Wait briefly for data to be saved
                     delay(1000)
                 }
@@ -79,10 +79,10 @@ class ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
                 withContext(Dispatchers.Main) {
                     _uiState.update { currentState ->
                         currentState.copy(
-                            sl_1_4_PeriodeVent = r_0_0_HeadOfRepositorys_Repository.repositorys_Model.repository_1_4_PeriodeVent.modelDatasSnapList,
-                            sl_1_3_TransactionCommercial = r_0_0_HeadOfRepositorys_Repository.repositorys_Model
+                            sl_1_4_PeriodeVent = r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.repository_1_4_PeriodeVent.modelDatasSnapList,
+                            sl_1_3_TransactionCommercial = r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model
                                 .repository_1_3_TransactionCommercial.modelDatasSnapList,
-                            sl_3_ClientsDataBase = r_0_0_HeadOfRepositorys_Repository.repositorys_Model
+                            sl_3_ClientsDataBase = r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model
                                 .repository_3_ClientsDataBase.modelDatasSnapList
                         )
                     }
@@ -93,7 +93,7 @@ class ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
 
                 // Now set up continuous monitoring in separate coroutines
                 launch {
-                    r_0_0_HeadOfRepositorys_Repository.repositorys_Model.repository_1_4_PeriodeVent.let { repo ->
+                    r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.repository_1_4_PeriodeVent.let { repo ->
                         snapshotFlow { repo.modelDatasSnapList.toList() }.collect {
                             withContext(Dispatchers.Main) {
                                 _uiState.update { currentState ->
@@ -106,7 +106,7 @@ class ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
                 }
 
                 launch {
-                    r_0_0_HeadOfRepositorys_Repository.repositorys_Model.repository_1_3_TransactionCommercial.let { repo ->
+                    r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.repository_1_3_TransactionCommercial.let { repo ->
                         snapshotFlow { repo.modelDatasSnapList.toList() }.collect {
                             withContext(Dispatchers.Main) {
                                 _uiState.update { currentState ->
@@ -119,7 +119,7 @@ class ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
                 }
 
                 launch {
-                    r_0_0_HeadOfRepositorys_Repository.repositorys_Model.repository_3_ClientsDataBase.let { repo ->
+                    r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.repository_3_ClientsDataBase.let { repo ->
                         snapshotFlow { repo.modelDatasSnapList.toList() }.collect {
                             withContext(Dispatchers.Main) {
                                 _uiState.update { currentState ->
