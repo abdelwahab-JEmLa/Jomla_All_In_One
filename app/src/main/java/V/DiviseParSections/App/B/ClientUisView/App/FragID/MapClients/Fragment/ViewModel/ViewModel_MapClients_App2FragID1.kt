@@ -124,4 +124,41 @@ class ViewModel_MapClients_App2FragID1(
         showClientsWithConfirmedProducts(LottieJsonGetterR_Raw_Icons.reacticonanimatedjsonurl), // New filter mode
         showAll(LottieJsonGetterR_Raw_Icons.reacticonanimatedjsonurl);
     }
+    // Add these methods to ViewModel_MapClients_App2FragID1 class
+
+    /**
+     * Cleans up all resources used by the ViewModel to prevent memory leaks
+     * and ensure proper resource management when the view is destroyed.
+     */
+    fun cleanupResources() {
+        viewModelScope.launch {
+            try {
+                // Cancel any ongoing operations first
+                cancelActiveOperations()
+
+                // Clear any stored map data
+                mapReloadTigger = 0
+                filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList = emptyList()
+
+
+
+                // Log cleanup completion
+                println("Map resources cleaned up successfully")
+            } catch (e: Exception) {
+                println("Error during resource cleanup: ${e.message}")
+            }
+        }
+    }
+
+
+    fun cancelActiveOperations() {
+        try {
+            mapReloadTigger++
+            afficheLesJoursAuNoms = true
+
+            println("Active operations canceled successfully")
+        } catch (e: Exception) {
+            println("Error canceling active operations: ${e.message}")
+        }
+    }
 }

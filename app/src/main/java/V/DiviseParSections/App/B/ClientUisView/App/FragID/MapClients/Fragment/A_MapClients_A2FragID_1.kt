@@ -75,6 +75,14 @@ fun A_MapClients_A2FragID_1(
 ) {
     val progress by viewModel.mainRepositery.progressRepo.collectAsState()
 
+    // Clean up resources when fragment is disposed
+    DisposableEffect(Unit) {
+        onDispose {
+            // Clean up any resources when navigating away
+            viewModel.cleanupResources()
+        }
+    }
+
     Box(modifier = modifier.fillMaxSize()) {
         if (progress < 1.0f) {
             LoadingProgressOverlay(progress = progress)
@@ -116,8 +124,9 @@ private fun MapContent(
     var showEditMarkerMode by remember { mutableStateOf(false) }
     val activeTransactionId = viewModel.repo_0_0_HeadOfRepositorys_Repository.repositorys_Model.activeVId_1_3_TransactionCommercial.collectAsState().value
 
+    // Handle active transaction by showing the relevant marker
     LaunchedEffect(viewModel.repo_0_0_HeadOfRepositorys_Repository.repositorys_Model.activeVId_1_3_TransactionCommercial.collectAsState().value) {
-         
+
         if (activeTransactionId != 0L) {
             // Find the transaction to get the client ID
             val activeTransaction = viewModel.repo_0_0_HeadOfRepositorys_Repository.repositorys_Model
@@ -141,6 +150,7 @@ private fun MapContent(
             }
         }
     }
+
     // Initialize map with current location or default position
     LaunchedEffect(Unit) {
         val location = getCurrentLocation(context)
@@ -170,15 +180,19 @@ private fun MapContent(
         }
     }
 
-    // Configure OSMDroid
-    DisposableEffect(context) {
+    // Configure OSMDroid and handle cleanup
+    DisposableEffect(context, mapReloadTrigger) {
         Configuration.getInstance()
             .load(context, context.getSharedPreferences("osmdroid", Context.MODE_PRIVATE))
         mapView.setTileSource(TileSourceFactory.MAPNIK)
         mapView.setMultiTouchControls(true)
 
         onDispose {
+            // Properly clean up OSMDroid resources
+            mapView.onDetach()
             mapView.overlays.clear()
+            // Cancel any ongoing operations
+            viewModel.cancelActiveOperations()
         }
     }
 
@@ -382,8 +396,11 @@ private fun MapContent(
             }
         }
         mapView.invalidate()
-
-        // Find latest transactions for each client
+             //<--
+        //TODO(1): cree un autre verification de tout les 
+        // Find latest transactions for each transaction du repository_1_3_TransactionCommercial si .ouvert == true 
+        //<--
+        //TODO(1): ouvre     son client mark 
         val latestTransactionsMap = viewModel.repo_0_0_HeadOfRepositorys_Repository.repositorys_Model
             .repository_1_3_TransactionCommercial.modelDatasSnapList
             .groupBy { it.clientAcheteurID }

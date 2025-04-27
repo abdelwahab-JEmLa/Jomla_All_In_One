@@ -14,10 +14,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -27,11 +30,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.database.database
@@ -54,22 +58,20 @@ fun AppNavHost(
     lockHost: Boolean,
     onClickImageToShowControles: () -> Unit,
 ) {
-    val repo_01_VentsHistoriquesDataBase_Repository =
-        viewModelInitApp
-            .repo_01_VentsHistoriquesDataBase_Repository
-
     val uiState by headViewModel.uiState.collectAsState()
+
+    // Get current navigation state
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
+    var savedGridScrollPosition by rememberSaveable { mutableStateOf(0) }
+
     // Get current client from settings
     val currentClientId = uiState.appSettingsSaverModel
         .find { it.name == "clientBuyerNowId" }?.valueLong ?: 0
 
     val currentClient = viewModelInitApp.clientDataBaseSnapList.find { it.id == currentClientId }
 
-    // Repository model for accessing data structures
-    val repo00HeadofrepositorysRepository = viewModelInitApp.repo_0_0_HeadOfRepositorys_Repository
-    val repositorysModel = repo00HeadofrepositorysRepository.repositorys_Model
-
-    // Existing state management
+    // State management for dialogs and navigation
     var opnerSaleWindows by rememberSaveable { mutableStateOf(false) }
     var showClientSelection by rememberSaveable { mutableStateOf(false) }
     var showClientSelectionWithoutCondition by rememberSaveable { mutableStateOf(false) }
@@ -78,7 +80,6 @@ fun AppNavHost(
     val reloadTrigger by rememberSaveable { mutableIntStateOf(0) }
     var scrollTiger by rememberSaveable { mutableIntStateOf(0) }
     var lockExpandedPrices by rememberSaveable { mutableStateOf(false) }
-    var showOrderCompletionDialog by rememberSaveable { mutableStateOf(false) }
 
     val clientEnCourDeVent by rememberSaveable {
         mutableLongStateOf(
@@ -87,16 +88,23 @@ fun AppNavHost(
                 ?.valueLong ?: 0)
     }
 
-    // Inside AppNavHost
+    // Map reload trigger for client location selection
     val mapReloadTrigger = remember { mutableIntStateOf(0) }
 
+    // Screen-specific navigation state
+    val isMainScreenActive = remember(currentDestination) {
+        derivedStateOf {
+            currentDestination?.route == Screen.EditDatabaseWithCreateNewArticles.route
+        }
+    }
+
     val bottomNavHeight = 80.dp
-    val bottomPadding = 8.dp // Additional padding for the navigation bar
+    val bottomPadding = 8.dp
 
     Surface(
         modifier = modifier
             .fillMaxSize()
-            .padding(bottom = bottomNavHeight + bottomPadding) // Add padding to prevent content from being hidden
+            .padding(bottom = bottomNavHeight + bottomPadding)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             NavHost(
@@ -104,6 +112,153 @@ fun AppNavHost(
                 startDestination = Screen.EditDatabaseWithCreateNewArticles.route,
                 modifier = Modifier.fillMaxSize()
             ) {
+                // Main product catalog screen
+                composable(
+                    route = Screen.EditDatabaseWithCreateNewArticles.route,
+                ) { backStackEntry ->
+                    // Create a unique key for proper state handling
+                    val screenKey = rememberScreenKey(backStackEntry)
+
+                    // Reset state when screen is disposed
+                    CleanupEffect {
+                        // Nothing specific to clean up here as this is the main screen
+                    }
+
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        // Use key to ensure proper state management
+                        key(screenKey) {
+                            FragmentStartupScreen(
+                                viewModel = headViewModel,
+                                onToggleNavBar = onToggleNavBar,
+                                reloadTrigger = reloadTrigger,
+                                onClickToOpenWindos = { articleDataBaseOn, indexColor ->
+                                    relatedArticleBaseStats = articleDataBaseOn
+                                    pendingIndexColor = indexColor
+
+                                    if (currentClientId == 0L) {
+                                        showClientSelection = true
+                                    } else {
+                                        headViewModel.openWindowsNewSaleWithUpdateCurrent(
+                                            relatedArticleBaseStats!!.idArticle.toLong(),
+                                            currentClientId,
+                                            pendingIndexColor
+                                        )
+                                        opnerSaleWindows = true
+                                        headViewModel.sendOrderToClientDisplayer(
+                                            WifiUpdateClientDisplayerStats.ClientWindowsDisplayedProductId.prefix,
+                                            relatedArticleBaseStats!!.idArticle.toLong()
+                                        )
+                                    }
+                                },
+                                onClickToOpenClientsW = {
+                                    showClientSelectionWithoutCondition = true
+                                },
+                                isFabVisible = isFabVisible,
+                                onClickDonne = onClickDonne,
+                                onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi,
+                                scrollTiger = scrollTiger,
+                                onToggleLockHost = onToggleLockHost,
+                                onToggleLockExpandedPricex = {
+                                    lockExpandedPrices = !lockExpandedPrices
+                                },
+                                currentClient = currentClient,
+                                viewModelInitApp = viewModelInitApp,
+                                targetCategoryId = targetCategoryId,
+                                lockHost = lockHost,
+                                onClickImageToShowControles = onClickImageToShowControles
+                            )
+                        }
+
+                        if (uiState.isLoading) {
+                            LoadingOverlay(
+                                progress = uiState.loadingProgress / 100f,
+                                modifier = Modifier.matchParentSize()
+                            )
+                        }
+                    }
+                }
+
+                // Cart screen
+                composable(
+                    route = Screen.SoldCart.route,
+                ) { backStackEntry ->
+                    val screenKey = rememberScreenKey(backStackEntry)
+
+                    // Clean up resources when leaving screen
+                    CleanupEffect {
+                        // Any cleanup needed for this screen
+                    }
+
+                    LaunchedEffect(Unit) {
+                        scrollTiger++
+                    }
+
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        key(screenKey) {
+                            A_MainScreen_APP2_ID_2PanierFinaleDAchat(
+                                onConfirmOrder = {
+                                    headViewModel.updateLongAppSetting("clientBuyerNowId", 0)
+                                }
+                            )
+                        }
+                    }
+                }
+
+                // Work time recorder screen
+                composable(
+                    route = Screen.TravailleTempRecorder.route,
+                ) { backStackEntry ->
+                    val screenKey = rememberScreenKey(backStackEntry)
+
+                    // Clean up resources when leaving screen
+                    CleanupEffect {
+                        // Any cleanup needed for this screen
+                    }
+
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        key(screenKey) {
+                            A_APP3FragID1_MainScreen()
+                        }
+                    }
+                }
+
+                // Product ordering screen
+                composable(
+                    route = Screen.CommandeProduits.route,
+                ) { backStackEntry ->
+                    val screenKey = rememberScreenKey(backStackEntry)
+
+                    // Clean up resources when leaving screen
+                    CleanupEffect {
+                        // Any cleanup needed for this screen
+                    }
+
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        key(screenKey) {
+                            A_APP1FragID3_MainScreen()
+                        }
+                    }
+                }
+
+                // Test fragment screen (empty implementation)
+                composable(
+                    route = Screen.NewFragTest.route,
+                ) { backStackEntry ->
+                    val screenKey = rememberScreenKey(backStackEntry)
+
+                    // Clean up resources when leaving screen
+                    CleanupEffect {
+                        // Any cleanup needed for this screen
+                    }
+
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        key(screenKey) {
+                            // Empty fragment implementation
+                        }
+                    }
+                }
+
+                // Add client map navigation routes
                 app2(
                     viewModelInitApp = viewModelInitApp,
                     clientEnCourDeVent = clientEnCourDeVent,
@@ -123,112 +278,30 @@ fun AppNavHost(
                             database.getReference("O_SoldArticlesTabelle").removeValue()
                         }
                     },
-                    mapReloadTrigger = mapReloadTrigger.intValue // Pass the trigger value
+                    mapReloadTrigger = mapReloadTrigger.intValue
                 )
-
-                composable(Screen.EditDatabaseWithCreateNewArticles.route) {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        FragmentStartupScreen(
-                            viewModel = headViewModel,
-                            onToggleNavBar = onToggleNavBar,
-                            reloadTrigger = reloadTrigger,
-                            onClickToOpenWindos = { articleDataBaseOn, indexColor ->
-                                relatedArticleBaseStats = articleDataBaseOn
-                                pendingIndexColor = indexColor
-
-                                if (currentClientId == 0L) {
-                                    showClientSelection = true
-                                } else {
-                                    headViewModel.openWindowsNewSaleWithUpdateCurrent(
-                                        relatedArticleBaseStats!!.idArticle.toLong(),
-                                        currentClientId,
-                                        pendingIndexColor
-                                    )
-                                    opnerSaleWindows = true
-                                    headViewModel.sendOrderToClientDisplayer(
-                                        WifiUpdateClientDisplayerStats.ClientWindowsDisplayedProductId.prefix,
-                                        relatedArticleBaseStats!!.idArticle.toLong()
-                                    )
-                                }
-                            },
-                            onClickToOpenClientsW = {
-                                showClientSelectionWithoutCondition = true
-                            },
-                            isFabVisible = isFabVisible,
-                            onClickDonne = onClickDonne,
-                            onClickToDisplayeConexionWifi = onClickToDisplayeConexionWifi,
-                            scrollTiger = scrollTiger,
-                            onToggleLockHost = onToggleLockHost,
-                            onToggleLockExpandedPricex = {
-                                lockExpandedPrices = !lockExpandedPrices
-                            },
-                            currentClient = currentClient,
-                            viewModelInitApp = viewModelInitApp,
-                            targetCategoryId = targetCategoryId,
-                            lockHost = lockHost,
-                            onClickImageToShowControles = onClickImageToShowControles
-                        )
-
-                        if (uiState.isLoading) {
-                            LoadingOverlay(
-                                progress = uiState.loadingProgress / 100f,
-                                modifier = Modifier.matchParentSize()
-                            )
-                        }
-                    }
-                }
-
-                composable(Screen.SoldCart.route) {
-                    LaunchedEffect(Unit) {
-                        scrollTiger++
-                    }
-
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        A_MainScreen_APP2_ID_2PanierFinaleDAchat(
-                            onConfirmOrder = {
-
-                                headViewModel.updateLongAppSetting("clientBuyerNowId", 0)
-                            }
-                        )
-                    }
-                }
-
-                composable(Screen.TravailleTempRecorder.route) {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        A_APP3FragID1_MainScreen()
-                    }
-                }
-
-                composable(Screen.CommandeProduits.route) {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        A_APP1FragID3_MainScreen()
-                    }
-                }
-
-                composable(Screen.NewFragTest.route) {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                    }
-                }
             }
 
-
-
+            // Handle client selection navigation logic
             if (showClientSelectionWithoutCondition || (showClientSelection && currentClientId == 0L)) {
-                // Navigate to client map selection screen when no client is selected
                 LaunchedEffect(Unit) {
                     navController.navigate(Screen.A_ClientsLocationGps.route) {
                         popUpTo(navController.graph.startDestinationId) {
                             saveState = true
                         }
                         launchSingleTop = true
-                        restoreState = true
+                        restoreState = false // Force recreation of the screen
                     }
                     // Reset dialog states after navigation
                     showClientSelection = false
                     showClientSelectionWithoutCondition = false
+
+                    // Trigger map reload when navigating to client map
+                    mapReloadTrigger.intValue++
                 }
             }
 
+            // Product detail dialog
             if (opnerSaleWindows) {
                 A_VendeurAfficheurInfosProduit_FragmentMainId3(
                     modifier = Modifier.padding(horizontal = 3.dp),
@@ -253,60 +326,80 @@ fun AppNavHost(
     }
 }
 
-@Composable
-fun MainApp(
-    headViewModel: HeadViewModel,
-    viewModelInitApp: ViewModelInitApp,
-) {
-    val navController = rememberNavController()
-    val isFabVisible = remember { mutableStateOf(true) }
-    val lockHost = remember { mutableStateOf(false) }
-
-    AppNavHost(
-        navController = navController,
-        onToggleNavBar = { /* Implementation for toggling navbar */ },
-        isFabVisible = isFabVisible.value,
-        onClickDonne = { /* Implementation for done click */ },
-        onClickToDisplayeConexionWifi = { /* Implementation for WiFi connection display */ },
-        onToggleLockHost = { lockHost.value = !lockHost.value },
-        viewModelInitApp = viewModelInitApp,
-        headViewModel = headViewModel,
-        lockHost = lockHost.value,
-        onClickImageToShowControles = { /* Implementation for showing controls */ }
-    )
-}
-
+/**
+ * Creates client map navigation routes
+ */
 fun NavGraphBuilder.app2(
     viewModelInitApp: ViewModelInitApp,
     clientEnCourDeVent: Long,
     navController: NavHostController,
     onClear: () -> Unit,
-    mapReloadTrigger: Int = 0, // Add this parameter
+    mapReloadTrigger: Int = 0,
 ) {
-    composable(Screen.A_ClientsLocationGps.route) {
+    composable(
+        route = Screen.A_ClientsLocationGps.route,
+    ) { backStackEntry ->
+        val screenKey = remember(backStackEntry, mapReloadTrigger) {
+            mutableStateOf(System.currentTimeMillis())
+        }
 
-        A_MapClients_A2FragID_1(
-            viewModelInitApp = viewModelInitApp,
-            clientEnCourDeVent = clientEnCourDeVent,
-            onUpdateLongAppSetting = {
-                allerAuFragment(navController)
-            },
-            onClear = onClear,
-            mapReloadTrigger = mapReloadTrigger
-        )
+        // Cleanup when leaving the map screen
+        CleanupEffect {
+            // Specific cleanup for map screen
+        }
+
+        key(screenKey.value) {
+            A_MapClients_A2FragID_1(
+                viewModelInitApp = viewModelInitApp,
+                clientEnCourDeVent = clientEnCourDeVent,
+                onUpdateLongAppSetting = {
+                    navigateToMainScreen(navController)
+                },
+                onClear = onClear,
+                mapReloadTrigger = mapReloadTrigger
+            )
+        }
     }
 }
 
-private fun allerAuFragment(navController: NavHostController) {
+/**
+ * Helper function to create a consistent screen key for proper recomposition
+ */
+@Composable
+private fun rememberScreenKey(backStackEntry: NavBackStackEntry): Any {
+    return remember(backStackEntry) { mutableStateOf(System.currentTimeMillis()) }
+}
+
+/**
+ * Helper composable for consistent cleanup across screens
+ */
+@Composable
+private fun CleanupEffect(onCleanup: () -> Unit) {
+    DisposableEffect(Unit) {
+        onDispose {
+            onCleanup()
+        }
+    }
+}
+
+/**
+ * Navigate to main screen with proper back stack handling
+ */
+private fun navigateToMainScreen(navController: NavHostController) {
     navController.navigate(Screen.EditDatabaseWithCreateNewArticles.route) {
         // Pop the current fragment off the back stack
         popUpTo(Screen.A_ClientsLocationGps.route) {
             inclusive = true
         }
         launchSingleTop = true
+        // Force recreation of destination screen
+        restoreState = false
     }
 }
 
+/**
+ * App2 screen definition
+ */
 object ScreensApp2 {
     val A_ClientsLocationGps = Screen.A_ClientsLocationGps
 }

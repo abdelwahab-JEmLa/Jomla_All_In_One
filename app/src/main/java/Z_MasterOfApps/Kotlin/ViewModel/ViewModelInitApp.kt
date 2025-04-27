@@ -43,6 +43,7 @@ class ViewModelInitApp(
     var _paramatersAppsViewModelModel by mutableStateOf(ParamatersAppsModel())
     var _modelAppsFather by mutableStateOf(_ModelAppsFather())
 
+    var savedGridScrollPosition by mutableStateOf(0)
 
     val modelAppsFather: _ModelAppsFather get() = _modelAppsFather
     val produitsMainDataBase = _modelAppsFather.produitsMainDataBase

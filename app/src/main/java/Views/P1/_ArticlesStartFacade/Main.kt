@@ -7,8 +7,8 @@ import Views.P1._ArticlesStartFacade.FloatingActionButtonGroup.FloatingActionBut
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
 import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
-import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_CodePartageEntreApps.Modules.WifiUpdateClientDisplayerStats
+import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
@@ -67,6 +68,19 @@ fun FragmentStartupScreen(
     val gridState = rememberLazyStaggeredGridState()
     val uiState by viewModel.uiState.collectAsState()
 
+    LaunchedEffect(Unit) {
+        if (viewModelInitApp.savedGridScrollPosition > 0) {
+            // Restore previous scroll position
+            gridState.scrollToItem(viewModelInitApp.savedGridScrollPosition)
+        }
+    }
+
+    // Add the DisposableEffect to save scroll position when leaving the screen
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModelInitApp.savedGridScrollPosition = gridState.firstVisibleItemIndex
+        }
+    }
     MainUi(
         uiState = uiState,
         gridColumns = gridColumns,
