@@ -17,9 +17,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.FilterAlt
+import androidx.compose.material.icons.filled.Gesture
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -104,38 +103,13 @@ fun FabButtons(
                             modifier = Modifier.size(40.dp),
                             containerColor = couleurButton1
                         ) {
-                            Icon(Icons.Filled.FilterAlt, "Filter by sectors")
+                            Icon(Icons.Filled.Add, "Filter by sectors")
                         }
 
                         if (showLabels) {
                             Text("قطاعات العملاء", // Client Sectors
                                 modifier = Modifier
                                     .background(couleurButton1)
-                                    .padding(4.dp),
-                                color = Color.White
-                            )
-                        }
-                    }
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        val couleurButton2 = Color(0xFF4CAF50) // Green color
-                        FloatingActionButton(
-                            onClick = {
-                                viewModel.startNewPolygon()
-                            },
-                            modifier = Modifier.size(40.dp),
-                            containerColor = couleurButton2
-                        ) {
-                            Icon(Icons.Filled.Add, "Start new polygon")
-                        }
-
-                        if (showLabels) {
-                            Text("بدء منطقة جديدة", // Start new area
-                                modifier = Modifier
-                                    .background(couleurButton2)
                                     .padding(4.dp),
                                 color = Color.White
                             )
@@ -155,7 +129,7 @@ fun FabButtons(
                             modifier = Modifier.size(40.dp),
                             containerColor = couleurButton3
                         ) {
-                            Icon(Icons.Filled.Done, "Add point")
+                            Icon(Icons.Filled.Gesture, "Add point")
                         }
 
                         if (showLabels) {
@@ -180,7 +154,7 @@ fun FabButtons(
                             modifier = Modifier.size(40.dp),
                             containerColor = couleurButton4
                         ) {
-                            Icon(Icons.Filled.Close, "Close polygon")
+                            Icon(Icons.Filled.Lock, "Close polygon")
                         }
 
                         if (showLabels) {
