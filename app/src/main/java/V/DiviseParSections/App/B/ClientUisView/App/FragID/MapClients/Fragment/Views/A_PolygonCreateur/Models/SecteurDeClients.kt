@@ -10,6 +10,6 @@ data class SecteurDeClients(
     val nom: String = "Tamaris",
     val ouvert: Boolean = false,
     val polygonEstFerme: Boolean = false,
-    val couleur: String = "#ff0000ff",
+    val couleur: String = "0xff0000ff",
 )
 

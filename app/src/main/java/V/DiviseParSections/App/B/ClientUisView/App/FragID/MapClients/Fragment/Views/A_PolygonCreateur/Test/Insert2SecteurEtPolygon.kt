@@ -17,7 +17,7 @@ suspend fun insert2SecteurEtPolygon(
         vid = 0, // Auto-generated
         nom = "Tamaris",
         polygonEstFerme = true,
-        couleur = "#ff0000ff" // Blue color as string
+        couleur = "0xff0000ff" // Blue color as string
     )
 
     // Deuxième secteur - "Plage" with green color
@@ -25,7 +25,7 @@ suspend fun insert2SecteurEtPolygon(
         vid = 0, // Auto-generated
         nom = "Plage",
         polygonEstFerme = true,
-        couleur = "#ff00ff00" // Green color as string
+        couleur = "0xff00ff00" // Green color as string
     )
 
     // Insérer les deux secteurs et obtenir leurs IDs

@@ -14,7 +14,7 @@ import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Polygon
 import org.osmdroid.views.overlay.Polyline
 
-fun addSectorsToMap(
+fun addToMapOsmdroid(
     mapView: MapView, secteurPolygonInfoList: List<SecteurDeClientsPolygonGeoLimite>,
     allPolygonPoints: List<PolygonGeoLimite>, allSecteurs: List<SecteurDeClients>,
 ) {

@@ -2,7 +2,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.V
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Options.FabButtons
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.View.addSectorsToMap
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.View.addToMapOsmdroid
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.View.getPolygenDeChaqueSecteur
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Test.insert2SecteurEtPolygon
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.handleActiveTransaction
@@ -111,7 +111,7 @@ fun MapContent(
                 mapView.overlays.removeAll(sectorsToRemove)
 
                 // Add sectors to map
-                addSectorsToMap(mapView, secteurPolygonInfoList, allPolygonPoints, allSecteurs)
+                addToMapOsmdroid(mapView, secteurPolygonInfoList, allPolygonPoints, allSecteurs)
             }
         }
     }
