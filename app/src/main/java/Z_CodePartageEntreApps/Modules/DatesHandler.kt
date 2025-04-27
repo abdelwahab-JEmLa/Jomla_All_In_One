@@ -39,8 +39,6 @@ class DatesHandler {
         }
     }
 
-    
-
     fun getDateAndTimString(timestamp: Long?): DateAndTimString {
         if (timestamp == null) return DateAndTimString()
 
@@ -52,7 +50,8 @@ class DatesHandler {
             val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
 
             val date = dateFormat.format(calendar.time)
-            val time = timeFormat.format(calendar.time)
+            val timeString = timeFormat.format(calendar.time)
+            val time = timeString.formatTimeToArabic()
 
             return DateAndTimString(date, time)
         } catch (e: Exception) {
@@ -120,12 +119,12 @@ class DatesHandler {
 
             // Calculate week difference
             val weeksDiff = daysDiff / 7
-            val s = "الفائت"
+            val avant = "الفائت"
 
             return when {
                 weeksDiff == 0L -> "هذا"
-                weeksDiff == 1L -> s
-                weeksDiff == 2L -> "ق.$s"
+                weeksDiff == 1L -> avant
+                weeksDiff == 2L -> "ق.$avant"
                 weeksDiff == 3L -> "ق.3"
                 weeksDiff == 4L -> "ق.4"
                 weeksDiff > 4L -> "ق.+"
@@ -186,15 +185,13 @@ class DatesHandler {
     }
 
     @SuppressLint("DefaultLocale")
-    fun formatTimeToArabic(timeString: String): String {
+    fun formatTimeToArabic(timestamp: Long): String {
         try {
-            val timeParts = timeString.split(":")
-            if (timeParts.size < 2) {
-                return timeString
-            }
+            val calendar = Calendar.getInstance()
+            calendar.timeInMillis = timestamp
 
-            val hour = timeParts[0].toIntOrNull() ?: return timeString
-            val minute = timeParts[1].toIntOrNull() ?: return timeString
+            val hour = calendar.get(Calendar.HOUR_OF_DAY)
+            val minute = calendar.get(Calendar.MINUTE)
 
             // Check if it's AM or PM
             val isPM = hour >= 12
@@ -210,7 +207,37 @@ class DatesHandler {
             // Format to hour:minute AM/PM in Arabic
             return String.format("%d:%02d %s", hour12, minute, amPmIndicator)
         } catch (e: Exception) {
-            return timeString
+            return ""
         }
+    }
+}
+
+// Extension function for String to format time to Arabic
+@SuppressLint("DefaultLocale")
+fun String.formatTimeToArabic(): String {
+    try {
+        val timeParts = this.split(":")
+        if (timeParts.size < 2) {
+            return this
+        }
+
+        val hour = timeParts[0].toIntOrNull() ?: return this
+        val minute = timeParts[1].toIntOrNull() ?: return this
+
+        // Check if it's AM or PM
+        val isPM = hour >= 12
+        val amPmIndicator = if (isPM) "م" else "ص"
+
+        // Convert to 12-hour format
+        val hour12 = when {
+            hour == 0 -> 12
+            hour > 12 -> hour - 12
+            else -> hour
+        }
+
+        // Format to hour:minute AM/PM in Arabic
+        return String.format("%d:%02d %s", hour12, minute, amPmIndicator)
+    } catch (e: Exception) {
+        return this
     }
 }
