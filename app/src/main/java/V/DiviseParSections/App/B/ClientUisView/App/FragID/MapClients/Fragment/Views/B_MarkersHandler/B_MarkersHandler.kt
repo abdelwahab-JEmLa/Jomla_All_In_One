@@ -145,12 +145,10 @@ fun createAndAddMarker(
         marker.showInfoWindow()
     }
 }
-
 private fun Marker.title(
     viewModel: ViewModel_MapClients_App2FragID1,
     client: B_ClientDataBase,
 ) {
-
     title = if (viewModel.afficheLesJoursAuNoms) {
         val historicalData = viewModel.repo_0_0_HeadSQLRepositorys
             .repositorys_Model
@@ -164,9 +162,10 @@ private fun Marker.title(
         val dateHandler = DatesHandler()
         val timeStr = dateHandler.getDateAndTimString(lastTransaction?.timestamps).time
         val dayName = dateHandler.getArabicDayNameFromTimestamp(lastTransaction?.timestamps ?: 0)
+        val distanceSemain = dateHandler.getAbrgDistanceSemain(lastTransaction?.timestamps)
 
         if (lastTransaction != null) {
-            "$dayName (${timeStr})" +
+            "$distanceSemain.$dayName (${timeStr})" +
                     "\n${lastTransaction.etateActuellementEst?.nomArabe}" +
                     "\n${client.nom}"
         } else {

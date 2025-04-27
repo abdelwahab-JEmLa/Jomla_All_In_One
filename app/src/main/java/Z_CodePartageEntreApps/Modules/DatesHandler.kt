@@ -6,6 +6,11 @@ import java.util.Calendar
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
+data class DateAndTimString(
+    val date: String = "yyyy-mm-dd",
+    val time: String = "HH:mm"
+)
+
 class DatesHandler {
 
     fun getCurrentTimestamps(): Long {
@@ -34,39 +39,7 @@ class DatesHandler {
         }
     }
 
-    // Added implementation for getDateStrFromTimestamps
-    fun getDateStrFromTimestamps(timestamp: Long?): String {
-        if (timestamp == null) return ""
-        try {
-            val calendar = Calendar.getInstance()
-            calendar.timeInMillis = timestamp
-
-            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            return dateFormat.format(calendar.time)
-        } catch (e: Exception) {
-            return ""
-        }
-    }
-
-    // Added implementation for getTimeStrFromeTimestamps
-    fun getTimeStrFromeTimestamps(timestamp: Long?): String {
-        if (timestamp == null) return ""
-        try {
-            val calendar = Calendar.getInstance()
-            calendar.timeInMillis = timestamp
-
-            val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
-            val timeStr = timeFormat.format(calendar.time)
-            return formatTimeToArabic(timeStr)
-        } catch (e: Exception) {
-            return ""
-        }
-    }
-
-    data class DateAndTimString(
-        val date: String = "yyyy-mm-dd",
-        val time: String = "HH:mm"
-    )
+    
 
     fun getDateAndTimString(timestamp: Long?): DateAndTimString {
         if (timestamp == null) return DateAndTimString()
@@ -112,6 +85,54 @@ class DatesHandler {
         } catch (e: Exception) {
             // Return unknown if parsing fails
             return "غير معروف"
+        }
+    }
+    fun getAbrgDistanceSemain(timestamp: Long?): String {
+        if (timestamp == null) return ""
+
+        try {
+            // Get current date without time
+            val currentCalendar = Calendar.getInstance()
+            currentCalendar.set(Calendar.HOUR_OF_DAY, 0)
+            currentCalendar.set(Calendar.MINUTE, 0)
+            currentCalendar.set(Calendar.SECOND, 0)
+            currentCalendar.set(Calendar.MILLISECOND, 0)
+
+            // Calculate the start of the current week (Monday)
+            val daysToSubtract = when (val dayOfWeek = currentCalendar.get(Calendar.DAY_OF_WEEK)) {
+                Calendar.SUNDAY -> 6
+                Calendar.MONDAY -> 0
+                else -> dayOfWeek - Calendar.MONDAY
+            }
+            currentCalendar.add(Calendar.DAY_OF_MONTH, -daysToSubtract)
+
+            // Set given date calendar
+            val givenCalendar = Calendar.getInstance()
+            givenCalendar.timeInMillis = timestamp
+            givenCalendar.set(Calendar.HOUR_OF_DAY, 0)
+            givenCalendar.set(Calendar.MINUTE, 0)
+            givenCalendar.set(Calendar.SECOND, 0)
+            givenCalendar.set(Calendar.MILLISECOND, 0)
+
+            // Calculate difference in days from the start of the current week
+            val millsDiff = currentCalendar.timeInMillis - givenCalendar.timeInMillis
+            val daysDiff = TimeUnit.MILLISECONDS.toDays(millsDiff)
+
+            // Calculate week difference
+            val weeksDiff = daysDiff / 7
+            val s = "الفائت"
+
+            return when {
+                weeksDiff == 0L -> "هذا"
+                weeksDiff == 1L -> s
+                weeksDiff == 2L -> "ق.$s"
+                weeksDiff == 3L -> "ق.3"
+                weeksDiff == 4L -> "ق.4"
+                weeksDiff > 4L -> "ق.+"
+                else -> "" // For current week or future dates, return empty string
+            }
+        } catch (e: Exception) {
+            return ""
         }
     }
 
