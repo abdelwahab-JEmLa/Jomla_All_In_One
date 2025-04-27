@@ -165,7 +165,7 @@ fun SecteurItem(
 
         // Active checkbox
         Checkbox(
-            checked = secteur.active,
+            checked = secteur.ouvert,
             onCheckedChange = { onActiveChange(it) },
             colors = CheckboxDefaults.colors(checkedColor = colorValue)
         )

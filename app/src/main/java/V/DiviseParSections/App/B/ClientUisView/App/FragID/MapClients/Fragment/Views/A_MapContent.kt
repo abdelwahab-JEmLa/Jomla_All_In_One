@@ -81,7 +81,8 @@ fun MapContent(
     }
 
 
-    LaunchedEffect(mapView) {
+    LaunchedEffect(mapView) {       //<--
+    //TODO(1): pk le neveau secteur ne s affiche pas 
         // Exécuter toutes les opérations de base de données sur Dispatchers.IO
         withContext(Dispatchers.IO) {
             // Récupérer les secteurs et leurs polygones

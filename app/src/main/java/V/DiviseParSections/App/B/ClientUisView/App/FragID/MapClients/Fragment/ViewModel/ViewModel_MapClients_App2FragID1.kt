@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.PolygonGeoLimite
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.SecteurDeClients
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_Repository
@@ -25,6 +26,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import org.osmdroid.api.IGeoPoint
 import org.osmdroid.views.MapView
 import java.util.Date
 
@@ -35,6 +37,7 @@ class ViewModel_MapClients_App2FragID1(
     val repo_01_VentsHistoriquesDataBase : _01_VentsHistoriquesDataBase_Repository
 ) : ViewModel() {
     val secteurDao = appDatabase.secteurDeClientsDao()
+    val polygonDao = appDatabase.polygonGeoLimiteDaoDao()
 
     val modelDatasSnapList_1_3_BonAchat=repo_0_0_HeadSQLRepositorys.repositorys_Model
         .repository_1_3_TransactionCommercial.modelDatasSnapList
@@ -54,6 +57,10 @@ class ViewModel_MapClients_App2FragID1(
     private val _secteurs = MutableStateFlow<List<SecteurDeClients>>(emptyList())
     val secteurs: StateFlow<List<SecteurDeClients>> = _secteurs
 
+    // Current active sector for polygon creation
+    private var _currentActiveSectorId = MutableStateFlow<Long?>(null)
+    val currentActiveSectorId: StateFlow<Long?> = _currentActiveSectorId
+
     // Dialog states
     val showSecteurDialog = mutableStateOf(false)
     val showAddSecteurDialog = mutableStateOf(false)
@@ -64,7 +71,6 @@ class ViewModel_MapClients_App2FragID1(
 
     private fun loadSecteurs() {
         viewModelScope.launch {
-
             _secteurs.value = secteurDao.getAll()
         }
     }
@@ -87,7 +93,7 @@ class ViewModel_MapClients_App2FragID1(
 
     suspend fun updateSecteurActive(secteurId: Long, active: Boolean) {
         val secteur = _secteurs.value.find { it.vid == secteurId } ?: return
-        val updatedSecteur = secteur.copy(active = active)
+        val updatedSecteur = secteur.copy(ouvert = active)
         secteurDao.insert(updatedSecteur)
         loadSecteurs() // Refresh the list
     }
@@ -96,13 +102,76 @@ class ViewModel_MapClients_App2FragID1(
         val newSector = SecteurDeClients(
             vid = 0, // Auto-generated
             nom = name,
-            active = true,
+            ouvert = true,
             polygonEstFerme = false,
             couleur = color
         )
-        secteurDao.insert(newSector)
+        val sectorId = secteurDao.insertAvecRetureNewVid(newSector)
+        _currentActiveSectorId.value = sectorId
         loadSecteurs() // Refresh the list
+        mapReloadTigger++ // Add this line to trigger map refresh
+
     }
+
+    fun startNewPolygon() {
+        viewModelScope.launch {
+            // Check if there are any sectors marked as open
+            val openSector = _secteurs.value.find { it.ouvert }
+
+            if (openSector != null) {
+                // Use existing open sector
+                _currentActiveSectorId.value = openSector.vid
+            } else {
+                // Create a new sector if none are open
+                showAddSecteurDialog()
+            }
+        }
+    }
+
+    fun addPointToCurrentSector(mapCenter: IGeoPoint) {
+        val sectorId = _currentActiveSectorId.value ?: return
+
+        viewModelScope.launch {
+            val sector = _secteurs.value.find { it.vid == sectorId } ?: return@launch
+
+            // Create a new point for the polygon
+            val newPoint = PolygonGeoLimite(
+                vid = 0, // Auto-generated
+                parentSecteurDeClientsId = sectorId,
+                parentSecteurDeClientsKey = "SecteurDeClients.$sectorId(${sector.nom})",
+                aLatitude = (mapCenter.latitude * 1E6).toInt(),
+                aLongitude = (mapCenter.longitude * 1E6).toInt()
+            )
+
+            // Insert the point into the database
+            polygonDao.insert(newPoint)
+
+            // Refresh the map
+            mapReloadTigger++
+        }
+    }
+
+    fun closeCurrentSector() {
+        val sectorId = _currentActiveSectorId.value ?: return
+
+        viewModelScope.launch {
+            val sector = _secteurs.value.find { it.vid == sectorId } ?: return@launch
+
+            // Update the sector to mark it as closed
+            val updatedSector = sector.copy(polygonEstFerme = true, ouvert = false)
+            secteurDao.insert(updatedSector)
+
+            // Clear the current active sector
+            _currentActiveSectorId.value = null
+
+            // Refresh the sectors list
+            loadSecteurs()
+
+            // Refresh the map
+            mapReloadTigger++
+        }
+    }
+
     fun updateData(client: B_ClientDataBase): Unit {
         viewModelScope.launch {
             mainRepositery.updateUnSeulData(client)
@@ -184,7 +253,6 @@ class ViewModel_MapClients_App2FragID1(
         showClientsWithConfirmedProducts(LottieJsonGetterR_Raw_Icons.reacticonanimatedjsonurl), // New filter mode
         showAll(LottieJsonGetterR_Raw_Icons.reacticonanimatedjsonurl);
     }
-    // Add these methods to ViewModel_MapClients_App2FragID1 class
 
     /**
      * Cleans up all resources used by the ViewModel to prevent memory leaks
@@ -199,8 +267,7 @@ class ViewModel_MapClients_App2FragID1(
                 // Clear any stored map data
                 mapReloadTigger = 0
                 filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList = emptyList()
-
-
+                _currentActiveSectorId.value = null
 
                 // Log cleanup completion
                 println("Map resources cleaned up successfully")
@@ -210,11 +277,11 @@ class ViewModel_MapClients_App2FragID1(
         }
     }
 
-
     fun cancelActiveOperations() {
         try {
             mapReloadTigger++
             afficheLesJoursAuNoms = true
+            _currentActiveSectorId.value = null
 
             println("Active operations canceled successfully")
         } catch (e: Exception) {

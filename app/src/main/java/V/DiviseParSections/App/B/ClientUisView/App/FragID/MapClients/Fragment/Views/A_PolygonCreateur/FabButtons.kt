@@ -14,6 +14,9 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -28,16 +31,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import org.osmdroid.views.MapView
 import kotlin.math.roundToInt
 
 @Composable
 fun FabButtons(
     viewModel: ViewModel_MapClients_App2FragID1,
 ) {
-    var showMenu by remember { mutableStateOf(false) }
-    var showLabels by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val mapView = remember { MapView(context) }
+
+    var showMenu by remember { mutableStateOf(true) }
+    var showLabels by remember { mutableStateOf(true) }
 
     // États pour le drag
     var offsetX by remember { mutableFloatStateOf(0f) }
@@ -109,6 +117,80 @@ fun FabButtons(
                         }
                     }
 
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        val couleurButton2 = Color(0xFF4CAF50) // Green color
+                        FloatingActionButton(
+                            onClick = {
+                                viewModel.startNewPolygon()
+                            },
+                            modifier = Modifier.size(40.dp),
+                            containerColor = couleurButton2
+                        ) {
+                            Icon(Icons.Filled.Add, "Start new polygon")
+                        }
+
+                        if (showLabels) {
+                            Text("بدء منطقة جديدة", // Start new area
+                                modifier = Modifier
+                                    .background(couleurButton2)
+                                    .padding(4.dp),
+                                color = Color.White
+                            )
+                        }
+                    }
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        val couleurButton3 = Color(0xFF2196F3) // Blue color
+                        FloatingActionButton(
+                            onClick = {
+                                viewModel.addPointToCurrentSector(mapView.mapCenter)
+                            },
+                            modifier = Modifier.size(40.dp),
+                            containerColor = couleurButton3
+                        ) {
+                            Icon(Icons.Filled.Done, "Add point")
+                        }
+
+                        if (showLabels) {
+                            Text("إضافة نقطة", // Add point
+                                modifier = Modifier
+                                    .background(couleurButton3)
+                                    .padding(4.dp),
+                                color = Color.White
+                            )
+                        }
+                    }
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        val couleurButton4 = Color(0xFFFF9800) // Orange color
+                        FloatingActionButton(
+                            onClick = {
+                                viewModel.closeCurrentSector()
+                            },
+                            modifier = Modifier.size(40.dp),
+                            containerColor = couleurButton4
+                        ) {
+                            Icon(Icons.Filled.Close, "Close polygon")
+                        }
+
+                        if (showLabels) {
+                            Text("إغلاق المنطقة", // Close area
+                                modifier = Modifier
+                                    .background(couleurButton4)
+                                    .padding(4.dp),
+                                color = Color.White
+                            )
+                        }
+                    }
                 }
 
                 LabelsButton(
