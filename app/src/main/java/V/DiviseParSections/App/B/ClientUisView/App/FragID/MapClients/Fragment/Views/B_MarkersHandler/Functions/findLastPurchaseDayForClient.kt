@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions
 
 import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._01_PeriodVentHistorique
 import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._14_TransactionStatue

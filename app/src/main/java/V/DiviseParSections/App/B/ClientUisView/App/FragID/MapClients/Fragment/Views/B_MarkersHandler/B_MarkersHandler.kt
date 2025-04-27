@@ -2,12 +2,12 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.V
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.filterClientsBasedOnMode
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.findLastPurchaseDayForClient
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.findLastPurchaseInfoForClient
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.getClientStateInArabic
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.displayLatestTransactions
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.displayOpenTransactions
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.DEFAULT_LATITUDE
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.findLastPurchaseDayForClient
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.findLastPurchaseInfoForClient
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.getClientStateInArabic
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import Z_MasterOfApps.Resources.XmlsFilesHandler.Companion.xmlResources
 import android.content.Context
@@ -149,6 +149,7 @@ private fun Marker.title(
     viewModel: ViewModel_MapClients_App2FragID1,
     client: B_ClientDataBase,
 ) {
+
     title = if (viewModel.afficheLesJoursAuNoms) {
         val lastPurchaseInfo = findLastPurchaseInfoForClient(
             viewModel.repo_01_VentsHistoriquesDataBase.modelDatasSnapList,
