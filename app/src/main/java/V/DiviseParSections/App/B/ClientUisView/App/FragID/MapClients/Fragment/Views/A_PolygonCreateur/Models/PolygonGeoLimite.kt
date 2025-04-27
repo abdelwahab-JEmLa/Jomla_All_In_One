@@ -8,10 +8,15 @@ data class PolygonGeoLimite(
     @PrimaryKey(autoGenerate = true)
     val vid: Long=0,
 
+    //Forging Keys
     val parentSecteurDeClientsId: Long=0,
     val parentSecteurDeClientsKey: String =
         "SecteurDeClients.vid(SecteurDeClients.nom)",
+
+    //Infos De Base
     val aLatitude: Int,
     val aLongitude: Int,
+
+    //Etates Mutable
 
     )

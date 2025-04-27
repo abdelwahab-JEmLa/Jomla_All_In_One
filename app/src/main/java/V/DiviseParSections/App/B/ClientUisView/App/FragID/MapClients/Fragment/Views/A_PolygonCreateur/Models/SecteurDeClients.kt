@@ -7,9 +7,14 @@ import androidx.room.PrimaryKey
 data class SecteurDeClients(
     @PrimaryKey(autoGenerate = true)
     val vid: Long,
+
+    //Infos De Base
     val nom: String = "Tamaris",
-    val ouvert: Boolean = false,
-    val polygonEstFerme: Boolean = false,
     val couleur: String = "0xff0000ff",
+
+    //Etates Mutable
+    val ouvert: Boolean = false,
+    val ciblePourCettePeriodDeVent: Boolean = false,
+    val polygonEstFerme: Boolean = false,
 )
 
