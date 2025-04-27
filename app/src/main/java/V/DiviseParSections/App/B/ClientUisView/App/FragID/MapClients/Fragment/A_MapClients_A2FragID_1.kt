@@ -156,7 +156,6 @@ private fun getMapUpdateTriggers(
     )
 }
 
-// For the TODO: Refactoring MapContent function with necessary modifications
 @Composable
 private fun MapContent(
     viewModel: ViewModel_MapClients_App2FragID1,
