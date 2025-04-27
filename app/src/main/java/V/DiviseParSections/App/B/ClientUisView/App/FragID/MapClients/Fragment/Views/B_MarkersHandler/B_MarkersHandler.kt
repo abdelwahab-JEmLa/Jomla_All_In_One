@@ -147,7 +147,7 @@ fun createAndAddMarker(
 
         try {
             configureMarkerInfoWindow(this, mapView, context, actuelleEtat)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
         }
 
         setOnMarkerClickListener { clickedMarker, _ ->
