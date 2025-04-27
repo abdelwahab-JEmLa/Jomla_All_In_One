@@ -19,7 +19,6 @@ fun addToMapOsmdroid(
     mapView: MapView, secteurPolygonInfoList: List<SecteurDeClientsPolygonGeoLimite>,
     allPolygonPoints: List<PolygonGeoLimite>, allSecteurs: List<SecteurDeClients>,
 ) {
-    // FIX: Removed TODO comment - Problem solved
     Log.d("PolygonCreator", "Starting to add sectors to map")
     Log.d("PolygonCreator", "Number of sectors: ${allSecteurs.size}")
     Log.d("PolygonCreator", "Number of polygon points: ${allPolygonPoints.size}")
@@ -67,12 +66,20 @@ fun addToMapOsmdroid(
             Log.d("PolygonCreator", "Point $index: lat=${point.latitude}, lon=${point.longitude}")
         }
 
-        // FIX: Parse color safely and ensure valid default
+        // FIX: Correctly parse hexadecimal color string
         val sectorColor = try {
-            // Try parsing the color as hexadecimal
-            secteur.couleur.toColorInt()
+            // Fix for color parsing - convert from hex format "0xAARRGGBB" to int
+            val colorStr = secteur.couleur
+
+            if (colorStr.startsWith("0x")) {
+                // Parse as Long first to handle unsigned integers properly, then convert to Int
+                val colorLong = colorStr.substring(2).toLong(16)
+                colorLong.toInt()
+            } else {
+                // Try the standard "#RRGGBB" or "#AARRGGBB" format
+                colorStr.toColorInt()
+            }
         } catch (e: Exception) {
-            // Log the error and provide a valid fallback color
             Log.e("PolygonCreator", "Failed to parse color: ${secteur.couleur}, using default blue", e)
             Color.BLUE
         }
@@ -87,14 +94,14 @@ fun addToMapOsmdroid(
                 val polyline = Polyline(mapView)
                 polyline.setPoints(geoPoints)
 
-                // FIX: Improve polyline visibility
+                // Improve polyline visibility
                 polyline.outlinePaint.color = sectorColor
                 polyline.outlinePaint.strokeWidth = 12f  // Thicker line
                 polyline.outlinePaint.strokeCap = Paint.Cap.ROUND
                 polyline.outlinePaint.isAntiAlias = true
                 polyline.outlinePaint.style = Paint.Style.STROKE
 
-                // Add polyline to map overlays - adding before markers
+                // Add polyline to map overlays
                 mapView.overlays.add(polyline)
                 Log.d("PolygonCreator", "Added single polyline connecting all ${geoPoints.size} points")
             }
@@ -113,7 +120,7 @@ fun addToMapOsmdroid(
         } else if (secteur.polygonEstFerme) {
             Log.d("PolygonCreator", "Processing closed sector: ${secteur.nom}")
 
-            // FIX: Improved polygon rendering for closed sectors
+            // Create a new polygon for closed sectors
             val polygon = Polygon(mapView)
 
             // Create a copy of the points
@@ -128,18 +135,17 @@ fun addToMapOsmdroid(
             // Configure polygon with improved styling
             polygon.setPoints(pointsList)
 
-            // FIX: Improved outline visibility
+            // Improved outline visibility
             polygon.outlinePaint.color = sectorColor
-            polygon.outlinePaint.strokeWidth = 8f  // Increased from 5f
+            polygon.outlinePaint.strokeWidth = 8f
             polygon.outlinePaint.strokeCap = Paint.Cap.ROUND
             polygon.outlinePaint.strokeJoin = Paint.Join.ROUND
             polygon.outlinePaint.isAntiAlias = true
 
-            // FIX: Improved transparency calculation
-            val transparenceEnPourcent = 30
-            val alphaValue = (255 * (100 - transparenceEnPourcent) / 100)
 
-            // Create a color with the calculated alpha value (transparency)
+            val transparenceEnPourcent = 93   // Pourcentage de transparence (0-100)
+            val alphaValue = (255 * (100 - transparenceEnPourcent) / 100).toInt()
+
             val fillColor = Color.argb(
                 alphaValue,
                 Color.red(sectorColor),
@@ -147,19 +153,21 @@ fun addToMapOsmdroid(
                 Color.blue(sectorColor)
             )
 
+
+
             Log.d("PolygonCreator", "Polygon fill color: ${Integer.toHexString(fillColor)}")
 
             // Set fill color and ensure it's visible
             polygon.fillPaint.color = fillColor
             polygon.fillPaint.style = Paint.Style.FILL
 
-            // FIX: Clear any previous polygons for this sector first
+            // Clear any previous polygons for this sector first
             mapView.overlays.removeAll { it is Polygon && it.title == secteur.nom }
 
             // Set title for identification
             polygon.title = secteur.nom
 
-            // FIX: Add polygon at the beginning of overlays for proper z-order
+            // Add polygon at the beginning of overlays for proper z-order
             mapView.overlays.add(0, polygon)
             Log.d("PolygonCreator", "Added closed polygon with ${pointsList.size} points")
         } else {

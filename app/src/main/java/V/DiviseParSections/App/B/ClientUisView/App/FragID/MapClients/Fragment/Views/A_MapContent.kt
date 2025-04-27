@@ -4,7 +4,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Options.FabButtons
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Test.insert2SecteurEtPolygon
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.View.addToMapOsmdroid
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.View.getNoSqlData
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.View.getNoSqlDisplayer
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.handleActiveTransaction
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.handleFilterMarkersClick
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Init.getMapUpdateTriggers
@@ -104,7 +104,7 @@ fun MapContent(
             val allPolygonPoints = polygonDao.getAll()
 
             // Get structured information about sectors and their polygons
-            val secteurPolygonInfoList = getNoSqlData(secteurDao, polygonDao)
+            val secteurPolygonInfoList = getNoSqlDisplayer(secteurDao, polygonDao)
 
             // Back to main thread to update UI
             withContext(Dispatchers.Main) {
