@@ -2,7 +2,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment
 
 import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._01_PeriodVentHistorique
 import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Models._14_TransactionStatue
-import android.annotation.SuppressLint
+import Z_CodePartageEntreApps.Modules.DatesHandler
 
 data class LastPurchaseInfo(
     val dayName: String = "",
@@ -39,40 +39,12 @@ private fun extractTimeFromDateString(dateTimeString: String): String {
         }
 
         // Convert to Arabic time format with ص (AM) or م (PM)
-        return formatTimeToArabic(extractedTime)
+        return DatesHandler(). formatTimeToArabic(extractedTime)
     } catch (e: Exception) {
         return ""
     }
 }
 
-@SuppressLint("DefaultLocale")
-private fun formatTimeToArabic(timeString: String): String {
-    try {
-        val timeParts = timeString.split(":")
-        if (timeParts.size < 2) {
-            return timeString
-        }
-
-        val hour = timeParts[0].toIntOrNull() ?: return timeString
-        val minute = timeParts[1].toIntOrNull() ?: return timeString
-
-        // Check if it's AM or PM
-        val isPM = hour >= 12
-        val amPmIndicator = if (isPM) "م" else "ص"
-
-        // Convert to 12-hour format
-        val hour12 = when {
-            hour == 0 -> 12
-            hour > 12 -> hour - 12
-            else -> hour
-        }
-
-        // Format to hour:minute AM/PM in Arabic
-        return String.format("%d:%02d %s", hour12, minute, amPmIndicator)
-    } catch (e: Exception) {
-        return timeString
-    }
-}
 
 fun getClientStateInArabic(
     clientId: Long,
