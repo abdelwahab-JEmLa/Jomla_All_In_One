@@ -20,12 +20,10 @@ fun findLastPurchaseInfoForClient(
 
     return if (lastTransaction != null) {
         val dateHandler = DatesHandler()
-        val dayName = dateHandler.getArabicDayNameFromTimestamp(lastTransaction.timestamps)
-        val timeStr = dateHandler.getTimeStrFromeTimestamps(lastTransaction.timestamps)
 
         LastPurchaseInfo(
-            dayName = dayName,
-            timeStr = timeStr
+            dayName = dateHandler.getDateAndTimString(lastTransaction.timestamps).date,
+            timeStr = dateHandler.getDateAndTimString(lastTransaction.timestamps).time
         )
     } else {
         LastPurchaseInfo()

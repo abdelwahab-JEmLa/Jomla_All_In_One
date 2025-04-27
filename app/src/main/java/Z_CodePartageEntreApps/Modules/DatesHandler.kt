@@ -63,6 +63,30 @@ class DatesHandler {
         }
     }
 
+    data class DateAndTimString(
+        val date: String = "yyyy-mm-dd",
+        val time: String = "HH:mm"
+    )
+
+    fun getDateAndTimString(timestamp: Long?): DateAndTimString {
+        if (timestamp == null) return DateAndTimString()
+
+        try {
+            val calendar = Calendar.getInstance()
+            calendar.timeInMillis = timestamp
+
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+
+            val date = dateFormat.format(calendar.time)
+            val time = timeFormat.format(calendar.time)
+
+            return DateAndTimString(date, time)
+        } catch (e: Exception) {
+            return DateAndTimString()
+        }
+    }
+
     fun getNomJourArabParDateStr(dataStr: String): String {
         try {
             // Parse the input date string (expected format: "yyyy-MM-dd")

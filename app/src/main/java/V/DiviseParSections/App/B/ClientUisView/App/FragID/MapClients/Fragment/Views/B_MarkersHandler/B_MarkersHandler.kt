@@ -162,12 +162,11 @@ private fun Marker.title(
             .maxByOrNull { it.timestamps }
 
         val dateHandler = DatesHandler()
-        val dateStr = dateHandler.getDateStrFromTimestamps(lastTransaction?.timestamps)
-        val timeStr = dateHandler.getTimeStrFromeTimestamps(lastTransaction?.timestamps)
+        val timeStr = dateHandler.getDateAndTimString(lastTransaction?.timestamps).time
         val dayName = dateHandler.getArabicDayNameFromTimestamp(lastTransaction?.timestamps ?: 0)
 
         if (lastTransaction != null) {
-            "$dayName $dateStr(${timeStr})" +
+            "$dayName (${timeStr})" +
                     "\n${lastTransaction.etateActuellementEst?.nomArabe}" +
                     "\n${client.nom}"
         } else {
