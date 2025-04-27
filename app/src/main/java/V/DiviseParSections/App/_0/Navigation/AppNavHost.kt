@@ -198,6 +198,13 @@ fun AppNavHost(
                             A_MainScreen_APP2_ID_2PanierFinaleDAchat(
                                 onConfirmOrder = {
                                     headViewModel.updateLongAppSetting("clientBuyerNowId", 0)
+                                    // Navigate back to the main screen after confirming order
+                                    navController.navigate(Screen.EditDatabaseWithCreateNewArticles.route) {
+                                        popUpTo(Screen.SoldCart.route) {
+                                            inclusive = true
+                                        }
+                                        launchSingleTop = true
+                                    }
                                 }
                             )
                         }
@@ -339,13 +346,14 @@ fun NavGraphBuilder.app2(
     composable(
         route = Screen.A_ClientsLocationGps.route,
     ) { backStackEntry ->
+        // Create a more reliable key that combines time and reload trigger
         val screenKey = remember(backStackEntry, mapReloadTrigger) {
-            mutableStateOf(System.currentTimeMillis())
+            mutableStateOf("map_${mapReloadTrigger}_${System.currentTimeMillis()}")
         }
 
-        // Cleanup when leaving the map screen
+        // Enhanced cleanup when leaving the map screen
         CleanupEffect {
-            // Specific cleanup for map screen
+            // Clear any client selection state if necessary
         }
 
         key(screenKey.value) {

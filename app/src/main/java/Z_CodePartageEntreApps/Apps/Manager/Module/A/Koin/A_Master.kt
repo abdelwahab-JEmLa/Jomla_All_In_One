@@ -2,10 +2,10 @@ package Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin
 
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.ViewModel.VendeursViewModel
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID1.VentHistoriques.Fragment.ViewModel.PeriodeVenteViewModel
-import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_Repository
-import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_RepositoryImpl
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.ViewModel.ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
+import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_Repository
+import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_RepositoryImpl
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepositoryImpl
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.B_ClientDataBaseRepository
@@ -24,6 +24,7 @@ import Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.K_TempT
 import Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.K_TempTravailleRepositoryImpl
 import Z_CodePartageEntreApps.Model.O_SoldArticlesTabelle.Repository.SoldArticlesTabelleRepository
 import Z_CodePartageEntreApps.Model.O_SoldArticlesTabelle.Repository.SoldArticlesTabelleRepositoryImpl
+import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_RepositoryImpl
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperationRepositoryImpl
@@ -91,38 +92,32 @@ val commonRepositoriesModule = module {
     single<C_GrossistsDataBaseRepository> { C_GrossistsDataBaseRepositoryImpl() }
 }
 
-val viewModelModule = module {
-    viewModel { PeriodeVenteViewModel(get()) }
-
-    viewModel { ViewModelFragment_StartUpScreen(
-        get(),
-        get(),
-        get(),
-        get(),
-        get()
-    ) }
-
-    viewModel { ViewModelInitApp(
-        get()
-        ,get()
-        ,get()
-        ,get()
-        ,get()
-        ,get()
-        ,get()
-        ,get()
-        ,get()
-    ) }
-
-    viewModel { VendeursViewModel(
-        get(),
-        get(),
-    ) }
-
-    viewModel { ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
-        get(),
-    ) }
+// Add this to A_Master.kt
+val navigationModule = module {
+    // Create as a singleton so it can be accessed from anywhere
+    single { FragmentNavigationHandler() }
 }
+
+
+
+// Update the viewModelModule for the problematic ViewModel
+val viewModelModule = module {
+    // Original viewModels
+    viewModel { PeriodeVenteViewModel(get()) }
+    viewModel { ViewModelFragment_StartUpScreen(get(), get(), get(), get(), get()) }
+    viewModel { ViewModelInitApp(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    viewModel { VendeursViewModel(get(), get()) }
+
+    // Update this ViewModel to use the navigation handler
+    viewModel {
+        ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
+            get(),  // The repository
+            get()   // The navigation handler
+        )
+    }
+}
+
+
 
 // Function to determine the application type
 fun isManagerApp(context: Context): Boolean {
@@ -136,9 +131,12 @@ val appTypeModule = module {
     }
 }
 
-val appModule = module {
-    includes(commonRepositoriesModule, appTypeModule, viewModelModule)
 
+// Update the appModule to include navigationModule
+val appModule = module {
+    includes(commonRepositoriesModule, appTypeModule, viewModelModule, navigationModule)
+
+    // Rest of the code remains the same
     single {
         val context = get<Context>()
         if (isManagerApp(context)) {

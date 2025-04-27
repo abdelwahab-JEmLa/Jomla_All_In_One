@@ -3,6 +3,7 @@ package V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.F
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_3_TransactionCommercial
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_4_PeriodeVent
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Preview.addTestDataToFireBaseIfEmpty
+import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Repository
 import Z_CodePartageEntreApps.Repository._3_ClientsDataBase._3_ClientsDataBase
 import androidx.compose.runtime.snapshotFlow
@@ -34,6 +35,8 @@ data class SecID5FragID2UiState(
 
 class ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
     val r_0_0_HeadOfRepositorys_Repository: _0_0_HeadOfRepositorys_Repository,
+    private val navigationHandler: FragmentNavigationHandler
+
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SecID5FragID2UiState())
@@ -44,6 +47,14 @@ class ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
             loadCollectSnapshotStateList()
         }
     }
+
+    fun navigateToCartScreen() {
+        viewModelScope.launch(Dispatchers.Main) {
+            navigationHandler.navigateToCartScreen()
+        }
+    }
+
+
 
     private fun loadCollectSnapshotStateList() {
         viewModelScope.launch(Dispatchers.IO) {

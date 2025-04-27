@@ -94,6 +94,9 @@ fun B_Item_TransactionItem(
                         ) {
                             viewModel.r_0_0_HeadOfRepositorys_Repository.repositorys_Model.activeVId_1_3_TransactionCommercial.value =
                                 transaction.vid
+
+                            // Navigate to the cart screen after selecting a transaction
+                            viewModel.navigateToCartScreen()
                         }
                     },
                     modifier = Modifier

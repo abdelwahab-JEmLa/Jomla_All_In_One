@@ -2,15 +2,16 @@ package P0_MainScreen.Main
 
 import P0_MainScreen.Main.Windows.RecordAfficheurFAB
 import P0_MainScreen.Modules.HandleFullscreenMode
+import P0_MainScreen.Ui.Objects.ConnexionCard
+import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.A_APP4FragID1_MainScreen
 import V.DiviseParSections.App._0.Navigation.AppNavHost
 import V.DiviseParSections.App._0.Navigation.NavigationBarWithFab
 import V.DiviseParSections.App._0.Navigation.NavigationItems
 import V.DiviseParSections.App._0.Navigation.Screen
-import P0_MainScreen.Ui.Objects.ConnexionCard
-import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.A_APP4FragID1_MainScreen
 import Views.FragId4_EStorePresentationToClient.FragmentDisplayeInfoProductToClient7
 import Views.FragId4_EStorePresentationToClient.Modules.SearchArticle
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
+import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.os.Build
 import android.util.Log
@@ -64,6 +65,8 @@ fun MainScreen(
     var showVendeursDialog by remember { mutableStateOf(false) }
 
     val a_ProduitModelRepository = koinInject<A_ProduitRepository>()
+    // Use koinInject to get the FragmentNavigationHandler
+    val navigationHandler = koinInject<FragmentNavigationHandler>()
 
     // Track the repository progress
     val repositoryProgress by a_ProduitModelRepository.progressRepo.collectAsState()
@@ -203,8 +206,14 @@ fun MainScreen(
                             )
                         }
 
+                        // Set the NavController in the navigation handler
+                        LaunchedEffect(Unit) {
+                            navigationHandler.setNavController(navController)
+                        }
+
                         // Main Content Area
                         Box(modifier = Modifier.weight(1f)) {
+
                             AppNavHost(
                                 navController = navController,
                                 onToggleNavBar = { isNavBarVisible = !isNavBarVisible },
