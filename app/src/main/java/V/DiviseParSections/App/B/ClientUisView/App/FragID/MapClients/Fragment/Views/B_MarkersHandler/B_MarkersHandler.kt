@@ -120,26 +120,7 @@ fun createAndAddMarker(
             client.longitude
         )
 
-        title = if (viewModel.afficheLesJoursAuNoms) {
-            val lastPurchaseInfo = findLastPurchaseInfoForClient(
-                viewModel.repo_01_VentsHistoriquesDataBase.modelDatasSnapList,
-                client.id
-            )
-
-            if (lastPurchaseInfo.dayName.isNotEmpty()) {
-                val clientStateArabic = getClientStateInArabic(
-                    client.id,
-                    viewModel.repo_01_VentsHistoriquesDataBase.modelDatasSnapList
-                )
-                "${lastPurchaseInfo.dayName} (${lastPurchaseInfo.timeStr})" +
-                        "\n$clientStateArabic" +
-                        "\n${client.nom}"
-            } else {
-                client.nom
-            }
-        } else {
-            client.nom
-        }
+        title(viewModel, client)
 
         snippet = if (client.cUnClientTemporaire)
             "Client temporaire" else "Client permanent"
@@ -161,6 +142,32 @@ fun createAndAddMarker(
 
     if (showMarkerDetails) {
         marker.showInfoWindow()
+    }
+}
+
+private fun Marker.title(
+    viewModel: ViewModel_MapClients_App2FragID1,
+    client: B_ClientDataBase,
+) {
+    title = if (viewModel.afficheLesJoursAuNoms) {
+        val lastPurchaseInfo = findLastPurchaseInfoForClient(
+            viewModel.repo_01_VentsHistoriquesDataBase.modelDatasSnapList,
+            client.id
+        )
+
+        if (lastPurchaseInfo.dayName.isNotEmpty()) {
+            val clientStateArabic = getClientStateInArabic(
+                client.id,
+                viewModel.repo_01_VentsHistoriquesDataBase.modelDatasSnapList
+            )
+            "${lastPurchaseInfo.dayName} (${lastPurchaseInfo.timeStr})" +
+                    "\n$clientStateArabic" +
+                    "\n${client.nom}"
+        } else {
+            client.nom
+        }
+    } else {
+        client.nom
     }
 }
 
