@@ -1,35 +1,58 @@
 package V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.View
 
+// Add these imports at the top of your file
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_3_TransactionCommercial
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.ViewModel.ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient
 import Z_CodePartageEntreApps.Modules.DatesHandler
+import android.content.Context
+import android.media.AudioAttributes
+import android.media.MediaPlayer
+import android.widget.Toast
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.google.firebase.Firebase
+import com.google.firebase.storage.storage
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 
 @Composable
 fun B_Item_TransactionItem(
@@ -42,6 +65,29 @@ fun B_Item_TransactionItem(
 
     // For blinking effect when not active
     val blinkState = remember { mutableStateOf(false) }
+
+    // Audio player states
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    var isPlaying by remember { mutableStateOf(false) }
+    var playbackProgress by remember { mutableStateOf(0f) }
+    var mediaPlayer by remember { mutableStateOf<MediaPlayer?>(null) }
+
+    // Has voice message
+    val hasVoiceMessage = !transaction.vocaleKeyID.isNullOrEmpty()
+
+    // Cleanup MediaPlayer when leaving composition
+    DisposableEffect(Unit) {
+        onDispose {
+            mediaPlayer?.apply {
+                if (isPlaying) {
+                    stop()
+                }
+                release()
+            }
+            mediaPlayer = null
+        }
+    }
 
     // Blinking effect using LaunchedEffect when not active and in ON_MODE_COMMEND_ACTUELLEMENT state
     if (etateActuellementEst == _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
@@ -68,58 +114,139 @@ fun B_Item_TransactionItem(
         Box(
             modifier = Modifier.fillMaxWidth()
         ) {
-            // Original Row content
-            Row(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .padding(8.dp)
             ) {
-                // Shopping cart icon moved inside the Row
-                if (etateActuellementEst == _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT) {
-                    IconButton(
-                        onClick = {
-                            viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.upsertUneDataEtReturnVID(
-                                transaction.copy(
-                                    ouvert = !transaction.ouvert
-                                )
-                            ) {
-                                viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.activeVId_1_3_TransactionCommercial.value =
-                                    transaction.vid
+                // Top row with transaction details
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Shopping cart icon moved inside the Row
+                    if (etateActuellementEst == _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT) {
+                        IconButton(
+                            onClick = {
+                                viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.upsertUneDataEtReturnVID(
+                                    transaction.copy(
+                                        ouvert = !transaction.ouvert
+                                    )
+                                ) {
+                                    viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.repositorys_Model.activeVId_1_3_TransactionCommercial.value =
+                                        transaction.vid
 
-                                // Navigate to the cart screen after selecting a transaction
-                                viewModel.navigateToCartScreen()
+                                    // Navigate to the cart screen after selecting a transaction
+                                    viewModel.navigateToCartScreen()
+                                }
                             }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ShoppingCart,
+                                contentDescription = "Select Transaction",
+                                tint = if (activeTransactionId == transaction.vid) {
+                                    Color.White
+                                } else {
+                                    // Blinking effect - alternate between Red and Gray
+                                    if (blinkState.value) Color.Red else Color.Gray
+                                }
+                            )
                         }
+                    }
+
+                    Text(
+                        text = " الوقت: ${datesHandler.getDateAndTimString(transaction.timestamps).time}",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    Text(
+                        text = etateActuellementEst.nomArabe,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.End  // Right-aligned for Arabic
+                    )
+                }
+
+                // Audio player section (only show if there's a voice message)
+                if (hasVoiceMessage) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.ShoppingCart,
-                            contentDescription = "Select Transaction",
-                            tint = if (activeTransactionId == transaction.vid) {
-                                Color.White
-                            } else {
-                                // Blinking effect - alternate between Red and Gray
-                                if (blinkState.value) Color.Red else Color.Gray
+                        // Play/Pause Button
+                        IconButton(
+                            onClick = {
+                                if (isPlaying) {
+                                    // Stop playing
+                                    mediaPlayer?.apply {
+                                        if (isPlaying) {
+                                            stop()
+                                        }
+                                        release()
+                                    }
+                                    mediaPlayer = null
+                                    isPlaying = false
+                                    playbackProgress = 0f
+                                } else {
+                                    // Start playing
+                                    coroutineScope.launch {
+                                        playVoiceMessage(
+                                            transaction.vocaleKeyID,
+                                            context,
+                                            onPrepared = { player ->
+                                                mediaPlayer = player
+                                                isPlaying = true
+
+                                                // Update progress every 100ms while playing
+                                                coroutineScope.launch {
+                                                    while (isPlaying && mediaPlayer != null) {
+                                                        val duration = mediaPlayer?.duration ?: 1
+                                                        val currentPosition = mediaPlayer?.currentPosition ?: 0
+                                                        playbackProgress = currentPosition.toFloat() / duration.toFloat()
+                                                        delay(100)
+                                                    }
+                                                }
+                                            },
+                                            onCompletion = {
+                                                isPlaying = false
+                                                playbackProgress = 0f
+                                                mediaPlayer?.release()
+                                                mediaPlayer = null
+                                            },
+                                            onError = {
+                                                isPlaying = false
+                                                playbackProgress = 0f
+                                                Toast.makeText(context, "Erreur de lecture du message vocal", Toast.LENGTH_SHORT).show()
+                                            }
+                                        )
+                                    }
+                                }
                             }
+                        ) {
+                            Icon(
+                                imageVector = if (isPlaying) Icons.Default.Stop else Icons.Default.PlayArrow,
+                                contentDescription = if (isPlaying) "Arrêter la lecture" else "Lecture du message vocal",
+                                tint = Color.White
+                            )
+                        }
+
+                        // Progress Bar
+                        LinearProgressIndicator(
+                            progress = { playbackProgress },
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(4.dp)
+                                .padding(horizontal = 8.dp)
+                                .clip(RoundedCornerShape(2.dp)),
+                            color = Color.White,
+                            trackColor = Color.White.copy(alpha = 0.3f)
                         )
                     }
                 }
-
-                Text(
-                    text = " الوقت: ${datesHandler.getDateAndTimString(transaction.timestamps).time}",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-
-                Text(
-                    text = etateActuellementEst.nomArabe,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.End,  // Right-aligned for Arabic
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 8.dp)
-                )
-
             }
         }
     }
@@ -129,4 +256,69 @@ fun B_Item_TransactionItem(
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
     )
+}
+
+// Fonction mise à jour pour lire les fichiers AAC
+private suspend fun playVoiceMessage(
+    voiceMessageId: String?,
+    context: Context,
+    onPrepared: (MediaPlayer) -> Unit,
+    onCompletion: () -> Unit,
+    onError: () -> Unit
+) {
+    if (voiceMessageId.isNullOrEmpty()) return
+
+    withContext(Dispatchers.IO) {
+        try {
+            // Get download URL from Firebase Storage
+            val storageRef = Firebase.storage.reference
+                .child("1_messagesVocales")
+                .child(voiceMessageId)
+
+            val downloadUrl = withContext(Dispatchers.IO) {
+                try {
+                    storageRef.downloadUrl.await()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    null
+                }
+            }
+
+            if (downloadUrl != null) {
+                // Create and prepare MediaPlayer
+                val mediaPlayer = MediaPlayer().apply {
+                    setAudioAttributes(
+                        AudioAttributes.Builder()
+                            .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                            .setUsage(AudioAttributes.USAGE_MEDIA)
+                            .build()
+                    )
+                    setDataSource(downloadUrl.toString())
+                    setOnPreparedListener {
+                        start()
+                        onPrepared(this)
+                    }
+                    setOnCompletionListener {
+                        onCompletion()
+                    }
+                    setOnErrorListener { _, _, _ ->
+                        onError()
+                        true
+                    }
+                    prepareAsync()
+                }
+            } else {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "Impossible de charger le message vocal", Toast.LENGTH_SHORT).show()
+                    onError()
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, "Erreur: ${e.message}", Toast.LENGTH_SHORT).show()
+                onError()
+            }
+        }
+    }
 }

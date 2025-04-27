@@ -28,6 +28,7 @@ data class _1_3_TransactionCommercial(
     // Section StatuesMutable
     var cJustPourVoirPanie: Boolean = false,
     var ouvert: Boolean = false,
+    var vocaleKeyID: String = "",
 
     var etateActuellementEst: EtateActuellementEst =
         EtateActuellementEst.NON_DEFINI,
@@ -61,6 +62,8 @@ data class _1_3_TransactionCommercial(
         FERME(android.R.color.darker_gray, "مغلق"),
 
         A_EVITE(android.R.color.black, "اقترح ان يتجنب لمدة اسبوعين"),
+
+        RAPPORT_AU_ENREGESTREMENT_VOCALE(android.R.color.black, "التقرير قي التسجيل الصوتي "),
 
         ON_MODE_VOIRE_PANIE_ARTICLES(android.R.color.holo_blue_dark, "في معاينة السلة"),
 

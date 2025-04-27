@@ -27,7 +27,7 @@ fun upsert_1_3_TransactionCommercial(
 
     val clientId = relatedClients?.id ?: 0L
     // Check if a BonAchat already exists for this client in the active period
-    val existingBonAchat = viewModel.modelDatasSnapList_1_3_BonAchat.find {
+    val existingBonAchat = viewModel.modelDatasSnapList_1_3_TransactionCommercial.find {
         it.clientAcheteurID == clientId
                 && it.parentVID_1_4_PeriodeVent == ceComptVendeurInsertBonsAchatAuPeriodID
                 && it.etateActuellementEst == newEtate

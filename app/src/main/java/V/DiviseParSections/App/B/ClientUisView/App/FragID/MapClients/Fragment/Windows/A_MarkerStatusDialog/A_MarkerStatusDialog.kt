@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.Vocale.EnregestrementMessageVocaleEtLeMetreAuStorageGoogle
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_3_TransactionCommercial
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.View.A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
@@ -78,7 +79,7 @@ fun MarkerStatusDialog(
 
     val clientId = relatedClients?.id ?: 0L
     // Check if a BonAchat already exists for this client in the active period
-    val existingBonAchat = viewModel.modelDatasSnapList_1_3_BonAchat.find {
+    val existingBonAchat = viewModel.modelDatasSnapList_1_3_TransactionCommercial.find {
         it.clientAcheteurID == clientId
                 && it.parentVID_1_4_PeriodeVent == ceComptVendeurInsertBonsAchatAuPeriodID
     }
@@ -211,7 +212,44 @@ fun MarkerStatusDialog(
                                             clientId = clientId,
                                             context = context
                                         )
+
                                 }
+                                item {
+                                    EnregestrementMessageVocaleEtLeMetreAuStorageGoogle(
+                                        clientId = clientId,
+                                        onVoiceMessageUploaded = { voiceMessageId ->
+                                            coroutineScope.launch {
+                                                // Update the client or transaction with the voice message ID
+                                                relatedClients?.let { client ->
+                                                    // Update the transaction with the voice message ID
+                                                    val currentTransaction =
+                                                        viewModel.modelDatasSnapList_1_3_TransactionCommercial.find {
+                                                            it.clientAcheteurID == clientId &&
+                                                                    it.parentVID_1_4_PeriodeVent == ceComptVendeurInsertBonsAchatAuPeriodID
+                                                        }
+
+                                                    currentTransaction?.let { transaction ->
+                                                        // Update the transaction with the voice message ID
+                                                        val updatedTransaction =
+                                                            transaction.copy(
+                                                                vocaleKeyID = voiceMessageId
+                                                            )
+
+                                                        // Update the transaction in the repository
+                                                        viewModel.repo_0_0_HeadSQLRepositorys.upsertUneDataEtReturnVID(
+                                                            updatedTransaction
+                                                        ) { vid ->
+                                                            // Update active transaction ID if needed
+                                                            repositorysModel.activeVId_1_3_TransactionCommercial.value =
+                                                                vid
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    )
+                                }
+
                                 if (ceTelephoneEstDeAbdelwahab) {
                                     item {
                                         _1_3_TransactionCommercial.EtateActuellementEst.Cible
@@ -230,11 +268,6 @@ fun MarkerStatusDialog(
                                                 clientId = clientId,
                                                 context = context
                                             )
-                                    }
-                                    item {
-                                        EnregestrementMessageVocaleEtLeMetreAuStorageGoogle(
-
-                                        )
                                     }
                                 }
                             }

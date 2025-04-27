@@ -38,7 +38,7 @@ class ViewModel_MapClients_App2FragID1(
     val secteurDao = appDatabase.secteurDeClientsDao()
     val polygonDao = appDatabase.polygonGeoLimiteDaoDao()
 
-    val modelDatasSnapList_1_3_BonAchat=repo_0_0_HeadSQLRepositorys.repositorys_Model
+    val modelDatasSnapList_1_3_TransactionCommercial=repo_0_0_HeadSQLRepositorys.repositorys_Model
         .repository_1_3_TransactionCommercial.modelDatasSnapList
 
     val bProto_ClientsDataBase = mainRepositery.modelDatas
