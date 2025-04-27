@@ -17,24 +17,8 @@ data class SecteurDeClients(
     val vid: Long,
     val nom: String = "Tamaris",
     val polygonEstFerme: Boolean = false,
-    val couleur: String = "0xff0000ff",
-) {
-    private fun getCouleurDepuitStr(): Int {
-        // Implementation for converting the string color to Int
-        return try {
-            ("#" + couleur.replace("0x", "")).toColorInt()
-        } catch (e: Exception) {
-            // Default to blue if parsing fails
-            Color.BLUE
-        }
-    }
-
-    // Helper function to get the color directly
-    fun getCouleur(): Int {
-        return getCouleurDepuitStr()
-    }
-}
-
+    val couleur: String = "#ff0000ff",
+)
 @Entity
 data class PolygonGeoLimite(
     @PrimaryKey(autoGenerate = true)
@@ -57,7 +41,7 @@ suspend fun insert2SecteurEtPolygon(
         vid = 0, // Auto-generated
         nom = "Tamaris",
         polygonEstFerme = true,
-        couleur = "0xff0000ff" // Blue color as string
+        couleur = "#ff0000ff" // Blue color as string
     )
 
     // Deuxième secteur - "Plage" with green color
@@ -65,7 +49,7 @@ suspend fun insert2SecteurEtPolygon(
         vid = 0, // Auto-generated
         nom = "Plage",
         polygonEstFerme = true,
-        couleur = "0xff00ff00" // Green color as string
+        couleur = "#ff00ff00" // Green color as string
     )
 
     // Insérer les deux secteurs et obtenir leurs IDs
@@ -211,9 +195,7 @@ fun addSectorsToMap(
         polygon.setPoints(pointsList)
 
         // CHANGE THIS LINE: Get sector color using the couleur property directly
-        val sectorColor = try {
-            ("#" + secteur.couleur.replace("0x", "")).toColorInt()
-        } catch (e: Exception) {
+        val sectorColor = try { secteur.couleur.toColorInt() } catch (e: Exception) {
             Color.BLUE // Default to blue if parsing fails
         }
 
