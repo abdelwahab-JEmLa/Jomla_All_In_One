@@ -18,8 +18,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,6 +30,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
 
 @Composable
 fun B_Item_TransactionItem(
@@ -36,6 +40,20 @@ fun B_Item_TransactionItem(
     val datesHandler = DatesHandler()
     val etateActuellementEst = transaction.etateActuellementEst
     val activeTransactionId by viewModel.r_0_0_HeadOfRepositorys_Repository.repositorys_Model.activeVId_1_3_TransactionCommercial.collectAsState()
+
+    // For blinking effect when not active
+    val blinkState = remember { mutableStateOf(false) }
+
+    // Blinking effect using LaunchedEffect when not active and in ON_MODE_COMMEND_ACTUELLEMENT state
+    if (etateActuellementEst == _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
+        && activeTransactionId != transaction.vid) {
+        LaunchedEffect(key1 = Unit) {
+            while (true) {
+                blinkState.value = !blinkState.value
+                delay(500) // 500ms blink interval
+            }
+        }
+    }
 
     // Card with background color based on transaction state
     Card(
@@ -58,6 +76,36 @@ fun B_Item_TransactionItem(
                     .padding(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                // Shopping cart icon moved inside the Row
+                if (etateActuellementEst == _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT) {
+                    IconButton(
+                        onClick = {
+                            viewModel.r_0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID(
+                                transaction.copy(
+                                    ouvert = !transaction.ouvert
+                                )
+                            ) {
+                                viewModel.r_0_0_HeadOfRepositorys_Repository.repositorys_Model.activeVId_1_3_TransactionCommercial.value =
+                                    transaction.vid
+
+                                // Navigate to the cart screen after selecting a transaction
+                                viewModel.navigateToCartScreen()
+                            }
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ShoppingCart,
+                            contentDescription = "Select Transaction",
+                            tint = if (activeTransactionId == transaction.vid) {
+                                Color.White
+                            } else {
+                                // Blinking effect - alternate between Red and Gray
+                                if (blinkState.value) Color.Red else Color.Gray
+                            }
+                        )
+                    }
+                }
+
                 Text(
                     text = " الوقت: ${datesHandler.formatTimeToArabic(transaction.heurDebutInString)}",
                     style = MaterialTheme.typography.bodyMedium
@@ -78,39 +126,6 @@ fun B_Item_TransactionItem(
                     Text(
                         text = "Fin: ${datesHandler.formatTimeToArabic(transaction.heurFinInString)}",
                         style = MaterialTheme.typography.bodySmall
-                    )
-                }
-            }
-
-            // Shopping cart icon as floating element, only shown for ON_MODE_COMMEND_ACTUELLEMENT state
-            if (etateActuellementEst == _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT) {
-                // Original IconButton:
-                IconButton(
-                    onClick = {
-                        viewModel.r_0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID(
-                            transaction.copy(
-                                ouvert = !transaction.ouvert
-                            )
-                        ) {
-                            viewModel.r_0_0_HeadOfRepositorys_Repository.repositorys_Model.activeVId_1_3_TransactionCommercial.value =
-                                transaction.vid
-
-                            // Navigate to the cart screen after selecting a transaction
-                            viewModel.navigateToCartScreen()
-                        }
-                    },
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(bottom = 4.dp, end = 4.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.ShoppingCart,
-                        contentDescription = "Select Transaction",
-                        tint = if (activeTransactionId == transaction.vid) {
-                            Color.White
-                        } else {
-                            Color.Gray
-                        }
                     )
                 }
             }
