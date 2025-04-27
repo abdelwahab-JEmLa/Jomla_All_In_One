@@ -204,10 +204,10 @@ fun addSectorsToMap(
         polygon.outlinePaint.strokeWidth = 5f
 
         // Set fill color with transparency
-        val transparenceEnPourcent = 1     // 1%
+        val transparenceEnPourcent = 4
 
         // Calculate alpha value based on transparency percentage (1% = ~2.5/255 alpha)
-        val alphaValue = (255 * transparenceEnPourcent / 100).toInt()
+        val alphaValue = (255 * transparenceEnPourcent / 100)
 
         // Create a color with the calculated alpha value (transparency)
         val fillColor = Color.argb(
