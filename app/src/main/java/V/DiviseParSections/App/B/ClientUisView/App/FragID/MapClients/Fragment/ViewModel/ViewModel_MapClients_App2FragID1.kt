@@ -3,7 +3,6 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.V
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.PolygonGeoLimite
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.SecteurDeClients
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_Repository
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.B_ClientDataBaseRepository
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
@@ -35,7 +34,6 @@ class ViewModel_MapClients_App2FragID1(
     val appDatabase: AppDatabase,
     val mainRepositery: B_ClientDataBaseRepository,
     val repo_0_0_HeadSQLRepositorys:_0_0_HeadSQLRepositorys,
-    val repo_01_VentsHistoriquesDataBase : _01_VentsHistoriquesDataBase_Repository
 ) : ViewModel() {
     val secteurDao = appDatabase.secteurDeClientsDao()
     val polygonDao = appDatabase.polygonGeoLimiteDaoDao()
@@ -44,9 +42,6 @@ class ViewModel_MapClients_App2FragID1(
         .repository_1_3_TransactionCommercial.modelDatasSnapList
 
     val bProto_ClientsDataBase = mainRepositery.modelDatas
-    val newClientDataBase = repo_0_0_HeadSQLRepositorys.repositorys_Model
-        .repository_3_ClientsDataBase
-        .modelDatasSnapList
 
     var auClickeCaUpdateClientPar by mutableStateOf(B_ClientDataBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT)
     var mapReloadTigger by mutableIntStateOf(0)
@@ -113,8 +108,6 @@ class ViewModel_MapClients_App2FragID1(
         mapReloadTigger++ // Add this line to trigger map refresh
 
     }
-
-
 
     fun addPointToCurrentSector(mapCenter: IGeoPoint) {
         val sectorId = _currentActiveSectorId.value
