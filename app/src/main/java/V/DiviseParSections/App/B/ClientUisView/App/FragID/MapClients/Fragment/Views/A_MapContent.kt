@@ -72,6 +72,9 @@ fun MapContent(
         viewModel.repo_0_0_HeadSQLRepositorys.repositorys_Model.activeVId_1_3_TransactionCommercial.collectAsState().value
     val clientDataBaseSnapList = viewModel.bProto_ClientsDataBase
 
+    // Collect the current mapReloadTrigger from viewModel for sectors updates
+    val sectorMapReloadTrigger = viewModel.mapReloadTigger
+
     // Handle active transaction by showing the relevant marker
     LaunchedEffect(viewModel.repo_0_0_HeadSQLRepositorys.repositorys_Model.activeVId_1_3_TransactionCommercial.collectAsState().value) {
         handleActiveTransaction(activeTransactionId, viewModel, mapView) { marker ->
@@ -80,31 +83,34 @@ fun MapContent(
         }
     }
 
-
-    LaunchedEffect(mapView) {       //<--
-    //TODO(1): pk le neveau secteur ne s affiche pas 
-        // Exécuter toutes les opérations de base de données sur Dispatchers.IO
+    // Effect to update sectors on map - now responds to viewModel.mapReloadTigger changes
+    LaunchedEffect(mapView, sectorMapReloadTrigger) {
+        // Execute all database operations on Dispatchers.IO
         withContext(Dispatchers.IO) {
-            // Récupérer les secteurs et leurs polygones
+            // Get sector and polygon DAOs
             val secteurDao = viewModel.appDatabase.secteurDeClientsDao()
             val polygonDao = viewModel.appDatabase.polygonGeoLimiteDaoDao()
 
-            // Vérifier s'il y a des secteurs existants
+            // Check if there are existing sectors
             if (secteurDao.getCount() == 0) {
-                // Si aucun secteur n'existe, en créer deux avec leurs polygones
+                // If no sectors exist, create two with their polygons
                 insert2SecteurEtPolygon(secteurDao, polygonDao)
             }
 
-            // Récupérer tous les secteurs et points de polygone
+            // Get all sectors and polygon points
             val allSecteurs = secteurDao.getAll()
             val allPolygonPoints = polygonDao.getAll()
 
-            // Récupérer les informations structurées sur les secteurs et leurs polygones
+            // Get structured information about sectors and their polygons
             val secteurPolygonInfoList = getPolygenDeChaqueSecteur(secteurDao, polygonDao)
 
-            // Revenir sur le thread principal pour mettre à jour l'interface utilisateur
+            // Back to main thread to update UI
             withContext(Dispatchers.Main) {
-                // Ajouter les secteurs à la carte
+                // Clear existing sector polygons first to prevent duplicates
+                val sectorsToRemove = mapView.overlays.take(allSecteurs.size)
+                mapView.overlays.removeAll(sectorsToRemove)
+
+                // Add sectors to map
                 addSectorsToMap(mapView, secteurPolygonInfoList, allPolygonPoints, allSecteurs)
             }
         }
@@ -165,7 +171,7 @@ fun MapContent(
 
         // Main controls
         A_OptionsControlsButtons_Main()
-        FabButtons(viewModel)
+        FabButtons(mapView, viewModel)
 
         // Floating action buttons for map controls
         if (viewModelInitApp._paramatersAppsViewModelModel.fabsVisibility) {

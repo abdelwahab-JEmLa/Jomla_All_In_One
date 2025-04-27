@@ -31,7 +31,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import org.osmdroid.views.MapView
@@ -39,10 +38,9 @@ import kotlin.math.roundToInt
 
 @Composable
 fun FabButtons(
+    mapView: MapView,
     viewModel: ViewModel_MapClients_App2FragID1,
 ) {
-    val context = LocalContext.current
-    val mapView = remember { MapView(context) }
 
     var showMenu by remember { mutableStateOf(true) }
     var showLabels by remember { mutableStateOf(true) }
