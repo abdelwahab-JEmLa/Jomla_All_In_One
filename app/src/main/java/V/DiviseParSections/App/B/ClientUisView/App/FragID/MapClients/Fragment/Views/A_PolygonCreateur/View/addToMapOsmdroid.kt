@@ -2,7 +2,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.V
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.PolygonGeoLimite
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.SecteurDeClients
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.SecteurDeClientsPolygonGeoLimite
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.NoSqlSecteurDeClientsPolygonGeoLimite
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.Log
@@ -16,7 +16,7 @@ import org.osmdroid.views.overlay.Polygon
 import org.osmdroid.views.overlay.Polyline
 
 fun addToMapOsmdroid(
-    mapView: MapView, secteurPolygonInfoList: List<SecteurDeClientsPolygonGeoLimite>,
+    mapView: MapView, secteurPolygonInfoList: List<NoSqlSecteurDeClientsPolygonGeoLimite>,
     allPolygonPoints: List<PolygonGeoLimite>, allSecteurs: List<SecteurDeClients>,
 ) {
     Log.d("PolygonCreator", "Starting to add sectors to map")

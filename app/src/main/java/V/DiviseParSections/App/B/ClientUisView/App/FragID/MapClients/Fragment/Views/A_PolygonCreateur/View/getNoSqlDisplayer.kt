@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.View
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.SecteurDeClientsPolygonGeoLimite
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.NoSqlSecteurDeClientsPolygonGeoLimite
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Repository.PolygonGeoLimiteDao
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Repository.SecteurDeClientsDao
 import android.util.Log
@@ -8,7 +8,7 @@ import android.util.Log
 suspend fun getNoSqlDisplayer(
     secteurDao: SecteurDeClientsDao,
     polygonDao: PolygonGeoLimiteDao,
-): List<SecteurDeClientsPolygonGeoLimite> {
+): List<NoSqlSecteurDeClientsPolygonGeoLimite> {
     // Récupérer tous les secteurs
     val allSecteurs = secteurDao.getAll()
     Log.d("PolygonCreator", "Retrieved ${allSecteurs.size} sectors from database")
@@ -17,8 +17,8 @@ suspend fun getNoSqlDisplayer(
     val allPolygonPoints = polygonDao.getAll()
     Log.d("PolygonCreator", "Retrieved ${allPolygonPoints.size} polygon points from database")
 
-    // Créer une liste de SecteurDeClientsPolygonGeoLimite
-    val result = mutableListOf<SecteurDeClientsPolygonGeoLimite>()
+    // Créer une liste de NoSqlSecteurDeClientsPolygonGeoLimite
+    val result = mutableListOf<NoSqlSecteurDeClientsPolygonGeoLimite>()
 
     allSecteurs.forEach { secteur ->
         val secteurPoints = allPolygonPoints.filter {
@@ -35,15 +35,15 @@ suspend fun getNoSqlDisplayer(
             "${point.vid}->(${point.parentSecteurDeClientsKey})"
         }
 
-        // Ajouter le SecteurDeClientsPolygonGeoLimite à la liste résultat
+        // Ajouter le NoSqlSecteurDeClientsPolygonGeoLimite à la liste résultat
         result.add(
-            SecteurDeClientsPolygonGeoLimite(
+            NoSqlSecteurDeClientsPolygonGeoLimite(
                 keyIDSecteurDeClients = secteurKey,
                 listPolygonGeoLimite = pointKeys
             )
         )
 
-        Log.d("PolygonCreator", "Added SecteurDeClientsPolygonGeoLimite for sector: $secteurKey with ${pointKeys.size} points")
+        Log.d("PolygonCreator", "Added NoSqlSecteurDeClientsPolygonGeoLimite for sector: $secteurKey with ${pointKeys.size} points")
     }
 
     return result
