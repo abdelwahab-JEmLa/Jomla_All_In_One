@@ -24,4 +24,5 @@ interface _1_3_TransactionCommercial_Repository {
     }
 
 
+    fun getOuvert_1_3_TransactionCommercial(): _1_3_TransactionCommercial?
 }

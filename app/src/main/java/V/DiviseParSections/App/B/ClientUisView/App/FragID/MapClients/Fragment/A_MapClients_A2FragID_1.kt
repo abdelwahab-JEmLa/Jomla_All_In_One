@@ -214,6 +214,7 @@ private fun MapContent(
             .filter { marker -> clientDataBaseSnapList.any { it.id.toString() == marker.id } }
         mapView.overlays.removeAll(markersToRemove)
 
+
         // Filter clients based on the current mode
         val clientsToShow = when (currentFilterMode) {
             ViewModel_MapClients_App2FragID1.VisibleClientsNow.showNonAbsentClientsOnly -> {
@@ -396,11 +397,23 @@ private fun MapContent(
             }
         }
         mapView.invalidate()
-             //<--
-        //TODO(1): cree un autre verification de tout les 
-        // Find latest transactions for each transaction du repository_1_3_TransactionCommercial si .ouvert == true 
-        //<--
-        //TODO(1): ouvre     son client mark 
+
+        // Find all open transactions and display their markers
+        viewModel.repo_0_0_HeadOfRepositorys_Repository.repositorys_Model
+            .repository_1_3_TransactionCommercial.modelDatasSnapList
+            .filter { it.ouvert }
+            .forEach { transaction ->
+                val marker = mapView.overlays.filterIsInstance<Marker>()
+                    .find { it.id == transaction.clientAcheteurID.toString() }
+
+                marker?.let {
+                    selectedMarker = it
+                    showMarkerDialog = true
+                    it.showInfoWindow()
+                    mapView.controller.animateTo(it.position)
+                }
+            }
+
         val latestTransactionsMap = viewModel.repo_0_0_HeadOfRepositorys_Repository.repositorys_Model
             .repository_1_3_TransactionCommercial.modelDatasSnapList
             .groupBy { it.clientAcheteurID }

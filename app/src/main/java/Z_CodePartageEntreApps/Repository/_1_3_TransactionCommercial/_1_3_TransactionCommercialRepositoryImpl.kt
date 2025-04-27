@@ -48,6 +48,9 @@ class _1_3_TransactionCommercialRepositoryImpl(
         }
     }
 
+    override fun getOuvert_1_3_TransactionCommercial(): _1_3_TransactionCommercial? {
+        return modelDatasSnapList.find { it.ouvert }
+    }
 
 
     override suspend fun ensureDataIsInitialized() {
