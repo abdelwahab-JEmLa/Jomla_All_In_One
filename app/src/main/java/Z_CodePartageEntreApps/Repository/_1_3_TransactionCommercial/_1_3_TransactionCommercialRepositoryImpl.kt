@@ -53,6 +53,7 @@ class _1_3_TransactionCommercialRepositoryImpl(
     }
 
 
+
     override suspend fun ensureDataIsInitialized() {
         try {
             if (!initialDataLoaded) {

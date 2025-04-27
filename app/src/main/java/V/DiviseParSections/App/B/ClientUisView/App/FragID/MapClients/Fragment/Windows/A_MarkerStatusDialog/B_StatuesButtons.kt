@@ -2,8 +2,6 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.W
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_3_TransactionCommercial
-import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -108,6 +106,14 @@ fun _1_3_TransactionCommercial.EtateActuellementEst.Button(
                     clientId,
                     Etate
                 )
+                val data = viewModel.repo_0_0_HeadOfRepositorys_Repository
+                    .repositorys_Model
+                    .repository_1_3_TransactionCommercial
+                    .getOuvert_1_3_TransactionCommercial()
+                viewModel.repo_0_0_HeadOfRepositorys_Repository
+                    .upsertUneDataEtReturnVID(
+                        data?.copy(ouvert = false)
+                    )
             }
         },
         modifier = Modifier.fillMaxWidth(),
@@ -145,19 +151,14 @@ fun _1_3_TransactionCommercial.EtateActuellementEst.Button(
 @Composable
 fun CommandButton(
     modifier: Modifier = Modifier,
-    relatedClients: B_ClientDataBase?,
     coroutineScope: CoroutineScope,
-    existingBonAchat: _1_3_TransactionCommercial?,
-    repositorysModel: _0_0_HeadOfRepositorys_Model,
     clientId: Long,
-    ceComptVendeurInsertBonsAchatAuPeriodID: Long?,
     selectedMarker: Marker,
     viewModel: ViewModel_MapClients_App2FragID1,
     onUpdateLongAppSetting: () -> Unit,
     onDismiss: () -> Unit,
     context: Context,
     etateActuellementEst1: _1_3_TransactionCommercial.EtateActuellementEst,
-    cJustPourVoirPanie: Boolean = false,
 ) {
 
     FilledTonalButton(
