@@ -39,13 +39,13 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 
 @Composable
- fun MapContent(
+fun MapContent(
     viewModel: ViewModel_MapClients_App2FragID1,
     viewModelInitApp: ViewModelInitApp,
     clientEnCourDeVent: Long,
     onUpdateLongAppSetting: () -> Unit,
     onClear: () -> Unit,
-    mapReloadTrigger: Int = 0
+    mapReloadTrigger: Int = 0,
 ) {
     val context = LocalContext.current
     val currentZoom by remember { mutableDoubleStateOf(18.2) }
@@ -61,7 +61,8 @@ import org.osmdroid.views.overlay.Marker
 
     var editingMarkerId by remember { mutableLongStateOf(0L) }
     var showEditMarkerMode by remember { mutableStateOf(false) }
-    val activeTransactionId = viewModel.repo_0_0_HeadOfRepositorys_Repository.repositorys_Model.activeVId_1_3_TransactionCommercial.collectAsState().value
+    val activeTransactionId =
+        viewModel.repo_0_0_HeadOfRepositorys_Repository.repositorys_Model.activeVId_1_3_TransactionCommercial.collectAsState().value
     val clientDataBaseSnapList = viewModel.bProto_ClientsDataBase
 
     // Handle active transaction by showing the relevant marker

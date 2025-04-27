@@ -12,7 +12,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import org.koin.androidx.compose.koinViewModel
 
-
 @Composable
 fun A_MapClients_A2FragID_1(
     modifier: Modifier = Modifier,
