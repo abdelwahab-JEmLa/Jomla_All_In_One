@@ -278,10 +278,10 @@ fun MapContent(
         }
     }
 
-    // Ajouter un effet pour dessiner les secteurs une fois que la carte est prête
+
     LaunchedEffect(mapView) {
-        // Attendre que la carte soit initialisée
-        withContext(Dispatchers.Main) {
+        // Exécuter toutes les opérations de base de données sur Dispatchers.IO
+        withContext(Dispatchers.IO) {
             // Récupérer les secteurs et leurs polygones
             val secteurDao = viewModel.appDatabase.secteurDeClientsDao()
             val polygonDao = viewModel.appDatabase.polygonGeoLimiteDaoDao()
@@ -299,8 +299,11 @@ fun MapContent(
             // Récupérer les informations structurées sur les secteurs et leurs polygones
             val secteurPolygonInfoList = getPolygenDeChaqueSecteur(secteurDao, polygonDao)
 
-            // Ajouter les secteurs à la carte
-            addSectorsToMap(mapView, secteurPolygonInfoList, allPolygonPoints, allSecteurs)
+            // Revenir sur le thread principal pour mettre à jour l'interface utilisateur
+            withContext(Dispatchers.Main) {
+                // Ajouter les secteurs à la carte
+                addSectorsToMap(mapView, secteurPolygonInfoList, allPolygonPoints, allSecteurs)
+            }
         }
     }
 
