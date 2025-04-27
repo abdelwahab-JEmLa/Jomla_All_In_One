@@ -7,7 +7,6 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Wi
 import android.content.Context
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
@@ -18,13 +17,6 @@ fun cleanupMapResources(mapView: MapView, viewModel: ViewModel_MapClients_App2Fr
     mapView.overlays.clear()
     // Cancel any ongoing operations
     viewModel.cancelActiveOperations()
-}
-
-fun configureOSMDroid(context: Context, mapView: MapView) {
-    Configuration.getInstance()
-        .load(context, context.getSharedPreferences("osmdroid", Context.MODE_PRIVATE))
-    mapView.setTileSource(TileSourceFactory.MAPNIK)
-    mapView.setMultiTouchControls(true)
 }
 
 suspend fun initializeMapPosition(

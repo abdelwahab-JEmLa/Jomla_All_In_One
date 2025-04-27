@@ -17,7 +17,8 @@ import org.osmdroid.views.overlay.Polyline
 fun addToMapOsmdroid(
     mapView: MapView, secteurPolygonInfoList: List<SecteurDeClientsPolygonGeoLimite>,
     allPolygonPoints: List<PolygonGeoLimite>, allSecteurs: List<SecteurDeClients>,
-) {
+) {     //<--
+//TODO(1): pk la couleur et line de polygon ne s affiche pas
     Log.d("PolygonCreator", "Starting to add sectors to map")
     Log.d("PolygonCreator", "Number of sectors: ${allSecteurs.size}")
     Log.d("PolygonCreator", "Number of polygon points: ${allPolygonPoints.size}")
