@@ -4,9 +4,7 @@ import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fr
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.ViewModel.ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.compose.foundation.layout.Box
-
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -108,7 +106,7 @@ fun B_Item_TransactionItem(
                 }
 
                 Text(
-                    text = " الوقت: ${datesHandler.formatTimeToArabic(transaction.heurDebutInString)}",
+                    text = " الوقت: ${datesHandler.getDateAndTimString(transaction.timestamps).time}",
                     style = MaterialTheme.typography.bodyMedium
                 )
 
@@ -122,13 +120,6 @@ fun B_Item_TransactionItem(
                         .padding(bottom = 8.dp)
                 )
 
-                if (transaction.heurFinInString != "Non Defini") {
-                    Spacer(modifier = Modifier.padding(top = 4.dp))
-                    Text(
-                        text = "Fin: ${datesHandler.formatTimeToArabic(transaction.heurFinInString)}",
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
             }
         }
     }
