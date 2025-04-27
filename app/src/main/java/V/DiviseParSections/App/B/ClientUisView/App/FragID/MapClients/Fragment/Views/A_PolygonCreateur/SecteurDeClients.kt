@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur
 
 import android.graphics.Color
 import androidx.core.graphics.toColorInt
@@ -10,7 +10,6 @@ import org.osmdroid.views.overlay.Polygon
 import kotlin.math.cos
 import kotlin.math.sin
 
-// First fix: Add couleur property to SecteurDeClients class
 @Entity
 data class SecteurDeClients(
     @PrimaryKey(autoGenerate = true)

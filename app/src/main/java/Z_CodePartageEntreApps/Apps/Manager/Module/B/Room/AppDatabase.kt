@@ -1,9 +1,9 @@
 package Z_CodePartageEntreApps.Apps.Manager.Module.B.Room
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.PolygonGeoLimite
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.PolygonGeoLimiteDao
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.SecteurDeClients
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.SecteurDeClientsDao
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.PolygonGeoLimite
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.PolygonGeoLimiteDao
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.SecteurDeClients
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.SecteurDeClientsDao
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_2_ProduitAcheteOperation
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_3_TransactionCommercial
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_4_PeriodeVent
