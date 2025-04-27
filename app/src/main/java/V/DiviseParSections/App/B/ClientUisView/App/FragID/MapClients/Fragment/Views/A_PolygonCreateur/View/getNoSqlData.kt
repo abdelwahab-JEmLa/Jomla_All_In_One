@@ -5,7 +5,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Repository.SecteurDeClientsDao
 import android.util.Log
 
-suspend fun getPolygenDeChaqueSecteur(
+suspend fun getNoSqlData(
     secteurDao: SecteurDeClientsDao,
     polygonDao: PolygonGeoLimiteDao,
 ): List<SecteurDeClientsPolygonGeoLimite> {
