@@ -157,11 +157,10 @@ fun addSectorsToMap(
 ) {
     // For each secteurPolygonInfo, create and add a polygon to the map
     secteurPolygonInfoList.forEach { secteurPolygonInfo ->
-        // Extract secteur ID from key
-        val secteurIdMatch = "SecteurDeClients\\.(\\d+)->.*"
-            .toRegex().find(secteurPolygonInfo.keyIDSecteurDeClients)
 
-        val secteurId = secteurIdMatch?.groupValues?.get(1)?.toLongOrNull() ?: return@forEach
+        val secteurId = "SecteurDeClients\\.(\\d+)->.*"
+            .toRegex().find(secteurPolygonInfo.keyIDSecteurDeClients)
+            ?.groupValues?.get(1)?.toLongOrNull()
 
         // Find the corresponding sector
         val secteur = allSecteurs.find { it.vid == secteurId } ?: return@forEach
