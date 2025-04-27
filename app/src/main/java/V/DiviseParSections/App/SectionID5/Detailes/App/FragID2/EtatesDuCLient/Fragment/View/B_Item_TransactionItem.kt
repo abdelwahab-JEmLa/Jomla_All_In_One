@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun B_Item_TransactionItem(
     transaction: _1_3_TransactionCommercial,
-    viewModel: ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient
+    viewModel: ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient,
 ) {
     val datesHandler = DatesHandler()
     val etateActuellementEst = transaction.etateActuellementEst
@@ -48,7 +48,7 @@ fun B_Item_TransactionItem(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         // Main content is in a Box to allow floating elements
-       Box(
+        Box(
             modifier = Modifier.fillMaxWidth()
         ) {
             // Original Row content
@@ -84,9 +84,17 @@ fun B_Item_TransactionItem(
 
             // Shopping cart icon as floating element, only shown for ON_MODE_COMMEND_ACTUELLEMENT state
             if (etateActuellementEst == _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT) {
+                // Original IconButton:
                 IconButton(
                     onClick = {
-                        viewModel.r_0_0_HeadOfRepositorys_Repository.repositorys_Model.activeVId_1_3_TransactionCommercial.value = transaction.vid
+                        viewModel.r_0_0_HeadOfRepositorys_Repository.upsertUneDataEtReturnVID(
+                            transaction.copy(
+                                ouvert = !transaction.ouvert
+                            )
+                        ) {
+                            viewModel.r_0_0_HeadOfRepositorys_Repository.repositorys_Model.activeVId_1_3_TransactionCommercial.value =
+                                transaction.vid
+                        }
                     },
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
