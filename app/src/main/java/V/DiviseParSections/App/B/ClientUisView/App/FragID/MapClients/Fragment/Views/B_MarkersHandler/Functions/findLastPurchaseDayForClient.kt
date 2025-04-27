@@ -2,7 +2,6 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.V
 
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_3_TransactionCommercial
 import Z_CodePartageEntreApps.Modules.DatesHandler
-import Z_CodePartageEntreApps.Modules.formatTimeToArabic
 import androidx.compose.runtime.snapshots.SnapshotStateList
 
 data class LastPurchaseInfo(
@@ -22,7 +21,7 @@ fun findLastPurchaseInfoForClient(
     return if (lastTransaction != null) {
         val dateHandler = DatesHandler()
         val dayName = dateHandler.getArabicDayNameFromTimestamp(lastTransaction.timestamps)
-        val timeStr = formatTimeToArabic(lastTransaction.heurDebutInString)
+        val timeStr = dateHandler.getTimeStrFromeTimestamps(lastTransaction.timestamps)
 
         LastPurchaseInfo(
             dayName = dayName,
