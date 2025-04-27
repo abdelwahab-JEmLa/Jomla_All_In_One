@@ -15,6 +15,7 @@ data class SecteurDeClients(
     @PrimaryKey(autoGenerate = true)
     val vid: Long,
     val nom: String = "Tamaris",
+    val active: Boolean = false,
     val polygonEstFerme: Boolean = false,
     val couleur: String = "#ff0000ff",
 )

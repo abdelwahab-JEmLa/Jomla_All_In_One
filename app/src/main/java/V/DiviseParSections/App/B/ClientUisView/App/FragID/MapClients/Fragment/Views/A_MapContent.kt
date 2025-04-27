@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.FabButtons
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.addSectorsToMap
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.getPolygenDeChaqueSecteur
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.insert2SecteurEtPolygon
@@ -163,6 +164,7 @@ fun MapContent(
 
         // Main controls
         A_OptionsControlsButtons_Main()
+        FabButtons(viewModel)
 
         // Floating action buttons for map controls
         if (viewModelInitApp._paramatersAppsViewModelModel.fabsVisibility) {

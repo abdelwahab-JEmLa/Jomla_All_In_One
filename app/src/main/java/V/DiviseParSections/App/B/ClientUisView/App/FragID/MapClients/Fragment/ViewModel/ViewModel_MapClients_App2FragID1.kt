@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.SecteurDeClients
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_Repository
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
@@ -20,6 +21,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Firebase
 import com.google.firebase.database.database
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import org.osmdroid.views.MapView
@@ -31,6 +34,8 @@ class ViewModel_MapClients_App2FragID1(
     val repo_0_0_HeadSQLRepositorys:_0_0_HeadSQLRepositorys,
     val repo_01_VentsHistoriquesDataBase : _01_VentsHistoriquesDataBase_Repository
 ) : ViewModel() {
+    val secteurDao = appDatabase.secteurDeClientsDao()
+
     val modelDatasSnapList_1_3_BonAchat=repo_0_0_HeadSQLRepositorys.repositorys_Model
         .repository_1_3_TransactionCommercial.modelDatasSnapList
 
@@ -45,6 +50,59 @@ class ViewModel_MapClients_App2FragID1(
     var afficheLesJoursAuNoms by mutableStateOf(true)
     var filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList by mutableStateOf<List<String>>(emptyList())
 
+    // State for sectors
+    private val _secteurs = MutableStateFlow<List<SecteurDeClients>>(emptyList())
+    val secteurs: StateFlow<List<SecteurDeClients>> = _secteurs
+
+    // Dialog states
+    val showSecteurDialog = mutableStateOf(false)
+    val showAddSecteurDialog = mutableStateOf(false)
+
+    init {
+        loadSecteurs()
+    }
+
+    private fun loadSecteurs() {
+        viewModelScope.launch {
+
+            _secteurs.value = secteurDao.getAll()
+        }
+    }
+
+    fun showSecteurDialog() {
+        showSecteurDialog.value = true
+    }
+
+    fun hideSecteurDialog() {
+        showSecteurDialog.value = false
+    }
+
+    fun showAddSecteurDialog() {
+        showAddSecteurDialog.value = true
+    }
+
+    fun hideAddSecteurDialog() {
+        showAddSecteurDialog.value = false
+    }
+
+    suspend fun updateSecteurActive(secteurId: Long, active: Boolean) {
+        val secteur = _secteurs.value.find { it.vid == secteurId } ?: return
+        val updatedSecteur = secteur.copy(active = active)
+        secteurDao.insert(updatedSecteur)
+        loadSecteurs() // Refresh the list
+    }
+
+    suspend fun addNewSector(name: String, color: String) {
+        val newSector = SecteurDeClients(
+            vid = 0, // Auto-generated
+            nom = name,
+            active = true,
+            polygonEstFerme = false,
+            couleur = color
+        )
+        secteurDao.insert(newSector)
+        loadSecteurs() // Refresh the list
+    }
     fun updateData(client: B_ClientDataBase): Unit {
         viewModelScope.launch {
             mainRepositery.updateUnSeulData(client)
