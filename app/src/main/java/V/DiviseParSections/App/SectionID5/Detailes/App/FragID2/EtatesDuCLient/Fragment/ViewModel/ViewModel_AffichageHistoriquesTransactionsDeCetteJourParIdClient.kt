@@ -6,10 +6,12 @@ import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fr
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
 import Z_CodePartageEntreApps.Repository._3_ClientsDataBase._3_ClientsDataBase
+import android.util.Log
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -54,7 +56,23 @@ class ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
         }
     }
 
+    // Add this function to your ViewModel class
+    fun deleteVoiceRecordingFromStorage(vocaleKeyID: String, onComplete: (Boolean) -> Unit) {
+        // Assuming you're using Firebase Storage for voice recordings
+        val storageRef = FirebaseStorage.getInstance().reference
+        val voiceRef = storageRef.child("voice_recordings/$vocaleKeyID")
 
+        voiceRef.delete()
+            .addOnSuccessListener {
+                // Voice file deleted successfully
+                onComplete(true)
+            }
+            .addOnFailureListener { exception ->
+                // Failed to delete voice file
+                Log.e("VoiceDeletion", "Failed to delete voice recording: ${exception.message}")
+                onComplete(false)
+            }
+    }
 
     private fun loadCollectSnapshotStateList() {
         viewModelScope.launch(Dispatchers.IO) {

@@ -28,7 +28,9 @@ data class _1_3_TransactionCommercial(
     // Section StatuesMutable
     var cJustPourVoirPanie: Boolean = false,
     var ouvert: Boolean = false,
+
     var vocaleKeyID: String = "",
+    var sonVocaleEstEcoute: Boolean = false,
 
     var etateActuellementEst: EtateActuellementEst =
         EtateActuellementEst.NON_DEFINI,

@@ -44,4 +44,10 @@ interface _0_0_HeadSQLRepositorys {
 
 
     fun <T> upsertUneDataEtReturnVID(data: T, onSuccess: (Long) -> Unit= {})
+
+    fun <T> deleteData(
+        data: T,
+        onSuccess: () -> Unit = {},
+        onError: (Exception) -> Unit = {}
+    )
 }

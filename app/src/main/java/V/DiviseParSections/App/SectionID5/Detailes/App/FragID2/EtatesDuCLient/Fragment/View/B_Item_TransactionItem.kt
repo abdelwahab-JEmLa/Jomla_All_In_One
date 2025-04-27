@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Stop
@@ -103,14 +104,47 @@ fun B_Item_TransactionItem(
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        // Main content is in a Box to allow floating elements
         Box(
             modifier = Modifier.fillMaxWidth()
         ) {
+            // Delete button at the top start
+            IconButton(
+                onClick = {
+                    // Check if there's a voice recording to delete
+                    if (transaction.vocaleKeyID.isNotEmpty()) {
+                        // Delete voice recording from storage first
+                        viewModel.deleteVoiceRecordingFromStorage(transaction.vocaleKeyID) { success ->
+                            if (success) {
+                                // Then delete the transaction from database
+                                viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.deleteData(transaction)
+                            } else {
+                                // Show error message if voice deletion failed
+                                Toast.makeText(
+                                    context,
+                                    "Erreur lors de la suppression du message vocal",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                    } else {
+                        // No voice recording to delete, just delete the transaction
+                        viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.deleteData(transaction)
+                    }
+                },
+                modifier = Modifier.align(Alignment.TopStart)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Supprimer la transaction",
+                    tint = Color.White
+                )
+            }
+
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp)
+                    .padding(top = 32.dp) // Add padding to avoid overlap with the delete button
             ) {
                 // Top row with transaction details
                 Row(
@@ -209,6 +243,15 @@ fun B_Item_TransactionItem(
                                                 playbackProgress = 0f
                                                 mediaPlayer?.release()
                                                 mediaPlayer = null
+
+                                                // Update the transaction to mark voice message as listened
+                                                if (!transaction.sonVocaleEstEcoute) {
+                                                    viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.upsertUneDataEtReturnVID(
+                                                        transaction.copy(
+                                                            sonVocaleEstEcoute = true
+                                                        )
+                                                    ) {}
+                                                }
                                             },
                                             onError = {
                                                 isPlaying = false
@@ -250,4 +293,3 @@ fun B_Item_TransactionItem(
             .padding(horizontal = 16.dp)
     )
 }
-
