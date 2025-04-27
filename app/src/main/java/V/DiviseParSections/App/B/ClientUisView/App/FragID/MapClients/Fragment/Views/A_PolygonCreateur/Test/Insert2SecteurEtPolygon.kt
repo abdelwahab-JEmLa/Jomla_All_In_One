@@ -1,32 +1,12 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Test
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.PolygonGeoLimite
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.SecteurDeClients
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Repository.PolygonGeoLimiteDao
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Repository.SecteurDeClientsDao
 import org.osmdroid.util.GeoPoint
 import kotlin.math.cos
 import kotlin.math.sin
-
-@Entity
-data class SecteurDeClients(
-    @PrimaryKey(autoGenerate = true)
-    val vid: Long,
-    val nom: String = "Tamaris",
-    val ouvert: Boolean = false,
-    val polygonEstFerme: Boolean = false,
-    val couleur: String = "#ff0000ff",
-)
-@Entity
-data class PolygonGeoLimite(
-    @PrimaryKey(autoGenerate = true)
-    val vid: Long=0,
-
-    val parentSecteurDeClientsId: Long=0,
-    val parentSecteurDeClientsKey: String =
-        "SecteurDeClients.vid(SecteurDeClients.nom)",
-    val aLatitude: Int,
-    val aLongitude: Int,
-
-    )
 
 suspend fun insert2SecteurEtPolygon(
     secteurDao: SecteurDeClientsDao,
@@ -103,9 +83,3 @@ suspend fun insert2SecteurEtPolygon(
     polygonDao.insertAll(polygonPoints1)
     polygonDao.insertAll(polygonPoints2)
 }
-
-data class SecteurDeClientsPolygonGeoLimite(
-    val keyIDSecteurDeClients: String = "vid->(nom)",
-    val listPolygonGeoLimite: List<String> = listOf(),
-)
-

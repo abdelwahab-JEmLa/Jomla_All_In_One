@@ -1,5 +1,8 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.View
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.PolygonGeoLimite
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.SecteurDeClients
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.SecteurDeClientsPolygonGeoLimite
 import android.graphics.Color
 import android.util.Log
 import androidx.core.content.ContextCompat
@@ -10,6 +13,7 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Polygon
 import org.osmdroid.views.overlay.Polyline
+
 fun addSectorsToMap(
     mapView: MapView, secteurPolygonInfoList: List<SecteurDeClientsPolygonGeoLimite>,
     allPolygonPoints: List<PolygonGeoLimite>, allSecteurs: List<SecteurDeClients>,
@@ -72,15 +76,19 @@ fun addSectorsToMap(
 
         if (secteur.ouvert) {
             Log.d("PolygonCreator", "Processing open sector: ${secteur.nom}")
-            // For open sectors, draw connecting lines between points
-            for (i in 0 until geoPoints.size - 1) {
-                val polyline = Polyline(mapView) //<--
-                //TODO(1): pk les entre eux ne s affiche pas 
-                polyline.setPoints(listOf(geoPoints[i], geoPoints[i + 1]))
+
+            // FIX: Instead of drawing individual polylines, create a single polyline for all points
+            // This ensures all line segments are part of the same visual object and appear connected
+            if (geoPoints.size > 1) {
+                val polyline = Polyline(mapView)
+                polyline.setPoints(geoPoints)
                 polyline.outlinePaint.color = sectorColor
-                polyline.outlinePaint.strokeWidth = 5f
+                polyline.outlinePaint.strokeWidth = 10f  // Increased thickness for better visibility
+
+                // Add polyline to map overlays
+                // Make sure to add it before markers so it appears beneath them
                 mapView.overlays.add(polyline)
-                Log.d("PolygonCreator", "Added polyline between points $i and ${i + 1}")
+                Log.d("PolygonCreator", "Added single polyline connecting all ${geoPoints.size} points")
             }
 
             // Add markers at each point
@@ -90,6 +98,7 @@ fun addSectorsToMap(
                 marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                 marker.icon = ContextCompat.getDrawable(mapView.context, R.drawable.ic_location_dot)
                 marker.setInfoWindow(null) // No info window
+
                 mapView.overlays.add(marker)
                 Log.d("PolygonCreator", "Added marker at point $index")
             }

@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.PolygonGeoLimite
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.SecteurDeClients
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.PolygonGeoLimite
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.SecteurDeClients
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_Repository
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
