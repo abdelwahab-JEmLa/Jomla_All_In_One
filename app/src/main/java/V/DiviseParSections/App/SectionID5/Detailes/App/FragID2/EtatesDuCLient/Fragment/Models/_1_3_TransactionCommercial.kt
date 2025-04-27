@@ -57,9 +57,10 @@ data class _1_3_TransactionCommercial(
         COMMANDE_LIVRAI(android.R.color.holo_blue_dark, "تم أيصال منتجاته"),
 
         AVEC_MARCHANDISE(R.color.couleur1, "عندو سلعة"),
-        A_EVITE(android.R.color.black, "يتجنب"),
-        ACHETEUR_NON_DISPO(android.R.color.darker_gray, "الشاري غائب"),
+        ACHETEUR_NON_DISPO(R.color.c2, "الشاري غائب"),
         FERME(android.R.color.darker_gray, "مغلق"),
+
+        A_EVITE(android.R.color.black, "اقترح ان يتجنب لمدة اسبوعين"),
 
         ON_MODE_VOIRE_PANIE_ARTICLES(android.R.color.holo_blue_dark, "في معاينة السلة"),
 

@@ -12,5 +12,6 @@
     <color name="md_theme_light_onBackground">#1C1B1F</color>
     <color name="md_theme_light_surface">#FFFBFE</color>
     <color name="md_theme_light_onSurface">#1C1B1F</color>
-    <color name="couleur1">#106359</color>
+    <color name="couleur1">#FF9800</color>
+    <color name="c2">#009688</color>
 </resources>
