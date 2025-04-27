@@ -9,6 +9,7 @@ import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.B_ClientDataBase
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
 import Z_MasterOfApps.Z_AppsFather.Kotlin._1.Model.Parent.AppSettingsSaverModel
+import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircleOutline
 import androidx.compose.material.icons.filled.Map
@@ -129,28 +130,62 @@ class ViewModel_MapClients_App2FragID1(
     }
 
     fun addPointToCurrentSector(mapCenter: IGeoPoint) {
-        val sectorId = _currentActiveSectorId.value ?: return
+        val sectorId = _currentActiveSectorId.value
 
         viewModelScope.launch {
-            val sector = _secteurs.value.find { it.vid == sectorId } ?: return@launch
+            try {
+                if (sectorId == null) {
+                    Log.e("PolygonCreator", "No active sector selected. Please select or create a sector first.")
+                    return@launch
+                }
 
-            // Create a new point for the polygon
-            val newPoint = PolygonGeoLimite(
-                vid = 0, // Auto-generated
-                parentSecteurDeClientsId = sectorId,
-                parentSecteurDeClientsKey = "SecteurDeClients.$sectorId(${sector.nom})",
-                aLatitude = (mapCenter.latitude * 1E6).toInt(),
-                aLongitude = (mapCenter.longitude * 1E6).toInt()
-            )
+                val sector = _secteurs.value.find { it.vid == sectorId }
+                if (sector == null) {
+                    Log.e("PolygonCreator", "Cannot find sector with ID: $sectorId")
+                    return@launch
+                }
 
-            // Insert the point into the database
-            polygonDao.insert(newPoint)
+                // Log coordinates being added
+                val latMicroDegrees = (mapCenter.latitude * 1E6).toInt()
+                val lonMicroDegrees = (mapCenter.longitude * 1E6).toInt()
+                Log.d("PolygonCreator", "Adding point to sector ${sector.nom} (ID: $sectorId): lat=$latMicroDegrees, lon=$lonMicroDegrees")
 
-            // Refresh the map
-            mapReloadTigger++
+                // Create a new point for the polygon
+                val newPoint = PolygonGeoLimite(
+                    parentSecteurDeClientsId = sectorId,
+                    parentSecteurDeClientsKey = "SecteurDeClients.$sectorId(${sector.nom})",
+                    aLatitude = latMicroDegrees,
+                    aLongitude = lonMicroDegrees
+                )
+
+                // Insert the point into the database
+                val pointId = polygonDao.insertAvecRetureNewVid(newPoint)
+                Log.d("PolygonCreator", "Successfully added point with ID: $pointId to sector $sectorId")
+
+                // Let's also verify if the point was correctly saved
+                val allPointsForSector = polygonDao.getAll().filter { it.parentSecteurDeClientsId == sectorId }
+                Log.d("PolygonCreator", "Total points for sector $sectorId after adding: ${allPointsForSector.size}")
+
+                // Refresh the map
+                mapReloadTigger++
+
+                // Log success
+                Log.d("PolygonCreator", "Map refresh triggered. New mapReloadTrigger value: $mapReloadTigger")
+            } catch (e: Exception) {
+                // Log the error
+                Log.e("PolygonCreator", "Error adding point to sector: ${e.message}", e)
+            }
         }
     }
-
+    // Add this function to your ViewModel
+    fun refreshMapData() {
+        viewModelScope.launch {
+            Log.d("PolygonCreator", "Refreshing map data")
+            // This will trigger a re-fetch of all the data and redraw the map
+            loadSecteurs() // Make sure all sectors are up to date
+            mapReloadTigger++ // Increment to trigger map redraw
+        }
+    }
     fun closeCurrentSector() {
         val sectorId = _currentActiveSectorId.value ?: return
 

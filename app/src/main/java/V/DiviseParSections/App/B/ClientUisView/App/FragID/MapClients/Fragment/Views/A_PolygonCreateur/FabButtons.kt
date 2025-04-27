@@ -148,6 +148,7 @@ fun FabButtons(
                         FloatingActionButton(
                             onClick = {
                                 viewModel.addPointToCurrentSector(mapView.mapCenter)
+
                             },
                             modifier = Modifier.size(40.dp),
                             containerColor = couleurButton3

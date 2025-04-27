@@ -1,16 +1,8 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur
 
-import android.graphics.Color
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.toColorInt
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.example.clientjetpack.R
 import org.osmdroid.util.GeoPoint
-import org.osmdroid.views.MapView
-import org.osmdroid.views.overlay.Marker
-import org.osmdroid.views.overlay.Polygon
-import org.osmdroid.views.overlay.Polyline
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -26,9 +18,9 @@ data class SecteurDeClients(
 @Entity
 data class PolygonGeoLimite(
     @PrimaryKey(autoGenerate = true)
-    val vid: Long,
+    val vid: Long=0,
 
-    val parentSecteurDeClientsId: Long,
+    val parentSecteurDeClientsId: Long=0,
     val parentSecteurDeClientsKey: String =
         "SecteurDeClients.vid(SecteurDeClients.nom)",
     val aLatitude: Int,
@@ -117,133 +109,3 @@ data class SecteurDeClientsPolygonGeoLimite(
     val listPolygonGeoLimite: List<String> = listOf(),
 )
 
-suspend fun getPolygenDeChaqueSecteur(
-    secteurDao: SecteurDeClientsDao,
-    polygonDao: PolygonGeoLimiteDao,
-): List<SecteurDeClientsPolygonGeoLimite> {
-    // Récupérer tous les secteurs
-    val allSecteurs = secteurDao.getAll()
-
-    // Récupérer tous les points de polygone
-    val allPolygonPoints = polygonDao.getAll()
-
-    // Créer une liste de SecteurDeClientsPolygonGeoLimite
-    val result = mutableListOf<SecteurDeClientsPolygonGeoLimite>()
-
-    allSecteurs.forEach { secteur ->
-        val secteurPoints = allPolygonPoints.filter {
-            it.parentSecteurDeClientsId == secteur.vid
-        }
-
-        // Créer la clé pour ce secteur
-        val secteurKey = "SecteurDeClients.${secteur.vid}->(${secteur.nom})"
-
-        // Créer la liste de chaînes de caractères pour les points du polygone
-        val pointKeys = secteurPoints.map { point ->
-            "${point.vid}->(${point.parentSecteurDeClientsKey})"
-        }
-
-        // Ajouter le SecteurDeClientsPolygonGeoLimite à la liste résultat
-        result.add(
-            SecteurDeClientsPolygonGeoLimite(
-                keyIDSecteurDeClients = secteurKey,
-                listPolygonGeoLimite = pointKeys
-            )
-        )
-    }
-
-    return result
-}
-fun addSectorsToMap(
-    mapView: MapView, secteurPolygonInfoList: List<SecteurDeClientsPolygonGeoLimite>,
-    allPolygonPoints: List<PolygonGeoLimite>, allSecteurs: List<SecteurDeClients>,
-) {
-    // For each secteurPolygonInfo, create and add a polygon to the map
-    secteurPolygonInfoList.forEach { secteurPolygonInfo ->
-
-        val secteurId = "SecteurDeClients\\.(\\d+)->.*"
-            .toRegex().find(secteurPolygonInfo.keyIDSecteurDeClients)
-            ?.groupValues?.get(1)?.toLongOrNull()
-
-        // Find the corresponding sector
-        val secteur = allSecteurs.find { it.vid == secteurId } ?: return@forEach
-
-        // Get polygon points for this sector
-        val polygonPoints = allPolygonPoints.filter { it.parentSecteurDeClientsId == secteurId }
-
-        // Skip if polygon is empty
-        if (polygonPoints.isEmpty()) return@forEach
-
-        // Convert PolygonGeoLimite points to GeoPoint
-        val geoPoints = polygonPoints.map { point ->
-            GeoPoint(
-                point.aLatitude / 1E6, // Convert micro-degrees to degrees
-                point.aLongitude / 1E6
-            )
-        }
-
-        // Get sector color using the couleur property directly
-        val sectorColor = try { secteur.couleur.toColorInt() } catch (e: Exception) {
-            Color.BLUE // Default to blue if parsing fails
-        }
-
-        if (secteur.ouvert) {
-            // For open sectors, draw connecting lines between points
-            for (i in 0 until geoPoints.size - 1) {
-                val polyline = Polyline(mapView)
-                polyline.setPoints(listOf(geoPoints[i], geoPoints[i + 1]))
-                polyline.outlinePaint.color = sectorColor
-                polyline.outlinePaint.strokeWidth = 5f
-                mapView.overlays.add(polyline)
-            }
-
-            // Add markers at each point
-            geoPoints.forEach { point ->
-                val marker = Marker(mapView)
-                marker.position = point
-                marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                marker.icon = ContextCompat.getDrawable(mapView.context, R.drawable.ic_location_dot)
-                marker.setInfoWindow(null) // No info window
-                mapView.overlays.add(marker)
-            }
-        } else if (secteur.polygonEstFerme) {
-            // Create a new polygon for closed sectors
-            val polygon = Polygon(mapView)
-
-            // Create a copy of the points
-            val pointsList = ArrayList<GeoPoint>(geoPoints)
-
-            // Close polygon by adding the first point at the end if needed
-            if (pointsList.isNotEmpty() && pointsList.first() != pointsList.last()) {
-                pointsList.add(pointsList.first())
-            }
-
-            // Configure polygon
-            polygon.setPoints(pointsList)
-            polygon.outlinePaint.color = sectorColor
-            polygon.outlinePaint.strokeWidth = 5f
-
-            // Set fill color with transparency
-            val transparenceEnPourcent = 4
-
-            // Calculate alpha value based on transparency percentage (1% = ~2.5/255 alpha)
-            val alphaValue = (255 * transparenceEnPourcent / 100)
-
-            // Create a color with the calculated alpha value (transparency)
-            val fillColor = Color.argb(
-                alphaValue,
-                Color.red(sectorColor),
-                Color.green(sectorColor),
-                Color.blue(sectorColor)
-            )
-
-            polygon.fillPaint.color = fillColor
-
-            // Make sure polygon is rendered below other overlays
-            mapView.overlays.add(0, polygon) // Index 0 to add at start of list
-        }
-    }
-
-    // Refresh map
-    mapView.invalidate()
-}
