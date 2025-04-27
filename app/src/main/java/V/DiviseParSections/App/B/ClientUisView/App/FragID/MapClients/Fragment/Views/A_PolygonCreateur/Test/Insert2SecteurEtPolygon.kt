@@ -16,7 +16,7 @@ suspend fun insert2SecteurEtPolygon(
     val secteur1 = SecteurDeClients(
         vid = 0, // Auto-generated
         nom = "Tamaris",
-        polygonEstFerme = true,
+        sonPolygonOnModeDessine = true,
         couleur = "0xff0000ff" // Blue color as string
     )
 
@@ -24,7 +24,7 @@ suspend fun insert2SecteurEtPolygon(
     val secteur2 = SecteurDeClients(
         vid = 0, // Auto-generated
         nom = "Plage",
-        polygonEstFerme = true,
+        sonPolygonOnModeDessine = true,
         couleur = "0xff00ff00" // Green color as string
     )
 

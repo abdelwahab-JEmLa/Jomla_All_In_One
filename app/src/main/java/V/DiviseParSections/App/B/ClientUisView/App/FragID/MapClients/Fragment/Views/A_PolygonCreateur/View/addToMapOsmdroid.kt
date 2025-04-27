@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.View
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.NoSqlSecteurDeClientsPolygonGeoLimite
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.PolygonGeoLimite
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.SecteurDeClients
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.NoSqlSecteurDeClientsPolygonGeoLimite
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.Log
@@ -41,7 +41,7 @@ fun addToMapOsmdroid(
             return@forEach
         }
 
-        Log.d("PolygonCreator", "Found sector: ${secteur.nom}, open: ${secteur.ouvert}, closed: ${secteur.polygonEstFerme}")
+        Log.d("PolygonCreator", "Found sector: ${secteur.nom}, open: ${secteur.ouvert}, closed: ${secteur.sonPolygonOnModeDessine}")
 
         // Get polygon points for this sector
         val polygonPoints = allPolygonPoints.filter { it.parentSecteurDeClientsId == secteurId }
@@ -117,7 +117,7 @@ fun addToMapOsmdroid(
                 mapView.overlays.add(marker)
                 Log.d("PolygonCreator", "Added marker at point $index")
             }
-        } else if (secteur.polygonEstFerme) {
+        } else if (secteur.sonPolygonOnModeDessine) {
             Log.d("PolygonCreator", "Processing closed sector: ${secteur.nom}")
 
             // Create a new polygon for closed sectors

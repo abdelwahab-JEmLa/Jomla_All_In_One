@@ -104,7 +104,7 @@ class ViewModel_MapClients_App2FragID1(
             vid = 0, // Auto-generated
             nom = name,
             ouvert = true,
-            polygonEstFerme = false,
+            sonPolygonOnModeDessine = false,
             couleur = color
         )
         val sectorId = secteurDao.insertAvecRetureNewVid(newSector)
@@ -114,20 +114,7 @@ class ViewModel_MapClients_App2FragID1(
 
     }
 
-    fun startNewPolygon() {
-        viewModelScope.launch {
-            // Check if there are any sectors marked as open
-            val openSector = _secteurs.value.find { it.ouvert }
 
-            if (openSector != null) {
-                // Use existing open sector
-                _currentActiveSectorId.value = openSector.vid
-            } else {
-                // Create a new sector if none are open
-                showAddSecteurDialog()
-            }
-        }
-    }
 
     fun addPointToCurrentSector(mapCenter: IGeoPoint) {
         val sectorId = _currentActiveSectorId.value
@@ -177,15 +164,7 @@ class ViewModel_MapClients_App2FragID1(
             }
         }
     }
-    // Add this function to your ViewModel
-    fun refreshMapData() {
-        viewModelScope.launch {
-            Log.d("PolygonCreator", "Refreshing map data")
-            // This will trigger a re-fetch of all the data and redraw the map
-            loadSecteurs() // Make sure all sectors are up to date
-            mapReloadTigger++ // Increment to trigger map redraw
-        }
-    }
+
     fun closeCurrentSector() {
         val sectorId = _currentActiveSectorId.value ?: return
 
@@ -193,7 +172,7 @@ class ViewModel_MapClients_App2FragID1(
             val sector = _secteurs.value.find { it.vid == sectorId } ?: return@launch
 
             // Update the sector to mark it as closed
-            val updatedSector = sector.copy(polygonEstFerme = true, ouvert = false)
+            val updatedSector = sector.copy(sonPolygonOnModeDessine = true, ouvert = false)
             secteurDao.insert(updatedSector)
 
             // Clear the current active sector

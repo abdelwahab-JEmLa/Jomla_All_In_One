@@ -15,6 +15,6 @@ data class SecteurDeClients(
     //Etates Mutable
     val ouvert: Boolean = false,
     val ciblePourCettePeriodDeVent: Boolean = false,
-    val polygonEstFerme: Boolean = false,
+    val sonPolygonOnModeDessine: Boolean = false,
 )
 
