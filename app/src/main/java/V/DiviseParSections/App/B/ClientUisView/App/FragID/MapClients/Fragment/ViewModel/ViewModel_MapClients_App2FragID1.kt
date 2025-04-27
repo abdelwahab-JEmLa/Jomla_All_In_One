@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel
 
+import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.DataBase._01_VentsHistoriques.Repository._01_VentsHistoriquesDataBase_Repository
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.B_ClientDataBaseRepository
@@ -25,6 +26,7 @@ import org.osmdroid.views.MapView
 import java.util.Date
 
 class ViewModel_MapClients_App2FragID1(
+    val appDatabase: AppDatabase,
     val mainRepositery: B_ClientDataBaseRepository,
     val repo_0_0_HeadSQLRepositorys:_0_0_HeadSQLRepositorys,
     val repo_01_VentsHistoriquesDataBase : _01_VentsHistoriquesDataBase_Repository

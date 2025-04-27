@@ -1,5 +1,7 @@
 package Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
+import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.ViewModel.Windows__ViewModel
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.ViewModel.VendeursViewModel
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID1.VentHistoriques.Fragment.ViewModel.PeriodeVenteViewModel
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.ViewModel.ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient
@@ -24,6 +26,7 @@ import Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.K_TempT
 import Z_CodePartageEntreApps.Model.K_TempTravailleRepository.Repository.K_TempTravailleRepositoryImpl
 import Z_CodePartageEntreApps.Model.O_SoldArticlesTabelle.Repository.SoldArticlesTabelleRepository
 import Z_CodePartageEntreApps.Model.O_SoldArticlesTabelle.Repository.SoldArticlesTabelleRepositoryImpl
+import Z_CodePartageEntreApps.Modules.ConnectionManager
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_Head_SQL_RepositorysImpl
@@ -46,6 +49,7 @@ import Z_CodePartageEntreApps.Repository._4_2_._4_CouleurOperationCommand._4_Cou
 import Z_CodePartageEntreApps.Windows.B.Windows.ViewModel.ViewModelFragment_StartUpScreen
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.content.Context
+import com.example.clientjetpack.ViewModel.HeadViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -102,11 +106,29 @@ val navigationModule = module {
 
 // Update the viewModelModule for the problematic ViewModel
 val viewModelModule = module {
+    factory { (viewModel: HeadViewModel, context: Context) ->
+        ConnectionManager(
+            context = context,
+        )
+    }
+
+    viewModel { (context: Context) -> HeadViewModel(get(),
+        AppDatabase.DatabaseModule.getDatabase(get())
+    ) }
+
+    viewModel { Windows__ViewModel(get()) }
+
     // Original viewModels
     viewModel { PeriodeVenteViewModel(get()) }
     viewModel { ViewModelFragment_StartUpScreen(get(), get(), get(), get(), get()) }
     viewModel { ViewModelInitApp(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     viewModel { VendeursViewModel(get(), get()) }
+    viewModel { ViewModel_MapClients_App2FragID1(
+        get(),
+        get(),
+        get(),
+        get()
+    ) }
 
     // Update this ViewModel to use the navigation handler
     viewModel {

@@ -1,6 +1,12 @@
 package Z_CodePartageEntreApps.Apps.Manager.Module.B.Room
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.PolygonGeoLimite
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.PolygonGeoLimiteDao
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.SecteurDeClients
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.SecteurDeClientsDao
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_2_ProduitAcheteOperation
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_3_TransactionCommercial
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_4_PeriodeVent
 import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.Extension.A_ProduitDao
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
@@ -15,11 +21,9 @@ import Z_CodePartageEntreApps.Model.Z.Archive.ColorsArticlesTabelle
 import Z_CodePartageEntreApps.Model.Z.Archive.DevicesTypeManager
 import Z_CodePartageEntreApps.Model.Z.Archive.DiviseurDeDisplayProductForEachClient
 import Z_CodePartageEntreApps.Model.Z.Archive.SoldArticlesTabelle
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_4_PeriodeVent
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation.Z.Dao._1_1_CouleurAcheteOperationDao
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation.Dao._1_2_ProduitAcheteOperationDao
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial._1_3_TransactionCommercialDao
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVentDao
 import Z_CodePartageEntreApps.Repository._1_5_Vendeur.Extension.DataBase._1_5_VendeurDao
@@ -64,6 +68,9 @@ import java.util.Date
         _3_ClientsDataBase::class,
         _4_CouleurOperationCommand::class,
 
+        SecteurDeClients::class,
+        PolygonGeoLimite::class,
+
     ],
     version = 3, // Increment version number since we're adding new entities
     exportSchema = false
@@ -96,7 +103,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun _3_ClientsDataBaseDao(): _3_ClientsDataBaseDao
     abstract fun _4_CouleurOperationCommandDao(): _4_CouleurOperationCommandDao
 
-
+    abstract fun secteurDeClientsDao(): SecteurDeClientsDao
+    abstract fun polygonGeoLimiteDaoDao(): PolygonGeoLimiteDao
 
     object DatabaseModule {
 
