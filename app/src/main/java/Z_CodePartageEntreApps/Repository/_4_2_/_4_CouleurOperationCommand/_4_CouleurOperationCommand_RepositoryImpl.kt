@@ -212,7 +212,7 @@ class _4_CouleurOperationCommand_RepositoryImpl(
                         // Call the success callback with the existing vid
                         onSuccess(dataToUpsert.vid)
                     } else {
-                        // If no valid vid, insertEtReturnSonNewVid as new (same as addDataAndReturneItVID)
+                        // If no valid vid, upsertEtReturnSonNewVid as new (same as addDataAndReturneItVID)
                         val newVid = appDatabase._4_CouleurOperationCommandDao().insertAvecRetureNewVid(dataToUpsert)
 
                         // Update the object with the new vid

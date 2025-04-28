@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Models
+package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.Models
 
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.room.Entity
@@ -10,20 +10,17 @@ import kotlin.random.Random
 data class MessageVocale(
     @PrimaryKey(autoGenerate = true)
     val vid: Long=0,
+    val keyID: String = "",
+
     //Infos De Base
+
     var currentTimeStr: String = DatesHandler().getDateAndTimString().time,
     val vocaleKeyID: String = "",
 
     //Etates Mutable
 
 ) {
-    val fireBaseKeyID: String
-        get() {
-            val parent = "()"
-            val vid = "$vid->"
-            val thisVal = "(${currentTimeStr})"
-            return thisVal
-        }
+
 
     // Test instance function with random value implementation
     companion object {

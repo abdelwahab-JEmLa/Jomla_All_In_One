@@ -62,7 +62,7 @@ class _01_VentsHistoriquesDataBase_RepositoryImpl(
     }
 
     override suspend fun addPeriode(periode: _01_PeriodesVentRoomSQl) {
-        appDatabase._01_PeriodesVentRoomSQlModelDao().insertEtReturnSonNewVid(periode)
+        appDatabase._01_PeriodesVentRoomSQlModelDao().upsertEtReturnSonNewVid(periode)
         refreshData()
     }
 

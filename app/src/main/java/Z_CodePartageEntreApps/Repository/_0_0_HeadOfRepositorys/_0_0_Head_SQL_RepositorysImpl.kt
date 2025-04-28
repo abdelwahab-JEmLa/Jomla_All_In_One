@@ -434,7 +434,7 @@ class _0_0_Head_SQL_RepositorysImpl(
                         // Call the success callback with the existing vid
                         onSuccess(dataToUpsert.vid)
                     } else {
-                        // If no valid vid, insertEtReturnSonNewVid as new (same as addDataAndReturneItVID)
+                        // If no valid vid, upsertEtReturnSonNewVid as new (same as addDataAndReturneItVID)
                         val newVid =
                             appDatabase._1_5_VendeurDao().insertAvecRetureNewVid(dataToUpsert)
 

@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Models
+package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.Models
 
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.room.Entity
@@ -16,7 +16,7 @@ data class EtateMessageVocale(
         "SecteurDeClients.vid(SecteurDeClients.nom)",
 
     //Infos De Base
-    var nom: Nom = Nom.CREE,
+    var nom: Nom = Nom.EN_COURT_ENREGESTREMENT,
     var timestamps: Long = DatesHandler().getCurrentTimestamps(),
 
     //Etates Mutable
@@ -31,7 +31,8 @@ data class EtateMessageVocale(
         }
 
     enum class Nom(val nomArabe: String? = null) {
-        CREE,
+        EN_COURT_ENREGESTREMENT,
+        ENVOYER,
         VUE,
         ECOUTE,
     }
@@ -47,7 +48,7 @@ data class EtateMessageVocale(
                 parentMessageVID = parentMessageVID,
                 parentMessageKeyID = parentMessageKeyID,
                 nom = when (randomNumber % 3) {
-                    0 -> Nom.CREE
+                    0 -> Nom.EN_COURT_ENREGESTREMENT
                     1 -> Nom.VUE
                     else -> Nom.ECOUTE
                 },

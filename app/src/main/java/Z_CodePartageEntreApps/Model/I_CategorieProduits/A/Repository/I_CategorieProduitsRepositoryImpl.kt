@@ -158,7 +158,7 @@ class I_CategorieProduitsRepositoryImpl(
                                             appDatabase.I_CategorieProduitsDao().insert(clientData)
                                             Log.d(TAG, "Successfully inserted into Room: ID=${clientData.id}")
                                         } catch (e: Exception) {
-                                            Log.e(TAG, "Failed to insertEtReturnSonNewVid category into Room: ID=${clientData.id}, Error: ${e.message}", e)
+                                            Log.e(TAG, "Failed to upsertEtReturnSonNewVid category into Room: ID=${clientData.id}, Error: ${e.message}", e)
                                         }
                                     }
                                 }
@@ -275,14 +275,14 @@ class I_CategorieProduitsRepositoryImpl(
                             appDatabase.I_CategorieProduitsDao().insertAll(clientsList)
                             Log.d(TAG, "Successfully inserted ${clientsList.size} categories into Room")
                         } catch (e: Exception) {
-                            Log.e(TAG, "Batch insertEtReturnSonNewVid failed, attempting individual inserts", e)
+                            Log.e(TAG, "Batch upsertEtReturnSonNewVid failed, attempting individual inserts", e)
                             // Try individual inserts if batch fails
                             clientsList.forEachIndexed { index, category ->
                                 try {
                                     appDatabase.I_CategorieProduitsDao().insert(category)
-                                    Log.d(TAG, "Individual insertEtReturnSonNewVid success: ${index+1}/${clientsList.size}, ID=${category.id}")
+                                    Log.d(TAG, "Individual upsertEtReturnSonNewVid success: ${index+1}/${clientsList.size}, ID=${category.id}")
                                 } catch (e2: Exception) {
-                                    Log.e(TAG, "Failed to insertEtReturnSonNewVid category: ID=${category.id}, Error: ${e2.message}", e2)
+                                    Log.e(TAG, "Failed to upsertEtReturnSonNewVid category: ID=${category.id}, Error: ${e2.message}", e2)
                                 }
                             }
                         }

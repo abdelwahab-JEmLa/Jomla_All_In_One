@@ -23,7 +23,7 @@ interface _02_VendeursActiveDonsCettePeriode_RoomSQlModelDao {
     suspend fun add(produitAcheteOperation: _02_VendeursActiveDonsCettePeriodeRoomSQlModel): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertEtReturnSonNewVid(item: _02_VendeursActiveDonsCettePeriodeRoomSQlModel)
+    suspend fun upsertEtReturnSonNewVid(item: _02_VendeursActiveDonsCettePeriodeRoomSQlModel)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(items: List<_02_VendeursActiveDonsCettePeriodeRoomSQlModel>)

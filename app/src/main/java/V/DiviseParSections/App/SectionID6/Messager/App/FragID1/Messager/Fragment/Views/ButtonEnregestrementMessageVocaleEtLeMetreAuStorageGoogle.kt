@@ -1,9 +1,11 @@
 package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Options
 
-import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Models.EtateMessageVocale
-import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Models.MessageVocale
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.Functions.formatTime
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.MessageurUiState
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.Models.EtateMessageVocale
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.Models.MessageVocale
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
+import Z_CodePartageEntreApps.Modules.DatesHandler
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
@@ -26,6 +28,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,20 +40,21 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import java.util.UUID
 
 @Composable
 fun ButtonEnregestrementMessageVocaleEtLeMetreAuStorageGoogle(
     modifier: Modifier = Modifier,
     viewModel: ViewModelMessageur,
-    
 ) {
+    val uiState by viewModel.uiState.collectAsState()
+
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
@@ -125,47 +129,18 @@ fun ButtonEnregestrementMessageVocaleEtLeMetreAuStorageGoogle(
 
                 if (isRecording) {
                     // Stop recording
-// Stop recording
                     stopRecording(
+                        uiState,
                         mediaRecorder,
                         context,
                         outputFile,
-                        onComplete = { file ->
-                            coroutineScope.launch {
-                                // Create a new MessageVocale with the uploaded file ID
-                                val newMessage = MessageVocale()
-                                // Insert the new message into the database
-                                val insertedVid = viewModel.appDatabase.messageVocaleDao()
-                                    .insertEtReturnSonNewVid(newMessage)
-
-                                // After getting the insertedVid, upload the voice message
-                                uploadVoiceMessage(
-                                    file,
-                                    messageVid = insertedVid,
-                                    context,
-                                    onSuccess = { fileId ->
-                                        // Create an initial CREE state for the message
-                                        val parentMessageKeyID = newMessage.fireBaseKeyID
-
-                                        val newEtate = EtateMessageVocale(
-                                            parentMessageVID = insertedVid,
-                                            parentMessageKeyID = parentMessageKeyID,
-                                        )
-
-                                        coroutineScope.launch {
-                                            viewModel.appDatabase.etateMessageVocaleDao()
-                                                .insert(newEtate)
-                                        }
-                                    }
-                                )
-                            }
-                        }
+                        viewModel,
                     )
                     isRecording = false
                     mediaRecorder = null
                 } else {
                     // Start recording
-                    val (recorder, file) = startRecording(context)
+                    val (recorder, file) = startRecording(context, viewModel)
                     mediaRecorder = recorder
                     outputFile = file
                     isRecording = true
@@ -194,8 +169,11 @@ fun ButtonEnregestrementMessageVocaleEtLeMetreAuStorageGoogle(
         }
     }
 }
-
-private fun startRecording(context: Context): Pair<MediaRecorder, File> {
+// Fix for the upsertEtReturnSonNewVid lambda issue
+private fun startRecording(
+    context: Context,
+    viewModel: ViewModelMessageur,
+): Pair<MediaRecorder, File> {
     val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
     val fileName = "voice_$timestamp.aac"  // Utiliser AAC au lieu de 3GP
     val file = File(context.cacheDir, fileName)
@@ -220,6 +198,30 @@ private fun startRecording(context: Context): Pair<MediaRecorder, File> {
         try {
             prepare()
             start()
+
+            viewModel.viewModelScope.launch {
+                // Créer un nouveau message vocal
+                val maxVid = viewModel.appDatabase.messageVocaleDao().getMaxVid() + 1
+                val currentTimeStr = DatesHandler().getDateAndTimString().time
+                val newMessageKeyID = "$maxVid->(${currentTimeStr})"
+
+                val newMessage = MessageVocale(
+                    vid = maxVid,
+                    keyID = newMessageKeyID
+                )
+
+                // Fixed: Use proper callback technique without trailing lambda
+                val newVid = viewModel.appDatabase.messageVocaleDao().upsertEtReturnSonNewVid(newMessage)
+
+                // After getting the newVid, insert the EtateMessageVocale
+                viewModel.appDatabase.etateMessageVocaleDao().insert(
+                    EtateMessageVocale(
+                        parentMessageVID = newVid,
+                        parentMessageKeyID = newMessageKeyID
+                    )
+                )
+            }
+
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -228,18 +230,29 @@ private fun startRecording(context: Context): Pair<MediaRecorder, File> {
     return Pair(recorder, file)
 }
 
+// Fix for the stopRecording and uploadVoiceMessage functions
 private fun stopRecording(
+    uiState: MessageurUiState,
     recorder: MediaRecorder?,
     context: Context,
     file: File?,
-    onComplete: (File) -> Unit
+    viewModel: ViewModelMessageur,
 ) {
     try {
         recorder?.apply {
             stop()
             release()
         }
-        file?.let { onComplete(it) }
+
+        file?.let { audioFile ->
+            // Upload the voice message to Firebase Storage
+            uploadVoiceMessage(
+                viewModel = viewModel,
+                uiState = uiState,
+                file = audioFile,
+                context = context
+            )
+        }
     } catch (e: Exception) {
         e.printStackTrace()
         Toast.makeText(
@@ -251,17 +264,20 @@ private fun stopRecording(
 }
 
 private fun uploadVoiceMessage(
-    file: File?,
-    messageVid: Long,
-    context: Context,
-    onSuccess: (String) -> Unit
+    viewModel: ViewModelMessageur,
+    uiState: MessageurUiState,
+    file: File,
+    context: Context
 ) {
-    if (file == null) return
+    val noSqlMessages = uiState.noSqlMessageVocaleList
+    val lastNoSqlMessages = noSqlMessages.lastOrNull()
+    val lastStateKeyID = lastNoSqlMessages
+        ?.keyIDsChildListEtateMessageVocale?.lastOrNull()
 
     val messagesVocalesRef = MessageVocale.storageRef
 
     // Generate a unique filename for the voice message using messageVid
-    val fileId = "voice_${messageVid}_${UUID.randomUUID()}.aac"  // Extension AAC
+    val fileId = "${lastStateKeyID}.aac"  // Extension AAC
     val fileRef = messagesVocalesRef.child(fileId)
 
     fileRef.putFile(android.net.Uri.fromFile(file))
@@ -271,7 +287,29 @@ private fun uploadVoiceMessage(
                 "Message vocal enregistré avec succès",
                 Toast.LENGTH_SHORT
             ).show()
-            onSuccess(fileId)
+            viewModel.viewModelScope.launch {
+                // Get the last message vocal and its state
+                if (lastStateKeyID != null) {
+                    val parentVid = lastStateKeyID
+                        .substringBefore("->")
+                        .trimStart('(').trimEnd(')')
+                        .toLongOrNull()
+
+                    parentVid?.let { vid ->
+                        val relatedSqlEtate = uiState
+                            .etateMessageVocaleList
+                            .find { it.parentMessageVID == vid }
+
+                        relatedSqlEtate?.let { etate ->
+                            // Fixed: Proper copying and updating of the EtateMessageVocale
+                            val updatedEtate = etate.copy(
+                                nom = EtateMessageVocale.Nom.ENVOYER
+                            )
+                            viewModel.appDatabase.etateMessageVocaleDao().update(updatedEtate)
+                        }
+                    }
+                }
+            }
         }
         .addOnFailureListener { exception ->
             Toast.makeText(

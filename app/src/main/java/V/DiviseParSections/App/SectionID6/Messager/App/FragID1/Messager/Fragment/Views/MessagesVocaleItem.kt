@@ -1,8 +1,8 @@
 package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views
 
-import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Models.EtateMessageVocale
-import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Models.MessageVocale
-import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.Functions.playVoiceMessage
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.MessageurUiState
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.Models.EtateMessageVocale
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.Models.MessageVocale
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import android.media.MediaPlayer
@@ -48,9 +48,10 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun MessagesVocaleItem(
+    uiState: MessageurUiState,
     messageDetails: MessageVocale,
     etates: List<EtateMessageVocale>,
-    viewModel: ViewModelMessageur
+    viewModel: ViewModelMessageur,
 ) {
     // For audio playback
     val context = LocalContext.current
@@ -187,7 +188,7 @@ fun MessagesVocaleItem(
                                                 // Create a new EtateMessageVocale with ECOUTE state
                                                 val newEtate = EtateMessageVocale(
                                                     parentMessageVID = messageDetails.vid,
-                                                    parentMessageKeyID = messageDetails.fireBaseKeyID,
+                                                    parentMessageKeyID = messageDetails.keyID,
                                                     nom = EtateMessageVocale.Nom.ECOUTE,
                                                     timestamps = datesHandler.getCurrentTimestamps()
                                                 )

@@ -318,7 +318,7 @@ fun PeriodeItem(
                     onUpdateceComptVendeurInsertBonsAchatAuPeriodID(periode.vid)
                 }
             ) {
-                // Change icon based on whether this is the insertEtReturnSonNewVid period
+                // Change icon based on whether this is the upsertEtReturnSonNewVid period
                 val icon = if (isInsertPeriod) {
                     Icons.Default.Check
                 } else {

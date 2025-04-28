@@ -1,7 +1,8 @@
-package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Options
+package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.LabelsButton
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.MenuButton
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Options.ButtonEnregestrementMessageVocaleEtLeMetreAuStorageGoogle
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement

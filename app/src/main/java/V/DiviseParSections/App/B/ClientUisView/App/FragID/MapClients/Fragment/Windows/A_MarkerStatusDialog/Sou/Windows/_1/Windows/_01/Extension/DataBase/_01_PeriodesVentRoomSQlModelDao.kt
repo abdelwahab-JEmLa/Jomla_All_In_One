@@ -19,7 +19,7 @@ interface _01_PeriodesVentRoomSQlModelDao {
     suspend fun getAll(): MutableList<_01_PeriodesVentRoomSQl>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertEtReturnSonNewVid(item: _01_PeriodesVentRoomSQl)
+    suspend fun upsertEtReturnSonNewVid(item: _01_PeriodesVentRoomSQl)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(items: List<_01_PeriodesVentRoomSQl>)

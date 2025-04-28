@@ -1,24 +1,22 @@
 package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel
 
-import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Models.EtateMessageVocale
-import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Models.MessageVocale
-import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Models.NoSqlMessageVocale
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.Models.EtateMessageVocale
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.Models.MessageVocale
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.Models.NoSqlMessageVocale
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
 
 data class MessageurUiState(
-    val listNoSqlMessageVocale: Flow<List<NoSqlMessageVocale>> = emptyFlow(),
-    val listMessageVocale: Flow<List<MessageVocale>> = emptyFlow(),
-    val listEtateMessageVocale: Flow<List<EtateMessageVocale>> = emptyFlow(),
+    val noSqlMessageVocaleList: List<NoSqlMessageVocale> = emptyList(),
+    val messageVocaleList: List<MessageVocale> = emptyList(),
+    val etateMessageVocaleList: List<EtateMessageVocale> = emptyList(),
 )
 
 class ViewModelMessageur(
@@ -42,12 +40,12 @@ class ViewModelMessageur(
 
         if (messageCount == 0 && this) {
             val messageVocale = MessageVocale.createTestInstance()
-            appDatabase.messageVocaleDao().insertEtReturnSonNewVid(messageVocale)
+            appDatabase.messageVocaleDao().upsertEtReturnSonNewVid(messageVocale)
 
             appDatabase.etateMessageVocaleDao().insert(
                 EtateMessageVocale.createTestInstance(
                     parentMessageVID = messageVocale.vid,
-                    parentMessageKeyID = messageVocale.fireBaseKeyID
+                    parentMessageKeyID = messageVocale.keyID
                 )
             )
         }
@@ -58,13 +56,15 @@ class ViewModelMessageur(
         viewModelScope.launch {
             // Collect MessageVocale entities
             appDatabase.messageVocaleDao().getAllFlow().collectLatest { messagesList ->
+                // Fixed: Using the collected list directly instead of the Flow
                 _uiState.value = _uiState.value.copy(
-                    listMessageVocale = appDatabase.messageVocaleDao().getAllFlow()
+                    messageVocaleList = messagesList
                 )
 
                 appDatabase.etateMessageVocaleDao().getAllFlow().collectLatest { etatesList ->
+                    // Fixed: Using the collected list directly instead of the Flow
                     _uiState.value = _uiState.value.copy(
-                        listEtateMessageVocale = appDatabase.etateMessageVocaleDao().getAllFlow()
+                        etateMessageVocaleList = etatesList
                     )
 
                     // Process data for NoSqlMessageVocale
@@ -79,19 +79,16 @@ class ViewModelMessageur(
 
                     val noSqlMessages = messagesList.map { message ->
                         NoSqlMessageVocale(
-                            keyIDMessageVocale = message.fireBaseKeyID,
+                            keyIDMessageVocale = message.keyID,
                             keyIDsChildListEtateMessageVocale = etatesKeysByParent[message.vid] ?: listOf()
                         )
                     }
 
                     _uiState.value = _uiState.value.copy(
-                        listNoSqlMessageVocale = MutableStateFlow(noSqlMessages)
+                        noSqlMessageVocaleList = noSqlMessages
                     )
                 }
             }
         }
     }
-
-
 }
-

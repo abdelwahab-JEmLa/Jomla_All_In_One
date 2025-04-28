@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Repository
 
-import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Models.EtateMessageVocale
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.Models.EtateMessageVocale
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface EtateMessageVocaleDao {
+
     @Query("SELECT * FROM EtateMessageVocale")
     fun getAllFlow(): Flow<List<EtateMessageVocale>>
 
@@ -20,5 +21,5 @@ interface EtateMessageVocaleDao {
     suspend fun insert(category: EtateMessageVocale)
 
     @Update
-    suspend fun update(item: List<EtateMessageVocale>)
+    suspend fun update(item: EtateMessageVocale)
 }
