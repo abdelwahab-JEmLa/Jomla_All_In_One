@@ -1,9 +1,9 @@
 package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views
 
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.Functions.formatTime
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.Functions.startRecording
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.Functions.stopRecording
-import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
 import android.Manifest
 import android.content.pm.PackageManager
 import android.media.MediaRecorder
@@ -132,7 +132,10 @@ fun ButtonEnregestrementMessageVocaleEtLeMetreAuStorageGoogle(
                     mediaRecorder = null
                 } else {
                     // Start recording
-                    val (recorder, file) = startRecording(context, viewModel)
+                    val (recorder, file) = startRecording(
+                        context,
+                        viewModel,
+                                uiState)
                     mediaRecorder = recorder
                     outputFile = file
                     isRecording = true

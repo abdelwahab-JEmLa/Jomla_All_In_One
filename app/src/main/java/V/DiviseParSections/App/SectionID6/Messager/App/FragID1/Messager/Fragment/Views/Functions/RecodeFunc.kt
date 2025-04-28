@@ -20,6 +20,7 @@ import java.util.Locale
 fun startRecording(
     context: Context,
     viewModel: ViewModelMessageur,
+    uiState: MessageurUiState,
 ): Pair<MediaRecorder, File> {
     val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
     val fileName = "voice_$timestamp.aac"  // Utiliser AAC au lieu de 3GP
@@ -47,27 +48,35 @@ fun startRecording(
             start()
 
             viewModel.viewModelScope.launch {
+
                 // Créer un nouveau message vocal
-                val maxVid = viewModel.appDatabase.messageVocaleDao().getMaxVid() + 1
+                val lastOrNull = uiState.noSqlMessageVocaleList.lastOrNull()?.keyIDMessageVocale
+                val maxVid = uiState.messageVocaleList.find {
+                    it.keyID==lastOrNull
+                }?.vid?.plus(1) ?: 1
+
                 val currentTimeStr = DatesHandler().getDateAndTimString().time
                 val newMessageKeyID = "$maxVid->(${currentTimeStr})"
 
                 val newMessage = MessageVocale(
                     vid = maxVid,
-                    keyID = newMessageKeyID
+                    keyID = newMessageKeyID,
+                    vocaleKeyID = newMessageKeyID
                 )
-
-                // Fixed: Use proper callback technique without trailing lambda
-                val newVid =
-                    viewModel.appDatabase.messageVocaleDao().upsertEtReturnSonNewVid(newMessage)
-
                 // After getting the newVid, insert the EtateMessageVocale
-                viewModel.appDatabase.etateMessageVocaleDao().insert(
-                    EtateMessageVocale(
-                        parentMessageVID = newVid,
-                        parentMessageKeyID = newMessageKeyID
-                    )
+                viewModel.appDatabase.messageVocaleDao().insert(
+                    newMessage
                 )
+
+                val newStatue = EtateMessageVocale(
+                    parentMessageVID = maxVid,
+                    parentMessageKeyID = newMessageKeyID
+                )
+
+                viewModel.appDatabase.etateMessageVocaleDao().insert(
+                    newStatue
+                )
+
             }
 
         } catch (e: Exception) {

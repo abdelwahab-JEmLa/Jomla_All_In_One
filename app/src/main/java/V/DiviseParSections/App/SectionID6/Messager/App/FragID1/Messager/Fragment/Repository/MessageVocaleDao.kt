@@ -25,6 +25,9 @@ interface MessageVocaleDao {
     @Query("SELECT * FROM MessageVocale")
     suspend fun getAll(): MutableList<MessageVocale>
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(item: MessageVocale)
+
     @Update
     suspend fun update(item: List<MessageVocale>)
 }
