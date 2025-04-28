@@ -29,13 +29,15 @@ class ViewModelMessageur(
 
 
     init {
-        if (true) {
-            viewModelScope.launch {
-                // Add suspend function call within coroutine
+        viewModelScope.launch {
+            // Check count in a coroutine, not on the main thread
+            val messageCount = appDatabase.messageVocaleDao().getCount()
+
+            if (messageCount > 0) {
+                // Add test data if needed
                 val messageVocale = MessageVocale.createTestInstance()
                 appDatabase.messageVocaleDao().insert(messageVocale)
 
-                // Fix the EtateMessageVocale creation by passing required parameters
                 appDatabase.etateMessageVocaleDao().insert(
                     EtateMessageVocale.createTestInstance(
                         parentMessageVID = messageVocale.vid,
@@ -43,19 +45,26 @@ class ViewModelMessageur(
                     )
                 )
             }
+
+            // Setup the data collection flow
+            setupDataCollection()
         }
-        // Collect messages and their states from the database
+    }
+
+    private fun setupDataCollection() {
         viewModelScope.launch {
             // Collect MessageVocale entities
             appDatabase.messageVocaleDao().getAllFlow().collectLatest { messagesList ->
-                // FIXED: collect to _uiState.listMessageVocale
-                _uiState.value = _uiState.value.copy(listMessageVocale = appDatabase.messageVocaleDao().getAllFlow())
+                _uiState.value = _uiState.value.copy(
+                    listMessageVocale = appDatabase.messageVocaleDao().getAllFlow()
+                )
 
                 appDatabase.etateMessageVocaleDao().getAllFlow().collectLatest { etatesList ->
-                    // FIXED: collect to _uiState.listEtateMessageVocale
-                    _uiState.value = _uiState.value.copy(listEtateMessageVocale = appDatabase.etateMessageVocaleDao().getAllFlow())
+                    _uiState.value = _uiState.value.copy(
+                        listEtateMessageVocale = appDatabase.etateMessageVocaleDao().getAllFlow()
+                    )
 
-                    // Group EtateMessageVocale by parent message using forEach
+                    // Process data for NoSqlMessageVocale
                     val etatesKeysByParent = mutableMapOf<Long, MutableList<String>>()
 
                     etatesList.forEach { etate ->
@@ -65,7 +74,6 @@ class ViewModelMessageur(
                         etatesKeysByParent[etate.parentMessageVID]?.add(etate.fireBaseKeyID)
                     }
 
-                    // FIXED: Rules for adding NoSqlMessageVocale with associated states
                     val noSqlMessages = messagesList.map { message ->
                         NoSqlMessageVocale(
                             keyIDMessageVocale = message.fireBaseKeyID,
@@ -73,7 +81,6 @@ class ViewModelMessageur(
                         )
                     }
 
-                    // Update the UI state with the NoSqlMessageVocale list
                     _uiState.value = _uiState.value.copy(
                         listNoSqlMessageVocale = MutableStateFlow(noSqlMessages)
                     )

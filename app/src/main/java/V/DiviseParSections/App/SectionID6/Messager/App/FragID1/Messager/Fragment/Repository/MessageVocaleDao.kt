@@ -10,6 +10,9 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MessageVocaleDao {
+    @Query("SELECT COUNT(*) FROM MessageVocale")
+    fun getCount(): Int
+
     @Query("SELECT * FROM MessageVocale")
     fun getAllFlow(): Flow<List<MessageVocale>>
 
