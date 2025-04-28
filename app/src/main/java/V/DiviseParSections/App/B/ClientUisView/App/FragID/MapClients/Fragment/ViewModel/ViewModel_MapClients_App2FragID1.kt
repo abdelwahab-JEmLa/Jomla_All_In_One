@@ -45,8 +45,8 @@ data class PanelsGroupeButton(
 data class MapClientsUiState(
     val paneleGroupeButtonList: List<PanelsGroupeButton> =
         listOf(
-        PanelsGroupeButton(PanelsGroupeButton.Keys.MapSecteursPolygenHandelButtons, isVisible = false),
-        PanelsGroupeButton(PanelsGroupeButton.Keys.autres, isVisible = true),
+        PanelsGroupeButton(PanelsGroupeButton.Keys.MapSecteursPolygenHandelButtons, isVisible = true),
+        PanelsGroupeButton(PanelsGroupeButton.Keys.autres, isVisible = false),
     ),
     var showDialogeControleFabs: Boolean = false,
 )
