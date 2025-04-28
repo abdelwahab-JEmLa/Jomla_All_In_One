@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.EtateDePanelsGroupeButton
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Options.MapSecteursPolygenHandelButtons
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Test.insert2SecteurEtPolygon
@@ -15,7 +16,6 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.Ui.handleMarkerPositionUpdate
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.MarkerStatusDialog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Options.A_GlobalOptionsControlsFloatingActionButtons_FragId1
-import Z_CodePartageEntreApps.Windows.B.Windows.Options.A_OptionsControlsButtons_Main
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.content.Context
 import androidx.compose.foundation.background
@@ -177,14 +177,10 @@ fun MapContent(
                 .align(Alignment.Center)
         )
 
-        // Main controls
-        A_OptionsControlsButtons_Main()
-
-        val mapSecteursButtonsVisible = uiState.paneleGroupeButtonList
-            .find { it.key == "MapSecteursPolygenHandelButtons" }
-            ?.isVisible ?: false
-
-        if (mapSecteursButtonsVisible) {
+        if (viewModel.getVisiblityPar(
+                EtateDePanelsGroupeButton.Keys.MapSecteursPolygenHandelButtons
+            )
+        ) {
             MapSecteursPolygenHandelButtons(mapView, viewModel)
         }
 
@@ -250,3 +246,4 @@ fun MapContent(
         }
     }
 }
+

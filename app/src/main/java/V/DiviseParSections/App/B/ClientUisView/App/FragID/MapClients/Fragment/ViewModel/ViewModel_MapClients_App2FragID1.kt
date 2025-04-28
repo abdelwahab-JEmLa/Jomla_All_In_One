@@ -32,16 +32,21 @@ import org.osmdroid.views.MapView
 import java.util.Date
 
 data class EtateDePanelsGroupeButton(
-    val key: String,
+    val key: Keys,
     val isVisible: Boolean = false,
-)
+) {
+    enum class Keys{
+        MapSecteursPolygenHandelButtons,
+        autres,
+    }
+}
 
 // Updated MapClientsUiState data class
 data class MapClientsUiState(
     val paneleGroupeButtonList: List<EtateDePanelsGroupeButton> =
         listOf(
-        EtateDePanelsGroupeButton("MapSecteursPolygenHandelButtons", isVisible = false),
-        EtateDePanelsGroupeButton("autres", isVisible = true),
+        EtateDePanelsGroupeButton(EtateDePanelsGroupeButton.Keys.MapSecteursPolygenHandelButtons, isVisible = false),
+        EtateDePanelsGroupeButton(EtateDePanelsGroupeButton.Keys.autres, isVisible = true),
     ),
     var showDialogeControleFabs: Boolean = false,
 )
@@ -85,6 +90,20 @@ class ViewModel_MapClients_App2FragID1(
 
     init {
         loadSecteurs()
+    }
+
+    fun getVisiblityPar(
+        key: EtateDePanelsGroupeButton.Keys,
+    ): Boolean {
+        // Access the current value from the state flow first
+        val currentState = _uiState.value
+
+        // Then access paneleGroupeButtonList from the current state
+        return currentState.paneleGroupeButtonList
+            .find {
+                it.key == key
+            }
+            ?.isVisible ?: false
     }
 
     fun setShowDialogControleFabs(show: Boolean) {
