@@ -47,7 +47,7 @@ data class MapClientsUiState(
         listOf(
             PanelsGroupeButton(
                 PanelsGroupeButton.Keys.MapSecteursPolygenHandelButtons,
-                isVisible = true
+                isVisible = false
             ),
             PanelsGroupeButton(PanelsGroupeButton.Keys.autres, isVisible = false),
         ),

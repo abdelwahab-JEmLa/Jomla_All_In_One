@@ -18,7 +18,6 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Wi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Options.A_GlobalOptionsControlsFloatingActionButtons_FragId1
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -182,10 +181,7 @@ fun MapContent(
             .find { it.key == PanelsGroupeButton.Keys.MapSecteursPolygenHandelButtons }
             ?.isVisible ?: false
 
-        Log.d("PanelVisibility", "Composable rendering with ${PanelsGroupeButton.Keys.MapSecteursPolygenHandelButtons} visibility: $isVisible")
-
         if (isVisible)
-
          {
             MapSecteursPolygenHandelButtons(mapView, viewModel)
         }
