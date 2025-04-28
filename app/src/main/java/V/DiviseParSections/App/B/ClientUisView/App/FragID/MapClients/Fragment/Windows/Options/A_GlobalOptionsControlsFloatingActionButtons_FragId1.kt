@@ -33,8 +33,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material.icons.filled.Fireplace
-import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.SearchOff
+import androidx.compose.material.icons.filled.Shop
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -133,7 +133,7 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
             ) {
                 if (showMenu) {
 
-                    val couleurButton2 = Color(0xFFF44336)
+                    val couleurButton2 = Color(0xFF3F51B5)
                     FloatingActionButton(
                         onClick = {
                             viewModel.setShowDialogControleFabs(true)
@@ -142,7 +142,7 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                         containerColor = couleurButton2
                     ) {
                         // Change icon to indicate polygon creation
-                        Icon(Icons.Filled.Map, "Add Polygon")
+                        Icon(Icons.Filled.Shop, "setShowDialogControleFabs")
                     }
 
                     Row(
