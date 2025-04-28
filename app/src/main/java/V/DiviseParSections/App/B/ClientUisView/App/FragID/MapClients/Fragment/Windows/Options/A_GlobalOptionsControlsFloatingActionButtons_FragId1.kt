@@ -378,9 +378,9 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                                                 modifier = Modifier
                                                     .padding(vertical = 8.dp)
                                                     .clickable {
-                                                        // Create a new PaneleGroupeButton with toggled value
+                                                        // Create a new EtateDePanelsGroupeButton with toggled value
                                                         val updatedState = fabHandler.copy(
-                                                            isActive = !fabHandler.isActive
+                                                            isVisible = !fabHandler.isVisible
                                                         )
                                                         // Call the viewModel function with the updated state
                                                         viewModel.udatedStateFabGroupVisibility(updatedState)
@@ -391,7 +391,7 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                                                     modifier = Modifier
                                                         .size(24.dp)
                                                         .background(
-                                                            color = if (fabHandler.isActive) Color.Green else Color.Gray,
+                                                            color = if (fabHandler.isVisible) Color.Green else Color.Gray,
                                                             shape = CircleShape
                                                         )
                                                         .padding(4.dp)

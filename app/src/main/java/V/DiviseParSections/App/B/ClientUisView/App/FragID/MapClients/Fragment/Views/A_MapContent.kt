@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Options.FabButtons
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Options.MapSecteursPolygenHandelButtons
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Test.insert2SecteurEtPolygon
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.View.addToMapOsmdroid
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.View.getNoSqlDisplayer
@@ -73,6 +73,9 @@ fun MapContent(
     val activeTransactionId =
         viewModel.repo_0_0_HeadSQLRepositorys.repositorys_Model.activeVId_1_3_TransactionCommercial.collectAsState().value
     val clientDataBaseSnapList = viewModel.bProto_ClientsDataBase
+
+    // Collect UI state to check button visibility
+    val uiState by viewModel.uiState.collectAsState()
 
     // Collect the current mapReloadTrigger from viewModel for sectors updates
     val sectorMapReloadTrigger = viewModel.mapReloadTigger
@@ -176,7 +179,14 @@ fun MapContent(
 
         // Main controls
         A_OptionsControlsButtons_Main()
-        FabButtons(mapView, viewModel)
+
+        val mapSecteursButtonsVisible = uiState.paneleGroupeButtonList
+            .find { it.key == "MapSecteursPolygenHandelButtons" }
+            ?.isVisible ?: false
+
+        if (mapSecteursButtonsVisible) {
+            MapSecteursPolygenHandelButtons(mapView, viewModel)
+        }
 
         // Floating action buttons for map controls
         if (viewModelInitApp._paramatersAppsViewModelModel.fabsVisibility) {

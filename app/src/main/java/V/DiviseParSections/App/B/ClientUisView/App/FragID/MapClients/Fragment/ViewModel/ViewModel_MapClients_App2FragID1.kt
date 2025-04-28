@@ -31,17 +31,17 @@ import org.osmdroid.api.IGeoPoint
 import org.osmdroid.views.MapView
 import java.util.Date
 
-data class PaneleGroupeButton(
+data class EtateDePanelsGroupeButton(
     val key: String,
-    val isActive: Boolean = false,
+    val isVisible: Boolean = false,
 )
 
 // Updated MapClientsUiState data class
 data class MapClientsUiState(
-    val paneleGroupeButtonList: List<PaneleGroupeButton> =
+    val paneleGroupeButtonList: List<EtateDePanelsGroupeButton> =
         listOf(
-        PaneleGroupeButton("Map Secteurs polygen", isActive = false),
-        PaneleGroupeButton("autres", isActive = true),
+        EtateDePanelsGroupeButton("MapSecteursPolygenHandelButtons", isVisible = false),
+        EtateDePanelsGroupeButton("autres", isVisible = true),
     ),
     var showDialogeControleFabs: Boolean = false,
 )
@@ -94,7 +94,7 @@ class ViewModel_MapClients_App2FragID1(
     }
 
 
-    fun udatedStateFabGroupVisibility(updatedState: PaneleGroupeButton) {
+    fun udatedStateFabGroupVisibility(updatedState: EtateDePanelsGroupeButton) {
         viewModelScope.launch {
             // Find the index of the state to update
             val currentList = _uiState.value.paneleGroupeButtonList

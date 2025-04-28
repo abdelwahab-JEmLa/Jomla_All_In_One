@@ -38,7 +38,7 @@ import org.osmdroid.views.MapView
 import kotlin.math.roundToInt
 
 @Composable
-fun FabButtons(
+fun MapSecteursPolygenHandelButtons(
     mapView: MapView,
     viewModel: ViewModel_MapClients_App2FragID1,
 ) {
