@@ -68,7 +68,8 @@ class ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
 
         // Attempting to delete the voice recording from Firebase Storage
         val storageRef = FirebaseStorage.getInstance().reference
-        val voiceRef = storageRef.child("voice_recordings/$vocaleKeyID")
+        // Update the path to match the correct location in Firebase Storage
+        val voiceRef = storageRef.child("1_messagesVocales/$vocaleKeyID")
 
         // First check if the file exists
         voiceRef.metadata
