@@ -3,7 +3,6 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.V
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import android.util.Log
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.database.DataSnapshot
@@ -13,6 +12,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
@@ -22,10 +22,11 @@ class E1SecteurDeClientsRepositoryImpl(
 ) : E1SecteurDeClientsRepository {
     private val TAG = E1SecteurDeClientsRepository.TAG
 
-    override var modelDatasSnapList: SnapshotStateList<E1SecteurDeClients> =
-        mutableStateListOf()
+    override var listState: SnapshotStateList<E1SecteurDeClients> = SnapshotStateList()
 
     override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
+    private val repositoryScope = CoroutineScope(Dispatchers.IO)
+    private val mainDao = appDatabase.e1SecteurDeClientsDao()
 
     private val isListenerActive = AtomicBoolean(false)
     private val isFlowListenerActive = AtomicBoolean(false)
@@ -33,11 +34,9 @@ class E1SecteurDeClientsRepositoryImpl(
 
     internal var lastUpdateTimestamp = 0L
     var initialDataLoaded = false
-    private val repositoryScope = CoroutineScope(Dispatchers.IO)
     private var valueEventListener: ValueEventListener? = null
     private val listenerLock = Any()
     private val flowListenerLock = Any()
-
 
     init {
         repositoryScope.launch {
@@ -45,37 +44,9 @@ class E1SecteurDeClientsRepositoryImpl(
         }
     }
 
-    override fun getOuvertE1SecteurDeClients(): E1SecteurDeClients? {
-        return modelDatasSnapList.find { it.ouvert }
-    }
-
-
-
-    override suspend fun ensureDataIsInitialized() {
-        try {
-            if (!initialDataLoaded) {
-                withContext(Dispatchers.IO) {
-                    // Wait until data is loaded
-                    while (!initialDataLoaded) {
-                        delay(100)
-                        if (progressRepo.value >= 1.0f) {
-                            initialDataLoaded = true
-                        }
-                    }
-                }
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error ensuring data initialization: ${e.message}")
-        }
-    }
-
-
-
     private suspend fun initializeE1SecteurDeClientsRepository() {
         try {
             loadDepuitRoom()
-            checkDataConsistency()
-
         } catch (e: Exception) {
             Log.e(TAG, "Error initializing repository: ${e.message}")
         }
@@ -93,12 +64,13 @@ class E1SecteurDeClientsRepositoryImpl(
                 }
 
                 withContext(Dispatchers.Main) {
-                    modelDatasSnapList.clear()
+                    listState.clear()
                     if (dataList.isNotEmpty()) {
-                        modelDatasSnapList.addAll(dataList)
+                        listState.addAll(dataList)
                     }
                     initialDataLoaded = true
                     progressRepo.value = 1.0f
+                    collectDepuitRoom()
                 }
             }
         } catch (e: Exception) {
@@ -107,7 +79,20 @@ class E1SecteurDeClientsRepositoryImpl(
         }
     }
 
-    private suspend fun checkDataConsistency() {
+    private fun collectDepuitRoom() {
+        repositoryScope.launch {
+            mainDao.getAllFlow().collectLatest { roomData ->
+                withContext(Dispatchers.Main) {
+                    listState.clear()
+                    listState.addAll(roomData)
+                }
+                // Then check consistency with Firebase
+                checkDataConsistencyWithFireBase()
+            }
+        }
+    }
+
+    private suspend fun checkDataConsistencyWithFireBase() {
         try {
             val roomCount = withContext(Dispatchers.IO) {
                 try {
@@ -132,7 +117,7 @@ class E1SecteurDeClientsRepositoryImpl(
 
             if (roomCount != firebaseCount || roomCount == 0) {
                 if (firebaseCount > 0) {
-                    importDeFireBaseAuRoom(repositoryScope)
+                    importDeFireBaseAuRoom(firebaseSnapshot)
                 }
             }
 
@@ -144,6 +129,52 @@ class E1SecteurDeClientsRepositoryImpl(
                 FireBaseOnDataChangeListner()
             }
             Log.e(TAG, "Error in checkDataConsistency: ${e.message}")
+        }
+    }
+
+    private suspend fun importDeFireBaseAuRoom(snapshot: DataSnapshot?) {
+        try {
+            if (snapshot == null) return
+
+            val updatedList = mutableListOf<E1SecteurDeClients>()
+            for (dataSnapshot in snapshot.children) {
+                val data = dataSnapshot.getValue(E1SecteurDeClients::class.java)
+                data?.let {
+                    updatedList.add(it)
+                }
+            }
+
+            if (updatedList.isNotEmpty()) {
+                withContext(Dispatchers.IO) {
+                    appDatabase.e1SecteurDeClientsDao().deleteAll()
+                    appDatabase.e1SecteurDeClientsDao().insertAll(updatedList)
+                }
+
+                withContext(Dispatchers.Main) {
+                    listState.clear()
+                    listState.addAll(updatedList)
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error importing from Firebase to Room: ${e.message}")
+        }
+    }
+
+    override suspend fun ensureDataIsInitialized() {
+        try {
+            if (!initialDataLoaded) {
+                withContext(Dispatchers.IO) {
+                    // Wait until data is loaded
+                    while (!initialDataLoaded) {
+                        delay(100)
+                        if (progressRepo.value >= 1.0f) {
+                            initialDataLoaded = true
+                        }
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error ensuring data initialization: ${e.message}")
         }
     }
 
@@ -163,17 +194,17 @@ class E1SecteurDeClientsRepositoryImpl(
                                 }
                             }
 
-                            repositoryScope.launch(Dispatchers.Main) {
-                                if (updatedList.isNotEmpty()) {
-                                    modelDatasSnapList.clear()
-                                    modelDatasSnapList.addAll(updatedList)
-                                }
-                            }
-
+                            // Update both Room and UI state
                             repositoryScope.launch(Dispatchers.IO) {
                                 try {
                                     appDatabase.e1SecteurDeClientsDao().deleteAll()
                                     appDatabase.e1SecteurDeClientsDao().insertAll(updatedList)
+
+                                    // Update UI state directly
+                                    withContext(Dispatchers.Main) {
+                                        listState.clear()
+                                        listState.addAll(updatedList)
+                                    }
                                 } catch (e: Exception) {
                                     Log.e(
                                         TAG,
@@ -212,62 +243,6 @@ class E1SecteurDeClientsRepositoryImpl(
         }
     }
 
-    private fun importDeFireBaseAuRoom(viewModelScope: CoroutineScope) {
-        try {
-            progressRepo.value = 0f
-            viewModelScope.launch(Dispatchers.Main) {
-                modelDatasSnapList.clear()
-            }
-
-            viewModelScope.launch(Dispatchers.IO) {
-                try {
-                    val task = E1SecteurDeClientsRepository.sonDataBaseRef.get()
-                    val snapshot = Tasks.await(task)
-
-                    try {
-                        appDatabase.e1SecteurDeClientsDao().deleteAll()
-                    } catch (e: Exception) {
-                        Log.e(TAG, "Error deleting Room data: ${e.message}")
-                    }
-
-                    val dataList = mutableListOf<E1SecteurDeClients>()
-
-                    for (dataSnapshot in snapshot.children) {
-                        try {
-                            val data = dataSnapshot.getValue(E1SecteurDeClients::class.java)
-                            data?.let {
-                                dataList.add(it)
-                            }
-                        } catch (e: Exception) {
-                            Log.e(TAG, "Error parsing Firebase data: ${e.message}")
-                        }
-                    }
-
-                    if (dataList.isNotEmpty()) {
-                        try {
-                            appDatabase.e1SecteurDeClientsDao().insertAll(dataList)
-
-                            withContext(Dispatchers.Main) {
-                                modelDatasSnapList.addAll(dataList)
-                            }
-                        } catch (e: Exception) {
-                            Log.e(TAG, "Error inserting data to Room: ${e.message}")
-                        }
-                    }
-
-                    initialDataLoaded = true
-                    progressRepo.value = 1.0f
-                } catch (e: Exception) {
-                    progressRepo.value = 0f
-                    Log.e(TAG, "Error importing from Firebase: ${e.message}")
-                }
-            }
-        } catch (e: Exception) {
-            progressRepo.value = 0f
-            Log.e(TAG, "Error in importDeFireBaseAuRoom: ${e.message}")
-        }
-    }
-
     private fun removeDataChangeListener() {
         synchronized(listenerLock) {
             if (isListenerActive.get() && valueEventListener != null) {
@@ -283,8 +258,10 @@ class E1SecteurDeClientsRepositoryImpl(
         }
     }
 
-
-
+    // Implement the missing interface method
+    override fun getOuvertE1SecteurDeClients(): E1SecteurDeClients? {
+        return listState.find { it.ouvert }
+    }
 
     fun cleanup() {
         repositoryScope.launch {
@@ -296,6 +273,4 @@ class E1SecteurDeClientsRepositoryImpl(
     fun onDestroy() {
         cleanup()
     }
-
-
 }

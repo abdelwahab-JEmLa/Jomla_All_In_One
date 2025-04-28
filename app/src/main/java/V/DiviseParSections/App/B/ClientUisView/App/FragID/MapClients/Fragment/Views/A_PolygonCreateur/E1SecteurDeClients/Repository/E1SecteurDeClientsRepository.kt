@@ -6,7 +6,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import kotlinx.coroutines.flow.MutableStateFlow
 
 interface E1SecteurDeClientsRepository {
-    var modelDatasSnapList: SnapshotStateList<E1SecteurDeClients>
+    var listState: SnapshotStateList<E1SecteurDeClients>
 
     val progressRepo: MutableStateFlow<Float>
         get() = MutableStateFlow(0f)
