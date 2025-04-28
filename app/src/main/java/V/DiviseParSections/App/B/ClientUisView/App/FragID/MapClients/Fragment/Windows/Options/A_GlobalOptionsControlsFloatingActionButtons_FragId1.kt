@@ -372,13 +372,13 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                                             modifier = Modifier.padding(bottom = 16.dp)
                                         )
 
-                                        // Replace hard-coded rows with a loop over dISPLAYE_FABS_HANDLER items
-                                        uiState.dISPLAYE_FABS_HANDLER.forEach { fabHandler ->
+                                        // Replace hard-coded rows with a loop over dISPLAYE_FABS_HANDLERS items
+                                        uiState.paneleGroupeButtonList.forEach { fabHandler ->
                                             Row(
                                                 modifier = Modifier
                                                     .padding(vertical = 8.dp)
                                                     .clickable {
-                                                        // Create a new DISPLAYE_FABS_HANDLER with toggled value
+                                                        // Create a new PaneleGroupeButton with toggled value
                                                         val updatedState = fabHandler.copy(
                                                             isActive = !fabHandler.isActive
                                                         )

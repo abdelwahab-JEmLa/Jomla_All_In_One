@@ -31,18 +31,18 @@ import org.osmdroid.api.IGeoPoint
 import org.osmdroid.views.MapView
 import java.util.Date
 
-data class DISPLAYE_FABS_HANDLER(
+data class PaneleGroupeButton(
     val key: String,
     val isActive: Boolean = false,
 )
 
 // Updated MapClientsUiState data class
 data class MapClientsUiState(
-    val dISPLAYE_FABS_HANDLER: List<DISPLAYE_FABS_HANDLER> =
+    val paneleGroupeButtonList: List<PaneleGroupeButton> =
         listOf(
-            DISPLAYE_FABS_HANDLER("ajoutePolygen", isActive = false),
-            DISPLAYE_FABS_HANDLER("autres", isActive = true),
-        ),
+        PaneleGroupeButton("ajoutePolygen", isActive = false),
+        PaneleGroupeButton("autres", isActive = true),
+    ),
     var showDialogeControleFabs: Boolean = false,
 )
 
@@ -94,10 +94,10 @@ class ViewModel_MapClients_App2FragID1(
     }
 
 
-    fun udatedStateFabGroupVisibility(updatedState: DISPLAYE_FABS_HANDLER) {
+    fun udatedStateFabGroupVisibility(updatedState: PaneleGroupeButton) {
         viewModelScope.launch {
             // Find the index of the state to update
-            val currentList = _uiState.value.dISPLAYE_FABS_HANDLER
+            val currentList = _uiState.value.paneleGroupeButtonList
             val index = currentList.indexOfFirst { it.key == updatedState.key }
 
             if (index != -1) {
@@ -106,11 +106,11 @@ class ViewModel_MapClients_App2FragID1(
                 newList[index] = updatedState
 
                 // Update the UI state with the new list
-                _uiState.value = _uiState.value.copy(dISPLAYE_FABS_HANDLER = newList)
+                _uiState.value = _uiState.value.copy(paneleGroupeButtonList = newList)
             } else {
                 // If the state doesn't exist, add it to the list
                 val newList = currentList + updatedState
-                _uiState.value = _uiState.value.copy(dISPLAYE_FABS_HANDLER = newList)
+                _uiState.value = _uiState.value.copy(paneleGroupeButtonList = newList)
             }
         }
     }
