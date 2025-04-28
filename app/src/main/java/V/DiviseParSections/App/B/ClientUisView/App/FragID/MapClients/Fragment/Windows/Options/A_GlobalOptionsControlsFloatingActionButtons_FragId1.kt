@@ -1,7 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Options
 
 // Importer la nouvelle fonction FilterView au lieu de FilterModesDialog
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.DISPLAYE_FABS_HANDLER
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.C.FilterView
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.A_ChangeIdColor
@@ -373,15 +372,18 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                                             modifier = Modifier.padding(bottom = 16.dp)
                                         )
 
-                                        DISPLAYE_FABS_HANDLER.entries.forEach { fabGroup ->
-                                            val isActive = uiState.dISPLAYE_FABS_HANDLER == fabGroup
-
+                                        // Replace hard-coded rows with a loop over dISPLAYE_FABS_HANDLER items
+                                        uiState.dISPLAYE_FABS_HANDLER.forEach { fabHandler ->
                                             Row(
                                                 modifier = Modifier
                                                     .padding(vertical = 8.dp)
                                                     .clickable {
-                                                        // Toggle visibility of this fab group
-                                                        viewModel.toggleFabGroupVisibility(fabGroup)
+                                                        // Create a new DISPLAYE_FABS_HANDLER with toggled value
+                                                        val updatedState = fabHandler.copy(
+                                                            isActive = !fabHandler.isActive
+                                                        )
+                                                        // Call the viewModel function with the updated state
+                                                        viewModel.udatedStateFabGroupVisibility(updatedState)
                                                     },
                                                 verticalAlignment = Alignment.CenterVertically
                                             ) {
@@ -389,15 +391,14 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                                                     modifier = Modifier
                                                         .size(24.dp)
                                                         .background(
-                                                            color = if (isActive) Color.Green else Color.Gray,
+                                                            color = if (fabHandler.isActive) Color.Green else Color.Gray,
                                                             shape = CircleShape
                                                         )
                                                         .padding(4.dp)
                                                 )
 
                                                 Spacer(modifier = Modifier.width(8.dp))
-
-                                                Text(fabGroup.key)
+                                                Text(fabHandler.key)
                                             }
                                         }
 

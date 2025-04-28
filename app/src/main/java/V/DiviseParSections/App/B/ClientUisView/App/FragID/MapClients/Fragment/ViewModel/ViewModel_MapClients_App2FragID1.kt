@@ -31,20 +31,21 @@ import org.osmdroid.api.IGeoPoint
 import org.osmdroid.views.MapView
 import java.util.Date
 
-enum class DISPLAYE_FABS_HANDLER(val visible: Boolean = false) {
-    POLYGEN_HANDLER_BUTTONS(true),
-    AUTRES_FUNCS(false); // Added default value for second enum
-
-    // Add a property to get the display name
-    val key: String
-        get() = name
-}
+data class DISPLAYE_FABS_HANDLER(
+    val key: String,
+    val isActive: Boolean = false,
+)
 
 // Updated MapClientsUiState data class
 data class MapClientsUiState(
-    val dISPLAYE_FABS_HANDLER: DISPLAYE_FABS_HANDLER = DISPLAYE_FABS_HANDLER.POLYGEN_HANDLER_BUTTONS,
+    val dISPLAYE_FABS_HANDLER: List<DISPLAYE_FABS_HANDLER> =
+        listOf(
+            DISPLAYE_FABS_HANDLER("ajoutePolygen", isActive = false),
+            DISPLAYE_FABS_HANDLER("autres", isActive = true),
+        ),
     var showDialogeControleFabs: Boolean = false,
 )
+
 class ViewModel_MapClients_App2FragID1(
     val appDatabase: AppDatabase,
     val mainRepositery: B_ClientDataBaseRepository,
@@ -92,16 +93,28 @@ class ViewModel_MapClients_App2FragID1(
         }
     }
 
-    fun toggleFabGroupVisibility(fabGroup: DISPLAYE_FABS_HANDLER) {
+
+    fun udatedStateFabGroupVisibility(updatedState: DISPLAYE_FABS_HANDLER) {
         viewModelScope.launch {
+            // Find the index of the state to update
+            val currentList = _uiState.value.dISPLAYE_FABS_HANDLER
+            val index = currentList.indexOfFirst { it.key == updatedState.key }
 
-            _uiState.value = _uiState.value.copy(
-                dISPLAYE_FABS_HANDLER = fabGroup
-            )
+            if (index != -1) {
+                // Create a new list with the updated state
+                val newList = currentList.toMutableList()
+                newList[index] = updatedState
 
-            mapReloadTigger++
+                // Update the UI state with the new list
+                _uiState.value = _uiState.value.copy(dISPLAYE_FABS_HANDLER = newList)
+            } else {
+                // If the state doesn't exist, add it to the list
+                val newList = currentList + updatedState
+                _uiState.value = _uiState.value.copy(dISPLAYE_FABS_HANDLER = newList)
+            }
         }
     }
+
 
     private fun loadSecteurs() {
         viewModelScope.launch {
