@@ -346,12 +346,6 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                             modifier = Modifier.padding(bottom = 16.dp)
                         )
 
-                        // Display the list of fabsGrooupeAAffiche
-                        // Fix for the dialog in A_GlobalOptionsControlsFloatingActionButtons_FragId1.kt
-// Specifically targeting the control panel section with the Unresolved reference error
-
-// ... previous code remains unchanged ...
-
                         if (uiState.showDialogeControleFabs) {
                             Dialog(
                                 onDismissRequest = { uiState.showDialogeControleFabs = false },
