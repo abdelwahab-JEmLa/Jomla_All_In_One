@@ -49,9 +49,9 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun B_ItemMessagesVocale(
+    parentMessageVocale: MessageVocale,
+    etatesChildKeyIDsList: List<EtateMessageVocale>,
     uiState: MessageurUiState,
-    messageDetails: MessageVocale,
-    etates: List<EtateMessageVocale>,
     viewModel: ViewModelMessageur,
 ) {
     // For audio playback
@@ -63,11 +63,12 @@ fun B_ItemMessagesVocale(
     val datesHandler = remember { DatesHandler() }
 
     // Check if message has been listened to
-    val isListened = etates.any { it.nom == EtateMessageVocale.Nom.ECOUTE }
-    val isViewed = etates.any { it.nom == EtateMessageVocale.Nom.VUE }
+    val isListened = etatesChildKeyIDsList.any { it.nom == EtateMessageVocale.Nom.ECOUTE }
+    val isViewed = etatesChildKeyIDsList.any { it.nom == EtateMessageVocale.Nom.VUE }
 
     // Get the latest state timestamp
-    val latestTimestamp = etates.maxByOrNull { it.timestamps }?.timestamps ?: 0L
+    val latestTimestamp = etatesChildKeyIDsList.maxByOrNull { it.timestamps }?.timestamps ?: 0L
+
 
     // Cleanup MediaPlayer when leaving composition
     DisposableEffect(Unit) {
@@ -109,8 +110,8 @@ fun B_ItemMessagesVocale(
 
                 Text(
                     text = try {
-                        if (messageDetails.vocaleKeyID.contains("_")) {
-                            messageDetails.vocaleKeyID.substringBefore("_")
+                        if (parentMessageVocale.vocaleKeyID.contains("_")) {
+                            parentMessageVocale.vocaleKeyID.substringBefore("_")
                         } else {
                             "Message vocal" // Fallback to generic text
                         }
@@ -126,7 +127,7 @@ fun B_ItemMessagesVocale(
                 Text(
                     text = "الوقت: ${
                         datesHandler.getDateAndTimString(
-                            messageDetails.vocaleKeyID.hashCode().toLong()
+                            parentMessageVocale.vocaleKeyID.hashCode().toLong()
                         ).time
                     }",
                     style = MaterialTheme.typography.bodyMedium
@@ -157,7 +158,7 @@ fun B_ItemMessagesVocale(
                             coroutineScope.launch {
                                 // Fixed: Store and use the player variable
                                 viewModel.playVoiceMessage(
-                                    messageDetails.vocaleKeyID,
+                                    parentMessageVocale.vocaleKeyID,
                                     context,
                                     onPrepared = { player ->
                                         mediaPlayer = player
@@ -186,8 +187,8 @@ fun B_ItemMessagesVocale(
                                             coroutineScope.launch {
                                                 // Create a new EtateMessageVocale with ECOUTE state
                                                 val newEtate = EtateMessageVocale(
-                                                    parentMessageVID = messageDetails.vid,
-                                                    parentMessageKeyID = messageDetails.keyID,
+                                                    parentMessageVID = parentMessageVocale.vid,
+                                                    parentMessageKeyID = parentMessageVocale.keyID,
                                                     nom = EtateMessageVocale.Nom.ECOUTE,
                                                     timestamps = datesHandler.getCurrentTimestamps()
                                                 )

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -23,27 +24,23 @@ fun A_MessageurMainScreen(
         // Collect messages from ViewModel
         val uiState by viewModel.uiState.collectAsState()
 
-        // Create a map of messages for easier access
-        val messagesMap = uiState.messageVocaleList.associateBy { it.keyID }
-
-        // Display messages in LazyColumn
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 80.dp) // Add padding for the FAB
         ) {
-            items(uiState.noSqlMessageVocaleList.size) { index ->
-                val message = uiState.noSqlMessageVocaleList[index]
+            items(uiState.noSqlMessageVocaleList) { noSqlMessageVocale ->
+                val parentMessage = uiState.messageVocaleList.find { it.keyID == noSqlMessageVocale.keyIDMessageVocale }
 
-                val messageDetails = messagesMap[message.keyIDMessageVocale]
+                val relevantEtates = uiState.etateMessageVocaleList.filter { etate ->
+                    noSqlMessageVocale.keyIDsChildListEtateMessageVocale.contains(etate.fireBaseKeyID)
+                }
 
-                if (messageDetails != null) {
+                if (parentMessage != null) {
                     B_ItemMessagesVocale(
+                        parentMessageVocale = parentMessage,
+                        etatesChildKeyIDsList = relevantEtates,
                         uiState = uiState,
-                        messageDetails = messageDetails,
-                        etates = uiState.etateMessageVocaleList.filter { etate ->
-                            message.keyIDsChildListEtateMessageVocale.contains(etate.fireBaseKeyID)
-                        },
                         viewModel = viewModel
                     )
                 }
@@ -54,7 +51,6 @@ fun A_MessageurMainScreen(
         FabButtonsMessageurMainScreen(viewModel)
     }
 }
-
 @Preview
 @Composable
 private fun PreviewMessageurMainScreenP() {
