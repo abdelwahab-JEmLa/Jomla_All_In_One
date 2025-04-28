@@ -1,12 +1,16 @@
 package Z_CodePartageEntreApps.Apps.Manager.Module.B.Room
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.PolygonGeoLimite
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Repository.PolygonGeoLimiteDao
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.SecteurDeClients
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Repository.PolygonGeoLimiteDao
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Repository.SecteurDeClientsDao
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_2_ProduitAcheteOperation
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_3_TransactionCommercial
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_4_PeriodeVent
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.EtateMessageVocale
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.EtateMessageVocaleDao
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.MessageVocale
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.MessageVocaleDao
 import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.Extension.A_ProduitDao
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
@@ -71,6 +75,9 @@ import java.util.Date
         SecteurDeClients::class,
         PolygonGeoLimite::class,
 
+        MessageVocale::class,
+        EtateMessageVocale::class,
+
     ],
     version = 3, // Increment version number since we're adding new entities
     exportSchema = false
@@ -105,6 +112,9 @@ abstract class AppDatabase : RoomDatabase() {
 
     abstract fun secteurDeClientsDao(): SecteurDeClientsDao
     abstract fun polygonGeoLimiteDaoDao(): PolygonGeoLimiteDao
+
+    abstract fun messageVocaleDao(): MessageVocaleDao
+    abstract fun etateMessageVocaleDao(): EtateMessageVocaleDao
 
     object DatabaseModule {
 

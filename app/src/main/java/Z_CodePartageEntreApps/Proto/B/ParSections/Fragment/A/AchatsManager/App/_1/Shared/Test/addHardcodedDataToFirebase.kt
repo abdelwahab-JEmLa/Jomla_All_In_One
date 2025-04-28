@@ -98,67 +98,67 @@ suspend fun addHardcodedDataToFirebase(
                 vid = 201L,
                 produitAcheterID = 1001L,
                 parent_1_3_BonAchat = 501L,
-                etateActuellementEst = _1_2_ProduitAcheteOperation.EtateActuellementEst.NON_CONFIRME_JUST_AFFICHE
+                etateActuellementEst = _1_2_ProduitAcheteOperation.Nom.NON_CONFIRME_JUST_AFFICHE
             ),
             _1_2_ProduitAcheteOperation(
                 vid = 202L,
                 produitAcheterID = 1002L,
                 parent_1_3_BonAchat = 501L,
-                etateActuellementEst = _1_2_ProduitAcheteOperation.EtateActuellementEst.AFFICHE_MAIS_PAS_CONFIRME
+                etateActuellementEst = _1_2_ProduitAcheteOperation.Nom.AFFICHE_MAIS_PAS_CONFIRME
             ),
             _1_2_ProduitAcheteOperation(
                 vid = 203L,
                 produitAcheterID = 1003L,
                 parent_1_3_BonAchat = 502L,
-                etateActuellementEst = _1_2_ProduitAcheteOperation.EtateActuellementEst.AFFICHE_MAIS_PAS_CONFIRME
+                etateActuellementEst = _1_2_ProduitAcheteOperation.Nom.AFFICHE_MAIS_PAS_CONFIRME
             ),
             _1_2_ProduitAcheteOperation(
                 vid = 204L,
                 produitAcheterID = 1004L,
                 parent_1_3_BonAchat = 502L,
-                etateActuellementEst = _1_2_ProduitAcheteOperation.EtateActuellementEst.NON_CONFIRME_JUST_AFFICHE
+                etateActuellementEst = _1_2_ProduitAcheteOperation.Nom.NON_CONFIRME_JUST_AFFICHE
             ),
             _1_2_ProduitAcheteOperation(
                 vid = 205L,
                 produitAcheterID = 1005L,
                 parent_1_3_BonAchat = 503L,
-                etateActuellementEst = _1_2_ProduitAcheteOperation.EtateActuellementEst.AFFICHE_MAIS_PAS_CONFIRME
+                etateActuellementEst = _1_2_ProduitAcheteOperation.Nom.AFFICHE_MAIS_PAS_CONFIRME
             ),
             _1_2_ProduitAcheteOperation(
                 vid = 206L,
                 produitAcheterID = 1006L,
                 parent_1_3_BonAchat = 503L,
-                etateActuellementEst = _1_2_ProduitAcheteOperation.EtateActuellementEst.SUPPRIME_AU_PREMIER_PICK
+                etateActuellementEst = _1_2_ProduitAcheteOperation.Nom.SUPPRIME_AU_PREMIER_PICK
             ),
             _1_2_ProduitAcheteOperation(
                 vid = 207L,
                 produitAcheterID = 1007L,
                 parent_1_3_BonAchat = 504L,
-                etateActuellementEst = _1_2_ProduitAcheteOperation.EtateActuellementEst.AFFICHE_MAIS_PAS_CONFIRME
+                etateActuellementEst = _1_2_ProduitAcheteOperation.Nom.AFFICHE_MAIS_PAS_CONFIRME
             ),
             _1_2_ProduitAcheteOperation(
                 vid = 208L,
                 produitAcheterID = 1008L,
                 parent_1_3_BonAchat = 505L,
-                etateActuellementEst = _1_2_ProduitAcheteOperation.EtateActuellementEst.SUPP_AU_PANIER_FINALE
+                etateActuellementEst = _1_2_ProduitAcheteOperation.Nom.SUPP_AU_PANIER_FINALE
             ),
             _1_2_ProduitAcheteOperation(
                 vid = 209L,
                 produitAcheterID = 1009L,
                 parent_1_3_BonAchat = 506L,
-                etateActuellementEst = _1_2_ProduitAcheteOperation.EtateActuellementEst.NON_CONFIRME_JUST_AFFICHE
+                etateActuellementEst = _1_2_ProduitAcheteOperation.Nom.NON_CONFIRME_JUST_AFFICHE
             ),
             _1_2_ProduitAcheteOperation(
                 vid = 210L,
                 produitAcheterID = 1010L,
                 parent_1_3_BonAchat = 507L,
-                etateActuellementEst = _1_2_ProduitAcheteOperation.EtateActuellementEst.AFFICHE_MAIS_PAS_CONFIRME
+                etateActuellementEst = _1_2_ProduitAcheteOperation.Nom.AFFICHE_MAIS_PAS_CONFIRME
             ),
             _1_2_ProduitAcheteOperation(
                 vid = 250L,
                 produitAcheterID = 1050L,
                 parent_1_3_BonAchat = 501L,
-                etateActuellementEst = _1_2_ProduitAcheteOperation.EtateActuellementEst.NON_CONFIRME_JUST_AFFICHE
+                etateActuellementEst = _1_2_ProduitAcheteOperation.Nom.NON_CONFIRME_JUST_AFFICHE
             )
         )
 
@@ -194,63 +194,63 @@ suspend fun addHardcodedDataToFirebase(
                 couleurId = 105L,
                 parent_1_2_ProduitAcheteOperationID = 204L,
                 totaleQuantity = 35,
-                etateActuellementEst = _1_1_CouleurAcheteOperation.EtateActuellementEst.AFFICHE_MAIS_PAS_CONFIRME
+                etateActuellementEst = _1_1_CouleurAcheteOperation.Nom.AFFICHE_MAIS_PAS_CONFIRME
             ),
             _1_1_CouleurAcheteOperation(
                 vid = 6L,
                 couleurId = 106L,
                 parent_1_2_ProduitAcheteOperationID = 204L,
                 totaleQuantity = 45,
-                etateActuellementEst = _1_1_CouleurAcheteOperation.EtateActuellementEst.NON_CONFIRME_JUST_AFFICHE
+                etateActuellementEst = _1_1_CouleurAcheteOperation.Nom.NON_CONFIRME_JUST_AFFICHE
             ),
             _1_1_CouleurAcheteOperation(
                 vid = 7L,
                 couleurId = 107L,
                 parent_1_2_ProduitAcheteOperationID = 205L,
                 totaleQuantity = 60,
-                etateActuellementEst = _1_1_CouleurAcheteOperation.EtateActuellementEst.AFFICHE_MAIS_PAS_CONFIRME
+                etateActuellementEst = _1_1_CouleurAcheteOperation.Nom.AFFICHE_MAIS_PAS_CONFIRME
             ),
             _1_1_CouleurAcheteOperation(
                 vid = 8L,
                 couleurId = 108L,
                 parent_1_2_ProduitAcheteOperationID = 206L,
                 totaleQuantity = 20,
-                etateActuellementEst = _1_1_CouleurAcheteOperation.EtateActuellementEst.SUPPRIME_AU_PREMIER_PICK
+                etateActuellementEst = _1_1_CouleurAcheteOperation.Nom.SUPPRIME_AU_PREMIER_PICK
             ),
             _1_1_CouleurAcheteOperation(
                 vid = 9L,
                 couleurId = 109L,
                 parent_1_2_ProduitAcheteOperationID = 207L,
                 totaleQuantity = 55,
-                etateActuellementEst = _1_1_CouleurAcheteOperation.EtateActuellementEst.AFFICHE_MAIS_PAS_CONFIRME
+                etateActuellementEst = _1_1_CouleurAcheteOperation.Nom.AFFICHE_MAIS_PAS_CONFIRME
             ),
             _1_1_CouleurAcheteOperation(
                 vid = 10L,
                 couleurId = 110L,
                 parent_1_2_ProduitAcheteOperationID = 208L,
                 totaleQuantity = 15,
-                etateActuellementEst = _1_1_CouleurAcheteOperation.EtateActuellementEst.SUPP_AU_PANIER_FINALE
+                etateActuellementEst = _1_1_CouleurAcheteOperation.Nom.SUPP_AU_PANIER_FINALE
             ),
             _1_1_CouleurAcheteOperation(
                 vid = 11L,
                 couleurId = 111L,
                 parent_1_2_ProduitAcheteOperationID = 209L,
                 totaleQuantity = 70,
-                etateActuellementEst = _1_1_CouleurAcheteOperation.EtateActuellementEst.NON_CONFIRME_JUST_AFFICHE
+                etateActuellementEst = _1_1_CouleurAcheteOperation.Nom.NON_CONFIRME_JUST_AFFICHE
             ),
             _1_1_CouleurAcheteOperation(
                 vid = 12L,
                 couleurId = 112L,
                 parent_1_2_ProduitAcheteOperationID = 210L,
                 totaleQuantity = 65,
-                etateActuellementEst = _1_1_CouleurAcheteOperation.EtateActuellementEst.AFFICHE_MAIS_PAS_CONFIRME
+                etateActuellementEst = _1_1_CouleurAcheteOperation.Nom.AFFICHE_MAIS_PAS_CONFIRME
             ),
             _1_1_CouleurAcheteOperation(
                 vid = 15L,
                 couleurId = 120L,
                 parent_1_2_ProduitAcheteOperationID = 250L,
                 totaleQuantity = 65,
-                etateActuellementEst = _1_1_CouleurAcheteOperation.EtateActuellementEst.AFFICHE_MAIS_PAS_CONFIRME
+                etateActuellementEst = _1_1_CouleurAcheteOperation.Nom.AFFICHE_MAIS_PAS_CONFIRME
             )
         )
         if (active) {
