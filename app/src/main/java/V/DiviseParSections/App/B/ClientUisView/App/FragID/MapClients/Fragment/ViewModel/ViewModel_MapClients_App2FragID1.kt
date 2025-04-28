@@ -31,7 +31,7 @@ import org.osmdroid.api.IGeoPoint
 import org.osmdroid.views.MapView
 import java.util.Date
 
-data class EtateDePanelsGroupeButton(
+data class PanelsGroupeButton(
     val key: Keys,
     val isVisible: Boolean = false,
 ) {
@@ -43,10 +43,10 @@ data class EtateDePanelsGroupeButton(
 
 // Updated MapClientsUiState data class
 data class MapClientsUiState(
-    val paneleGroupeButtonList: List<EtateDePanelsGroupeButton> =
+    val paneleGroupeButtonList: List<PanelsGroupeButton> =
         listOf(
-        EtateDePanelsGroupeButton(EtateDePanelsGroupeButton.Keys.MapSecteursPolygenHandelButtons, isVisible = false),
-        EtateDePanelsGroupeButton(EtateDePanelsGroupeButton.Keys.autres, isVisible = true),
+        PanelsGroupeButton(PanelsGroupeButton.Keys.MapSecteursPolygenHandelButtons, isVisible = false),
+        PanelsGroupeButton(PanelsGroupeButton.Keys.autres, isVisible = true),
     ),
     var showDialogeControleFabs: Boolean = false,
 )
@@ -92,8 +92,8 @@ class ViewModel_MapClients_App2FragID1(
         loadSecteurs()
     }
 
-    fun getVisiblityPar(
-        key: EtateDePanelsGroupeButton.Keys,
+    fun getVisiblityPanelsGroupeButton(
+        key: PanelsGroupeButton.Keys,
     ): Boolean {
         // Access the current value from the state flow first
         val currentState = _uiState.value
@@ -113,7 +113,7 @@ class ViewModel_MapClients_App2FragID1(
     }
 
 
-    fun udatedStateFabGroupVisibility(updatedState: EtateDePanelsGroupeButton) {
+    fun udatedStateFabGroupVisibility(updatedState: PanelsGroupeButton) {
         viewModelScope.launch {
             // Find the index of the state to update
             val currentList = _uiState.value.paneleGroupeButtonList

@@ -378,7 +378,7 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                                                 modifier = Modifier
                                                     .padding(vertical = 8.dp)
                                                     .clickable {
-                                                        // Create a new EtateDePanelsGroupeButton with toggled value
+                                                        // Create a new PanelsGroupeButton with toggled value
                                                         val updatedState = fabHandler.copy(
                                                             isVisible = !fabHandler.isVisible
                                                         )
@@ -398,7 +398,8 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                                                 )
 
                                                 Spacer(modifier = Modifier.width(8.dp))
-                                                Text(fabHandler.key)
+
+                                                Text(fabHandler.key.name)
                                             }
                                         }
 

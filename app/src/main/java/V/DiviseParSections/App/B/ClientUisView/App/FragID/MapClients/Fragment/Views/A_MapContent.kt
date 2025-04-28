@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.EtateDePanelsGroupeButton
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.PanelsGroupeButton
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Options.MapSecteursPolygenHandelButtons
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Test.insert2SecteurEtPolygon
@@ -177,8 +177,8 @@ fun MapContent(
                 .align(Alignment.Center)
         )
 
-        if (viewModel.getVisiblityPar(
-                EtateDePanelsGroupeButton.Keys.MapSecteursPolygenHandelButtons
+        if (viewModel.getVisiblityPanelsGroupeButton(
+                PanelsGroupeButton.Keys.MapSecteursPolygenHandelButtons
             )
         ) {
             MapSecteursPolygenHandelButtons(mapView, viewModel)
