@@ -192,10 +192,6 @@ fun uploadVoiceMessage(
 
             viewModel.viewModelScope.launch {
                 try {
-                    // Get the latest state for this message
-                    val latestState = uiState.etateMessageVocaleList
-                        .filter { it.parentMessageVID == lastMessage.vid }
-                        .maxByOrNull { it.vid }
 
                     // Create new state for the message
                     val newEtate = EtateMessageVocale(
