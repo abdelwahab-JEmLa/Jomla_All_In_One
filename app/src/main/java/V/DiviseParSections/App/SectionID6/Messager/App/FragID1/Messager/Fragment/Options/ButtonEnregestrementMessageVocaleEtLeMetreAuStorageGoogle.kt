@@ -4,7 +4,6 @@ import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Models.MessageVocale
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.Functions.formatTime
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
-import Z_CodePartageEntreApps.Modules.DatesHandler
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
@@ -49,11 +48,8 @@ import java.util.UUID
 @Composable
 fun ButtonEnregestrementMessageVocaleEtLeMetreAuStorageGoogle(
     modifier: Modifier = Modifier,
-    messageVid: Long? = null,
     viewModel: ViewModelMessageur,
-    onVoiceMessageUploaded: (String) -> Unit = { fileId ->
-        // Create a new MessageVocale with the uploaded file ID
-    },
+    
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -129,41 +125,40 @@ fun ButtonEnregestrementMessageVocaleEtLeMetreAuStorageGoogle(
 
                 if (isRecording) {
                     // Stop recording
+// Stop recording
                     stopRecording(
                         mediaRecorder,
                         context,
                         outputFile,
                         onComplete = { file ->
-                            uploadVoiceMessage(
-                                file,
-                                messageVid,
-                                context,
-                                onSuccess = { fileId ->
-                                    coroutineScope.launch {
-                                        // Create a new MessageVocale with the uploaded file ID
-                                        val newMessage = MessageVocale(
-                                            vid = System.currentTimeMillis(),
-                                            vocaleKeyID = fileId,
-                                            nomClientConcerned = "Client ${System.currentTimeMillis() % 1000}"
-                                        )
-                                        // Insert the new message into the database
-                                        val insertedVid = viewModel.appDatabase.messageVocaleDao()
-                                            .insert(newMessage)
+                            coroutineScope.launch {
+                                // Create a new MessageVocale with the uploaded file ID
+                                val newMessage = MessageVocale()
+                                // Insert the new message into the database
+                                val insertedVid = viewModel.appDatabase.messageVocaleDao()
+                                    .insertEtReturnSonNewVid(newMessage)
 
+                                // After getting the insertedVid, upload the voice message
+                                uploadVoiceMessage(
+                                    file,
+                                    messageVid = insertedVid,
+                                    context,
+                                    onSuccess = { fileId ->
                                         // Create an initial CREE state for the message
-                                        val newEtate = EtateMessageVocale(
-                                            parentMessageVID = newMessage.vid,
-                                            parentMessageKeyID = newMessage.fireBaseKeyID,
-                                            nom = EtateMessageVocale.Nom.CREE,
-                                            timestamps = DatesHandler().getCurrentTimestamps()
-                                        )
-                                        viewModel.appDatabase.etateMessageVocaleDao()
-                                            .insert(newEtate)
+                                        val parentMessageKeyID = newMessage.fireBaseKeyID
 
-                                        onVoiceMessageUploaded(fileId)
+                                        val newEtate = EtateMessageVocale(
+                                            parentMessageVID = insertedVid,
+                                            parentMessageKeyID = parentMessageKeyID,
+                                        )
+
+                                        coroutineScope.launch {
+                                            viewModel.appDatabase.etateMessageVocaleDao()
+                                                .insert(newEtate)
+                                        }
                                     }
-                                }
-                            )
+                                )
+                            }
                         }
                     )
                     isRecording = false
@@ -199,7 +194,6 @@ fun ButtonEnregestrementMessageVocaleEtLeMetreAuStorageGoogle(
         }
     }
 }
-
 
 private fun startRecording(context: Context): Pair<MediaRecorder, File> {
     val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
@@ -258,7 +252,7 @@ private fun stopRecording(
 
 private fun uploadVoiceMessage(
     file: File?,
-    messageVid: Long?,
+    messageVid: Long,
     context: Context,
     onSuccess: (String) -> Unit
 ) {
@@ -266,7 +260,7 @@ private fun uploadVoiceMessage(
 
     val messagesVocalesRef = MessageVocale.storageRef
 
-    // Generate a unique filename for the voice message
+    // Generate a unique filename for the voice message using messageVid
     val fileId = "voice_${messageVid}_${UUID.randomUUID()}.aac"  // Extension AAC
     val fileRef = messagesVocalesRef.child(fileId)
 

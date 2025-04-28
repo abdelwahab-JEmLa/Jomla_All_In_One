@@ -103,8 +103,20 @@ fun MessagesVocaleItem(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                // Fix for the Text component in MessagesVocaleItem.kt
+
                 Text(
-                    text = messageDetails.nomClientConcerned,
+                    text = try {
+                        // Try to get a meaningful name from the message
+                        // If vocaleKeyID contains client info, extract it
+                        if (messageDetails.vocaleKeyID.contains("_")) {
+                            messageDetails.vocaleKeyID.substringBefore("_")
+                        } else {
+                            "Message vocal" // Fallback to generic text
+                        }
+                    } catch (e: Exception) {
+                        "Message vocal" // Error fallback
+                    },
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )

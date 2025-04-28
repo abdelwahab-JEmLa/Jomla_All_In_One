@@ -170,7 +170,7 @@ class ViewModel_AProto_ProduitDataBase(
                     convertAProduitToProduitsDataBase(produit)
                 }
 
-                Log.d(TAG, "Conversion complete. Ready to insert ${convertedData.size} items into _2_1_ProduitsDataBase")
+                Log.d(TAG, "Conversion complete. Ready to insertEtReturnSonNewVid ${convertedData.size} items into _2_1_ProduitsDataBase")
                 // Update progress to 80% before database write
                 _migrationProgress.value = 0.8f
                 Log.d(TAG, "Migration progress: 80% - Starting database insertion")

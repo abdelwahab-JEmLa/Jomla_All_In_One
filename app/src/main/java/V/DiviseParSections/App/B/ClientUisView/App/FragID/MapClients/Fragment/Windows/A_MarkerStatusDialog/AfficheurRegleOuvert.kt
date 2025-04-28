@@ -20,7 +20,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
- fun AfficheurRegleOuvert(
+fun AfficheurRegleOuvert(
     repositorysModel: _0_0_HeadOfRepositorys_Model,
     clientId: Long,
     activeTransactionId: Long,

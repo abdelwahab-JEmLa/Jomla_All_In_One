@@ -10,6 +10,9 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MessageVocaleDao {
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertEtReturnSonNewVid(item: MessageVocale): Long
+
     @Query("SELECT COUNT(*) FROM MessageVocale")
     fun getCount(): Int
 
@@ -18,9 +21,6 @@ interface MessageVocaleDao {
 
     @Query("SELECT * FROM MessageVocale")
     suspend fun getAll(): MutableList<MessageVocale>
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(category: MessageVocale)
 
     @Update
     suspend fun update(item: List<MessageVocale>)

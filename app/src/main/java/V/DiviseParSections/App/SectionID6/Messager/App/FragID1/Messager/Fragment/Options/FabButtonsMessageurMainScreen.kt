@@ -2,10 +2,7 @@ package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragmen
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.LabelsButton
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.MenuButton
-import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Models.EtateMessageVocale
-import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Models.MessageVocale
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
-import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,8 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 @Composable
@@ -64,32 +59,7 @@ fun FabButtonsMessageurMainScreen(
                 if (showMenu) {
                     ButtonEnregestrementMessageVocaleEtLeMetreAuStorageGoogle(
                         viewModel = viewModel
-                    ) { fileId ->
-                        // Implement the insertion logic here
-                        viewModel.viewModelScope.launch {
-                            // Create a new MessageVocale with the uploaded file ID
-                            val newMessage = MessageVocale(
-                                vid = System.currentTimeMillis(),
-                                vocaleKeyID = fileId,
-                                nomClientConcerned = "Client"
-                            )
-
-                            // Insert the message into the database
-                            viewModel.appDatabase.messageVocaleDao().insert(newMessage)
-
-                            // Create an initial CREE state for the message
-                            val newEtate = EtateMessageVocale(
-                                parentMessageVID = newMessage.vid,
-                                parentMessageKeyID = newMessage.fireBaseKeyID,
-                                nom = EtateMessageVocale.Nom.CREE,
-                                timestamps = DatesHandler().getCurrentTimestamps()
-                            )
-
-                            // Insert the state into the database
-                            viewModel.appDatabase.etateMessageVocaleDao().insert(newEtate)
-                        }
-                    }
-
+                    )
                 }
 
                 LabelsButton(

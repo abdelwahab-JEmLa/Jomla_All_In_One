@@ -39,8 +39,7 @@ class DatesHandler {
         }
     }
 
-    fun getDateAndTimString(timestamp: Long?): DateAndTimString {
-        if (timestamp == null) return DateAndTimString()
+    fun getDateAndTimString(timestamp: Long =getCurrentTimestamps()): DateAndTimString {
 
         try {
             val calendar = Calendar.getInstance()

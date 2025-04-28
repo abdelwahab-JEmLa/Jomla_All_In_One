@@ -42,7 +42,7 @@ class ViewModelMessageur(
 
         if (messageCount == 0 && this) {
             val messageVocale = MessageVocale.createTestInstance()
-            appDatabase.messageVocaleDao().insert(messageVocale)
+            appDatabase.messageVocaleDao().insertEtReturnSonNewVid(messageVocale)
 
             appDatabase.etateMessageVocaleDao().insert(
                 EtateMessageVocale.createTestInstance(

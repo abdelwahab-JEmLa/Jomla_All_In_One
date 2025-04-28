@@ -160,7 +160,7 @@ private fun Marker.title(
             .maxByOrNull { it.timestamps }
 
         val dateHandler = DatesHandler()
-        val timeStr = dateHandler.getDateAndTimString(lastTransaction?.timestamps).time
+        val timeStr = lastTransaction?.timestamps?.let { dateHandler.getDateAndTimString(it).time }
         val dayName = dateHandler.getArabicDayNameFromTimestamp(lastTransaction?.timestamps ?: 0)
         val distanceSemain = dateHandler.getAbrgDistanceSemain(lastTransaction?.timestamps)
 

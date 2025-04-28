@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Models
 
+import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.firebase.storage.FirebaseStorage
@@ -10,8 +11,8 @@ data class MessageVocale(
     @PrimaryKey(autoGenerate = true)
     val vid: Long=0,
     //Infos De Base
+    var currentTimeStr: String = DatesHandler().getDateAndTimString().time,
     val vocaleKeyID: String = "",
-    val nomClientConcerned: String = ""
 
     //Etates Mutable
 
@@ -19,8 +20,9 @@ data class MessageVocale(
     val fireBaseKeyID: String
         get() {
             val parent = "()"
-            val thisVal = "$vid->(${vocaleKeyID}_($nomClientConcerned))"
-            return "$parent$thisVal"
+            val vid = "$vid->"
+            val thisVal = "(${currentTimeStr})"
+            return thisVal
         }
 
     // Test instance function with random value implementation
@@ -36,7 +38,6 @@ data class MessageVocale(
             return MessageVocale(
                 vid = System.currentTimeMillis(),
                 vocaleKeyID = "test_${randomNumber}_${System.currentTimeMillis()}",
-                nomClientConcerned = "Test Client $randomNumber"
             )
         }
     }
