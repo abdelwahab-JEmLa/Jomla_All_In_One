@@ -31,27 +31,27 @@ class ViewModelMessageur(
 
     init {
         viewModelScope.launch(Dispatchers.IO) {  // Use IO dispatcher for database operations
-            // Check count in a coroutine with the right dispatcher
-            val messageCount = appDatabase.messageVocaleDao().getCount()
-
-            if (messageCount == 0) {  // Note: I changed the logic to only add test data if empty
-                // Add test data if needed
-                val messageVocale = MessageVocale.createTestInstance()
-                appDatabase.messageVocaleDao().insert(messageVocale)
-
-                appDatabase.etateMessageVocaleDao().insert(
-                    EtateMessageVocale.createTestInstance(
-                        parentMessageVID = messageVocale.vid,
-                        parentMessageKeyID = messageVocale.fireBaseKeyID
-                    )
-                )
-            }
-
-            // Setup the data collection flow
+            false.addTest()
             setupDataCollection()
         }
     }
 
+    private suspend fun Boolean.addTest() {
+        // Check count in a coroutine with the right dispatcher
+        val messageCount = appDatabase.messageVocaleDao().getCount()
+
+        if (messageCount == 0 && this) {
+            val messageVocale = MessageVocale.createTestInstance()
+            appDatabase.messageVocaleDao().insert(messageVocale)
+
+            appDatabase.etateMessageVocaleDao().insert(
+                EtateMessageVocale.createTestInstance(
+                    parentMessageVID = messageVocale.vid,
+                    parentMessageKeyID = messageVocale.fireBaseKeyID
+                )
+            )
+        }
+    }
 
 
     private fun setupDataCollection() {
