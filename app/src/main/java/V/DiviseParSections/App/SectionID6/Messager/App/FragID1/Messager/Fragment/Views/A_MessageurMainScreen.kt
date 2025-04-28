@@ -33,7 +33,7 @@ fun A_MessageurMainScreen(
                 val parentMessage = uiState.messageVocaleList.find { it.keyID == noSqlMessageVocale.keyIDMessageVocale }
 
                 val relevantEtates = uiState.etateMessageVocaleList.filter { etate ->
-                    noSqlMessageVocale.keyIDsChildListEtateMessageVocale.contains(etate.fireBaseKeyID)
+                    noSqlMessageVocale.keyIDsChildListEtateMessageVocale.contains(etate.keyID)
                 }
 
                 if (parentMessage != null) {

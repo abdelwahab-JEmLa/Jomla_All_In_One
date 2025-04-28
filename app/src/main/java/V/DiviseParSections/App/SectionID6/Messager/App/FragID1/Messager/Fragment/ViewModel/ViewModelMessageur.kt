@@ -76,7 +76,7 @@ class ViewModelMessageur(
                         if (!etatesKeysByParent.containsKey(etate.parentMessageVID)) {
                             etatesKeysByParent[etate.parentMessageVID] = mutableListOf()
                         }
-                        etatesKeysByParent[etate.parentMessageVID]?.add(etate.fireBaseKeyID)
+                        etatesKeysByParent[etate.parentMessageVID]?.add(etate.keyID)
                     }
 
                     val noSqlMessages = messagesList.map { message ->
@@ -99,6 +99,7 @@ class ViewModelMessageur(
 data class EtateMessageVocale(
     @PrimaryKey(autoGenerate = true)
     val vid: Long=0,
+    val keyID: String = "",
 
     //Forging Keys
     val parentMessageVID: Long = 0,
@@ -112,13 +113,6 @@ data class EtateMessageVocale(
     //Etates Mutable
 
 ) {
-    val fireBaseKeyID: String
-        get() {
-            val parent = "($parentMessageVID)->"
-            val thisVal = "($vid)->(${nom}_($timestamps))"
-
-            return "$parent$thisVal"
-        }
 
     enum class Nom(val nomArabe: String? = null) {
         EN_COURT_ENREGESTREMENT,

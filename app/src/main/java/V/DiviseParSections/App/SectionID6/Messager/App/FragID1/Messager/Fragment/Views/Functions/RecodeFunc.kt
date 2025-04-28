@@ -19,13 +19,16 @@ fun startRecording(
     viewModel: ViewModelMessageur,
     uiState: MessageurUiState,
 ): Pair<MediaRecorder, File> {
-    // Créer un nouveau message vocal
-    val lastOrNull = uiState.noSqlMessageVocaleList.lastOrNull()?.keyIDMessageVocale
+
+    val lastOrNullkeyIDMessageVocale = uiState.noSqlMessageVocaleList
+        .lastOrNull()?.keyIDMessageVocale
+
     val maxVid = uiState.messageVocaleList.find {
-        it.keyID==lastOrNull
+        it.keyID == lastOrNullkeyIDMessageVocale
     }?.vid?.plus(1) ?: 1
 
     val currentTimeStr = DatesHandler().getDateAndTimString().time
+
     val newMessageKeyID = "$maxVid->(${currentTimeStr})"
 
     val fileName = "$newMessageKeyID.aac"
@@ -54,8 +57,6 @@ fun startRecording(
 
             viewModel.viewModelScope.launch {
 
-
-
                 val newMessage = MessageVocale(
                     vid = maxVid,
                     keyID = newMessageKeyID,
@@ -74,7 +75,6 @@ fun startRecording(
                 viewModel.appDatabase.etateMessageVocaleDao().insert(
                     newStatue
                 )
-
             }
 
         } catch (e: Exception) {
@@ -125,9 +125,11 @@ fun uploadVoiceMessage(
     context: Context,
 ) {
     val noSqlMessages = uiState.noSqlMessageVocaleList
+
     val lastNoSqlMessages = noSqlMessages.lastOrNull()
     val lastStateKeyID = lastNoSqlMessages
-        ?.keyIDsChildListEtateMessageVocale?.lastOrNull()
+        ?.keyIDsChildListEtateMessageVocale
+        ?.lastOrNull()
 
     val messagesVocalesRef = MessageVocale.storageRef
 
@@ -145,23 +147,19 @@ fun uploadVoiceMessage(
             viewModel.viewModelScope.launch {
                 // Get the last message vocal and its state
                 if (lastStateKeyID != null) {
-                    val parentVid = lastStateKeyID
-                        .substringBefore("->")
-                        .trimStart('(').trimEnd(')')
-                        .toLongOrNull()
 
-                    parentVid?.let { vid ->
-                        val relatedSqlEtate = uiState
-                            .etateMessageVocaleList
-                            .find { it.parentMessageVID == vid }
+                    val relatedSqLEtate = uiState.etateMessageVocaleList
+                        .find { it.keyID == lastStateKeyID }
 
-                        relatedSqlEtate?.let { etate ->
-                            // Fixed: Proper copying and updating of the EtateMessageVocale
-                            val updatedEtate = etate.copy(
-                                nom = EtateMessageVocale.Nom.ENVOYER
-                            )
-                            viewModel.appDatabase.etateMessageVocaleDao().update(updatedEtate)
-                        }
+                    relatedSqLEtate?.let { etate ->
+                        // Fixed: Proper copying and updating of the EtateMessageVocale
+                        val newEtate = EtateMessageVocale(
+                            parentMessageVID = etate.parentMessageVID,
+                            parentMessageKeyID = etate.parentMessageKeyID,
+                            nom = EtateMessageVocale.Nom.ENVOYER
+                        )
+
+                        viewModel.appDatabase.etateMessageVocaleDao().insert(newEtate)
                     }
                 }
             }
