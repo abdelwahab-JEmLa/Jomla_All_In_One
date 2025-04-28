@@ -1,5 +1,6 @@
 package Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.Repository.E1SecteurDeClientsRepository
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial._1_3_TransactionCommercial_Repository
@@ -26,6 +27,8 @@ class _0_0_HeadOfRepositorys_Model(
     val repository_3_ClientsDataBase: _3_ClientsDataBase_Repository,
 
     val _4_CouleurOperationCommand_Repository: _4_CouleurOperationCommand_Repository,
+
+    val e1SecteurDeClientsRepository: E1SecteurDeClientsRepository,
 
     val databaseReference_1_2_ProduitAcheteOperation: DatabaseReference = _1_2_ProduitAcheteOperation_Repository.sonDataBaseRef,
     val databaseReference_1_5_Vendeur: DatabaseReference = _1_5_Vendeur_Repository.sonDataBaseRef,

@@ -5,7 +5,7 @@ import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepo
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import kotlinx.coroutines.flow.MutableStateFlow
 
-interface E1SecteurDeClients_Repository {
+interface E1SecteurDeClientsRepository {
     var modelDatasSnapList: SnapshotStateList<E1SecteurDeClients>
 
     val progressRepo: MutableStateFlow<Float>

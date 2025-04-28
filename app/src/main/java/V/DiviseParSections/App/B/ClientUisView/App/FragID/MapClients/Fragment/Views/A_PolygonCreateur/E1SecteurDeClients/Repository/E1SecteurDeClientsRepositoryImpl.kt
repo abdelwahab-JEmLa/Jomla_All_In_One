@@ -19,8 +19,8 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 class E1SecteurDeClientsRepositoryImpl(
     val appDatabase: AppDatabase
-) : E1SecteurDeClients_Repository {
-    private val TAG = E1SecteurDeClients_Repository.TAG
+) : E1SecteurDeClientsRepository {
+    private val TAG = E1SecteurDeClientsRepository.TAG
 
     override var modelDatasSnapList: SnapshotStateList<E1SecteurDeClients> =
         mutableStateListOf()
@@ -120,7 +120,7 @@ class E1SecteurDeClientsRepositoryImpl(
 
             val firebaseSnapshot = try {
                 withContext(Dispatchers.IO) {
-                    val task = E1SecteurDeClients_Repository.sonDataBaseRef.get()
+                    val task = E1SecteurDeClientsRepository.sonDataBaseRef.get()
                     Tasks.await(task)
                 }
             } catch (e: Exception) {
@@ -191,7 +191,7 @@ class E1SecteurDeClientsRepositoryImpl(
                     }
                 }
 
-                E1SecteurDeClients_Repository.sonDataBaseRef.addValueEventListener(flowValueEventListener!!)
+                E1SecteurDeClientsRepository.sonDataBaseRef.addValueEventListener(flowValueEventListener!!)
                 isFlowListenerActive.set(true)
             }
         }
@@ -201,7 +201,7 @@ class E1SecteurDeClientsRepositoryImpl(
         synchronized(flowListenerLock) {
             if (isFlowListenerActive.get() && flowValueEventListener != null) {
                 try {
-                    E1SecteurDeClients_Repository.sonDataBaseRef.removeEventListener(flowValueEventListener!!)
+                    E1SecteurDeClientsRepository.sonDataBaseRef.removeEventListener(flowValueEventListener!!)
                 } catch (e: Exception) {
                     Log.e(TAG, "Error removing flow listener: ${e.message}")
                 } finally {
@@ -221,7 +221,7 @@ class E1SecteurDeClientsRepositoryImpl(
 
             viewModelScope.launch(Dispatchers.IO) {
                 try {
-                    val task = E1SecteurDeClients_Repository.sonDataBaseRef.get()
+                    val task = E1SecteurDeClientsRepository.sonDataBaseRef.get()
                     val snapshot = Tasks.await(task)
 
                     try {
@@ -272,7 +272,7 @@ class E1SecteurDeClientsRepositoryImpl(
         synchronized(listenerLock) {
             if (isListenerActive.get() && valueEventListener != null) {
                 try {
-                    E1SecteurDeClients_Repository.sonDataBaseRef.removeEventListener(valueEventListener!!)
+                    E1SecteurDeClientsRepository.sonDataBaseRef.removeEventListener(valueEventListener!!)
                 } catch (e: Exception) {
                     Log.e(TAG, "Error removing data listener: ${e.message}")
                 } finally {
