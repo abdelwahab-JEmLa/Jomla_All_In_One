@@ -6,6 +6,7 @@ import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -29,11 +30,11 @@ class ViewModelMessageur(
 
 
     init {
-        viewModelScope.launch {
-            // Check count in a coroutine, not on the main thread
+        viewModelScope.launch(Dispatchers.IO) {  // Use IO dispatcher for database operations
+            // Check count in a coroutine with the right dispatcher
             val messageCount = appDatabase.messageVocaleDao().getCount()
 
-            if (messageCount > 0) {
+            if (messageCount == 0) {  // Note: I changed the logic to only add test data if empty
                 // Add test data if needed
                 val messageVocale = MessageVocale.createTestInstance()
                 appDatabase.messageVocaleDao().insert(messageVocale)
@@ -50,6 +51,8 @@ class ViewModelMessageur(
             setupDataCollection()
         }
     }
+
+
 
     private fun setupDataCollection() {
         viewModelScope.launch {
