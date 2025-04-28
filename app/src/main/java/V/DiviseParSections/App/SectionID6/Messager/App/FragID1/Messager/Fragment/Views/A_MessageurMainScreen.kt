@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views
 
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Options.FabButtonsMessageurMainScreen
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,12 +21,9 @@ fun A_MessageurMainScreen(
     Box(modifier = modifier) {
         // Collect messages from ViewModel
         val uiState by viewModel.uiState.collectAsState()
-        val messagesList by uiState.noSqlMessageVocaleList.collectAsState(initial = emptyList())
-        val etatesList by uiState.etateMessageVocaleList.collectAsState(initial = emptyList())
-        val messageVocaleList by uiState.messageVocaleList.collectAsState(initial = emptyList())
 
         // Create a map of messages for easier access
-        val messagesMap = messageVocaleList.associateBy { it.keyID }
+        val messagesMap = uiState.messageVocaleList.associateBy { it.keyID }
 
         // Display messages in LazyColumn
         LazyColumn(
@@ -33,15 +31,16 @@ fun A_MessageurMainScreen(
                 .fillMaxWidth()
                 .padding(bottom = 80.dp) // Add padding for the FAB
         ) {
-            items(messagesList) { message ->
-                // Find the message details from the map
+            items(uiState.noSqlMessageVocaleList.size) { index ->
+                val message = uiState.noSqlMessageVocaleList[index]
+
                 val messageDetails = messagesMap[message.keyIDMessageVocale]
 
                 if (messageDetails != null) {
-                    MessagesVocaleItem(
-                        uiState=uiState,
+                    B_ItemMessagesVocale(
+                        uiState = uiState,
                         messageDetails = messageDetails,
-                        etates = etatesList.filter { etate ->
+                        etates = uiState.etateMessageVocaleList.filter { etate ->
                             message.keyIDsChildListEtateMessageVocale.contains(etate.fireBaseKeyID)
                         },
                         viewModel = viewModel
@@ -54,5 +53,3 @@ fun A_MessageurMainScreen(
         FabButtonsMessageurMainScreen(viewModel)
     }
 }
-
-

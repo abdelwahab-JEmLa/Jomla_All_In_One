@@ -1,9 +1,10 @@
 package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views
 
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.EtateMessageVocale
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.MessageVocale
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.MessageurUiState
-import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.Models.EtateMessageVocale
-import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.Models.MessageVocale
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Views.Functions.playVoiceMessage
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import android.media.MediaPlayer
 import android.widget.Toast
@@ -47,7 +48,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun MessagesVocaleItem(
+fun B_ItemMessagesVocale(
     uiState: MessageurUiState,
     messageDetails: MessageVocale,
     etates: List<EtateMessageVocale>,
@@ -104,12 +105,10 @@ fun MessagesVocaleItem(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Fix for the Text component in MessagesVocaleItem.kt
+                // Fix for the Text component in B_ItemMessagesVocale.kt
 
                 Text(
                     text = try {
-                        // Try to get a meaningful name from the message
-                        // If vocaleKeyID contains client info, extract it
                         if (messageDetails.vocaleKeyID.contains("_")) {
                             messageDetails.vocaleKeyID.substringBefore("_")
                         } else {
