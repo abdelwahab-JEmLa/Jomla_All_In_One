@@ -13,12 +13,15 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Stop
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -85,7 +88,8 @@ fun B_Item_TransactionItem(
 
     // Blinking effect using LaunchedEffect when not active and in ON_MODE_COMMEND_ACTUELLEMENT state
     if (etateActuellementEst == _1_3_TransactionCommercial.EtateActuellementEst.ON_MODE_COMMEND_ACTUELLEMENT
-        && activeTransactionId != transaction.vid) {
+        && activeTransactionId != transaction.vid
+    ) {
         LaunchedEffect(key1 = Unit) {
             while (true) {
                 blinkState.value = !blinkState.value
@@ -116,7 +120,9 @@ fun B_Item_TransactionItem(
                         viewModel.deleteVoiceRecordingFromStorage(transaction.vocaleKeyID) { success ->
                             if (success) {
                                 // Then delete the transaction from database
-                                viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.deleteData(transaction)
+                                viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.deleteData(
+                                    transaction
+                                )
                             } else {
                                 // Show error message if voice deletion failed
                                 Toast.makeText(
@@ -232,8 +238,10 @@ fun B_Item_TransactionItem(
                                                 coroutineScope.launch {
                                                     while (isPlaying && mediaPlayer != null) {
                                                         val duration = mediaPlayer?.duration ?: 1
-                                                        val currentPosition = mediaPlayer?.currentPosition ?: 0
-                                                        playbackProgress = currentPosition.toFloat() / duration.toFloat()
+                                                        val currentPosition =
+                                                            mediaPlayer?.currentPosition ?: 0
+                                                        playbackProgress =
+                                                            currentPosition.toFloat() / duration.toFloat()
                                                         delay(100)
                                                     }
                                                 }
@@ -246,9 +254,14 @@ fun B_Item_TransactionItem(
 
                                                 // Update the transaction to mark voice message as listened
                                                 if (!transaction.sonVocaleEstEcoute) {
+                                                    // Get current timestamp
+                                                    val currentTimestamp =
+                                                        datesHandler.getCurrentTimestamps()
+
                                                     viewModel.r_0_0_HeadOfRepositorys_SQL_Repository.upsertUneDataEtReturnVID(
                                                         transaction.copy(
-                                                            sonVocaleEstEcoute = true
+                                                            sonVocaleEstEcoute = true,
+                                                            sonEcoutementEstFaitAutimestamps = currentTimestamp
                                                         )
                                                     ) {}
                                                 }
@@ -256,7 +269,11 @@ fun B_Item_TransactionItem(
                                             onError = {
                                                 isPlaying = false
                                                 playbackProgress = 0f
-                                                Toast.makeText(context, "Erreur de lecture du message vocal", Toast.LENGTH_SHORT).show()
+                                                Toast.makeText(
+                                                    context,
+                                                    "Erreur de lecture du message vocal",
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
                                             }
                                         )
                                     }
@@ -281,6 +298,41 @@ fun B_Item_TransactionItem(
                             color = Color.White,
                             trackColor = Color.White.copy(alpha = 0.3f)
                         )
+
+                        // Show status icon and listened time
+                        Column(
+                            modifier = Modifier
+                                .padding(start = 4.dp),
+                            horizontalAlignment = Alignment.End
+                        ) {
+                            if (transaction.sonVocaleEstEcoute) {
+                                // Show check mark if message has been listened to
+                                Column {
+                                    Icon(
+                                        imageVector = Icons.Default.Check,
+                                        contentDescription = "Message écouté",
+                                        tint = Color.Green,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                    // Show when the message was listened to
+                                    if (transaction.sonEcoutementEstFaitAutimestamps > 0) {
+                                        Text(
+                                            text = datesHandler.getDateAndTimString(transaction.sonEcoutementEstFaitAutimestamps).time,
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = Color.White
+                                        )
+                                    }
+                                }
+                            } else {
+                                // Show warning if message has not been listened to
+                                Icon(
+                                    imageVector = Icons.Default.Warning,
+                                    contentDescription = "Message non écouté",
+                                    tint = Color.Yellow,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+                        }
                     }
                 }
             }

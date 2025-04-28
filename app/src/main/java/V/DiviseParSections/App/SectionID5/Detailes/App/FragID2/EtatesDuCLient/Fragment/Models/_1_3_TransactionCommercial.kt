@@ -31,6 +31,7 @@ data class _1_3_TransactionCommercial(
 
     var vocaleKeyID: String = "",
     var sonVocaleEstEcoute: Boolean = false,
+    var sonEcoutementEstFaitAutimestamps: Long=0,
 
     var etateActuellementEst: EtateActuellementEst =
         EtateActuellementEst.NON_DEFINI,
