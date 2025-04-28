@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.PolygonGeoLimite
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.PolygonGeoLimite
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.B_ClientDataBaseRepository
@@ -43,6 +43,8 @@ data class PanelsGroupeButton(
 
 // Updated MapClientsUiState data class
 data class MapClientsUiState(
+    val e1SecteurDeClientsList: List<E1SecteurDeClients> = emptyList(),
+
     val paneleGroupeButtonList: List<PanelsGroupeButton> =
         listOf(
             PanelsGroupeButton(
@@ -63,7 +65,11 @@ class ViewModel_MapClients_App2FragID1(
     private val _uiState = MutableStateFlow(MapClientsUiState())
     val uiState: StateFlow<MapClientsUiState> = _uiState.asStateFlow()
 
-    val secteurDao = appDatabase.secteurDeClientsDao()
+    val secteurRepo = repo_0_0_HeadSQLRepositorys.repositorys_Model
+        .e1SecteurDeClientsRepository
+
+    val secteurList = secteurRepo.listCollected
+
     val polygonDao = appDatabase.polygonGeoLimiteDaoDao()
 
     val modelDatasSnapList_1_3_TransactionCommercial = repo_0_0_HeadSQLRepositorys.repositorys_Model
@@ -119,7 +125,7 @@ class ViewModel_MapClients_App2FragID1(
 
     private fun loadSecteurs() {
         viewModelScope.launch {
-            _secteurs.value = secteurDao.getAll()
+            _secteurs.value = secteurList
         }
     }
 
@@ -142,7 +148,8 @@ class ViewModel_MapClients_App2FragID1(
     suspend fun updateSecteurActive(secteurId: Long, active: Boolean) {
         val secteur = _secteurs.value.find { it.vid == secteurId } ?: return
         val updatedSecteur = secteur.copy(ouvert = active)
-        secteurDao.insert(updatedSecteur)
+
+        secteurRepo.insert(updatedSecteur)
         loadSecteurs() // Refresh the list
     }
 
@@ -154,8 +161,10 @@ class ViewModel_MapClients_App2FragID1(
             sonPolygonOnModeDessine = false,
             couleur = color
         )
-        val sectorId = secteurDao.insertAvecRetureNewVid(newSector)
-        _currentActiveSectorId.value = sectorId
+
+        val newSectorId = _secteurs.value.maxOf { it.vid } +1
+
+        _currentActiveSectorId.value = newSectorId
         loadSecteurs() // Refresh the list
         mapReloadTigger++ // Add this line to trigger map refresh
 
@@ -234,7 +243,7 @@ class ViewModel_MapClients_App2FragID1(
 
             // Update the sector to mark it as closed
             val updatedSector = sector.copy(sonPolygonOnModeDessine = true, ouvert = false)
-            secteurDao.insert(updatedSector)
+            secteurRepo.insert(updatedSector)
 
             // Clear the current active sector
             _currentActiveSectorId.value = null

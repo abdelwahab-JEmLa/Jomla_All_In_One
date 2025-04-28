@@ -1,15 +1,15 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Test
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.PolygonGeoLimite
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.PolygonGeoLimite
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Repository.PolygonGeoLimiteDao
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.SQL.SecteurDeClientsDao
 import org.osmdroid.util.GeoPoint
 import kotlin.math.cos
 import kotlin.math.sin
 
 suspend fun insert2SecteurEtPolygon(
-    secteurDao: SecteurDeClientsDao,
+    viewModel: ViewModel_MapClients_App2FragID1,
     polygonDao: PolygonGeoLimiteDao,
 ) {
     // Premier secteur - "Tamaris" with blue color
@@ -29,8 +29,9 @@ suspend fun insert2SecteurEtPolygon(
     )
 
     // Insérer les deux secteurs et obtenir leurs IDs
-    val secteur1Id = secteurDao.insertAvecRetureNewVid(secteur1)
-    val secteur2Id = secteurDao.insertAvecRetureNewVid(secteur2)
+
+    val secteur1Id =  viewModel.secteurRepo.insertAvecRetureNewVid(secteur1)
+    val secteur2Id =  viewModel.secteurRepo.insertAvecRetureNewVid(secteur2)
 
     // Point de départ pour le premier secteur
     val startPoint = GeoPoint(36.73928, 3.17188)

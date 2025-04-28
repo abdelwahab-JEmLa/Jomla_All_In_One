@@ -17,9 +17,9 @@ import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
 
 class E1SecteurDeClientsRepositoryImpl(
-    val appDatabase: AppDatabase
+    val appDatabase: AppDatabase,
 ) : E1SecteurDeClientsRepository {
-    override var listState: SnapshotStateList<E1SecteurDeClients> = SnapshotStateList()
+    override var listCollected: SnapshotStateList<E1SecteurDeClients> = SnapshotStateList()
 
     override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
     private val repositoryScope = CoroutineScope(Dispatchers.IO)
@@ -60,9 +60,9 @@ class E1SecteurDeClientsRepositoryImpl(
                 }
 
                 withContext(Dispatchers.Main) {
-                    listState.clear()
+                    listCollected.clear()
                     if (dataList.isNotEmpty()) {
-                        listState.addAll(dataList)
+                        listCollected.addAll(dataList)
                     }
                     initialDataLoaded = true
                     progressRepo.value = 1.0f
@@ -78,8 +78,8 @@ class E1SecteurDeClientsRepositoryImpl(
         repositoryScope.launch {
             mainDao.getAllFlow().collectLatest { roomData ->
                 withContext(Dispatchers.Main) {
-                    listState.clear()
-                    listState.addAll(roomData)
+                    listCollected.clear()
+                    listCollected.addAll(roomData)
                 }
                 // Then check consistency with Firebase
                 checkDataConsistencyWithFireBase()
@@ -200,7 +200,9 @@ class E1SecteurDeClientsRepositoryImpl(
                     }
                 }
 
-                E1SecteurDeClientsRepository.sonDataBaseRef.addValueEventListener(flowValueEventListener!!)
+                E1SecteurDeClientsRepository.sonDataBaseRef.addValueEventListener(
+                    flowValueEventListener!!
+                )
                 isFlowListenerActive.set(true)
             }
         }
@@ -210,7 +212,9 @@ class E1SecteurDeClientsRepositoryImpl(
         synchronized(flowListenerLock) {
             if (isFlowListenerActive.get() && flowValueEventListener != null) {
                 try {
-                    E1SecteurDeClientsRepository.sonDataBaseRef.removeEventListener(flowValueEventListener!!)
+                    E1SecteurDeClientsRepository.sonDataBaseRef.removeEventListener(
+                        flowValueEventListener!!
+                    )
                 } catch (e: Exception) {
                     // Exception handled silently
                 } finally {
@@ -225,7 +229,9 @@ class E1SecteurDeClientsRepositoryImpl(
         synchronized(listenerLock) {
             if (isListenerActive.get() && valueEventListener != null) {
                 try {
-                    E1SecteurDeClientsRepository.sonDataBaseRef.removeEventListener(valueEventListener!!)
+                    E1SecteurDeClientsRepository.sonDataBaseRef.removeEventListener(
+                        valueEventListener!!
+                    )
                 } catch (e: Exception) {
                     // Exception handled silently
                 } finally {
@@ -236,7 +242,17 @@ class E1SecteurDeClientsRepositoryImpl(
         }
     }
 
+    override fun insert(updatedSecteur: E1SecteurDeClients) {
+        repositoryScope.launch {
+            mainDao.insert(updatedSecteur)
+        }
+    }
 
+    override suspend fun insertAvecRetureNewVid(secteur1: E1SecteurDeClients): Long {
+        return withContext(Dispatchers.IO) {
+            mainDao.insertAvecRetureNewVid(secteur1)
+        }
+    }
 
     fun cleanup() {
         repositoryScope.launch {

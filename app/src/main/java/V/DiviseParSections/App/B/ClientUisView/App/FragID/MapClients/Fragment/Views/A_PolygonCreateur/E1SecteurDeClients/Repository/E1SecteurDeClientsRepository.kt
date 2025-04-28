@@ -6,12 +6,14 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import kotlinx.coroutines.flow.MutableStateFlow
 
 interface E1SecteurDeClientsRepository {
-    var listState: SnapshotStateList<E1SecteurDeClients>
+    var listCollected: SnapshotStateList<E1SecteurDeClients>
 
     val progressRepo: MutableStateFlow<Float>
         get() = MutableStateFlow(0f)
 
     suspend fun ensureDataIsInitialized()
+
+    fun insert(updatedSecteur: E1SecteurDeClients)
 
     companion object {
         const val TAG = "E1SecteurDeClients"
@@ -20,4 +22,6 @@ interface E1SecteurDeClientsRepository {
             .child("E")
             .child("1")
     }
+
+    suspend fun insertAvecRetureNewVid(secteur1: E1SecteurDeClients): Long
 }

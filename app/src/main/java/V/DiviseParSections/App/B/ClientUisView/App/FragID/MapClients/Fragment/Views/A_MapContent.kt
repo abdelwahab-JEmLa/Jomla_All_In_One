@@ -55,6 +55,7 @@ fun MapContent(
     onClear: () -> Unit,
     mapReloadTrigger: Int = 0,
 ) {
+
     val context = LocalContext.current
     val currentZoom by remember { mutableDoubleStateOf(18.2) }
     val mapView = remember { MapView(context) }
@@ -92,21 +93,26 @@ fun MapContent(
         // Execute all database operations on Dispatchers.IO
         withContext(Dispatchers.IO) {
             // Get sector and polygon DAOs
-            val secteurDao = viewModel.appDatabase.secteurDeClientsDao()
             val polygonDao = viewModel.appDatabase.polygonGeoLimiteDaoDao()
 
             // Check if there are existing sectors
-            if (secteurDao.getCount() == 0) {
+            if (uiState.e1SecteurDeClientsList.isEmpty()) {
                 // If no sectors exist, create two with their polygons
-                insert2SecteurEtPolygon(secteurDao, polygonDao)
+                insert2SecteurEtPolygon(viewModel,
+                    polygonDao =polygonDao
+                )
             }
 
             // Get all sectors and polygon points
-            val allSecteurs = secteurDao.getAll()
+            val allSecteurs = uiState.e1SecteurDeClientsList
             val allPolygonPoints = polygonDao.getAll()
 
             // Get structured information about sectors and their polygons
-            val secteurPolygonInfoList = getNoSqlDisplayer(secteurDao, polygonDao)
+
+            val secteurPolygonInfoList = getNoSqlDisplayer(
+                uiState=uiState,
+                viewModel=viewModel,
+                polygonDao= polygonDao)
 
             // Back to main thread to update UI
             withContext(Dispatchers.Main) {

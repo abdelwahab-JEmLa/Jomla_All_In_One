@@ -1,16 +1,18 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.View
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsUiState
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.NoSqlSecteurDeClientsPolygonGeoLimite
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Repository.PolygonGeoLimiteDao
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.SQL.SecteurDeClientsDao
 import android.util.Log
 
 suspend fun getNoSqlDisplayer(
-    secteurDao: SecteurDeClientsDao,
     polygonDao: PolygonGeoLimiteDao,
+    uiState: MapClientsUiState,
+    viewModel: ViewModel_MapClients_App2FragID1,
 ): List<NoSqlSecteurDeClientsPolygonGeoLimite> {
     // Récupérer tous les secteurs
-    val allSecteurs = secteurDao.getAll()
+    val allSecteurs = uiState.e1SecteurDeClientsList
     Log.d("PolygonCreator", "Retrieved ${allSecteurs.size} sectors from database")
 
     // Récupérer tous les points de polygone
