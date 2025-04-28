@@ -12,9 +12,6 @@ import android.widget.Toast
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import java.io.File
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 // Fix for the upsertEtReturnSonNewVid lambda issue
 fun startRecording(
@@ -22,8 +19,16 @@ fun startRecording(
     viewModel: ViewModelMessageur,
     uiState: MessageurUiState,
 ): Pair<MediaRecorder, File> {
-    val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-    val fileName = "voice_$timestamp.aac"  // Utiliser AAC au lieu de 3GP
+    // Créer un nouveau message vocal
+    val lastOrNull = uiState.noSqlMessageVocaleList.lastOrNull()?.keyIDMessageVocale
+    val maxVid = uiState.messageVocaleList.find {
+        it.keyID==lastOrNull
+    }?.vid?.plus(1) ?: 1
+
+    val currentTimeStr = DatesHandler().getDateAndTimString().time
+    val newMessageKeyID = "$maxVid->(${currentTimeStr})"
+
+    val fileName = "$newMessageKeyID.aac"
     val file = File(context.cacheDir, fileName)
 
     val recorder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -49,14 +54,7 @@ fun startRecording(
 
             viewModel.viewModelScope.launch {
 
-                // Créer un nouveau message vocal
-                val lastOrNull = uiState.noSqlMessageVocaleList.lastOrNull()?.keyIDMessageVocale
-                val maxVid = uiState.messageVocaleList.find {
-                    it.keyID==lastOrNull
-                }?.vid?.plus(1) ?: 1
 
-                val currentTimeStr = DatesHandler().getDateAndTimString().time
-                val newMessageKeyID = "$maxVid->(${currentTimeStr})"
 
                 val newMessage = MessageVocale(
                     vid = maxVid,

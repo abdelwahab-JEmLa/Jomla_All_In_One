@@ -135,7 +135,8 @@ fun ButtonEnregestrementMessageVocaleEtLeMetreAuStorageGoogle(
                     val (recorder, file) = startRecording(
                         context,
                         viewModel,
-                                uiState)
+                        uiState
+                    )
                     mediaRecorder = recorder
                     outputFile = file
                     isRecording = true
