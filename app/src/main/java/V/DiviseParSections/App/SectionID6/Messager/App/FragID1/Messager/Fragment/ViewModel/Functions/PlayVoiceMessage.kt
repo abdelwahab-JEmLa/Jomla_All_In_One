@@ -1,12 +1,11 @@
 package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.Functions
 
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Models.MessageVocale
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
 import android.content.Context
 import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.widget.Toast
-import com.google.firebase.Firebase
-import com.google.firebase.storage.storage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
@@ -23,8 +22,7 @@ suspend fun ViewModelMessageur.playVoiceMessage(
     return withContext(Dispatchers.IO) {
         try {
             // Get download URL from Firebase Storage
-            val storageRef = Firebase.storage.reference
-                .child("1_messagesVocales")
+            val storageRef = MessageVocale.storageRef
                 .child(voiceMessageId)
 
             val downloadUrl = withContext(Dispatchers.IO) {

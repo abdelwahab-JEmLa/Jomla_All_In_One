@@ -2,8 +2,8 @@ package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragmen
 
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Models.EtateMessageVocale
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Models.MessageVocale
-import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.Functions.formatTime
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import android.Manifest
 import android.content.Context
@@ -38,8 +38,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import com.google.firebase.Firebase
-import com.google.firebase.storage.storage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
@@ -266,8 +264,7 @@ private fun uploadVoiceMessage(
 ) {
     if (file == null) return
 
-    val messagesVocalesRef = Firebase.storage.reference
-        .child("1_messagesVocales")
+    val messagesVocalesRef = MessageVocale.storageRef
 
     // Generate a unique filename for the voice message
     val fileId = "voice_${messageVid}_${UUID.randomUUID()}.aac"  // Extension AAC

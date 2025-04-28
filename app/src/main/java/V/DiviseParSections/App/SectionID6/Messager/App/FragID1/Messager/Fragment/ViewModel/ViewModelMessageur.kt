@@ -6,7 +6,6 @@ import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +14,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
 
-// UI State class that contains all UI-related state
 data class MessageurUiState(
     val listNoSqlMessageVocale: Flow<List<NoSqlMessageVocale>> = emptyFlow(),
     val listMessageVocale: Flow<List<MessageVocale>> = emptyFlow(),
@@ -29,7 +27,6 @@ class ViewModelMessageur(
     private val _uiState = MutableStateFlow(MessageurUiState())
     val uiState: StateFlow<MessageurUiState> = _uiState.asStateFlow()
 
-    val storageRef = FirebaseStorage.getInstance().reference
 
     init {
         if (true) {

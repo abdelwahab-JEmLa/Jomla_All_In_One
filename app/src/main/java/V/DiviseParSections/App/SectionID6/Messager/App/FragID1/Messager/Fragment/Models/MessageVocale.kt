@@ -2,6 +2,7 @@ package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragmen
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.google.firebase.storage.FirebaseStorage
 import kotlin.random.Random
 
 @Entity
@@ -24,6 +25,10 @@ data class MessageVocale(
 
     // Test instance function with random value implementation
     companion object {
+        val storageRef = FirebaseStorage.getInstance().reference
+            .child("2_MessageVocale")
+
+
         fun createTestInstance(): MessageVocale {
             // Generate a random number between 1 and 3
             val randomNumber = Random.nextInt(1, 4) // Generates 1, 2, or 3
