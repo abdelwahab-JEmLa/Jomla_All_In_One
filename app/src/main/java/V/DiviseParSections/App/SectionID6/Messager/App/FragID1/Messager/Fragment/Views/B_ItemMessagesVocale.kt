@@ -62,13 +62,16 @@ fun B_ItemMessagesVocale(
     var mediaPlayer by remember { mutableStateOf<MediaPlayer?>(null) }
     val datesHandler = remember { DatesHandler() }
 
-    // Check if message has been listened to
+    // Check message states
     val isListened = etatesChildKeyIDsList.any { it.nom == EtateMessageVocale.Nom.ECOUTE }
     val isViewed = etatesChildKeyIDsList.any { it.nom == EtateMessageVocale.Nom.VUE }
+    val isBeingRecorded = etatesChildKeyIDsList.any {
+        it.nom == EtateMessageVocale.Nom.EN_COURT_ENREGESTREMENT
+    }
+    val isSent = etatesChildKeyIDsList.any { it.nom == EtateMessageVocale.Nom.ENVOYER }
 
     // Get the latest state timestamp
     val latestTimestamp = etatesChildKeyIDsList.maxByOrNull { it.timestamps }?.timestamps ?: 0L
-
 
     // Cleanup MediaPlayer when leaving composition
     DisposableEffect(Unit) {
@@ -106,14 +109,24 @@ fun B_ItemMessagesVocale(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Fix for the Text component in B_ItemMessagesVocale.kt
-
                 Text(
                     text = try {
-                        if (parentMessageVocale.vocaleKeyID.contains("_")) {
-                            parentMessageVocale.vocaleKeyID.substringBefore("_")
-                        } else {
-                            "Message vocal" // Fallback to generic text
+                        when {
+                            parentMessageVocale.vocaleKeyID.startsWith("voice_") -> {
+                                // Extract the message ID part
+                                val parts = parentMessageVocale.vocaleKeyID.split("_")
+                                if (parts.size >= 2) {
+                                    "Message vocal #${parts[1]}"
+                                } else {
+                                    "Message vocal"
+                                }
+                            }
+                            parentMessageVocale.vocaleKeyID.isNotEmpty() -> {
+                                "Message: ${parentMessageVocale.vocaleKeyID}"
+                            }
+                            else -> {
+                                "Message vocal"
+                            }
                         }
                     } catch (e: Exception) {
                         "Message vocal" // Error fallback
@@ -134,131 +147,148 @@ fun B_ItemMessagesVocale(
                 )
             }
 
-            // Audio player controls
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Play/Stop Button
-                IconButton(
-                    onClick = {
-                        if (isPlaying) {
-                            // Stop playing
-                            mediaPlayer?.apply {
-                                stop() // Fixed: Removed redundant isPlaying check
-                                release()
-                            }
-                            mediaPlayer = null
-                            isPlaying = false
-                            playbackProgress = 0f
-                        } else {
-                            // Start playing
-                            coroutineScope.launch {
-                                // Fixed: Store and use the player variable
-                                viewModel.playVoiceMessage(
-                                    parentMessageVocale.vocaleKeyID,
-                                    context,
-                                    onPrepared = { player ->
-                                        mediaPlayer = player
-                                        isPlaying = true
-
-                                        // Update progress while playing
-                                        coroutineScope.launch {
-                                            while (isPlaying && mediaPlayer != null) {
-                                                val duration = mediaPlayer?.duration ?: 1
-                                                val currentPosition =
-                                                    mediaPlayer?.currentPosition ?: 0
-                                                playbackProgress =
-                                                    currentPosition.toFloat() / duration.toFloat()
-                                                delay(100)
-                                            }
-                                        }
-                                    },
-                                    onCompletion = {
-                                        isPlaying = false
-                                        playbackProgress = 0f
-                                        mediaPlayer?.release()
-                                        mediaPlayer = null
-
-                                        // Update message state to ECOUTE if not already
-                                        if (!isListened) {
-                                            coroutineScope.launch {
-                                                // Create a new EtateMessageVocale with ECOUTE state
-                                                val newEtate = EtateMessageVocale(
-                                                    parentMessageVID = parentMessageVocale.vid,
-                                                    parentMessageKeyID = parentMessageVocale.keyID,
-                                                    nom = EtateMessageVocale.Nom.ECOUTE,
-                                                    timestamps = datesHandler.getCurrentTimestamps()
-                                                )
-                                                viewModel.appDatabase.etateMessageVocaleDao()
-                                                    .insert(newEtate)
-                                            }
-                                        }
-                                    },
-                                    onError = {
-                                        isPlaying = false
-                                        playbackProgress = 0f
-                                        Toast.makeText(
-                                            context,
-                                            "Erreur de lecture du message vocal",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    }
-                                )
-                            }
-                        }
-                    }
+            // Show different UI based on message state
+            if (isBeingRecorded && !isSent) {
+                // Display "Recording in progress" text instead of player controls
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        imageVector = if (isPlaying) Icons.Default.Stop else Icons.Default.PlayArrow,
-                        contentDescription = if (isPlaying) "Arrêter la lecture" else "Lecture du message vocal",
-                        tint = Color.White
+                    Text(
+                        text = "Enregistrement en cours...",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color.White,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                     )
                 }
-
-                // Progress Bar
-                LinearProgressIndicator(
-                    progress = { playbackProgress },
+            } else {
+                // Audio player controls - only show for sent messages
+                Row(
                     modifier = Modifier
-                        .weight(1f)
-                        .height(4.dp)
-                        .padding(horizontal = 8.dp)
-                        .clip(RoundedCornerShape(2.dp)),
-                    color = Color.White,
-                    trackColor = Color.White.copy(alpha = 0.3f)
-                )
-
-                // Status icon
-                Column(
-                    modifier = Modifier.padding(start = 4.dp),
-                    horizontalAlignment = Alignment.End
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (isListened) {
-                        // Show check mark if message has been listened to
+                    // Play/Stop Button
+                    IconButton(
+                        onClick = {
+                            if (isPlaying) {
+                                // Stop playing
+                                mediaPlayer?.apply {
+                                    stop()
+                                    release()
+                                }
+                                mediaPlayer = null
+                                isPlaying = false
+                                playbackProgress = 0f
+                            } else {
+                                // Start playing
+                                coroutineScope.launch {
+                                    viewModel.playVoiceMessage(
+                                        parentMessageVocale.vocaleKeyID,
+                                        context,
+                                        onPrepared = { player ->
+                                            mediaPlayer = player
+                                            isPlaying = true
+
+                                            // Update progress while playing
+                                            coroutineScope.launch {
+                                                while (isPlaying && mediaPlayer != null) {
+                                                    val duration = mediaPlayer?.duration ?: 1
+                                                    val currentPosition =
+                                                        mediaPlayer?.currentPosition ?: 0
+                                                    playbackProgress =
+                                                        currentPosition.toFloat() / duration.toFloat()
+                                                    delay(100)
+                                                }
+                                            }
+                                        },
+                                        onCompletion = {
+                                            isPlaying = false
+                                            playbackProgress = 0f
+                                            mediaPlayer?.release()
+                                            mediaPlayer = null
+
+                                            // Update message state to ECOUTE if not already
+                                            if (!isListened) {
+                                                coroutineScope.launch {
+                                                    // Create a new EtateMessageVocale with ECOUTE state
+                                                    val newEtate = EtateMessageVocale(
+                                                        parentMessageVID = parentMessageVocale.vid,
+                                                        parentMessageKeyID = parentMessageVocale.keyID,
+                                                        nom = EtateMessageVocale.Nom.ECOUTE,
+                                                        timestamps = datesHandler.getCurrentTimestamps()
+                                                    )
+                                                    viewModel.appDatabase.etateMessageVocaleDao()
+                                                        .insert(newEtate)
+                                                }
+                                            }
+                                        },
+                                        onError = {
+                                            isPlaying = false
+                                            playbackProgress = 0f
+                                            Toast.makeText(
+                                                context,
+                                                "Erreur de lecture du message vocal",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    ) {
                         Icon(
-                            imageVector = Icons.Default.Check,
-                            contentDescription = "Message écouté",
-                            tint = Color.Green,
-                            modifier = Modifier.size(24.dp)
+                            imageVector = if (isPlaying) Icons.Default.Stop else Icons.Default.PlayArrow,
+                            contentDescription = if (isPlaying) "Arrêter la lecture" else "Lecture du message vocal",
+                            tint = Color.White
                         )
-                        // Show when the message was listened to
-                        if (latestTimestamp > 0) {
-                            Text(
-                                text = datesHandler.getDateAndTimString(latestTimestamp).time,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = Color.White
+                    }
+
+                    // Progress Bar
+                    LinearProgressIndicator(
+                        progress = { playbackProgress },
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(4.dp)
+                            .padding(horizontal = 8.dp)
+                            .clip(RoundedCornerShape(2.dp)),
+                        color = Color.White,
+                        trackColor = Color.White.copy(alpha = 0.3f)
+                    )
+
+                    // Status icon
+                    Column(
+                        modifier = Modifier.padding(start = 4.dp),
+                        horizontalAlignment = Alignment.End
+                    ) {
+                        if (isListened) {
+                            // Show check mark if message has been listened to
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = "Message écouté",
+                                tint = Color.Green,
+                                modifier = Modifier.size(24.dp)
+                            )
+                            // Show when the message was listened to
+                            if (latestTimestamp > 0) {
+                                Text(
+                                    text = datesHandler.getDateAndTimString(latestTimestamp).time,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color.White
+                                )
+                            }
+                        } else {
+                            // Show warning if message has not been listened to
+                            Icon(
+                                imageVector = Icons.Default.Warning,
+                                contentDescription = "Message non écouté",
+                                tint = Color.Yellow,
+                                modifier = Modifier.size(24.dp)
                             )
                         }
-                    } else {
-                        // Show warning if message has not been listened to
-                        Icon(
-                            imageVector = Icons.Default.Warning,
-                            contentDescription = "Message non écouté",
-                            tint = Color.Yellow,
-                            modifier = Modifier.size(24.dp)
-                        )
                     }
                 }
             }
