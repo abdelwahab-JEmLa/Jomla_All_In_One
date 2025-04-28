@@ -40,7 +40,7 @@ data class PaneleGroupeButton(
 data class MapClientsUiState(
     val paneleGroupeButtonList: List<PaneleGroupeButton> =
         listOf(
-        PaneleGroupeButton("ajoutePolygen", isActive = false),
+        PaneleGroupeButton("Map Secteurs polygen", isActive = false),
         PaneleGroupeButton("autres", isActive = true),
     ),
     var showDialogeControleFabs: Boolean = false,
