@@ -46,7 +46,6 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import androidx.compose.ui.graphics.Color as ComposeColor
 
-
 @Composable
 fun MapContent(
     viewModel: ViewModel_MapClients_App2FragID1,
