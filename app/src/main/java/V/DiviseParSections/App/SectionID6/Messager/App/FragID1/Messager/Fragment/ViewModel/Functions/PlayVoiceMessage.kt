@@ -1,5 +1,6 @@
-package V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.View
+package V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.Functions
 
+import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.ViewModelMessageur
 import android.content.Context
 import android.media.AudioAttributes
 import android.media.MediaPlayer
@@ -10,17 +11,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
-// Fonction mise à jour pour lire les fichiers AAC
-suspend fun playVoiceMessage(
+suspend fun ViewModelMessageur.playVoiceMessage(
     voiceMessageId: String?,
     context: Context,
     onPrepared: (MediaPlayer) -> Unit,
     onCompletion: () -> Unit,
     onError: () -> Unit,
-) {
-    if (voiceMessageId.isNullOrEmpty()) return
+): MediaPlayer? {  // Changed to return MediaPlayer
+    if (voiceMessageId.isNullOrEmpty()) return null
 
-    withContext(Dispatchers.IO) {
+    return withContext(Dispatchers.IO) {
         try {
             // Get download URL from Firebase Storage
             val storageRef = Firebase.storage.reference
@@ -59,6 +59,7 @@ suspend fun playVoiceMessage(
                     }
                     prepareAsync()
                 }
+                mediaPlayer  // Return the mediaPlayer instance
             } else {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
@@ -68,6 +69,7 @@ suspend fun playVoiceMessage(
                     ).show()
                     onError()
                 }
+                null
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -75,6 +77,7 @@ suspend fun playVoiceMessage(
                 Toast.makeText(context, "Erreur: ${e.message}", Toast.LENGTH_SHORT).show()
                 onError()
             }
+            null
         }
     }
 }
