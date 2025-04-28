@@ -1,36 +1,11 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Repository
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.SecteurDeClients
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.PolygonGeoLimite
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-
-@Dao
-interface SecteurDeClientsDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAvecRetureNewVid(item: SecteurDeClients): Long
-
-    @Query("SELECT * FROM SecteurDeClients")
-    suspend fun getAll(): MutableList<SecteurDeClients>
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(item: SecteurDeClients)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(items: List<SecteurDeClients>)
-
-    @Delete
-    suspend fun delete(item: SecteurDeClients)
-
-    @Query("DELETE FROM SecteurDeClients")
-    suspend fun deleteAll()
-
-    @Query("SELECT COUNT(*) FROM SecteurDeClients")
-    fun getCount(): Int
-}
 
 @Dao
 interface PolygonGeoLimiteDao {

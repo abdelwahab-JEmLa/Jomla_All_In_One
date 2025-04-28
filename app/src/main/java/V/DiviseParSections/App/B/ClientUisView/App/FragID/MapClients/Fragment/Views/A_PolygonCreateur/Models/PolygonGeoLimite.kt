@@ -10,8 +10,8 @@ data class PolygonGeoLimite(
 
     //Forging Keys
     val parentSecteurDeClientsId: Long=0,
-    val parentSecteurDeClientsKey: String =
-        "SecteurDeClients.vid(SecteurDeClients.nom)",
+    val parentE1SecteurDeClientsKey: String =
+        "E1SecteurDeClients.vid(E1SecteurDeClients.nom)",
 
     //Infos De Base
     val aLatitude: Int,

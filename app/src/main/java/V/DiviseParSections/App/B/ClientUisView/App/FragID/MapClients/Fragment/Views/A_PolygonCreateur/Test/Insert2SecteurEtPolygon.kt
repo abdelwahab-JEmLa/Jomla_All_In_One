@@ -1,9 +1,9 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Test
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.PolygonGeoLimite
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.SecteurDeClients
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Repository.PolygonGeoLimiteDao
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Repository.SecteurDeClientsDao
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.SQL.SecteurDeClientsDao
 import org.osmdroid.util.GeoPoint
 import kotlin.math.cos
 import kotlin.math.sin
@@ -13,7 +13,7 @@ suspend fun insert2SecteurEtPolygon(
     polygonDao: PolygonGeoLimiteDao,
 ) {
     // Premier secteur - "Tamaris" with blue color
-    val secteur1 = SecteurDeClients(
+    val secteur1 = E1SecteurDeClients(
         vid = 0, // Auto-generated
         nom = "Tamaris",
         sonPolygonOnModeDessine = true,
@@ -21,7 +21,7 @@ suspend fun insert2SecteurEtPolygon(
     )
 
     // Deuxième secteur - "Plage" with green color
-    val secteur2 = SecteurDeClients(
+    val secteur2 = E1SecteurDeClients(
         vid = 0, // Auto-generated
         nom = "Plage",
         sonPolygonOnModeDessine = true,
@@ -49,7 +49,7 @@ suspend fun insert2SecteurEtPolygon(
             PolygonGeoLimite(
                 vid = 0, // Auto-generated
                 parentSecteurDeClientsId = secteur1Id,
-                parentSecteurDeClientsKey = "SecteurDeClients.$secteur1Id(${secteur1.nom})",
+                parentE1SecteurDeClientsKey = "E1SecteurDeClients.$secteur1Id(${secteur1.nom})",
                 aLatitude = (lat * 1E6).toInt(), // Stocker comme entiers (coordonnées en micro-degrés)
                 aLongitude = (lon * 1E6).toInt()
             )
@@ -72,7 +72,7 @@ suspend fun insert2SecteurEtPolygon(
             PolygonGeoLimite(
                 vid = 0, // Auto-generated
                 parentSecteurDeClientsId = secteur2Id,
-                parentSecteurDeClientsKey = "SecteurDeClients.$secteur2Id(${secteur2.nom})",
+                parentE1SecteurDeClientsKey = "E1SecteurDeClients.$secteur2Id(${secteur2.nom})",
                 aLatitude = (lat * 1E6).toInt(),
                 aLongitude = (lon * 1E6).toInt()
             )

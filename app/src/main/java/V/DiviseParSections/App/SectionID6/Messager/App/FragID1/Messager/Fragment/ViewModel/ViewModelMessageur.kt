@@ -104,7 +104,7 @@ data class EtateMessageVocale(
     //Forging Keys
     val parentMessageVID: Long = 0,
     val parentMessageKeyID: String =
-        "SecteurDeClients.vid(SecteurDeClients.nom)",
+        "E1SecteurDeClients.vid(E1SecteurDeClients.nom)",
 
     //Infos De Base
     var nom: Nom = Nom.EN_COURT_ENREGESTREMENT,

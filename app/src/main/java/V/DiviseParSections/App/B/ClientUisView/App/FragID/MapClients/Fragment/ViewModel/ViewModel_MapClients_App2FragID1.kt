@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.PolygonGeoLimite
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.SecteurDeClients
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.B_ClientDataBaseRepository
@@ -80,8 +80,8 @@ class ViewModel_MapClients_App2FragID1(
     )
 
     // State for sectors
-    private val _secteurs = MutableStateFlow<List<SecteurDeClients>>(emptyList())
-    val secteurs: StateFlow<List<SecteurDeClients>> = _secteurs
+    private val _secteurs = MutableStateFlow<List<E1SecteurDeClients>>(emptyList())
+    val secteurs: StateFlow<List<E1SecteurDeClients>> = _secteurs
 
     // Current active sector for polygon creation
     private var _currentActiveSectorId = MutableStateFlow<Long?>(null)
@@ -147,7 +147,7 @@ class ViewModel_MapClients_App2FragID1(
     }
 
     suspend fun addNewSector(name: String, color: String) {
-        val newSector = SecteurDeClients(
+        val newSector = E1SecteurDeClients(
             vid = 0, // Auto-generated
             nom = name,
             ouvert = true,
@@ -191,7 +191,7 @@ class ViewModel_MapClients_App2FragID1(
                 // Create a new point for the polygon
                 val newPoint = PolygonGeoLimite(
                     parentSecteurDeClientsId = sectorId,
-                    parentSecteurDeClientsKey = "SecteurDeClients.$sectorId(${sector.nom})",
+                    parentE1SecteurDeClientsKey = "E1SecteurDeClients.$sectorId(${sector.nom})",
                     aLatitude = latMicroDegrees,
                     aLongitude = lonMicroDegrees
                 )

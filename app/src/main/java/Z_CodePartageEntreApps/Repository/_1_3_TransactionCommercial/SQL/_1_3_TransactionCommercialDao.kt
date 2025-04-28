@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial
+package Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.SQL
 
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_3_TransactionCommercial
 import androidx.room.Dao

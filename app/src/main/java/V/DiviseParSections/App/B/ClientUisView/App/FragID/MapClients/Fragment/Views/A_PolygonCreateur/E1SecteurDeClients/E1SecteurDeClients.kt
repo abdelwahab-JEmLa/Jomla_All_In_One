@@ -1,10 +1,10 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
-data class SecteurDeClients(
+data class E1SecteurDeClients(
     @PrimaryKey(autoGenerate = true)
     val vid: Long,
 

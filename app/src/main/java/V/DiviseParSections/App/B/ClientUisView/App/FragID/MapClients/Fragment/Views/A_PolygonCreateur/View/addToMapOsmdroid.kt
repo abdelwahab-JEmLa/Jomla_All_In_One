@@ -2,7 +2,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.V
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.NoSqlSecteurDeClientsPolygonGeoLimite
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.PolygonGeoLimite
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.SecteurDeClients
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.Log
@@ -17,7 +17,7 @@ import org.osmdroid.views.overlay.Polyline
 
 fun addToMapOsmdroid(
     mapView: MapView, secteurPolygonInfoList: List<NoSqlSecteurDeClientsPolygonGeoLimite>,
-    allPolygonPoints: List<PolygonGeoLimite>, allSecteurs: List<SecteurDeClients>,
+    allPolygonPoints: List<PolygonGeoLimite>, allSecteurs: List<E1SecteurDeClients>,
 ) {
     Log.d("PolygonCreator", "Starting to add sectors to map")
     Log.d("PolygonCreator", "Number of sectors: ${allSecteurs.size}")
@@ -28,7 +28,7 @@ fun addToMapOsmdroid(
     secteurPolygonInfoList.forEach { secteurPolygonInfo ->
         Log.d("PolygonCreator", "Processing secteur info: ${secteurPolygonInfo.keyIDSecteurDeClients}")
 
-        val secteurId = "SecteurDeClients\\.(\\d+)->.*"
+        val secteurId = "E1SecteurDeClients\\.(\\d+)->.*"
             .toRegex().find(secteurPolygonInfo.keyIDSecteurDeClients)
             ?.groupValues?.get(1)?.toLongOrNull()
 

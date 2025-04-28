@@ -2,7 +2,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.V
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.NoSqlSecteurDeClientsPolygonGeoLimite
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Repository.PolygonGeoLimiteDao
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Repository.SecteurDeClientsDao
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.SQL.SecteurDeClientsDao
 import android.util.Log
 
 suspend fun getNoSqlDisplayer(
@@ -28,11 +28,11 @@ suspend fun getNoSqlDisplayer(
         Log.d("PolygonCreator", "Sector ${secteur.nom} (ID: ${secteur.vid}) has ${secteurPoints.size} points")
 
         // Créer la clé pour ce secteur
-        val secteurKey = "SecteurDeClients.${secteur.vid}->(${secteur.nom})"
+        val secteurKey = "E1SecteurDeClients.${secteur.vid}->(${secteur.nom})"
 
         // Créer la liste de chaînes de caractères pour les points du polygone
         val pointKeys = secteurPoints.map { point ->
-            "${point.vid}->(${point.parentSecteurDeClientsKey})"
+            "${point.vid}->(${point.parentE1SecteurDeClientsKey})"
         }
 
         // Ajouter le NoSqlSecteurDeClientsPolygonGeoLimite à la liste résultat
