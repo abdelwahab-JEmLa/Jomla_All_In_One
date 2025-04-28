@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Options
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 // Importer la nouvelle fonction FilterView au lieu de FilterModesDialog
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.C.FilterView
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.A_ChangeIdColor
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.AddMarkerButton
@@ -22,19 +22,25 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material.icons.filled.Fireplace
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.SearchOff
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -47,6 +53,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import kotlin.math.roundToInt
@@ -72,14 +79,15 @@ private class FilterLogger {
 
 @Composable
 fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
-    mapView: MapView,
     viewModel: ViewModel_MapClients_App2FragID1,
+    mapView: MapView,
     viewModelInitApp: ViewModelInitApp,
     onClear: () -> Unit,
     onPickFilter: (ViewModel_MapClients_App2FragID1.VisibleClientsNow) -> Unit,
     onFilterMarkers: () -> Unit,
     currentFilterMode: ViewModel_MapClients_App2FragID1.VisibleClientsNow,
 ) {
+    val uiState by viewModel.uiState.collectAsState()
     var showDatabaseEditDialog by remember { mutableStateOf(false) }
     var showFilterDialog by remember { mutableStateOf(false) }
     var showMenu by remember { mutableStateOf(false) }
@@ -122,6 +130,18 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
             ) {
                 if (showMenu) {
 
+                    val couleurButton2 = Color(0xFFF44336)
+                    FloatingActionButton(
+                        onClick = {
+                            uiState.showDialogeControleFabs=true
+                        },
+                        modifier = Modifier.size(40.dp),
+                        containerColor = couleurButton2
+                    ) {
+                        // Change icon to indicate polygon creation
+                        Icon(Icons.Filled.Map, "Add Polygon")
+                    }
+
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -139,9 +159,7 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
 
                         if (showLabels) {
                             Text(
-                                if (viewModel.filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList != null)
-                                    "فلتر: ${viewModel.filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList}"
-                                else "فلتر حسب اليوم",
+                                "فلتر: ${viewModel.filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList}",
                                 modifier = Modifier
                                     .background(couleurButton1)
                                     .padding(4.dp),
@@ -312,7 +330,108 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                 onDismiss = { showDayFilterDialog = false }
             )
         }
+
+        if (uiState.showDialogeControleFabs) {
+            Dialog(
+                onDismissRequest = { uiState.showDialogeControleFabs = false },
+            ) {
+                Box(
+                    modifier = Modifier
+                        .background(Color.White)
+                        .padding(16.dp)
+                ) {
+                    Column {
+                        Text(
+                            "Control Panel",
+                            modifier = Modifier.padding(bottom = 16.dp)
+                        )
+
+                        // Display the list of fabsGrooupeAAffiche
+                        // Fix for the dialog in A_GlobalOptionsControlsFloatingActionButtons_FragId1.kt
+// Specifically targeting the control panel section with the Unresolved reference error
+
+// ... previous code remains unchanged ...
+
+                        if (uiState.showDialogeControleFabs) {
+                            Dialog(
+                                onDismissRequest = { uiState.showDialogeControleFabs = false },
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .background(Color.White)
+                                        .padding(16.dp)
+                                ) {
+                                    Column {
+                                        Text(
+                                            "Control Panel",
+                                            modifier = Modifier.padding(bottom = 16.dp)
+                                        )
+
+                                        // Display the list of fabsGrooupeAAffiche
+                                        uiState.fabsGrooupeAAffiche.forEach { fabGroup ->
+                                            Row(
+                                                modifier = Modifier
+                                                    .padding(vertical = 8.dp)
+                                                    .clickable {
+                                                        // Fix: Use fabGroup.key instead of the unresolved 'key' variable
+                                                        val currentGroups = uiState.fabsGrooupeAAffiche
+                                                        val updatedGroups = currentGroups.map { group ->
+                                                            if (group.key == fabGroup.key) {   // Fixed: using fabGroup.key
+                                                                group.copy(visible = !group.visible)
+                                                            } else {
+                                                                group
+                                                            }
+                                                        }
+
+                                                        // Fix: Update the UI state directly through the viewModel
+                                                        viewModel.updateFabsGroups(updatedGroups)
+                                                    },
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Box(
+                                                    modifier = Modifier
+                                                        .size(24.dp)
+                                                        .background(
+                                                            color = if (fabGroup.visible) Color.Green else Color.Gray,
+                                                            shape = CircleShape
+                                                        )
+                                                        .padding(4.dp)
+                                                )
+
+                                                Spacer(modifier = Modifier.width(8.dp))
+
+                                                Text(fabGroup.key)
+                                            }
+                                        }
+
+                                        Spacer(modifier = Modifier.height(16.dp))
+
+                                        TextButton(
+                                            onClick = { viewModel.setShowDialogControleFabs(false) },
+                                            modifier = Modifier.align(Alignment.End)
+                                        ) {
+                                            Text("Close")
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        TextButton(
+                            onClick = { uiState.showDialogeControleFabs = false },
+                            modifier = Modifier.align(Alignment.End)
+                        ) {
+                            Text("Close")
+                        }
+                    }
+                }
+            }
+        }
     }
+
 }
 
 @Composable

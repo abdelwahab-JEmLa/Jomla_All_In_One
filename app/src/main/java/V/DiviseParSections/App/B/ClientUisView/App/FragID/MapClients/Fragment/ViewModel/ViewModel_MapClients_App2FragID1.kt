@@ -24,21 +24,40 @@ import com.google.firebase.Firebase
 import com.google.firebase.database.database
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import org.osmdroid.api.IGeoPoint
 import org.osmdroid.views.MapView
 import java.util.Date
 
+data class FabGroupe(
+    val key: String,
+    val visible: Boolean = false,
+)
+
+// UI State class to hold all UI-related state
+data class MapClientsUiState(
+    val fabsGrooupeAAffiche: List<FabGroupe> = listOf(
+        FabGroupe("ajoutePolygen", visible = false),
+    ),
+    var showDialogeControleFabs: Boolean = false,
+
+    )
+
 class ViewModel_MapClients_App2FragID1(
     val appDatabase: AppDatabase,
     val mainRepositery: B_ClientDataBaseRepository,
-    val repo_0_0_HeadSQLRepositorys:_0_0_HeadSQLRepositorys,
+    val repo_0_0_HeadSQLRepositorys: _0_0_HeadSQLRepositorys,
 ) : ViewModel() {
+
+    private val _uiState = MutableStateFlow(MapClientsUiState())
+    val uiState: StateFlow<MapClientsUiState> = _uiState.asStateFlow()
+
     val secteurDao = appDatabase.secteurDeClientsDao()
     val polygonDao = appDatabase.polygonGeoLimiteDaoDao()
 
-    val modelDatasSnapList_1_3_TransactionCommercial=repo_0_0_HeadSQLRepositorys.repositorys_Model
+    val modelDatasSnapList_1_3_TransactionCommercial = repo_0_0_HeadSQLRepositorys.repositorys_Model
         .repository_1_3_TransactionCommercial.modelDatasSnapList
 
     val bProto_ClientsDataBase = mainRepositery.modelDatas
@@ -46,8 +65,14 @@ class ViewModel_MapClients_App2FragID1(
     var auClickeCaUpdateClientPar by mutableStateOf(B_ClientDataBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT)
     var mapReloadTigger by mutableIntStateOf(0)
 
+
+
+
+
     var afficheLesJoursAuNoms by mutableStateOf(true)
-    var filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList by mutableStateOf<List<String>>(emptyList())
+    var filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList by mutableStateOf<List<String>>(
+        emptyList()
+    )
 
     // State for sectors
     private val _secteurs = MutableStateFlow<List<SecteurDeClients>>(emptyList())
@@ -63,6 +88,19 @@ class ViewModel_MapClients_App2FragID1(
 
     init {
         loadSecteurs()
+    }
+
+    // Inside ViewModel_MapClients_App2FragID1 class
+    fun updateFabsGroups(updatedGroups: List<FabGroupe>) {
+        _uiState.value = _uiState.value.copy(
+            fabsGrooupeAAffiche = updatedGroups
+        )
+    }
+
+    fun setShowDialogControleFabs(show: Boolean) {
+        _uiState.value = _uiState.value.copy(
+            showDialogeControleFabs = show
+        )
     }
 
     private fun loadSecteurs() {
@@ -115,7 +153,10 @@ class ViewModel_MapClients_App2FragID1(
         viewModelScope.launch {
             try {
                 if (sectorId == null) {
-                    Log.e("PolygonCreator", "No active sector selected. Please select or create a sector first.")
+                    Log.e(
+                        "PolygonCreator",
+                        "No active sector selected. Please select or create a sector first."
+                    )
                     return@launch
                 }
 
@@ -128,7 +169,10 @@ class ViewModel_MapClients_App2FragID1(
                 // Log coordinates being added
                 val latMicroDegrees = (mapCenter.latitude * 1E6).toInt()
                 val lonMicroDegrees = (mapCenter.longitude * 1E6).toInt()
-                Log.d("PolygonCreator", "Adding point to sector ${sector.nom} (ID: $sectorId): lat=$latMicroDegrees, lon=$lonMicroDegrees")
+                Log.d(
+                    "PolygonCreator",
+                    "Adding point to sector ${sector.nom} (ID: $sectorId): lat=$latMicroDegrees, lon=$lonMicroDegrees"
+                )
 
                 // Create a new point for the polygon
                 val newPoint = PolygonGeoLimite(
@@ -140,17 +184,27 @@ class ViewModel_MapClients_App2FragID1(
 
                 // Insert the point into the database
                 val pointId = polygonDao.insertAvecRetureNewVid(newPoint)
-                Log.d("PolygonCreator", "Successfully added point with ID: $pointId to sector $sectorId")
+                Log.d(
+                    "PolygonCreator",
+                    "Successfully added point with ID: $pointId to sector $sectorId"
+                )
 
                 // Let's also verify if the point was correctly saved
-                val allPointsForSector = polygonDao.getAll().filter { it.parentSecteurDeClientsId == sectorId }
-                Log.d("PolygonCreator", "Total points for sector $sectorId after adding: ${allPointsForSector.size}")
+                val allPointsForSector =
+                    polygonDao.getAll().filter { it.parentSecteurDeClientsId == sectorId }
+                Log.d(
+                    "PolygonCreator",
+                    "Total points for sector $sectorId after adding: ${allPointsForSector.size}"
+                )
 
                 // Refresh the map
                 mapReloadTigger++
 
                 // Log success
-                Log.d("PolygonCreator", "Map refresh triggered. New mapReloadTrigger value: $mapReloadTigger")
+                Log.d(
+                    "PolygonCreator",
+                    "Map refresh triggered. New mapReloadTrigger value: $mapReloadTigger"
+                )
             } catch (e: Exception) {
                 // Log the error
                 Log.e("PolygonCreator", "Error adding point to sector: ${e.message}", e)
@@ -248,7 +302,7 @@ class ViewModel_MapClients_App2FragID1(
         mainRepositery.deleteUnSeulData(data)
     }
 
-    enum class VisibleClientsNow(val icon: Any,val couleur :Color = Color.White) {
+    enum class VisibleClientsNow(val icon: Any, val couleur: Color = Color.White) {
         AFFICHE_CIBLE_POUR_VENDEUR(Icons.Default.Map, Color.Red),
         CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX(Icons.Default.SettingsBackupRestore, Color.Blue),
 
