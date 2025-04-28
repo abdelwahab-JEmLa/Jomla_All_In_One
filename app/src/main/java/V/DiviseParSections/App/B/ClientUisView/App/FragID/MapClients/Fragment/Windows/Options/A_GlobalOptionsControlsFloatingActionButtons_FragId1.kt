@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Options
 
 // Importer la nouvelle fonction FilterView au lieu de FilterModesDialog
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.DISPLAYE_FABS_HANDLER
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.C.FilterView
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.A_ChangeIdColor
@@ -64,10 +65,13 @@ private class FilterLogger {
         private const val TAG = "FilterChangeLog"
         private val logs = mutableListOf<String>()
 
-        fun logFilterChange(previousMode: ViewModel_MapClients_App2FragID1.VisibleClientsNow,
-                            newMode: ViewModel_MapClients_App2FragID1.VisibleClientsNow) {
-            val timestamp = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault())
-                .format(java.util.Date())
+        fun logFilterChange(
+            previousMode: ViewModel_MapClients_App2FragID1.VisibleClientsNow,
+            newMode: ViewModel_MapClients_App2FragID1.VisibleClientsNow,
+        ) {
+            val timestamp =
+                java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault())
+                    .format(java.util.Date())
             val logMessage = "[$timestamp] Filter changed: $previousMode -> $newMode"
             logs.add(logMessage)
             android.util.Log.d(TAG, logMessage)
@@ -133,7 +137,7 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                     val couleurButton2 = Color(0xFFF44336)
                     FloatingActionButton(
                         onClick = {
-                            uiState.showDialogeControleFabs=true
+                            viewModel.setShowDialogControleFabs(true)
                         },
                         modifier = Modifier.size(40.dp),
                         containerColor = couleurButton2
@@ -196,12 +200,12 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
 
                     ControlButton(
                         onClick = {
-                            showDatabaseEditDialog=true
+                            showDatabaseEditDialog = true
                         },
                         icon = Icons.Default.Fireplace,
-                        contentDescription =  "showDatabaseEditDialog",
+                        contentDescription = "showDatabaseEditDialog",
                         showLabels = showLabels,
-                        labelText =  "showDatabaseEditDialog",
+                        labelText = "showDatabaseEditDialog",
                         containerColor = Color(0xFFF44336)
                     )
 
@@ -226,9 +230,9 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                     )
 
 
-                    if (!packageName.contains("clientje")||true ) {
+                    if (!packageName.contains("clientje") || true) {
                         But1_NearbyMarkersButton(
-                            viewModel=viewModel,
+                            viewModel = viewModel,
                             showLabels = showLabels,
                             viewModelInitApp = viewModelInitApp,
                             markers = mapView.overlays.filterIsInstance<Marker>().toMutableList(),
@@ -238,32 +242,41 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                         )
 
                         But_2(
-                            viewModel =viewModel,
+                            viewModel = viewModel,
                             viewModelInitApp = viewModelInitApp,
                             textButton = "onFilterMarkers",
                             showLabels = showLabels,
                             onClick = {
-                                mapView.overlays.filterIsInstance<Marker>().forEach { it.closeInfoWindow() }
+                                mapView.overlays.filterIsInstance<Marker>()
+                                    .forEach { it.closeInfoWindow() }
 
                                 // Log the filter change
                                 val previousMode = currentFilterMode
                                 val newMode = when (currentFilterMode) {
                                     ViewModel_MapClients_App2FragID1.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR ->
                                         ViewModel_MapClients_App2FragID1.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX
+
                                     ViewModel_MapClients_App2FragID1.VisibleClientsNow.CIBLE_ET_CELUIT_ON_A_PASSE_A_EUX ->
                                         ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAll
+
                                     ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAll ->
                                         ViewModel_MapClients_App2FragID1.VisibleClientsNow.showNonAbsentClientsOnly
+
                                     ViewModel_MapClients_App2FragID1.VisibleClientsNow.showNonAbsentClientsOnly ->
                                         ViewModel_MapClients_App2FragID1.VisibleClientsNow.affichePourCollecteurCommendes
+
                                     ViewModel_MapClients_App2FragID1.VisibleClientsNow.affichePourCollecteurCommendes ->
                                         ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2
+
                                     ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsOnlyAcEtateCIBLE_POUR_2 ->
                                         ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAtayClients
+
                                     ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAtayClients ->
                                         ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAlimentionlients
+
                                     ViewModel_MapClients_App2FragID1.VisibleClientsNow.showAlimentionlients ->
                                         ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsWithConfirmedProducts
+
                                     ViewModel_MapClients_App2FragID1.VisibleClientsNow.showClientsWithConfirmedProducts ->
                                         ViewModel_MapClients_App2FragID1.VisibleClientsNow.AFFICHE_CIBLE_POUR_VENDEUR
                                 }
@@ -274,7 +287,7 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                             currentFilterMode = currentFilterMode
                         )
                         A_ChangeIdColor(
-                            viewModel=viewModel,
+                            viewModel = viewModel,
                             viewModelInitApp = viewModelInitApp,
                             showLabels = showLabels,
                             contentDescription = "Repeat",
@@ -301,11 +314,10 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
         }
 
 
-
         // Show DataBaseEditeWindows dialog when showDatabaseEditDialog is true
         if (showDatabaseEditDialog) {
             DataBaseEditeWindows(
-                onDissmis = { showDatabaseEditDialog= false }
+                onDissmis = { showDatabaseEditDialog = false }
             )
         }
 
@@ -348,7 +360,7 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
 
                         if (uiState.showDialogeControleFabs) {
                             Dialog(
-                                onDismissRequest = { uiState.showDialogeControleFabs = false },
+                                onDismissRequest = { viewModel.setShowDialogControleFabs(false) },
                             ) {
                                 Box(
                                     modifier = Modifier
@@ -361,24 +373,15 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                                             modifier = Modifier.padding(bottom = 16.dp)
                                         )
 
-                                        // Display the list of fabsGrooupeAAffiche
-                                        uiState.fabsGrooupeAAffiche.forEach { fabGroup ->
+                                        DISPLAYE_FABS_HANDLER.entries.forEach { fabGroup ->
+                                            val isActive = uiState.dISPLAYE_FABS_HANDLER == fabGroup
+
                                             Row(
                                                 modifier = Modifier
                                                     .padding(vertical = 8.dp)
                                                     .clickable {
-                                                        // Fix: Use fabGroup.key instead of the unresolved 'key' variable
-                                                        val currentGroups = uiState.fabsGrooupeAAffiche
-                                                        val updatedGroups = currentGroups.map { group ->
-                                                            if (group.key == fabGroup.key) {   // Fixed: using fabGroup.key
-                                                                group.copy(visible = !group.visible)
-                                                            } else {
-                                                                group
-                                                            }
-                                                        }
-
-                                                        // Fix: Update the UI state directly through the viewModel
-                                                        viewModel.updateFabsGroups(updatedGroups)
+                                                        // Toggle visibility of this fab group
+                                                        viewModel.toggleFabGroupVisibility(fabGroup)
                                                     },
                                                 verticalAlignment = Alignment.CenterVertically
                                             ) {
@@ -386,7 +389,7 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                                                     modifier = Modifier
                                                         .size(24.dp)
                                                         .background(
-                                                            color = if (fabGroup.visible) Color.Green else Color.Gray,
+                                                            color = if (isActive) Color.Green else Color.Gray,
                                                             shape = CircleShape
                                                         )
                                                         .padding(4.dp)
@@ -410,7 +413,6 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                                 }
                             }
                         }
-
 
                         Spacer(modifier = Modifier.height(16.dp))
 
@@ -436,7 +438,7 @@ fun ControlButton(
     showLabels: Boolean,
     labelText: String,
     containerColor: Color,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
 
     Row(
@@ -455,6 +457,7 @@ fun ControlButton(
                     Icon(icon, contentDescription)
                 }
             }
+
             is LottieJsonGetterR_Raw_Icons -> {
                 Box(
                     modifier = Modifier
@@ -476,6 +479,7 @@ fun ControlButton(
                     )
                 }
             }
+
             else -> {
                 throw IllegalArgumentException("Unsupported icon type")
             }

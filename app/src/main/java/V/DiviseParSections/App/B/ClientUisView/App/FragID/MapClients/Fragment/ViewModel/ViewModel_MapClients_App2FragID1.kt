@@ -31,20 +31,20 @@ import org.osmdroid.api.IGeoPoint
 import org.osmdroid.views.MapView
 import java.util.Date
 
-data class FabGroupe(
-    val key: String,
-    val visible: Boolean = false,
-)
+enum class DISPLAYE_FABS_HANDLER(val visible: Boolean = false) {
+    POLYGEN_HANDLER_BUTTONS(true),
+    AUTRES_FUNCS(false); // Added default value for second enum
 
-// UI State class to hold all UI-related state
+    // Add a property to get the display name
+    val key: String
+        get() = name
+}
+
+// Updated MapClientsUiState data class
 data class MapClientsUiState(
-    val fabsGrooupeAAffiche: List<FabGroupe> = listOf(
-        FabGroupe("ajoutePolygen", visible = false),
-    ),
+    val dISPLAYE_FABS_HANDLER: DISPLAYE_FABS_HANDLER = DISPLAYE_FABS_HANDLER.POLYGEN_HANDLER_BUTTONS,
     var showDialogeControleFabs: Boolean = false,
-
-    )
-
+)
 class ViewModel_MapClients_App2FragID1(
     val appDatabase: AppDatabase,
     val mainRepositery: B_ClientDataBaseRepository,
@@ -64,10 +64,6 @@ class ViewModel_MapClients_App2FragID1(
 
     var auClickeCaUpdateClientPar by mutableStateOf(B_ClientDataBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT)
     var mapReloadTigger by mutableIntStateOf(0)
-
-
-
-
 
     var afficheLesJoursAuNoms by mutableStateOf(true)
     var filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList by mutableStateOf<List<String>>(
@@ -90,17 +86,21 @@ class ViewModel_MapClients_App2FragID1(
         loadSecteurs()
     }
 
-    // Inside ViewModel_MapClients_App2FragID1 class
-    fun updateFabsGroups(updatedGroups: List<FabGroupe>) {
-        _uiState.value = _uiState.value.copy(
-            fabsGrooupeAAffiche = updatedGroups
-        )
+    fun setShowDialogControleFabs(show: Boolean) {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(showDialogeControleFabs = show)
+        }
     }
 
-    fun setShowDialogControleFabs(show: Boolean) {
-        _uiState.value = _uiState.value.copy(
-            showDialogeControleFabs = show
-        )
+    fun toggleFabGroupVisibility(fabGroup: DISPLAYE_FABS_HANDLER) {
+        viewModelScope.launch {
+
+            _uiState.value = _uiState.value.copy(
+                dISPLAYE_FABS_HANDLER = fabGroup
+            )
+
+            mapReloadTigger++
+        }
     }
 
     private fun loadSecteurs() {
