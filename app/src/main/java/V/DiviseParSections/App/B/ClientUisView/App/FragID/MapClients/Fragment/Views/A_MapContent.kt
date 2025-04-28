@@ -182,9 +182,7 @@ fun MapContent(
             ?.isVisible ?: false
 
         if (isVisible)
-         {
-            MapSecteursPolygenHandelButtons(mapView, viewModel)
-        }
+         { MapSecteursPolygenHandelButtons(mapView, viewModel) }
 
         // Floating action buttons for map controls
         if (viewModelInitApp._paramatersAppsViewModelModel.fabsVisibility) {
