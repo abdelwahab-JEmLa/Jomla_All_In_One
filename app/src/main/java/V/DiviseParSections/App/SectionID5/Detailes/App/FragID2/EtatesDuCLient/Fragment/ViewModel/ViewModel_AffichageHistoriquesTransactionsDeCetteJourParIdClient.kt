@@ -58,22 +58,45 @@ class ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
 
     // Add this function to your ViewModel class
     fun deleteVoiceRecordingFromStorage(vocaleKeyID: String, onComplete: (Boolean) -> Unit) {
-        // Assuming you're using Firebase Storage for voice recordings
-        val storageRef = FirebaseStorage.getInstance().reference
-        val voiceRef = storageRef.child("voice_recordings/$vocaleKeyID")
+        // Check if the vocaleKeyID is valid before attempting to delete
+        if (vocaleKeyID.isBlank()) {
+            // If vocaleKeyID is empty or blank, consider deletion successful since there's nothing to delete
+            Log.d(TAG, "No voice recording ID provided, skipping deletion")
+            onComplete(true)
+            return
+        }
 
-        voiceRef.delete()
-            .addOnSuccessListener {
-                // Voice file deleted successfully
-                onComplete(true)
+        // Attempting to delete the voice recording from Firebase Storage
+        val storageRef = FirebaseStorage.getInstance().reference
+        // Update the path to match the correct location in Firebase Storage
+        val voiceRef = storageRef.child("1_messagesVocales/$vocaleKeyID")
+
+        // First check if the file exists
+        voiceRef.metadata
+            .addOnSuccessListener { metadata ->
+                // File exists, proceed with deletion
+                voiceRef.delete()
+                    .addOnSuccessListener {
+                        Log.d(TAG, "Voice recording $vocaleKeyID deleted successfully")
+                        onComplete(true)
+                    }
+                    .addOnFailureListener { exception ->
+                        Log.e(TAG, "Failed to delete existing voice recording: ${exception.message}")
+                        onComplete(false)
+                    }
             }
             .addOnFailureListener { exception ->
-                // Failed to delete voice file
-                Log.e("VoiceDeletion", "Failed to delete voice recording: ${exception.message}")
-                onComplete(false)
+                // File doesn't exist, which is fine - we wanted to delete it anyway
+                if (exception.message?.contains("Object does not exist", ignoreCase = true) == true) {
+                    Log.w(TAG, "Voice recording $vocaleKeyID doesn't exist, considering deletion successful")
+                    onComplete(true)
+                } else {
+                    // Some other error occurred when checking existence
+                    Log.e(TAG, "Error checking voice recording existence: ${exception.message}")
+                    onComplete(false)
+                }
             }
     }
-
     private fun loadCollectSnapshotStateList() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
