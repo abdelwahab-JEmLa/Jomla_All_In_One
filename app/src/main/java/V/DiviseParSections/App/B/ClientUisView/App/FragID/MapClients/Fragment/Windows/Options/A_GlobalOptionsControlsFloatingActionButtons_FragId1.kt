@@ -357,6 +357,7 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                             modifier = Modifier.padding(bottom = 16.dp)
                         )
 
+
                         if (uiState.showDialogeControleFabs) {
                             Dialog(
                                 onDismissRequest = { viewModel.setShowDialogControleFabs(false) },
@@ -372,7 +373,6 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                                             modifier = Modifier.padding(bottom = 16.dp)
                                         )
 
-                                        // Replace hard-coded rows with a loop over dISPLAYE_FABS_HANDLERS items
                                         uiState.paneleGroupeButtonList.forEach { fabHandler ->
                                             Row(
                                                 modifier = Modifier
@@ -383,7 +383,7 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                                                             isVisible = !fabHandler.isVisible
                                                         )
                                                         // Call the viewModel function with the updated state
-                                                        viewModel.udatedStateFabGroupVisibility(updatedState)
+                                                        viewModel.updatedStateFabGroupVisibility(updatedState)
                                                     },
                                                 verticalAlignment = Alignment.CenterVertically
                                             ) {

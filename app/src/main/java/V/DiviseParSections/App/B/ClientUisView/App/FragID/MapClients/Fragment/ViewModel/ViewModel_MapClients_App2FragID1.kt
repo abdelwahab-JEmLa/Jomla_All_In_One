@@ -35,7 +35,7 @@ data class PanelsGroupeButton(
     val key: Keys,
     val isVisible: Boolean = false,
 ) {
-    enum class Keys{
+    enum class Keys {
         MapSecteursPolygenHandelButtons,
         autres,
     }
@@ -45,9 +45,12 @@ data class PanelsGroupeButton(
 data class MapClientsUiState(
     val paneleGroupeButtonList: List<PanelsGroupeButton> =
         listOf(
-        PanelsGroupeButton(PanelsGroupeButton.Keys.MapSecteursPolygenHandelButtons, isVisible = true),
-        PanelsGroupeButton(PanelsGroupeButton.Keys.autres, isVisible = false),
-    ),
+            PanelsGroupeButton(
+                PanelsGroupeButton.Keys.MapSecteursPolygenHandelButtons,
+                isVisible = true
+            ),
+            PanelsGroupeButton(PanelsGroupeButton.Keys.autres, isVisible = false),
+        ),
     var showDialogeControleFabs: Boolean = false,
 )
 
@@ -92,48 +95,27 @@ class ViewModel_MapClients_App2FragID1(
         loadSecteurs()
     }
 
-    fun getVisiblityPanelsGroupeButton(
-        key: PanelsGroupeButton.Keys,
-    ): Boolean {
-        // Access the current value from the state flow first
-        val currentState = _uiState.value
-
-        // Then access paneleGroupeButtonList from the current state
-        return currentState.paneleGroupeButtonList
-            .find {
-                it.key == key
-            }
-            ?.isVisible ?: false
-    }
-
     fun setShowDialogControleFabs(show: Boolean) {
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(showDialogeControleFabs = show)
+            Log.d("PanelVisibility", "Updating dialog control fabs visibility to: $show")
+            _uiState.emit(_uiState.value.copy(showDialogeControleFabs = show))
         }
     }
 
-
-    fun udatedStateFabGroupVisibility(updatedState: PanelsGroupeButton) {
+    fun updatedStateFabGroupVisibility(updatedState: PanelsGroupeButton) {
         viewModelScope.launch {
-            // Find the index of the state to update
+            // Create a new list with the updated panel
             val currentList = _uiState.value.paneleGroupeButtonList
             val index = currentList.indexOfFirst { it.key == updatedState.key }
 
-            if (index != -1) {
-                // Create a new list with the updated state
-                val newList = currentList.toMutableList()
-                newList[index] = updatedState
+            // Create a new list with the updated item
+            val updatedList = currentList.toMutableList()
+            updatedList[index] = updatedState
 
-                // Update the UI state with the new list
-                _uiState.value = _uiState.value.copy(paneleGroupeButtonList = newList)
-            } else {
-                // If the state doesn't exist, add it to the list
-                val newList = currentList + updatedState
-                _uiState.value = _uiState.value.copy(paneleGroupeButtonList = newList)
-            }
+            // Emit the new state with the updated list
+            _uiState.emit(_uiState.value.copy(paneleGroupeButtonList = updatedList))
         }
     }
-
 
     private fun loadSecteurs() {
         viewModelScope.launch {
@@ -381,4 +363,6 @@ class ViewModel_MapClients_App2FragID1(
             println("Error canceling active operations: ${e.message}")
         }
     }
+
+
 }
