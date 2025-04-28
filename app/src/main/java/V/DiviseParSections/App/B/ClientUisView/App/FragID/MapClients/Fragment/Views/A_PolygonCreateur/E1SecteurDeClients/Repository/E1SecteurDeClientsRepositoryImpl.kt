@@ -2,7 +2,6 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.V
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import android.util.Log
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.database.DataSnapshot
@@ -20,8 +19,6 @@ import java.util.concurrent.atomic.AtomicBoolean
 class E1SecteurDeClientsRepositoryImpl(
     val appDatabase: AppDatabase
 ) : E1SecteurDeClientsRepository {
-    private val TAG = E1SecteurDeClientsRepository.TAG
-
     override var listState: SnapshotStateList<E1SecteurDeClients> = SnapshotStateList()
 
     override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
@@ -48,7 +45,7 @@ class E1SecteurDeClientsRepositoryImpl(
         try {
             loadDepuitRoom()
         } catch (e: Exception) {
-            Log.e(TAG, "Error initializing repository: ${e.message}")
+            // Exception handled silently
         }
     }
 
@@ -59,7 +56,6 @@ class E1SecteurDeClientsRepositoryImpl(
                 val dataList = try {
                     appDatabase.e1SecteurDeClientsDao().getAll()
                 } catch (e: Exception) {
-                    Log.e(TAG, "Error loading from Room: ${e.message}")
                     emptyList()
                 }
 
@@ -75,7 +71,6 @@ class E1SecteurDeClientsRepositoryImpl(
             }
         } catch (e: Exception) {
             progressRepo.value = 0f
-            Log.e(TAG, "Error in loadDepuitRoom: ${e.message}")
         }
     }
 
@@ -98,7 +93,6 @@ class E1SecteurDeClientsRepositoryImpl(
                 try {
                     appDatabase.e1SecteurDeClientsDao().getCount()
                 } catch (e: Exception) {
-                    Log.e(TAG, "Error getting Room count: ${e.message}")
                     0
                 }
             }
@@ -109,7 +103,6 @@ class E1SecteurDeClientsRepositoryImpl(
                     Tasks.await(task)
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Error getting Firebase snapshot: ${e.message}")
                 null
             }
 
@@ -128,7 +121,6 @@ class E1SecteurDeClientsRepositoryImpl(
             withContext(Dispatchers.Main) {
                 FireBaseOnDataChangeListner()
             }
-            Log.e(TAG, "Error in checkDataConsistency: ${e.message}")
         }
     }
 
@@ -149,14 +141,9 @@ class E1SecteurDeClientsRepositoryImpl(
                     appDatabase.e1SecteurDeClientsDao().deleteAll()
                     appDatabase.e1SecteurDeClientsDao().insertAll(updatedList)
                 }
-
-                withContext(Dispatchers.Main) {
-                    listState.clear()
-                    listState.addAll(updatedList)
-                }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error importing from Firebase to Room: ${e.message}")
+            // Exception handled silently
         }
     }
 
@@ -174,7 +161,7 @@ class E1SecteurDeClientsRepositoryImpl(
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error ensuring data initialization: ${e.message}")
+            // Exception handled silently
         }
     }
 
@@ -199,26 +186,17 @@ class E1SecteurDeClientsRepositoryImpl(
                                 try {
                                     appDatabase.e1SecteurDeClientsDao().deleteAll()
                                     appDatabase.e1SecteurDeClientsDao().insertAll(updatedList)
-
-                                    // Update UI state directly
-                                    withContext(Dispatchers.Main) {
-                                        listState.clear()
-                                        listState.addAll(updatedList)
-                                    }
                                 } catch (e: Exception) {
-                                    Log.e(
-                                        TAG,
-                                        "Error updating Room from Firebase listener: ${e.message}"
-                                    )
+                                    // Exception handled silently
                                 }
                             }
                         } catch (e: Exception) {
-                            Log.e(TAG, "Error in Firebase data listener: ${e.message}")
+                            // Exception handled silently
                         }
                     }
 
                     override fun onCancelled(error: DatabaseError) {
-                        Log.e(TAG, "Firebase listener cancelled: ${error.message}")
+                        // Firebase listener cancelled - no logging
                     }
                 }
 
@@ -234,7 +212,7 @@ class E1SecteurDeClientsRepositoryImpl(
                 try {
                     E1SecteurDeClientsRepository.sonDataBaseRef.removeEventListener(flowValueEventListener!!)
                 } catch (e: Exception) {
-                    Log.e(TAG, "Error removing flow listener: ${e.message}")
+                    // Exception handled silently
                 } finally {
                     flowValueEventListener = null
                     isFlowListenerActive.set(false)
@@ -249,7 +227,7 @@ class E1SecteurDeClientsRepositoryImpl(
                 try {
                     E1SecteurDeClientsRepository.sonDataBaseRef.removeEventListener(valueEventListener!!)
                 } catch (e: Exception) {
-                    Log.e(TAG, "Error removing data listener: ${e.message}")
+                    // Exception handled silently
                 } finally {
                     valueEventListener = null
                     isListenerActive.set(false)
@@ -258,10 +236,7 @@ class E1SecteurDeClientsRepositoryImpl(
         }
     }
 
-    // Implement the missing interface method
-    override fun getOuvertE1SecteurDeClients(): E1SecteurDeClients? {
-        return listState.find { it.ouvert }
-    }
+
 
     fun cleanup() {
         repositoryScope.launch {

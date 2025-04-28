@@ -1,5 +1,6 @@
 package Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.Repository.E1SecteurDeClientsRepository
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_2_ProduitAcheteOperation
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_3_TransactionCommercial
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_4_PeriodeVent
@@ -8,6 +9,7 @@ import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.Extension.Log._0
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation.Dao._1_2_ProduitAcheteOperationDao
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
+import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial.SQL._1_3_TransactionCommercialDao
 import Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial._1_3_TransactionCommercial_Repository
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVentDao
 import Z_CodePartageEntreApps.Repository._1_4_PeriodeVent._1_4_PeriodeVent_Repository
@@ -46,7 +48,9 @@ class _0_0_Head_SQL_RepositorysImpl(
     private val _2_1_Repository: _2_1_ProduitsDataBase_Repository,
     private val _2_2_Repository: _3_ClientsDataBase_Repository,
     private val _4_CouleurOperationCommand_Repository: _4_CouleurOperationCommand_Repository,
+    private val e1SecteurDeClientsRepository: E1SecteurDeClientsRepository
 ) : _0_0_HeadSQLRepositorys {
+    
     private val TAG = _0_0_HeadSQLRepositorys.TAG
 
     // Create a MutableStateFlow for activeId_1_3_BonAchat
@@ -56,7 +60,7 @@ class _0_0_Head_SQL_RepositorysImpl(
         _1_1_Repository,
         _1_2_ProduitAcheteOperation_Repository,
         repo_1_3_TransactionCommercial,
-        activeId_1_3_BonAchat, // Add the missing MutableStateFlow<Long>
+        activeId_1_3_BonAchat,
         _1_4_Repository,
         _1_5_Repository,
 
@@ -64,6 +68,7 @@ class _0_0_Head_SQL_RepositorysImpl(
         _2_2_Repository,
 
         _4_CouleurOperationCommand_Repository,
+        e1SecteurDeClientsRepository  // Add this parameter here
     )
     override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
 
@@ -679,13 +684,14 @@ class _0_0_Head_SQL_RepositorysImpl(
                     _1_1_CouleurAcheteOperation_Repository = _1_1_Repository,
                     repository_1_2_ProduitAcheteOperation = _1_2_ProduitAcheteOperation_Repository,
                     repository_1_3_TransactionCommercial = repo_1_3_TransactionCommercial,
-                    activeVId_1_3_TransactionCommercial = activeId_1_3_BonAchat, // Include it here as well
+                    activeVId_1_3_TransactionCommercial = activeId_1_3_BonAchat,
                     repository_1_4_PeriodeVent = _1_4_Repository,
                     repository_1_5_Vendeur = _1_5_Repository,
 
                     _2_1_ProduitsDataBase_Repository = _2_1_Repository,
                     repository_3_ClientsDataBase = _2_2_Repository,
                     _4_CouleurOperationCommand_Repository = _4_CouleurOperationCommand_Repository,
+                    e1SecteurDeClientsRepository = e1SecteurDeClientsRepository // Pass the parameter here
                 )
 
                 // Update progress

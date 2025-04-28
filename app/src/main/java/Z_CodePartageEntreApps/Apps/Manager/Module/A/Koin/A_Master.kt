@@ -74,6 +74,7 @@ val commonRepositoriesModule = module {
         get(),
         get(),
         get(),
+        get(),
     ) }
 
     single<E1SecteurDeClientsRepository> { E1SecteurDeClientsRepositoryImpl(

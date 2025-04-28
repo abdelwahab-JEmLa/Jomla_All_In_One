@@ -17,10 +17,7 @@ interface E1SecteurDeClientsRepository {
         const val TAG = "E1SecteurDeClients"
 
         val sonDataBaseRef = _0_0_HeadOfRepositorys_RepositoryRef
+            .child("E")
             .child("1")
-            .child("3")
     }
-
-
-    fun getOuvertE1SecteurDeClients(): E1SecteurDeClients?
 }
