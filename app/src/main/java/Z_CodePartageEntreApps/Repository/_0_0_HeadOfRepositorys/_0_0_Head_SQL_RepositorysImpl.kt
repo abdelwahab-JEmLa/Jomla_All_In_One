@@ -5,7 +5,6 @@ import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fr
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_3_TransactionCommercial
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_4_PeriodeVent
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys.Extension.Log._0_0_HeadOfRepositoryLogOperationsExtension
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation_Repository
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation.Dao._1_2_ProduitAcheteOperationDao
 import Z_CodePartageEntreApps.Repository._1_2_ProduitAcheteOperation._1_2_ProduitAcheteOperation_Repository
@@ -69,15 +68,13 @@ class _0_0_Head_SQL_RepositorysImpl(
         e1SecteurDeClientsRepository  // Add this parameter here
     )
 
-
+    override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
 
     private val repositoryScope = CoroutineScope(Dispatchers.IO)
     private var initialDataLoaded = false
     private var lastUpdateTimestamp: Long = 0L
-    private var isListenerActive = false
     private var isFlowListenerActive = false
 
-    private val logOperations = _0_0_HeadOfRepositoryLogOperationsExtension(this)
 
     // In the head repository's init block
     init {
@@ -693,9 +690,6 @@ class _0_0_Head_SQL_RepositorysImpl(
             progressRepo.value = 0.5f
             collectRepositorys()
 
-            if (TAG.isNotEmpty()) {
-                log()
-            }
 
             Log.d(TAG, "Repository initialization completed")
         } catch (e: Exception) {
@@ -785,7 +779,6 @@ class _0_0_Head_SQL_RepositorysImpl(
 
             combinedFlow.collect { combinedProgress ->
                 progressRepo.value = combinedProgress
-                log()
 
                 // Check if loading is complete (progress = 1.0f)
                 if (combinedProgress >= 1.0f && !hasCompletedOnce) {
@@ -796,18 +789,8 @@ class _0_0_Head_SQL_RepositorysImpl(
         } catch (e: Exception) {
             isFlowListenerActive = false
             Log.e(TAG, "Error tracking progress: ${e.message}")
-            logOperations.logError("startProgressTracking", e)
         }
     }
 
-    fun log() {
-        logOperations.log(
-            dataCount = 1, // There's only one model in the repositorys_Model
-            initialDataLoaded = initialDataLoaded,
-            progressValue = progressRepo.value,
-            lastUpdateTimestamp = lastUpdateTimestamp,
-            isListenerActive = isListenerActive,
-            isFlowListenerActive = isFlowListenerActive
-        )
-    }
+
 }

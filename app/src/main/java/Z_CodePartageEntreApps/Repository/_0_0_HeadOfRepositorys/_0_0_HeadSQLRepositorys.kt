@@ -7,25 +7,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 interface _0_0_HeadSQLRepositorys {
     var repositorys_Model: _0_0_HeadOfRepositorys_Model
 
-    // Added properties
-    val currentVendeur get() = repositorys_Model.repository_1_5_Vendeur.modelDatasSnapList.firstOrNull()
-
-    val activePeriod
-        get() = currentVendeur?.let {
-            repositorys_Model.repository_1_4_PeriodeVent.modelDatasSnapList
-                .find { it.vendeur_ParentVID == currentVendeur!!.vid }
-        }
-
     val progressRepo: MutableStateFlow<Float>
         get() {
             return MutableStateFlow(0f)
         }
 
-
     companion object {
         const val TAG = "_0_0_HeadOfRepositorys"
     }
-
 
     fun updateActiveIdDe_1_5_Vendeur(id: Long = -1L)
     fun notifyDataChanged_2_1_ProduitsDataBase_Repository()
