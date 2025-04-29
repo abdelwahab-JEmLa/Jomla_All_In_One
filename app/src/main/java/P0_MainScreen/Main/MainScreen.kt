@@ -241,35 +241,36 @@ fun MainScreen(
                                         .clickable(enabled = false) { }
                                 )
                             }
-                        }
-                        if (isControleFabVisible) {
-                            A_OptionsControlsButtons_A1FragID_3() {
-                                showVendeursDialog = true
-                            }
-                        }
-                    }
-
-                    if (showVendeursDialog) {
-                        AlertDialog(
-                            onDismissRequest = {
-                                showVendeursDialog = false
-                            },
-                            title = { Text("Manage Vendeurs") },
-                            text = {
-                                A_APP4FragID1_MainScreen(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(500.dp)
-                                )
-                            },
-                            confirmButton = {
-                                TextButton(onClick = {
-                                    showVendeursDialog = false
-                                }) {
-                                    Text("Close")
+                            if (isControleFabVisible) {
+                                A_OptionsControlsButtons_A1FragID_3() {
+                                    showVendeursDialog = true
                                 }
                             }
-                        )
+                        }
+
+                        if (showVendeursDialog) {
+                            AlertDialog(
+                                onDismissRequest = {
+                                    showVendeursDialog = false
+                                },
+                                title = { Text("Manage Vendeurs") },
+                                text = {
+                                    A_APP4FragID1_MainScreen(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(500.dp)
+                                    )
+                                },
+                                confirmButton = {
+                                    TextButton(onClick = {
+                                        showVendeursDialog = false
+                                    }) {
+                                        Text("Close")
+                                    }
+                                }
+                            )
+                        }
+
                     }
                 }
 
