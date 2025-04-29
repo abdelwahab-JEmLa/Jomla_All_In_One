@@ -9,15 +9,7 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Mic
-import androidx.compose.material.icons.filled.Stop
-import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,8 +27,6 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.google.firebase.Firebase
 import com.google.firebase.storage.storage
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -114,7 +104,7 @@ fun EnregestrementMessageVocaleEtLeMetreAuStorageGoogle(
         }
 
         // Record/Stop button
-        FilledTonalButton(
+      /*  FilledTonalButton(
             onClick = {
                 if (!hasRecordPermission) {
                     permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
@@ -168,7 +158,7 @@ fun EnregestrementMessageVocaleEtLeMetreAuStorageGoogle(
                 text = if (isRecording) "Arrêter l'enregistrement" else "Message vocal",
                 modifier = Modifier.padding(8.dp)
             )
-        }
+        }         */
     }
 }
 

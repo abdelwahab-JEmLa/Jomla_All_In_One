@@ -17,7 +17,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
     modifier: Modifier = Modifier,
@@ -51,14 +50,7 @@ fun A_Main_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
             .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         // Title or header for the transactions section
-        Text(
-            text = "معاملات العميل",
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp),
-            style = MaterialTheme.typography.headlineSmall,
-            textAlign = TextAlign.Start
-        )
+
 
         // Regular Column without scrolling behavior
         Column(
