@@ -31,6 +31,7 @@ import Z_CodePartageEntreApps.Model.O_SoldArticlesTabelle.Repository.SoldArticle
 import Z_CodePartageEntreApps.Model.O_SoldArticlesTabelle.Repository.SoldArticlesTabelleRepositoryImpl
 import Z_CodePartageEntreApps.Modules.ConnectionManager
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
+import Z_CodePartageEntreApps.Modules.PanelsGroupeButtonHandler
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_Head_SQL_RepositorysImpl
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperationRepositoryImpl
@@ -164,9 +165,13 @@ val appTypeModule = module {
 }
 
 
-// Update the appModule to include navigationModule
+val uiHandlersModule = module {
+    single { PanelsGroupeButtonHandler() }
+}
+
+// Ensuite, incluez ce module dans votre appModule
 val appModule = module {
-    includes(commonRepositoriesModule, appTypeModule, viewModelModule, navigationModule)
+    includes(commonRepositoriesModule, appTypeModule, viewModelModule, navigationModule, uiHandlersModule)
 
     // Rest of the code remains the same
     single {

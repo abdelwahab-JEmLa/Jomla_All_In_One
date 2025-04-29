@@ -11,6 +11,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Wi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.LocationTrackingButton
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.MenuButton
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.rememberLocationTracker
+import Z_CodePartageEntreApps.Modules.PanelsGroupeButtonHandler
 import Z_CodePartageEntreApps.Windows.A.B_DataBaseEdite.Windows.DataBaseEditeWindows
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
@@ -55,6 +56,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import org.koin.compose.koinInject
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import kotlin.math.roundToInt
@@ -90,6 +92,8 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
     onPickFilter: (ViewModel_MapClients_App2FragID1.VisibleClientsNow) -> Unit,
     onFilterMarkers: () -> Unit,
     currentFilterMode: ViewModel_MapClients_App2FragID1.VisibleClientsNow,
+    panelsGroupeButtonHandler: PanelsGroupeButtonHandler =
+        koinInject<PanelsGroupeButtonHandler>()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var showDatabaseEditDialog by remember { mutableStateOf(false) }
@@ -134,7 +138,8 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
             ) {
                 if (showMenu) {
 
-                    ButtonActiveWindow(viewModel)
+                    panelsGroupeButtonHandler.ButtonActiveWindow()
+                    ButtonActiveWindowNum2(viewModel)
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -333,6 +338,8 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
             )
         }
 
+        panelsGroupeButtonHandler.DialogPanelButtons()
+
         if (uiState.showDialogeControleFabs) {
             Dialog(
                 onDismissRequest = { uiState.showDialogeControleFabs = false },
@@ -349,7 +356,7 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                         )
 
 
-                        DialogePanelButtons(uiState, viewModel)
+                        DialogePanelButtonsNum2(uiState, viewModel)
 
                         Spacer(modifier = Modifier.height(16.dp))
 
@@ -367,8 +374,8 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
 }
 
 @Composable
-private fun ButtonActiveWindow(viewModel: ViewModel_MapClients_App2FragID1) {
-    val couleurButton2 = Color(0xFF3F51B5)
+private fun ButtonActiveWindowNum2(viewModel: ViewModel_MapClients_App2FragID1) {
+    val couleurButton2 = Color(0xFF8BC34A)
     FloatingActionButton(
         onClick = {
             viewModel.setShowDialogControleFabs(true)
@@ -382,7 +389,7 @@ private fun ButtonActiveWindow(viewModel: ViewModel_MapClients_App2FragID1) {
 }
 
 @Composable
-private fun DialogePanelButtons(
+private fun DialogePanelButtonsNum2(
     uiState: MapClientsUiState,
     viewModel: ViewModel_MapClients_App2FragID1,
 ) {
