@@ -1,11 +1,11 @@
 // C_Couleurs.kt
 package V.DiviseParSections.App.A.AchatsManager.App.FragID3.CommandeProduits.Package
 
+import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.Repository.B_ClientDataBaseRepository
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation._1_1_CouleurAcheteOperation
-import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_2_ProduitAcheteOperation
 import Z_CodePartageEntreApps.View.A_GlideDisplayImageByKeyId_Proto_4_11
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -93,8 +93,6 @@ fun Couleurs(
         }
     }
 
-    // Filter colors to only include those with quantity > 0 and QUANTITY_CHOISI status
-    // Also respect the period filter if provided
     val filteredColors = colorsForProduct
         .filter { color ->
             // Basic filter conditions
