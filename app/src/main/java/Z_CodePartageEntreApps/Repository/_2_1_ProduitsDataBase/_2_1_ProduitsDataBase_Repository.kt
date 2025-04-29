@@ -1,7 +1,8 @@
 package Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase
 
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys.Companion._0_0_HeadOfRepositorys_RepositoryRef
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.flow.MutableStateFlow
 
 interface _2_1_ProduitsDataBase_Repository {
@@ -16,9 +17,10 @@ interface _2_1_ProduitsDataBase_Repository {
         data: _2_1_ProduitsDataBase,
         onAddSuccess: (Long) -> Unit = {},
     )
+
     fun addMultiDATAsEtReturnVIDsList(
         dataList: List<_2_1_ProduitsDataBase>,
-        onAddSuccess: (List<Long>) -> Unit
+        onAddSuccess: (List<Long>) -> Unit,
     )
 
     fun upsertUneDataEtReturnVID(data: _2_1_ProduitsDataBase, onSuccess: (Long) -> Unit)
@@ -31,9 +33,10 @@ interface _2_1_ProduitsDataBase_Repository {
     companion object {
         const val TAG = "_2_1_ProduitsDataBase"
 
-        val sonDataBaseRef = _0_0_HeadOfRepositorys_RepositoryRef
-            .child("_2_")
-            .child("1_ProduitsDataBase")
+        val sonDataBaseRef: DatabaseReference =
+            _0_0_HeadOfRepositorys_Model.determineRepositoryRef()
+                .child("_2_")
+                .child("1_ProduitsDataBase")
     }
 
 

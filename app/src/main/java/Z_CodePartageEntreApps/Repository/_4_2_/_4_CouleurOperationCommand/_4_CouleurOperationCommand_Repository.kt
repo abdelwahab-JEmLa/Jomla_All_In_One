@@ -1,7 +1,8 @@
 package Z_CodePartageEntreApps.Repository._4_2_._4_CouleurOperationCommand
 
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys.Companion._0_0_HeadOfRepositorys_RepositoryRef
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.flow.MutableStateFlow
 
 interface _4_CouleurOperationCommand_Repository {
@@ -16,9 +17,10 @@ interface _4_CouleurOperationCommand_Repository {
         data: _4_CouleurOperationCommand,
         onAddSuccess: (Long) -> Unit = {},
     )
+
     fun addMultiDATAsEtReturnVIDsList(
         dataList: List<_4_CouleurOperationCommand>,
-        onAddSuccess: (List<Long>) -> Unit
+        onAddSuccess: (List<Long>) -> Unit,
     )
 
     fun upsertUneDataEtReturnVID(data: _4_CouleurOperationCommand, onSuccess: (Long) -> Unit)
@@ -33,9 +35,10 @@ interface _4_CouleurOperationCommand_Repository {
     companion object {
         const val TAG = "_4_CouleurOperationCommand"
 
-        val sonDataBaseRef = _0_0_HeadOfRepositorys_RepositoryRef
-            .child("4")
-            .child("1")
+        val sonDataBaseRef: DatabaseReference =
+            _0_0_HeadOfRepositorys_Model.determineRepositoryRef()
+                .child("4")
+                .child("1")
     }
 
 }
