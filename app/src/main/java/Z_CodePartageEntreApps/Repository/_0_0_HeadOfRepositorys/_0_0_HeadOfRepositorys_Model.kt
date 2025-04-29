@@ -35,14 +35,11 @@ class _0_0_HeadOfRepositorys_Model(
     var activeIdDe_1_5_Vendeur: Long = 2L,
 ) {
     companion object {
-        fun getHeadSqlDataBaseRef(): DatabaseReference {
+        fun getHeadSqlDataBaseRef(itsProductionMode:Boolean=false): DatabaseReference {
             val _01_HeadRef = Firebase.database.getReference("00_DataPrototype-04-02")
 
             val _1_developingRef = _01_HeadRef.child("_1_developingRef")
             val _2_productionTestRef = _01_HeadRef.child("_2_productionTestRef")
-
-            // Determine if we're in production mode based on the first vendeur in the repository
-            val itsProductionMode = true
 
             // Return the appropriate reference based on mode
             return if (!itsProductionMode) _1_developingRef else _2_productionTestRef

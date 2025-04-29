@@ -38,6 +38,4 @@ interface _2_1_ProduitsDataBase_Repository {
                 .child("A_ProduitsDataBase")
                 .child("A_MainDataBase")
     }
-
-
 }

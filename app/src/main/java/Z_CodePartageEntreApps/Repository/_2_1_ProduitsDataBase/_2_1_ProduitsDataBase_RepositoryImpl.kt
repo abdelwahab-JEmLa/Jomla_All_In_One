@@ -20,7 +20,7 @@ import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
 
 class _2_1_ProduitsDataBase_RepositoryImpl(
-     val appDatabase: AppDatabase,
+    val appDatabase: AppDatabase,
 ) : _2_1_ProduitsDataBase_Repository {
     private val TAG = _2_1_ProduitsDataBase_Repository.TAG
 
@@ -44,8 +44,59 @@ class _2_1_ProduitsDataBase_RepositoryImpl(
     private val logOperations = _2_1_ProduitsDataBaseRepositoryLogOperationsExtension(this)
 
     init {
+        // Log Firebase reference information on initialization
+        logFirebaseReferenceInfo()
+
         repositoryScope.launch {
             initialize_2_1_ProduitsDataBaseRepository()
+        }
+    }
+
+    /**
+     * Logs detailed information about the Firebase reference path
+     * Addresses TODO: Create logs for debugging the Firebase reference issue
+     */
+    private fun logFirebaseReferenceInfo() {
+        try {
+            val firebaseRef = _2_1_ProduitsDataBase_Repository.sonDataBaseRef
+            val refPath = firebaseRef.toString()
+
+            Log.d(TAG, "====== FIREBASE REFERENCE DEBUG INFO ======")
+            Log.d(TAG, "Firebase reference complete path: $refPath")
+
+            // Get database URL
+            val databaseUrl = firebaseRef.root.toString()
+            Log.d(TAG, "Firebase database URL: $databaseUrl")
+
+            // Expected URL from the TODO comment
+            val expectedUrl = "https://abdelwahab-jemla-com-default-rtdb.europe-west1.firebasedatabase.app"
+            Log.d(TAG, "Expected URL: $expectedUrl")
+            Log.d(TAG, "URL check - Contains expected URL: ${databaseUrl.contains(expectedUrl)}")
+
+            // Check path components from the TODO comment
+            val pathComponents = listOf(
+                "00_DataPrototype-04-02",
+                "_1_developingRef", // or _2_productionTestRef depending on mode
+                "A_ProduitsDataBase",
+                "A_MainDataBase"
+            )
+
+            Log.d(TAG, "Expected path structure: ${pathComponents.joinToString(" -> ")}")
+            Log.d(TAG, "Actual path: $refPath")
+
+            // Check if the path contains all expected components
+            val containsAllComponents = pathComponents.all { refPath.contains(it) }
+            Log.d(TAG, "Path check - Contains all expected components: $containsAllComponents")
+
+            // Additional check based on HeadOfRepositorys_Model.getHeadSqlDataBaseRef()
+            val isProduction = true // Based on companion object in HeadOfRepositorys_Model
+            val expectedRefType = if (isProduction) "_2_productionTestRef" else "_1_developingRef"
+            Log.d(TAG, "Production mode: $isProduction, Expected ref type: $expectedRefType")
+            Log.d(TAG, "Reference contains expected ref type: ${refPath.contains(expectedRefType)}")
+
+            Log.d(TAG, "==========================================")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error logging Firebase reference info: ${e.message}")
         }
     }
 
@@ -202,10 +253,8 @@ class _2_1_ProduitsDataBase_RepositoryImpl(
             loadDepuitRoom()
             checkDataConsistency()
 
-
-            if (TAG.isNotEmpty()) {
-                log()
-            }
+            // Log repository state after initialization
+            log()
         } catch (e: Exception) {
             Log.e(TAG, "Error initializing repository: ${e.message}")
         }
@@ -260,8 +309,12 @@ class _2_1_ProduitsDataBase_RepositoryImpl(
 
             val firebaseCount = firebaseSnapshot?.childrenCount?.toInt() ?: 0
 
+            // Log counts for debugging
+            Log.d(TAG, "Data consistency check - Room count: $roomCount, Firebase count: $firebaseCount")
+
             if (roomCount != firebaseCount || roomCount == 0) {
                 if (firebaseCount > 0) {
+                    Log.d(TAG, "Importing data from Firebase to Room (counts mismatch or empty Room)")
                     importDeFireBaseAuRoom(repositoryScope)
                 }
             }
@@ -323,6 +376,9 @@ class _2_1_ProduitsDataBase_RepositoryImpl(
 
                 _2_1_ProduitsDataBase_Repository.sonDataBaseRef.addValueEventListener(flowValueEventListener!!)
                 isFlowListenerActive.set(true)
+
+                // Log that the listener was set up
+                Log.d(TAG, "Firebase data change listener set up successfully")
             }
         }
     }
@@ -332,6 +388,7 @@ class _2_1_ProduitsDataBase_RepositoryImpl(
             if (isFlowListenerActive.get() && flowValueEventListener != null) {
                 try {
                     _2_1_ProduitsDataBase_Repository.sonDataBaseRef.removeEventListener(flowValueEventListener!!)
+                    Log.d(TAG, "Firebase flow data listener removed successfully")
                 } catch (e: Exception) {
                     Log.e(TAG, "Error removing flow listener: ${e.message}")
                 } finally {
@@ -373,6 +430,8 @@ class _2_1_ProduitsDataBase_RepositoryImpl(
                         }
                     }
 
+                    Log.d(TAG, "Importing ${dataList.size} items from Firebase to Room")
+
                     if (dataList.isNotEmpty()) {
                         try {
                             appDatabase._2_1_ProduitsDataBaseDao().insertAll(dataList)
@@ -387,6 +446,7 @@ class _2_1_ProduitsDataBase_RepositoryImpl(
 
                     initialDataLoaded = true
                     progressRepo.value = 1.0f
+                    Log.d(TAG, "Import from Firebase completed successfully")
                 } catch (e: Exception) {
                     progressRepo.value = 0f
                     Log.e(TAG, "Error importing from Firebase: ${e.message}")
@@ -403,6 +463,7 @@ class _2_1_ProduitsDataBase_RepositoryImpl(
             if (isListenerActive.get() && valueEventListener != null) {
                 try {
                     _2_1_ProduitsDataBase_Repository.sonDataBaseRef.removeEventListener(valueEventListener!!)
+                    Log.d(TAG, "Firebase data change listener removed successfully")
                 } catch (e: Exception) {
                     Log.e(TAG, "Error removing data listener: ${e.message}")
                 } finally {
