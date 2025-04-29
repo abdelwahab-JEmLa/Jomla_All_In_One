@@ -9,7 +9,9 @@ import Z_CodePartageEntreApps.Repository._1_5_Vendeur._1_5_Vendeur_Repository
 import Z_CodePartageEntreApps.Repository._2_1_ProduitsDataBase._2_1_ProduitsDataBase_Repository
 import Z_CodePartageEntreApps.Repository._3_ClientsDataBase._3_ClientsDataBase_Repository
 import Z_CodePartageEntreApps.Repository._4_2_._4_CouleurOperationCommand._4_CouleurOperationCommand_Repository
+import com.google.firebase.Firebase
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.database
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class _0_0_HeadOfRepositorys_Model(
@@ -30,12 +32,20 @@ class _0_0_HeadOfRepositorys_Model(
 
     val e1SecteurDeClientsRepository: E1SecteurDeClientsRepository,
 
-    val databaseReference_1_2_ProduitAcheteOperation: DatabaseReference = _1_2_ProduitAcheteOperation_Repository.sonDataBaseRef,
-    val databaseReference_1_5_Vendeur: DatabaseReference = _1_5_Vendeur_Repository.sonDataBaseRef,
-    val databaseReference_1_4_PeriodeVent: DatabaseReference = _1_4_PeriodeVent_Repository.sonDataBaseRef,
-    val databaseReference_1_3_TransactionCommercial: DatabaseReference = _1_3_TransactionCommercial_Repository.sonDataBaseRef,
+    var activeIdDe_1_5_Vendeur: Long = 2L,
+) {
+    companion object {
+        fun determineRepositoryRef(): DatabaseReference {
+            val _01_HeadRef = Firebase.database.getReference("00_DataPrototype-04-02")
 
-    var activeIdDe_1_5_Vendeur: Long = 1L,
+            val _1_developingRef = _01_HeadRef.child("_1_developingRef")
+            val _2_productionTestRef = _01_HeadRef.child("_2_productionTestRef")
 
-    )
+            // Determine if we're in production mode based on the first vendeur in the repository
+            val itsProductionMode = true
 
+            // Return the appropriate reference based on mode
+            return if (!itsProductionMode) _1_developingRef else _2_productionTestRef
+        }
+    }
+}

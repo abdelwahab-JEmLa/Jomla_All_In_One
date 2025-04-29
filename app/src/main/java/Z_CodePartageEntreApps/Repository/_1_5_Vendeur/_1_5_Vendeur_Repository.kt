@@ -1,7 +1,8 @@
 package Z_CodePartageEntreApps.Repository._1_5_Vendeur
 
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys.Companion._0_0_HeadOfRepositorys_RepositoryRef
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.flow.MutableStateFlow
 
 interface _1_5_Vendeur_Repository {
@@ -28,7 +29,8 @@ interface _1_5_Vendeur_Repository {
     companion object {
         const val TAG = "_1_5_Vendeur"
 
-        val sonDataBaseRef = _0_0_HeadOfRepositorys_RepositoryRef
+        val sonDataBaseRef: DatabaseReference =
+            _0_0_HeadOfRepositorys_Model.determineRepositoryRef()
             .child("1")
             .child("5_Vendeur")
     }

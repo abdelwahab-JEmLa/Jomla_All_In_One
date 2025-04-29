@@ -1,8 +1,9 @@
 package Z_CodePartageEntreApps.Repository._1_3_TransactionCommercial
 
 import V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models._1_3_TransactionCommercial
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys.Companion._0_0_HeadOfRepositorys_RepositoryRef
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.flow.MutableStateFlow
 
 interface _1_3_TransactionCommercial_Repository {
@@ -18,7 +19,8 @@ interface _1_3_TransactionCommercial_Repository {
     companion object {
         const val TAG = "_1_3_TransactionCommercial"
 
-        val sonDataBaseRef = _0_0_HeadOfRepositorys_RepositoryRef
+        val sonDataBaseRef: DatabaseReference =
+            _0_0_HeadOfRepositorys_Model.determineRepositoryRef()
             .child("1")
             .child("3")
     }

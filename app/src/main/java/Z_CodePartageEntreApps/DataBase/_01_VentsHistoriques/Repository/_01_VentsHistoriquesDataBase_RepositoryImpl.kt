@@ -28,7 +28,8 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.util.concurrent.atomic.AtomicBoolean
 
-class _01_VentsHistoriquesDataBase_RepositoryImpl(itsProductionMode: Boolean)
+class _01_VentsHistoriquesDataBase_RepositoryImpl(
+    itsProductionMode: Boolean)
     : _01_VentsHistoriquesDataBase_Repository {
 
     private val TAG = "_01_PeriodesVent_Repo"

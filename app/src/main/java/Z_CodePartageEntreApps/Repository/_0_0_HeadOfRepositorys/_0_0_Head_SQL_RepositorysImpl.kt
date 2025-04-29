@@ -37,10 +37,11 @@ import kotlinx.coroutines.withContext
  *     _0_0_HeadSQLRepositorys: _0_0_HeadSQLRepositorys = koinInject()
  */
 class _0_0_Head_SQL_RepositorysImpl(
+
     val appDatabase: AppDatabase,
 
-    private val _1_1_Repository: _1_1_CouleurAcheteOperation_Repository,
-    private val _1_2_ProduitAcheteOperation_Repository: _1_2_ProduitAcheteOperation_Repository,
+    private val repo_1_1_CouleurAcheteOperation: _1_1_CouleurAcheteOperation_Repository,
+    private val repo_1_2_ProduitAcheteOperation: _1_2_ProduitAcheteOperation_Repository,
     private val repo_1_3_TransactionCommercial: _1_3_TransactionCommercial_Repository,
     private val _1_4_Repository: _1_4_PeriodeVent_Repository,
     private val _1_5_Repository: _1_5_Vendeur_Repository,
@@ -48,17 +49,14 @@ class _0_0_Head_SQL_RepositorysImpl(
     private val _2_1_Repository: _2_1_ProduitsDataBase_Repository,
     private val _2_2_Repository: _3_ClientsDataBase_Repository,
     private val _4_CouleurOperationCommand_Repository: _4_CouleurOperationCommand_Repository,
-    private val e1SecteurDeClientsRepository: E1SecteurDeClientsRepository
+    private val e1SecteurDeClientsRepository: E1SecteurDeClientsRepository,
 ) : _0_0_HeadSQLRepositorys {
-    
+
     private val TAG = _0_0_HeadSQLRepositorys.TAG
-
-    // Create a MutableStateFlow for activeId_1_3_BonAchat
     private val activeId_1_3_BonAchat = MutableStateFlow<Long>(-1L)
-
     override var repositorys_Model: _0_0_HeadOfRepositorys_Model = _0_0_HeadOfRepositorys_Model(
-        _1_1_Repository,
-        _1_2_ProduitAcheteOperation_Repository,
+        repo_1_1_CouleurAcheteOperation,
+        repo_1_2_ProduitAcheteOperation,
         repo_1_3_TransactionCommercial,
         activeId_1_3_BonAchat,
         _1_4_Repository,
@@ -70,7 +68,8 @@ class _0_0_Head_SQL_RepositorysImpl(
         _4_CouleurOperationCommand_Repository,
         e1SecteurDeClientsRepository  // Add this parameter here
     )
-    override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)
+
+
 
     private val repositoryScope = CoroutineScope(Dispatchers.IO)
     private var initialDataLoaded = false
@@ -86,8 +85,8 @@ class _0_0_Head_SQL_RepositorysImpl(
             initialize_0_0_HeadOfRepositoryRepository()
 
             // Ensure all child repositories are initialized
-            _1_1_Repository.ensureDataIsInitialized()
-            _1_2_ProduitAcheteOperation_Repository.ensureDataIsInitialized()
+            repo_1_1_CouleurAcheteOperation.ensureDataIsInitialized()
+            repo_1_2_ProduitAcheteOperation.ensureDataIsInitialized()
             repo_1_3_TransactionCommercial.ensureDataIsInitialized()
             _1_4_Repository.ensureDataIsInitialized()
             _1_5_Repository.ensureDataIsInitialized()
@@ -101,10 +100,11 @@ class _0_0_Head_SQL_RepositorysImpl(
             }
         }
     }
+
     override fun <T> deleteData(
         data: T,
         onSuccess: () -> Unit,
-        onError: (Exception) -> Unit
+        onError: (Exception) -> Unit,
     ) {
         try {
             repositoryScope.launch(Dispatchers.IO) {
@@ -114,7 +114,7 @@ class _0_0_Head_SQL_RepositorysImpl(
                             data = data,
                             databaseDao = appDatabase._1_3_TransactionCommercialDao(),
                             snapshotList = repo_1_3_TransactionCommercial.modelDatasSnapList,
-                            databaseRef = repositorys_Model.databaseReference_1_3_TransactionCommercial,
+                            databaseRef = _1_3_TransactionCommercial_Repository.sonDataBaseRef,
                             getFirebaseKey = { it.fireBaseKeyID_1_3_TransactionCommercial },
                             onSuccess = onSuccess,
                             onError = onError
@@ -123,8 +123,8 @@ class _0_0_Head_SQL_RepositorysImpl(
                         is _1_2_ProduitAcheteOperation -> processDeleteOperation(
                             data = data,
                             databaseDao = appDatabase._1_2_ProduitAcheteOperationDao(),
-                            snapshotList = _1_2_ProduitAcheteOperation_Repository.modelDatasSnapList,
-                            databaseRef = repositorys_Model.databaseReference_1_2_ProduitAcheteOperation,
+                            snapshotList = repo_1_2_ProduitAcheteOperation.modelDatasSnapList,
+                            databaseRef = _1_2_ProduitAcheteOperation_Repository.sonDataBaseRef,
                             getFirebaseKey = { it.fireBaseKeyID },
                             onSuccess = onSuccess,
                             onError = onError
@@ -134,7 +134,7 @@ class _0_0_Head_SQL_RepositorysImpl(
                             data = data,
                             databaseDao = appDatabase._1_4_PeriodeVentDao(),
                             snapshotList = _1_4_Repository.modelDatasSnapList,
-                            databaseRef = repositorys_Model.databaseReference_1_4_PeriodeVent,
+                            databaseRef = _1_4_PeriodeVent_Repository.sonDataBaseRef,
                             getFirebaseKey = { it.fireBaseKeyID_1_4_PeriodeVent },
                             onSuccess = onSuccess,
                             onError = onError
@@ -144,7 +144,7 @@ class _0_0_Head_SQL_RepositorysImpl(
                             data = data,
                             databaseDao = appDatabase._1_5_VendeurDao(),
                             snapshotList = _1_5_Repository.modelDatasSnapList,
-                            databaseRef = repositorys_Model.databaseReference_1_5_Vendeur,
+                            databaseRef = _1_5_Vendeur_Repository.sonDataBaseRef,
                             getFirebaseKey = { it.vid.toString() },
                             onSuccess = onSuccess,
                             onError = onError
@@ -175,7 +175,7 @@ class _0_0_Head_SQL_RepositorysImpl(
         databaseRef: DatabaseReference,
         crossinline getFirebaseKey: (T) -> String,
         noinline onSuccess: () -> Unit,
-        noinline onError: (Exception) -> Unit
+        noinline onError: (Exception) -> Unit,
     ) where T : Any {
         try {
             // Access the vid field with proper accessibility
@@ -199,7 +199,10 @@ class _0_0_Head_SQL_RepositorysImpl(
                 is _1_4_PeriodeVentDao -> databaseDao.delete(data as _1_4_PeriodeVent)
                 is _1_5_VendeurDao -> databaseDao.delete(data as _1_5_Vendeur)
                 else -> {
-                    Log.e(TAG, "Unsupported DAO type for deletion: ${databaseDao.javaClass.simpleName}")
+                    Log.e(
+                        TAG,
+                        "Unsupported DAO type for deletion: ${databaseDao.javaClass.simpleName}"
+                    )
                     onError(IllegalArgumentException("Unsupported DAO type for deletion"))
                     return
                 }
@@ -213,7 +216,8 @@ class _0_0_Head_SQL_RepositorysImpl(
             // Remove from snapshot list
             withContext(Dispatchers.Main) {
                 val index = snapshotList.indexOfFirst {
-                    val itemVidField = it.javaClass.getDeclaredField("vid").apply { isAccessible = true }
+                    val itemVidField =
+                        it.javaClass.getDeclaredField("vid").apply { isAccessible = true }
                     itemVidField.getLong(it) == currentVid
                 }
                 if (index >= 0) {
@@ -233,6 +237,7 @@ class _0_0_Head_SQL_RepositorysImpl(
             onError(e)
         }
     }
+
     override fun <T> upsertUneDataEtReturnVID(
         data: T,
         onSuccess: (Long) -> Unit,
@@ -245,12 +250,18 @@ class _0_0_Head_SQL_RepositorysImpl(
                             data = data,
                             databaseDao = appDatabase._1_3_TransactionCommercialDao(),
                             snapshotList = repo_1_3_TransactionCommercial.modelDatasSnapList,
-                            databaseRef = repositorys_Model.databaseReference_1_3_TransactionCommercial,
+                            databaseRef = _1_3_TransactionCommercial_Repository.sonDataBaseRef,
                             getFirebaseKey = { it.fireBaseKeyID_1_3_TransactionCommercial },
                             onSuccess = { resultVid ->
-                                Log.d(TAG, "Upsert completed for _1_3_TransactionCommercial with VID: $resultVid")
+                                Log.d(
+                                    TAG,
+                                    "Upsert completed for _1_3_TransactionCommercial with VID: $resultVid"
+                                )
                                 if (resultVid <= 0) {
-                                    Log.e(TAG, "No VID increment occurred. Check database insertion or key generation.")
+                                    Log.e(
+                                        TAG,
+                                        "No VID increment occurred. Check database insertion or key generation."
+                                    )
                                 }
                                 onSuccess(resultVid)
                             }
@@ -259,13 +270,19 @@ class _0_0_Head_SQL_RepositorysImpl(
                         is _1_2_ProduitAcheteOperation -> processUpsertOperation(
                             data = data,
                             databaseDao = appDatabase._1_2_ProduitAcheteOperationDao(),
-                            snapshotList = _1_2_ProduitAcheteOperation_Repository.modelDatasSnapList,
-                            databaseRef = repositorys_Model.databaseReference_1_2_ProduitAcheteOperation,
+                            snapshotList = repo_1_2_ProduitAcheteOperation.modelDatasSnapList,
+                            databaseRef = _1_2_ProduitAcheteOperation_Repository.sonDataBaseRef,
                             getFirebaseKey = { it.fireBaseKeyID },
                             onSuccess = { resultVid ->
-                                Log.d(TAG, "Upsert completed for _1_2_ProduitAcheteOperation with VID: $resultVid")
+                                Log.d(
+                                    TAG,
+                                    "Upsert completed for _1_2_ProduitAcheteOperation with VID: $resultVid"
+                                )
                                 if (resultVid <= 0) {
-                                    Log.e(TAG, "No VID increment occurred. Check database insertion or key generation.")
+                                    Log.e(
+                                        TAG,
+                                        "No VID increment occurred. Check database insertion or key generation."
+                                    )
                                 }
                                 onSuccess(resultVid)
                             }
@@ -321,15 +338,19 @@ class _0_0_Head_SQL_RepositorysImpl(
                 // Update existing data
                 when (databaseDao) {
                     is _1_3_TransactionCommercialDao -> {
-                        val result = databaseDao.insertAvecRetureNewVid(dataToUpsert as _1_3_TransactionCommercial)
+                        val result =
+                            databaseDao.insertAvecRetureNewVid(dataToUpsert as _1_3_TransactionCommercial)
                         Log.d(TAG, "Update result for _1_3_TransactionCommercial: $result")
                         result
                     }
+
                     is _1_2_ProduitAcheteOperationDao -> {
-                        val result = databaseDao.insertAvecRetureNewVid(dataToUpsert as _1_2_ProduitAcheteOperation)
+                        val result =
+                            databaseDao.insertAvecRetureNewVid(dataToUpsert as _1_2_ProduitAcheteOperation)
                         Log.d(TAG, "Update result for _1_2_ProduitAcheteOperation: $result")
                         result
                     }
+
                     else -> {
                         Log.e(TAG, "Unsupported DAO type: ${databaseDao.javaClass.simpleName}")
                         -1L
@@ -338,7 +359,8 @@ class _0_0_Head_SQL_RepositorysImpl(
 
                 withContext(Dispatchers.Main) {
                     val index = snapshotList.indexOfFirst {
-                        val itemVidField = it.javaClass.getDeclaredField("vid").apply { isAccessible = true }
+                        val itemVidField =
+                            it.javaClass.getDeclaredField("vid").apply { isAccessible = true }
                         itemVidField.getLong(it) == currentVid
                     }
                     if (index >= 0) {
@@ -366,15 +388,19 @@ class _0_0_Head_SQL_RepositorysImpl(
                 // Insert as new
                 val newVid = when (databaseDao) {
                     is _1_3_TransactionCommercialDao -> {
-                        val result = databaseDao.insertAvecRetureNewVid(dataToUpsert as _1_3_TransactionCommercial)
+                        val result =
+                            databaseDao.insertAvecRetureNewVid(dataToUpsert as _1_3_TransactionCommercial)
                         Log.d(TAG, "New VID for _1_3_TransactionCommercial: $result")
                         result
                     }
+
                     is _1_2_ProduitAcheteOperationDao -> {
-                        val result = databaseDao.insertAvecRetureNewVid(dataToUpsert as _1_2_ProduitAcheteOperation)
+                        val result =
+                            databaseDao.insertAvecRetureNewVid(dataToUpsert as _1_2_ProduitAcheteOperation)
                         Log.d(TAG, "New VID for _1_2_ProduitAcheteOperation: $result")
                         result
                     }
+
                     else -> {
                         Log.e(TAG, "Unsupported DAO type: ${databaseDao.javaClass.simpleName}")
                         -1L
@@ -382,7 +408,10 @@ class _0_0_Head_SQL_RepositorysImpl(
                 }
 
                 if (newVid <= 0) {
-                    Log.e(TAG, "Failed to generate new VID. Check database insertion or key generation logic.")
+                    Log.e(
+                        TAG,
+                        "Failed to generate new VID. Check database insertion or key generation logic."
+                    )
                 }
 
                 // Set the new vid on the object with proper accessibility
@@ -405,6 +434,7 @@ class _0_0_Head_SQL_RepositorysImpl(
 
         onSuccess(vid)
     }
+
     override fun upsertUneDataEtReturnVID_1_5_Vendeur(
         data: _1_5_Vendeur,
         onSuccess: (Long) -> Unit,
@@ -432,7 +462,7 @@ class _0_0_Head_SQL_RepositorysImpl(
                         }
 
                         // Update in Firebase
-                        repositorys_Model.databaseReference_1_5_Vendeur.child(dataToUpsert.vid.toString())
+                        _1_5_Vendeur_Repository.sonDataBaseRef.child(dataToUpsert.vid.toString())
                             .setValue(dataToUpsert).await()
 
                         // Call the success callback with the existing vid
@@ -450,7 +480,7 @@ class _0_0_Head_SQL_RepositorysImpl(
                         }
 
                         // Update Firebase with the new vid
-                        repositorys_Model.databaseReference_1_5_Vendeur.child(newVid.toString())
+                        _1_5_Vendeur_Repository.sonDataBaseRef.child(newVid.toString())
                             .setValue(dataToUpsert).await()
 
                         // Call the success callback with the new vid
@@ -490,7 +520,7 @@ class _0_0_Head_SQL_RepositorysImpl(
                         dataToUpsert.fireBaseKeyID_1_4_PeriodeVent =
                             "${dataToUpsert.vid}->(${dataToUpsert.startDateInString})"
 
-                        repositorys_Model.databaseReference_1_4_PeriodeVent.child(dataToUpsert.fireBaseKeyID_1_4_PeriodeVent)
+                        _1_4_PeriodeVent_Repository.sonDataBaseRef.child(dataToUpsert.fireBaseKeyID_1_4_PeriodeVent)
                             .setValue(dataToUpsert).await()
 
                         onSuccess(dataToUpsert.vid)
@@ -508,7 +538,7 @@ class _0_0_Head_SQL_RepositorysImpl(
                         }
 
                         // Update Firebase using fireBaseKeyID as the key
-                        repositorys_Model.databaseReference_1_4_PeriodeVent.child(dataToUpsert.fireBaseKeyID_1_4_PeriodeVent)
+                        _1_4_PeriodeVent_Repository.sonDataBaseRef.child(dataToUpsert.fireBaseKeyID_1_4_PeriodeVent)
                             .setValue(dataToUpsert).await()
 
                         // Call the success callback with the new vid
@@ -522,7 +552,6 @@ class _0_0_Head_SQL_RepositorysImpl(
             Log.e(TAG, "Error in upsertUnSeulDataEtReturnVID: ${e.message}")
         }
     }
-
 
 
     override fun notifyDataChanged_1_3_TransactionCommercial_Repository() {
@@ -647,8 +676,8 @@ class _0_0_Head_SQL_RepositorysImpl(
 
             // Initialize all child repositories in parallel for better performance
             val initJobs = listOf(
-                repositoryScope.launch { _1_1_Repository.ensureDataIsInitialized() },
-                repositoryScope.launch { _1_2_ProduitAcheteOperation_Repository.ensureDataIsInitialized() },
+                repositoryScope.launch { repo_1_1_CouleurAcheteOperation.ensureDataIsInitialized() },
+                repositoryScope.launch { repo_1_2_ProduitAcheteOperation.ensureDataIsInitialized() },
                 repositoryScope.launch { repo_1_3_TransactionCommercial.ensureDataIsInitialized() },
                 repositoryScope.launch { _1_4_Repository.ensureDataIsInitialized() },
                 repositoryScope.launch { _1_5_Repository.ensureDataIsInitialized() },
@@ -681,8 +710,8 @@ class _0_0_Head_SQL_RepositorysImpl(
             withContext(Dispatchers.IO) {
                 // Create a repository head with all repositories
                 repositorys_Model = _0_0_HeadOfRepositorys_Model(
-                    _1_1_CouleurAcheteOperation_Repository = _1_1_Repository,
-                    repository_1_2_ProduitAcheteOperation = _1_2_ProduitAcheteOperation_Repository,
+                    _1_1_CouleurAcheteOperation_Repository = repo_1_1_CouleurAcheteOperation,
+                    repository_1_2_ProduitAcheteOperation = repo_1_2_ProduitAcheteOperation,
                     repository_1_3_TransactionCommercial = repo_1_3_TransactionCommercial,
                     activeVId_1_3_TransactionCommercial = activeId_1_3_BonAchat,
                     repository_1_4_PeriodeVent = _1_4_Repository,
@@ -711,8 +740,8 @@ class _0_0_Head_SQL_RepositorysImpl(
         try {
             // Use combine with a different syntax
             val combinedFlow = combine(
-                _1_1_Repository.progressRepo,
-                _1_2_ProduitAcheteOperation_Repository.progressRepo,
+                repo_1_1_CouleurAcheteOperation.progressRepo,
+                repo_1_2_ProduitAcheteOperation.progressRepo,
                 repo_1_3_TransactionCommercial.progressRepo,
                 _1_4_Repository.progressRepo,
                 _1_5_Repository.progressRepo,

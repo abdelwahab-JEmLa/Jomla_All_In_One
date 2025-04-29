@@ -1,7 +1,8 @@
 package Z_CodePartageEntreApps.Repository._1_1_CouleurAcheteOperation
 
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys.Companion._0_0_HeadOfRepositorys_RepositoryRef
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.flow.MutableStateFlow
 
 interface _1_1_CouleurAcheteOperation_Repository {
@@ -23,9 +24,10 @@ interface _1_1_CouleurAcheteOperation_Repository {
     companion object {
         const val TAG = "_1_1_CouleurAcheteOperation"
 
-        val sonDataBaseRef = _0_0_HeadOfRepositorys_RepositoryRef
-            .child("1")
-            .child("1")
+        val sonDataBaseRef: DatabaseReference =
+            _0_0_HeadOfRepositorys_Model.determineRepositoryRef()
+                .child("1")
+                .child("1")
     }
 
     fun addDataAndReturnItVID(data: _1_1_CouleurAcheteOperation, onAddSuccess: (Long) -> Unit = {})
