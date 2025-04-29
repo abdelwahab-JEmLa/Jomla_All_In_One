@@ -115,7 +115,7 @@ fun AfficheurRegleOuvert(
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text("Fermer la transaction")
+                        Text("إغلاق الفاتورة مع عدم وض اي تقرير")
                     }
                 }
             }
