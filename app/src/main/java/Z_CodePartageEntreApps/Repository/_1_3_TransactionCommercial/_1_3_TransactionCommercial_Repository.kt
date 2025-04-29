@@ -20,9 +20,15 @@ interface _1_3_TransactionCommercial_Repository {
         const val TAG = "_1_3_TransactionCommercial"
 
         val sonDataBaseRef: DatabaseReference =
-            _0_0_HeadOfRepositorys_Model.determineRepositoryRef()
-            .child("1")
-            .child("3")
+            _0_0_HeadOfRepositorys_Model.getHeadSqlDataBaseRef()
+                .child("C_AchatsDataBases")
+                .child(
+                    "D" +
+                            "_" +
+                            "TransactionCommercial"
+                            + "DataBAse"
+
+                )
     }
 
 

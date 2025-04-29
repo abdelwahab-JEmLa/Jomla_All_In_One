@@ -25,9 +25,12 @@ interface _1_1_CouleurAcheteOperation_Repository {
         const val TAG = "_1_1_CouleurAcheteOperation"
 
         val sonDataBaseRef: DatabaseReference =
-            _0_0_HeadOfRepositorys_Model.determineRepositoryRef()
-                .child("1")
-                .child("1")
+            _0_0_HeadOfRepositorys_Model.getHeadSqlDataBaseRef()
+                .child("C_AchatsDataBases")
+                .child("A_CouleurAcheteOperation"
+                        + "DataBAse"
+                )
+
     }
 
     fun addDataAndReturnItVID(data: _1_1_CouleurAcheteOperation, onAddSuccess: (Long) -> Unit = {})

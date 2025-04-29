@@ -35,7 +35,7 @@ class _0_0_HeadOfRepositorys_Model(
     var activeIdDe_1_5_Vendeur: Long = 2L,
 ) {
     companion object {
-        fun determineRepositoryRef(): DatabaseReference {
+        fun getHeadSqlDataBaseRef(): DatabaseReference {
             val _01_HeadRef = Firebase.database.getReference("00_DataPrototype-04-02")
 
             val _1_developingRef = _01_HeadRef.child("_1_developingRef")

@@ -28,9 +28,15 @@ interface _1_2_ProduitAcheteOperation_Repository {
         const val TAG = "_1_2_ProduitAcheteOperation"
 
         val sonDataBaseRef: DatabaseReference =
-            _0_0_HeadOfRepositorys_Model.determineRepositoryRef()
-                .child("1")
-                .child("2")
+            _0_0_HeadOfRepositorys_Model.getHeadSqlDataBaseRef()
+                .child("C_AchatsDataBases")
+                .child(
+                    "B" +
+                            "_" +
+                            "ProduitAcheteOperation"
+                            + "DataBAse"
+
+                )
     }
 
     fun addDataAndReturneItVID(

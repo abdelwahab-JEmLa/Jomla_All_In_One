@@ -25,9 +25,9 @@ interface _3_ClientsDataBase_Repository {
         const val TAG = "_3_ClientsDataBase"
 
         val sonDataBaseRef: DatabaseReference =
-            _0_0_HeadOfRepositorys_Model.determineRepositoryRef()
-                .child("_3_")
-                .child("_Main")
+            _0_0_HeadOfRepositorys_Model.getHeadSqlDataBaseRef()
+                .child("D_Clients")
+                .child("A_MainDataBase")
     }
 
 

@@ -36,7 +36,7 @@ interface _4_CouleurOperationCommand_Repository {
         const val TAG = "_4_CouleurOperationCommand"
 
         val sonDataBaseRef: DatabaseReference =
-            _0_0_HeadOfRepositorys_Model.determineRepositoryRef()
+            _0_0_HeadOfRepositorys_Model.getHeadSqlDataBaseRef()
                 .child("4")
                 .child("1")
     }

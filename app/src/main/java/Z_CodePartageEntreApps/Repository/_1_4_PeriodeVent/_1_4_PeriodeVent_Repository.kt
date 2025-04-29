@@ -30,8 +30,14 @@ interface _1_4_PeriodeVent_Repository {
         const val TAG = "_1_4_PeriodeVent"
 
         val sonDataBaseRef: DatabaseReference =
-            _0_0_HeadOfRepositorys_Model.determineRepositoryRef()
-            .child("1")
-            .child("4_PeriodeVent")
+            _0_0_HeadOfRepositorys_Model.getHeadSqlDataBaseRef()
+                .child("C_AchatsDataBases")
+                .child(
+                    "E" +
+                            "_" +
+                            "PeriodeVent"
+                            + "DataBAse"
+
+                )
     }
 }

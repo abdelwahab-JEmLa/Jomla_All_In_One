@@ -21,7 +21,7 @@ interface E1SecteurDeClientsRepository {
 
 
         val sonDataBaseRef: DatabaseReference =
-            _0_0_HeadOfRepositorys_Model.determineRepositoryRef()
+            _0_0_HeadOfRepositorys_Model.getHeadSqlDataBaseRef()
             .child("E")
             .child("1")
     }

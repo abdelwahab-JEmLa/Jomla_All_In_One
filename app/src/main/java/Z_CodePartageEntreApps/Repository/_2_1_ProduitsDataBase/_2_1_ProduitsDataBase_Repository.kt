@@ -34,9 +34,9 @@ interface _2_1_ProduitsDataBase_Repository {
         const val TAG = "_2_1_ProduitsDataBase"
 
         val sonDataBaseRef: DatabaseReference =
-            _0_0_HeadOfRepositorys_Model.determineRepositoryRef()
-                .child("_2_")
-                .child("1_ProduitsDataBase")
+            _0_0_HeadOfRepositorys_Model.getHeadSqlDataBaseRef()
+                .child("A_ProduitsDataBase")
+                .child("A_MainDataBase")
     }
 
 
