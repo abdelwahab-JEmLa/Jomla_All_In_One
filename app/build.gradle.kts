@@ -17,7 +17,7 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName =
-            "تحديث رقمٍ 12.00  ليوم الاربعاء الساعة 9.00"
+            "تحديث  Version 2.01  ليوم الثلاثاء الساعة 7.30 من 29 الشهر"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
