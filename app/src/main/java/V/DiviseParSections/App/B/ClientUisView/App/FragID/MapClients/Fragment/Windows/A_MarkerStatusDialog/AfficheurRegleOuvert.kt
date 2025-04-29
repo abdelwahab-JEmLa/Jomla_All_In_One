@@ -115,7 +115,7 @@ fun AfficheurRegleOuvert(
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text("إغلاق الفاتورة مع عدم وض اي تقرير")
+                        Text("إغلاق الفاتورة مع عدم وضع اي تقرير")
                     }
                 }
             }
