@@ -141,6 +141,7 @@ fun MainScreen(
                 .repositorys_Model
             val hideAppScreen = repositorysModel.repository_1_5_Vendeur.modelDatasSnapList
                 .find { it.vid == repositorysModel.activeIdDe_1_5_Vendeur }?.hideAppScreen ?: false
+            var isControleFabVisible by remember { mutableStateOf(false) }
 
             if (!shouldShowContent) {
                 Box(
@@ -232,6 +233,7 @@ fun MainScreen(
                                 targetCategoryId = targetCategoryId,
                                 lockHost = isHostPhone,
                                 onClickImageToShowControles = {
+                                    isControleFabVisible = !isControleFabVisible
                                 }
                             )
 
@@ -243,14 +245,14 @@ fun MainScreen(
                                 )
                             }
 
-                            val isControleFabVisible = panelsGroupeButtonHandler
+                            val isControleFabVisibleFromClasse = panelsGroupeButtonHandler
                                 .paneleGroupeButtonList
                                 .find { it.key == PanelsGroupeButtonHandler.
                                 PanelsGroupeButtonDeClasse.Keys
                                     .A_OptionsControlsButtons_A1FragID_3 }
                                 ?.isVisible ?: false
 
-                            if (isControleFabVisible) {
+                            if (isControleFabVisibleFromClasse || isControleFabVisible) {
                                 A_OptionsControlsButtons_A1FragID_3() {
                                     showVendeursDialog = true
                                 }
