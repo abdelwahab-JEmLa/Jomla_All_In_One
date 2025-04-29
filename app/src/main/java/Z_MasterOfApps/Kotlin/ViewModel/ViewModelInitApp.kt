@@ -38,7 +38,7 @@ class ViewModelInitApp(
     val _1_4_PeriodeVent_Repository: _1_4_PeriodeVent_Repository,
     val _1_5_Vendeur_Repository: _1_5_Vendeur_Repository,
     val repo_0_0_HeadOfRepositorys_SQL_Repository: _0_0_HeadSQLRepositorys,
-    val repo_01_VentsHistoriquesDataBase_Repository: _01_VentsHistoriquesDataBase_Repository
+    val repo_01_VentsHistoriquesDataBase_Repository: _01_VentsHistoriquesDataBase_Repository ,
 ) : ViewModel() {
     var _paramatersAppsViewModelModel by mutableStateOf(ParamatersAppsModel())
     var _modelAppsFather by mutableStateOf(_ModelAppsFather())

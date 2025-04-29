@@ -41,7 +41,6 @@ data class PanelsGroupeButton(
     }
 }
 
-// Updated MapClientsUiState data class
 data class MapClientsUiState(
     val e1SecteurDeClientsList: List<E1SecteurDeClients> = emptyList(),
 

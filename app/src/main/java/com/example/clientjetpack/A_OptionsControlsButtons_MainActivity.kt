@@ -95,7 +95,6 @@ fun A_OptionsControlsButtons_A1FragID_3(
                             FloatingActionButton(
                                 onClick = {
                                     onShoControleurApps()
-
                                 },
                                 modifier = Modifier.size(40.dp),
                                 containerColor = couleur

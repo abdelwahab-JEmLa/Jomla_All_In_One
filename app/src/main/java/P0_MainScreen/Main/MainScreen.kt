@@ -12,6 +12,7 @@ import Views.FragId4_EStorePresentationToClient.FragmentDisplayeInfoProductToCli
 import Views.FragId4_EStorePresentationToClient.Modules.SearchArticle
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.A_ProduitRepository
 import Z_CodePartageEntreApps.Modules.FragmentNavigationHandler
+import Z_CodePartageEntreApps.Modules.PanelsGroupeButtonHandler
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.os.Build
 import android.util.Log
@@ -61,7 +62,9 @@ fun MainScreen(
     modifier: Modifier = Modifier,
     viewModelInitApp: ViewModelInitApp = koinViewModel(),
     xmlResources: List<Pair<String, Int>>? = null,
-) {
+    panelsGroupeButtonHandler: PanelsGroupeButtonHandler = koinInject()
+
+    ) {
     var showVendeursDialog by remember { mutableStateOf(false) }
 
     val a_ProduitModelRepository = koinInject<A_ProduitRepository>()
@@ -138,7 +141,6 @@ fun MainScreen(
                 .repositorys_Model
             val hideAppScreen = repositorysModel.repository_1_5_Vendeur.modelDatasSnapList
                 .find { it.vid == repositorysModel.activeIdDe_1_5_Vendeur }?.hideAppScreen ?: false
-            var isControleFabVisible by remember { mutableStateOf(false) }
 
             if (!shouldShowContent) {
                 Box(
@@ -230,7 +232,6 @@ fun MainScreen(
                                 targetCategoryId = targetCategoryId,
                                 lockHost = isHostPhone,
                                 onClickImageToShowControles = {
-                                    isControleFabVisible = !isControleFabVisible
                                 }
                             )
 
@@ -241,6 +242,14 @@ fun MainScreen(
                                         .clickable(enabled = false) { }
                                 )
                             }
+
+                            val isControleFabVisible = panelsGroupeButtonHandler
+                                .paneleGroupeButtonList
+                                .find { it.key == PanelsGroupeButtonHandler.
+                                PanelsGroupeButtonDeClasse.Keys
+                                    .A_OptionsControlsButtons_A1FragID_3 }
+                                ?.isVisible ?: false
+
                             if (isControleFabVisible) {
                                 A_OptionsControlsButtons_A1FragID_3() {
                                     showVendeursDialog = true
