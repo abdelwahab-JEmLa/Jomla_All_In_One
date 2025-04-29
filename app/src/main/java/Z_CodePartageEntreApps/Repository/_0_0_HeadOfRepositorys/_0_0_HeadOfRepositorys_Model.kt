@@ -32,7 +32,7 @@ class _0_0_HeadOfRepositorys_Model(
 
     val e1SecteurDeClientsRepository: E1SecteurDeClientsRepository,
 
-    var activeIdDe_1_5_Vendeur: Long = 2L,
+    var activeIdDe_1_5_Vendeur: Long = 1L,
 ) {
     companion object {
         fun getHeadSqlDataBaseRef(itsProductionMode:Boolean = true): DatabaseReference {
