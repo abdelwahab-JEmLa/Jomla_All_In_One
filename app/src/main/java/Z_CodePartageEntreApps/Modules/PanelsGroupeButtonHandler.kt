@@ -32,6 +32,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -105,7 +106,8 @@ class PanelsGroupeButtonHandler {
                             val couleur = Color(0xFF9C27B0)
                             FloatingActionButton(
                                 onClick = {
-                                    _showVendeursDialog.value=true
+                                    Log.d(TAG, "Vendeurs button clicked, setting _showVendeursDialog to true")
+                                    _showVendeursDialog.value = true
                                 }, modifier = Modifier.size(40.dp), containerColor = couleur
                             ) {
                                 Icon(
@@ -117,11 +119,19 @@ class PanelsGroupeButtonHandler {
                         val couleurButton2 = Color(0xFF3F51B5)
                         FloatingActionButton(
                             onClick = {
-                                Log.d(
-                                    TAG, "Button clicked, attempting to show dialog"
-                                )
-                                setShowDialogControleFabs(true)    //<--
-//TODO(1): cree log pk ca n affiche pas le dialoge
+                                Log.d(TAG, "Control FAB clicked, current dialog state: ${_showDialogeControleFabs.value}")
+
+                                // Check if state is already true
+                                if (_showDialogeControleFabs.value) {
+                                    Log.d(TAG, "Dialog is already showing, toggling off")
+                                    setShowDialogControleFabs(false)
+                                } else {
+                                    Log.d(TAG, "Setting dialog visibility to true")
+                                    setShowDialogControleFabs(true)
+
+                                    // Log the new state to verify it was changed
+                                    Log.d(TAG, "New dialog state after setting: ${_showDialogeControleFabs.value}")
+                                }
                             }, modifier = Modifier.size(40.dp), containerColor = couleurButton2
                         ) {
                             // Change icon to indicate polygon creation
@@ -159,8 +169,20 @@ class PanelsGroupeButtonHandler {
                 }
                 AfficheComptsVendeursManager()
             }
+
+            // Ensure the dialog state is being tracked properly
+            LaunchedEffect(_showDialogeControleFabs.value) {
+                Log.d(TAG, "LaunchedEffect triggered. Dialog state: ${_showDialogeControleFabs.value}")
+                if (_showDialogeControleFabs.value) {
+                    Log.d(TAG, "Dialog should be visible now")
+                }
+            }
+
+            // Add the dialog display here to ensure it's in the composition hierarchy
+            AfficheDialogesHeadApps()
         }
     }
+
     @Composable
     fun ControlButton(
         onClick: () -> Unit,
@@ -282,8 +304,10 @@ class PanelsGroupeButtonHandler {
     @Composable
     private fun AfficheComptsVendeursManager() {
         if (_showVendeursDialog.value) {
+            Log.d(TAG, "Rendering Vendeurs dialog since _showVendeursDialog is true")
             AlertDialog(
                 onDismissRequest = {
+                    Log.d(TAG, "Vendeurs dialog dismiss requested")
                     _showVendeursDialog.value = false
                 },
                 title = { Text("Manage Vendeurs") },
@@ -296,22 +320,29 @@ class PanelsGroupeButtonHandler {
                 },
                 confirmButton = {
                     TextButton(onClick = {
+                        Log.d(TAG, "Vendeurs dialog close button clicked")
                         _showVendeursDialog.value = false
                     }) {
                         Text("Close")
                     }
                 }
             )
+        } else {
+            Log.d(TAG, "Not rendering Vendeurs dialog since _showVendeursDialog is false")
         }
     }
 
     @Composable
     fun AfficheDialogesHeadApps() {
         // Get the current values from state
-        if (_showDialogeControleFabs.value) {
+        val isDialogVisible = _showDialogeControleFabs.value
+        Log.d(TAG, "AfficheDialogesHeadApps called, dialog state: $isDialogVisible")
+
+        if (isDialogVisible) {
+            Log.d(TAG, "Rendering control panel dialog")
             Dialog(
                 onDismissRequest = {
-                    Log.d(TAG, "Dialog dismiss requested")
+                    Log.d(TAG, "Control panel dialog dismiss requested")
                     setShowDialogControleFabs(false)
                 },
             ) {
@@ -373,6 +404,8 @@ class PanelsGroupeButtonHandler {
                     }
                 }
             }
+        } else {
+            Log.d(TAG, "Not rendering control panel dialog since _showDialogeControleFabs is false")
         }
     }
 
