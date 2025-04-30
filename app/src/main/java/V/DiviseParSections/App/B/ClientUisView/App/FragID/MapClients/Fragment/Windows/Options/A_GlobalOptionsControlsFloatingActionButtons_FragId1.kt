@@ -141,6 +141,7 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                     panelsGroupeButtonHandler.ButtonActiveWindow()
                     ButtonActiveWindowNum2(viewModel)
 
+
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)

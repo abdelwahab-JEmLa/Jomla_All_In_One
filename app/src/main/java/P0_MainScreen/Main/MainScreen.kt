@@ -63,7 +63,6 @@ fun MainScreen(
     viewModelInitApp: ViewModelInitApp = koinViewModel(),
     xmlResources: List<Pair<String, Int>>? = null,
     panelsGroupeButtonHandler: PanelsGroupeButtonHandler = koinInject()
-
     ) {
     var showVendeursDialog by remember { mutableStateOf(false) }
 
