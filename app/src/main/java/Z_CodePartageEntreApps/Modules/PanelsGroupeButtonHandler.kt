@@ -105,7 +105,7 @@ class PanelsGroupeButtonHandler {
                                 Text(
                                     "ShowDialogControleFabs", modifier = Modifier
                                         .background(
-                                            Color(0xFF009688)
+                                            couleurButton2
                                         )
                                         .padding(4.dp), color = Color.White
                                 )
@@ -130,7 +130,7 @@ class PanelsGroupeButtonHandler {
                                 Text(
                                     "View Vendeurs", modifier = Modifier
                                         .background(
-                                            Color(0xFF009688)
+                                            couleur
                                         )
                                         .padding(4.dp), color = Color.White
                                 )
