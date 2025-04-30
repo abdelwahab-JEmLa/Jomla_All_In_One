@@ -183,16 +183,14 @@ fun MapContent(
                 .align(Alignment.Center)
         )
 
-        // Get the panels handler
         val panelsGroupeButtonHandler = koinInject<PanelsGroupeButtonHandler>()
 
-        // Check if the MapSecteursPolygenHandelButtons should be visible
         val isSecteursButtonVisible = panelsGroupeButtonHandler
             ._paneleGroupeButtonList.value
-            .find { it.key == PanelsGroupeButtonHandler.PanelsGroupeButtonDeClasse.Keys.MapSecteursPolygenHandelButtons }
+            .find { it.key == PanelsGroupeButtonHandler
+                .PanelsGroupeButtonDeClasse.Keys.MapSecteursPolygenHandelButtons }
             ?.isVisible ?: false
 
-        // Show MapSecteursPolygenHandelButtons if visible
         if (isSecteursButtonVisible) {
             MapSecteursPolygenHandelButtons(mapView, viewModel)
         }

@@ -73,21 +73,46 @@ class PanelsGroupeButtonHandler {
         Box(
             modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
         ) {
-            Box(modifier = Modifier
-                .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
-                .pointerInput(Unit) {
-                    detectDragGestures { change, dragAmount ->
-                        change.consume()
-                        offsetX += dragAmount.x
-                        offsetY += dragAmount.y
+            Box(
+                modifier = Modifier
+                    .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
+                    .pointerInput(Unit) {
+                        detectDragGestures { change, dragAmount ->
+                            change.consume()
+                            offsetX += dragAmount.x
+                            offsetY += dragAmount.y
+                        }
                     }
-                }
-                .padding(16.dp)) {
+                    .padding(16.dp)) {
                 Column(
                     modifier = Modifier.align(Alignment.BottomStart),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     if (showMenu) {
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            val couleurButton2 = Color(0xFFF44336)
+                            FloatingActionButton(
+                                onClick = {
+                                    setShowDialogControleFabs(!_showDialogeControleFabs.value)
+                                }, modifier = Modifier.size(40.dp), containerColor = couleurButton2
+                            ) {
+                                Icon(Icons.Filled.Shop, "setShowDialogControleFabs")
+                            }
+                            if (showLabels) {
+                                Text(
+                                    "ShowDialogControleFabs", modifier = Modifier
+                                        .background(
+                                            Color(0xFF009688)
+                                        )
+                                        .padding(4.dp), color = Color.White
+                                )
+                            }
+                        }
+
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -102,28 +127,19 @@ class PanelsGroupeButtonHandler {
                                     Icons.Filled.PhoneAndroid, contentDescription = "View Vendeurs"
                                 )
                             }
+                            if (showLabels) {
+                                Text(
+                                    "View Vendeurs", modifier = Modifier
+                                        .background(
+                                            Color(0xFF009688)
+                                        )
+                                        .padding(4.dp), color = Color.White
+                                )
+                            }
                         }
 
-                        val couleurButton2 = Color(0xFF3F51B5)
-                        FloatingActionButton(
-                            onClick = {
-                                // Toggle dialog state
-                                setShowDialogControleFabs(!_showDialogeControleFabs.value)
-                            }, modifier = Modifier.size(40.dp), containerColor = couleurButton2
-                        ) {
-                            // Change icon to indicate polygon creation
-                            Icon(Icons.Filled.Shop, "setShowDialogControleFabs")
-                        }
 
-                        if (showLabels) {
-                            Text(
-                                "View Vendeurs", modifier = Modifier
-                                    .background(
-                                        Color(0xFF009688)
-                                    )
-                                    .padding(4.dp), color = Color.White
-                            )
-                        }
+
                         ControlButton(
                             onClick = { showLabels = !showLabels },
                             icon = Icons.Default.Info,
@@ -208,14 +224,16 @@ class PanelsGroupeButtonHandler {
 
                 is Int -> {
                     // Support for direct resource IDs like R.raw.categ
-                    Box(modifier = Modifier
-                        .size(40.dp)
-                        .clickable(enabled = enabled) {
-                            onClick()
-                        }
-                        .background(
-                            color = if (enabled) containerColor else Color.Gray, shape = CircleShape
-                        ), contentAlignment = Alignment.Center) {
+                    Box(
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clickable(enabled = enabled) {
+                                onClick()
+                            }
+                            .background(
+                                color = if (enabled) containerColor else Color.Gray,
+                                shape = CircleShape
+                            ), contentAlignment = Alignment.Center) {
                     }
                 }
 
