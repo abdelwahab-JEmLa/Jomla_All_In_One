@@ -43,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.clientjetpack.ViewModel.HeadViewModel
@@ -57,7 +58,7 @@ fun MainScreen(
     viewModelInitApp: ViewModelInitApp = koinViewModel(),
     xmlResources: List<Pair<String, Int>>? = null,
     panelsGroupeButtonHandler: PanelsGroupeButtonHandler = koinInject()
-    ) {
+) {
     var showVendeursDialog by remember { mutableStateOf(false) }
 
     val a_ProduitModelRepository = koinInject<A_ProduitRepository>()
@@ -108,6 +109,7 @@ fun MainScreen(
     var showProductDisplay by remember { mutableStateOf(false) }
     var lockHost by remember { mutableStateOf(false) }
     val targetCategoryId = remember { mutableStateOf<Long?>(null) }
+    var isControleFabVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(productDisplayController.clientWindowsDisplayedProductId) {
         showProductDisplay = productDisplayController.clientWindowsDisplayedProductId != null
@@ -134,7 +136,6 @@ fun MainScreen(
                 .repositorys_Model
             val hideAppScreen = repositorysModel.repository_1_5_Vendeur.modelDatasSnapList
                 .find { it.vid == repositorysModel.activeIdDe_1_5_Vendeur }?.hideAppScreen ?: false
-            var isControleFabVisible by remember { mutableStateOf(false) }
 
             if (!shouldShowContent) {
                 Box(
@@ -237,10 +238,6 @@ fun MainScreen(
                                         .clickable(enabled = false) { }
                                 )
                             }
-
-                            if (isControleFabVisible) {
-                                panelsGroupeButtonHandler.GroupeButtonsActivePanelsWindows()
-                            }
                         }
 
                     }
@@ -317,6 +314,18 @@ fun MainScreen(
                             trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
                             color = MaterialTheme.colorScheme.primary
                         )
+                    }
+                }
+
+                // Control FAB panel - placed at the highest z-index to be on top of everything
+                if (isControleFabVisible) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .zIndex(10f) // Ensure it's always on top
+                    ) {
+                        panelsGroupeButtonHandler.GroupeButtonsActivePanelsWindows()
+                        panelsGroupeButtonHandler.AfficheDialogesHeadApps() // Also show any dialogs from the handler
                     }
                 }
             }

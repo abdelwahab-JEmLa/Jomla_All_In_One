@@ -52,7 +52,6 @@ class PanelsGroupeButtonHandler {
 
     // Changed to mutableStateOf to make it observable in Compose
     private var _showDialogeControleFabs = mutableStateOf(false)
-    val showDialogeControleFabs: Boolean get() = _showDialogeControleFabs.value
 
     private var _showVendeursDialog = mutableStateOf(false)
 
@@ -69,13 +68,6 @@ class PanelsGroupeButtonHandler {
         )
     )
 
-    // Property to expose the state value
-    var paneleGroupeButtonList: List<PanelsGroupeButtonDeClasse>
-        get() = _paneleGroupeButtonList.value
-        set(value) {
-            Log.d(TAG, "Setting new panel list with ${value.size} items")
-            _paneleGroupeButtonList.value = value
-        }
 
     @Composable
     fun GroupeButtonsActivePanelsWindows() {
@@ -120,34 +112,31 @@ class PanelsGroupeButtonHandler {
                                     Icons.Filled.PhoneAndroid, contentDescription = "View Vendeurs"
                                 )
                             }
-
-                            val couleurButton2 = Color(0xFF3F51B5)
-                            FloatingActionButton(
-                                onClick = {
-                                    Log.d(
-                                        TAG, "Button clicked, attempting to show dialog"
-                                    )
-                                    setShowDialogControleFabs(true)
-                                }, modifier = Modifier.size(40.dp), containerColor = couleurButton2
-                            ) {
-                                // Change icon to indicate polygon creation
-                                Icon(Icons.Filled.Shop, "setShowDialogControleFabs")
-                            }
-
-                            if (showLabels) {
-                                Text(
-                                    "View Vendeurs", modifier = Modifier
-                                        .background(
-                                            Color(0xFF009688)
-                                        )
-                                        .padding(4.dp), color = Color.White
-                                )
-                            }
-
-                            ComptsManager()
-
                         }
 
+                        val couleurButton2 = Color(0xFF3F51B5)
+                        FloatingActionButton(
+                            onClick = {
+                                Log.d(
+                                    TAG, "Button clicked, attempting to show dialog"
+                                )
+                                setShowDialogControleFabs(true)    //<--
+//TODO(1): cree log pk ca n affiche pas le dialoge
+                            }, modifier = Modifier.size(40.dp), containerColor = couleurButton2
+                        ) {
+                            // Change icon to indicate polygon creation
+                            Icon(Icons.Filled.Shop, "setShowDialogControleFabs")
+                        }
+
+                        if (showLabels) {
+                            Text(
+                                "View Vendeurs", modifier = Modifier
+                                    .background(
+                                        Color(0xFF009688)
+                                    )
+                                    .padding(4.dp), color = Color.White
+                            )
+                        }
                         ControlButton(
                             onClick = { showLabels = !showLabels },
                             icon = Icons.Default.Info,
@@ -168,6 +157,7 @@ class PanelsGroupeButtonHandler {
                         containerColor = Color(0xFFF44336)
                     )
                 }
+                AfficheComptsVendeursManager()
             }
         }
     }
@@ -290,7 +280,7 @@ class PanelsGroupeButtonHandler {
     }
 
     @Composable
-    private fun ComptsManager() {
+    private fun AfficheComptsVendeursManager() {
         if (_showVendeursDialog.value) {
             AlertDialog(
                 onDismissRequest = {
