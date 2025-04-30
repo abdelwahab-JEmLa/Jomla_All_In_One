@@ -28,7 +28,8 @@ import androidx.compose.ui.window.Dialog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 
-class PanelsGroupeButtonHandler {
+class PanelsGroupeButtonHandler {   //<--
+//TODO(1): enleve logs
     // Added a TAG for logs
     private val TAG = "PanelsButtonHandler"
 
@@ -60,50 +61,6 @@ class PanelsGroupeButtonHandler {
             _paneleGroupeButtonList.value = value
         }
 
-    fun updatedStateFabGroupVisibility(updatedState: PanelsGroupeButtonDeClasse) {
-        Log.d(TAG, "Updating visibility for ${updatedState.key} to ${updatedState.isVisible}")
-
-        try {
-            // Get current list value
-            val currentList = _paneleGroupeButtonList.value
-            val index = currentList.indexOfFirst { it.key == updatedState.key }
-
-            if (index == -1) {
-                Log.e(TAG, "Failed to find panel with key ${updatedState.key} in the list")
-                return
-            }
-
-            Log.d(TAG, "Found panel at index $index with current visibility: ${currentList[index].isVisible}")
-
-            // Create a new list with the updated item
-            val updatedList = currentList.toMutableList()
-            updatedList[index] = updatedState
-
-            // Update the state (directly on the main thread for UI updates)
-            _paneleGroupeButtonList.value = updatedList
-
-            Log.d(TAG, "Successfully updated panel list. New state: ${updatedList.map { "${it.key}:${it.isVisible}" }}")
-        } catch (e: Exception) {
-            Log.e(TAG, "Error updating panel visibility: ${e.message}", e)
-        }
-    }
-
-    data class PanelsGroupeButtonDeClasse(
-        val key: Keys,
-        val isVisible: Boolean = false,
-    ) {
-        enum class Keys {
-            A_OptionsControlsButtons_A1FragID_3,
-            MapSecteursPolygenHandelButtons,
-            autres,
-        }
-    }
-
-    fun setShowDialogControleFabs(show: Boolean) {
-        Log.d(TAG, "Setting dialog visibility to: $show")
-        _showDialogeControleFabs.value = show
-    }
-
     @Composable
     fun ButtonActiveWindow() {
         val couleurButton2 = Color(0xFF3F51B5)
@@ -121,15 +78,9 @@ class PanelsGroupeButtonHandler {
     }
 
     @Composable
-    fun DialogPanelButtons() {
+    fun AfficheDialoges() {
         // Get the current values from state
-        val showDialog = _showDialogeControleFabs.value
-        val panelsList = _paneleGroupeButtonList.value
-
-        Log.d(TAG, "DialogPanelButtons composable called, showDialog: $showDialog, panels: ${panelsList.size}")
-
-        if (showDialog) {
-            Log.d(TAG, "Showing dialog with ${panelsList.size} panel options: ${panelsList.map { "${it.key}:${it.isVisible}" }}")
+        if (_showDialogeControleFabs.value) {
             Dialog(
                 onDismissRequest = {
                     Log.d(TAG, "Dialog dismiss requested")
@@ -147,7 +98,7 @@ class PanelsGroupeButtonHandler {
                             modifier = Modifier.padding(bottom = 16.dp)
                         )
 
-                        panelsList.forEach { fabHandler ->
+                        _paneleGroupeButtonList.value.forEach { fabHandler ->
                             Row(
                                 modifier = Modifier
                                     .padding(vertical = 8.dp)
@@ -193,4 +144,49 @@ class PanelsGroupeButtonHandler {
             }
         }
     }
+    fun updatedStateFabGroupVisibility(updatedState: PanelsGroupeButtonDeClasse) {
+        Log.d(TAG, "Updating visibility for ${updatedState.key} to ${updatedState.isVisible}")
+
+        try {
+            // Get current list value
+            val currentList = _paneleGroupeButtonList.value
+            val index = currentList.indexOfFirst { it.key == updatedState.key }
+
+            if (index == -1) {
+                Log.e(TAG, "Failed to find panel with key ${updatedState.key} in the list")
+                return
+            }
+
+            Log.d(TAG, "Found panel at index $index with current visibility: ${currentList[index].isVisible}")
+
+            // Create a new list with the updated item
+            val updatedList = currentList.toMutableList()
+            updatedList[index] = updatedState
+
+            // Update the state (directly on the main thread for UI updates)
+            _paneleGroupeButtonList.value = updatedList
+
+            Log.d(TAG, "Successfully updated panel list. New state: ${updatedList.map { "${it.key}:${it.isVisible}" }}")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error updating panel visibility: ${e.message}", e)
+        }
+    }
+
+    data class PanelsGroupeButtonDeClasse(
+        val key: Keys,
+        val isVisible: Boolean = false,
+    ) {
+        enum class Keys {
+            A_OptionsControlsButtons_A1FragID_3,
+            MapSecteursPolygenHandelButtons,
+            autres,
+        }
+    }
+
+    fun setShowDialogControleFabs(show: Boolean) {
+        Log.d(TAG, "Setting dialog visibility to: $show")
+        _showDialogeControleFabs.value = show
+    }
+
+
 }

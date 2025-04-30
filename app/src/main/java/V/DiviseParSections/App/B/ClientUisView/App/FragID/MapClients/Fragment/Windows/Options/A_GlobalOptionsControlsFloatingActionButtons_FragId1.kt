@@ -339,7 +339,7 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
             )
         }
 
-        panelsGroupeButtonHandler.DialogPanelButtons()
+        panelsGroupeButtonHandler.AfficheDialoges()
 
         if (uiState.showDialogeControleFabs) {
             Dialog(

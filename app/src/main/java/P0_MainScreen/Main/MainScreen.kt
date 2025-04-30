@@ -281,6 +281,8 @@ fun MainScreen(
                             )
                         }
 
+                        panelsGroupeButtonHandler.AfficheDialoges()
+
                     }
                 }
 
