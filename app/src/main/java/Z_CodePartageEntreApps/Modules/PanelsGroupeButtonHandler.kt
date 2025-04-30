@@ -42,6 +42,9 @@ class PanelsGroupeButtonHandler {
     private var _paneleGroupeButtonList = mutableStateOf(
         listOf(
             PanelsGroupeButtonDeClasse(
+                PanelsGroupeButtonDeClasse.Keys.A_OptionsControlsButtons_A1FragID_3,
+            ),
+            PanelsGroupeButtonDeClasse(
                 PanelsGroupeButtonDeClasse.Keys.MapSecteursPolygenHandelButtons,
                 isVisible = false
             ),
