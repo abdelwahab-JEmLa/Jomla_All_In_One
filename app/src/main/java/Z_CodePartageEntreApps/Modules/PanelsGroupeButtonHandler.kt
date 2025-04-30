@@ -89,7 +89,6 @@ class PanelsGroupeButtonHandler {
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     if (showMenu) {
-
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(4.dp)
