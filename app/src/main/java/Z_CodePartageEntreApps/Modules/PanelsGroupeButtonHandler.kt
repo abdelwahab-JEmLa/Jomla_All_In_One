@@ -51,7 +51,7 @@ class PanelsGroupeButtonHandler {
     private var _showDialogeControleFabs = mutableStateOf(false)
     private var _showVendeursDialog = mutableStateOf(false)
 
-    private var _paneleGroupeButtonList = mutableStateOf(
+    var _paneleGroupeButtonList = mutableStateOf(
         listOf(
             PanelsGroupeButtonDeClasse(
                 PanelsGroupeButtonDeClasse.Keys.A_OptionsControlsButtons_A1FragID_3,

@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.PanelsGroupeButton
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Options.MapSecteursPolygenHandelButtons
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Test.insert2SecteurEtPolygon
@@ -16,6 +15,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Vi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.Ui.handleMarkerPositionUpdate
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.MarkerStatusDialog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Options.A_GlobalOptionsControlsFloatingActionButtons_FragId1
+import Z_CodePartageEntreApps.Modules.PanelsGroupeButtonHandler
 import Z_MasterOfApps.Kotlin.ViewModel.ViewModelInitApp
 import android.content.Context
 import androidx.compose.foundation.background
@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.koin.compose.koinInject
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.views.MapView
@@ -182,12 +183,19 @@ fun MapContent(
                 .align(Alignment.Center)
         )
 
-        val isVisible = uiState.paneleGroupeButtonList
-            .find { it.key == PanelsGroupeButton.Keys.MapSecteursPolygenHandelButtons }
+        // Get the panels handler
+        val panelsGroupeButtonHandler = koinInject<PanelsGroupeButtonHandler>()
+
+        // Check if the MapSecteursPolygenHandelButtons should be visible
+        val isSecteursButtonVisible = panelsGroupeButtonHandler
+            ._paneleGroupeButtonList.value
+            .find { it.key == PanelsGroupeButtonHandler.PanelsGroupeButtonDeClasse.Keys.MapSecteursPolygenHandelButtons }
             ?.isVisible ?: false
 
-        if (isVisible)
-         { MapSecteursPolygenHandelButtons(mapView, viewModel) }
+        // Show MapSecteursPolygenHandelButtons if visible
+        if (isSecteursButtonVisible) {
+            MapSecteursPolygenHandelButtons(mapView, viewModel)
+        }
 
         // Floating action buttons for map controls
         if (viewModelInitApp._paramatersAppsViewModelModel.fabsVisibility) {
@@ -251,4 +259,3 @@ fun MapContent(
         }
     }
 }
-
