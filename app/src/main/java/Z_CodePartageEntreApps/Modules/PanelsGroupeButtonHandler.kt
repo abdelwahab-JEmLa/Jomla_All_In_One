@@ -138,8 +138,6 @@ class PanelsGroupeButtonHandler {
                             }
                         }
 
-
-
                         ControlButton(
                             onClick = { showLabels = !showLabels },
                             icon = Icons.Default.Info,
