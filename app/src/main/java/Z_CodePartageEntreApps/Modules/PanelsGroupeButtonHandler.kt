@@ -3,7 +3,6 @@ package Z_CodePartageEntreApps.Modules
 import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.A_APP4FragID1_MainScreen
 import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
 import Z_MasterOfApps.Z_AppsFather.Kotlin.Partage.Views.AnimatedIconLottieJsonFile
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -49,14 +48,9 @@ import androidx.compose.ui.window.Dialog
 import kotlin.math.roundToInt
 
 class PanelsGroupeButtonHandler {
-    private val TAG = "PanelsButtonHandler"
-
-    // Changed to mutableStateOf to make it observable in Compose
     private var _showDialogeControleFabs = mutableStateOf(false)
-
     private var _showVendeursDialog = mutableStateOf(false)
 
-    // Make the list a mutableStateOf to ensure updates trigger recomposition
     private var _paneleGroupeButtonList = mutableStateOf(
         listOf(
             PanelsGroupeButtonDeClasse(
@@ -69,21 +63,16 @@ class PanelsGroupeButtonHandler {
         )
     )
 
-
     @Composable
     fun GroupeButtonsActivePanelsWindows() {
-        val TAG = "A_OptionsControlsButtons_Main"
-
         var showMenu by remember { mutableStateOf(false) }
         var showLabels by remember { mutableStateOf(true) }
         var offsetX by remember { mutableFloatStateOf(0f) }
         var offsetY by remember { mutableFloatStateOf(0f) }
 
-
         Box(
             modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
         ) {
-
             Box(modifier = Modifier
                 .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
                 .pointerInput(Unit) {
@@ -106,7 +95,6 @@ class PanelsGroupeButtonHandler {
                             val couleur = Color(0xFF9C27B0)
                             FloatingActionButton(
                                 onClick = {
-                                    Log.d(TAG, "Vendeurs button clicked, setting _showVendeursDialog to true")
                                     _showVendeursDialog.value = true
                                 }, modifier = Modifier.size(40.dp), containerColor = couleur
                             ) {
@@ -119,19 +107,8 @@ class PanelsGroupeButtonHandler {
                         val couleurButton2 = Color(0xFF3F51B5)
                         FloatingActionButton(
                             onClick = {
-                                Log.d(TAG, "Control FAB clicked, current dialog state: ${_showDialogeControleFabs.value}")
-
-                                // Check if state is already true
-                                if (_showDialogeControleFabs.value) {
-                                    Log.d(TAG, "Dialog is already showing, toggling off")
-                                    setShowDialogControleFabs(false)
-                                } else {
-                                    Log.d(TAG, "Setting dialog visibility to true")
-                                    setShowDialogControleFabs(true)
-
-                                    // Log the new state to verify it was changed
-                                    Log.d(TAG, "New dialog state after setting: ${_showDialogeControleFabs.value}")
-                                }
+                                // Toggle dialog state
+                                setShowDialogControleFabs(!_showDialogeControleFabs.value)
                             }, modifier = Modifier.size(40.dp), containerColor = couleurButton2
                         ) {
                             // Change icon to indicate polygon creation
@@ -172,10 +149,7 @@ class PanelsGroupeButtonHandler {
 
             // Ensure the dialog state is being tracked properly
             LaunchedEffect(_showDialogeControleFabs.value) {
-                Log.d(TAG, "LaunchedEffect triggered. Dialog state: ${_showDialogeControleFabs.value}")
-                if (_showDialogeControleFabs.value) {
-                    Log.d(TAG, "Dialog should be visible now")
-                }
+                // Dialog state tracking effect maintained with no logging
             }
 
             // Add the dialog display here to ensure it's in the composition hierarchy
@@ -194,64 +168,37 @@ class PanelsGroupeButtonHandler {
         modifier: Modifier = Modifier,
         enabled: Boolean = true,
     ) {
-        Log.d(
-            TAG,
-            "ControlButton called with icon type: ${icon.javaClass.simpleName}"
-        )
-
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             when (icon) {
                 is ImageVector -> {
-                    Log.d(
-                        TAG,
-                        "Rendering ImageVector icon"
-                    )
                     FloatingActionButton(
                         onClick = {
                             if (enabled) {
-                                Log.d(
-                                    TAG,
-                                    "ImageVector FAB clicked"
-                                )
                                 onClick()
                             }
                         },
                         modifier = modifier.size(40.dp),
                         containerColor = containerColor,
-
-                        ) {
+                    ) {
                         Icon(icon, contentDescription)
                     }
                 }
 
                 is LottieJsonGetterR_Raw_Icons -> {
-                    Log.d(
-                        TAG,
-                        "Rendering LottieJsonGetterR_Raw_Icons"
-                    )
                     Box(
                         modifier = Modifier
                             .size(40.dp)
                             .clickable(enabled = enabled) {
-                                Log.d(
-                                    TAG,
-                                    "LottieJson Box clicked"
-                                )
                                 onClick()
                             }
                             .background(
                                 color = if (enabled) containerColor else Color.Gray,
                                 shape = CircleShape
-                            )
-                            .also {
-                                Log.d(
-                                    TAG,
-                                    "Box modifiers applied successfully"
-                                )
-                            }, contentAlignment = Alignment.Center
+                            ),
+                        contentAlignment = Alignment.Center
                     ) {
                         AnimatedIconLottieJsonFile(
                             ressourceXml = icon, onClick = if (enabled) onClick else ({})
@@ -261,17 +208,9 @@ class PanelsGroupeButtonHandler {
 
                 is Int -> {
                     // Support for direct resource IDs like R.raw.categ
-                    Log.d(
-                        TAG,
-                        "Rendering direct resource ID: $icon"
-                    )
                     Box(modifier = Modifier
                         .size(40.dp)
                         .clickable(enabled = enabled) {
-                            Log.d(
-                                TAG,
-                                "Resource ID Box clicked"
-                            )
                             onClick()
                         }
                         .background(
@@ -281,10 +220,6 @@ class PanelsGroupeButtonHandler {
                 }
 
                 else -> {
-                    Log.e(
-                        TAG,
-                        "Unsupported icon type: ${icon.javaClass.simpleName}"
-                    )
                     throw IllegalArgumentException("Unsupported icon type")
                 }
             }
@@ -304,10 +239,8 @@ class PanelsGroupeButtonHandler {
     @Composable
     private fun AfficheComptsVendeursManager() {
         if (_showVendeursDialog.value) {
-            Log.d(TAG, "Rendering Vendeurs dialog since _showVendeursDialog is true")
             AlertDialog(
                 onDismissRequest = {
-                    Log.d(TAG, "Vendeurs dialog dismiss requested")
                     _showVendeursDialog.value = false
                 },
                 title = { Text("Manage Vendeurs") },
@@ -320,15 +253,12 @@ class PanelsGroupeButtonHandler {
                 },
                 confirmButton = {
                     TextButton(onClick = {
-                        Log.d(TAG, "Vendeurs dialog close button clicked")
                         _showVendeursDialog.value = false
                     }) {
                         Text("Close")
                     }
                 }
             )
-        } else {
-            Log.d(TAG, "Not rendering Vendeurs dialog since _showVendeursDialog is false")
         }
     }
 
@@ -336,13 +266,10 @@ class PanelsGroupeButtonHandler {
     fun AfficheDialogesHeadApps() {
         // Get the current values from state
         val isDialogVisible = _showDialogeControleFabs.value
-        Log.d(TAG, "AfficheDialogesHeadApps called, dialog state: $isDialogVisible")
 
         if (isDialogVisible) {
-            Log.d(TAG, "Rendering control panel dialog")
             Dialog(
                 onDismissRequest = {
-                    Log.d(TAG, "Control panel dialog dismiss requested")
                     setShowDialogControleFabs(false)
                 },
             ) {
@@ -361,16 +288,8 @@ class PanelsGroupeButtonHandler {
                                 modifier = Modifier
                                     .padding(vertical = 8.dp)
                                     .clickable {
-                                        Log.d(
-                                            TAG,
-                                            "Clicked on panel item: ${fabHandler.key}, current state: ${fabHandler.isVisible}"
-                                        )
                                         val updatedState = fabHandler.copy(
                                             isVisible = !fabHandler.isVisible
-                                        )
-                                        Log.d(
-                                            TAG,
-                                            "Creating updated state with new visibility: ${updatedState.isVisible}"
                                         )
                                         updatedStateFabGroupVisibility(updatedState)
                                     }, verticalAlignment = Alignment.CenterVertically
@@ -395,7 +314,6 @@ class PanelsGroupeButtonHandler {
 
                         TextButton(
                             onClick = {
-                                Log.d(TAG, "Close button clicked")
                                 setShowDialogControleFabs(false)
                             }, modifier = Modifier.align(Alignment.End)
                         ) {
@@ -404,28 +322,18 @@ class PanelsGroupeButtonHandler {
                     }
                 }
             }
-        } else {
-            Log.d(TAG, "Not rendering control panel dialog since _showDialogeControleFabs is false")
         }
     }
 
     fun updatedStateFabGroupVisibility(updatedState: PanelsGroupeButtonDeClasse) {
-        Log.d(TAG, "Updating visibility for ${updatedState.key} to ${updatedState.isVisible}")
-
         try {
             // Get current list value
             val currentList = _paneleGroupeButtonList.value
             val index = currentList.indexOfFirst { it.key == updatedState.key }
 
             if (index == -1) {
-                Log.e(TAG, "Failed to find panel with key ${updatedState.key} in the list")
                 return
             }
-
-            Log.d(
-                TAG,
-                "Found panel at index $index with current visibility: ${currentList[index].isVisible}"
-            )
 
             // Create a new list with the updated item
             val updatedList = currentList.toMutableList()
@@ -433,13 +341,8 @@ class PanelsGroupeButtonHandler {
 
             // Update the state (directly on the main thread for UI updates)
             _paneleGroupeButtonList.value = updatedList
-
-            Log.d(
-                TAG,
-                "Successfully updated panel list. New state: ${updatedList.map { "${it.key}:${it.isVisible}" }}"
-            )
         } catch (e: Exception) {
-            Log.e(TAG, "Error updating panel visibility: ${e.message}", e)
+            // Silent exception handling (removed logging)
         }
     }
 
@@ -453,9 +356,6 @@ class PanelsGroupeButtonHandler {
     }
 
     fun setShowDialogControleFabs(show: Boolean) {
-        Log.d(TAG, "Setting dialog visibility to: $show")
         _showDialogeControleFabs.value = show
     }
-
-
 }
