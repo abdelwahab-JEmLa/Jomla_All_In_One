@@ -3,7 +3,6 @@ package P0_MainScreen.Main
 import P0_MainScreen.Main.Windows.RecordAfficheurFAB
 import P0_MainScreen.Modules.HandleFullscreenMode
 import P0_MainScreen.Ui.Objects.ConnexionCard
-import V.DiviseParSections.App.D4.ControleApps.App.FragID1.VendeursContent.Fragment.A_APP4FragID1_MainScreen
 import V.DiviseParSections.App._0.Navigation.AppNavHost
 import V.DiviseParSections.App._0.Navigation.NavigationBarWithFab
 import V.DiviseParSections.App._0.Navigation.NavigationItems
@@ -22,20 +21,16 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -50,7 +45,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.clientjetpack.A_OptionsControlsButtons_A1FragID_3
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
@@ -244,44 +238,10 @@ fun MainScreen(
                                 )
                             }
 
-                            val isControleFabVisibleFromClasse = panelsGroupeButtonHandler
-                                .paneleGroupeButtonList
-                                .find { it.key == PanelsGroupeButtonHandler.
-                                PanelsGroupeButtonDeClasse.Keys
-                                    .A_OptionsControlsButtons_A1FragID_3 }
-                                ?.isVisible ?: false
-
-                            if (isControleFabVisibleFromClasse || isControleFabVisible) {
-                                A_OptionsControlsButtons_A1FragID_3() {
-                                    showVendeursDialog = true
-                                }
+                            if (isControleFabVisible) {
+                                panelsGroupeButtonHandler.GroupeButtonsActivePanelsWindows()
                             }
                         }
-
-                        if (showVendeursDialog) {
-                            AlertDialog(
-                                onDismissRequest = {
-                                    showVendeursDialog = false
-                                },
-                                title = { Text("Manage Vendeurs") },
-                                text = {
-                                    A_APP4FragID1_MainScreen(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(500.dp)
-                                    )
-                                },
-                                confirmButton = {
-                                    TextButton(onClick = {
-                                        showVendeursDialog = false
-                                    }) {
-                                        Text("Close")
-                                    }
-                                }
-                            )
-                        }
-
-                        panelsGroupeButtonHandler.AfficheDialoges()
 
                     }
                 }

@@ -1,10 +1,15 @@
 package com.example.clientjetpack
 
 import V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.ControlButton
+import Z_CodePartageEntreApps.Modules.PanelsGroupeButtonHandler
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadSQLRepositorys
 import Z_CodePartageEntreApps.Windows.B.Windows.UI.LoadingContent
 import Z_CodePartageEntreApps.Windows.B.Windows.ViewModel.ViewModelFragment_StartUpScreen
+import Z_MasterOfApps.Resources.LottieJsonGetterR_Raw_Icons
+import Z_MasterOfApps.Z_AppsFather.Kotlin.Partage.Views.AnimatedIconLottieJsonFile
+import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.Info
@@ -32,6 +38,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -44,6 +51,7 @@ fun A_OptionsControlsButtons_A1FragID_3(
     viewModel: ViewModelFragment_StartUpScreen = koinViewModel(),
     _0_0_HeadSQLRepositorys: _0_0_HeadSQLRepositorys = koinInject(),
     onShoControleurApps: () -> Unit,
+    panelsGroupeButtonHandler: PanelsGroupeButtonHandler = koinInject()
 ) {
      val TAG = "A_OptionsControlsButtons_Main"
 
@@ -105,6 +113,7 @@ fun A_OptionsControlsButtons_A1FragID_3(
                                 )
                             }
 
+
                             if (showLabels) {
                                 Text(
                                     "View Vendeurs",
@@ -118,6 +127,9 @@ fun A_OptionsControlsButtons_A1FragID_3(
                                     color = Color.White
                                 )
                             }
+
+                            panelsGroupeButtonHandler.AfficheDialogesHeadApps()
+
                         }
 
                         ControlButton(
@@ -142,6 +154,104 @@ fun A_OptionsControlsButtons_A1FragID_3(
                 }
             }
 
+        }
+    }
+}
+@Composable
+fun ControlButton(
+    onClick: () -> Unit,
+    icon: Any,
+    contentDescription: String,
+    showLabels: Boolean,
+    labelText: String,
+    containerColor: Color,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
+) {
+    Log.d(V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.TAG, "ControlButton called with icon type: ${icon.javaClass.simpleName}")
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        when (icon) {
+            is ImageVector -> {
+                Log.d(V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.TAG, "Rendering ImageVector icon")
+                FloatingActionButton(
+                    onClick = {
+                        if (enabled) {
+                            Log.d(V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.TAG, "ImageVector FAB clicked")
+                            onClick()
+                        }
+                    },
+                    modifier = modifier.size(40.dp),
+                    containerColor =  containerColor,
+
+                    ) {
+                    Icon(icon, contentDescription)
+                }
+            }
+            is LottieJsonGetterR_Raw_Icons -> {
+                Log.d(V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.TAG, "Rendering LottieJsonGetterR_Raw_Icons")
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clickable(enabled = enabled) {
+                            Log.d(V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.TAG, "LottieJson Box clicked")
+                            onClick()
+                        }
+                        .background(
+                            color = if (enabled) containerColor else Color.Gray,
+                            shape = CircleShape
+                        )
+                        .also {
+                            Log.d(V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.TAG, "Box modifiers applied successfully")
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    AnimatedIconLottieJsonFile(
+                        ressourceXml = icon,
+                        onClick = if (enabled) onClick else ({})
+                    )
+                }
+            }
+            is Int -> {
+                // Support for direct resource IDs like R.raw.categ
+                Log.d(V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.TAG, "Rendering direct resource ID: $icon")
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clickable(enabled = enabled) {
+                            Log.d(V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.TAG, "Resource ID Box clicked")
+                            onClick()
+                        }
+                        .background(
+                            color = if (enabled) containerColor else Color.Gray,
+                            shape = CircleShape
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.Components.AnimatedIconLottieJsonFile(
+                        resourceId = icon,
+                        onClick = if (enabled) onClick else ({})
+                    )
+                }
+            }
+            else -> {
+                Log.e(V.DiviseParSections.App.D.FraitProjet.App.FragID1.TravailleTemps.Fragment.View.Components.Windows.A_OptionsControlsButtons_FragId_.TAG, "Unsupported icon type: ${icon.javaClass.simpleName}")
+                throw IllegalArgumentException("Unsupported icon type")
+            }
+        }
+
+
+        if (showLabels) {
+            Text(
+                labelText,
+                modifier = Modifier
+                    .background(if (enabled) containerColor else Color.Gray)
+                    .padding(4.dp),
+                color = Color.White
+            )
         }
     }
 }

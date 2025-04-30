@@ -138,9 +138,7 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
             ) {
                 if (showMenu) {
 
-                    panelsGroupeButtonHandler.ButtonActiveWindow()
                     ButtonActiveWindowNum2(viewModel)
-
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -339,7 +337,7 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
             )
         }
 
-        panelsGroupeButtonHandler.AfficheDialoges()
+        panelsGroupeButtonHandler.AfficheDialogesHeadApps()
 
         if (uiState.showDialogeControleFabs) {
             Dialog(
