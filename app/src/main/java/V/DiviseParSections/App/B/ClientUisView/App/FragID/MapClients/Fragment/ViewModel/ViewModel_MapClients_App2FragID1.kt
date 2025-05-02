@@ -63,6 +63,9 @@ class ViewModel_MapClients_App2FragID1(
     private val _uiState = MutableStateFlow(MapClientsUiState())
     val uiState: StateFlow<MapClientsUiState> = _uiState.asStateFlow()
 
+    val filterClientMarkesManager = FilterClientMarkesManager()        //<--
+    //TODO(1): utilise cette classe pour
+
     val secteurRepo = repo_0_0_HeadSQLRepositorys.repositorys_Model
         .e1SecteurDeClientsRepository
 
@@ -98,6 +101,7 @@ class ViewModel_MapClients_App2FragID1(
     init {
         loadSecteurs()
     }
+
 
 
     fun updatedStateFabGroupVisibility(updatedState: PanelsGroupeButton) {

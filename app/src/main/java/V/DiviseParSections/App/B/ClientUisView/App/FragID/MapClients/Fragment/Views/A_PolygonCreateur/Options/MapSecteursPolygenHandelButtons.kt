@@ -3,8 +3,6 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.V
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.View.AddSecteurDialog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.View.SecteurDialog
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.LabelsButton
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.MenuButton
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -17,7 +15,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Gesture
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -42,7 +43,6 @@ fun MapSecteursPolygenHandelButtons(
     mapView: MapView,
     viewModel: ViewModel_MapClients_App2FragID1,
 ) {
-
     var showMenu by remember { mutableStateOf(true) }
     var showLabels by remember { mutableStateOf(true) }
 
@@ -90,7 +90,6 @@ fun MapSecteursPolygenHandelButtons(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 if (showMenu) {
-
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -124,7 +123,6 @@ fun MapSecteursPolygenHandelButtons(
                         FloatingActionButton(
                             onClick = {
                                 viewModel.addPointToCurrentSector(mapView.mapCenter)
-
                             },
                             modifier = Modifier.size(40.dp),
                             containerColor = couleurButton3
@@ -168,16 +166,58 @@ fun MapSecteursPolygenHandelButtons(
                     }
                 }
 
-                LabelsButton(
-                    showLabels = showLabels,
-                    onShowLabelsChange = { showLabels = it }
-                )
+                // Integrated LabelsButton function
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    val containerColor = Color(0xFF3F51B5)
+                    FloatingActionButton(
+                        onClick = { showLabels = !showLabels },
+                        modifier = Modifier.size(40.dp),
+                        containerColor = containerColor
+                    ) {
+                        Icon(Icons.Default.Info, if (showLabels) "Hide labels" else "Show labels")
+                    }
 
-                MenuButton(
-                    showLabels = showLabels,
-                    showMenu = showMenu,
-                    onShowMenuChange = { showMenu = it }
-                )
+                    if (showLabels) {
+                        Text(
+                            if (showLabels) "Hide labels" else "Show labels",
+                            modifier = Modifier
+                                .background(containerColor)
+                                .padding(4.dp),
+                            color = Color.White
+                        )
+                    }
+                }
+
+                // Integrated MenuButton function
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    val containerColor = Color(0xFF3F51B5)
+                    FloatingActionButton(
+                        onClick = { showMenu = !showMenu },
+                        modifier = Modifier.size(40.dp),
+                        containerColor = containerColor
+                    ) {
+                        Icon(
+                            if (showMenu) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                            if (showMenu) "Hide menu" else "Show menu"
+                        )
+                    }
+
+                    if (showLabels) {
+                        Text(
+                            if (showMenu) "Hide" else "Options",
+                            modifier = Modifier
+                                .background(containerColor)
+                                .padding(4.dp),
+                            color = Color.White
+                        )
+                    }
+                }
             }
         }
     }
