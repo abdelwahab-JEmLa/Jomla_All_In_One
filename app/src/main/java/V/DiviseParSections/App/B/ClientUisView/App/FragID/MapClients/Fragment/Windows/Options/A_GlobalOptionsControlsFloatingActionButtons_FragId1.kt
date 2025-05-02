@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Options
 
-// Importer la nouvelle fonction FilterView au lieu de FilterModesDialog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.MapClientsUiState
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.C.FilterView
@@ -61,7 +60,6 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import kotlin.math.roundToInt
 
-// Add this utility class for logging filter changes
 private class FilterLogger {
     companion object {
         private const val TAG = "FilterChangeLog"
@@ -138,7 +136,6 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
             ) {
                 if (showMenu) {
 
-                    ButtonActiveWindowNum2(viewModel)
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -339,117 +336,9 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
 
         panelsGroupeButtonHandler.AfficheDialogesHeadApps()
 
-        if (uiState.showDialogeControleFabs) {
-            Dialog(
-                onDismissRequest = { uiState.showDialogeControleFabs = false },
-            ) {
-                Box(
-                    modifier = Modifier
-                        .background(Color.White)
-                        .padding(16.dp)
-                ) {
-                    Column {
-                        Text(
-                            "Control Panel",
-                            modifier = Modifier.padding(bottom = 16.dp)
-                        )
-
-
-                        DialogePanelButtonsNum2(uiState, viewModel)
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        TextButton(
-                            onClick = { uiState.showDialogeControleFabs = false },
-                            modifier = Modifier.align(Alignment.End)
-                        ) {
-                            Text("Close")
-                        }
-                    }
-                }
-            }
-        }
     }
 }
 
-@Composable
-private fun ButtonActiveWindowNum2(viewModel: ViewModel_MapClients_App2FragID1) {
-    val couleurButton2 = Color(0xFF8BC34A)
-    FloatingActionButton(
-        onClick = {
-            viewModel.setShowDialogControleFabs(true)
-        },
-        modifier = Modifier.size(40.dp),
-        containerColor = couleurButton2
-    ) {
-        // Change icon to indicate polygon creation
-        Icon(Icons.Filled.Shop, "setShowDialogControleFabs")
-    }
-}
-
-@Composable
-private fun DialogePanelButtonsNum2(
-    uiState: MapClientsUiState,
-    viewModel: ViewModel_MapClients_App2FragID1,
-) {
-    if (uiState.showDialogeControleFabs) {
-        Dialog(
-            onDismissRequest = { viewModel.setShowDialogControleFabs(false) },
-        ) {
-            Box(
-                modifier = Modifier
-                    .background(Color.White)
-                    .padding(16.dp)
-            ) {
-                Column {
-                    Text(
-                        "Control Panel",
-                        modifier = Modifier.padding(bottom = 16.dp)
-                    )
-
-                    uiState.paneleGroupeButtonList.forEach { fabHandler ->
-                        Row(
-                            modifier = Modifier
-                                .padding(vertical = 8.dp)
-                                .clickable {
-                                    // Create a new PanelsGroupeButtonDeClasse with toggled value
-                                    val updatedState = fabHandler.copy(
-                                        isVisible = !fabHandler.isVisible
-                                    )
-                                    // Call the viewModel function with the updated state
-                                    viewModel.updatedStateFabGroupVisibility(updatedState)
-                                },
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(24.dp)
-                                    .background(
-                                        color = if (fabHandler.isVisible) Color.Green else Color.Gray,
-                                        shape = CircleShape
-                                    )
-                                    .padding(4.dp)
-                            )
-
-                            Spacer(modifier = Modifier.width(8.dp))
-
-                            Text(fabHandler.key.name)
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    TextButton(
-                        onClick = { viewModel.setShowDialogControleFabs(false) },
-                        modifier = Modifier.align(Alignment.End)
-                    ) {
-                        Text("Close")
-                    }
-                }
-            }
-        }
-    }
-}
 
 @Composable
 fun ControlButton(

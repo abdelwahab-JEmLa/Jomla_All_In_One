@@ -52,7 +52,6 @@ data class MapClientsUiState(
             ),
             PanelsGroupeButton(PanelsGroupeButton.Keys.autres, isVisible = false),
         ),
-    var showDialogeControleFabs: Boolean = false,
 )
 
 class ViewModel_MapClients_App2FragID1(
@@ -100,12 +99,6 @@ class ViewModel_MapClients_App2FragID1(
         loadSecteurs()
     }
 
-    fun setShowDialogControleFabs(show: Boolean) {
-        viewModelScope.launch {
-            Log.d("PanelVisibility", "Updating dialog control fabs visibility to: $show")
-            _uiState.emit(_uiState.value.copy(showDialogeControleFabs = show))
-        }
-    }
 
     fun updatedStateFabGroupVisibility(updatedState: PanelsGroupeButton) {
         viewModelScope.launch {
