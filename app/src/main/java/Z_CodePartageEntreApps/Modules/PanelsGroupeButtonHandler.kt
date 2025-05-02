@@ -160,9 +160,7 @@ class PanelsGroupeButtonHandler {
                 AfficheComptsVendeursManager()
             }
 
-            // Ensure the dialog state is being tracked properly
             LaunchedEffect(_showDialogeControleFabs.value) {
-                // Dialog state tracking effect maintained with no logging
             }
 
             // Add the dialog display here to ensure it's in the composition hierarchy
