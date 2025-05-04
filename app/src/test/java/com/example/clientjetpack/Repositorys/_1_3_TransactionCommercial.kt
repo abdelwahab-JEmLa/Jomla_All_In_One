@@ -16,27 +16,28 @@ fun createTestTransactions(): List<TransactionCommercial> {
     // Set timestamps for different days
     val calendar = Calendar.getInstance()
 
-    // First transaction: today
+    // First transaction: today at 1 PM
+    calendar.set(Calendar.HOUR_OF_DAY, 13) // 1 PM
+    calendar.set(Calendar.MINUTE, 0)
+    calendar.set(Calendar.SECOND, 0)
+    calendar.set(Calendar.MILLISECOND, 0)
     val todayTimestamp = calendar.timeInMillis
 
-    // Second transaction: yesterday
+    // Second transaction: yesterday at 3 PM
     calendar.add(Calendar.DAY_OF_MONTH, -1)
+    calendar.set(Calendar.HOUR_OF_DAY, 15) // 3 PM
+    calendar.set(Calendar.MINUTE, 0)
+    calendar.set(Calendar.SECOND, 0)
+    calendar.set(Calendar.MILLISECOND, 0)
     val yesterdayTimestamp = calendar.timeInMillis
 
-    // Third transaction: 3 days ago
-    calendar.add(Calendar.DAY_OF_MONTH, -2)
-    val threeDaysAgoTimestamp = calendar.timeInMillis
-
-    // Fourth transaction: 1 week ago
-    calendar.add(Calendar.DAY_OF_MONTH, -4)
-    val oneWeekAgoTimestamp = calendar.timeInMillis
 
     // Add a COMMANDE_LIVRAI transaction
     testTransactions.add(
         TransactionCommercial(
             vid = 1L,
             etateActuellementEst = TransactionCommercial.EtateActuellementEst.COMMANDE_LIVRAI,
-            nomClientConcerned = "Client 1",
+            nomClientConcerned = "Abderrahmane",
             timestamps = todayTimestamp
         )
     )
@@ -46,30 +47,12 @@ fun createTestTransactions(): List<TransactionCommercial> {
         TransactionCommercial(
             vid = 2L,
             etateActuellementEst = TransactionCommercial.EtateActuellementEst.Cible,
-            nomClientConcerned = "Client 2",
+            nomClientConcerned = "Houssine",
             timestamps = yesterdayTimestamp
         )
     )
 
-    // Add another CIBLE_PRIORITE_2 transaction
-    testTransactions.add(
-        TransactionCommercial(
-            vid = 3L,
-            etateActuellementEst = TransactionCommercial.EtateActuellementEst.CIBLE_PRIORITE_2,
-            nomClientConcerned = "Client 3",
-            timestamps = threeDaysAgoTimestamp
-        )
-    )
 
-    // Add a NON_DEFINI transaction
-    testTransactions.add(
-        TransactionCommercial(
-            vid = 4L,
-            etateActuellementEst = TransactionCommercial.EtateActuellementEst.NON_DEFINI,
-            nomClientConcerned = "Client 4",
-            timestamps = oneWeekAgoTimestamp
-        )
-    )
 
     return testTransactions
 }
