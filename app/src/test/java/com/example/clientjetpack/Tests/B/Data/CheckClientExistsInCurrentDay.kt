@@ -1,10 +1,39 @@
 package com.example.clientjetpack.Tests.B.Data
 
-import com.example.clientjetpack.Repositorys.DatesHistoriqueTransactions
-import com.example.clientjetpack.Init.getEndOfDay
-import com.example.clientjetpack.Init.getStartOfDay
-import java.util.Calendar
+/*
 
+@Test
+fun testDatesHistoriqueTransactions() {
+    val testData = datesHistoriqueForTesting
+
+    logDatesHistoriqueStructure(testData)
+
+    // Verify structure of test data
+    assertEquals("Should have 1 weeks", 1, testData.cesSemains.size)
+
+    // Test week 1
+    val week1 = testData.cesSemains[0]
+    assertEquals(1L, week1.vid)
+    assertEquals("Semaine-1", week1.key)
+}
+
+@Test
+fun testQueCeJoureAUnClientAbderrahmane() {
+    // Check if client Abderrahmane exists in today's transactions
+    val hasClientAbderrahmane = checkClientExistsInCurrentDay(datesHistoriqueForTesting, "Abderrahmane")
+
+    // Assert that Abderrahmane exists in today's transactions
+    assertEquals("Should have a client named Abderrahmane", true, hasClientAbderrahmane)
+}
+
+@Test
+fun testQueCeJoureAUnClientHoussine() {
+    val hasClientHoussine = testTransactions.any { transaction ->
+        transaction.nomClientConcerned.contains("an")
+    }
+
+    assertTrue("Should ", hasClientHoussine)
+}
 /**
  * Tests if a specific client exists in today's transactions
  */
@@ -41,3 +70,4 @@ fun checkClientExistsInCurrentDay(
         transaction.nomClientConcerned == clientName
     }
 }
+                          */
