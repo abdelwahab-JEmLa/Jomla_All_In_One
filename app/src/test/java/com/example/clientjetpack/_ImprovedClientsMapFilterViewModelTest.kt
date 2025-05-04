@@ -8,6 +8,7 @@ import com.example.clientjetpack.Repositorys.DatesHistoriqueTransactions
 import com.example.clientjetpack.Repositorys.StrNomJourEtSonSemainToStartJourTimeTemp
 import com.example.clientjetpack.Repositorys.TransactionCommercial
 import com.example.clientjetpack.Repositorys.createTestTransactions
+import com.example.clientjetpack.Repositorys.logDatesHistoriqueStructure
 import com.example.clientjetpack.Tests.A.Filter.getFilteredTransactions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -24,7 +25,6 @@ import org.junit.rules.TestRule
 @ExperimentalCoroutinesApi
 class _ImprovedClientsMapFilterViewModelTest {
 
-    // Rule to make LiveData work instantly in tests
     @get:Rule
     val rule: TestRule = InstantTaskExecutorRule()
 
@@ -57,9 +57,13 @@ class _ImprovedClientsMapFilterViewModelTest {
             transactionCommercialsFiltre(allTransactions)
         )
 
+
         // Collect data for testing
         uniqueDaysForTesting = collectAddAuStrNomJourEtSonSemainToStartJourTimeTemp(testTransactions)
-        datesHistoriqueForTesting = collecteAddAuDatesHistoriqueTransactions(uniqueDaysForTesting, testTransactions)
+
+        val datesHistoriqueForTesting = collecteAddAuDatesHistoriqueTransactions(uniqueDaysForTesting, testTransactions)
+        logDatesHistoriqueStructure(datesHistoriqueForTesting)
+
     }
 
     @After
@@ -80,6 +84,7 @@ class _ImprovedClientsMapFilterViewModelTest {
         // Check we get all transactions
         assertEquals(testTransactions.size, filteredTransactions.size)
     }
+
 
 
     enum class FilterType {
