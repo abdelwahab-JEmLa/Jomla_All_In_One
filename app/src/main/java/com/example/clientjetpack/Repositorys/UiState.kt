@@ -1,4 +1,4 @@
-package com.example.clientjetpack.Models
+package com.example.clientjetpack.Repositorys
 
 import Z_CodePartageEntreApps.Model.A_ProduitModel
 import Z_CodePartageEntreApps.Model.Z.Archive.AppSettingsSaverModel

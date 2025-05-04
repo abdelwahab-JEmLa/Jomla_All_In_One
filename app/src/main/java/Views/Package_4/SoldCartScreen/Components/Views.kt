@@ -48,7 +48,7 @@ import androidx.compose.ui.zIndex
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
-import com.example.clientjetpack.Models.UiState
+import com.example.clientjetpack.Repositorys.UiState
 import com.example.clientjetpack.R
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import java.io.File

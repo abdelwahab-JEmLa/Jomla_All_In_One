@@ -37,7 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import com.example.clientjetpack.Models.UiState
+import com.example.clientjetpack.Repositorys.UiState
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged

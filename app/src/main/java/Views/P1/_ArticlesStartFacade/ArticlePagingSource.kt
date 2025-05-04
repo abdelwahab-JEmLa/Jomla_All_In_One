@@ -6,7 +6,7 @@ import Z_CodePartageEntreApps.Model.B_ClientsDataBase
 import Z_CodePartageEntreApps.Model.Z.Archive.ArticlesBasesStatsTable
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.example.clientjetpack.Models.UiState
+import com.example.clientjetpack.Repositorys.UiState
 import kotlinx.coroutines.flow.first
 import org.koin.core.context.GlobalContext
 

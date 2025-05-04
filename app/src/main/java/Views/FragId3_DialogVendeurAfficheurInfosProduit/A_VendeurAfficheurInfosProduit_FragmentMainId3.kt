@@ -34,7 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.example.clientjetpack.Models.UiState
+import com.example.clientjetpack.Repositorys.UiState
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import org.koin.compose.koinInject
 

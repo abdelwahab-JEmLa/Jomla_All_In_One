@@ -32,7 +32,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import com.example.clientjetpack.Models.UiState
+import com.example.clientjetpack.Repositorys.UiState
 import com.example.clientjetpack.ViewModel.HeadViewModel
 import kotlinx.coroutines.launch
 

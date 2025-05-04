@@ -21,8 +21,8 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.clientjetpack.Models.PriceRecord
-import com.example.clientjetpack.Models.UiState
+import com.example.clientjetpack.Repositorys.PriceRecord
+import com.example.clientjetpack.Repositorys.UiState
 import com.google.firebase.database.BuildConfig
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
