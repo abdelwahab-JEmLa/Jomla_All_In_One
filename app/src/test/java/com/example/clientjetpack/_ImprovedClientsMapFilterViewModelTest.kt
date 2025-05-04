@@ -72,7 +72,6 @@ class _ImprovedClientsMapFilterViewModelTest {
         val uniqueDays = mutableListOf<StrNomJourEtSonSemainToStartJourTimeTemp>()
 
         testTransactions.forEach { transaction ->
-            if (transaction.etateActuellementEst == TransactionCommercial.EtateActuellementEst.COMMANDE_LIVRAI) {
                 // Get transaction date
                 val transactionDate = Date(transaction.timestamps)
 
@@ -105,7 +104,6 @@ class _ImprovedClientsMapFilterViewModelTest {
                         )
                     )
                 }
-            }
         }
 
         // Store the results in our class variable
@@ -182,7 +180,6 @@ class _ImprovedClientsMapFilterViewModelTest {
 
     @Test
     fun testDatesHistoriqueTransactions() {
-        // Create a test instance of DatesHistoriqueTransactions
         val testData = datesHistoriqueForTesting
 
         logDatesHistoriqueStructure(testData)
@@ -237,7 +234,24 @@ class _ImprovedClientsMapFilterViewModelTest {
         assertEquals("Should have a client named Abderrahmane", true, hasClientAbderrahmane)
     }
 
-    // Define filter types as an enum for direct testing
+    //<--
+    /**
+     * Test to verify that transactions contain a client named "Houssine"
+     * with CIBLE status from yesterday
+     */
+    @Test
+    fun testQueCeJoureAUnClientHoussine() {
+        // Check if there's a client named "Houssine" with CIBLE status in our test transactions
+        val hasClientHoussine = testTransactions.any { transaction ->
+            transaction.nomClientConcerned == "Houssine" &&
+                    transaction.etateActuellementEst == TransactionCommercial.EtateActuellementEst.Cible
+        }
+
+        // Assert that Houssine exists in the original test data
+        assertEquals("Should have a client named Houssine with CIBLE status", true, hasClientHoussine)
+    }
+
+
     enum class FilterType {
         ALL,
         DatesHistoriqueTransactions,

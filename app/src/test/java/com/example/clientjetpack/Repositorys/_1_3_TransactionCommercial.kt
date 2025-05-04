@@ -51,6 +51,15 @@ fun createTestTransactions(): List<TransactionCommercial> {
             timestamps = yesterdayTimestamp
         )
     )
+    // Add a CIBLE transaction
+    testTransactions.add(
+        TransactionCommercial(
+            vid = 3L,
+            etateActuellementEst = TransactionCommercial.EtateActuellementEst.COMMANDE_LIVRAI,
+            nomClientConcerned = "Fares",
+            timestamps = yesterdayTimestamp
+        )
+    )
 
 
 
