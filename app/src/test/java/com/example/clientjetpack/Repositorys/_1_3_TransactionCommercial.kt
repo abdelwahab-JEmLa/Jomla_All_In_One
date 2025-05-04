@@ -32,7 +32,7 @@ fun createTestTransactions(): List<TransactionCommercial> {
     val yesterdayTimestamp = calendar.timeInMillis
 
     calendar.add(Calendar.DAY_OF_MONTH, -1)
-    calendar.set(Calendar.HOUR_OF_DAY, 17) // 3 PM
+    calendar.set(Calendar.HOUR_OF_DAY, 17) //  PM
     calendar.set(Calendar.MINUTE, 0)
     calendar.set(Calendar.SECOND, 0)
     calendar.set(Calendar.MILLISECOND, 0)
@@ -90,7 +90,7 @@ data class TransactionCommercial(
     var heurFinInString: String = "Non Defini",
 
     // Section StatuesMutable
-    var cActive: Boolean = false,
+    var cActiveDataDeParentList: Boolean = false,
 
     var cJustPourVoirPanie: Boolean = false,
     var ouvert: Boolean = false,
