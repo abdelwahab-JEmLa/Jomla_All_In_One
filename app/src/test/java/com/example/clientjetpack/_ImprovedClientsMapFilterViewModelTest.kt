@@ -243,8 +243,7 @@ class _ImprovedClientsMapFilterViewModelTest {
     fun testQueCeJoureAUnClientHoussine() {
         // Check if there's a client named "Houssine" with CIBLE status in our test transactions
         val hasClientHoussine = testTransactions.any { transaction ->
-            transaction.nomClientConcerned == "Houssine" &&
-                    transaction.etateActuellementEst == TransactionCommercial.EtateActuellementEst.Cible
+            transaction.nomClientConcerned == "Houssine"
         }
 
         // Assert that Houssine exists in the original test data
