@@ -178,7 +178,7 @@ class ImprovedClientsMapFilterViewModelTest {
 
     /**
      * Function to log detailed information about DatesHistoriqueTransactions structure
-     * Extracted as per TODO(1)
+     * Extracted as per
      */
     private fun logDatesHistoriqueStructure(testData: DatesHistoriqueTransactions) {
         println("======== TESTING DATES HISTORIQUE TRANSACTIONS ========")
@@ -273,7 +273,6 @@ class ImprovedClientsMapFilterViewModelTest {
         // Create a test instance of DatesHistoriqueTransactions
         val testData = testHardDataDatesHistoriqueTransactions()
 
-        // Fix for TODO(1): Call the separate logging function
         logDatesHistoriqueStructure(testData)
 
         // Verify structure of test data
