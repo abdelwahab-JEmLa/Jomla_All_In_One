@@ -31,6 +31,13 @@ fun createTestTransactions(): List<TransactionCommercial> {
     calendar.set(Calendar.MILLISECOND, 0)
     val yesterdayTimestamp = calendar.timeInMillis
 
+    calendar.add(Calendar.DAY_OF_MONTH, -1)
+    calendar.set(Calendar.HOUR_OF_DAY, 17) // 3 PM
+    calendar.set(Calendar.MINUTE, 0)
+    calendar.set(Calendar.SECOND, 0)
+    calendar.set(Calendar.MILLISECOND, 0)
+    val yesterdayTimestamp17 = calendar.timeInMillis
+
 
     // Add a COMMANDE_LIVRAI transaction
     testTransactions.add(
@@ -51,16 +58,16 @@ fun createTestTransactions(): List<TransactionCommercial> {
             timestamps = yesterdayTimestamp
         )
     )
+
     // Add a CIBLE transaction
     testTransactions.add(
         TransactionCommercial(
             vid = 3L,
             etateActuellementEst = TransactionCommercial.EtateActuellementEst.COMMANDE_LIVRAI,
             nomClientConcerned = "Fares",
-            timestamps = yesterdayTimestamp
+            timestamps = yesterdayTimestamp17
         )
     )
-
 
 
     return testTransactions
