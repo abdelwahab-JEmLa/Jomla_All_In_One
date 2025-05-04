@@ -177,10 +177,7 @@ class _ImprovedClientsMapFilterViewModelTest {
         assertEquals(testTransactions.size, filteredTransactions.size)
     }
 
-    /**
-     * Function to log detailed information about DatesHistoriqueTransactions structure
-     * Extracted as per
-     */
+
 
     @Test
     fun testDatesHistoriqueTransactions() {
