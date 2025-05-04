@@ -1,12 +1,16 @@
 package com.example.clientjetpack
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.example.clientjetpack.Init.collectAddAuStrNomJourEtSonSemainToStartJourTimeTemp
+import com.example.clientjetpack.Init.collecteAddAuDatesHistoriqueTransactions
+import com.example.clientjetpack.Init.transactionCommercialsFiltre
 import com.example.clientjetpack.Repositorys.DatesHistoriqueTransactions
 import com.example.clientjetpack.Repositorys.StrNomJourEtSonSemainToStartJourTimeTemp
 import com.example.clientjetpack.Repositorys.TransactionCommercial
 import com.example.clientjetpack.Repositorys.createTestTransactions
 import com.example.clientjetpack.Repositorys.logDatesHistoriqueStructure
 import com.example.clientjetpack.Tests.A.Filter.getFilteredTransactions
+import com.example.clientjetpack.Tests.B.Data.checkClientExistsInCurrentDay
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineDispatcher
@@ -19,10 +23,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
 
 /**
  * Improved unit tests that don't rely on external ViewModels
@@ -61,112 +61,13 @@ class _ImprovedClientsMapFilterViewModelTest {
         // Create some test transactions
         val allTransactions = createTestTransactions()
 
-        testTransactions
-            .addAll(
-                transactionCommercialsFiltre(allTransactions)
-            )
+        testTransactions.addAll(
+            transactionCommercialsFiltre(allTransactions)
+        )
 
         // Collect data for testing
-        collectAddAuStrNomJourEtSonSemainToStartJourTimeTemp()
-        collecteAddAuDatesHistoriqueTransactions()
-    }
-
-    private fun transactionCommercialsFiltre(transactions: List<TransactionCommercial>) =
-        transactions
-            .filter {
-                it.etateActuellementEst ==
-                        TransactionCommercial.EtateActuellementEst.COMMANDE_LIVRAI
-            }
-
-
-    private fun collectAddAuStrNomJourEtSonSemainToStartJourTimeTemp() {
-        // Track changes in transactions with COMMANDE_LIVRAI status
-        val calendar = Calendar.getInstance()
-        val today = calendar.timeInMillis
-
-        // Create a list to store unique days with transactions
-        val uniqueDays = mutableListOf<StrNomJourEtSonSemainToStartJourTimeTemp>()
-
-        testTransactions.forEach { transaction ->
-                // Get transaction date
-                val transactionDate = Date(transaction.timestamps)
-
-                // Get start and end of day
-                val startDay = getStartOfDay(transaction.timestamps)
-                val endDay = getEndOfDay(transaction.timestamps)
-
-                // Calculate how many weeks ago this was
-                val weeksDifference = getWeeksDifference(today, transaction.timestamps)
-
-                // Get day name in Arabic
-                val dayFormat = SimpleDateFormat("EEEE", Locale("ar"))
-                val dayName = dayFormat.format(transactionDate)
-
-                // Create key for uniqueness
-                val key = "${startDay}_${dayName}_${weeksDifference}"
-
-                // Check if this day is already in our list
-                val existingDay = uniqueDays.find { it.key == key }
-
-                if (existingDay == null) {
-                    // Add new day if not exists
-                    uniqueDays.add(
-                        StrNomJourEtSonSemainToStartJourTimeTemp(
-                            vid = transaction.vid,
-                            nomJourArabe = dayName,
-                            estDonLaSemainDistantDe = weeksDifference,
-                            jourEstEntreTimeTemp = Pair(startDay, endDay),
-                            key = key
-                        )
-                    )
-                }
-        }
-
-        // Store the results in our class variable
-        this.uniqueDaysForTesting = uniqueDays
-    }
-
-    private fun collecteAddAuDatesHistoriqueTransactions() {
-        // Create instances for weeks and days based on the collected dates
-        val semainsList = mutableListOf<DatesHistoriqueTransactions.Semain>()
-
-        // Group by week distance using our uniqueDaysForTesting
-        val groupedByWeek = uniqueDaysForTesting.groupBy {
-            it.estDonLaSemainDistantDe
-        }
-
-        groupedByWeek.forEach { (weekDistance, days) ->
-            val semain = DatesHistoriqueTransactions.Semain().apply {
-                vid = (weekDistance + 1).toLong()
-                key = "Semaine-${weekDistance + 1}"
-            }
-
-            val joursList = mutableListOf<DatesHistoriqueTransactions.Semain.Jour>()
-
-            days.forEach { dayInfo ->
-                val jour = DatesHistoriqueTransactions.Semain.Jour().apply {
-                    vid = dayInfo.vid
-                    key = dayInfo.key
-                }
-
-                // Find all transactions for this day
-                val dayTransactions = testTransactions.filter { transaction ->
-                    transaction.timestamps >= dayInfo.jourEstEntreTimeTemp.first &&
-                            transaction.timestamps <= dayInfo.jourEstEntreTimeTemp.second
-                }
-
-                jour.cesCommercialTransactions = dayTransactions
-                joursList.add(jour)
-            }
-
-            semain.cesJours = joursList
-            semainsList.add(semain)
-        }
-
-        // Store result in our class variable
-        this.datesHistoriqueForTesting = DatesHistoriqueTransactions().apply {
-            this.cesSemains = semainsList
-        }
+        uniqueDaysForTesting = collectAddAuStrNomJourEtSonSemainToStartJourTimeTemp(testTransactions)
+        datesHistoriqueForTesting = collecteAddAuDatesHistoriqueTransactions(uniqueDaysForTesting, testTransactions)
     }
 
     @After
@@ -182,13 +83,11 @@ class _ImprovedClientsMapFilterViewModelTest {
         currentFilter = FilterType.ALL
 
         // Get filtered transactions
-        val filteredTransactions = getFilteredTransactions()
+        val filteredTransactions = getFilteredTransactions(testTransactions, currentFilter)
 
         // Check we get all transactions
         assertEquals(testTransactions.size, filteredTransactions.size)
     }
-
-
 
     @Test
     fun testDatesHistoriqueTransactions() {
@@ -207,37 +106,8 @@ class _ImprovedClientsMapFilterViewModelTest {
 
     @Test
     fun testQueCeJoureAUnClientAbderrahmane() {
-        // Get test data
-        val testData = datesHistoriqueForTesting
-
-        // Check if we have any weeks
-        if (testData.cesSemains.isEmpty()) {
-            throw AssertionError("No weeks found in test data")
-        }
-
-        // Find the current day's transactions (today)
-        val currentDay = testData.cesSemains.flatMap { semain ->
-            semain.cesJours
-        }.find { jour ->
-            // Find the most recent day (should be today based on our test data)
-            val calendar = Calendar.getInstance()
-            val todayStartTime = getStartOfDay(calendar.timeInMillis)
-            val todayEndTime = getEndOfDay(calendar.timeInMillis)
-
-            jour.cesCommercialTransactions.any { transaction ->
-                transaction.timestamps in todayStartTime..todayEndTime
-            }
-        }
-
-        // Assert that we found the current day
-        if (currentDay == null) {
-            throw AssertionError("Current day not found in historical data")
-        }
-
-        // Check if there's a client named "Abderrahmane" in today's transactions
-        val hasClientAbderrahmane = currentDay.cesCommercialTransactions.any { transaction ->
-            transaction.nomClientConcerned == "Abderrahmane"
-        }
+        // Check if client Abderrahmane exists in today's transactions
+        val hasClientAbderrahmane = checkClientExistsInCurrentDay(datesHistoriqueForTesting, "Abderrahmane")
 
         // Assert that Abderrahmane exists in today's transactions
         assertEquals("Should have a client named Abderrahmane", true, hasClientAbderrahmane)
@@ -251,7 +121,6 @@ class _ImprovedClientsMapFilterViewModelTest {
 
         assertTrue("Should ", hasClientHoussine)
     }
-
 
     enum class FilterType {
         ALL,
