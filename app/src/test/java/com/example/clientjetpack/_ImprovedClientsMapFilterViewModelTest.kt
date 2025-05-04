@@ -59,12 +59,24 @@ class _ImprovedClientsMapFilterViewModelTest {
         Dispatchers.setMain(testDispatcher)
 
         // Create some test transactions
-        testTransactions.addAll(createTestTransactions())
+        val allTransactions = createTestTransactions()
+
+        testTransactions
+            .addAll(
+                transactionCommercialsFiltre(allTransactions)
+            )
 
         // Collect data for testing
         collectAddAuStrNomJourEtSonSemainToStartJourTimeTemp()
         collecteAddAuDatesHistoriqueTransactions()
     }
+
+    private fun transactionCommercialsFiltre(transactions: List<TransactionCommercial>) =
+        transactions
+            .filter {
+                it.etateActuellementEst ==
+                        TransactionCommercial.EtateActuellementEst.COMMANDE_LIVRAI
+            }
 
 
     private fun collectAddAuStrNomJourEtSonSemainToStartJourTimeTemp() {
@@ -125,7 +137,6 @@ class _ImprovedClientsMapFilterViewModelTest {
 
         groupedByWeek.forEach { (weekDistance, days) ->
             val semain = DatesHistoriqueTransactions.Semain().apply {
-                // FIX: Use weekDistance + 1 to match expected test values
                 vid = (weekDistance + 1).toLong()
                 key = "Semaine-${weekDistance + 1}"
             }
@@ -194,9 +205,6 @@ class _ImprovedClientsMapFilterViewModelTest {
         assertEquals("Semaine-1", week1.key)
     }
 
-    /**
-     * Test to verify that transactions for a specific day contain a client named "Abderrahmane"
-     */
     @Test
     fun testQueCeJoureAUnClientAbderrahmane() {
         // Get test data
