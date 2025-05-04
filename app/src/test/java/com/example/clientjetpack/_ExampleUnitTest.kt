@@ -31,7 +31,7 @@ import java.util.Locale
  * Uses direct testing of the data processing logic without dependencies
  */
 @ExperimentalCoroutinesApi
-class ImprovedClientsMapFilterViewModelTest {
+class SImprovedClientsMapFilterViewModelTest {
 
     // Rule to make LiveData work instantly in tests
     @get:Rule
