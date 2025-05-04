@@ -6,6 +6,7 @@ import com.example.clientjetpack.Repositorys.StrNomJourEtSonSemainToStartJourTim
 import com.example.clientjetpack.Repositorys.TransactionCommercial
 import com.example.clientjetpack.Repositorys.createTestTransactions
 import com.example.clientjetpack.Repositorys.testHardDataDatesHistoriqueTransactions
+import com.example.clientjetpack.Tests.A.Filter.getFilteredTransactions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineDispatcher
@@ -40,7 +41,7 @@ class ImprovedClientsMapFilterViewModelTest {
     private val testDispatcher = TestCoroutineDispatcher()
 
     // Our test data - a simple list of transactions
-    private val testTransactions = ArrayList<TransactionCommercial>()
+    val testTransactions = ArrayList<TransactionCommercial>()
 
     // Store for the uniqueDays data
     private var uniqueDaysForTesting = mutableListOf<StrNomJourEtSonSemainToStartJourTimeTemp>()
@@ -49,7 +50,7 @@ class ImprovedClientsMapFilterViewModelTest {
     private var datesHistoriqueForTesting: DatesHistoriqueTransactions? = null
 
     // Current filter state for direct testing
-    private var currentFilter = FilterType.ALL
+    var currentFilter = FilterType.ALL
 
     @Before
     fun setup() {
@@ -163,45 +164,6 @@ class ImprovedClientsMapFilterViewModelTest {
         testDispatcher.cleanupTestCoroutines()
     }
 
-    // Direct filtering function to replace ViewModel functionality
-    private fun getFilteredTransactions(): List<TransactionCommercial> {
-        return when (currentFilter) {
-            FilterType.ALL -> testTransactions
-            FilterType.DatesHistoriqueTransactions -> {
-                testTransactions.filter { transaction ->
-                    transaction.etateActuellementEst == TransactionCommercial.EtateActuellementEst.COMMANDE_LIVRAI
-                }
-            }
-            FilterType.CIBLE -> {
-                testTransactions.filter { transaction ->
-                    transaction.etateActuellementEst == TransactionCommercial.EtateActuellementEst.Cible ||
-                            transaction.etateActuellementEst == TransactionCommercial.EtateActuellementEst.CIBLE_PRIORITE_2 ||
-                            transaction.etateActuellementEst == TransactionCommercial.EtateActuellementEst.CIBLE_PRIORITE_3 ||
-                            transaction.etateActuellementEst == TransactionCommercial.EtateActuellementEst.CIBLE_POUR_2
-                }
-            }
-        }
-    }
-
-    @Test
-    fun testFilterChanges() {
-        // Set the filter directly
-        currentFilter = FilterType.CIBLE
-
-        // Get filtered transactions
-        val filteredTransactions = getFilteredTransactions()
-
-        // Check that the filtered list only contains CIBLE transactions
-        for (transaction in filteredTransactions) {
-            assertTrue(
-                transaction.etateActuellementEst == TransactionCommercial.EtateActuellementEst.Cible ||
-                        transaction.etateActuellementEst == TransactionCommercial.EtateActuellementEst.CIBLE_PRIORITE_2 ||
-                        transaction.etateActuellementEst == TransactionCommercial.EtateActuellementEst.CIBLE_PRIORITE_3 ||
-                        transaction.etateActuellementEst == TransactionCommercial.EtateActuellementEst.CIBLE_POUR_2
-            )
-        }
-    }
-
     @Test
     fun testAllFilterShowsAllTransactions() {
         // Use the ALL filter (default)
@@ -255,25 +217,32 @@ class ImprovedClientsMapFilterViewModelTest {
         assertEquals("2_الخميس_2", day2Week2.key)
         assertTrue(day2Week2.cActive)
         assertEquals("This day should have 2 transactions", 2, day2Week2.cesCommercialTransactions.size)
-    }
 
-    // Test filtering specifically for dates
-    @Test
-    fun testDatesHistoriqueTransactionsFilter() {
-        // Set filter to DatesHistoriqueTransactions
-        currentFilter = FilterType.DatesHistoriqueTransactions
+        // Test nested structure traversal - recursively check transaction count for all days
+        var totalTransactions = 0
+        testData.cesSemains.forEach { week ->
+            week.cesJours.forEach { day ->
+                totalTransactions += day.cesCommercialTransactions.size
+            }
+        }
+        assertEquals("Total transactions across all nested structure should be 7", 7, totalTransactions)
 
-        // Get filtered transactions
-        val filteredTransactions = getFilteredTransactions()
-
-        // Check that all filtered transactions have COMMANDE_LIVRAI status
-        for (transaction in filteredTransactions) {
-            assertEquals(
-                TransactionCommercial.EtateActuellementEst.COMMANDE_LIVRAI,
-                transaction.etateActuellementEst
-            )
+        // Test that all transactions in the structure have COMMANDE_LIVRAI status
+        testData.cesSemains.forEach { week ->
+            week.cesJours.forEach { day ->
+                day.cesCommercialTransactions.forEach { transaction ->
+                    assertEquals(
+                        "All transactions should have COMMANDE_LIVRAI status",
+                        TransactionCommercial.EtateActuellementEst.COMMANDE_LIVRAI,
+                        transaction.etateActuellementEst
+                    )
+                }
+            }
         }
     }
+
+
+
 
     // Define filter types as an enum for direct testing
     enum class FilterType {
@@ -281,6 +250,4 @@ class ImprovedClientsMapFilterViewModelTest {
         DatesHistoriqueTransactions,
         CIBLE,
     }
-
-
 }
