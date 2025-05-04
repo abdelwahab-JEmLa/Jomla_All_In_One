@@ -12,7 +12,7 @@ import com.example.clientjetpack.Repositorys.logDatesHistoriqueStructure
 import com.example.clientjetpack.Tests.A.Filter.getFilteredTransactions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import org.junit.After
@@ -28,8 +28,8 @@ class _ImprovedClientsMapFilterViewModelTest {
     @get:Rule
     val rule: TestRule = InstantTaskExecutorRule()
 
-    // Test dispatcher for Compose/Coroutines operations
-    private val testDispatcher = TestCoroutineDispatcher()
+    // Using StandardTestDispatcher instead of the deprecated TestCoroutineDispatcher
+    private val testDispatcher = StandardTestDispatcher()
 
     // Our test data - a simple list of transactions
     private val testTransactions = ArrayList<TransactionCommercial>()
@@ -37,10 +37,8 @@ class _ImprovedClientsMapFilterViewModelTest {
     // Store for the uniqueDays data
     private var uniqueDaysForTesting = mutableListOf<StrNomJourEtSonSemainToStartJourTimeTemp>()
 
-
     // Store for dates historique
     private lateinit var datesHistoriqueForTesting: DatesHistoriqueTransactions
-
 
     private var currentIdJourAuFilter = 1L
     private var currentFilter = FilterType.ALL
@@ -57,20 +55,18 @@ class _ImprovedClientsMapFilterViewModelTest {
             transactionCommercialsFiltre(allTransactions)
         )
 
-
         // Collect data for testing
         uniqueDaysForTesting = collectAddAuStrNomJourEtSonSemainToStartJourTimeTemp(testTransactions)
 
-        val datesHistoriqueForTesting = collecteAddAuDatesHistoriqueTransactions(uniqueDaysForTesting, testTransactions)
+        datesHistoriqueForTesting = collecteAddAuDatesHistoriqueTransactions(uniqueDaysForTesting, testTransactions)
         logDatesHistoriqueStructure(datesHistoriqueForTesting)
-
     }
 
     @After
     fun tearDown() {
         // Reset the main dispatcher
         Dispatchers.resetMain()
-        testDispatcher.cleanupTestCoroutines()
+        // No need for cleanupTestCoroutines() with StandardTestDispatcher
     }
 
     @Test
@@ -84,8 +80,6 @@ class _ImprovedClientsMapFilterViewModelTest {
         // Check we get all transactions
         assertEquals(testTransactions.size, filteredTransactions.size)
     }
-
-
 
     enum class FilterType {
         ALL,
