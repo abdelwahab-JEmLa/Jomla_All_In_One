@@ -45,6 +45,8 @@ class _ImprovedClientsMapFilterViewModelTest {
     // Store for the uniqueDays data
     private var uniqueDaysForTesting = mutableListOf<StrNomJourEtSonSemainToStartJourTimeTemp>()
 
+    private var idJourAuFilter = 1L
+
     // Store for dates historique
     private lateinit var datesHistoriqueForTesting: DatesHistoriqueTransactions
 
@@ -60,11 +62,12 @@ class _ImprovedClientsMapFilterViewModelTest {
         testTransactions.addAll(createTestTransactions())
 
         // Collect data for testing
-        collecteAddAuStrNomJourEtSonSemainToStartJourTimeTemp()
+        collectAddAuStrNomJourEtSonSemainToStartJourTimeTemp()
         collecteAddAuDatesHistoriqueTransactions()
     }
 
-    private fun collecteAddAuStrNomJourEtSonSemainToStartJourTimeTemp() {
+
+    private fun collectAddAuStrNomJourEtSonSemainToStartJourTimeTemp() {
         // Track changes in transactions with COMMANDE_LIVRAI status
         val calendar = Calendar.getInstance()
         val today = calendar.timeInMillis
