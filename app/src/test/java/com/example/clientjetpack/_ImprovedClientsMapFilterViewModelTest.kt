@@ -35,18 +35,18 @@ class _ImprovedClientsMapFilterViewModelTest {
     private val testDispatcher = TestCoroutineDispatcher()
 
     // Our test data - a simple list of transactions
-    val testTransactions = ArrayList<TransactionCommercial>()
+    private val testTransactions = ArrayList<TransactionCommercial>()
 
     // Store for the uniqueDays data
     private var uniqueDaysForTesting = mutableListOf<StrNomJourEtSonSemainToStartJourTimeTemp>()
 
-    private var idJourAuFilter = 1L
 
     // Store for dates historique
     private lateinit var datesHistoriqueForTesting: DatesHistoriqueTransactions
 
-    // Current filter state for direct testing
-    var currentFilter = FilterType.ALL
+
+    private var currentIdJourAuFilter = 1L
+    private var currentFilter = FilterType.ALL
 
     @Before
     fun setup() {
