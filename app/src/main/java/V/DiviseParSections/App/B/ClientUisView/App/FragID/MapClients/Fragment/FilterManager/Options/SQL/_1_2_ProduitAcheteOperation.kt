@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL
 
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.room.Entity

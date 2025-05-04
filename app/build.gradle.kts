@@ -16,8 +16,7 @@ android {
         minSdk = 26
         targetSdk = 34
         versionCode = 1
-        versionName =
-            "2.01"
+        versionName = "2.01"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -63,6 +62,10 @@ android {
             )
         }
     }
+    // Ajout pour résoudre les problèmes potentiels avec Mockito
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
 }
 
 dependencies {
@@ -89,7 +92,17 @@ dependencies {
     implementation(libs.firebase.storage.ktx)
     implementation(libs.generativeai)
     implementation(libs.material)
+
+    // Test dependencies
     testImplementation(libs.junit)
+    // Mockito dependencies pour tests unitaires
+    testImplementation("org.mockito:mockito-core:4.11.0")
+    testImplementation("org.mockito:mockito-inline:4.11.0") // Pour mocker les méthodes finales
+    // Coroutines test
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    // Pour tester les ViewModel et LiveData
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
+
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -106,18 +119,18 @@ dependencies {
     implementation(libs.kotlin.reflect)
     implementation(libs.androidx.material.icons.extended)
 
-    implementation( libs.gson)
+    implementation(libs.gson)
 
-    implementation  (libs.androidx.paging.runtime )
-    implementation (libs.androidx.paging.compose)
+    implementation(libs.androidx.paging.runtime)
+    implementation(libs.androidx.paging.compose)
     // Glide core dependencies
     implementation(libs.glide)
     kapt(libs.compiler)
 
     // Glide Compose integration
     implementation(libs.compose.v100beta01)
-    implementation (libs.glide.transformations)
-    implementation (libs.play.services.nearby)
+    implementation(libs.glide.transformations)
+    implementation(libs.play.services.nearby)
 
     // OSMDroid dependencies
     implementation(libs.osmdroid.android)
@@ -125,17 +138,15 @@ dependencies {
     implementation(libs.osmdroid.mapsforge)
 
     // Lottie Compose
-    implementation ("com.airbnb.android:lottie-compose:6.1.0")
+    implementation("com.airbnb.android:lottie-compose:6.1.0")
 
     // Koin pour Android
-    implementation ("io.insert-koin:koin-android:3.5.0")
-    implementation ("io.insert-koin:koin-androidx-compose:3.5.0")
+    implementation("io.insert-koin:koin-android:3.5.0")
+    implementation("io.insert-koin:koin-androidx-compose:3.5.0")
 
     // Dépendances Realm
     implementation("io.realm.kotlin:library-base:1.12.0")
     implementation("io.realm.kotlin:library-sync:1.12.0") // Optionnel, si vous avez besoin de synchronisation
-
 }
 
 apply(plugin = "com.google.gms.google-services")
-

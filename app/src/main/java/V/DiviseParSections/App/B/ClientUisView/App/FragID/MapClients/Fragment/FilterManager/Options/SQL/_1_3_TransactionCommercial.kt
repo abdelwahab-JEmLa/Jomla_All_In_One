@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionID5.Detailes.App.FragID2.EtatesDuCLient.Fragment.Models
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL
 
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.room.Entity
@@ -26,12 +26,14 @@ data class _1_3_TransactionCommercial(
     var heurFinInString: String = "Non Defini",
 
     // Section StatuesMutable
+    var cActive: Boolean = false,
+
     var cJustPourVoirPanie: Boolean = false,
     var ouvert: Boolean = false,
 
     var vocaleKeyID: String = "",
     var sonVocaleEstEcoute: Boolean = false,
-    var sonEcoutementEstFaitAutimestamps: Long=0,
+    var sonEcoutementEstFaitAutimestamps: Long = 0,
 
     var etateActuellementEst: EtateActuellementEst =
         EtateActuellementEst.NON_DEFINI,
@@ -52,7 +54,7 @@ data class _1_3_TransactionCommercial(
         }
 
     @IgnoreExtraProperties
-    enum class EtateActuellementEst(val color: Int, val nomArabe: String,) {
+    enum class EtateActuellementEst(val color: Int, val nomArabe: String) {
         NON_DEFINI(android.R.color.white, "غير محدد"),
 
         ON_MODE_COMMEND_ACTUELLEMENT(android.R.color.holo_green_light, "تم تنفيذ المطلوب في "),

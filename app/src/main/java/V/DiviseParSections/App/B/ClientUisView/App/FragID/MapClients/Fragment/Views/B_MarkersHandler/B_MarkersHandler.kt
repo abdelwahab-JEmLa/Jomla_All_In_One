@@ -2,7 +2,6 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.V
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.filterClientsBasedOnMode
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.B_MarkersHandler.Functions.findLastPurchaseInfoForClient
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.displayLatestTransactions
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.A_MarkerStatusDialog.displayOpenTransactions
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Windows.Utils.DEFAULT_LATITUDE
@@ -60,40 +59,20 @@ fun addMarkersForFilteredClients(
     onMarkerSelected: (Marker) -> Unit,
 ) {
     val context = mapView.context
-    val dayFilters = viewModel.filterLesClientsOuLeurDernierjourAchatsEstDonsCetteList
-    val shouldApplyDayFilter = dayFilters.isNotEmpty()
 
     clientsToShow.forEach { client ->
-        val lastPurchaseDay = if (shouldApplyDayFilter) {
-            findLastPurchaseInfoForClient(
-                viewModel.repo_0_0_HeadSQLRepositorys.repositorys_Model
-                    .repository_1_3_TransactionCommercial
-                    .modelDatasSnapList, client.id
-            ).dayName
-
-        } else {
-            ""
-        }
-
-        val shouldDisplayClient = if (!shouldApplyDayFilter) {
-            true
-        } else {
-            lastPurchaseDay.isNotEmpty() && dayFilters.contains(lastPurchaseDay)
-        }
-
-        if (shouldDisplayClient) {
-            try {
-                createAndAddMarker(
-                    mapView,
-                    client,
-                    clientEnCourDeVent,
-                    viewModel,
-                    context,
-                    showMarkerDetails,
-                    onMarkerSelected
-                )
-            } catch (e: Exception) {
-            }
+        try {
+            createAndAddMarker(
+                mapView,
+                client,
+                clientEnCourDeVent,
+                viewModel,
+                context,
+                showMarkerDetails,
+                onMarkerSelected
+            )
+        } catch (e: Exception) {
+            // Error handling
         }
     }
 
@@ -215,4 +194,3 @@ fun configureMarkerInfoWindow(
         }
     }
 }
-

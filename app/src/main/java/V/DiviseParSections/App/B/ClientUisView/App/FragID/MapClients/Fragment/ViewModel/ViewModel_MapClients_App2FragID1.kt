@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.ClientsMapFilterViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.PolygonGeoLimite
 import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
@@ -63,8 +64,8 @@ class ViewModel_MapClients_App2FragID1(
     private val _uiState = MutableStateFlow(MapClientsUiState())
     val uiState: StateFlow<MapClientsUiState> = _uiState.asStateFlow()
 
-    val filterClientMarkesManager = FilterClientMarkesManager()        //<--
-    //TODO(1): utilise cette classe pour
+    // Initialize the filter viewModel with the repository
+    val clientsMapFilterViewModel = ClientsMapFilterViewModel(repo_0_0_HeadSQLRepositorys)
 
     val secteurRepo = repo_0_0_HeadSQLRepositorys.repositorys_Model
         .e1SecteurDeClientsRepository
@@ -101,8 +102,6 @@ class ViewModel_MapClients_App2FragID1(
     init {
         loadSecteurs()
     }
-
-
 
     fun updatedStateFabGroupVisibility(updatedState: PanelsGroupeButton) {
         viewModelScope.launch {
