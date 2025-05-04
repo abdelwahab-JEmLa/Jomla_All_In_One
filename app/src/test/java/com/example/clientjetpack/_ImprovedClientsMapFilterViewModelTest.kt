@@ -24,11 +24,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
 
-/**
- * Improved unit tests that don't rely on external ViewModels
- *
- * Uses direct testing of the data processing logic without dependencies
- */
 @ExperimentalCoroutinesApi
 class _ImprovedClientsMapFilterViewModelTest {
 
