@@ -1,9 +1,9 @@
 package com.example.clientjetpack.Logs
 
-import com.example.clientjetpack.Logs.Functions.belongsToSameWeek
-import com.example.clientjetpack.Logs.Functions.formatTime
-import com.example.clientjetpack.Logs.Functions.isSameDay
-import com.example.clientjetpack.Logs.Functions.formatTimestampToDate
+import com.example.clientjetpack.Functions.belongsToSameWeek
+import com.example.clientjetpack.Functions.formatTime
+import com.example.clientjetpack.Functions.formatTimestampToDate
+import com.example.clientjetpack.Functions.isSameDay
 import com.example.clientjetpack.Repositorys.SqlDatasDatesHistoriqueTransactions
 
 /**

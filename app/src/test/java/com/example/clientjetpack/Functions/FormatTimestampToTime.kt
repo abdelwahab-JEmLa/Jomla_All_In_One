@@ -1,4 +1,4 @@
-package com.example.clientjetpack.Logs.Functions
+package com.example.clientjetpack.Functions
 
 import java.text.SimpleDateFormat
 import java.util.Date

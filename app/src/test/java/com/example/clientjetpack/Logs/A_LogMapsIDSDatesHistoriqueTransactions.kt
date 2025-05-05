@@ -1,8 +1,8 @@
 package com.example.clientjetpack.Logs
 
-import com.example.clientjetpack.Logs.Functions.formatTimestampToDate
-import com.example.clientjetpack.Logs.Functions.formatTimestampToTime
-import com.example.clientjetpack.Logs.Functions.getTransactionTime
+import com.example.clientjetpack.Functions.formatTimestampToDate
+import com.example.clientjetpack.Functions.formatTimestampToTime
+import com.example.clientjetpack.Functions.getTransactionTime
 import com.example.clientjetpack.Repositorys.MapsIDSDatesHistoriqueTransactions
 
 /**

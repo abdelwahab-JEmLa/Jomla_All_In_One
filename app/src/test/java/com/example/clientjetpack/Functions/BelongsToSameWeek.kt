@@ -1,4 +1,4 @@
-package com.example.clientjetpack.Logs.Functions
+package com.example.clientjetpack.Functions
 
 /**
  * Helper function to check if two timestamps belong to the same week
