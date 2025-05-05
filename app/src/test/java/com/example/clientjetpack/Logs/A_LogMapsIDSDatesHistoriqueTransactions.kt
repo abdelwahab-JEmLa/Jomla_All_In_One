@@ -1,11 +1,9 @@
 package com.example.clientjetpack.Logs
 
+import com.example.clientjetpack.Logs.Functions.formatTimestampToTime
+import com.example.clientjetpack.Logs.Functions.getTransactionTime
 import com.example.clientjetpack.Repositorys.MapsIDSDatesHistoriqueTransactions
-import com.example.clientjetpack.Repositorys.formatTimestampToDate
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
+import com.example.clientjetpack.Logs.Functions.formatTimestampToDate
 
 /**
  * Improved logging function for MapsIDSDatesHistoriqueTransactions
@@ -13,11 +11,6 @@ import java.util.Locale
  */
 fun A_LogMapsIDSDatesHistoriqueTransactions(mapsIDSDatesHistoriqueTransactions: MapsIDSDatesHistoriqueTransactions) {
     println("======== TESTING DATES HISTORIQUE TRANSACTIONS ========")
-    println("Created test data structure for MapsIDSDatesHistoriqueTransactions")
-    println("Total weeks: ${mapsIDSDatesHistoriqueTransactions.semaines.size}")
-    println("Total days: ${mapsIDSDatesHistoriqueTransactions.jours.size}")
-    println("Total clients: ${mapsIDSDatesHistoriqueTransactions.clients.size}")
-    println("Total transactions: ${mapsIDSDatesHistoriqueTransactions.transactions.size}")
 
     // Display nested data structure in hierarchical format
     println("\n-- Hierarchical Structure --")
@@ -87,28 +80,3 @@ fun A_LogMapsIDSDatesHistoriqueTransactions(mapsIDSDatesHistoriqueTransactions: 
     println("\n======== TEST COMPLETED SUCCESSFULLY ========\n")
 }
 
-/**
- * Helper function to format timestamp to time (HH:mm)
- */
-private fun formatTimestampToTime(timestamp: Long): String {
-    if (timestamp <= 0) return "N/A"
-    val formatter = SimpleDateFormat("HH:mm", Locale.getDefault())
-    return formatter.format(Date(timestamp))
-}
-
-/**
- * Helper function to get transaction time (mocking based on transaction ID for this example)
- * In a real implementation, you would get this from the transaction data
- */
-private fun getTransactionTime(transactionId: Long, transactionsInDay: List<Long>): Long {
-    // This is just a placeholder. In a real implementation, you would get the real timestamp.
-    // For demonstration purposes, we'll create a fake time based on transaction ID
-    val baseHour = 8 // Start at 8 AM
-    val index = transactionsInDay.indexOf(transactionId)
-
-    val calendar = Calendar.getInstance()
-    calendar.set(Calendar.HOUR_OF_DAY, baseHour + (index % 8)) // Spread transactions over 8 hours
-    calendar.set(Calendar.MINUTE, ((transactionId * 7) % 60).toInt())    // Pseudo-random minutes
-
-    return calendar.timeInMillis
-}

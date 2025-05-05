@@ -35,19 +35,4 @@ data class TransactionCommercial(
 
     var etateActuellementEst: Type =
         Type.NON_DEFINI,
-) {
-    val fireBaseKeyID_1_3_TransactionCommercial: String
-        get() {
-            val parent = "(${parentVID_1_4_PeriodeVent})"
-            val thisVal = "->(${clientAcheteurID}_($nomClientConcerned))"
-
-            val name = if (cJustPourVoirPanie)
-                "PourVoirPanie"
-            else
-                etateActuellementEst.nomArabe
-
-            val autre = "->($name)"
-
-            return "$parent$thisVal$autre"
-        }
-}
+)

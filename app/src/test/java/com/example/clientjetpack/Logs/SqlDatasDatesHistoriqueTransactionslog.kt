@@ -1,10 +1,10 @@
 package com.example.clientjetpack.Logs
 
+import com.example.clientjetpack.Logs.Functions.belongsToSameWeek
+import com.example.clientjetpack.Logs.Functions.formatTime
+import com.example.clientjetpack.Logs.Functions.isSameDay
+import com.example.clientjetpack.Logs.Functions.formatTimestampToDate
 import com.example.clientjetpack.Tests.B.Data.SqlDatasDatesHistoriqueTransactions
-import com.example.clientjetpack.Repositorys.formatTimestampToDate
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 /**
  * Improved logging function for SqlDatasDatesHistoriqueTransactions structure
@@ -89,34 +89,3 @@ fun SqlDatasDatesHistoriqueTransactionslog(
     println("\n======== TEST COMPLETED SUCCESSFULLY ========\n")
 }
 
-/**
- * Helper function to format timestamp to time (HH:mm)
- */
-private fun formatTime(timestamp: Long): String {
-    if (timestamp <= 0) return "N/A"
-    val formatter = SimpleDateFormat("HH:mm", Locale.getDefault())
-    return formatter.format(Date(timestamp))
-}
-
-/**
- * Helper function to check if two timestamps belong to the same week
- */
-private fun belongsToSameWeek(timestamp1: Long, timestamp2: Long): Boolean {
-    val cal1 = java.util.Calendar.getInstance().apply { timeInMillis = timestamp1 }
-    val cal2 = java.util.Calendar.getInstance().apply { timeInMillis = timestamp2 }
-
-    return cal1.get(java.util.Calendar.YEAR) == cal2.get(java.util.Calendar.YEAR) &&
-            cal1.get(java.util.Calendar.WEEK_OF_YEAR) == cal2.get(java.util.Calendar.WEEK_OF_YEAR)
-}
-
-/**
- * Helper function to check if two timestamps belong to the same day
- */
-private fun isSameDay(timestamp1: Long, timestamp2: Long): Boolean {
-    val cal1 = java.util.Calendar.getInstance().apply { timeInMillis = timestamp1 }
-    val cal2 = java.util.Calendar.getInstance().apply { timeInMillis = timestamp2 }
-
-    return cal1.get(java.util.Calendar.YEAR) == cal2.get(java.util.Calendar.YEAR) &&
-            cal1.get(java.util.Calendar.MONTH) == cal2.get(java.util.Calendar.MONTH) &&
-            cal1.get(java.util.Calendar.DAY_OF_MONTH) == cal2.get(java.util.Calendar.DAY_OF_MONTH)
-}

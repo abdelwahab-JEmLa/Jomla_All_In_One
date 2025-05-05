@@ -1,4 +1,4 @@
-package com.example.clientjetpack.Repositorys
+package com.example.clientjetpack.Logs.Functions
 
 // Helper function to format timestamp to readable date
 fun formatTimestampToDate(timestamp: Long): String {
