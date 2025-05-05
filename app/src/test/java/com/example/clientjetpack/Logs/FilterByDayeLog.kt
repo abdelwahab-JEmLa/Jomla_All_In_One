@@ -10,16 +10,16 @@ import java.util.Locale
 
 fun FilterByDayeLog(
     sqlDatasDatesHistorique: D_Repo_SqlDatasDatesHistoriqueTransactions,
-    normalizeTimetampFromeStrDate: Long
+    filterDateTimeTamp: Long
 ) {
         println("======== TESTING FILTERED DATES HISTORIQUE BY DAY ========")
 
         // Display filtered data structure for specific day
-        println("\n-- Filtered Transactions for Day: ${formatTimestampToDate(normalizeTimetampFromeStrDate)} --")
+        println("\n-- Filtered Transactions for Day: ${formatTimestampToDate(filterDateTimeTamp)} --")
 
         // Find transactions for this specific day
         val filteredTransactions = sqlDatasDatesHistorique.transactions.filter { transaction ->
-            isSameDay(transaction.timestamp, normalizeTimetampFromeStrDate)
+            isSameDay(transaction.timestamp, filterDateTimeTamp)
         }.sortedBy { it.timestamp }
 
         println("Found ${filteredTransactions.size} transaction(s) for this day")
@@ -50,7 +50,7 @@ fun FilterByDayeLog(
         }
 
         if (filteredTransactions.isEmpty()) {
-            println("No transactions found for date: ${formatTimestampToDate(normalizeTimetampFromeStrDate)}")
+            println("No transactions found for date: ${formatTimestampToDate(filterDateTimeTamp)}")
         }
 
         println("\n======== FILTER TEST COMPLETED SUCCESSFULLY ========\n")

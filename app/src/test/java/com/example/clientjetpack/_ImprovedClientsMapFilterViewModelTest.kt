@@ -65,7 +65,7 @@ class ImprovedDatesHistoriqueTest {
         try {
             FilterByDayeLog(
                 sqlDatasDatesHistorique,
-                normalizeTimetampFromeStrDate("2025-05-05")
+                filterDateTimeTamp = normalizeTimetampFromeStrDate("2025-05-05")
             )
 
             // If we reach here without exceptions, test passes
