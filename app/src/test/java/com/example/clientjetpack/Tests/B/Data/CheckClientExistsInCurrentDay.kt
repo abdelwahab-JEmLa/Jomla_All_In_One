@@ -6,7 +6,7 @@ package com.example.clientjetpack.Tests.B.Data
 fun testDatesHistoriqueTransactions() {
     val testData = datesHistoriqueForTesting
 
-    logDatesHistoriqueStructure(testData)
+    log(testData)
 
     // Verify structure of test data
     assertEquals("Should have 1 weeks", 1, testData.cesSemainKeys.size)

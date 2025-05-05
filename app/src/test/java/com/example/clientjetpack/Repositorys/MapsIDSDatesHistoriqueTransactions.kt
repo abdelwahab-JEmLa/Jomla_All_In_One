@@ -83,7 +83,6 @@ class MapsIDSDatesHistoriqueTransactions {
         println("- Clients: ${clientTransMap.size}")
         println("- Transactions: ${stateMap.size}")
 
-        this.log()
         return this
     }
 }
@@ -110,7 +109,10 @@ fun MapsIDSDatesHistoriqueTransactions.log() {
             // Log transactions for each day (limited to first 5)
             jours[dayTimestamp]?.take(5)?.forEachIndexed { tIndex, transactionId ->
                 val state = transactions[transactionId]
-                println("  │  ├─ Transaction #$tIndex (ID: $transactionId, État: $state)")
+                val isLastTransaction = tIndex == (jours[dayTimestamp]?.take(5)?.size ?: 1) - 1 &&
+                        ((jours[dayTimestamp]?.size ?: 0) <= 5)
+                val prefix = if (isLastTransaction) "  │  └─" else "  │  ├─"
+                println("$prefix Transaction #$tIndex (ID: $transactionId, État: $state)")
             }
 
             // Show ellipsis if there are more transactions
@@ -128,7 +130,10 @@ fun MapsIDSDatesHistoriqueTransactions.log() {
         // Log transactions for each client (limited to first 3)
         clientTransactions.take(3).forEachIndexed { index, transactionId ->
             val state = transactions[transactionId]
-            println("  ├─ Transaction #$index (ID: $transactionId, État: $state)")
+            val isLastTransaction = index == clientTransactions.take(3).size - 1 &&
+                    clientTransactions.size <= 3
+            val prefix = if (isLastTransaction) "  └─" else "  ├─"
+            println("$prefix Transaction #$index (ID: $transactionId, État: $state)")
         }
 
         // Show ellipsis if there are more transactions
