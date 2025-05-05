@@ -4,8 +4,8 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.example.clientjetpack.Logs.A_LogMapsIDSDatesHistoriqueTransactions
 import com.example.clientjetpack.Logs.SqlDatasDatesHistoriqueTransactionslog
 import com.example.clientjetpack.Repositorys.MapsIDSDatesHistoriqueTransactions
-import com.example.clientjetpack.Tests.B.Data.SqlDatasDatesHistoriqueTransactions
-import com.example.clientjetpack.Repositorys.createTestTransactions
+import com.example.clientjetpack.Repositorys.SqlDatasDatesHistoriqueTransactions
+import com.example.clientjetpack.Tests.B.Data.createTestTransactions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher

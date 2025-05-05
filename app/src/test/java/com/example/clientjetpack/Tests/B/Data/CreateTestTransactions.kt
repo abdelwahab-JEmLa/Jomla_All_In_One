@@ -1,5 +1,7 @@
-package com.example.clientjetpack.Repositorys
+package com.example.clientjetpack.Tests.B.Data
 
+import com.example.clientjetpack.Repositorys.TransactionCommercial
+import com.example.clientjetpack.Repositorys.Type
 import java.util.Calendar
 
 fun createTestTransactions(): List<TransactionCommercial> {

@@ -4,7 +4,7 @@ import com.example.clientjetpack.Logs.Functions.belongsToSameWeek
 import com.example.clientjetpack.Logs.Functions.formatTime
 import com.example.clientjetpack.Logs.Functions.isSameDay
 import com.example.clientjetpack.Logs.Functions.formatTimestampToDate
-import com.example.clientjetpack.Tests.B.Data.SqlDatasDatesHistoriqueTransactions
+import com.example.clientjetpack.Repositorys.SqlDatasDatesHistoriqueTransactions
 
 /**
  * Improved logging function for SqlDatasDatesHistoriqueTransactions structure
