@@ -38,7 +38,7 @@ fun testQueCeJoureAUnClientHoussine() {
  * Tests if a specific client exists in today's transactions
  */
 fun checkClientExistsInCurrentDay(
-    datesHistorique: DatesHistoriqueTransactions,
+    datesHistorique: IdsDatesHistoriqueTransactions,
     clientName: String
 ): Boolean {
     // Check if we have any weeks

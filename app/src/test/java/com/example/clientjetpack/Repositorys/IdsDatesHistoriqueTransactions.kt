@@ -4,7 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 
-class DatesHistoriqueTransactions {
+class IdsDatesHistoriqueTransactions {
     var semaines by mutableStateOf<Map<Long, MutableList<Long>>>(emptyMap())
 
     var jours by mutableStateOf<Map<Long, MutableList<Long>>>(emptyMap())
@@ -15,7 +15,7 @@ class DatesHistoriqueTransactions {
 
     fun collectInit(
         testTransactions: List<TransactionCommercial>,
-    ): DatesHistoriqueTransactions {
+    ): IdsDatesHistoriqueTransactions {
         // Initialize maps to collect data
         val weekMap = mutableMapOf<Long, MutableList<Long>>()
         val dayMap = mutableMapOf<Long, MutableList<Long>>()
