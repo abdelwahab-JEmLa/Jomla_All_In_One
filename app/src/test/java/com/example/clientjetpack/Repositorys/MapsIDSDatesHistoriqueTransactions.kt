@@ -76,13 +76,6 @@ class MapsIDSDatesHistoriqueTransactions {
         clients = clientTransMap
         transactions = stateMap
 
-        // Log the state after initialization
-        println("Collected data:")
-        println("- Weeks: ${weekMap.size}")
-        println("- Days: ${dayMap.size}")
-        println("- Clients: ${clientTransMap.size}")
-        println("- Transactions: ${stateMap.size}")
-
         return this
     }
 }
@@ -96,58 +89,44 @@ fun MapsIDSDatesHistoriqueTransactions.log() {
 
     // Log weeks and their days
     println("\n-- Semaines (Weeks) --")
-    semaines.forEach { (weekTimestamp, days) ->
+
+    // Sort weeks chronologically
+    val sortedWeeks = semaines.entries.sortedBy { it.key }
+
+    sortedWeeks.forEach { (weekTimestamp, days) ->
         val weekDate = formatTimestampToDate(weekTimestamp)
         println("Semaine ($weekDate): ${days.size} jour(s)")
 
+        // Sort days chronologically for consistent output
+        val sortedDays = days.sortedBy { it }
+
         // Log days for each week
-        days.forEachIndexed { index, dayTimestamp ->
+        sortedDays.forEachIndexed { index, dayTimestamp ->
             val dayDate = formatTimestampToDate(dayTimestamp)
             val transactionsInDay = jours[dayTimestamp]?.size ?: 0
-            println("  ├─ Jour $index ($dayDate): $transactionsInDay transaction(s)")
+            val isLastDay = index == sortedDays.size - 1
+            val dayPrefix = if (isLastDay) "  └─" else "  ├─"
 
-            // Log transactions for each day (limited to first 5)
-            jours[dayTimestamp]?.take(5)?.forEachIndexed { tIndex, transactionId ->
-                val state = transactions[transactionId]
-                val isLastTransaction = tIndex == (jours[dayTimestamp]?.take(5)?.size ?: 1) - 1 &&
-                        ((jours[dayTimestamp]?.size ?: 0) <= 5)
-                val prefix = if (isLastTransaction) "  │  └─" else "  │  ├─"
-                println("$prefix Transaction #$tIndex (ID: $transactionId, État: $state)")
-            }
+            println("$dayPrefix Jour $index ($dayDate): $transactionsInDay transaction(s)")
 
-            // Show ellipsis if there are more transactions
-            if ((jours[dayTimestamp]?.size ?: 0) > 5) {
-                println("  │  └─ ... ${(jours[dayTimestamp]?.size ?: 0) - 5} more transaction(s)")
+            // Log all transactions for each day without the 5 transaction limit
+            jours[dayTimestamp]?.let { transactionIds ->
+                transactionIds.forEachIndexed { tIndex, transactionId ->
+                    val state = transactions[transactionId]
+                    val isLastTransaction = tIndex == transactionIds.size - 1
+
+                    // Use correct prefix based on whether this is the last day and last transaction
+                    val transPrefix = if (isLastDay) {
+                        if (isLastTransaction) "     └─" else "     ├─"
+                    } else {
+                        if (isLastTransaction) "  │  └─" else "  │  ├─"
+                    }
+
+                    println("$transPrefix Transaction #$tIndex (ID: $transactionId, État: $state)")
+                }
             }
         }
     }
-
-    // Log clients and their transactions
-    println("\n-- Clients --")
-    clients.forEach { (clientId, clientTransactions) ->
-        println("Client (ID: $clientId): ${clientTransactions.size} transaction(s)")
-
-        // Log transactions for each client (limited to first 3)
-        clientTransactions.take(3).forEachIndexed { index, transactionId ->
-            val state = transactions[transactionId]
-            val isLastTransaction = index == clientTransactions.take(3).size - 1 &&
-                    clientTransactions.size <= 3
-            val prefix = if (isLastTransaction) "  └─" else "  ├─"
-            println("$prefix Transaction #$index (ID: $transactionId, État: $state)")
-        }
-
-        // Show ellipsis if there are more transactions
-        if (clientTransactions.size > 3) {
-            println("  └─ ... ${clientTransactions.size - 3} more transaction(s)")
-        }
-    }
-
-    // Log summary statistics
-    println("\n-- Summary Statistics --")
-    println("Total weeks: ${semaines.size}")
-    println("Total days with transactions: ${jours.size}")
-    println("Total clients: ${clients.size}")
-    println("Total transactions: ${transactions.size}")
 
     println("\n======== TEST COMPLETED SUCCESSFULLY ========")
 }
