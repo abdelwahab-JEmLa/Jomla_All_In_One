@@ -16,4 +16,8 @@ class DatesHistoriqueTransactions {
 
     var etate by mutableStateOf<Map<Long, EtateActuellementEst>>(emptyMap())
 
+    fun init() {
+
+    }
+
 }
