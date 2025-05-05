@@ -41,7 +41,7 @@ fun createTestTransactions(): List<TransactionCommercial> {
     testTransactions.add(
         TransactionCommercial(
             vid = 1L,
-            etateActuellementEst = EtateActuellementEst.COMMANDE_LIVRAI,
+            etateActuellementEst = Type.COMMANDE_LIVRAI,
             nomClientConcerned = "Abderrahmane",
             timestamps = todayTimestamp
         )
@@ -51,7 +51,7 @@ fun createTestTransactions(): List<TransactionCommercial> {
     testTransactions.add(
         TransactionCommercial(
             vid = 2L,
-            etateActuellementEst = EtateActuellementEst.Cible,
+            etateActuellementEst = Type.Cible,
             nomClientConcerned = "Houssine",
             timestamps = yesterdayTimestamp
         )
@@ -61,7 +61,7 @@ fun createTestTransactions(): List<TransactionCommercial> {
     testTransactions.add(
         TransactionCommercial(
             vid = 3L,
-            etateActuellementEst = EtateActuellementEst.COMMANDE_LIVRAI,
+            etateActuellementEst = Type.COMMANDE_LIVRAI,
             nomClientConcerned = "Fares",
             timestamps = yesterdayTimestamp17
         )
@@ -96,8 +96,8 @@ data class TransactionCommercial(
     var sonVocaleEstEcoute: Boolean = false,
     var sonEcoutementEstFaitAutimestamps: Long = 0,
 
-    var etateActuellementEst: EtateActuellementEst =
-        EtateActuellementEst.NON_DEFINI,
+    var etateActuellementEst: Type =
+        Type.NON_DEFINI,
 ) {
     val fireBaseKeyID_1_3_TransactionCommercial: String
         get() {

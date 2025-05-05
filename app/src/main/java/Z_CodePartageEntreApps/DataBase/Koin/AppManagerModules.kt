@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin
+package Z_CodePartageEntreApps.DataBase.Koin
 
 import Z_CodePartageEntreApps.Proto.B.ParSections.Fragment.B.DataBaseManager.App.A.CategoryReorderAndSelection.Package.ViewModel.ViewModel_A4FragID1
 import org.koin.androidx.viewmodel.dsl.viewModel

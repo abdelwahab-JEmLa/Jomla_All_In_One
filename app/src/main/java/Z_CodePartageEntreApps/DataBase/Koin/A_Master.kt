@@ -1,4 +1,4 @@
-package Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin
+package Z_CodePartageEntreApps.DataBase.Koin
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.ClientsMapFilterViewModel
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.ViewModel.ViewModel_MapClients_App2FragID1

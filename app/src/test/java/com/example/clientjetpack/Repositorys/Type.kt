@@ -4,7 +4,7 @@ import com.example.clientjetpack.R
 import com.google.firebase.database.IgnoreExtraProperties
 
 @IgnoreExtraProperties
-enum class EtateActuellementEst(val color: Int, val nomArabe: String) {
+enum class Type(val color: Int, val nomArabe: String) {
     NON_DEFINI(android.R.color.white, "غير محدد"),
 
     ON_MODE_COMMEND_ACTUELLEMENT(android.R.color.holo_green_light, "تم تنفيذ المطلوب في "),

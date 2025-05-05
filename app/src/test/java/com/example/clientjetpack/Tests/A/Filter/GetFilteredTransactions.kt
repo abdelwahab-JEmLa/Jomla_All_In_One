@@ -1,6 +1,6 @@
 package com.example.clientjetpack.Tests.A.Filter
 
-import com.example.clientjetpack.Repositorys.EtateActuellementEst
+import com.example.clientjetpack.Repositorys.Type
 import com.example.clientjetpack.Repositorys.TransactionCommercial
 
 /**
@@ -13,7 +13,7 @@ fun getFilteredTransactions(
     return when (filterType) {
         FilterType.ALL -> testTransactions
         FilterType.CIBLE -> {
-            testTransactions.filter { it.etateActuellementEst == EtateActuellementEst.Cible }
+            testTransactions.filter { it.etateActuellementEst == Type.Cible }
         }
         FilterType.DatesHistoriqueTransactions -> {
             // In a real implementation, this would filter by date criteria

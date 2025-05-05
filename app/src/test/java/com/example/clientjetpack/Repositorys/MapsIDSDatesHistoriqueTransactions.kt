@@ -4,23 +4,23 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 
-class IdsDatesHistoriqueTransactions {
+class MapsIDSDatesHistoriqueTransactions {
     var semaines by mutableStateOf<Map<Long, MutableList<Long>>>(emptyMap())
 
     var jours by mutableStateOf<Map<Long, MutableList<Long>>>(emptyMap())
 
-    var clientTransactions by mutableStateOf<Map<Long, MutableList<Long>>>(emptyMap())
+    var clients by mutableStateOf<Map<Long, MutableList<Long>>>(emptyMap())
 
-    var etate by mutableStateOf<Map<Long, EtateActuellementEst>>(emptyMap())
+    var transactions by mutableStateOf<Map<Long, Type>>(emptyMap())
 
     fun collectInit(
         testTransactions: List<TransactionCommercial>,
-    ): IdsDatesHistoriqueTransactions {
+    ): MapsIDSDatesHistoriqueTransactions {
         // Initialize maps to collect data
         val weekMap = mutableMapOf<Long, MutableList<Long>>()
         val dayMap = mutableMapOf<Long, MutableList<Long>>()
         val clientTransMap = mutableMapOf<Long, MutableList<Long>>()
-        val stateMap = mutableMapOf<Long, EtateActuellementEst>()
+        val stateMap = mutableMapOf<Long, Type>()
 
         // Group transactions by day first
         val transactionsByDay = testTransactions.groupBy { transaction ->
@@ -63,9 +63,10 @@ class IdsDatesHistoriqueTransactions {
         // Update state with the collected data
         semaines = weekMap
         jours = dayMap
-        clientTransactions = clientTransMap
-        etate = stateMap
+        clients = clientTransMap
+        transactions = stateMap
 
         return this
     }
 }
+

@@ -1,8 +1,8 @@
 package com.example.clientjetpack
 
-import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.appManagerModules
-import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.appModule
-import Z_CodePartageEntreApps.Apps.Manager.Module.A.Koin.isManagerApp
+import Z_CodePartageEntreApps.DataBase.Koin.appManagerModules
+import Z_CodePartageEntreApps.DataBase.Koin.appModule
+import Z_CodePartageEntreApps.DataBase.Koin.isManagerApp
 import Z_MasterOfApps.A.MainActivity.Start.Module.A.Koin.appClientModules
 import android.app.Application
 import android.util.Log

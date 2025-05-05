@@ -1,7 +1,8 @@
 package com.example.clientjetpack
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.example.clientjetpack.Repositorys.IdsDatesHistoriqueTransactions
+import com.example.clientjetpack.Repositorys.MapsIDSDatesHistoriqueTransactions
+import com.example.clientjetpack.Repositorys.SqlDatasDatesHistoriqueTransactions
 import com.example.clientjetpack.Repositorys.TransactionCommercial
 import com.example.clientjetpack.Repositorys.createTestTransactions
 import com.example.clientjetpack.Repositorys.logDatesHistoriqueStructure
@@ -28,8 +29,8 @@ class _ImprovedClientsMapFilterViewModelTest {
 
     private val testTransactions = mutableListOf<TransactionCommercial>()
 
-
-    private lateinit var datesHistoriqueForTesting: IdsDatesHistoriqueTransactions
+    private lateinit var datesHistoriqueForTesting: MapsIDSDatesHistoriqueTransactions
+    private lateinit var sqlDatasDatesHistoriqueTransactions: SqlDatasDatesHistoriqueTransactions
 
     private var currentFilter = FilterType.ALL
     private var currentIdJourAuFilter = 1L
@@ -42,9 +43,13 @@ class _ImprovedClientsMapFilterViewModelTest {
 
         testTransactions.addAll(allTransactionsId)
 
-        datesHistoriqueForTesting = IdsDatesHistoriqueTransactions()
-            .collectInit( testTransactions)
-        logDatesHistoriqueStructure(datesHistoriqueForTesting)
+        datesHistoriqueForTesting = MapsIDSDatesHistoriqueTransactions()
+            .collectInit(testTransactions)
+
+        sqlDatasDatesHistoriqueTransactions =
+            SqlDatasDatesHistoriqueTransactions(datesHistoriqueForTesting, testTransactions)
+
+        logDatesHistoriqueStructure(sqlDatasDatesHistoriqueTransactions)
     }
 
     @After
@@ -60,6 +65,4 @@ class _ImprovedClientsMapFilterViewModelTest {
 
         assertEquals(testTransactions.size, filteredTransactions.size)
     }
-
-
 }
