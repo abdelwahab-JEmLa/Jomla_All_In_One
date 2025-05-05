@@ -14,11 +14,6 @@ fun SqlDatasDatesHistoriqueTransactionslog(
     sqlDatasDatesHistoriqueTransactions: SqlDatasDatesHistoriqueTransactions
 ) {
     println("======== TESTING DATES HISTORIQUE TRANSACTIONS ========")
-    println("Created test data structure for SqlDatasDatesHistoriqueTransactions")
-    println("Total weeks: ${sqlDatasDatesHistoriqueTransactions.semaines.size}")
-    println("Total days: ${sqlDatasDatesHistoriqueTransactions.jours.size}")
-    println("Total clients: ${sqlDatasDatesHistoriqueTransactions.clients.size}")
-    println("Total transactions: ${sqlDatasDatesHistoriqueTransactions.transactions.size}")
 
     // Display nested data structure in hierarchical format
     println("\n-- Hierarchical Structure --")

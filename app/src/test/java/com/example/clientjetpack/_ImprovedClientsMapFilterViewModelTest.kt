@@ -55,6 +55,18 @@ class ImprovedDatesHistoriqueTest {
             // Log MapsIDSDatesHistoriqueTransactions structure
             A_LogMapsIDSDatesHistoriqueTransactions(mapsIDsDatesHistorique)
 
+
+            // If we reach here without exceptions, test passes
+            assertTrue(true)
+        } catch (e: Exception) {
+            // If an exception occurs, fail the test
+            assertTrue("Exception during logging: ${e.message}", false)
+        }
+    }
+    @Test
+    fun testLogSqlDatasDatesHistoriqueTransactionslog() {
+        try {
+
             // Log SqlDatasDatesHistoriqueTransactions structure
             SqlDatasDatesHistoriqueTransactionslog(sqlDatasDatesHistorique)
 
