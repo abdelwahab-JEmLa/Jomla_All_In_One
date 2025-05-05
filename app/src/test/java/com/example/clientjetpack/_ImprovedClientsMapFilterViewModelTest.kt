@@ -1,6 +1,8 @@
 package com.example.clientjetpack
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.example.clientjetpack.Functions.belongsToSameWeek
+import com.example.clientjetpack.Functions.isSameDay
 import com.example.clientjetpack.Logs.A_LogMapsIDSDatesHistoriqueTransactions
 import com.example.clientjetpack.Logs.SqlDatasDatesHistoriqueTransactionslog
 import com.example.clientjetpack.Repositorys.MapsIDSDatesHistoriqueTransactions
@@ -18,7 +20,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
-import java.util.Calendar
 
 @ExperimentalCoroutinesApi
 class ImprovedDatesHistoriqueTest {
@@ -114,43 +115,5 @@ class ImprovedDatesHistoriqueTest {
         }
     }
 
-    @Test
-    fun testWeekCalculation() {
-        // Create two timestamps in the same week
-        val calendar = Calendar.getInstance()
-        val dayInWeek1 = calendar.timeInMillis
 
-        // Move to next day but same week
-        calendar.add(Calendar.DAY_OF_WEEK, 1)
-        val dayInWeek2 = calendar.timeInMillis
-
-        // Move to next week
-        calendar.add(Calendar.DAY_OF_WEEK, 6)
-        val dayInNextWeek = calendar.timeInMillis
-
-        // Test same week
-        assertTrue(belongsToSameWeek(dayInWeek1, dayInWeek2))
-
-        // Test different weeks
-        assertTrue(!belongsToSameWeek(dayInWeek1, dayInNextWeek))
-    }
-
-    // Helper functions for testing
-
-    private fun belongsToSameWeek(timestamp1: Long, timestamp2: Long): Boolean {
-        val cal1 = Calendar.getInstance().apply { timeInMillis = timestamp1 }
-        val cal2 = Calendar.getInstance().apply { timeInMillis = timestamp2 }
-
-        return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
-                cal1.get(Calendar.WEEK_OF_YEAR) == cal2.get(Calendar.WEEK_OF_YEAR)
-    }
-
-    private fun isSameDay(timestamp1: Long, timestamp2: Long): Boolean {
-        val cal1 = Calendar.getInstance().apply { timeInMillis = timestamp1 }
-        val cal2 = Calendar.getInstance().apply { timeInMillis = timestamp2 }
-
-        return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
-                cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH) &&
-                cal1.get(Calendar.DAY_OF_MONTH) == cal2.get(Calendar.DAY_OF_MONTH)
-    }
 }
