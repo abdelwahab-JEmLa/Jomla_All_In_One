@@ -9,10 +9,10 @@ fun testDatesHistoriqueTransactions() {
     logDatesHistoriqueStructure(testData)
 
     // Verify structure of test data
-    assertEquals("Should have 1 weeks", 1, testData.cesSemains.size)
+    assertEquals("Should have 1 weeks", 1, testData.cesSemainKeys.size)
 
     // Test week 1
-    val week1 = testData.cesSemains[0]
+    val week1 = testData.cesSemainKeys[0]
     assertEquals(1L, week1.vid)
     assertEquals("Semaine-1", week1.key)
 }
@@ -42,13 +42,13 @@ fun checkClientExistsInCurrentDay(
     clientName: String
 ): Boolean {
     // Check if we have any weeks
-    if (datesHistorique.cesSemains.isEmpty()) {
+    if (datesHistorique.cesSemainKeys.isEmpty()) {
         return false
     }
 
     // Find the current day's transactions (today)
-    val currentDay = datesHistorique.cesSemains.flatMap { semain ->
-        semain.cesJours
+    val currentDay = datesHistorique.cesSemainKeys.flatMap { semain ->
+        semain.cesJourKeys
     }.find { jour ->
         // Find the most recent day (should be today based on our test data)
         val calendar = Calendar.getInstance()

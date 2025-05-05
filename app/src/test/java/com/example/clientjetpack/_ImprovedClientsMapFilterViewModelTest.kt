@@ -30,7 +30,7 @@ class _ImprovedClientsMapFilterViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
 
-    private val testTransactions = ArrayList<TransactionCommercial>()
+    private val testTransactions = ArrayList<Long>()
 
     private var uniqueDaysForTesting = mutableListOf<StrNomJourEtSonSemainToStartJourTimeTemp>()
 
@@ -43,10 +43,10 @@ class _ImprovedClientsMapFilterViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
 
-        val allTransactions = createTestTransactions()
+        val allTransactionsId = createTestTransactions()
 
         testTransactions.addAll (
-            transactionCommercialsFiltre(allTransactions)
+            transactionCommercialsFiltre(allTransactionsId)
         )
 
         uniqueDaysForTesting = collectAddAuStrNomJourEtSonSemainToStartJourTimeTemp(testTransactions)
