@@ -1,6 +1,6 @@
 package com.example.clientjetpack.Logs
 
-import com.example.clientjetpack.Repositorys.SqlDatasDatesHistoriqueTransactions
+import com.example.clientjetpack.Tests.B.Data.SqlDatasDatesHistoriqueTransactions
 import com.example.clientjetpack.Repositorys.formatTimestampToDate
 import java.text.SimpleDateFormat
 import java.util.Date

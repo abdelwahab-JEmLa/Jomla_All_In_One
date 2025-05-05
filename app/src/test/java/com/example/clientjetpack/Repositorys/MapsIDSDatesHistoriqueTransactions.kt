@@ -81,58 +81,5 @@ class MapsIDSDatesHistoriqueTransactions {
         return calendar.timeInMillis
     }
 
-    /**
-     * Gets all transaction IDs for a specific week
-     */
-    fun getTransactionsForWeek(weekTimestamp: Long): List<Long> {
-        val result = mutableListOf<Long>()
 
-        // Get all days in this week
-        semaines[weekTimestamp]?.forEach { dayTimestamp ->
-            // Get all transactions for each day
-            jours[dayTimestamp]?.let { result.addAll(it) }
-        }
-
-        return result
-    }
-
-    /**
-     * Gets all transaction IDs for a specific client
-     */
-    fun getTransactionsForClient(clientId: Long): List<Long> {
-        return clients[clientId] ?: emptyList()
-    }
-
-    /**
-     * Gets all client IDs that have transactions on a specific day
-     */
-    fun getClientsForDay(dayTimestamp: Long): Set<Long> {
-        val result = mutableSetOf<Long>()
-
-        // Get all transactions for this day
-        jours[dayTimestamp]?.forEach { transactionId ->
-            // Find which client this transaction belongs to
-            clients.forEach { (clientId, transactionIds) ->
-                if (transactionIds.contains(transactionId)) {
-                    result.add(clientId)
-                }
-            }
-        }
-
-        return result
-    }
-
-    /**
-     * Checks if a transaction belongs to a specific day
-     */
-    fun isTransactionInDay(transactionId: Long, dayTimestamp: Long): Boolean {
-        return jours[dayTimestamp]?.contains(transactionId) == true
-    }
-
-    /**
-     * Checks if a transaction belongs to a specific client
-     */
-    fun isTransactionForClient(transactionId: Long, clientId: Long): Boolean {
-        return clients[clientId]?.contains(transactionId) == true
-    }
 }
