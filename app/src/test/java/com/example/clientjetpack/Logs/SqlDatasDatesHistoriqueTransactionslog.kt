@@ -1,6 +1,6 @@
 package com.example.clientjetpack.Logs
 
-import com.example.clientjetpack.D_Repo_SqlDatasDatesHistoriqueTransactions
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.D_Repo_SqlDatasDatesHistoriqueTransactions
 import com.example.clientjetpack.Functions.belongsToSameWeek
 import com.example.clientjetpack.Functions.formatTime
 import com.example.clientjetpack.Functions.formatTimestampToDate

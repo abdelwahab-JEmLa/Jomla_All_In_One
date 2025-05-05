@@ -1,6 +1,6 @@
 package com.example.clientjetpack.Logs
 
-import com.example.clientjetpack.D_Rep_MapsIDSDatesHistoriqueTransactions
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.D_Rep_MapsIDSDatesHistoriqueTransactions
 import com.example.clientjetpack.Functions.formatTimestampToDate
 import com.example.clientjetpack.Functions.formatTimestampToTime
 import com.example.clientjetpack.Functions.getTransactionTime
