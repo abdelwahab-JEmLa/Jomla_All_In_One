@@ -5,7 +5,7 @@ import com.example.clientjetpack.Repositorys.MapsIDSDatesHistoriqueTransactions
 import com.example.clientjetpack.Repositorys.SqlDatasDatesHistoriqueTransactions
 import com.example.clientjetpack.Repositorys.TransactionCommercial
 import com.example.clientjetpack.Repositorys.createTestTransactions
-import com.example.clientjetpack.Repositorys.log
+import com.example.clientjetpack.Logs.log
 import com.example.clientjetpack.Tests.A.Filter.FilterType
 import com.example.clientjetpack.Tests.A.Filter.getFilteredTransactions
 import kotlinx.coroutines.Dispatchers

@@ -1,5 +1,8 @@
-package com.example.clientjetpack.Repositorys
+package com.example.clientjetpack.Logs
 
+import com.example.clientjetpack.Repositorys.SqlDatasDatesHistoriqueTransactions
+import com.example.clientjetpack.Repositorys.TransactionCommercial
+import com.example.clientjetpack.Repositorys.formatTimestampToDate
 import java.util.Calendar
 
 fun SqlDatasDatesHistoriqueTransactions
@@ -95,9 +98,3 @@ fun SqlDatasDatesHistoriqueTransactions
     println("\n======== TEST COMPLETED SUCCESSFULLY ========")
 }
 
-// Helper function to format timestamp to readable date
-private fun formatTimestampToDate(timestamp: Long): String {
-    val date = java.util.Date(timestamp)
-    val formatter = java.text.SimpleDateFormat("yyyy-MM-dd")
-    return formatter.format(date)
-}
