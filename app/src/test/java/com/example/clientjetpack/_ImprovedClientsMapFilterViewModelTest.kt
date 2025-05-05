@@ -36,8 +36,8 @@ class _ImprovedClientsMapFilterViewModelTest {
 
     private lateinit var datesHistoriqueForTesting: DatesHistoriqueTransactions
 
-    private var currentIdJourAuFilter = 1L
     private var currentFilter = FilterType.ALL
+    private var currentIdJourAuFilter = 1L
 
     @Before
     fun setup() {
