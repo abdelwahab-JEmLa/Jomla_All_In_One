@@ -1,15 +1,16 @@
 package com.example.clientjetpack.Logs
 
+import com.example.clientjetpack.Logs.Functions.formatTimestampToDate
 import com.example.clientjetpack.Logs.Functions.formatTimestampToTime
 import com.example.clientjetpack.Logs.Functions.getTransactionTime
 import com.example.clientjetpack.Repositorys.MapsIDSDatesHistoriqueTransactions
-import com.example.clientjetpack.Logs.Functions.formatTimestampToDate
 
 /**
  * Improved logging function for MapsIDSDatesHistoriqueTransactions
  * Ensures correct week-day associations and provides detailed transaction information
  */
-fun A_LogMapsIDSDatesHistoriqueTransactions(mapsIDSDatesHistoriqueTransactions: MapsIDSDatesHistoriqueTransactions) {
+fun A_LogMapsIDSDatesHistoriqueTransactions(
+    mapsIDSDatesHistoriqueTransactions: MapsIDSDatesHistoriqueTransactions) {
     println("======== TESTING DATES HISTORIQUE TRANSACTIONS ========")
 
     // Display nested data structure in hierarchical format
