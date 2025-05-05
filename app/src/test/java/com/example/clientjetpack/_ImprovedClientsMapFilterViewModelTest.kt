@@ -45,7 +45,7 @@ class _ImprovedClientsMapFilterViewModelTest {
 
         val allTransactions = createTestTransactions()
 
-        testTransactions.addAll(
+        testTransactions.addAll (
             transactionCommercialsFiltre(allTransactions)
         )
 
