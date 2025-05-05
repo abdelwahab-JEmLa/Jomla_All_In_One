@@ -1,9 +1,29 @@
 package com.example.clientjetpack.Logs
 
+import com.example.clientjetpack.D_Rep_MapsIDSDatesHistoriqueTransactions
 import com.example.clientjetpack.Functions.formatTimestampToDate
 import com.example.clientjetpack.Functions.formatTimestampToTime
 import com.example.clientjetpack.Functions.getTransactionTime
-import com.example.clientjetpack.D_Rep_MapsIDSDatesHistoriqueTransactions
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
+
+fun normalizeTimetampFromeStrDate(stringDate: String): Long {
+    val calendar = Calendar.getInstance()
+    // Parse the date string to get a timestamp
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    val date = dateFormat.parse(stringDate)
+
+    calendar.apply {
+        time = date ?: Date() // Use the parsed date or current date as fallback
+        set(Calendar.HOUR_OF_DAY, 0)
+        set(Calendar.MINUTE, 0)
+        set(Calendar.SECOND, 0)
+        set(Calendar.MILLISECOND, 0)
+    }
+    return calendar.timeInMillis
+}
 
 /**
  * Improved logging function for D_Rep_MapsIDSDatesHistoriqueTransactions
