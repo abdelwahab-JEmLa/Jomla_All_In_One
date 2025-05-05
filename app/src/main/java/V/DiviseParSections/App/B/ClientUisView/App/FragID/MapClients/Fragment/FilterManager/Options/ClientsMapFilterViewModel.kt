@@ -178,7 +178,7 @@ open class ClientsMapFilterViewModel(
         }
     }
 
-    protected var currentFilter = FilterType.ALL
+    private var currentFilter = FilterType.ALL
 
     // Définir un nouveau filtre
     open fun setFilter(filter: FilterType) {
