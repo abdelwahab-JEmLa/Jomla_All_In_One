@@ -51,5 +51,6 @@ fun MapsIDSDatesHistoriqueTransactions.log() {
         }
     }
 
-    println("\n======== TEST COMPLETED SUCCESSFULLY ========")
+    println("\n======== TEST COMPLETED SUCCESSFULLY ========" +
+            "\n")
 }

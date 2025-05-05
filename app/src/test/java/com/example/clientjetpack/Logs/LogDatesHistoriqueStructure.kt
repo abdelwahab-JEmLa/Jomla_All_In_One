@@ -95,6 +95,7 @@ fun SqlDatasDatesHistoriqueTransactions
         }
     }
 
-    println("\n======== TEST COMPLETED SUCCESSFULLY ========")
+    println("\n======== TEST COMPLETED SUCCESSFULLY ========" +
+            "\n")
 }
 
