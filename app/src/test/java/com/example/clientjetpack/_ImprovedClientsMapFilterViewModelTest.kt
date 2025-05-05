@@ -1,7 +1,6 @@
 package com.example.clientjetpack
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.example.clientjetpack.Init.collectAddAuStrNomJourEtSonSemainToStartJourTimeTemp
 import com.example.clientjetpack.Repositorys.DatesHistoriqueTransactions
 import com.example.clientjetpack.Repositorys.StrNomJourEtSonSemainToStartJourTimeTemp
 import com.example.clientjetpack.Repositorys.TransactionCommercial
@@ -45,10 +44,8 @@ class _ImprovedClientsMapFilterViewModelTest {
 
         testTransactions.addAll(allTransactionsId)
 
-        uniqueDaysForTesting = collectAddAuStrNomJourEtSonSemainToStartJourTimeTemp(testTransactions)
-
         datesHistoriqueForTesting = DatesHistoriqueTransactions()
-            .collectInit(uniqueDaysForTesting, testTransactions)
+            .collectInit( testTransactions)
         logDatesHistoriqueStructure(datesHistoriqueForTesting)
     }
 

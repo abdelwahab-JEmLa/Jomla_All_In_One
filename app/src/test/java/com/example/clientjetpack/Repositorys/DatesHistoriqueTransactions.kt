@@ -4,55 +4,49 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 
-/**
- * Class to manage historical transaction dates and their states
- */
 class DatesHistoriqueTransactions {
-    var semaines by mutableStateOf<Map<Long, List<Long>>>(emptyMap())
+    var semaines by mutableStateOf<Map<Long, MutableList<Long>>>(emptyMap())
 
-    var jours by mutableStateOf<Map<Long, List<Long>>>(emptyMap())
+    var jours by mutableStateOf<Map<Long, MutableList<Long>>>(emptyMap())
 
-    var clientTransactions by mutableStateOf<Map<Long, List<Long>>>(emptyMap())
+    var clientTransactions by mutableStateOf<Map<Long, MutableList<Long>>>(emptyMap())
 
     var etate by mutableStateOf<Map<Long, EtateActuellementEst>>(emptyMap())
 
     fun collectInit(
-        uniqueDaysForTesting: List<StrNomJourEtSonSemainToStartJourTimeTemp>,
         testTransactions: List<TransactionCommercial>,
     ): DatesHistoriqueTransactions {
-        // Create mutable maps to populate
+        // Initialize maps to collect data
         val weekMap = mutableMapOf<Long, MutableList<Long>>()
         val dayMap = mutableMapOf<Long, MutableList<Long>>()
         val clientTransMap = mutableMapOf<Long, MutableList<Long>>()
         val stateMap = mutableMapOf<Long, EtateActuellementEst>()
 
-        // Process each unique day
-        uniqueDaysForTesting.forEach { dayInfo ->
-            val startDayTimestamp = dayInfo.jourEstEntreTimeTemp.first
+        // Group transactions by day first
+        val transactionsByDay = testTransactions.groupBy { transaction ->
+            val dayStart = transaction.timestamps - (transaction.timestamps % (24 * 60 * 60 * 1000))
+            dayStart
+        }
 
-            // Group days by week
-            // Use start of the week as the key for weeks
-            val weekStart = startDayTimestamp - (startDayTimestamp % (7 * 24 * 60 * 60 * 1000))
+        // Process each day and its transactions
+        transactionsByDay.forEach { (dayTimestamp, dayTransactions) ->
+            val weekStart = dayTimestamp - (dayTimestamp % (7 * 24 * 60 * 60 * 1000))
 
-            // Add day to the week
+            // Add day to the week map
             if (!weekMap.containsKey(weekStart)) {
                 weekMap[weekStart] = mutableListOf()
             }
-            weekMap[weekStart]?.add(startDayTimestamp)
+            weekMap[weekStart]?.add(dayTimestamp)
 
-            // Collect transactions for this day
-            val dayTransactions = testTransactions.filter {
-                it.timestamps >= dayInfo.jourEstEntreTimeTemp.first &&
-                        it.timestamps <= dayInfo.jourEstEntreTimeTemp.second
+            // Initialize day's transaction list
+            if (!dayMap.containsKey(dayTimestamp)) {
+                dayMap[dayTimestamp] = mutableListOf()
             }
 
-            // Add transactions to the day
-            if (!dayMap.containsKey(startDayTimestamp)) {
-                dayMap[startDayTimestamp] = mutableListOf()
-            }
-
+            // Process each transaction for this day
             dayTransactions.forEach { transaction ->
-                dayMap[startDayTimestamp]?.add(transaction.vid)
+                // Add transaction ID to day's list
+                dayMap[dayTimestamp]?.add(transaction.vid)
 
                 // Group transactions by client
                 val clientId = transaction.clientAcheteurID
