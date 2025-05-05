@@ -9,6 +9,7 @@ import com.example.clientjetpack.Repositorys.StrNomJourEtSonSemainToStartJourTim
 import com.example.clientjetpack.Repositorys.TransactionCommercial
 import com.example.clientjetpack.Repositorys.createTestTransactions
 import com.example.clientjetpack.Repositorys.logDatesHistoriqueStructure
+import com.example.clientjetpack.Tests.A.Filter.FilterType
 import com.example.clientjetpack.Tests.A.Filter.getFilteredTransactions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -45,10 +46,8 @@ class _ImprovedClientsMapFilterViewModelTest {
 
     @Before
     fun setup() {
-        // Set the main dispatcher to our test dispatcher
         Dispatchers.setMain(testDispatcher)
 
-        // Create some test transactions
         val allTransactions = createTestTransactions()
 
         testTransactions.addAll(
@@ -75,9 +74,5 @@ class _ImprovedClientsMapFilterViewModelTest {
         assertEquals(testTransactions.size, filteredTransactions.size)
     }
 
-    enum class FilterType {
-        ALL,
-        DatesHistoriqueTransactions,
-        CIBLE,
-    }
+
 }
