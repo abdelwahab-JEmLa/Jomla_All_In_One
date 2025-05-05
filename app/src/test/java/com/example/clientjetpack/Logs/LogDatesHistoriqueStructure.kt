@@ -1,15 +1,15 @@
 package com.example.clientjetpack.Logs
 
 import com.example.clientjetpack.Repositorys.SqlDatasDatesHistoriqueTransactions
-import com.example.clientjetpack.Repositorys.TransactionCommercial
 import com.example.clientjetpack.Repositorys.formatTimestampToDate
-import java.util.Calendar
 
-fun log(
-    sqlDatasDatesHistoriqueTransactions: SqlDatasDatesHistoriqueTransactions,
-    testTransactions: List<TransactionCommercial>? = null
+/**
+ * Improved logging function for SqlDatasDatesHistoriqueTransactions structure
+ * Removes dependency on testTransactions parameter and simplifies code
+ */
+fun SqlDatasDatesHistoriqueTransactionslog(
+    sqlDatasDatesHistoriqueTransactions: SqlDatasDatesHistoriqueTransactions
 ) {
-
     println("======== TESTING DATES HISTORIQUE TRANSACTIONS ========")
     println("Created test data structure for SqlDatasDatesHistoriqueTransactions")
     println("Total weeks: ${sqlDatasDatesHistoriqueTransactions.semaines.size}")
@@ -26,21 +26,12 @@ fun log(
     sortedWeeks.forEach { semaine ->
         val weekDate = formatTimestampToDate(semaine.vidTimeTemp)
 
-        // Find days in this week - using the semaine.vidTimeTemp directly
+        // Find days in this week directly using the timestamp ranges
         val daysInWeek = sqlDatasDatesHistoriqueTransactions.jours.filter { jour ->
-            // Get the week start for this day by calculating back to the first day of the week
-            val calendar = java.util.Calendar.getInstance()
-            calendar.timeInMillis = jour.vidTimeTemp
-
-            // Set to first day of week and reset time to midnight
-            calendar.set(java.util.Calendar.DAY_OF_WEEK, calendar.firstDayOfWeek)
-            calendar.set(java.util.Calendar.HOUR_OF_DAY, 0)
-            calendar.set(java.util.Calendar.MINUTE, 0)
-            calendar.set(java.util.Calendar.SECOND, 0)
-            calendar.set(java.util.Calendar.MILLISECOND, 0)
-
-            // Compare the calculated week start with the semaine timestamp
-            calendar.timeInMillis == semaine.vidTimeTemp
+            // A day belongs to a week if it falls within the week's timestamp range
+            // (between week start and week start + 6 days)
+            jour.vidTimeTemp >= semaine.vidTimeTemp &&
+                    jour.vidTimeTemp < (semaine.vidTimeTemp + 7 * 24 * 60 * 60 * 1000L)
         }.sortedBy { it.vidTimeTemp }
 
         println("Semaine ($weekDate): ${daysInWeek.size} jour(s)")
@@ -51,47 +42,42 @@ fun log(
             val isLastDay = dayIndex == daysInWeek.size - 1
             val dayPrefix = if (isLastDay) "  └─" else "  ├─"
 
-            // Find transactions for this day
+            // Find transactions for this day using direct timestamp comparison
             val transactionsForDay = sqlDatasDatesHistoriqueTransactions.transactions.filter { transaction ->
-                val transactionDay = java.util.Calendar.getInstance().apply {
-                    timeInMillis = transaction.timestamp
-                    set(Calendar.HOUR_OF_DAY, 0)
-                    set(Calendar.MINUTE, 0)
-                    set(Calendar.SECOND, 0)
-                    set(Calendar.MILLISECOND, 0)
-                }.timeInMillis
-
+                // A transaction belongs to a day if it falls within the day's timestamp range
+                // (between day start and day start + 24 hours)
+                val transactionDay = transaction.timestamp - (transaction.timestamp % (24 * 60 * 60 * 1000L))
                 transactionDay == jour.vidTimeTemp
             }
 
             println("$dayPrefix Jour $dayIndex ($dayDate): ${transactionsForDay.size} transaction(s)")
 
-            // Group transactions by client
-            val clientTransactions = transactionsForDay.groupBy { transaction ->
-                val originalTransaction = testTransactions?.find { it.vid == transaction.vidTimeTemp }
-                originalTransaction?.clientAcheteurID ?: 0L
-            }
+            // Group transactions by client directly from SqlDatasDatesHistoriqueTransactions
+            val transactionsByClient = transactionsForDay
+                .groupBy { transaction ->
+                    // Find the client ID by searching for a client that has this transaction in its history
+                    sqlDatasDatesHistoriqueTransactions.clients.find { client ->
+                        client.ancientIdTransaction == transaction.vidTimeTemp
+                    }?.vidTimeTemp ?: 0L
+                }
 
             // Log all transactions for each day without the 5 transaction limit
             var transactionCount = 0
-            clientTransactions.forEach { (clientId, transactions) ->
-                val client = sqlDatasDatesHistoriqueTransactions.clients.find { it.vidTimeTemp == clientId }
-                if (client != null) {
-                    // Show each transaction
-                    transactions.sortedBy { it.timestamp }.forEachIndexed { tIndex, transaction ->
-                        val isLastTransaction = tIndex == transactions.size - 1 &&
-                                transactionCount == transactionsForDay.size - 1
+            transactionsByClient.forEach { (_, transactions) ->
+                // Show each transaction
+                transactions.sortedBy { it.timestamp }.forEachIndexed { tIndex, transaction ->
+                    val isLastTransaction = tIndex == transactions.size - 1 &&
+                            transactionCount == transactionsForDay.size - 1
 
-                        // Use the correct prefix based on whether this is the last transaction
-                        val transPrefix = if (isLastDay) {
-                            if (isLastTransaction) "     └─" else "     ├─"
-                        } else {
-                            if (isLastTransaction) "  │  └─" else "  │  ├─"
-                        }
-
-                        println("$transPrefix Transaction #$transactionCount (ID: ${transaction.vidTimeTemp}, État: ${transaction.etate})")
-                        transactionCount++
+                    // Use the correct prefix based on whether this is the last transaction
+                    val transPrefix = if (isLastDay) {
+                        if (isLastTransaction) "     └─" else "     ├─"
+                    } else {
+                        if (isLastTransaction) "  │  └─" else "  │  ├─"
                     }
+
+                    println("$transPrefix Transaction #$transactionCount (ID: ${transaction.vidTimeTemp}, État: ${transaction.etate})")
+                    transactionCount++
                 }
             }
         }
@@ -100,4 +86,3 @@ fun log(
     println("\n======== TEST COMPLETED SUCCESSFULLY ========" +
             "\n")
 }
-

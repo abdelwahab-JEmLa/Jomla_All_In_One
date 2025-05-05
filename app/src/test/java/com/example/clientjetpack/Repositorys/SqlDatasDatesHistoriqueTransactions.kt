@@ -36,33 +36,47 @@ class SqlDatasDatesHistoriqueTransactions(
             jours.add(dayItem)
         }
 
+        // Build a map of transaction IDs to client IDs for more efficient lookups
+        val transactionToClientMap = mutableMapOf<Long, Long>()
+        testTransactions?.forEach { transaction ->
+            transactionToClientMap[transaction.vid] = transaction.clientAcheteurID
+        }
+
         // Initialize clients data
         datesHistoriqueForTesting.clients.keys.forEach { clientId ->
             val clientItem = Client()
             clientItem.vidTimeTemp = clientId
-            clientItem.updateNom(testTransactions)
+
+            // Find client transactions
+            val clientTransactions = testTransactions?.filter { it.clientAcheteurID == clientId }
+
+            // Update client name from transactions
+            clientItem.nom = clientTransactions?.firstOrNull()?.nomClientConcerned ?: "Client $clientId"
+
+            // Set the oldest transaction ID as ancientIdTransaction
+            if (!clientTransactions.isNullOrEmpty()) {
+                clientItem.ancientIdTransaction = clientTransactions.minByOrNull { it.timestamps }?.vid ?: 0L
+            }
+
             clients.add(clientItem)
         }
 
         // Initialize transactions data
         datesHistoriqueForTesting.transactions.forEach { (transactionId, transactionType) ->
             // Find the original transaction to get the correct timestamp
-            val originalTransaction = findOriginalTransaction(transactionId)
+            val originalTransaction = testTransactions?.find { it.vid == transactionId }
             val transactionItem = Transaction()
             transactionItem.vidTimeTemp = transactionId
+
+            // Set client ID from the map we built
+            transactionItem.clientId = transactionToClientMap[transactionId] ?: 0L
+
             // Use the timestamp from the original transaction if found
-            if (originalTransaction != null) {
-                transactionItem.timestamp = originalTransaction.timestamps
-            }
+            transactionItem.timestamp = originalTransaction?.timestamps ?: 0L
             transactionItem.updateTempStr()
             transactionItem.etate = transactionType
             transactions.add(transactionItem)
         }
-    }
-
-    // Find the original transaction by its ID
-    private fun findOriginalTransaction(transactionId: Long): TransactionCommercial? {
-        return testTransactions?.find { it.vid == transactionId }
     }
 
     class Semaine {
@@ -95,24 +109,13 @@ class SqlDatasDatesHistoriqueTransactions(
     class Client {
         var vidTimeTemp by mutableStateOf(0L)
         var nom by mutableStateOf("Client 0")
-
-        // Update client name when ID changes
-        fun updateNom(transactions: List<TransactionCommercial>? = null) {
-            // Find transactions associated with this client ID
-            val clientTransaction = transactions?.find { it.clientAcheteurID == vidTimeTemp }
-
-            // Use the client name from transaction if found, otherwise use default format
-            nom = if (clientTransaction != null) {
-                clientTransaction.nomClientConcerned
-            } else {
-                "Client $vidTimeTemp"
-            }
-        }
+        var ancientIdTransaction by mutableStateOf(0L)
     }
 
     class Transaction {
         var vidTimeTemp by mutableStateOf(0L)
         var timestamp by mutableStateOf(0L) // Store the actual timestamp
+        var clientId by mutableStateOf(0L)  // Store the client ID directly
         var tempStr by mutableStateOf("N/A")
         var etate by mutableStateOf<Type>(Type.NON_DEFINI)
 

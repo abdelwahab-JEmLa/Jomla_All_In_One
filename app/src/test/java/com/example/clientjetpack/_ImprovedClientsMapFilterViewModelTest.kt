@@ -1,11 +1,11 @@
 package com.example.clientjetpack
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.example.clientjetpack.Logs.SqlDatasDatesHistoriqueTransactionslog
 import com.example.clientjetpack.Repositorys.MapsIDSDatesHistoriqueTransactions
 import com.example.clientjetpack.Repositorys.SqlDatasDatesHistoriqueTransactions
 import com.example.clientjetpack.Repositorys.TransactionCommercial
 import com.example.clientjetpack.Repositorys.createTestTransactions
-import com.example.clientjetpack.Logs.log
 import com.example.clientjetpack.Tests.A.Filter.FilterType
 import com.example.clientjetpack.Tests.A.Filter.getFilteredTransactions
 import kotlinx.coroutines.Dispatchers
@@ -71,7 +71,7 @@ class _ImprovedClientsMapFilterViewModelTest {
             .collectInit(testTransactions)
 
         try {
-            mapsIDSDatesHistorique.log()
+            mapsIDSDatesHistorique.SqlDatasDatesHistoriqueTransactionslog()
             // If we reach here, no exception was thrown
             assert(true)
         } catch (e: Exception) {
@@ -83,23 +83,23 @@ class _ImprovedClientsMapFilterViewModelTest {
     @Test
     fun testLogDatesHistoriqueStructureFunction() {
         // Create a fresh SqlDatasDatesHistoriqueTransactions instance for testing
-        val mapsIDSDatesHistorique = MapsIDSDatesHistoriqueTransactions()
+        val mapsIDsDatesHistorique = MapsIDSDatesHistoriqueTransactions()
             .collectInit(testTransactions)
 
         // Create SqlDatasDatesHistoriqueTransactions with the MapsIDSDatesHistoriqueTransactions
         val sqlDatasDatesHistorique = SqlDatasDatesHistoriqueTransactions(
-            mapsIDSDatesHistorique,
+            mapsIDsDatesHistorique,
             testTransactions
         )
 
         try {
-            log(sqlDatasDatesHistorique, testTransactions)
+            // Use the improved function that doesn't require testTransactions
+            SqlDatasDatesHistoriqueTransactionslog(sqlDatasDatesHistorique)
             // If we reach here, no exception was thrown
             assert(true)
         } catch (e: Exception) {
             // If an exception is thrown, fail the test
             assert(false) { "Exception thrown during log function execution: ${e.message}" }
         }
-
     }
 }

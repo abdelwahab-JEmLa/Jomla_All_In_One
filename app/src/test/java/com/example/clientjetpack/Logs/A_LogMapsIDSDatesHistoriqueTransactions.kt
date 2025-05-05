@@ -3,7 +3,7 @@ package com.example.clientjetpack.Logs
 import com.example.clientjetpack.Repositorys.MapsIDSDatesHistoriqueTransactions
 import com.example.clientjetpack.Repositorys.formatTimestampToDate
 
-fun MapsIDSDatesHistoriqueTransactions.log() {
+fun MapsIDSDatesHistoriqueTransactions.SqlDatasDatesHistoriqueTransactionslog() {
     println("======== TESTING DATES HISTORIQUE TRANSACTIONS ========")
     println("Created test data structure for MapsIDSDatesHistoriqueTransactions")
 
