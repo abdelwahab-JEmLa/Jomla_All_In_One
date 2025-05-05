@@ -6,14 +6,6 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-/**
- * Helper function to format timestamp to time (HH:mm)
- */
- fun formatTime(timestamp: Long): String {
-    if (timestamp <= 0) return "N/A"
-    val formatter = SimpleDateFormat("HH:mm", Locale.getDefault())
-    return formatter.format(Date(timestamp))
-}
 
 /**
  * Helper function to check if two timestamps belong to the same week
@@ -119,4 +111,10 @@ fun getFromeDayeStringTime(dateTimeStr: String): Long {
         println("Error parsing date/time string '$dateTimeStr': ${e.message}")
         return System.currentTimeMillis()
     }
+}
+
+fun formatTime(timestamp: Long): String {
+    if (timestamp <= 0) return "N/A"
+    val formatter = SimpleDateFormat("HH:mm", Locale.getDefault())
+    return formatter.format(Date(timestamp))
 }

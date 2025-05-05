@@ -1,11 +1,9 @@
 package com.example.clientjetpack.Logs
 
 import com.example.clientjetpack.D_Repo_SqlDatasDatesHistoriqueTransactions
+import com.example.clientjetpack.Functions.formatTime
 import com.example.clientjetpack.Functions.formatTimestampToDate
 import com.example.clientjetpack.Functions.isSameDay
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 
 fun FilterByDayeLog(
@@ -55,8 +53,4 @@ fun FilterByDayeLog(
 
         println("\n======== FILTER TEST COMPLETED SUCCESSFULLY ========\n")
     }
-fun formatTime(timestamp: Long): String {
-    if (timestamp <= 0) return "N/A"
-    val formatter = SimpleDateFormat("HH:mm", Locale.getDefault())
-    return formatter.format(Date(timestamp))
-}
+
