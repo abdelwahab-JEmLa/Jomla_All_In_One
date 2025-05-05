@@ -47,8 +47,6 @@ class ImprovedDatesHistoriqueTest {
         Dispatchers.resetMain()
     }
 
-
-
     @Test
     fun testLogFunctions() {
         try {
@@ -77,6 +75,5 @@ class ImprovedDatesHistoriqueTest {
             assertTrue("Exception during logging: ${e.message}", false)
         }
     }
-
 
 }
