@@ -63,17 +63,6 @@ class SqlDatasDatesHistoriqueTransactions(
         return testTransactions?.find { it.vid == transactionId }
     }
 
-    // Helper method to find client transactions by client ID
-    private fun findClientTransactions(transactions: List<TransactionCommercial>?, clientId: Long): List<TransactionCommercial> {
-        return transactions?.filter { it.clientAcheteurID == clientId } ?: emptyList()
-    }
-
-    // Helper method to find client name by ID
-    private fun findClientName(transactions: List<TransactionCommercial>?, clientId: Long): String {
-        val clientTransaction = transactions?.find { it.clientAcheteurID == clientId }
-        return clientTransaction?.nomClientConcerned ?: "Client $clientId"
-    }
-
     class Semaine {
         var vidTimeTemp by mutableStateOf(0L)
         var semainCountDonSonAnne by mutableStateOf(0)
