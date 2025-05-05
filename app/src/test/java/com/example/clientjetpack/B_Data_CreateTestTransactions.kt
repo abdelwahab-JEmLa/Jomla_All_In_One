@@ -3,7 +3,7 @@ package com.example.clientjetpack
 import com.example.clientjetpack.Repositorys.Type
 import java.util.Calendar
 
-fun createTestTransactions(): List<D_Repo_TransactionCommercial> {
+fun B_Data_CreateTestTransactions(): List<D_Repo_TransactionCommercial> {
     val testTransactions = ArrayList<D_Repo_TransactionCommercial>()
 
     // Set timestamps for different days
