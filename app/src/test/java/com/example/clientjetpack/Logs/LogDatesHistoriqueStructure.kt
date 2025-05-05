@@ -5,12 +5,14 @@ import com.example.clientjetpack.Repositorys.TransactionCommercial
 import com.example.clientjetpack.Repositorys.formatTimestampToDate
 import java.util.Calendar
 
-fun SqlDatasDatesHistoriqueTransactions
-        .log(testTransactions: List<TransactionCommercial>? = null) {
+fun log(
+    sqlDatasDatesHistoriqueTransactions: SqlDatasDatesHistoriqueTransactions,
+    testTransactions: List<TransactionCommercial>? = null
+) {
 
     println("======== TESTING DATES HISTORIQUE TRANSACTIONS ========")
     println("Created test data structure for SqlDatasDatesHistoriqueTransactions")
-    println("Total weeks: ${semaines.size}")
+    println("Total weeks: ${sqlDatasDatesHistoriqueTransactions.semaines.size}")
 
     // Display nested data structure in hierarchical format
     println("\n-- Hierarchical Structure --")
@@ -19,13 +21,13 @@ fun SqlDatasDatesHistoriqueTransactions
     println("\n-- Semaines (Weeks) --")
 
     // Sort weeks chronologically
-    val sortedWeeks = semaines.sortedBy { it.vidTimeTemp }
+    val sortedWeeks = sqlDatasDatesHistoriqueTransactions.semaines.sortedBy { it.vidTimeTemp }
 
     sortedWeeks.forEach { semaine ->
         val weekDate = formatTimestampToDate(semaine.vidTimeTemp)
 
         // Find days in this week - using the semaine.vidTimeTemp directly
-        val daysInWeek = jours.filter { jour ->
+        val daysInWeek = sqlDatasDatesHistoriqueTransactions.jours.filter { jour ->
             // Get the week start for this day by calculating back to the first day of the week
             val calendar = java.util.Calendar.getInstance()
             calendar.timeInMillis = jour.vidTimeTemp
@@ -50,7 +52,7 @@ fun SqlDatasDatesHistoriqueTransactions
             val dayPrefix = if (isLastDay) "  └─" else "  ├─"
 
             // Find transactions for this day
-            val transactionsForDay = transactions.filter { transaction ->
+            val transactionsForDay = sqlDatasDatesHistoriqueTransactions.transactions.filter { transaction ->
                 val transactionDay = java.util.Calendar.getInstance().apply {
                     timeInMillis = transaction.timestamp
                     set(Calendar.HOUR_OF_DAY, 0)
@@ -73,7 +75,7 @@ fun SqlDatasDatesHistoriqueTransactions
             // Log all transactions for each day without the 5 transaction limit
             var transactionCount = 0
             clientTransactions.forEach { (clientId, transactions) ->
-                val client = clients.find { it.vidTimeTemp == clientId }
+                val client = sqlDatasDatesHistoriqueTransactions.clients.find { it.vidTimeTemp == clientId }
                 if (client != null) {
                     // Show each transaction
                     transactions.sortedBy { it.timestamp }.forEachIndexed { tIndex, transaction ->

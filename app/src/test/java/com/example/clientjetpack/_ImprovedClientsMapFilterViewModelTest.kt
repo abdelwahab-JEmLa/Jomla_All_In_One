@@ -93,7 +93,7 @@ class _ImprovedClientsMapFilterViewModelTest {
         )
 
         try {
-            sqlDatasDatesHistorique.log(testTransactions)
+            log(sqlDatasDatesHistorique, testTransactions)
             // If we reach here, no exception was thrown
             assert(true)
         } catch (e: Exception) {

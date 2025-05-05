@@ -5,10 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import java.util.Calendar
 
-/**
- * Simplified storage for transaction relationships between weeks, days, clients, and transactions.
- * Reduced complexity and code size by using more efficient data structures and concise functions.
- */
 class MapsIDSDatesHistoriqueTransactions {
     // Maps to store hierarchical relationship data
     var semaines by mutableStateOf<Map<Long, MutableList<Long>>>(emptyMap())
