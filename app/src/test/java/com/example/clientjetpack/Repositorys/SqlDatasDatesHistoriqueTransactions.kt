@@ -1,5 +1,6 @@
 package com.example.clientjetpack.Repositorys
 
+import android.annotation.SuppressLint
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -8,6 +9,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
+@SuppressLint("MutableCollectionMutableState")
 class SqlDatasDatesHistoriqueTransactions(
     datesHistoriqueForTesting: MapsIDSDatesHistoriqueTransactions,
     private val testTransactions: List<TransactionCommercial>? = null
