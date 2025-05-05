@@ -22,7 +22,9 @@ class D_Repo_SqlDatasDatesHistoriqueTransactions(
 
     init {
         // Initialize weeks data
-        datesHistoriqueForTesting.semaines.keys.forEach { weekTimestamp ->
+        datesHistoriqueForTesting.semaines.keys
+            .sortedByDescending { it }
+            .forEach { weekTimestamp ->
             val weekItem = Semaine()
             weekItem.vidTimeTemp = weekTimestamp
             weekItem.updateWeekNumber()
@@ -30,7 +32,9 @@ class D_Repo_SqlDatasDatesHistoriqueTransactions(
         }
 
         // Initialize days data
-        datesHistoriqueForTesting.jours.keys.forEach { dayTimestamp ->
+        datesHistoriqueForTesting.jours.keys
+            .sortedByDescending { it }
+            .forEach { dayTimestamp ->
             val dayItem = Jour()
             dayItem.vidTimeTemp = dayTimestamp
             dayItem.updateDateStr()
@@ -39,12 +43,14 @@ class D_Repo_SqlDatasDatesHistoriqueTransactions(
 
         // Build a map of transaction IDs to client IDs for more efficient lookups
         val transactionToClientMap = mutableMapOf<Long, Long>()
-        testTransactions?.forEach { transaction ->
+        testTransactions
+            ?.forEach { transaction ->
             transactionToClientMap[transaction.vid] = transaction.clientAcheteurID
         }
 
         // Initialize clients data
-        datesHistoriqueForTesting.clients.keys.forEach { clientId ->
+        datesHistoriqueForTesting.clients.keys
+            .forEach { clientId ->
             val clientItem = Client()
             clientItem.vidTimeTemp = clientId
 
