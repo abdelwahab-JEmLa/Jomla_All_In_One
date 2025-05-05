@@ -11,7 +11,7 @@ import java.util.Locale
  * Improved logging function for MapsIDSDatesHistoriqueTransactions
  * Ensures correct week-day associations and provides detailed transaction information
  */
-fun logMapsIDSDatesHistoriqueTransactions(mapsIDSDatesHistoriqueTransactions: MapsIDSDatesHistoriqueTransactions) {
+fun A_LogMapsIDSDatesHistoriqueTransactions(mapsIDSDatesHistoriqueTransactions: MapsIDSDatesHistoriqueTransactions) {
     println("======== TESTING DATES HISTORIQUE TRANSACTIONS ========")
     println("Created test data structure for MapsIDSDatesHistoriqueTransactions")
     println("Total weeks: ${mapsIDSDatesHistoriqueTransactions.semaines.size}")

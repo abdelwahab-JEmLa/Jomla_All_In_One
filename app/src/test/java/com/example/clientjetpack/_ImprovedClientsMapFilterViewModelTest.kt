@@ -1,8 +1,8 @@
 package com.example.clientjetpack
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.example.clientjetpack.Logs.A_LogMapsIDSDatesHistoriqueTransactions
 import com.example.clientjetpack.Logs.SqlDatasDatesHistoriqueTransactionslog
-import com.example.clientjetpack.Logs.logMapsIDSDatesHistoriqueTransactions
 import com.example.clientjetpack.Repositorys.MapsIDSDatesHistoriqueTransactions
 import com.example.clientjetpack.Repositorys.SqlDatasDatesHistoriqueTransactions
 import com.example.clientjetpack.Repositorys.createTestTransactions
@@ -101,7 +101,7 @@ class ImprovedDatesHistoriqueTest {
     fun testLogFunctions() {
         try {
             // Log MapsIDSDatesHistoriqueTransactions structure
-            logMapsIDSDatesHistoriqueTransactions(mapsIDsDatesHistorique)
+            A_LogMapsIDSDatesHistoriqueTransactions(mapsIDsDatesHistorique)
 
             // Log SqlDatasDatesHistoriqueTransactions structure
             SqlDatasDatesHistoriqueTransactionslog(sqlDatasDatesHistorique)
