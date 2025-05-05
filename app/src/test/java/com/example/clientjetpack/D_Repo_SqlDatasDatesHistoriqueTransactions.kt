@@ -1,18 +1,19 @@
-package com.example.clientjetpack.Repositorys
+package com.example.clientjetpack
 
 import android.annotation.SuppressLint
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.example.clientjetpack.Repositorys.Type
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
 @SuppressLint("MutableCollectionMutableState")
-class SqlDatasDatesHistoriqueTransactions(
-    datesHistoriqueForTesting: MapsIDSDatesHistoriqueTransactions,
-    private val testTransactions: List<TransactionCommercial>? = null
+class D_Repo_SqlDatasDatesHistoriqueTransactions(
+    datesHistoriqueForTesting: D_Rep_MapsIDSDatesHistoriqueTransactions,
+    private val testTransactions: List<D_Repo_TransactionCommercial>? = null
 ) {
     var semaines by mutableStateOf<MutableList<Semaine>>(mutableListOf())
     var jours by mutableStateOf<MutableList<Jour>>(mutableListOf())

@@ -4,14 +4,14 @@ import com.example.clientjetpack.Functions.belongsToSameWeek
 import com.example.clientjetpack.Functions.formatTime
 import com.example.clientjetpack.Functions.formatTimestampToDate
 import com.example.clientjetpack.Functions.isSameDay
-import com.example.clientjetpack.Repositorys.SqlDatasDatesHistoriqueTransactions
+import com.example.clientjetpack.D_Repo_SqlDatasDatesHistoriqueTransactions
 
 /**
- * Improved logging function for SqlDatasDatesHistoriqueTransactions structure
+ * Improved logging function for D_Repo_SqlDatasDatesHistoriqueTransactions structure
  * Properly associates transactions with days based on timestamp comparison
  */
 fun SqlDatasDatesHistoriqueTransactionslog(
-    sqlDatasDatesHistoriqueTransactions: SqlDatasDatesHistoriqueTransactions
+    sqlDatasDatesHistoriqueTransactions: D_Repo_SqlDatasDatesHistoriqueTransactions
 ) {
     println("======== TESTING DATES HISTORIQUE TRANSACTIONS ========")
 

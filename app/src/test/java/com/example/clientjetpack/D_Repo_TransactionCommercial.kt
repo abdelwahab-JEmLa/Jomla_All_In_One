@@ -1,14 +1,15 @@
-package com.example.clientjetpack.Repositorys
+package com.example.clientjetpack
 
 import Z_CodePartageEntreApps.Modules.DatesHandler
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.example.clientjetpack.Repositorys.Type
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 @Entity
-data class TransactionCommercial(
+data class D_Repo_TransactionCommercial(
     @PrimaryKey(autoGenerate = true)
     var vid: Long = 0L,
 

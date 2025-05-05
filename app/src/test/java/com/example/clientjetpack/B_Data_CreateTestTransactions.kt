@@ -1,11 +1,10 @@
 package com.example.clientjetpack
 
-import com.example.clientjetpack.Repositorys.TransactionCommercial
 import com.example.clientjetpack.Repositorys.Type
 import java.util.Calendar
 
-fun createTestTransactions(): List<TransactionCommercial> {
-    val testTransactions = ArrayList<TransactionCommercial>()
+fun createTestTransactions(): List<D_Repo_TransactionCommercial> {
+    val testTransactions = ArrayList<D_Repo_TransactionCommercial>()
 
     // Set timestamps for different days
     val calendar = Calendar.getInstance()
@@ -40,7 +39,7 @@ fun createTestTransactions(): List<TransactionCommercial> {
 
     // Add a COMMANDE_LIVRAI transaction for client 1
     testTransactions.add(
-        TransactionCommercial(
+        D_Repo_TransactionCommercial(
             vid = 1L,
             clientAcheteurID = 1L,  // Set unique client ID
             etateActuellementEst = Type.COMMANDE_LIVRAI,
@@ -51,7 +50,7 @@ fun createTestTransactions(): List<TransactionCommercial> {
 
     // Add a CIBLE transaction for client 2
     testTransactions.add(
-        TransactionCommercial(
+        D_Repo_TransactionCommercial(
             vid = 2L,
             clientAcheteurID = 2L,  // Set unique client ID
             etateActuellementEst = Type.Cible,
@@ -61,7 +60,7 @@ fun createTestTransactions(): List<TransactionCommercial> {
     )
     // Add a CIBLE transaction for client 2
     testTransactions.add(
-        TransactionCommercial(
+        D_Repo_TransactionCommercial(
             vid = 3L,
             clientAcheteurID = 2L,
             etateActuellementEst = Type.COMMANDE_LIVRAI,
@@ -72,7 +71,7 @@ fun createTestTransactions(): List<TransactionCommercial> {
 
     // Add a COMMANDE_LIVRAI transaction for client 3
     testTransactions.add(
-        TransactionCommercial(
+        D_Repo_TransactionCommercial(
             vid = 4L,
             clientAcheteurID = 3L,  // Set unique client ID
             etateActuellementEst = Type.COMMANDE_LIVRAI,

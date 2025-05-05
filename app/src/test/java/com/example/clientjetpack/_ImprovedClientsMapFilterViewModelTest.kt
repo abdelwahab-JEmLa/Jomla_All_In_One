@@ -3,8 +3,6 @@ package com.example.clientjetpack
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.example.clientjetpack.Logs.A_LogMapsIDSDatesHistoriqueTransactions
 import com.example.clientjetpack.Logs.SqlDatasDatesHistoriqueTransactionslog
-import com.example.clientjetpack.Repositorys.MapsIDSDatesHistoriqueTransactions
-import com.example.clientjetpack.Repositorys.SqlDatasDatesHistoriqueTransactions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -25,18 +23,18 @@ class ImprovedDatesHistoriqueTest {
 
     private val testDispatcher = StandardTestDispatcher()
     private val testTransactions = createTestTransactions()
-    private lateinit var mapsIDsDatesHistorique: MapsIDSDatesHistoriqueTransactions
-    private lateinit var sqlDatasDatesHistorique: SqlDatasDatesHistoriqueTransactions
+    private lateinit var mapsIDsDatesHistorique: D_Rep_MapsIDSDatesHistoriqueTransactions
+    private lateinit var sqlDatasDatesHistorique: D_Repo_SqlDatasDatesHistoriqueTransactions
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
 
         // Create and initialize data structures
-        mapsIDsDatesHistorique = MapsIDSDatesHistoriqueTransactions()
+        mapsIDsDatesHistorique = D_Rep_MapsIDSDatesHistoriqueTransactions()
             .collectInit(testTransactions)
 
-        sqlDatasDatesHistorique = SqlDatasDatesHistoriqueTransactions(
+        sqlDatasDatesHistorique = D_Repo_SqlDatasDatesHistoriqueTransactions(
             mapsIDsDatesHistorique,
             testTransactions
         )
@@ -58,7 +56,7 @@ class ImprovedDatesHistoriqueTest {
     @Test
     fun testLogFunctions() {
         try {
-            // Log MapsIDSDatesHistoriqueTransactions structure
+            // Log D_Rep_MapsIDSDatesHistoriqueTransactions structure
             A_LogMapsIDSDatesHistoriqueTransactions(mapsIDsDatesHistorique)
 
 
@@ -73,7 +71,7 @@ class ImprovedDatesHistoriqueTest {
     fun testLogSqlDatasDatesHistoriqueTransactionslog() {
         try {
 
-            // Log SqlDatasDatesHistoriqueTransactions structure
+            // Log D_Repo_SqlDatasDatesHistoriqueTransactions structure
             SqlDatasDatesHistoriqueTransactionslog(sqlDatasDatesHistorique)
 
             // If we reach here without exceptions, test passes

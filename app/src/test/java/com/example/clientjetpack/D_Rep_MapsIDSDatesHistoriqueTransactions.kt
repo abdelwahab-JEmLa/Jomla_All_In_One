@@ -1,11 +1,12 @@
-package com.example.clientjetpack.Repositorys
+package com.example.clientjetpack
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.example.clientjetpack.Repositorys.Type
 import java.util.Calendar
 
-class MapsIDSDatesHistoriqueTransactions {
+class D_Rep_MapsIDSDatesHistoriqueTransactions {
     // Maps to store hierarchical relationship data
     var semaines by mutableStateOf<Map<Long, MutableList<Long>>>(emptyMap())
     var jours by mutableStateOf<Map<Long, MutableList<Long>>>(emptyMap())
@@ -17,8 +18,8 @@ class MapsIDSDatesHistoriqueTransactions {
      * Uses more concise code with Kotlin collection operations.
      */
     fun collectInit(
-        testTransactions: List<TransactionCommercial>,
-    ): MapsIDSDatesHistoriqueTransactions {
+        testTransactions: List<D_Repo_TransactionCommercial>,
+    ): D_Rep_MapsIDSDatesHistoriqueTransactions {
         // Temporary mutable collections for building the data structure
         val weekMap = mutableMapOf<Long, MutableList<Long>>()
         val dayMap = mutableMapOf<Long, MutableList<Long>>()
