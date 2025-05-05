@@ -82,6 +82,4 @@ class D_Rep_MapsIDSDatesHistoriqueTransactions {
         }
         return calendar.timeInMillis
     }
-
-
 }
