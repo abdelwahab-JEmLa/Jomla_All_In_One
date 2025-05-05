@@ -1,7 +1,6 @@
 package com.example.clientjetpack.Repositorys
 
-data class StrNomJourEtSonSemainToStartJourTimeTemp
-    (
+data class StrNomJourEtSonSemainToStartJourTimeTemp (
     val vid: Long = 0,
     val nomJourArabe: String,
     val estDonLaSemainDistantDe: Int,

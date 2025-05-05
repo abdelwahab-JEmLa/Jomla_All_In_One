@@ -2,8 +2,6 @@ package com.example.clientjetpack
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.example.clientjetpack.Init.collectAddAuStrNomJourEtSonSemainToStartJourTimeTemp
-import com.example.clientjetpack.Init.collecteAddAuDatesHistoriqueTransactions
-import com.example.clientjetpack.Init.transactionCommercialsFiltre
 import com.example.clientjetpack.Repositorys.DatesHistoriqueTransactions
 import com.example.clientjetpack.Repositorys.StrNomJourEtSonSemainToStartJourTimeTemp
 import com.example.clientjetpack.Repositorys.TransactionCommercial
@@ -30,7 +28,7 @@ class _ImprovedClientsMapFilterViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
 
-    private val testTransactions = ArrayList<Long>()
+    private val testTransactions = mutableListOf<TransactionCommercial>()
 
     private var uniqueDaysForTesting = mutableListOf<StrNomJourEtSonSemainToStartJourTimeTemp>()
 
@@ -45,13 +43,12 @@ class _ImprovedClientsMapFilterViewModelTest {
 
         val allTransactionsId = createTestTransactions()
 
-        testTransactions.addAll (
-            transactionCommercialsFiltre(allTransactionsId)
-        )
+        testTransactions.addAll(allTransactionsId)
 
         uniqueDaysForTesting = collectAddAuStrNomJourEtSonSemainToStartJourTimeTemp(testTransactions)
 
-        datesHistoriqueForTesting = collecteAddAuDatesHistoriqueTransactions(uniqueDaysForTesting, testTransactions)
+        datesHistoriqueForTesting = DatesHistoriqueTransactions()
+            .collectInit(uniqueDaysForTesting, testTransactions)
         logDatesHistoriqueStructure(datesHistoriqueForTesting)
     }
 
@@ -67,5 +64,24 @@ class _ImprovedClientsMapFilterViewModelTest {
         val filteredTransactions = getFilteredTransactions(testTransactions, currentFilter)
 
         assertEquals(testTransactions.size, filteredTransactions.size)
+    }
+
+    @Test
+    fun testDatesHistoriqueStructure() {
+        // Verify weeks structure
+        assert(datesHistoriqueForTesting.semaines.isNotEmpty()) { "Weeks map should not be empty" }
+
+        // Verify days structure
+        assert(datesHistoriqueForTesting.jours.isNotEmpty()) { "Days map should not be empty" }
+
+        // Verify total counts
+        val totalDays = datesHistoriqueForTesting.semaines.values.sumOf { it.size }
+        val totalTransactions = datesHistoriqueForTesting.jours.values.sumOf { it.size }
+
+        assertEquals("Day count should match across structure",
+            uniqueDaysForTesting.size, totalDays)
+
+        assertEquals("Transaction count should match across structure",
+            testTransactions.size, totalTransactions)
     }
 }

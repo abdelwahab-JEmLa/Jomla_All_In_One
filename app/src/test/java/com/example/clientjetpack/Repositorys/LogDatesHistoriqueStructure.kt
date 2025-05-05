@@ -8,29 +8,33 @@ fun logDatesHistoriqueStructure(testData: DatesHistoriqueTransactions) {
 
     // Log overall structure
     println("\n== Structure Overview ==")
+    // Log weeks and their days
+    testData.semaines.forEach { (weekTimestamp, daysList) ->
+        val weekDateStr = java.util.Date(weekTimestamp).toString()
+        println("WEEK [$weekDateStr]: Contains ${daysList.size} days")
 
-    // Log semaines details
-    println("\n== Semaines (${testData.semaines.size}) ==")
-    testData.semaines.forEach { (weekId, daysList) ->
-        println("Week $weekId: ${daysList.size} days -> $daysList")
+        // Log days in this week
+        daysList.forEach { dayTimestamp ->
+            val dayDateStr = java.util.Date(dayTimestamp).toString()
+            val transactionsInDay = testData.jours[dayTimestamp] ?: emptyList()
+            println("  DAY [$dayDateStr]: Contains ${transactionsInDay.size} transactions")
+
+            // Log transactions in this day
+            transactionsInDay.forEach { transactionId ->
+                val state = testData.etate[transactionId]
+                println("    TRANSACTION [$transactionId]: State = ${state?.nomArabe ?: "Unknown"}")
+            }
+        }
     }
 
-    // Log jours details
-    println("\n== Jours (${testData.jours.size}) ==")
-    testData.jours.forEach { (dayId, transactionsList) ->
-        println("Day $dayId: ${transactionsList.size} transactions -> $transactionsList")
-    }
-
-    // Log client transactions details
-    println("\n== Client Transactions (${testData.clientTransactions.size}) ==")
+    // Log client transactions
+    println("\n== Client Transactions ==")
     testData.clientTransactions.forEach { (clientId, transactionsList) ->
-        println("Client $clientId: ${transactionsList.size} transactions -> $transactionsList")
-    }
-
-    // Log etate details with their names
-    println("\n== Etate Status (${testData.etate.size}) ==")
-    testData.etate.forEach { (id, state) ->
-        println("ID $id: ${state.name} (${state.nomArabe})")
+        println("CLIENT [$clientId]: Has ${transactionsList.size} transactions")
+        transactionsList.forEach { transactionId ->
+            val state = testData.etate[transactionId]
+            println("  TRANSACTION [$transactionId]: State = ${state?.nomArabe ?: "Unknown"}")
+        }
     }
 
     // Summary statistics

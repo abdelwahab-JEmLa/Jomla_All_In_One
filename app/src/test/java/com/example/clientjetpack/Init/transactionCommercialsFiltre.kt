@@ -1,6 +1,5 @@
 package com.example.clientjetpack.Init
 
-import com.example.clientjetpack.Repositorys.DatesHistoriqueTransactions
 import com.example.clientjetpack.Repositorys.EtateActuellementEst
 import com.example.clientjetpack.Repositorys.StrNomJourEtSonSemainToStartJourTimeTemp
 import com.example.clientjetpack.Repositorys.TransactionCommercial
@@ -12,12 +11,12 @@ import java.util.Locale
 /**
  * Filters transactions by their current state
  */
-fun transactionCommercialsFiltre(transactions: List<TransactionCommercial>): List<TransactionCommercial> {
+fun transactionCommercialsFiltre(transactions: List<TransactionCommercial>): List<Long> {
     return transactions
         .filter {
             it.etateActuellementEst ==
                     EtateActuellementEst.COMMANDE_LIVRAI
-        }
+        }.map { it.vid }
 }
 
 /**
@@ -70,51 +69,3 @@ fun collectAddAuStrNomJourEtSonSemainToStartJourTimeTemp(
 
     return uniqueDays
 }
-
-/**
- * Creates DatesHistoriqueTransactions structure from uniqueDays data
- */
-fun collecteAddAuDatesHistoriqueTransactions(
-    uniqueDaysForTesting: List<StrNomJourEtSonSemainToStartJourTimeTemp>,
-    testTransactions: List<TransactionCommercial>
-): DatesHistoriqueTransactions {
-    // Create instances for weeks and days based on the collected dates
-    val semainsList = mutableListOf<DatesHistoriqueTransactions.SemainKey>()
-
-    // Group by week distance using our uniqueDaysForTesting
-    val groupedByWeek = uniqueDaysForTesting.groupBy {
-        it.estDonLaSemainDistantDe
-    }
-
-    groupedByWeek.forEach { (weekDistance, days) ->
-        val semainKey = DatesHistoriqueTransactions.SemainKey().apply {
-            vid = (weekDistance + 1).toLong()
-        }
-
-        val joursList = mutableListOf<DatesHistoriqueTransactions.SemainKey.JourKey>()
-
-        days.forEach { dayInfo ->
-            val jourKey = DatesHistoriqueTransactions.SemainKey.JourKey().apply {
-                vid = dayInfo.vid
-            }
-
-            // Find all transactions for this day
-            val dayTransactions = testTransactions.filter { transaction ->
-                transaction >= dayInfo.jourEstEntreTimeTemp.first &&
-                        transaction.timestamps <= dayInfo.jourEstEntreTimeTemp.second
-            }
-
-            jourKey.cesCommercialTransactionsKeys = dayTransactions
-            joursList.add(jourKey)
-        }
-
-        semainKey.cesJour = joursList
-        semainsList.add(semainKey)
-    }
-
-    // Return the created structure
-    return DatesHistoriqueTransactions().apply {
-        this.cesSemain = semainsList
-    }
-}
-
