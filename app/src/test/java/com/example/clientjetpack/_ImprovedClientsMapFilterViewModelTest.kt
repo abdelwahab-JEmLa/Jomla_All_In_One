@@ -16,6 +16,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
+import java.util.Calendar
 
 @ExperimentalCoroutinesApi
 class ImprovedDatesHistoriqueTest {
@@ -40,7 +41,15 @@ class ImprovedDatesHistoriqueTest {
             testTransactions
         )
     }
+    fun remplitDayeAvecNoramalized(dayeStr:String): Unit {
+        val calendar = Calendar.getInstance()
 
+        calendar.set(Calendar.HOUR_OF_DAY, 13) // 1 PM
+        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.SECOND, 0)
+        calendar.set(Calendar.MILLISECOND, 0)
+        val todayTimestamp = calendar.timeInMillis
+    }
     @After
     fun tearDown() {
         Dispatchers.resetMain()
@@ -74,5 +83,6 @@ class ImprovedDatesHistoriqueTest {
             assertTrue("Exception during logging: ${e.message}", false)
         }
     }
+
 
 }
