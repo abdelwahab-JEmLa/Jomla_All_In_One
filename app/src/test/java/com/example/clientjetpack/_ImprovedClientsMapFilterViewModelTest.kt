@@ -25,7 +25,6 @@ import org.junit.rules.TestRule
 
 @ExperimentalCoroutinesApi
 class _ImprovedClientsMapFilterViewModelTest {
-
     @get:Rule
     val rule: TestRule = InstantTaskExecutorRule()
 
@@ -69,6 +68,4 @@ class _ImprovedClientsMapFilterViewModelTest {
 
         assertEquals(testTransactions.size, filteredTransactions.size)
     }
-
-
 }
