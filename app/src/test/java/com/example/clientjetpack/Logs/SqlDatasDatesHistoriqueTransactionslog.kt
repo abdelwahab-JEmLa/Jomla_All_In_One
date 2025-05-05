@@ -1,10 +1,10 @@
 package com.example.clientjetpack.Logs
 
+import com.example.clientjetpack.D_Repo_SqlDatasDatesHistoriqueTransactions
 import com.example.clientjetpack.Functions.belongsToSameWeek
 import com.example.clientjetpack.Functions.formatTime
 import com.example.clientjetpack.Functions.formatTimestampToDate
 import com.example.clientjetpack.Functions.isSameDay
-import com.example.clientjetpack.D_Repo_SqlDatasDatesHistoriqueTransactions
 
 /**
  * Improved logging function for D_Repo_SqlDatasDatesHistoriqueTransactions structure
@@ -83,4 +83,5 @@ fun SqlDatasDatesHistoriqueTransactionslog(
 
     println("\n======== TEST COMPLETED SUCCESSFULLY ========\n")
 }
+
 
