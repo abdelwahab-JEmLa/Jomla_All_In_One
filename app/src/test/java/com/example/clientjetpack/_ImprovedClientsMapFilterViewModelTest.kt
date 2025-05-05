@@ -29,16 +29,12 @@ class _ImprovedClientsMapFilterViewModelTest {
     @get:Rule
     val rule: TestRule = InstantTaskExecutorRule()
 
-    // Using StandardTestDispatcher instead of the deprecated TestCoroutineDispatcher
     private val testDispatcher = StandardTestDispatcher()
 
-    // Our test data - a simple list of transactions
     private val testTransactions = ArrayList<TransactionCommercial>()
 
-    // Store for the uniqueDays data
     private var uniqueDaysForTesting = mutableListOf<StrNomJourEtSonSemainToStartJourTimeTemp>()
 
-    // Store for dates historique
     private lateinit var datesHistoriqueForTesting: DatesHistoriqueTransactions
 
     private var currentIdJourAuFilter = 1L
