@@ -55,7 +55,6 @@ class _ImprovedClientsMapFilterViewModelTest {
             transactionCommercialsFiltre(allTransactions)
         )
 
-        // Collect data for testing
         uniqueDaysForTesting = collectAddAuStrNomJourEtSonSemainToStartJourTimeTemp(testTransactions)
 
         datesHistoriqueForTesting = collecteAddAuDatesHistoriqueTransactions(uniqueDaysForTesting, testTransactions)
@@ -64,20 +63,15 @@ class _ImprovedClientsMapFilterViewModelTest {
 
     @After
     fun tearDown() {
-        // Reset the main dispatcher
         Dispatchers.resetMain()
-        // No need for cleanupTestCoroutines() with StandardTestDispatcher
     }
 
     @Test
     fun testAllFilterShowsAllTransactions() {
-        // Use the ALL filter (default)
         currentFilter = FilterType.ALL
 
-        // Get filtered transactions
         val filteredTransactions = getFilteredTransactions(testTransactions, currentFilter)
 
-        // Check we get all transactions
         assertEquals(testTransactions.size, filteredTransactions.size)
     }
 
