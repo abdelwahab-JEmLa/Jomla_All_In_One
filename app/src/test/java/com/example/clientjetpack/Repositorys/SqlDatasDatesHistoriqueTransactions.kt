@@ -38,7 +38,7 @@ class SqlDatasDatesHistoriqueTransactions(
         datesHistoriqueForTesting.clients.keys.forEach { clientId ->
             val clientItem = Client()
             clientItem.vidTimeTemp = clientId
-            clientItem.updateNom()
+            clientItem.updateNom(testTransactions)
             clients.add(clientItem)
         }
 
@@ -94,8 +94,16 @@ class SqlDatasDatesHistoriqueTransactions(
         var nom by mutableStateOf("Client 0")
 
         // Update client name when ID changes
-        fun updateNom() {
-            nom = "Client $vidTimeTemp"
+        fun updateNom(transactions: List<TransactionCommercial>? = null) {
+            // Find transactions associated with this client ID
+            val clientTransaction = transactions?.find { it.clientAcheteurID == vidTimeTemp }
+
+            // Use the client name from transaction if found, otherwise use default format
+            nom = if (clientTransaction != null) {
+                clientTransaction.nomClientConcerned
+            } else {
+                "Client $vidTimeTemp"
+            }
         }
     }
 
