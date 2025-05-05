@@ -29,6 +29,7 @@ fun createTestTransactions(): List<TransactionCommercial> {
     calendar.set(Calendar.MILLISECOND, 0)
     val yesterdayTimestamp = calendar.timeInMillis
 
+
     calendar.add(Calendar.DAY_OF_MONTH, -1)
     calendar.set(Calendar.HOUR_OF_DAY, 17) //  PM
     calendar.set(Calendar.MINUTE, 0)
@@ -36,31 +37,43 @@ fun createTestTransactions(): List<TransactionCommercial> {
     calendar.set(Calendar.MILLISECOND, 0)
     val yesterdayTimestamp17 = calendar.timeInMillis
 
-
-    // Add a COMMANDE_LIVRAI transaction
+    // Add a COMMANDE_LIVRAI transaction for client 1
     testTransactions.add(
         TransactionCommercial(
             vid = 1L,
+            clientAcheteurID = 1L,  // Set unique client ID
             etateActuellementEst = Type.COMMANDE_LIVRAI,
             nomClientConcerned = "Abderrahmane",
             timestamps = todayTimestamp
         )
     )
 
-    // Add a CIBLE transaction
+    // Add a CIBLE transaction for client 2
     testTransactions.add(
         TransactionCommercial(
             vid = 2L,
+            clientAcheteurID = 2L,  // Set unique client ID
             etateActuellementEst = Type.Cible,
             nomClientConcerned = "Houssine",
             timestamps = yesterdayTimestamp
         )
     )
-
-    // Add a CIBLE transaction
+    // Add a CIBLE transaction for client 2
     testTransactions.add(
         TransactionCommercial(
             vid = 3L,
+            clientAcheteurID = 2L,
+            etateActuellementEst = Type.COMMANDE_LIVRAI,
+            nomClientConcerned = "Houssine",
+            timestamps = yesterdayTimestamp
+        )
+    )
+
+    // Add a COMMANDE_LIVRAI transaction for client 3
+    testTransactions.add(
+        TransactionCommercial(
+            vid = 4L,
+            clientAcheteurID = 3L,  // Set unique client ID
             etateActuellementEst = Type.COMMANDE_LIVRAI,
             nomClientConcerned = "Fares",
             timestamps = yesterdayTimestamp17
@@ -113,5 +126,4 @@ data class TransactionCommercial(
 
             return "$parent$thisVal$autre"
         }
-
 }

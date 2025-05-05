@@ -69,4 +69,3 @@ class MapsIDSDatesHistoriqueTransactions {
         return this
     }
 }
-

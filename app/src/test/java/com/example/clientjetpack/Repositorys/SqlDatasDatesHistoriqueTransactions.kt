@@ -45,7 +45,7 @@ class SqlDatasDatesHistoriqueTransactions(
         // Initialize transactions data
         datesHistoriqueForTesting.transactions.forEach { (transactionId, transactionType) ->
             // Find the original transaction to get the correct timestamp
-            val originalTransaction = findOriginalTransaction(testTransactions, transactionId)
+            val originalTransaction = findOriginalTransaction(transactionId)
             val transactionItem = Transaction()
             transactionItem.vidTimeTemp = transactionId
             // Use the timestamp from the original transaction if found
@@ -58,8 +58,20 @@ class SqlDatasDatesHistoriqueTransactions(
         }
     }
 
-    private fun findOriginalTransaction(transactions: List<TransactionCommercial>?, transactionId: Long): TransactionCommercial? {
-        return transactions?.find { it.vid == transactionId }
+    // Find the original transaction by its ID
+    private fun findOriginalTransaction(transactionId: Long): TransactionCommercial? {
+        return testTransactions?.find { it.vid == transactionId }
+    }
+
+    // Helper method to find client transactions by client ID
+    private fun findClientTransactions(transactions: List<TransactionCommercial>?, clientId: Long): List<TransactionCommercial> {
+        return transactions?.filter { it.clientAcheteurID == clientId } ?: emptyList()
+    }
+
+    // Helper method to find client name by ID
+    private fun findClientName(transactions: List<TransactionCommercial>?, clientId: Long): String {
+        val clientTransaction = transactions?.find { it.clientAcheteurID == clientId }
+        return clientTransaction?.nomClientConcerned ?: "Client $clientId"
     }
 
     class Semaine {

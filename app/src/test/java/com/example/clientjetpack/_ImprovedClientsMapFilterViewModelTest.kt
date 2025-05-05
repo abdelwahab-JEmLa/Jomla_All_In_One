@@ -49,7 +49,8 @@ class _ImprovedClientsMapFilterViewModelTest {
         sqlDatasDatesHistoriqueTransactions =
             SqlDatasDatesHistoriqueTransactions(datesHistoriqueForTesting, testTransactions)
 
-        logDatesHistoriqueStructure(sqlDatasDatesHistoriqueTransactions)
+        // Updated to pass testTransactions to the logging function
+        logDatesHistoriqueStructure(sqlDatasDatesHistoriqueTransactions, testTransactions)
     }
 
     @After
