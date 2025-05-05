@@ -102,9 +102,19 @@ fun B_Data_CreateTestTransactions(): List<D_Repo_TransactionCommercial> {
         D_Repo_TransactionCommercial(
             vid = 5L,
             clientAcheteurID = 1L,  // Set unique client ID
-            etateActuellementEst = Type.COMMANDE_LIVRAI,
+            etateActuellementEst = Type.ACHETEUR_NON_DISPO,
             nomClientConcerned = "Abderrahmane",
             timestamps = getFromeDayeStringTime("05/05 8.30PM")
+        )
+    )
+    // Add a COMMANDE_LIVRAI transaction for client 1
+    testTransactions.add(
+        D_Repo_TransactionCommercial(
+            vid = 7L,
+            clientAcheteurID = 4L,  // Set unique client ID
+            etateActuellementEst = Type.ON_MODE_COMMEND_ACTUELLEMENT,
+            nomClientConcerned = "Walide",
+            timestamps = getFromeDayeStringTime("05/05 10.30PM")
         )
     )
 
