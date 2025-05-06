@@ -1,19 +1,9 @@
 package com.example.clientjetpack.Logs
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.D_Repo_SqlDatasDatesHistoriqueTransactions
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.FilterHandler
 import com.example.clientjetpack.Functions.formatTime
 import com.example.clientjetpack.Functions.formatTimestampToDate
-import com.example.clientjetpack.Functions.isSameDay
-
-fun filterTransactionsByDay(
-    sqlDatasDatesHistorique: D_Repo_SqlDatasDatesHistoriqueTransactions,
-    filterDateTimeTamp: Long
-): List<D_Repo_SqlDatasDatesHistoriqueTransactions.Transaction> {
-    // Find transactions for this specific day
-    return sqlDatasDatesHistorique.transactions.filter { transaction ->
-        isSameDay(transaction.timestamp, filterDateTimeTamp)
-    }.sortedBy { it.timestamp }
-}
 
 /**
  * Logs filtered transactions for a specific day
@@ -28,7 +18,8 @@ fun FilterByDayeLog(
     println("\n-- Filtered Transactions for Day: ${formatTimestampToDate(filterDateTimeTamp)} --")
 
     // Use the new filter function to get filtered transactions
-    val filteredTransactions = filterTransactionsByDay(sqlDatasDatesHistorique, filterDateTimeTamp)
+    val filteredTransactions = FilterHandler()
+        .filterTransactionsByDay(sqlDatasDatesHistorique, filterDateTimeTamp)
 
     println("Found ${filteredTransactions.size} transaction(s) for this day")
 
