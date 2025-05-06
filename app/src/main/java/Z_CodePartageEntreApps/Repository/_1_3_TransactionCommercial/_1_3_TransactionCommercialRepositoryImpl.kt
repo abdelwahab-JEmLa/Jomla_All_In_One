@@ -72,8 +72,6 @@ class _1_3_TransactionCommercialRepositoryImpl(
         }
     }
 
-
-
     private suspend fun initialize_1_3_TransactionCommercialRepository() {
         try {
             loadDepuitRoom()

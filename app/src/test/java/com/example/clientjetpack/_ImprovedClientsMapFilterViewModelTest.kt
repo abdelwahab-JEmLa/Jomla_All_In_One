@@ -26,23 +26,25 @@ class ImprovedDatesHistoriqueTest {
     val rule: TestRule = InstantTaskExecutorRule()
 
     private val testDispatcher = StandardTestDispatcher()
-    private val transactions = B_Data_CreateTestTransactions()
+    private val testTransactions = B_Data_CreateTestTransactions()
     private lateinit var mapsIDSDatesHistoriqueTransactions: D_Rep_MapsIDSDatesHistoriqueTransactions
     private lateinit var sqlDatasDatesHistorique: D_Repo_SqlDatasDatesHistoriqueTransactions
 
     @Before
     fun setup() {
-        
+                 //<--
+                 //TODO(1):  fait inject _0_0_HeadSQLRepositorys et utilise 
+                 //.repositorys_Model .repository_1_3_TransactionCommercial  
         
         Dispatchers.setMain(testDispatcher)
 
         // Create and initialize data structures
         mapsIDSDatesHistoriqueTransactions = D_Rep_MapsIDSDatesHistoriqueTransactions()
-            .collectInit(transactions)
+            .collectInit(testTransactions)
 
         sqlDatasDatesHistorique = D_Repo_SqlDatasDatesHistoriqueTransactions(
             mapsIDSDatesHistoriqueTransactions,
-            transactions
+            testTransactions
         )
     }
 
