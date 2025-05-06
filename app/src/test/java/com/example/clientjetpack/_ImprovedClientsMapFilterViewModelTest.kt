@@ -33,7 +33,6 @@ class ImprovedDatesHistoriqueTest {
     @Before
     fun setup() {
 
-        
         Dispatchers.setMain(testDispatcher)
 
         // Create and initialize data structures
