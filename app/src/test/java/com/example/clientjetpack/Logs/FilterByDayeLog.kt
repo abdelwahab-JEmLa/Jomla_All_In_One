@@ -10,7 +10,7 @@ fun FilterByDayeLog(
     sqlDatasDatesHistorique: D_Repo_SqlDatasDatesHistoriqueTransactions,
     filterDateTimeTamp: Long
 ) {       //<--
-//TODO(1): seo
+//TODO(1): cree moi une functione separe du filtre pour l utilise a PreviewClientTransactionsListPreview
         println("======== TESTING FILTERED DATES HISTORIQUE BY DAY ========")
 
         // Display filtered data structure for specific day
