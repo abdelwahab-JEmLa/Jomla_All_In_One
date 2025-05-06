@@ -3,11 +3,11 @@ package com.example.clientjetpack
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.B_Data_CreateTestTransactions
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.D_Rep_MapsIDSDatesHistoriqueTransactions
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.D_Repo_SqlDatasDatesHistoriqueTransactions
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.A_LogMapsIDSDatesHistoriqueTransactions
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.FilterByDayeLog
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.SqlDatasDatesHistoriqueTransactionslog
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.normalizeTimetampFromeStrDate
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.example.clientjetpack.Logs.A_LogMapsIDSDatesHistoriqueTransactions
-import com.example.clientjetpack.Logs.FilterByDayeLog
-import com.example.clientjetpack.Logs.SqlDatasDatesHistoriqueTransactionslog
-import com.example.clientjetpack.Logs.normalizeTimetampFromeStrDate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -32,9 +32,7 @@ class ImprovedDatesHistoriqueTest {
 
     @Before
     fun setup() {
-                 //<--
-                 //TODO(1):  fait inject _0_0_HeadSQLRepositorys et utilise 
-                 //.repositorys_Model .repository_1_3_TransactionCommercial  
+
         
         Dispatchers.setMain(testDispatcher)
 

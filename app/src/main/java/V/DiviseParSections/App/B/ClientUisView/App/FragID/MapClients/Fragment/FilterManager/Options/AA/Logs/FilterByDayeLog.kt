@@ -1,9 +1,9 @@
-package com.example.clientjetpack.Logs
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.D_Repo_SqlDatasDatesHistoriqueTransactions
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.FilterHandler
-import com.example.clientjetpack.Functions.formatTime
-import com.example.clientjetpack.Functions.formatTimestampToDate
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.formatTime
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.formatTimestampToDate
 
 /**
  * Logs filtered transactions for a specific day

@@ -1,10 +1,10 @@
-package com.example.clientjetpack.Logs
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.D_Repo_SqlDatasDatesHistoriqueTransactions
-import com.example.clientjetpack.Functions.belongsToSameWeek
-import com.example.clientjetpack.Functions.formatTime
-import com.example.clientjetpack.Functions.formatTimestampToDate
-import com.example.clientjetpack.Functions.isSameDay
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.belongsToSameWeek
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.formatTime
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.formatTimestampToDate
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.isSameDay
 
 /**
  * Improved logging function for D_Repo_SqlDatasDatesHistoriqueTransactions structure

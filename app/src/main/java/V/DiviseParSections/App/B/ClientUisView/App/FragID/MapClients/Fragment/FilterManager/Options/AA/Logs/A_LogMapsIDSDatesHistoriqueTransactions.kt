@@ -1,9 +1,10 @@
-package com.example.clientjetpack.Logs
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.D_Rep_MapsIDSDatesHistoriqueTransactions
-import com.example.clientjetpack.Functions.formatTimestampToDate
-import com.example.clientjetpack.Functions.formatTimestampToTime
-import com.example.clientjetpack.Functions.getTransactionTime
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.formatTimestampToDate
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.formatTimestampToTime
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.getTransactionTime
+
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
