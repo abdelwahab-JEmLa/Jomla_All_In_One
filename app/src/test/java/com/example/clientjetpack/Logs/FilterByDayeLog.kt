@@ -9,7 +9,8 @@ import com.example.clientjetpack.Functions.isSameDay
 fun FilterByDayeLog(
     sqlDatasDatesHistorique: D_Repo_SqlDatasDatesHistoriqueTransactions,
     filterDateTimeTamp: Long
-) {
+) {       //<--
+//TODO(1): seo
         println("======== TESTING FILTERED DATES HISTORIQUE BY DAY ========")
 
         // Display filtered data structure for specific day
