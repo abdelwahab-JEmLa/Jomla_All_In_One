@@ -1,10 +1,5 @@
 package com.example.clientjetpack
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.A_LogMapsIDSDatesHistoriqueTransactions
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.A_Logs_FilterByDayeLog
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.D_MapsIDSDatesHistoriqueTransactionsRep_Repository
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.D_ParDatesHistoriqueTransactions_Repository
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.normalizeTimetampFromeStrDate
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -26,7 +21,7 @@ class ImprovedDatesHistoriqueTest {
 
     private val testDispatcher = StandardTestDispatcher()
 
-    private val transactions = TestTransactionDataProvider.getTransactions()
+    private val transactions = _B_TestTransactionDataProvider.getTransactions()
 
     private lateinit var mapsIDSDatesHistoriqueTransactions: D_MapsIDSDatesHistoriqueTransactionsRep_Repository
     private lateinit var sqlDatasDatesHistorique: D_ParDatesHistoriqueTransactions_Repository
@@ -88,7 +83,7 @@ class ImprovedDatesHistoriqueTest {
     @Test
     fun SqlDatasDatesHistoriqueTransactionsLogDisplayerTest() {
         try {
-             val  nameDataBase ="SqlDatasDatesHistoriqueTransactions"
+            val nameDataBase = "SqlDatasDatesHistoriqueTransactions"
 
             println("======== TESTING $nameDataBase TRANSACTIONS ========")
             println("\n-- Hierarchical Structure --")
@@ -106,7 +101,7 @@ class ImprovedDatesHistoriqueTest {
     @Test
     fun mapSemainJours_LogDisplayerTest() {
         try {
-             val  nameDataBase ="mapSemainJours"
+            val nameDataBase = "mapSemainJours"
 
             println("======== TESTING $nameDataBase TRANSACTIONS ========")
             println("\n-- Hierarchical Structure --")
@@ -122,13 +117,22 @@ class ImprovedDatesHistoriqueTest {
     }
 
     private fun mapSemainJours_HierarchicalStructureLog(
-        mapsIDSDatesHistoriqueTransactions: D_MapsIDSDatesHistoriqueTransactionsRep_Repository
+        mapsIDSDatesHistoriqueTransactions: D_MapsIDSDatesHistoriqueTransactionsRep_Repository,
     ) {
         println("Semaines (${mapsIDSDatesHistoriqueTransactions.semaines.size}):")
 
         // Sort weeks by timestamp (from newest to oldest)
-        val sortedWeeks = mapsIDSDatesHistoriqueTransactions.semaines.entries.sortedByDescending { it.key }
+        val sortedWeeks = mapsIDSDatesHistoriqueTransactions
+            .semaines
+            .entries.sortedByDescending { it.key }
 
+        ListLog(sortedWeeks, mapsIDSDatesHistoriqueTransactions)
+    }
+
+    private fun ListLog(
+        sortedWeeks: List<Map.Entry<Long, MutableList<Long>>>,
+        mapsIDSDatesHistoriqueTransactions: D_MapsIDSDatesHistoriqueTransactionsRep_Repository,
+    ) {
         sortedWeeks.forEachIndexed { weekIndex, (weekTimestamp, days) ->
             val isLastWeek = weekIndex == sortedWeeks.size - 1
             val weekPrefix = TreePrefix.Type1.get(isLastWeek)
@@ -147,18 +151,34 @@ class ImprovedDatesHistoriqueTest {
                 // Format day timestamp and count transactions
                 val dayDate = formatTimestamp(dayTimestamp)
                 val transactions = mapsIDSDatesHistoriqueTransactions.jours[dayTimestamp]?.size ?: 0
-                println("$dayPrefix Day: $dayDate ($transactions transactions)")
+                itemLog(
+                    dayPrefix,
+                    dayDate,
+                    transactions,
+                    mapsIDSDatesHistoriqueTransactions,
+                    dayTimestamp
+                )
+            }
+        }
+    }
 
-                // If you want to add more detail about transactions on this day:
-                val transactionsForDay = mapsIDSDatesHistoriqueTransactions.jours[dayTimestamp]
-                if (!transactionsForDay.isNullOrEmpty()) {
-                    transactionsForDay.forEachIndexed { txIndex, txId ->
-                        val isLastTx = txIndex == transactionsForDay.size - 1
-                        val txPrefix = TreePrefix.Type3.get(isLastTx)
-                        val txState = mapsIDSDatesHistoriqueTransactions.transactions[txId]
-                        println("$txPrefix Transaction: $txId (State: $txState)")
-                    }
-                }
+    private fun itemLog(
+        dayPrefix: String,
+        dayDate: String,
+        transactions: Int,
+        mapsIDSDatesHistoriqueTransactions: D_MapsIDSDatesHistoriqueTransactionsRep_Repository,
+        dayTimestamp: Long,
+    ) {
+        println("$dayPrefix Day: $dayDate ($transactions transactions)")
+
+        // If you want to add more detail about transactions on this day:
+        val transactionsForDay = mapsIDSDatesHistoriqueTransactions.jours[dayTimestamp]
+        if (!transactionsForDay.isNullOrEmpty()) {
+            transactionsForDay.forEachIndexed { txIndex, txId ->
+                val isLastTx = txIndex == transactionsForDay.size - 1
+                val txPrefix = TreePrefix.Type3.get(isLastTx)
+                val txState = mapsIDSDatesHistoriqueTransactions.transactions[txId]
+                println("$txPrefix Transaction: $txId (State: $txState)")
             }
         }
     }

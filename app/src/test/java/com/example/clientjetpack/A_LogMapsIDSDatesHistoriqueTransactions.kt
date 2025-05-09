@@ -1,6 +1,5 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs
+package com.example.clientjetpack
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Enleve.B_Data_CreateTestTransactions
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -32,7 +31,7 @@ fun A_LogMapsIDSDatesHistoriqueTransactions(
 
     val sortedWeeks = mapsIDSDatesHistoriqueTransactions.semaines.entries.sortedBy { it.key }
 
-    val testTransactions = B_Data_CreateTestTransactions()
+    val testTransactions = _B_TestTransactionDataProvider.getTransactions()
 
     sortedWeeks.forEach { (weekTimestamp, dayTimestamps) ->
         val weekDate = formatTimestampToDate(weekTimestamp)

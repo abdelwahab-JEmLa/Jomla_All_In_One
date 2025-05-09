@@ -1,11 +1,9 @@
 package com.example.clientjetpack
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.D_TransactionCommercial_Repository
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.createTimestamp
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.Type
 import java.util.Calendar
 
-object TestTransactionDataProvider {
+object _B_TestTransactionDataProvider {
 
     fun getTransactions(): List<D_TransactionCommercial_Repository> {
         val transactions = mutableListOf<D_TransactionCommercial_Repository>()

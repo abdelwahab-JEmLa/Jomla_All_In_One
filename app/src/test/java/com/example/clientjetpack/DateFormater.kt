@@ -1,6 +1,5 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs
+package com.example.clientjetpack
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Enleve.B_Data_CreateTestTransactions
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -30,7 +29,7 @@ fun formatTimestampToDate(timestamp: Long): String {
 }
 
 fun getTransactionTime(transactionId: Long, transactionsInDay: List<Long>): Long {
-    val testTransactions = B_Data_CreateTestTransactions()
+    val testTransactions = _B_TestTransactionDataProvider.getTransactions()
     val transaction = testTransactions.find { it.vid == transactionId }
 
     // If found, return its actual timestamp
