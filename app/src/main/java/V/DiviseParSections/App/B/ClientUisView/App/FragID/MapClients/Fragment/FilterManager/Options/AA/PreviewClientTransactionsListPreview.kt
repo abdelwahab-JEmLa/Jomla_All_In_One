@@ -1,53 +1,28 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.Type
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material3.Card
-import androidx.compose.material3.Divider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
 
 @Preview
 @Composable
 private fun PreviewClientTransactionsListPreview() {
-    // Initialize test data
+   /* // Initialize test data
     val testTransactions = B_Data_CreateTestTransactions()
-    val mapsIDSDatesHistoriqueTransactions = D_Rep_MapsIDSDatesHistoriqueTransactions()
+    val mapsIDSDatesHistoriqueTransactions = com.example.clientjetpack.D_Rep_MapsIDSDatesHistoriqueTransactions()
         .collectInit(testTransactions)
 
     // Display the client transactions using LazyColumn
-    ClientTransactionsListPreview(mapsIDSDatesHistoriqueTransactions, testTransactions)
+    ClientTransactionsListPreview(mapsIDSDatesHistoriqueTransactions, testTransactions)  */
 }
-
+      /*
 @Composable
 fun ClientTransactionsListPreview(
-    d_Rep_MapsIDSDatesHistoriqueTransactions: D_Rep_MapsIDSDatesHistoriqueTransactions,
-    rawTransactions: List<D_Repo_TransactionCommercial> = B_Data_CreateTestTransactions()
+    d_Rep_MapsIDSDatesHistoriqueTransactions: com.example.clientjetpack.D_Rep_MapsIDSDatesHistoriqueTransactions,
+    rawTransactions: List<com.example.clientjetpack.D_Repo_TransactionCommercial> = com.example.clientjetpack.B_Data_CreateTestTransactions()
 ) {
     // Create SqlData for displaying formatted data
     val sqlData = remember {
-        D_Repo_SqlDatasDatesHistoriqueTransactions(
+        com.example.clientjetpack.D_Repo_SqlDatasDatesHistoriqueTransactions(
             d_Rep_MapsIDSDatesHistoriqueTransactions,
             rawTransactions
         )
@@ -73,9 +48,9 @@ fun ClientTransactionsListPreview(
 
 @Composable
 fun WeekSection(
-    week: D_Repo_SqlDatasDatesHistoriqueTransactions.Semaine,
-    sqlData: D_Repo_SqlDatasDatesHistoriqueTransactions,
-    mapsData: D_Rep_MapsIDSDatesHistoriqueTransactions
+    week: com.example.clientjetpack.D_Repo_SqlDatasDatesHistoriqueTransactions.Semaine,
+    sqlData: com.example.clientjetpack.D_Repo_SqlDatasDatesHistoriqueTransactions,
+    mapsData: com.example.clientjetpack.D_Rep_MapsIDSDatesHistoriqueTransactions
 ) {
     val weekDays = remember {
         // Get all days in this week
@@ -108,9 +83,9 @@ fun WeekSection(
 
 @Composable
 fun DaySection(
-    day: D_Repo_SqlDatasDatesHistoriqueTransactions.Jour,
-    sqlData: D_Repo_SqlDatasDatesHistoriqueTransactions,
-    mapsData: D_Rep_MapsIDSDatesHistoriqueTransactions
+    day: com.example.clientjetpack.D_Repo_SqlDatasDatesHistoriqueTransactions.Jour,
+    sqlData: com.example.clientjetpack.D_Repo_SqlDatasDatesHistoriqueTransactions,
+    mapsData: com.example.clientjetpack.D_Rep_MapsIDSDatesHistoriqueTransactions
 ) {
     val transactionIds = remember {
         mapsData.jours[day.vidTimeTemp] ?: emptyList()
@@ -148,8 +123,8 @@ fun DaySection(
 
 @Composable
 fun TransactionItem(
-    transaction: D_Repo_SqlDatasDatesHistoriqueTransactions.Transaction,
-    sqlData: D_Repo_SqlDatasDatesHistoriqueTransactions
+    transaction: com.example.clientjetpack.D_Repo_SqlDatasDatesHistoriqueTransactions.Transaction,
+    sqlData: com.example.clientjetpack.D_Repo_SqlDatasDatesHistoriqueTransactions
 ) {
     val client = remember {
         sqlData.clients.find { it.vidTimeTemp == transaction.clientId }
@@ -225,8 +200,13 @@ fun formatDateLabel(timestamp: Long): String {
 
     // Check if the date is today, yesterday, or another day
     return when {
-        isSameDay(today.timeInMillis, timestamp) -> "Aujourd'hui"
-        isSameDay(today.apply { add(Calendar.DAY_OF_MONTH, -1) }.timeInMillis, timestamp) -> "Hier"
+        com.example.clientjetpack.isSameDay(today.timeInMillis, timestamp) -> "Aujourd'hui"
+        com.example.clientjetpack.isSameDay(today.apply {
+            add(
+                Calendar.DAY_OF_MONTH,
+                -1
+            )
+        }.timeInMillis, timestamp) -> "Hier"
         else -> {
             val dateFormat = SimpleDateFormat("EEEE d MMMM", Locale.getDefault())
             dateFormat.format(Date(timestamp)).capitalize()
@@ -251,3 +231,4 @@ fun getWeekDateRange(weekStartTimestamp: Long): String {
 fun String.capitalize(): String {
     return if (this.isEmpty()) this else this[0].uppercase() + this.substring(1)
 }
+                                     */

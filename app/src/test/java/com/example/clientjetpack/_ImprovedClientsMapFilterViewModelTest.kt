@@ -1,15 +1,15 @@
 package com.example.clientjetpack
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.B_Data_CreateTestTransactions
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.D_Rep_MapsIDSDatesHistoriqueTransactions
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.D_Repo_SqlDatasDatesHistoriqueTransactions
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.A_LogMapsIDSDatesHistoriqueTransactions
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.D_Rep_MapsIDSDatesHistoriqueTransactions
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.D_Repo_SqlDatasDatesHistoriqueTransactions
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.FilterByDayeLog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.SqlDatasDatesHistoriqueTransactionslog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.normalizeTimetampFromeStrDate
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
@@ -26,22 +26,30 @@ class ImprovedDatesHistoriqueTest {
     val rule: TestRule = InstantTaskExecutorRule()
 
     private val testDispatcher = StandardTestDispatcher()
-    private val testTransactions = B_Data_CreateTestTransactions()
+
+    // Lazy initialization of transactions using runBlocking for suspend function
+    private val transactions by lazy {
+        runBlocking {
+            // Set whether to use Firebase or mock data based on test needs
+            TestTransactionDataProvider.setUseFirebase(false) // Use mock data for testing
+            TestTransactionDataProvider.getTransactions() // This is a suspend function, but runBlocking makes it work
+        }
+    }
+
     private lateinit var mapsIDSDatesHistoriqueTransactions: D_Rep_MapsIDSDatesHistoriqueTransactions
     private lateinit var sqlDatasDatesHistorique: D_Repo_SqlDatasDatesHistoriqueTransactions
 
     @Before
     fun setup() {
-
         Dispatchers.setMain(testDispatcher)
 
         // Create and initialize data structures
         mapsIDSDatesHistoriqueTransactions = D_Rep_MapsIDSDatesHistoriqueTransactions()
-            .collectInit(testTransactions)
+            .collectInit(transactions)
 
         sqlDatasDatesHistorique = D_Repo_SqlDatasDatesHistoriqueTransactions(
             mapsIDSDatesHistoriqueTransactions,
-            testTransactions
+            transactions
         )
     }
 
@@ -85,7 +93,6 @@ class ImprovedDatesHistoriqueTest {
         }
     }
 
-
     @Test
     fun testLogSqlDatasDatesHistoriqueTransactionslog() {
         try {
@@ -96,7 +103,7 @@ class ImprovedDatesHistoriqueTest {
             assertTrue(true)
         } catch (e: Exception) {
             // If an exception occurs, fail the test
-            assertTrue("Exception during logging: ${e.message}", false)
+            assertTrue("Exception during filtering: ${e.message}", false)
         }
     }
 }

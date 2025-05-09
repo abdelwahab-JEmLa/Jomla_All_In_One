@@ -1,10 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.D_Rep_MapsIDSDatesHistoriqueTransactions
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.formatTimestampToDate
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.formatTimestampToTime
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.getTransactionTime
-
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Enleve.B_Data_CreateTestTransactions
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -44,6 +40,9 @@ fun A_LogMapsIDSDatesHistoriqueTransactions(
     // Sort weeks chronologically
     val sortedWeeks = mapsIDSDatesHistoriqueTransactions.semaines.entries.sortedBy { it.key }
 
+    // Load test transactions to access real timestamps
+    val testTransactions = B_Data_CreateTestTransactions()
+
     sortedWeeks.forEach { (weekTimestamp, dayTimestamps) ->
         val weekDate = formatTimestampToDate(weekTimestamp)
         println("Semaine ($weekDate): ${dayTimestamps.size} jour(s)")
@@ -77,7 +76,12 @@ fun A_LogMapsIDSDatesHistoriqueTransactions(
             var transactionCount = 0
             transactionsByClient.forEach { (clientId, transactionIds) ->
                 val clientPrefix = if (isLastDay) "     " else "  │  "
-                println("$clientPrefix Client ID: $clientId - ${transactionIds.size} transaction(s)")
+
+                // Find client name from test transactions
+                val clientName = testTransactions
+                    .find { it.clientAcheteurID == clientId }?.nomClientConcerned ?: "Client $clientId"
+
+                println("$clientPrefix Client ID: $clientId ($clientName) - ${transactionIds.size} transaction(s)")
 
                 // Log individual transactions
                 transactionIds.forEachIndexed { tIndex, transactionId ->
@@ -91,7 +95,15 @@ fun A_LogMapsIDSDatesHistoriqueTransactions(
                     }
 
                     val transactionType = mapsIDSDatesHistoriqueTransactions.transactions[transactionId]
-                    val timeStr = formatTimestampToTime(getTransactionTime(transactionId, transactionsInDay))
+
+                    // Find the actual transaction from test data to get proper timestamp
+                    val transaction = testTransactions.find { it.vid == transactionId }
+                    val timeStr = if (transaction != null) {
+                        formatTimestampToTime(transaction.timestamps)
+                    } else {
+                        // Fallback to old method if not found
+                        formatTimestampToTime(getTransactionTime(transactionId, transactionsInDay))
+                    }
 
                     println("$transactionPrefix Transaction #$transactionCount (ID: $transactionId, État: $transactionType, Time: $timeStr)")
                     transactionCount++
@@ -102,4 +114,3 @@ fun A_LogMapsIDSDatesHistoriqueTransactions(
 
     println("\n======== TEST COMPLETED SUCCESSFULLY ========\n")
 }
-

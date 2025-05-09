@@ -168,7 +168,17 @@ dependencies {
 
     // Dépendances Realm
     implementation("io.realm.kotlin:library-base:1.12.0")
-    implementation("io.realm.kotlin:library-sync:1.12.0") // Optionnel, si vous avez besoin de synchronisation
+    implementation("io.realm.kotlin:library-sync:1.12.0")
+
+    // MockK library for testing
+    testImplementation("io.mockk:mockk:1.13.5")
+
+    // If you need Android-specific features of MockK
+    testImplementation("io.mockk:mockk-android:1.13.5")
+
+    // Other testing dependencies you might need if not already included
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
 }
 
 apply(plugin = "com.google.gms.google-services")
