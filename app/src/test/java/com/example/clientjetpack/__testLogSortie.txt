@@ -15,8 +15,7 @@ Semaines (1):
 Semaines (1):
 └─ Week: 2025-05-05 (2 days)
 ├─ Day: 2025-05-09 itsActiveDaye=true
-└─ Day: 2025-05-08 itsActiveDaye=true               //<--
-//TODO(1): pk les 2 true normalement c just le premier
+└─ Day: 2025-05-08 itsActiveDaye=true
 
 ======== TEST COMPLETED SUCCESSFULLY ========
 

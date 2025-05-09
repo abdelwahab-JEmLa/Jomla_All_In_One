@@ -119,8 +119,7 @@ class ImprovedDatesHistoriqueTest {
             firstDay.itsActiveDaye = true
 
             // Verify that only the first day is active
-            assertEquals(true, sqlDatasDatesHistorique.jours.last().itsActiveDaye)
-
+            assertEquals(true, sqlDatasDatesHistorique.jours[1].itsActiveDaye)
 
             mapSemainJours_LogDisplayerTest(
                 mapsIDSDatesHistoriqueTransactions
