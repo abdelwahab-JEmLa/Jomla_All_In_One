@@ -1,6 +1,6 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs
 
-class FilterHandler {
+class D_FilterHandler {
     fun filterTransactionsByDay(
         sqlDatasDatesHistorique: D_ParDatesHistoriqueTransactions_Repository,
         filterDateTimeTamp: Long

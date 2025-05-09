@@ -3,7 +3,7 @@ package com.example.clientjetpack
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.A_LogMapsIDSDatesHistoriqueTransactions
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.D_MapsIDSDatesHistoriqueTransactionsRep_Repository
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.D_ParDatesHistoriqueTransactions_Repository
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.FilterByDayeLog
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.A_Logs_FilterByDayeLog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.SqlDatasDatesHistoriqueTransactionslog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.TestTransactionDataProvider
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.normalizeTimetampFromeStrDate
@@ -69,12 +69,12 @@ class ImprovedDatesHistoriqueTest {
     @Test
     fun testFilterByDay() {
         try {
-            FilterByDayeLog(
+            A_Logs_FilterByDayeLog(
                 sqlDatasDatesHistorique,
                 filterDateTimeTamp = normalizeTimetampFromeStrDate("2025-05-05")
             )
 
-            FilterByDayeLog(
+            A_Logs_FilterByDayeLog(
                 sqlDatasDatesHistorique,
                 filterDateTimeTamp = normalizeTimetampFromeStrDate("2025-05-04")
             )

@@ -3,7 +3,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.F
 /**
  * Logs filtered transactions for a specific day
  */
-fun FilterByDayeLog(
+fun A_Logs_FilterByDayeLog(
     sqlDatasDatesHistorique: D_ParDatesHistoriqueTransactions_Repository,
     filterDateTimeTamp: Long
 ) {
@@ -13,7 +13,7 @@ fun FilterByDayeLog(
     println("\n-- Filtered Transactions for Day: ${formatTimestampToDate(filterDateTimeTamp)} --")
 
     // Use the new filter function to get filtered transactions
-    val filteredTransactions = FilterHandler()
+    val filteredTransactions = D_FilterHandler()
         .filterTransactionsByDay(sqlDatasDatesHistorique, filterDateTimeTamp)
 
     println("Found ${filteredTransactions.size} transaction(s) for this day")

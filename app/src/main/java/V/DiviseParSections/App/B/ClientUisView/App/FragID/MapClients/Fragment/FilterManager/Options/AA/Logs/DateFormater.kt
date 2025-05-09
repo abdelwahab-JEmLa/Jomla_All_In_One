@@ -7,43 +7,29 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-
-
- fun createTimestamp(year: Int, month: Int, day: Int, hour: Int, minute: Int): Long {
+fun createTimestamp(year: Int, month: Int, day: Int, hour: Int, minute: Int): Long {
     val calendar = Calendar.getInstance()
     calendar.set(year, month - 1, day, hour, minute, 0)
     calendar.set(Calendar.MILLISECOND, 0)
     return calendar.timeInMillis
 }
 
-/**
- * Helper function to check if two timestamps belong to the same week
- */
 fun belongsToSameWeek(timestamp1: Long, timestamp2: Long): Boolean {
-    val cal1 = java.util.Calendar.getInstance().apply { timeInMillis = timestamp1 }
-    val cal2 = java.util.Calendar.getInstance().apply { timeInMillis = timestamp2 }
+    val cal1 = Calendar.getInstance().apply { timeInMillis = timestamp1 }
+    val cal2 = Calendar.getInstance().apply { timeInMillis = timestamp2 }
 
-    return cal1.get(java.util.Calendar.YEAR) == cal2.get(java.util.Calendar.YEAR) &&
-            cal1.get(java.util.Calendar.WEEK_OF_YEAR) == cal2.get(java.util.Calendar.WEEK_OF_YEAR)
+    return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+            cal1.get(Calendar.WEEK_OF_YEAR) == cal2.get(Calendar.WEEK_OF_YEAR)
 }
 
 // Helper function to format timestamp to readable date
 fun formatTimestampToDate(timestamp: Long): String {
-    val date = java.util.Date(timestamp)
+    val date = Date(timestamp)
     val formatter = java.text.SimpleDateFormat("yyyy-MM-dd")
     return formatter.format(date)
 }
 
-/**
- * Helper function to get transaction time from a transaction ID
- * Instead of generating a fake time, this now attempts to find the actual transaction time
- * from the list of transactions for the day
- */
 fun getTransactionTime(transactionId: Long, transactionsInDay: List<Long>): Long {
-    // Fix: This function should not create fake timestamps but use actual transaction data
-    // Since we don't have direct access to timestamps here, we'll implement a workaround
-
-    // First, we'll try to find the transaction in our test data
     val testTransactions = B_Data_CreateTestTransactions()
     val transaction = testTransactions.find { it.vid == transactionId }
 
@@ -76,18 +62,14 @@ fun formatTimestampToTime(timestamp: Long): String {
  * Helper function to check if two timestamps belong to the same day
  */
 fun isSameDay(timestamp1: Long, timestamp2: Long): Boolean {
-    val cal1 = java.util.Calendar.getInstance().apply { timeInMillis = timestamp1 }
-    val cal2 = java.util.Calendar.getInstance().apply { timeInMillis = timestamp2 }
+    val cal1 = Calendar.getInstance().apply { timeInMillis = timestamp1 }
+    val cal2 = Calendar.getInstance().apply { timeInMillis = timestamp2 }
 
-    return cal1.get(java.util.Calendar.YEAR) == cal2.get(java.util.Calendar.YEAR) &&
-            cal1.get(java.util.Calendar.MONTH) == cal2.get(java.util.Calendar.MONTH) &&
-            cal1.get(java.util.Calendar.DAY_OF_MONTH) == cal2.get(java.util.Calendar.DAY_OF_MONTH)
+    return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+            cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH) &&
+            cal1.get(Calendar.DAY_OF_MONTH) == cal2.get(Calendar.DAY_OF_MONTH)
 }
 
-/**
- * Converts a date/time string in format "dd/MM h.mmA" or "dd/MM h.mma"
- * (like "05/05 8.30PM" or "05/05 8.30pm") into a timestamp
- */
 fun getFromeDayeStringTime(dateTimeStr: String): Long {
     try {
         // Handle variations in input format (PM/pm, with or without spaces)
