@@ -53,7 +53,7 @@ class ImprovedDatesHistoriqueTest {
     }
 
     @Test
-    fun testLogFunctions() {
+    fun testMapsID() {
         try {
             A_LogMapsIDSDatesHistoriqueTransactions(
                 mapsIDSDatesHistoriqueTransactions
@@ -88,7 +88,7 @@ class ImprovedDatesHistoriqueTest {
     }
 
     @Test
-    fun testLogSqlDatasDatesHistoriqueTransactionslog() {
+    fun testSqlDatasDatesHistoriqueTransactionslog() {
         try {
             SqlDatasDatesHistoriqueTransactionslog(
                 sqlDatasDatesHistorique
