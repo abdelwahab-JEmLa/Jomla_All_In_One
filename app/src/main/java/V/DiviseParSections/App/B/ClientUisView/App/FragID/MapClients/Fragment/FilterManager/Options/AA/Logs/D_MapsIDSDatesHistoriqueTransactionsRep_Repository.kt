@@ -13,10 +13,7 @@ class D_MapsIDSDatesHistoriqueTransactionsRep_Repository {
     var clients by mutableStateOf<Map<Long, MutableList<Long>>>(emptyMap())
     var transactions by mutableStateOf<Map<Long, Type>>(emptyMap())
 
-    /**
-     * Initializes data collections from a list of transactions.
-     * Uses more concise code with Kotlin collection operations.
-     */
+
     fun collectInit(
         testTransactions: List<D_TransactionCommercial_Repository>,
     ): D_MapsIDSDatesHistoriqueTransactionsRep_Repository {
