@@ -7,7 +7,7 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Fi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.isSameDay
 
 
-fun SqlDatasDatesHistoriqueTransactionsHierarchicalStructure(
+fun HierarchicalStructure(
     sqlDatasDatesHistoriqueTransactions: D_ParDatesHistoriqueTransactions_Repository
 ) {
     val sortedWeeks = sqlDatasDatesHistoriqueTransactions.semaines.sortedBy { it.vidTimeTemp }

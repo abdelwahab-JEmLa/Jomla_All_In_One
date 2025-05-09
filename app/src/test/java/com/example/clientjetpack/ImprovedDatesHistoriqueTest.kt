@@ -87,14 +87,12 @@ class ImprovedDatesHistoriqueTest {
     @Test
     fun SqlDatasDatesHistoriqueTransactionsLogDisplayerTest() {
         try {
-            val nameDataBase = "SqlDatasDatesHistoriqueTransactions"
+             val  nameDataBase ="SqlDatasDatesHistoriqueTransactions"
 
             println("======== TESTING $nameDataBase TRANSACTIONS ========")
             println("\n-- Hierarchical Structure --")
 
-            SqlDatasDatesHistoriqueTransactionsHierarchicalStructure(
-                sqlDatasDatesHistorique,
-            )
+            HierarchicalStructure(sqlDatasDatesHistorique)
 
             assertTrue(true)
             println("\n======== TEST COMPLETED SUCCESSFULLY ========\n")
@@ -103,6 +101,8 @@ class ImprovedDatesHistoriqueTest {
             assertTrue("Exception during filtering: ${e.message}", false)
         }
     }
+
+
 }
 
 enum class TreePrefix(val lastItem: String, val normalItem: String) {
@@ -113,3 +113,4 @@ enum class TreePrefix(val lastItem: String, val normalItem: String) {
 
     fun get(isLast: Boolean): String = if (isLast) lastItem else normalItem
 }
+
