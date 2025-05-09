@@ -86,7 +86,7 @@ class ImprovedDatesHistoriqueTest {
     }
 
     @Test
-    fun testSqlDatasDatesHistoriqueTransactionslog() {
+    fun SqlDatasDatesHistoriqueTransactionsLogDisplayerTest() {
         try {
             SqlDatasDatesHistoriqueTransactionslog(
                 sqlDatasDatesHistorique
@@ -98,4 +98,5 @@ class ImprovedDatesHistoriqueTest {
             assertTrue("Exception during filtering: ${e.message}", false)
         }
     }
+
 }
