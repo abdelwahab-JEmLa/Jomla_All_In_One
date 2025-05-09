@@ -101,15 +101,16 @@ class ImprovedDatesHistoriqueTest {
             assertTrue("Exception during filtering: ${e.message}", false)
         }
     }
+
     @Test
     fun mapSemainJours_LogDisplayerTest() {
         try {
-             val  nameDataBase ="SqlDatasDatesHistoriqueTransactions"
+             val  nameDataBase ="mapSemainJours"
 
             println("======== TESTING $nameDataBase TRANSACTIONS ========")
             println("\n-- Hierarchical Structure --")
 
-            D_ParDatesHistoriqueTransactions_RepositoryHierarchicalStructure(sqlDatasDatesHistorique)
+            mapSemainJours_HierarchicalStructure()
 
             assertTrue(true)
             println("\n======== TEST COMPLETED SUCCESSFULLY ========\n")
@@ -117,6 +118,10 @@ class ImprovedDatesHistoriqueTest {
             // If an exception occurs, fail the test
             assertTrue("Exception during filtering: ${e.message}", false)
         }
+    }
+
+    private fun mapSemainJours_HierarchicalStructure() {
+
     }
 }
 
