@@ -5,7 +5,7 @@ import android.annotation.SuppressLint
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.example.clientjetpack.Passive.D_TransactionCommercial_Repository
+import com.example.clientjetpack.Z_Passive.D_TransactionCommercial_Repository
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -21,53 +21,58 @@ class DB_ParDatesHistoriqueTransactions_Repository(
     var clients by mutableStateOf<MutableList<Client>>(mutableListOf())
     var transactions by mutableStateOf<MutableList<Transaction>>(mutableListOf())
 
+    // Map for improving lookup of day objects by their timestamp
+    private val joursMap = mutableMapOf<Long, Jour>()
+
     init {
         // Initialize weeks data
         datesHistoriqueForTesting.semaines.keys
             .sortedByDescending { it }
             .forEach { weekTimestamp ->
-            val weekItem = Semaine()
-            weekItem.vidTimeTemp = weekTimestamp
-            weekItem.updateWeekNumber()
-            semaines.add(weekItem)
-        }
+                val weekItem = Semaine()
+                weekItem.vidTimeTemp = weekTimestamp
+                weekItem.updateWeekNumber()
+                semaines.add(weekItem)
+            }
 
         // Initialize days data
         datesHistoriqueForTesting.jours.keys
             .sortedByDescending { it }
             .forEach { dayTimestamp ->
-            val dayItem = Jour()
-            dayItem.vidTimeTemp = dayTimestamp
-            dayItem.updateDateStr()
-            jours.add(dayItem)
-        }
+                val dayItem = Jour()
+                dayItem.vidTimeTemp = dayTimestamp
+                dayItem.updateDateStr()
+                jours.add(dayItem)
+                // Add to map for easy lookup
+                joursMap[dayTimestamp] = dayItem
+            }
 
         // Build a map of transaction IDs to client IDs for more efficient lookups
         val transactionToClientMap = mutableMapOf<Long, Long>()
         testTransactions
             ?.forEach { transaction ->
-            transactionToClientMap[transaction.vid] = transaction.clientAcheteurID
-        }
+                transactionToClientMap[transaction.vid] = transaction.clientAcheteurID
+            }
 
         // Initialize clients data
         datesHistoriqueForTesting.clients.keys
             .forEach { clientId ->
-            val clientItem = Client()
-            clientItem.vidTimeTemp = clientId
+                val clientItem = Client()
+                clientItem.vidTimeTemp = clientId
 
-            // Find client transactions
-            val clientTransactions = testTransactions?.filter { it.clientAcheteurID == clientId }
+                // Find client transactions
+                val clientTransactions = testTransactions?.filter { it.clientAcheteurID == clientId }
 
-            // Update client name from transactions
-            clientItem.nom = clientTransactions?.firstOrNull()?.nomClientConcerned ?: "Client $clientId"
+                // Update client name from transactions
+                clientItem.nom = clientTransactions?.firstOrNull()?.nomClientConcerned ?: "Client $clientId"
 
-            // Set the oldest transaction ID as ancientIdTransaction
-            if (!clientTransactions.isNullOrEmpty()) {
-                clientItem.ancientIdTransaction = clientTransactions.minByOrNull { it.timestamps }?.vid ?: 0L
+                // Set the oldest transaction ID as ancientIdTransaction
+                if (!clientTransactions.isNullOrEmpty()) {
+                    clientItem.ancientIdTransaction = clientTransactions.minByOrNull { it.timestamps }?.vid ?: 0L
+                }
+
+                clients.add(clientItem)
             }
-
-            clients.add(clientItem)
-        }
 
         // Initialize transactions data
         datesHistoriqueForTesting.stateTransactions.forEach { (transactionId, transactionType) ->
@@ -87,6 +92,11 @@ class DB_ParDatesHistoriqueTransactions_Repository(
         }
     }
 
+    // Find a day by timestamp and update it
+    fun updateDay(dayTimestamp: Long, update: (Jour) -> Unit) {
+        joursMap[dayTimestamp]?.let { update(it) }
+    }
+
     class Semaine {
         var vidTimeTemp by mutableStateOf(0L)
         var semainCountDonSonAnne by mutableStateOf(0)
@@ -104,7 +114,6 @@ class DB_ParDatesHistoriqueTransactions_Repository(
     class Jour {
         var vidTimeTemp by mutableStateOf(0L)
         var itsActiveDaye by mutableStateOf(false)
-
         var dateStr by mutableStateOf("N/A")
 
         // Update date string when timestamp changes
@@ -114,16 +123,17 @@ class DB_ParDatesHistoriqueTransactions_Repository(
             val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             dateStr = dateFormat.format(Date(vidTimeTemp))
         }
-
     }
 
-    class JoursRepositoryImp {
-        fun update(data:Jour) {
-                       //<--
-                       //TODO(1): ici fait update par data on trouvon
+    class JoursRepositoryImp(private val repository: DB_ParDatesHistoriqueTransactions_Repository) {
+        fun update(data: Jour) {
+            // Find the day with matching timestamp and update only that one
+            repository.updateDay(data.vidTimeTemp) { jour ->
+                jour.itsActiveDaye = data.itsActiveDaye
+                // Update other properties as needed
+            }
         }
     }
-
 
     class Client {
         var vidTimeTemp by mutableStateOf(0L)

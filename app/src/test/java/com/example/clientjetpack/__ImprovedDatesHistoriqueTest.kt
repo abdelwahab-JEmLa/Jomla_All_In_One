@@ -1,17 +1,18 @@
 package com.example.clientjetpack
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.example.clientjetpack.Passive.A_LogMapsIDSDatesHistoriqueTransactions
-import com.example.clientjetpack.Passive.A_Logs_FilterByDayeLog
-import com.example.clientjetpack.Passive.D_ParDatesHistoriqueTransactions_RepositoryHierarchicalStructure
-import com.example.clientjetpack.Passive._B_TestTransactionDataProvider
-import com.example.clientjetpack.Passive.normalizeTimetampFromeStrDate
+import com.example.clientjetpack.Z_Passive.A_LogMapsIDSDatesHistoriqueTransactions
+import com.example.clientjetpack.Z_Passive.A_Logs_FilterByDayeLog
+import com.example.clientjetpack.Z_Passive.D_ParDatesHistoriqueTransactions_RepositoryHierarchicalStructure
+import com.example.clientjetpack.Z_Passive._B_TestTransactionDataProvider
+import com.example.clientjetpack.Z_Passive.normalizeTimetampFromeStrDate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -113,7 +114,15 @@ class ImprovedDatesHistoriqueTest {
                 mapsIDSDatesHistoriqueTransactions
             )
 
-            sqlDatasDatesHistorique.jours.first().itsActiveDaye=true
+            // Get the first day and set it active
+            val firstDay = sqlDatasDatesHistorique.jours.first()
+            firstDay.itsActiveDaye = true
+
+            // Verify that only the first day is active
+            assertEquals(true, sqlDatasDatesHistorique.jours.first().itsActiveDaye)
+            if (sqlDatasDatesHistorique.jours.size > 1) {
+                assertEquals(false, sqlDatasDatesHistorique.jours[1].itsActiveDaye)
+            }
 
             mapSemainJours_LogDisplayerTest(
                 mapsIDSDatesHistoriqueTransactions
@@ -180,21 +189,13 @@ class ImprovedDatesHistoriqueTest {
                 // Format day timestamp and count transactions
                 val dayDate = formatTimestamp(dayTimestamp)
 
-                itemLog(
-                    dayPrefix,
-                    dayDate
-                )
+                // Find the corresponding Jour object to check its active state
+                val jourObject = sqlDatasDatesHistorique.jours.find { it.vidTimeTemp == dayTimestamp }
+                val isActive = jourObject?.itsActiveDaye ?: false
+
+                println("$dayPrefix Day: $dayDate itsActiveDaye=$isActive")
             }
         }
-    }
-
-    private fun itemLog(
-        dayPrefix: String,
-        dayDate: String,
-    ) {
-       val firts = sqlDatasDatesHistorique.jours.first()
-
-        println("$dayPrefix Day: $dayDate itsActiveDaye=${firts.itsActiveDaye} ")
     }
 
     // Helper function to format timestamp to readable date
@@ -207,14 +208,5 @@ class ImprovedDatesHistoriqueTest {
                 "${(calendar.get(Calendar.MONTH) + 1).toString().padStart(2, '0')}-" +
                 calendar.get(Calendar.DAY_OF_MONTH).toString().padStart(2, '0')
     }
-}
-
-enum class TreePrefix(private val lastItem: String, private val normalItem: String) {
-    Type1("  └─", "  ├─"),
-    Type2("     └─", "     ├─"),
-    Type3("  │  └─", "  │  ├─"),
-    Type4("     ", "  │  ");
-
-    fun get(isLast: Boolean): String = if (isLast) lastItem else normalItem
 }
 
