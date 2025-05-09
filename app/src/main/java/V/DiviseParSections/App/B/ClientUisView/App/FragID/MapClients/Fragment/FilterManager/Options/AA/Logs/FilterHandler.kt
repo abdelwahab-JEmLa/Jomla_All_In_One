@@ -10,6 +10,5 @@ class FilterHandler {
             isSameDay(transaction.timestamp, filterDateTimeTamp)
         }.sortedBy { it.timestamp }
     }
-
 }
 
