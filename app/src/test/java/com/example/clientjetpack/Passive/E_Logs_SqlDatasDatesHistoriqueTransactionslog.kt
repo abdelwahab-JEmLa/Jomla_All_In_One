@@ -1,4 +1,7 @@
-package com.example.clientjetpack
+package com.example.clientjetpack.Passive
+
+import com.example.clientjetpack.DB_ParDatesHistoriqueTransactions_Repository
+import com.example.clientjetpack.TreePrefix
 
 
 fun D_ParDatesHistoriqueTransactions_RepositoryHierarchicalStructure(

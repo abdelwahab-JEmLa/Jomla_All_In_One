@@ -1,4 +1,6 @@
-package com.example.clientjetpack
+package com.example.clientjetpack.Passive
+
+import com.example.clientjetpack.DB_ParDatesHistoriqueTransactions_Repository
 
 class D_FilterHandler {
     fun filterTransactionsByDay(
