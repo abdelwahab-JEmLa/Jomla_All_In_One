@@ -92,7 +92,7 @@ class ImprovedDatesHistoriqueTest {
             println("======== TESTING $nameDataBase TRANSACTIONS ========")
             println("\n-- Hierarchical Structure --")
 
-            HierarchicalStructure(sqlDatasDatesHistorique)
+            D_ParDatesHistoriqueTransactions_RepositoryHierarchicalStructure(sqlDatasDatesHistorique)
 
             assertTrue(true)
             println("\n======== TEST COMPLETED SUCCESSFULLY ========\n")
@@ -101,8 +101,23 @@ class ImprovedDatesHistoriqueTest {
             assertTrue("Exception during filtering: ${e.message}", false)
         }
     }
+    @Test
+    fun mapSemainJours_LogDisplayerTest() {
+        try {
+             val  nameDataBase ="SqlDatasDatesHistoriqueTransactions"
 
+            println("======== TESTING $nameDataBase TRANSACTIONS ========")
+            println("\n-- Hierarchical Structure --")
 
+            D_ParDatesHistoriqueTransactions_RepositoryHierarchicalStructure(sqlDatasDatesHistorique)
+
+            assertTrue(true)
+            println("\n======== TEST COMPLETED SUCCESSFULLY ========\n")
+        } catch (e: Exception) {
+            // If an exception occurs, fail the test
+            assertTrue("Exception during filtering: ${e.message}", false)
+        }
+    }
 }
 
 enum class TreePrefix(val lastItem: String, val normalItem: String) {
