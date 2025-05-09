@@ -4,7 +4,6 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Fi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.A_Logs_FilterByDayeLog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.D_MapsIDSDatesHistoriqueTransactionsRep_Repository
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.D_ParDatesHistoriqueTransactions_Repository
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.LogHierarchicalStructure
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.normalizeTimetampFromeStrDate
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import kotlinx.coroutines.Dispatchers
@@ -88,16 +87,29 @@ class ImprovedDatesHistoriqueTest {
     @Test
     fun SqlDatasDatesHistoriqueTransactionsLogDisplayerTest() {
         try {
-            LogHierarchicalStructure(
+            val nameDataBase = "SqlDatasDatesHistoriqueTransactions"
+
+            println("======== TESTING $nameDataBase TRANSACTIONS ========")
+            println("\n-- Hierarchical Structure --")
+
+            SqlDatasDatesHistoriqueTransactionsHierarchicalStructure(
                 sqlDatasDatesHistorique,
-                "SqlDatasDatesHistoriqueTransactions"
             )
-            // If we reach here without exceptions, test passes
+
             assertTrue(true)
+            println("\n======== TEST COMPLETED SUCCESSFULLY ========\n")
         } catch (e: Exception) {
             // If an exception occurs, fail the test
             assertTrue("Exception during filtering: ${e.message}", false)
         }
     }
+}
 
+enum class TreePrefix(val lastItem: String, val normalItem: String) {
+    DAY("  └─", "  ├─"),
+    TRANSACTION_LAST_DAY("     └─", "     ├─"),
+    TRANSACTION_NORMAL_DAY("  │  └─", "  │  ├─"),
+    CLIENT_SPACING("     ", "  │  ");
+
+    fun get(isLast: Boolean): String = if (isLast) lastItem else normalItem
 }

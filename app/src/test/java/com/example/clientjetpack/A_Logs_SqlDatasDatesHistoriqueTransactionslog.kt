@@ -1,28 +1,15 @@
-package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs
+package com.example.clientjetpack
 
-// Enum class for hierarchical tree prefixes
-enum class TreePrefix(val lastItem: String, val normalItem: String) {
-    DAY("  └─", "  ├─"),
-    TRANSACTION_LAST_DAY("     └─", "     ├─"),
-    TRANSACTION_NORMAL_DAY("  │  └─", "  │  ├─"),
-    CLIENT_SPACING("     ", "  │  ");
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.D_ParDatesHistoriqueTransactions_Repository
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.belongsToSameWeek
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.formatTime
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.formatTimestampToDate
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.isSameDay
 
-    fun get(isLast: Boolean): String = if (isLast) lastItem else normalItem
-}
 
-fun LogHierarchicalStructure(
-    data: D_ParDatesHistoriqueTransactions_Repository,
-    nameDataBase: String
+fun SqlDatasDatesHistoriqueTransactionsHierarchicalStructure(
+    sqlDatasDatesHistoriqueTransactions: D_ParDatesHistoriqueTransactions_Repository
 ) {
-    println("======== TESTING $nameDataBase TRANSACTIONS ========")
-    println("\n-- Hierarchical Structure --")
-
-    HierarchicalStructure(data)
-
-    println("\n======== TEST COMPLETED SUCCESSFULLY ========\n")
-}
-
-private fun HierarchicalStructure(sqlDatasDatesHistoriqueTransactions: D_ParDatesHistoriqueTransactions_Repository) {
     val sortedWeeks = sqlDatasDatesHistoriqueTransactions.semaines.sortedBy { it.vidTimeTemp }
 
     sortedWeeks.forEach { semaine ->
