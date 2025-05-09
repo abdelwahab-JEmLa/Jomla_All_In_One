@@ -191,7 +191,7 @@ class ImprovedDatesHistoriqueTest {
 
         return "${calendar.get(Calendar.YEAR)}-" +
                 "${(calendar.get(Calendar.MONTH) + 1).toString().padStart(2, '0')}-" +
-                "${calendar.get(Calendar.DAY_OF_MONTH).toString().padStart(2, '0')}"
+                calendar.get(Calendar.DAY_OF_MONTH).toString().padStart(2, '0')
     }
 }
 
