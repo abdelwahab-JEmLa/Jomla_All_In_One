@@ -2,9 +2,9 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.F
 
 class FilterHandler {
     fun filterTransactionsByDay(
-        sqlDatasDatesHistorique: D_SqlDatasDatesHistoriqueTransactions_Repository,
+        sqlDatasDatesHistorique: D_DatesHistoriqueTransactions_Repository,
         filterDateTimeTamp: Long
-    ): List<D_SqlDatasDatesHistoriqueTransactions_Repository.Transaction> {
+    ): List<D_DatesHistoriqueTransactions_Repository.Transaction> {
         // Find transactions for this specific day
         return sqlDatasDatesHistorique.transactions.filter { transaction ->
             isSameDay(transaction.timestamp, filterDateTimeTamp)

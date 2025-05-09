@@ -2,7 +2,7 @@ package com.example.clientjetpack
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.A_LogMapsIDSDatesHistoriqueTransactions
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.D_MapsIDSDatesHistoriqueTransactionsRep_Repository
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.D_SqlDatasDatesHistoriqueTransactions_Repository
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.D_DatesHistoriqueTransactions_Repository
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.FilterByDayeLog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.SqlDatasDatesHistoriqueTransactionslog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.TestTransactionDataProvider
@@ -31,7 +31,7 @@ class ImprovedDatesHistoriqueTest {
     private val transactions = TestTransactionDataProvider.getTransactions() // This is a suspend function, but runBlocking makes it work
 
     private lateinit var mapsIDSDatesHistoriqueTransactions: D_MapsIDSDatesHistoriqueTransactionsRep_Repository
-    private lateinit var sqlDatasDatesHistorique: D_SqlDatasDatesHistoriqueTransactions_Repository
+    private lateinit var sqlDatasDatesHistorique: D_DatesHistoriqueTransactions_Repository
 
     @Before
     fun setup() {
@@ -41,7 +41,7 @@ class ImprovedDatesHistoriqueTest {
         mapsIDSDatesHistoriqueTransactions = D_MapsIDSDatesHistoriqueTransactionsRep_Repository()
             .collectInit(transactions)
 
-        sqlDatasDatesHistorique = D_SqlDatasDatesHistoriqueTransactions_Repository(
+        sqlDatasDatesHistorique = D_DatesHistoriqueTransactions_Repository(
             mapsIDSDatesHistoriqueTransactions,
             transactions
         )

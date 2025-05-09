@@ -22,7 +22,7 @@ fun ClientTransactionsListPreview(
 ) {
     // Create SqlData for displaying formatted data
     val sqlData = remember {
-        com.example.clientjetpack.D_SqlDatasDatesHistoriqueTransactions_Repository(
+        com.example.clientjetpack.D_DatesHistoriqueTransactions_Repository(
             d_Rep_MapsIDSDatesHistoriqueTransactions,
             rawTransactions
         )
@@ -48,8 +48,8 @@ fun ClientTransactionsListPreview(
 
 @Composable
 fun WeekSection(
-    week: com.example.clientjetpack.D_SqlDatasDatesHistoriqueTransactions_Repository.Semaine,
-    sqlData: com.example.clientjetpack.D_SqlDatasDatesHistoriqueTransactions_Repository,
+    week: com.example.clientjetpack.D_DatesHistoriqueTransactions_Repository.Semaine,
+    sqlData: com.example.clientjetpack.D_DatesHistoriqueTransactions_Repository,
     mapsData: com.example.clientjetpack.D_MapsIDSDatesHistoriqueTransactionsRep_Repository
 ) {
     val weekDays = remember {
@@ -83,8 +83,8 @@ fun WeekSection(
 
 @Composable
 fun DaySection(
-    day: com.example.clientjetpack.D_SqlDatasDatesHistoriqueTransactions_Repository.Jour,
-    sqlData: com.example.clientjetpack.D_SqlDatasDatesHistoriqueTransactions_Repository,
+    day: com.example.clientjetpack.D_DatesHistoriqueTransactions_Repository.Jour,
+    sqlData: com.example.clientjetpack.D_DatesHistoriqueTransactions_Repository,
     mapsData: com.example.clientjetpack.D_MapsIDSDatesHistoriqueTransactionsRep_Repository
 ) {
     val transactionIds = remember {
@@ -123,8 +123,8 @@ fun DaySection(
 
 @Composable
 fun TransactionItem(
-    transaction: com.example.clientjetpack.D_SqlDatasDatesHistoriqueTransactions_Repository.Transaction,
-    sqlData: com.example.clientjetpack.D_SqlDatasDatesHistoriqueTransactions_Repository
+    transaction: com.example.clientjetpack.D_DatesHistoriqueTransactions_Repository.Transaction,
+    sqlData: com.example.clientjetpack.D_DatesHistoriqueTransactions_Repository
 ) {
     val client = remember {
         sqlData.clients.find { it.vidTimeTemp == transaction.clientId }

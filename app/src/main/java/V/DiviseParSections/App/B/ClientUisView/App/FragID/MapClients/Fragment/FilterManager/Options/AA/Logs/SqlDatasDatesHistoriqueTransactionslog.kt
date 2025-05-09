@@ -1,11 +1,11 @@
 package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs
 
 /**
- * Improved logging function for D_SqlDatasDatesHistoriqueTransactions_Repository structure
+ * Improved logging function for D_DatesHistoriqueTransactions_Repository structure
  * Properly associates transactions with days based on timestamp comparison
  */
 fun SqlDatasDatesHistoriqueTransactionslog(
-    sqlDatasDatesHistoriqueTransactions: D_SqlDatasDatesHistoriqueTransactions_Repository
+    sqlDatasDatesHistoriqueTransactions: D_DatesHistoriqueTransactions_Repository
 ) {
     println("======== TESTING DATES HISTORIQUE TRANSACTIONS ========")
 
