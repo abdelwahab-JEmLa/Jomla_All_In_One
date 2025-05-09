@@ -49,9 +49,10 @@ object TestTransactionDataProvider {
         if (cachedTransactions == null || cacheExpired) {
             cachedTransactions = if (useFirebase) {
                 try {
+                    // Fix: Directly return the result from fetchTransactionsFromFirebase
                     val firebaseData = FirebaseTransactionProvider.fetchTransactionsFromFirebase()
                     lastCacheTime = currentTime
-                    firebaseData
+                    firebaseData  // This is now properly returned
                 } catch (e: Exception) {
                     println("Error fetching Firebase data: ${e.message}. Falling back to mock data.")
                     getMockTransactions()
