@@ -1,7 +1,5 @@
-package com.example.clientjetpack
+package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs
 
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.D_Repo_TransactionCommercial
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.createTimestamp
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.Type
 import java.util.Calendar
 
@@ -20,7 +18,8 @@ object TestTransactionDataProvider {
         val yesterday = Calendar.getInstance().apply { add(Calendar.DAY_OF_MONTH, -1) }
 
         // Client ID 174 - "الاخ لعمري اسماعيل" - Today
-        transactions.add(createTransaction(
+        transactions.add(
+            createTransaction(
             vid = 1L,
             parentId = 2L,
             clientId = 174L,
@@ -32,9 +31,11 @@ object TestTransactionDataProvider {
                 12, 30),
             heurDebut = "12:30",
             state = Type.A_COMMANDE_CONFIRME
-        ))
+        )
+        )
 
-        transactions.add(createTransaction(
+        transactions.add(
+            createTransaction(
             vid = 2L,
             parentId = 2L,
             clientId = 174L,
@@ -46,10 +47,12 @@ object TestTransactionDataProvider {
                 14, 15),
             heurDebut = "14:15",
             state = Type.ON_MODE_COMMEND_ACTUELLEMENT
-        ))
+        )
+        )
 
         // Client ID 177 - "الاخ زواوي محمد" - Yesterday
-        transactions.add(createTransaction(
+        transactions.add(
+            createTransaction(
             vid = 8L,
             parentId = 2L,
             clientId = 177L,
@@ -61,9 +64,11 @@ object TestTransactionDataProvider {
                 21, 45),
             heurDebut = "21:45",
             state = Type.A_COMMANDE_CONFIRME
-        ))
+        )
+        )
 
-        transactions.add(createTransaction(
+        transactions.add(
+            createTransaction(
             vid = 9L,
             parentId = 2L,
             clientId = 177L,
@@ -75,10 +80,12 @@ object TestTransactionDataProvider {
                 22, 54),
             heurDebut = "22:54",
             state = Type.ON_MODE_COMMEND_ACTUELLEMENT
-        ))
+        )
+        )
 
         // Client ID 180 - "الاخ سليم بن علي" - Today
-        transactions.add(createTransaction(
+        transactions.add(
+            createTransaction(
             vid = 10L,
             parentId = 2L,
             clientId = 180L,
@@ -90,10 +97,12 @@ object TestTransactionDataProvider {
                 9, 10),
             heurDebut = "09:10",
             state = Type.AVEC_MARCHANDISE
-        ))
+        )
+        )
 
         // Client ID 185 - "الاخ محمد بن عمر" - Yesterday
-        transactions.add(createTransaction(
+        transactions.add(
+            createTransaction(
             vid = 11L,
             parentId = 2L,
             clientId = 185L,
@@ -105,10 +114,12 @@ object TestTransactionDataProvider {
                 16, 20),
             heurDebut = "16:20",
             state = Type.ACHETEUR_NON_DISPO
-        ))
+        )
+        )
 
         // Add two more for variety
-        transactions.add(createTransaction(
+        transactions.add(
+            createTransaction(
             vid = 12L,
             parentId = 2L,
             clientId = 190L,
@@ -120,9 +131,11 @@ object TestTransactionDataProvider {
                 11, 5),
             heurDebut = "11:05",
             state = Type.COMMANDE_LIVRAI
-        ))
+        )
+        )
 
-        transactions.add(createTransaction(
+        transactions.add(
+            createTransaction(
             vid = 13L,
             parentId = 2L,
             clientId = 195L,
@@ -134,7 +147,8 @@ object TestTransactionDataProvider {
                 13, 45),
             heurDebut = "13:45",
             state = Type.FERME
-        ))
+        )
+        )
 
         return transactions
     }
