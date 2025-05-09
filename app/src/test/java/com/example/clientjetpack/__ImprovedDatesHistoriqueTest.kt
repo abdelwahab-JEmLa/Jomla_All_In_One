@@ -171,6 +171,13 @@ class ImprovedDatesHistoriqueTest {
     ) {
         println("$dayPrefix Day: $dayDate ($transactions transactions)")
 
+        sousItem(mapsIDSDatesHistoriqueTransactions, dayTimestamp)
+    }
+
+    private fun sousItem(
+        mapsIDSDatesHistoriqueTransactions: D_MapsIDSDatesHistoriqueTransactionsRep_Repository,
+        dayTimestamp: Long,
+    ) {
         // If you want to add more detail about transactions on this day:
         val transactionsForDay = mapsIDSDatesHistoriqueTransactions.jours[dayTimestamp]
         if (!transactionsForDay.isNullOrEmpty()) {
