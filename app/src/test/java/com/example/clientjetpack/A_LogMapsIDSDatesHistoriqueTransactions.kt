@@ -76,7 +76,7 @@ fun A_LogMapsIDSDatesHistoriqueTransactions(
                         if (isLastTransaction) "  │  └─" else "  │  ├─"
                     }
 
-                    val transactionType = mapsIDSDatesHistoriqueTransactions.transactions[transactionId]
+                    val transactionType = mapsIDSDatesHistoriqueTransactions.stateTransactions[transactionId]
 
                     val transaction = testTransactions.find { it.vid == transactionId }
                     val timeStr = if (transaction != null) {

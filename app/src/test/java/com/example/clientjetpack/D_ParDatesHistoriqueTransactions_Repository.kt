@@ -69,7 +69,7 @@ class D_ParDatesHistoriqueTransactions_Repository(
         }
 
         // Initialize transactions data
-        datesHistoriqueForTesting.transactions.forEach { (transactionId, transactionType) ->
+        datesHistoriqueForTesting.stateTransactions.forEach { (transactionId, transactionType) ->
             // Find the original transaction to get the correct timestamp
             val originalTransaction = testTransactions?.find { it.vid == transactionId }
             val transactionItem = Transaction()

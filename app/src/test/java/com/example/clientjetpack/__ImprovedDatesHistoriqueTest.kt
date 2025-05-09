@@ -126,12 +126,11 @@ class ImprovedDatesHistoriqueTest {
             .semaines
             .entries.sortedByDescending { it.key }
 
-        ListLog(sortedWeeks, mapsIDSDatesHistoriqueTransactions)
+        ListLog(sortedWeeks)
     }
 
     private fun ListLog(
         sortedWeeks: List<Map.Entry<Long, MutableList<Long>>>,
-        mapsIDSDatesHistoriqueTransactions: D_MapsIDSDatesHistoriqueTransactionsRep_Repository,
     ) {
         sortedWeeks.forEachIndexed { weekIndex, (weekTimestamp, days) ->
             val isLastWeek = weekIndex == sortedWeeks.size - 1
@@ -150,13 +149,10 @@ class ImprovedDatesHistoriqueTest {
 
                 // Format day timestamp and count transactions
                 val dayDate = formatTimestamp(dayTimestamp)
-                val transactions = mapsIDSDatesHistoriqueTransactions.jours[dayTimestamp]?.size ?: 0
+
                 itemLog(
                     dayPrefix,
-                    dayDate,
-                    transactions,
-                    mapsIDSDatesHistoriqueTransactions,
-                    dayTimestamp
+                    dayDate
                 )
             }
         }
@@ -165,29 +161,8 @@ class ImprovedDatesHistoriqueTest {
     private fun itemLog(
         dayPrefix: String,
         dayDate: String,
-        transactions: Int,
-        mapsIDSDatesHistoriqueTransactions: D_MapsIDSDatesHistoriqueTransactionsRep_Repository,
-        dayTimestamp: Long,
     ) {
-        println("$dayPrefix Day: $dayDate ($transactions transactions)")
-
-        sousItem(mapsIDSDatesHistoriqueTransactions, dayTimestamp)
-    }
-
-    private fun sousItem(
-        mapsIDSDatesHistoriqueTransactions: D_MapsIDSDatesHistoriqueTransactionsRep_Repository,
-        dayTimestamp: Long,
-    ) {
-        // If you want to add more detail about transactions on this day:
-        val transactionsForDay = mapsIDSDatesHistoriqueTransactions.jours[dayTimestamp]
-        if (!transactionsForDay.isNullOrEmpty()) {
-            transactionsForDay.forEachIndexed { txIndex, txId ->
-                val isLastTx = txIndex == transactionsForDay.size - 1
-                val txPrefix = TreePrefix.Type3.get(isLastTx)
-                val txState = mapsIDSDatesHistoriqueTransactions.transactions[txId]
-                println("$txPrefix Transaction: ID>$txId (State: $txState)")
-            }
-        }
+        println("$dayPrefix Day: $dayDate")
     }
 
     // Helper function to format timestamp to readable date

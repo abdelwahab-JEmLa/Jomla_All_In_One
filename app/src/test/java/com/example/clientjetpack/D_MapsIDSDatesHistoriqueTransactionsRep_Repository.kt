@@ -10,14 +10,14 @@ class D_MapsIDSDatesHistoriqueTransactionsRep_Repository {
     var semaines by mutableStateOf<Map<Long, MutableList<Long>>>(emptyMap())
     var jours by mutableStateOf<Map<Long, MutableList<Long>>>(emptyMap())
     var clients by mutableStateOf<Map<Long, MutableList<Long>>>(emptyMap())
-    var transactions by mutableStateOf<Map<Long, Type>>(emptyMap())
+    var stateTransactions by mutableStateOf<Map<Long, Type>>(emptyMap())
 
     fun collectInit(
         testTransactions: List<D_TransactionCommercial_Repository>,
     ): D_MapsIDSDatesHistoriqueTransactionsRep_Repository {
         val weekMap = mutableMapOf<Long, MutableList<Long>>()
         val dayMap = mutableMapOf<Long, MutableList<Long>>()
-        val clientMap = mutableMapOf<Long, MutableList<Long>>()
+        val txClientMap = mutableMapOf<Long, MutableList<Long>>()
         val txStateMap = mutableMapOf<Long, Type>()
 
         testTransactions.forEach { transaction ->
@@ -30,7 +30,7 @@ class D_MapsIDSDatesHistoriqueTransactionsRep_Repository {
 
             dayMap.getOrPut(dayTimestamp) { mutableListOf() }.add(transaction.vid)
 
-            clientMap.getOrPut(transaction.clientAcheteurID) { mutableListOf() }
+            txClientMap.getOrPut(transaction.clientAcheteurID) { mutableListOf() }
                 .add(transaction.vid)
 
             txStateMap[transaction.vid] = transaction.etateActuellementEst
@@ -38,8 +38,8 @@ class D_MapsIDSDatesHistoriqueTransactionsRep_Repository {
 
         semaines = weekMap
         jours = dayMap
-        clients = clientMap
-        transactions = txStateMap
+        clients = txClientMap
+        stateTransactions = txStateMap
 
         return this
     }
