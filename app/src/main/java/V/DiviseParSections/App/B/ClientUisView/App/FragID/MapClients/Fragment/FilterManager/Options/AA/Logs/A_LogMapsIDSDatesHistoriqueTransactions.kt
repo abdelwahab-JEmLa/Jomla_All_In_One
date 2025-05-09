@@ -23,11 +23,11 @@ fun normalizeTimetampFromeStrDate(stringDate: String): Long {
 }
 
 /**
- * Improved logging function for D_Rep_MapsIDSDatesHistoriqueTransactions
+ * Improved logging function for D_MapsIDSDatesHistoriqueTransactionsRep_Repository
  * Ensures correct week-day associations and provides detailed transaction information
  */
 fun A_LogMapsIDSDatesHistoriqueTransactions(
-    mapsIDSDatesHistoriqueTransactions: D_Rep_MapsIDSDatesHistoriqueTransactions
+    mapsIDSDatesHistoriqueTransactions: D_MapsIDSDatesHistoriqueTransactionsRep_Repository
 ) {
     println("======== TESTING DATES HISTORIQUE TRANSACTIONS ========")
 

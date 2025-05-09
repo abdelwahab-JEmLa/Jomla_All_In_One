@@ -9,7 +9,7 @@ import java.util.Date
 import java.util.Locale
 
 @Entity
-data class D_Repo_TransactionCommercial(
+data class D_TransactionCommercial_Repository(
     @PrimaryKey(autoGenerate = true)
     var vid: Long = 0L,
 

@@ -1,8 +1,8 @@
 package com.example.clientjetpack
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.A_LogMapsIDSDatesHistoriqueTransactions
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.D_Rep_MapsIDSDatesHistoriqueTransactions
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.D_Repo_SqlDatasDatesHistoriqueTransactions
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.D_MapsIDSDatesHistoriqueTransactionsRep_Repository
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.D_SqlDatasDatesHistoriqueTransactions_Repository
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.FilterByDayeLog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.SqlDatasDatesHistoriqueTransactionslog
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.TestTransactionDataProvider
@@ -30,18 +30,18 @@ class ImprovedDatesHistoriqueTest {
     // Lazy initialization of transactions using runBlocking for suspend function
     private val transactions = TestTransactionDataProvider.getTransactions() // This is a suspend function, but runBlocking makes it work
 
-    private lateinit var mapsIDSDatesHistoriqueTransactions: D_Rep_MapsIDSDatesHistoriqueTransactions
-    private lateinit var sqlDatasDatesHistorique: D_Repo_SqlDatasDatesHistoriqueTransactions
+    private lateinit var mapsIDSDatesHistoriqueTransactions: D_MapsIDSDatesHistoriqueTransactionsRep_Repository
+    private lateinit var sqlDatasDatesHistorique: D_SqlDatasDatesHistoriqueTransactions_Repository
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
 
         // Create and initialize data structures
-        mapsIDSDatesHistoriqueTransactions = D_Rep_MapsIDSDatesHistoriqueTransactions()
+        mapsIDSDatesHistoriqueTransactions = D_MapsIDSDatesHistoriqueTransactionsRep_Repository()
             .collectInit(transactions)
 
-        sqlDatasDatesHistorique = D_Repo_SqlDatasDatesHistoriqueTransactions(
+        sqlDatasDatesHistorique = D_SqlDatasDatesHistoriqueTransactions_Repository(
             mapsIDSDatesHistoriqueTransactions,
             transactions
         )

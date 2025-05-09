@@ -9,8 +9,8 @@ import java.util.Calendar
  */
 object TestTransactionDataProvider {
 
-    fun getTransactions(): List<D_Repo_TransactionCommercial> {
-        val transactions = mutableListOf<D_Repo_TransactionCommercial>()
+    fun getTransactions(): List<D_TransactionCommercial_Repository> {
+        val transactions = mutableListOf<D_TransactionCommercial_Repository>()
         val currentYear = Calendar.getInstance().get(Calendar.YEAR)
 
         // Create transactions for two days: yesterday and today
@@ -164,8 +164,8 @@ object TestTransactionDataProvider {
         timestamp: Long,
         heurDebut: String,
         state: Type
-    ): D_Repo_TransactionCommercial {
-        return D_Repo_TransactionCommercial(
+    ): D_TransactionCommercial_Repository {
+        return D_TransactionCommercial_Repository(
             vid = vid,
             parentVID_1_4_PeriodeVent = parentId,
             clientAcheteurID = clientId,

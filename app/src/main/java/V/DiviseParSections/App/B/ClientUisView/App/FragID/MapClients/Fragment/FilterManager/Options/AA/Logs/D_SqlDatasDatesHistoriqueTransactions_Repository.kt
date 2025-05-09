@@ -11,9 +11,9 @@ import java.util.Date
 import java.util.Locale
 
 @SuppressLint("MutableCollectionMutableState")
-class D_Repo_SqlDatasDatesHistoriqueTransactions(
-    datesHistoriqueForTesting: D_Rep_MapsIDSDatesHistoriqueTransactions,
-    private val testTransactions: List<D_Repo_TransactionCommercial>? = null
+class D_SqlDatasDatesHistoriqueTransactions_Repository(
+    datesHistoriqueForTesting: D_MapsIDSDatesHistoriqueTransactionsRep_Repository,
+    private val testTransactions: List<D_TransactionCommercial_Repository>? = null
 ) {
     var semaines by mutableStateOf<MutableList<Semaine>>(mutableListOf())
     var jours by mutableStateOf<MutableList<Jour>>(mutableListOf())
