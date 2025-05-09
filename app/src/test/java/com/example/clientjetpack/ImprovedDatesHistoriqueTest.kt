@@ -26,8 +26,7 @@ class ImprovedDatesHistoriqueTest {
 
     private val testDispatcher = StandardTestDispatcher()
 
-    // Lazy initialization of transactions using runBlocking for suspend function
-    private val transactions = TestTransactionDataProvider.getTransactions() // This is a suspend function, but runBlocking makes it work
+    private val transactions = TestTransactionDataProvider.getTransactions()
 
     private lateinit var mapsIDSDatesHistoriqueTransactions: D_MapsIDSDatesHistoriqueTransactionsRep_Repository
     private lateinit var sqlDatasDatesHistorique: D_ParDatesHistoriqueTransactions_Repository
