@@ -44,7 +44,7 @@ class D_MapsIDSDatesHistoriqueTransactionsRep_Repository {
         return this
     }
 
-    fun normalizeToDay(timestamp: Long): Long {
+    private fun normalizeToDay(timestamp: Long): Long {
         val calendar = Calendar.getInstance().apply {
             timeInMillis = timestamp
             set(Calendar.HOUR_OF_DAY, 0)
@@ -55,7 +55,7 @@ class D_MapsIDSDatesHistoriqueTransactionsRep_Repository {
         return calendar.timeInMillis
     }
 
-    fun normalizeToWeekStart(dayTimestamp: Long): Long {
+    private fun normalizeToWeekStart(dayTimestamp: Long): Long {
         val calendar = Calendar.getInstance().apply {
             timeInMillis = dayTimestamp
             set(Calendar.DAY_OF_WEEK, firstDayOfWeek)
