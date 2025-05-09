@@ -31,7 +31,8 @@ class ImprovedDatesHistoriqueTest {
 
     private lateinit var mapsIDSDatesHistoriqueTransactions: DA_MapsIDSDatesHistoriqueTransactionsRep_Repository
     private lateinit var sqlDatasDatesHistorique: DB_ParDatesHistoriqueTransactions_Repository
-    private lateinit var joursRepository: DB_ParDatesHistoriqueTransactions_Repository.JoursRepositoryImp
+    private lateinit var joursRepository: DB_ParDatesHistoriqueTransactions_Repository
+        .JoursRepositoryImp
 
     @Before
     fun setup() {
@@ -47,7 +48,8 @@ class ImprovedDatesHistoriqueTest {
         )
 
         // Initialize JoursRepositoryImp
-        joursRepository = DB_ParDatesHistoriqueTransactions_Repository.JoursRepositoryImp(sqlDatasDatesHistorique)
+        joursRepository = DB_ParDatesHistoriqueTransactions_Repository
+            .JoursRepositoryImp(sqlDatasDatesHistorique)
     }
 
     @After

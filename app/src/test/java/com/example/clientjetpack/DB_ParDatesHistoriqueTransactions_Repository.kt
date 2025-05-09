@@ -125,7 +125,9 @@ class DB_ParDatesHistoriqueTransactions_Repository(
         }
     }
 
-    class JoursRepositoryImp(private val repository: DB_ParDatesHistoriqueTransactions_Repository) {
+    class JoursRepositoryImp(
+        private val repository: DB_ParDatesHistoriqueTransactions_Repository
+    ) {
         fun update(data: Jour) {
             repository.updateDay(data.vidTimeTemp) { jour ->
                 jour.itsActiveDaye = data.itsActiveDaye
