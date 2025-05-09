@@ -11,18 +11,18 @@ enum class TreePrefix(val lastItem: String, val normalItem: String) {
 }
 
 fun LogHierarchicalStructure(
-    data: Any,
+    data: D_ParDatesHistoriqueTransactions_Repository,
     nameDataBase: String
 ) {
     println("======== TESTING $nameDataBase TRANSACTIONS ========")
     println("\n-- Hierarchical Structure --")
 
-    hierarchicalStructure(data)
+    HierarchicalStructure(data)
 
     println("\n======== TEST COMPLETED SUCCESSFULLY ========\n")
 }
 
-private fun hierarchicalStructure(sqlDatasDatesHistoriqueTransactions: Any) {
+private fun HierarchicalStructure(sqlDatasDatesHistoriqueTransactions: D_ParDatesHistoriqueTransactions_Repository) {
     val sortedWeeks = sqlDatasDatesHistoriqueTransactions.semaines.sortedBy { it.vidTimeTemp }
 
     sortedWeeks.forEach { semaine ->

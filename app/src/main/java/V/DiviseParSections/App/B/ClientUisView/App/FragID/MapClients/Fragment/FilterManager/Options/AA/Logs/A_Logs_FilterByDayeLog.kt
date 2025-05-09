@@ -4,7 +4,7 @@ package V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.F
  * Logs filtered transactions for a specific day
  */
 fun A_Logs_FilterByDayeLog(
-    sqlDatasDatesHistorique: Any,
+    sqlDatasDatesHistorique: D_ParDatesHistoriqueTransactions_Repository,
     filterDateTimeTamp: Long
 ) {
     println("======== TESTING FILTERED DATES HISTORIQUE BY DAY ========")
