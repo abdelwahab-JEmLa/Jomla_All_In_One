@@ -28,7 +28,7 @@ fun D_ParDatesHistoriqueTransactions_RepositoryHierarchicalStructure(
             val isLastDay = dayIndex == daysInWeek.size - 1
 
             // Using the enum instance method correctly
-            val dayPrefix = TreePrefix.DAY.get(isLastDay)
+            val type1Prefix = TreePrefix.Type1.get(isLastDay)
 
             // Find transactions for this day using direct timestamp comparison
             val transactionsForDay =
@@ -36,7 +36,7 @@ fun D_ParDatesHistoriqueTransactions_RepositoryHierarchicalStructure(
                     isSameDay(transaction.timestamp, jour.vidTimeTemp)
                 }.sortedBy { it.timestamp }
 
-            println("$dayPrefix Jour $dayIndex ($dayDate): ${transactionsForDay.size} transaction(s)")
+            println("$type1Prefix Jour $dayIndex ($dayDate): ${transactionsForDay.size} transaction(s)")
 
             // Group transactions by client
             val transactionsByClient = transactionsForDay
@@ -52,9 +52,9 @@ fun D_ParDatesHistoriqueTransactions_RepositoryHierarchicalStructure(
 
                 // Using the enum instance method correctly
                 val clientPrefix = if (isLastDay)
-                    TreePrefix.CLIENT_SPACING.get(true)
+                    TreePrefix.Type4.get(true)
                 else
-                    TreePrefix.CLIENT_SPACING.get(false)
+                    TreePrefix.Type4.get(false)
 
                 println("$clientPrefix Client ID: $clientId ($clientName) - ${transactions.size} transaction(s)")
 
@@ -65,9 +65,9 @@ fun D_ParDatesHistoriqueTransactions_RepositoryHierarchicalStructure(
 
                     // Using the enum instance method correctly
                     val transactionPrefix = if (isLastDay) {
-                        TreePrefix.TRANSACTION_LAST_DAY.get(isLastTransaction)
+                        TreePrefix.Type2.get(isLastTransaction)
                     } else {
-                        TreePrefix.TRANSACTION_NORMAL_DAY.get(isLastTransaction)
+                        TreePrefix.Type3.get(isLastTransaction)
                     }
 
                     val timeStr = formatTime(transaction.timestamp)
