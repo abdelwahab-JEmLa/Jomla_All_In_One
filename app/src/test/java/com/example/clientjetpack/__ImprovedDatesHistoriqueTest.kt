@@ -178,7 +178,7 @@ class ImprovedDatesHistoriqueTest {
                 val isLastTx = txIndex == transactionsForDay.size - 1
                 val txPrefix = TreePrefix.Type3.get(isLastTx)
                 val txState = mapsIDSDatesHistoriqueTransactions.transactions[txId]
-                println("$txPrefix Transaction: $txId (State: $txState)")
+                println("$txPrefix Transaction: ID>$txId (State: $txState)")
             }
         }
     }
