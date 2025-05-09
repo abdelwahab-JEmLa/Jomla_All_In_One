@@ -127,10 +127,8 @@ class DB_ParDatesHistoriqueTransactions_Repository(
 
     class JoursRepositoryImp(private val repository: DB_ParDatesHistoriqueTransactions_Repository) {
         fun update(data: Jour) {
-            // Find the day with matching timestamp and update only that one
             repository.updateDay(data.vidTimeTemp) { jour ->
                 jour.itsActiveDaye = data.itsActiveDaye
-                // Update other properties as needed
             }
         }
     }

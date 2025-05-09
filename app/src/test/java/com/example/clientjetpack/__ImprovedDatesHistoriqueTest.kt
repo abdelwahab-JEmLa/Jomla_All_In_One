@@ -31,6 +31,7 @@ class ImprovedDatesHistoriqueTest {
 
     private lateinit var mapsIDSDatesHistoriqueTransactions: DA_MapsIDSDatesHistoriqueTransactionsRep_Repository
     private lateinit var sqlDatasDatesHistorique: DB_ParDatesHistoriqueTransactions_Repository
+    private lateinit var joursRepository: DB_ParDatesHistoriqueTransactions_Repository.JoursRepositoryImp
 
     @Before
     fun setup() {
@@ -44,6 +45,9 @@ class ImprovedDatesHistoriqueTest {
             mapsIDSDatesHistoriqueTransactions,
             transactions
         )
+
+        // Initialize JoursRepositoryImp
+        joursRepository = DB_ParDatesHistoriqueTransactions_Repository.JoursRepositoryImp(sqlDatasDatesHistorique)
     }
 
     @After
@@ -116,9 +120,10 @@ class ImprovedDatesHistoriqueTest {
 
             // Get the first day and set it active
             val firstDay = sqlDatasDatesHistorique.jours[1]
-            firstDay.itsActiveDaye = true
 
-            // Verify that only the first day is active
+            firstDay.itsActiveDaye = true  // Set the value in the model
+            joursRepository.update(firstDay)  // Update via repository
+
             assertEquals(true, sqlDatasDatesHistorique.jours[1].itsActiveDaye)
 
             mapSemainJours_LogDisplayerTest(
@@ -129,7 +134,6 @@ class ImprovedDatesHistoriqueTest {
             println("\n========TEST $name  COMPLETED SUCCESSFULLY ========\n")
 
         } catch (e: Exception) {
-            // If an exception occurs, fail the test
             assertTrue("Exception during filtering: ${e.message}", false)
         }
     }
@@ -147,7 +151,6 @@ class ImprovedDatesHistoriqueTest {
             assertTrue(true)
             println("\n======== TEST COMPLETED SUCCESSFULLY ========\n")
         } catch (e: Exception) {
-            // If an exception occurs, fail the test
             assertTrue("Exception during filtering: ${e.message}", false)
         }
     }
@@ -157,7 +160,6 @@ class ImprovedDatesHistoriqueTest {
     ) {
         println("Semaines (${mapsIDSDatesHistoriqueTransactions.semaines.size}):")
 
-        // Sort weeks by timestamp (from newest to oldest)
         val sortedWeeks = mapsIDSDatesHistoriqueTransactions
             .semaines
             .entries.sortedByDescending { it.key }
@@ -172,21 +174,17 @@ class ImprovedDatesHistoriqueTest {
             val isLastWeek = weekIndex == sortedWeeks.size - 1
             val weekPrefix = TreePrefix.Type1.get(isLastWeek)
 
-            // Format week timestamp
             val weekDate = formatTimestamp(weekTimestamp)
             println("$weekPrefix Week: $weekDate (${days.size} days)")
 
-            // Sort days within each week (from newest to oldest)
             val sortedDays = days.sortedByDescending { it }
 
             sortedDays.forEachIndexed { dayIndex, dayTimestamp ->
                 val isLastDay = dayIndex == sortedDays.size - 1
                 val dayPrefix = TreePrefix.Type2.get(isLastDay)
 
-                // Format day timestamp and count transactions
                 val dayDate = formatTimestamp(dayTimestamp)
 
-                // Find the corresponding Jour object to check its active state
                 val jourObject = sqlDatasDatesHistorique.jours.find { it.vidTimeTemp == dayTimestamp }
                 val isActive = jourObject?.itsActiveDaye ?: false
 
@@ -195,7 +193,6 @@ class ImprovedDatesHistoriqueTest {
         }
     }
 
-    // Helper function to format timestamp to readable date
     private fun formatTimestamp(timestamp: Long): String {
         val calendar = Calendar.getInstance().apply {
             timeInMillis = timestamp
@@ -206,4 +203,3 @@ class ImprovedDatesHistoriqueTest {
                 calendar.get(Calendar.DAY_OF_MONTH).toString().padStart(2, '0')
     }
 }
-
