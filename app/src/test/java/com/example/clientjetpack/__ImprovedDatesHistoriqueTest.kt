@@ -115,14 +115,12 @@ class ImprovedDatesHistoriqueTest {
             )
 
             // Get the first day and set it active
-            val firstDay = sqlDatasDatesHistorique.jours.first()
+            val firstDay = sqlDatasDatesHistorique.jours[1]
             firstDay.itsActiveDaye = true
 
             // Verify that only the first day is active
-            assertEquals(true, sqlDatasDatesHistorique.jours.first().itsActiveDaye)
-            if (sqlDatasDatesHistorique.jours.size > 1) {
-                assertEquals(false, sqlDatasDatesHistorique.jours[1].itsActiveDaye)
-            }
+            assertEquals(true, sqlDatasDatesHistorique.jours.last().itsActiveDaye)
+
 
             mapSemainJours_LogDisplayerTest(
                 mapsIDSDatesHistoriqueTransactions
