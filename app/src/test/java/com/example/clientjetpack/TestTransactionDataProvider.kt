@@ -5,10 +5,6 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Fi
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.Type
 import java.util.Calendar
 
-/**
- * Provides transaction data for testing and production purposes.
- * Handles fetching data from Firebase in production or generating mock data in tests.
- */
 object TestTransactionDataProvider {
 
     fun getTransactions(): List<D_TransactionCommercial_Repository> {
@@ -177,7 +173,4 @@ object TestTransactionDataProvider {
             etateActuellementEst = state
         )
     }
-
-
-
 }
