@@ -21,7 +21,7 @@ fun normalizeTimetampFromeStrDate(stringDate: String): Long {
 }
 
 fun A_LogMapsIDSDatesHistoriqueTransactions(
-    mapsIDSDatesHistoriqueTransactions: D_MapsIDSDatesHistoriqueTransactionsRep_Repository
+    mapsIDSDatesHistoriqueTransactions: DA_MapsIDSDatesHistoriqueTransactionsRep_Repository
 ) {
     println("======== TESTING DATES HISTORIQUE TRANSACTIONS ========")
 

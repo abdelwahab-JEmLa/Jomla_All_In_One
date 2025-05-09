@@ -1,18 +1,18 @@
 package com.example.clientjetpack
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-    import kotlinx.coroutines.Dispatchers
-    import kotlinx.coroutines.ExperimentalCoroutinesApi
-    import kotlinx.coroutines.test.StandardTestDispatcher
-    import kotlinx.coroutines.test.resetMain
-    import kotlinx.coroutines.test.setMain
-    import org.junit.After
-    import org.junit.Assert.assertTrue
-    import org.junit.Before
-    import org.junit.Rule
-    import org.junit.Test
-    import org.junit.rules.TestRule
-    import java.util.Calendar
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
+import org.junit.After
+import org.junit.Assert.assertTrue
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
+import org.junit.rules.TestRule
+import java.util.Calendar
 
 @ExperimentalCoroutinesApi
 class ImprovedDatesHistoriqueTest {
@@ -23,18 +23,18 @@ class ImprovedDatesHistoriqueTest {
 
     private val transactions = _B_TestTransactionDataProvider.getTransactions()
 
-    private lateinit var mapsIDSDatesHistoriqueTransactions: D_MapsIDSDatesHistoriqueTransactionsRep_Repository
-    private lateinit var sqlDatasDatesHistorique: D_ParDatesHistoriqueTransactions_Repository
+    private lateinit var mapsIDSDatesHistoriqueTransactions: DA_MapsIDSDatesHistoriqueTransactionsRep_Repository
+    private lateinit var sqlDatasDatesHistorique: DB_ParDatesHistoriqueTransactions_Repository
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
 
         // Create and initialize data structures
-        mapsIDSDatesHistoriqueTransactions = D_MapsIDSDatesHistoriqueTransactionsRep_Repository()
+        mapsIDSDatesHistoriqueTransactions = DA_MapsIDSDatesHistoriqueTransactionsRep_Repository()
             .collectInit(transactions)
 
-        sqlDatasDatesHistorique = D_ParDatesHistoriqueTransactions_Repository(
+        sqlDatasDatesHistorique = DB_ParDatesHistoriqueTransactions_Repository(
             mapsIDSDatesHistoriqueTransactions,
             transactions
         )
@@ -99,14 +99,39 @@ class ImprovedDatesHistoriqueTest {
     }
 
     @Test
-    fun mapSemainJours_LogDisplayerTest() {
+    fun logAvantEtApreAppliqueFilter() {
+        try {
+            val name = "logAvantEtApreAppliqueFilter"
+
+            println("======== TESTING $name TRANSACTIONS ========")
+            mapSemainJours_LogDisplayerTest(
+                mapsIDSDatesHistoriqueTransactions
+            )
+
+            sqlDatasDatesHistorique.jours.first().itsActiveDaye=true
+
+            mapSemainJours_LogDisplayerTest(
+                mapsIDSDatesHistoriqueTransactions
+            )
+
+            assertTrue(true)
+            println("\n========TEST $name  COMPLETED SUCCESSFULLY ========\n")
+
+        } catch (e: Exception) {
+            // If an exception occurs, fail the test
+            assertTrue("Exception during filtering: ${e.message}", false)
+        }
+    }
+
+    fun mapSemainJours_LogDisplayerTest(
+        mapsIDSDatesHistoriqueTransactionsPassed: DA_MapsIDSDatesHistoriqueTransactionsRep_Repository) {
         try {
             val nameDataBase = "mapSemainJours"
 
             println("======== TESTING $nameDataBase TRANSACTIONS ========")
             println("\n-- Hierarchical Structure --")
 
-            mapSemainJours_HierarchicalStructureLog(mapsIDSDatesHistoriqueTransactions)
+            mapSemainJours_HierarchicalStructureLog(mapsIDSDatesHistoriqueTransactionsPassed)
 
             assertTrue(true)
             println("\n======== TEST COMPLETED SUCCESSFULLY ========\n")
@@ -117,7 +142,7 @@ class ImprovedDatesHistoriqueTest {
     }
 
     private fun mapSemainJours_HierarchicalStructureLog(
-        mapsIDSDatesHistoriqueTransactions: D_MapsIDSDatesHistoriqueTransactionsRep_Repository,
+        mapsIDSDatesHistoriqueTransactions: DA_MapsIDSDatesHistoriqueTransactionsRep_Repository,
     ) {
         println("Semaines (${mapsIDSDatesHistoriqueTransactions.semaines.size}):")
 
@@ -162,7 +187,9 @@ class ImprovedDatesHistoriqueTest {
         dayPrefix: String,
         dayDate: String,
     ) {
-        println("$dayPrefix Day: $dayDate")
+       val firts = sqlDatasDatesHistorique.jours.first()
+
+        println("$dayPrefix Day: $dayDate itsActiveDaye=${firts.itsActiveDaye} ")
     }
 
     // Helper function to format timestamp to readable date

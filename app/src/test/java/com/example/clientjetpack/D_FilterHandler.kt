@@ -2,9 +2,9 @@ package com.example.clientjetpack
 
 class D_FilterHandler {
     fun filterTransactionsByDay(
-        sqlDatasDatesHistorique: D_ParDatesHistoriqueTransactions_Repository,
+        sqlDatasDatesHistorique: DB_ParDatesHistoriqueTransactions_Repository,
         filterDateTimeTamp: Long
-    ): List<D_ParDatesHistoriqueTransactions_Repository.Transaction> {
+    ): List<DB_ParDatesHistoriqueTransactions_Repository.Transaction> {
         // Find transactions for this specific day
         return sqlDatasDatesHistorique.transactions.filter { transaction ->
             isSameDay(transaction.timestamp, filterDateTimeTamp)

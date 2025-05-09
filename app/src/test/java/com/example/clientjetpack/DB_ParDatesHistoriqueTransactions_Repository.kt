@@ -11,8 +11,8 @@ import java.util.Date
 import java.util.Locale
 
 @SuppressLint("MutableCollectionMutableState")
-class D_ParDatesHistoriqueTransactions_Repository(
-    datesHistoriqueForTesting: D_MapsIDSDatesHistoriqueTransactionsRep_Repository,
+class DB_ParDatesHistoriqueTransactions_Repository(
+    datesHistoriqueForTesting: DA_MapsIDSDatesHistoriqueTransactionsRep_Repository,
     private val testTransactions: List<D_TransactionCommercial_Repository>? = null
 ) {
     var semaines by mutableStateOf<MutableList<Semaine>>(mutableListOf())
@@ -102,6 +102,8 @@ class D_ParDatesHistoriqueTransactions_Repository(
 
     class Jour {
         var vidTimeTemp by mutableStateOf(0L)
+        var itsActiveDaye by mutableStateOf(false)
+
         var dateStr by mutableStateOf("N/A")
 
         // Update date string when timestamp changes
@@ -111,7 +113,16 @@ class D_ParDatesHistoriqueTransactions_Repository(
             val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             dateStr = dateFormat.format(Date(vidTimeTemp))
         }
+
     }
+
+    class JoursRepositoryImp {
+        fun update(data:Jour) {
+                       //<--
+                       //TODO(1): ici fait update par data on trouvon
+        }
+    }
+
 
     class Client {
         var vidTimeTemp by mutableStateOf(0L)

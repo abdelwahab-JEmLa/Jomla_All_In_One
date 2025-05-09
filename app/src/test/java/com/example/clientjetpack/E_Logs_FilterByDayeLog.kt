@@ -4,7 +4,7 @@ package com.example.clientjetpack
  * Logs filtered transactions for a specific day
  */
 fun A_Logs_FilterByDayeLog(
-    sqlDatasDatesHistorique: D_ParDatesHistoriqueTransactions_Repository,
+    sqlDatasDatesHistorique: DB_ParDatesHistoriqueTransactions_Repository,
     filterDateTimeTamp: Long
 ) {
     println("======== TESTING FILTERED DATES HISTORIQUE BY DAY ========")

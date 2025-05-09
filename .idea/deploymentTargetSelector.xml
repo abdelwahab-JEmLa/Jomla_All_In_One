@@ -32,9 +32,6 @@
       <SelectionState runConfigName="ImprovedClientsMapFilterViewModelTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="ExampleInstrumentedTest">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
       <SelectionState runConfigName="PreviewClientTransactionsListPreview">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>

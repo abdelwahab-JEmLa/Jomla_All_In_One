@@ -2,7 +2,7 @@ package com.example.clientjetpack
 
 
 fun D_ParDatesHistoriqueTransactions_RepositoryHierarchicalStructure(
-    sqlDatasDatesHistoriqueTransactions: D_ParDatesHistoriqueTransactions_Repository
+    sqlDatasDatesHistoriqueTransactions: DB_ParDatesHistoriqueTransactions_Repository
 ) {
     val sortedWeeks = sqlDatasDatesHistoriqueTransactions.semaines.sortedBy { it.vidTimeTemp }
 
