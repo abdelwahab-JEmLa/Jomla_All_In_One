@@ -11,7 +11,7 @@ import java.util.Date
 import java.util.Locale
 
 @SuppressLint("MutableCollectionMutableState")
-class D_ParDatesHistoriqueTransactions_Repository(
+class Any(
     datesHistoriqueForTesting: D_MapsIDSDatesHistoriqueTransactionsRep_Repository,
     private val testTransactions: List<D_TransactionCommercial_Repository>? = null
 ) {

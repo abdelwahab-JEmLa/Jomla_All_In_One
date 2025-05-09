@@ -2,9 +2,9 @@ package com.example.clientjetpack
 
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.A_LogMapsIDSDatesHistoriqueTransactions
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.A_Logs_FilterByDayeLog
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.Any
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.D_MapsIDSDatesHistoriqueTransactionsRep_Repository
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.D_ParDatesHistoriqueTransactions_Repository
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.SqlDatasDatesHistoriqueTransactionslog
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.LogHierarchicalStructure
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.AA.Logs.normalizeTimetampFromeStrDate
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import kotlinx.coroutines.Dispatchers
@@ -29,7 +29,7 @@ class ImprovedDatesHistoriqueTest {
     private val transactions = TestTransactionDataProvider.getTransactions()
 
     private lateinit var mapsIDSDatesHistoriqueTransactions: D_MapsIDSDatesHistoriqueTransactionsRep_Repository
-    private lateinit var sqlDatasDatesHistorique: D_ParDatesHistoriqueTransactions_Repository
+    private lateinit var sqlDatasDatesHistorique: Any
 
     @Before
     fun setup() {
@@ -39,7 +39,7 @@ class ImprovedDatesHistoriqueTest {
         mapsIDSDatesHistoriqueTransactions = D_MapsIDSDatesHistoriqueTransactionsRep_Repository()
             .collectInit(transactions)
 
-        sqlDatasDatesHistorique = D_ParDatesHistoriqueTransactions_Repository(
+        sqlDatasDatesHistorique = Any(
             mapsIDSDatesHistoriqueTransactions,
             transactions
         )
@@ -88,8 +88,9 @@ class ImprovedDatesHistoriqueTest {
     @Test
     fun SqlDatasDatesHistoriqueTransactionsLogDisplayerTest() {
         try {
-            SqlDatasDatesHistoriqueTransactionslog(
-                sqlDatasDatesHistorique
+            LogHierarchicalStructure(
+                sqlDatasDatesHistorique,
+                "SqlDatasDatesHistoriqueTransactions DATES HISTORIQUE"
             )
             // If we reach here without exceptions, test passes
             assertTrue(true)
