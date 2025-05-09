@@ -8,6 +8,14 @@ import java.util.Date
 import java.util.Locale
 
 
+
+ fun createTimestamp(year: Int, month: Int, day: Int, hour: Int, minute: Int): Long {
+    val calendar = Calendar.getInstance()
+    calendar.set(year, month - 1, day, hour, minute, 0)
+    calendar.set(Calendar.MILLISECOND, 0)
+    return calendar.timeInMillis
+}
+
 /**
  * Helper function to check if two timestamps belong to the same week
  */

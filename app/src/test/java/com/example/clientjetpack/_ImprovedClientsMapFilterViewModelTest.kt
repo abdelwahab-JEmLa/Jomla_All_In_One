@@ -9,7 +9,6 @@ import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Fi
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
@@ -28,13 +27,7 @@ class ImprovedDatesHistoriqueTest {
     private val testDispatcher = StandardTestDispatcher()
 
     // Lazy initialization of transactions using runBlocking for suspend function
-    private val transactions by lazy {
-        runBlocking {
-            // Set whether to use Firebase or mock data based on test needs
-            TestTransactionDataProvider.setUseFirebase(false) // Use mock data for testing
-            TestTransactionDataProvider.getTransactions() // This is a suspend function, but runBlocking makes it work
-        }
-    }
+    private val transactions = TestTransactionDataProvider.getTransactions() // This is a suspend function, but runBlocking makes it work
 
     private lateinit var mapsIDSDatesHistoriqueTransactions: D_Rep_MapsIDSDatesHistoriqueTransactions
     private lateinit var sqlDatasDatesHistorique: D_Repo_SqlDatasDatesHistoriqueTransactions
