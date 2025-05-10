@@ -7,8 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class _TarificationViewModel(
-    private val tarificationDataBaseFacileEntre_RepositoryImp: B_GroupeRepositoryImp
-        .TarificationDataBaseFacileEntre_RepositoryImp
+    private val tarificationDataBaseFacileEntre_RepositoryImp: TarificationDataBaseFacileEntre_RepositoryImp
 ): ViewModel(){
     // State for tarification data
     private val _imbriquantFlow = MutableStateFlow(A_DataBase_Imbricant(emptyList()))
@@ -51,14 +50,14 @@ class _TarificationViewModel(
                         }
 
                         // Get all unique tarification types for this client and product
-                        val uniqueTypeIds = clientEntries.map { it.parentVidTypeTarification }.toSet()
+                        val uniqueTypeIds = clientEntries.map { it.idTypeTarification }.toSet()
 
                         // Build list of tarification types with their prices
                         val typeTarifications = mutableListOf<A_DataBase_Imbricant.Produit.Client.TypeTarification>()
 
                         for (typeId in uniqueTypeIds) {
                             // Get all entries for this specific tarification type
-                            val typeEntries = clientEntries.filter { it.parentVidTypeTarification == typeId }
+                            val typeEntries = clientEntries.filter { it.idTypeTarification == typeId }
                                 .sortedByDescending { it.vidTimestamp }
 
                             if (typeEntries.isNotEmpty()) {
@@ -119,6 +118,7 @@ class _TarificationViewModel(
             _imbriquantFlow.value = A_DataBase_Imbricant(produitsList)
         }
     }
+    // Add this method to your _TarificationViewModel.kt class
 
     fun refreshData() {
         loadImbriquantData()

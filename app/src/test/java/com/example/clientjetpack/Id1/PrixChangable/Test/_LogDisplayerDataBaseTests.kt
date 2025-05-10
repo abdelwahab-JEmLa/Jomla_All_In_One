@@ -25,13 +25,12 @@ class _TestsDisplayerLogDataBase {
 
     private lateinit var viewModel: _TarificationViewModel
     private lateinit var b_GroupeRepositoryImp: B_GroupeRepositoryImp
-    private lateinit var tarificationRepo: B_GroupeRepositoryImp.TarificationDataBaseFacileEntre_RepositoryImp
+    private lateinit var tarificationRepo: TarificationDataBaseFacileEntre_RepositoryImp
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        tarificationRepo = B_GroupeRepositoryImp
-            .TarificationDataBaseFacileEntre_RepositoryImp()
+        tarificationRepo = TarificationDataBaseFacileEntre_RepositoryImp()
         b_GroupeRepositoryImp = B_GroupeRepositoryImp()
         viewModel = _TarificationViewModel(tarificationRepo)
     }
@@ -46,7 +45,7 @@ class _TestsDisplayerLogDataBase {
 
         tarificationRepo.add(
             // Add a new type for Client A (id 1) with product Caramels (id 1)
-            AB_ReferentialSepareDataBases.AA_TarificationDataBaseFacileEntre(
+            AA_TarificationDataBaseFacileEntre(
                 vidTimestamp = createTimestamp(
                     day = 10,
                     hour = 16,
@@ -54,7 +53,7 @@ class _TestsDisplayerLogDataBase {
                 ),
                 idProduit = 1L,
                 idClient = 1L,
-                parentVidTypeTarification = 2L,
+                idTypeTarification = 2L,
                 prixCurrency = 9.99
             )
         )
@@ -72,7 +71,6 @@ class _TestsDisplayerLogDataBase {
         SepareReferentialDataBases()
 
     }
-
     private fun SepareReferentialDataBases() = runTest {
         try {
             val name = "A_DataBasesSepareReferential"
@@ -180,8 +178,8 @@ class _TestsDisplayerLogDataBase {
             val typeInfo = typeRepository.modelList.find { it.id == type.id }
 
             // Get active status from repository
-            val isActive = typeInfo?.itsTheActiveOne ?: false
-            val activeStatus = if (isActive) "[ACTIVE]" else ""
+      //      val isActive = TODO()
+       //     val activeStatus = if (isActive) "[ACTIVE]" else ""
 
             // Using StringBuilder for more efficient string concatenation
             val typeInfos = StringBuilder().apply {
@@ -189,7 +187,7 @@ class _TestsDisplayerLogDataBase {
                 append(" Tarification Type : ")
                 append(type.id)
                 append("=(${typeInfo?.typeTarificationEnum ?: "Unknown"}) ")
-                append(activeStatus) // Add active status indicator
+        //        append(activeStatus) // Add active status indicator
                 append(", Date: ")
                 append(typeDate)
                 append(" Time: ")
