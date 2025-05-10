@@ -44,10 +44,12 @@ class _TestsDisplayerLogDataBase {
         try {
             val name = "A_DataBasesSepareReferential"
             val currentStrTime = strDateEtTempFromVidTimestamp(System.currentTimeMillis())
-            println(
-                "======== C Le Test Log Output Print Du Temp=${currentStrTime.first} " +
-                        "${currentStrTime.second} du  $name  ========"
-            )
+            val logMessage = StringBuilder().apply {
+                append("======== C Le Test Log Output Print Du Temp=${currentStrTime.first} ")
+                append("${currentStrTime.second} du  $name  ========")
+            }.toString()
+            println(logMessage)
+
             // Advance the dispatcher to ensure coroutines complete
             testDispatcher.scheduler.advanceUntilIdle()
 
@@ -75,8 +77,14 @@ class _TestsDisplayerLogDataBase {
             val (produitDate, produitTime) = strDateEtTempFromVidTimestamp(produit.vidTimestamp)
             val relatedInfos = produitRepository.modelList.find { it.id == produit.id }
 
-            //Header
-            println("$produitPrefix Product ID: ${produit.id} ${relatedInfos?.nom ?: "Unknown"}, Date: $produitDate Time: $produitTime (${produit.clients.size} clients)")
+            // Using StringBuilder for more efficient string concatenation
+            val produitInfos = StringBuilder().apply {
+                append("Product : ")
+                append(produit.id)
+                append(" (${relatedInfos?.nom ?: "Unknown"})")
+            }.toString()
+
+            println("$produitPrefix $produitInfos, Date: $produitDate Time: $produitTime (${produit.clients.size} clients)")
 
             logClients(produit.clients, isLastProduit)
         }
@@ -98,7 +106,22 @@ class _TestsDisplayerLogDataBase {
             val (clientDate, clientTime) = strDateEtTempFromVidTimestamp(client.vidTimestamp)
             val clientInfo = clientRepository.modelList.find { it.id == client.id }
 
-            println("$clientPrefix Client ID: ${client.id}, Name: ${clientInfo?.nom ?: "Unknown"}, Date: $clientDate Time: $clientTime (${client.typeTarification.size} tarification types)")
+            val clientInfoStr = StringBuilder().apply {
+                append(clientPrefix)
+                append(" Client ID: ")
+                append(client.id)
+                append(", Name: ")
+                append(clientInfo?.nom ?: "Unknown")
+                append(", Date: ")
+                append(clientDate)
+                append(" Time: ")
+                append(clientTime)
+                append(" (")
+                append(client.typeTarification.size)
+                append(" tarification types)")
+            }.toString()
+
+            println(clientInfoStr)
 
             logTarificationTypes(client.typeTarification, isLastProduit, isLastClient)
         }
@@ -122,7 +145,22 @@ class _TestsDisplayerLogDataBase {
             val (typeDate, typeTime) = strDateEtTempFromVidTimestamp(type.vidTimestamp)
             val typeInfo = typeRepository.modelList.find { it.id == type.id }
 
-            println("$typePrefix Tarification Type ID: ${type.id}, Type: ${typeInfo?.typeTarificationEnum ?: "Unknown"}, Date: $typeDate Time: $typeTime (${type.PrixsCurrency.size} currencies)")
+            val typeInfoStr = StringBuilder().apply {
+                append(typePrefix)
+                append(" Tarification Type ID: ")
+                append(type.id)
+                append(", Type: ")
+                append(typeInfo?.typeTarificationEnum ?: "Unknown")
+                append(", Date: ")
+                append(typeDate)
+                append(" Time: ")
+                append(typeTime)
+                append(" (")
+                append(type.PrixsCurrency.size)
+                append(" currencies)")
+            }.toString()
+
+            println(typeInfoStr)
 
             logPrixCurrencies(type.PrixsCurrency, isLastProduit, isLastClient, isLastType)
         }
@@ -144,7 +182,17 @@ class _TestsDisplayerLogDataBase {
 
             val (currencyDate, currencyTime) = strDateEtTempFromVidTimestamp(currency.vidTimestamp)
 
-            println("$currencyPrefix Currency: ${currency.valeur}, Date: $currencyDate Time: $currencyTime")
+            val currencyInfoStr = StringBuilder().apply {
+                append(currencyPrefix)
+                append(" Currency: ")
+                append(currency.valeur)
+                append(", Date: ")
+                append(currencyDate)
+                append(" Time: ")
+                append(currencyTime)
+            }.toString()
+
+            println(currencyInfoStr)
         }
     }
 
