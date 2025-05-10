@@ -13,8 +13,8 @@ class AB_ReferentialSepareDataBases {
     data class ClientDataBase(
         @PrimaryKey(autoGenerate = true)
         val id: Long = 0,
-        val nom: String,
-        val idActiveTypeTarificationDataBase: Long=0,
+        val nom: String = "Non Difinie",
+        val idActiveTypeTarificationDataBase: Long = 0,
     )
 
     data class TypeTarificationDataBase(
@@ -29,6 +29,7 @@ class AB_ReferentialSepareDataBases {
         LeMaxPrixArrive
     }
 }
+
 class B_GroupeRepositoryImp {
     // Explicitly set IDs to match the ones referenced in AA_TarificationDataBaseFacileEntre
     class ProduitDataBase_RepositoryImp {
@@ -52,27 +53,37 @@ class B_GroupeRepositoryImp {
             ),
             AB_ReferentialSepareDataBases.ClientDataBase(
                 id = 2L,  // Explicitly set ID
-                nom = "Client B" ,
-                idActiveTypeTarificationDataBase = 2
+                nom = "Client B",
             ),
         )
     }
 
     class TypeTarificationDataBase_RepositoryImp {
-        var modelList: List<AB_ReferentialSepareDataBases.TypeTarificationDataBase> = mutableStateListOf(
-            AB_ReferentialSepareDataBases.TypeTarificationDataBase(
-                id = 1L,  // Explicitly set ID
-                typeTarificationEnum = AB_ReferentialSepareDataBases.TypeTarificationEnum.ParBenifice
-            ),
-            AB_ReferentialSepareDataBases.TypeTarificationDataBase(
-                id = 2L,  // Explicitly set ID
-                typeTarificationEnum = AB_ReferentialSepareDataBases.TypeTarificationEnum.Historique
-            ),
-            AB_ReferentialSepareDataBases.TypeTarificationDataBase(
-                id = 3L,  // Explicitly set ID
-                typeTarificationEnum = AB_ReferentialSepareDataBases.TypeTarificationEnum.LeMaxPrixArrive
+        var modelList: List<AB_ReferentialSepareDataBases.TypeTarificationDataBase> =
+            mutableStateListOf(
+                AB_ReferentialSepareDataBases.TypeTarificationDataBase(
+                    id = 1L,  // Explicitly set ID
+                    typeTarificationEnum = AB_ReferentialSepareDataBases.TypeTarificationEnum.ParBenifice
+                ),
+                AB_ReferentialSepareDataBases.TypeTarificationDataBase(
+                    id = 2L,  // Explicitly set ID
+                    typeTarificationEnum = AB_ReferentialSepareDataBases.TypeTarificationEnum.Historique
+                ),
+                AB_ReferentialSepareDataBases.TypeTarificationDataBase(
+                    id = 3L,  // Explicitly set ID
+                    typeTarificationEnum = AB_ReferentialSepareDataBases.TypeTarificationEnum.LeMaxPrixArrive
+                )
             )
-        )
+    }
+
+    private val clientRepository = ClientDataBase_RepositoryImp()
+
+    fun addNewData(data: AB_ReferentialSepareDataBases.ClientDataBase) {
+
+    }
+    fun updateData(data: AB_ReferentialSepareDataBases.ClientDataBase) {
+        val currentList = clientRepository.modelList.toMutableList()
+        currentList[currentList.indexOfFirst { it.id == data.id }] = data
+        clientRepository.modelList = currentList
     }
 }
-

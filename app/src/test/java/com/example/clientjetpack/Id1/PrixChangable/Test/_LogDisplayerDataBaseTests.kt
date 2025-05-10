@@ -42,6 +42,8 @@ class _TestsDisplayerLogDataBase {
 
     @Test
     fun B_logUpdateReferentialDataBases(): Unit {
+        // Get the existing client from repository
+        val clientRepository = B_GroupeRepositoryImp.ClientDataBase_RepositoryImp()
 
         tarificationRepo.add(
             // Add a new type for Client A (id 1) with product Caramels (id 1)
@@ -56,9 +58,19 @@ class _TestsDisplayerLogDataBase {
                 idTypeTarification = 2L,
                 prixCurrency = 9.99
             )
-        )
+        )  {
+            val updatedClient = clientRepository.modelList.find { clientToUpdate ->
+                clientToUpdate.id == it.idClient
+            }?.copy(
+                idActiveTypeTarificationDataBase = it.idTypeTarification
+            )
 
-        // Update ViewModel after adding new data
+            // Update the client in the repository
+            if (updatedClient != null) {
+                b_GroupeRepositoryImp.updateData(updatedClient)
+            }
+        }
+
         viewModel.refreshData()
 
         println("\n========Apre Update========\n")

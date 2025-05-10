@@ -1,56 +1,36 @@
-======== C Le Test Log Output Print Du Temp=2025-05-10 10:15:00 du  A_DataBasesSepareReferential  ========
+======== C Le Test Log Output Print Du Temp=2025-05-10 11:56:47 du  A_DataBasesSepareReferential  ========
 
 -- Hierarchical Structure --
-├─ Product : 1=(Caramels), Date: 2025-05-10 Time: 10:15:00 (3 clients)
-  ├─ Client ID: 1=(Client A), Date: 2025-05-09 Time: 10:15:00 (1 tarification types)
-  │     └─ Tarification Type : 1=(ParBenifice), Date: 2025-05-09 Time: 10:15:00 (1 currencies)
-  │     │  └─ Currency: 2.99, Date: 2025-05-09 Time: 10:15:00
-  ├─ Client ID: 2=(Client B), Date: 2025-05-09 Time: 22:15:00 (1 tarification types)
-  │     └─ Tarification Type : 2=(Historique), Date: 2025-05-09 Time: 22:15:00 (1 currencies)
-  │     │  └─ Currency: 3.49, Date: 2025-05-09 Time: 22:15:00
-  ├─ Client ID: 3=(Client C), Date: 2025-05-10 Time: 10:15:00 (1 tarification types)
-  │     └─ Tarification Type : 3=(LeMaxPrixArrive), Date: 2025-05-10 Time: 10:15:00 (1 currencies)
-          └─ Currency: 3.99, Date: 2025-05-10 Time: 10:15:00
-└─ Product : 2=(Chocolats), Date: 2025-05-10 Time: 10:15:00 (3 clients)
-  └─ Client ID: 1=(Client A), Date: 2025-05-08 Time: 10:15:00 (1 tarification types)
-  │     └─ Tarification Type : 1=(ParBenifice), Date: 2025-05-08 Time: 10:15:00 (1 currencies)
-  │     │  └─ Currency: 4.99, Date: 2025-05-08 Time: 10:15:00
-  └─ Client ID: 3=(Client C), Date: 2025-05-10 Time: 04:15:00 (1 tarification types)
-  │     └─ Tarification Type : 2=(Historique), Date: 2025-05-10 Time: 04:15:00 (1 currencies)
-  │     │  └─ Currency: 5.49, Date: 2025-05-10 Time: 04:15:00
-  └─ Client ID: 4=(Client D), Date: 2025-05-10 Time: 10:15:00 (1 tarification types)
-     └─ Tarification Type : 3=(LeMaxPrixArrive), Date: 2025-05-10 Time: 10:15:00 (1 currencies)
-          └─ Currency: 5.99, Date: 2025-05-10 Time: 10:15:00
+├─ Product : 1=(Caramels), Date: 2025-05-10 Time: 14:30:00 (1 clients)
+  ├─ Client ID: 1=(Client A), Date: 2025-05-10 Time: 14:30:00 (2 tarification types)
+  │     ├─ Tarification Type : 1=(ParBenifice) , Date: 2025-05-09 Time: 11:56:47 (1 currencies)
+  │     │  └─ Currency: 2.99, Date: 2025-05-09 Time: 11:56:47
+  │     └─ Tarification Type : 2=(Historique) , Date: 2025-05-10 Time: 14:30:00 (1 currencies)
+          └─ Currency: 5.99, Date: 2025-05-10 Time: 14:30:00
+└─ Product : 2=(Chocolats), Date: 2025-05-08 Time: 11:56:47 (1 clients)
+  └─ Client ID: 2=(Client B), Date: 2025-05-08 Time: 11:56:47 (1 tarification types)
+     └─ Tarification Type : 2=(Historique) , Date: 2025-05-08 Time: 11:56:47 (1 currencies)
+          └─ Currency: 4.99, Date: 2025-05-08 Time: 11:56:47
 
 ========TEST A_DataBasesSepareReferential COMPLETED SUCCESSFULLY ========
 
 
 ========Apre Update========
 
-======== C Le Test Log Output Print Du Temp=2025-05-10 10:15:00 du  A_DataBasesSepareReferential  ========
+======== C Le Test Log Output Print Du Temp=2025-05-10 11:56:47 du  A_DataBasesSepareReferential  ========
 
 -- Hierarchical Structure --
-├─ Product : 1=(Caramels), Date: 2025-05-10 Time: 10:15:00 (3 clients)
-  ├─ Client ID: 1=(Client A), Date: 2025-05-09 Time: 10:15:00 (1 tarification types)
-  │     └─ Tarification Type : 1=(ParBenifice), Date: 2025-05-09 Time: 10:15:00 (1 currencies)
-  │     │  └─ Currency: 2.99, Date: 2025-05-09 Time: 10:15:00        //<--
-  //TODO(1): pk il n ya pas ici 2 type 
-  ├─ Client ID: 2=(Client B), Date: 2025-05-09 Time: 22:15:00 (1 tarification types)
-  │     └─ Tarification Type : 2=(Historique), Date: 2025-05-09 Time: 22:15:00 (1 currencies)
-  │     │  └─ Currency: 3.49, Date: 2025-05-09 Time: 22:15:00
-  ├─ Client ID: 3=(Client C), Date: 2025-05-10 Time: 10:15:00 (1 tarification types)
-  │     └─ Tarification Type : 3=(LeMaxPrixArrive), Date: 2025-05-10 Time: 10:15:00 (1 currencies)
-          └─ Currency: 3.99, Date: 2025-05-10 Time: 10:15:00
-└─ Product : 2=(Chocolats), Date: 2025-05-10 Time: 10:15:00 (3 clients)
-  └─ Client ID: 1=(Client A), Date: 2025-05-08 Time: 10:15:00 (1 tarification types)
-  │     └─ Tarification Type : 1=(ParBenifice), Date: 2025-05-08 Time: 10:15:00 (1 currencies)
-  │     │  └─ Currency: 4.99, Date: 2025-05-08 Time: 10:15:00
-  └─ Client ID: 3=(Client C), Date: 2025-05-10 Time: 04:15:00 (1 tarification types)
-  │     └─ Tarification Type : 2=(Historique), Date: 2025-05-10 Time: 04:15:00 (1 currencies)
-  │     │  └─ Currency: 5.49, Date: 2025-05-10 Time: 04:15:00
-  └─ Client ID: 4=(Client D), Date: 2025-05-10 Time: 10:15:00 (1 tarification types)
-     └─ Tarification Type : 3=(LeMaxPrixArrive), Date: 2025-05-10 Time: 10:15:00 (1 currencies)
-          └─ Currency: 5.99, Date: 2025-05-10 Time: 10:15:00
+├─ Product : 1=(Caramels), Date: 2025-05-10 Time: 16:30:00 (1 clients)
+  ├─ Client ID: 1=(Client A), Date: 2025-05-10 Time: 16:30:00 (2 tarification types)
+  │     ├─ Tarification Type : 1=(ParBenifice) , Date: 2025-05-09 Time: 11:56:47 (1 currencies)
+  │     │  └─ Currency: 2.99, Date: 2025-05-09 Time: 11:56:47
+  │     └─ Tarification Type : 2=(Historique) , Date: 2025-05-10 Time: 16:30:00 (2 currencies)
+          ├─ Currency: 9.99, Date: 2025-05-10 Time: 16:30:00
+          └─ Currency: 5.99, Date: 2025-05-10 Time: 14:30:00
+└─ Product : 2=(Chocolats), Date: 2025-05-08 Time: 11:56:47 (1 clients)
+  └─ Client ID: 2=(Client B), Date: 2025-05-08 Time: 11:56:47 (1 tarification types)
+     └─ Tarification Type : 2=(Historique) , Date: 2025-05-08 Time: 11:56:47 (1 currencies)
+          └─ Currency: 4.99, Date: 2025-05-08 Time: 11:56:47
 
 ========TEST A_DataBasesSepareReferential COMPLETED SUCCESSFULLY ========
 
