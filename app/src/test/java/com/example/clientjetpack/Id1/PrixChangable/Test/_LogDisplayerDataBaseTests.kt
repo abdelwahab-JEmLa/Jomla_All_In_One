@@ -54,7 +54,7 @@ class _TestsDisplayerLogDataBase {
                 ),
                 idProduit = 1L,
                 idClient = 1L,
-                idTypeTarification = 2L,
+                parentVidTypeTarification = 2L,
                 prixCurrency = 9.99
             )
         )

@@ -51,14 +51,14 @@ class _TarificationViewModel(
                         }
 
                         // Get all unique tarification types for this client and product
-                        val uniqueTypeIds = clientEntries.map { it.idTypeTarification }.toSet()
+                        val uniqueTypeIds = clientEntries.map { it.parentVidTypeTarification }.toSet()
 
                         // Build list of tarification types with their prices
                         val typeTarifications = mutableListOf<A_DataBase_Imbricant.Produit.Client.TypeTarification>()
 
                         for (typeId in uniqueTypeIds) {
                             // Get all entries for this specific tarification type
-                            val typeEntries = clientEntries.filter { it.idTypeTarification == typeId }
+                            val typeEntries = clientEntries.filter { it.parentVidTypeTarification == typeId }
                                 .sortedByDescending { it.vidTimestamp }
 
                             if (typeEntries.isNotEmpty()) {

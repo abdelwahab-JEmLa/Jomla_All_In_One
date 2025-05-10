@@ -32,10 +32,10 @@ class AB_ReferentialSepareDataBases {
     }
 
     data class AA_TarificationDataBaseFacileEntre(
+        val parentVidTypeTarification: Long,
         val vidTimestamp: Long,
         val idProduit: Long,
         val idClient: Long,
-        val idTypeTarification: Long,
         val prixCurrency: Double,
     )
 }
@@ -125,7 +125,7 @@ class B_GroupeRepositoryImp {
                     vidTimestamp = System.currentTimeMillis() - 86400000, // 1 day ago
                     idProduit = 1L,
                     idClient = 1L, // Client 1
-                    idTypeTarification = 1L, // ParBenifice
+                    parentVidTypeTarification = 1L, // ParBenifice
                     prixCurrency = 2.99
                 ),
                 AB_ReferentialSepareDataBases.AA_TarificationDataBaseFacileEntre(
@@ -136,7 +136,7 @@ class B_GroupeRepositoryImp {
                     ),
                     idProduit = 1L,
                     idClient = 1L,
-                    idTypeTarification = 2L,
+                    parentVidTypeTarification = 2L,
                     prixCurrency = 5.99
                 ),
 
@@ -145,21 +145,21 @@ class B_GroupeRepositoryImp {
                     vidTimestamp = System.currentTimeMillis() - 172800000, // 2 days ago
                     idProduit = 2L,
                     idClient = 1L, // Client 1
-                    idTypeTarification = 4L, // ParBenifice
+                    parentVidTypeTarification = 4L, // ParBenifice
                     prixCurrency = 4.99
                 ),
                 AB_ReferentialSepareDataBases.AA_TarificationDataBaseFacileEntre(
                     vidTimestamp = System.currentTimeMillis() - 21600000, // 6 hours ago
                     idProduit = 2L,
                     idClient = 3L, // Client 3
-                    idTypeTarification = 5L, // Historique
+                    parentVidTypeTarification = 5L, // Historique
                     prixCurrency = 5.49
                 ),
                 AB_ReferentialSepareDataBases.AA_TarificationDataBaseFacileEntre(
                     vidTimestamp = System.currentTimeMillis(),
                     idProduit = 2L,
                     idClient = 4L, // Client 4
-                    idTypeTarification = 6L, // LeMaxPrixArrive
+                    parentVidTypeTarification = 6L, // LeMaxPrixArrive
                     prixCurrency = 5.99
                 )
             )
