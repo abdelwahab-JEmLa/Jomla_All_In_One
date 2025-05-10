@@ -44,11 +44,11 @@ class B_GroupeRepositoryImp {
     class ProduitDataBase_RepositoryImp {
         var modelList: List<AB_ReferentialSepareDataBases.ProduitDataBase> = mutableStateListOf(
             AB_ReferentialSepareDataBases.ProduitDataBase(
-                id = 1L,  // Explicitly set ID to 1 to match references
+                id = 1L,
                 nom = "Caramels"
             ),
             AB_ReferentialSepareDataBases.ProduitDataBase(
-                id = 2L,  // Explicitly set ID to 2 to match references
+                id = 2L,
                 nom = "Chocolats"
             )
         )
@@ -102,7 +102,6 @@ class B_GroupeRepositoryImp {
             ),
             AB_ReferentialSepareDataBases.TypeTarificationDataBase(
                 itsTheActiveOne = true,
-
                 id = 5L,
                 typeTarificationEnum = AB_ReferentialSepareDataBases.TypeTarificationEnum.Historique,
                 clientId = 2L
@@ -115,7 +114,6 @@ class B_GroupeRepositoryImp {
 
         )
     }
-
 
     class TarificationDataBaseFacileEntre_RepositoryImp {
         var modelList: List<AB_ReferentialSepareDataBases.AA_TarificationDataBaseFacileEntre> =
