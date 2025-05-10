@@ -1,44 +1,25 @@
-======== C Le Test Log Output Print Du Temp=2025-05-10 12:07:12 du  A_DataBasesSepareReferential  ========
+======== C Le Test Log Output Print Du Temp=2025-05-10 12:21:02 du  A_DataBasesSepareReferential  ========
 
 -- Hierarchical Structure --
-├─ Product : 1=(Caramels), Date: 2025-05-10 Time: 14:30:00 (1 clients)
-  ├─ Client ID: 1=(Client A), Date: 2025-05-10 Time: 14:30:00 (2 tarification types)
-  │     ├─ Tarification Type : 1=(ParBenifice) , Date: 2025-05-09 Time: 12:07:11 (1 currencies)
-  │     │  └─ Currency: 2.99, Date: 2025-05-09 Time: 12:07:11
-  │     └─ Tarification Type : 2=(Historique) , Date: 2025-05-10 Time: 14:30:00 (1 currencies)
-          └─ Currency: 5.99, Date: 2025-05-10 Time: 14:30:00
-└─ Product : 2=(Chocolats), Date: 2025-05-08 Time: 12:07:11 (1 clients)
-  └─ Client ID: 2=(Client B), Date: 2025-05-08 Time: 12:07:11 (1 tarification types)
-     └─ Tarification Type : 2=(Historique) , Date: 2025-05-08 Time: 12:07:11 (1 currencies)
-          └─ Currency: 4.99, Date: 2025-05-08 Time: 12:07:11
+├─ Product : 1=(Caramels), Date: 2025-05-10 Time: 12:21:02 (0 clients)
+└─ Product : 2=(Chocolats), Date: 2025-05-08 Time: 12:21:02 (1 clients)
+  └─ Client ID: 2=(Client B), Date: 2025-05-08 Time: 12:21:02 (1 tarification types)
+     └─ Tarification Type : 2=(Historique) , Date: 2025-05-08 Time: 12:21:02 (1 currencies)
+          └─ Currency: 4.99, Date: 2025-05-08 Time: 12:21:02
 
 ========TEST A_DataBasesSepareReferential COMPLETED SUCCESSFULLY ========
 
-Before update, client active tarification types:
-Client 1: activeType=0
-Client 2: activeType=0
-Client updated: ClientDataBase(id=1, nom=Client A, idActiveTypeTarificationDataBase=2)
-After update, client active tarification types:
-Client 1: activeType=0
-Client 2: activeType=0
 
 ========Apre Update========
 
-======== C Le Test Log Output Print Du Temp=2025-05-10 12:07:12 du  A_DataBasesSepareReferential  ========
+======== C Le Test Log Output Print Du Temp=2025-05-10 12:21:02 du  A_DataBasesSepareReferential  ========
 
 -- Hierarchical Structure --
-├─ Product : 1=(Caramels), Date: 2025-05-10 Time: 16:30:00 (1 clients)
-  ├─ Client ID: 1=(Client A), Date: 2025-05-10 Time: 16:30:00 (2 tarification types)
-  │     ├─ Tarification Type : 1=(ParBenifice) , Date: 2025-05-09 Time: 12:07:12 (1 currencies)
-  │     │  └─ Currency: 2.99, Date: 2025-05-09 Time: 12:07:12
-  │     └─ Tarification Type : 2=(Historique) , Date: 2025-05-10 Time: 16:30:00 (2 currencies)
-          ├─ Currency: 9.99, Date: 2025-05-10 Time: 16:30:00
-          └─ Currency: 5.99, Date: 2025-05-10 Time: 14:30:00
-└─ Product : 2=(Chocolats), Date: 2025-05-08 Time: 12:07:12 (1 clients)
-  └─ Client ID: 2=(Client B), Date: 2025-05-08 Time: 12:07:12 (1 tarification types)
-     └─ Tarification Type : 2=(Historique) , Date: 2025-05-08 Time: 12:07:12 (1 currencies)
-          └─ Currency: 4.99, Date: 2025-05-08 Time: 12:07:12
+├─ Product : 1=(Caramels), Date: 2025-05-10 Time: 12:21:02 (0 clients)
+└─ Product : 2=(Chocolats), Date: 2025-05-08 Time: 12:21:02 (1 clients)
+  └─ Client ID: 2=(Client B), Date: 2025-05-08 Time: 12:21:02 (1 tarification types)
+     └─ Tarification Type : 2=(Historique) , Date: 2025-05-08 Time: 12:21:02 (1 currencies)
+          └─ Currency: 4.99, Date: 2025-05-08 Time: 12:21:02
 
-========TEST A_DataBasesSepareReferential COMPLETED SUCCESSFULLY ========     //<--
-//TODO(1): pk aucun ai active 
+========TEST A_DataBasesSepareReferential COMPLETED SUCCESSFULLY ========
 

@@ -42,8 +42,7 @@ class _TestsDisplayerLogDataBase {
 
 
     @Test
-    fun B_logUpdateReferentialDataBases(): Unit {
-
+    fun B_logUpdateReferentialDataBases(): Unit = runTest {
         // Create a new tarification entry
         val newTarification = AA_TarificationDataBaseFacileEntre(
             vidTimestamp = createTimestamp(day = 10, hour = 16, minute = 30),
@@ -53,19 +52,31 @@ class _TestsDisplayerLogDataBase {
             prixCurrency = 9.99
         )
 
-        // Add the new tarification entry
-        tarificationRepo.add(newTarification) { addedTarification ->
-            // Find the client to update
-            val newClient = AB_ReferentialSepareDataBases.ClientDataBase(
-                id = addedTarification.idClient,
-                nom = "Client A",
-                idActiveTypeTarificationDataBase = addedTarification.idTypeTarification
-            )
+        // First ensure Client A exists in the repository
+        val newClient = AB_ReferentialSepareDataBases.ClientDataBase(
+            id = 1L,
+            nom = "Client A",
+            idActiveTypeTarificationDataBase = 2L  // Set to match the tarification type
+        )
 
-            b_GroupeRepositoryImp.addNewData(newClient)
-        }
+        // Add the client first to ensure it exists
+        b_GroupeRepositoryImp.addNewData(newClient)
 
+        // Verify client was added
+        val clientExists = B_GroupeRepositoryImp.clientRepository.modelList.any { it.id == 1L }
+        println("Client with ID 1 exists in repository: $clientExists")
+
+        // Add the tarification entry
+        tarificationRepo.add(newTarification)
+
+        // Force dispatcher to process coroutines
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Refresh view model data
         viewModel.refreshData()
+
+        // Force dispatcher to process coroutines again
+        testDispatcher.scheduler.advanceUntilIdle()
 
         println("\n========Apre Update========\n")
 
@@ -75,7 +86,6 @@ class _TestsDisplayerLogDataBase {
     @Test
     fun A_logSepareReferentialDataBases(): Unit {
         SepareReferentialDataBases()
-
     }
 
     private fun SepareReferentialDataBases() = runTest {
@@ -133,7 +143,7 @@ class _TestsDisplayerLogDataBase {
         clients: List<A_DataBase_Imbricant.Produit.Client>,
         isLastProduit: Boolean,
     ) {
-        val clientRepository = B_GroupeRepositoryImp.ClientDataBase_RepositoryImp()
+        val clientRepository = B_GroupeRepositoryImp.clientRepository
 
         clients.forEachIndexed { clientIndex, client ->
             val isLastClient = clientIndex == clients.size - 1
@@ -164,15 +174,13 @@ class _TestsDisplayerLogDataBase {
         }
     }
 
-    // Modified logTarificationTypes function in _LogDisplayerDataBaseTests.kt
-
     private fun logTarificationTypes(
         types: List<A_DataBase_Imbricant.Produit.Client.TypeTarification>,
         isLastProduit: Boolean,
         isLastClient: Boolean,
     ) {
         val typeRepository = B_GroupeRepositoryImp.TypeTarificationDataBase_RepositoryImp()
-        val clientRepository = B_GroupeRepositoryImp.ClientDataBase_RepositoryImp()
+        val clientRepository = B_GroupeRepositoryImp.clientRepository
 
         // Find the client that owns these tarification types
         val currentClient = viewModel.imbriquantFlow.value.produits

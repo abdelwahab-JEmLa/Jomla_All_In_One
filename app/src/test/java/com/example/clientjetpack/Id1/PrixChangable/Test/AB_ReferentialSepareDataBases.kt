@@ -51,13 +51,33 @@ class B_GroupeRepositoryImp {
     }
 
     class ClientDataBase_RepositoryImp {
-        var modelList: List<AB_ReferentialSepareDataBases.ClientDataBase> = mutableStateListOf(
-
+        // Changed from List to MutableList to make direct updates possible
+        var modelList = mutableStateListOf(
             AB_ReferentialSepareDataBases.ClientDataBase(
                 id = 2L,  // Explicitly set ID
                 nom = "Client B",
             ),
         )
+
+        // Added methods to ClientDataBase_RepositoryImp to modify its own list
+        fun add(client: AB_ReferentialSepareDataBases.ClientDataBase) {
+            // Check if client with this ID already exists
+            val existingIndex = modelList.indexOfFirst { it.id == client.id }
+            if (existingIndex == -1) {
+                // Add only if not already exists
+                modelList.add(client)
+            } else {
+                // Update if exists
+                modelList[existingIndex] = client
+            }
+        }
+
+        fun update(client: AB_ReferentialSepareDataBases.ClientDataBase) {
+            val index = modelList.indexOfFirst { it.id == client.id }
+            if (index != -1) {
+                modelList[index] = client
+            }
+        }
     }
 
     class TypeTarificationDataBase_RepositoryImp {
@@ -79,17 +99,12 @@ class B_GroupeRepositoryImp {
     }
 
     fun addNewData(data: AB_ReferentialSepareDataBases.ClientDataBase) {
-        val currentList = clientRepository.modelList.toMutableList()
-        currentList.add(data)
-        clientRepository.modelList = currentList
+        // Fixed: Use the add method on the clientRepository
+        clientRepository.add(data)
     }
 
     fun updateData(data: AB_ReferentialSepareDataBases.ClientDataBase) {
-        val currentList = clientRepository.modelList.toMutableList()
-        val index = currentList.indexOfFirst { it.id == data.id }
-        if (index != -1) {
-            currentList[index] = data
-            clientRepository.modelList = currentList
-        }
+        // Fixed: Use the update method on the clientRepository
+        clientRepository.update(data)
     }
 }

@@ -20,7 +20,7 @@ class _TarificationViewModel(
     private fun loadImbriquantData() {
         viewModelScope.launch {
             val produitRepository = B_GroupeRepositoryImp.ProduitDataBase_RepositoryImp()
-            val clientRepository = B_GroupeRepositoryImp.ClientDataBase_RepositoryImp()
+            val clientRepository = B_GroupeRepositoryImp.clientRepository // Use the shared instance
             val typeTarificationRepository = B_GroupeRepositoryImp.TypeTarificationDataBase_RepositoryImp()
             val tarificationEntries = tarificationDataBaseFacileEntre_RepositoryImp.modelList
 
@@ -95,6 +95,9 @@ class _TarificationViewModel(
 
                             produitClients.add(client)
                         }
+                    } else {
+                        // Debug: If client exists in tarification but not in repository
+                        println("WARNING: Client with ID $clientId has tarification entries but is not found in client repository!")
                     }
                 }
 
@@ -118,7 +121,6 @@ class _TarificationViewModel(
             _imbriquantFlow.value = A_DataBase_Imbricant(produitsList)
         }
     }
-    // Add this method to your _TarificationViewModel.kt class
 
     fun refreshData() {
         loadImbriquantData()
