@@ -27,7 +27,6 @@ class _TarificationViewModel(
         viewModelScope.launch {
             val produitRepository = B_GroupeRepositoryImp.ProduitDataBase_RepositoryImp()
             val clientRepository = B_GroupeRepositoryImp.clientRepository
-            val typeTarificationRepository = B_GroupeRepositoryImp.TypeTarificationDataBase_RepositoryImp()
             val tarificationEntries = tarificationDataBaseFacileEntre_RepositoryImp.modelList
 
             val produitsList = mutableListOf<A_DataBase_Imbricant.Produit>()
