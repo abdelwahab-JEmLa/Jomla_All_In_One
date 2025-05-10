@@ -119,13 +119,11 @@ class _TestsDisplayerLogDataBase {
         types.forEachIndexed { typeIndex, type ->
             val isLastType = typeIndex == types.size - 1
 
-            // This is the key change - special handling for the last client of the last product
+            // Special case for the last client of the last product
             val typePrefix = if (isLastProduit && isLastClient) {
-                // Use special spacing for the last client of the last product
-                TreePrefix.getLastClientPrefix(isLastType)
+                "        ${if (isLastType) "└─" else "├─"}"  // 8 spaces followed by the tree connector
             } else {
-                // Use standard spacing for other cases
-                TreePrefix.getNestedPrefix(isLastType)
+                "  │     ${if (isLastType) "└─" else "├─"}"  // Standard format for other cases
             }
 
             val (typeDate, typeTime) = strDateEtTempFromVidTimestamp(type.vidTimestamp)
@@ -145,13 +143,11 @@ class _TestsDisplayerLogDataBase {
         currencies.forEachIndexed { currencyIndex, currency ->
             val isLastCurrency = currencyIndex == currencies.size - 1
 
-            // Adjust prefix based on position in the tree
+            // Special case for the last client of the last product
             val currencyPrefix = if (isLastProduit && isLastClient) {
-                // Special spacing for the last client of the last product
-                "          ${if (isLastCurrency) "└─" else "├─"}"
+                "          ${if (isLastCurrency) "└─" else "├─"}"  // 10 spaces for correct indentation
             } else {
-                // Standard spacing for other cases
-                "  │     │  ${if (isLastCurrency) "└─" else "├─"}"
+                "  │     │  ${if (isLastCurrency) "└─" else "├─"}"  // Standard format for other cases
             }
 
             val (currencyDate, currencyTime) = strDateEtTempFromVidTimestamp(currency.vidTimestamp)
@@ -159,30 +155,6 @@ class _TestsDisplayerLogDataBase {
             println("$currencyPrefix Currency: ${currency.valeur}, Date: $currencyDate Time: $currencyTime")
         }
     }
-    private fun logTarificationTypes(
-        types: List<A_DataBase_Imbricant.Produit.Client.TypeTarification>,
-        isLastProduit: Boolean,
-        isLastClient: Boolean
-    ) {
-        types.forEachIndexed { typeIndex, type ->
-            val isLastType = typeIndex == types.size - 1
-
-            // Special case for the last client of the last product
-            val typePrefix = if (isLastProduit && isLastClient) {
-                "        ${if (isLastType) "└─" else "├─"}"
-            } else {
-                "  │     ${if (isLastType) "└─" else "├─"}"
-            }
-
-            val (typeDate, typeTime) = strDateEtTempFromVidTimestamp(type.vidTimestamp)
-
-            println("$typePrefix Tarification Type ID: ${type.id}, Date: $typeDate Time: $typeTime (${type.PrixsCurrency.size} currencies)")
-
-            logPrixCurrencies(type.PrixsCurrency, isLastProduit, isLastClient, isLastType)
-        }
-    }
-
-
     private fun strDateEtTempFromVidTimestamp(timestamp: Long): Pair<String, String> {
         val calendar = Calendar.getInstance().apply {
             timeInMillis = timestamp
