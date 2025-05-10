@@ -11,6 +11,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -65,13 +66,27 @@ class _TestsDisplayerLogDataBase {
             }
         }
 
+        // Advance the dispatcher to ensure coroutines complete
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Assert that the active tarification type has been updated to 2 (Historique)
+        val updatedClient = clientRepository.modelList.find { it.id == 1L }
+        assertEquals(2L, updatedClient?.idActiveTypeTarificationDataBase)
+
         println("\n========Apre Update========\n")
 
         SepareReferentialDataBases()
     }
 
     @Test
-    fun A_logSepareReferentialDataBases(): Unit {
+    fun A_logSepareReferentialDataBases(): Unit = runTest {
+        // Advance the dispatcher to ensure coroutines complete
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Assert that the initial active tarification type is 1 (ParBenifice)
+        val initialClient = clientRepository.modelList.find { it.id == 1L }
+        assertEquals(1L, initialClient?.idActiveTypeTarificationDataBase)
+
         SepareReferentialDataBases()
     }
 
@@ -90,7 +105,21 @@ class _TestsDisplayerLogDataBase {
             val currentValue = viewModel.imbriquantFlow.value
             mainLog(currentValue)
 
-            assertTrue(true)
+            // Check that active tarification marker appears in the correct location
+            val clientA = currentValue.produits
+                .find { it.id == 1L }?.clients
+                ?.find { it.id == 1L }
+
+            if (clientA != null) {
+                val activeTypeTarificationId = clientRepository.modelList
+                    .find { it.id == 1L }?.idActiveTypeTarificationDataBase
+
+                val hasActiveType = clientA.typeTarification
+                    .any { it.id == activeTypeTarificationId }
+
+                assertTrue("Client A should have an active tarification type", hasActiveType)
+            }
+
             println("\n========TEST $name COMPLETED SUCCESSFULLY ========\n")
 
         } catch (e: Exception) {
