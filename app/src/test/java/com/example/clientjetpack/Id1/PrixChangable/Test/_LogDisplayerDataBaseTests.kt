@@ -1,11 +1,11 @@
 package com.example.clientjetpack.Id1.PrixChangable.Test
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.example.clientjetpack.Z_Passive.strDateFromVidTimestamp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertTrue
@@ -13,6 +13,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
+import java.util.Calendar
 
 @ExperimentalCoroutinesApi
 class _TestsDisplayerLogDataBase {
@@ -37,11 +38,15 @@ class _TestsDisplayerLogDataBase {
     }
 
     @Test
-    fun SepareReferentialDataBases() {
+    fun SepareReferentialDataBases() = runTest {
         try {
-            val name = "AB_ReferentialSepareDataBases"
+            val name = "A_DataBasesSepareReferential"
 
             println("======== TESTING $name TRANSACTIONS ========")
+
+            // Advance the dispatcher to ensure coroutines complete
+            testDispatcher.scheduler.advanceUntilIdle()
+
             mainLog(viewModel.imbriquantFlow.value)
 
             assertTrue(true)
@@ -139,5 +144,15 @@ class _TestsDisplayerLogDataBase {
             fun getDeepNestedPrefix(isLast: Boolean): String = "          ${if (isLast) "└─" else "├─"}"
             fun getDeepNestedBranchPrefix(isLast: Boolean): String = "  │     │  ${if (isLast) "└─" else "├─"}"
         }
+    }
+
+    fun strDateFromVidTimestamp(timestamp: Long): String {
+        val calendar = Calendar.getInstance().apply {
+            timeInMillis = timestamp
+        }
+
+        return "${calendar.get(Calendar.YEAR)}-" +
+                "${(calendar.get(Calendar.MONTH) + 1).toString().padStart(2, '0')}-" +
+                calendar.get(Calendar.DAY_OF_MONTH).toString().padStart(2, '0')
     }
 }

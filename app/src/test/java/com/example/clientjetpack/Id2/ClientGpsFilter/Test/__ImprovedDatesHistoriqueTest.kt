@@ -1,12 +1,12 @@
-package com.example.clientjetpack
+package com.example.clientjetpack.Id2.ClientGpsFilter.Test
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.example.clientjetpack.Z_Passive.A_LogMapsIDSDatesHistoriqueTransactions
-import com.example.clientjetpack.Z_Passive.A_Logs_FilterByDayeLog
-import com.example.clientjetpack.Z_Passive.D_ParDatesHistoriqueTransactions_RepositoryHierarchicalStructure
-import com.example.clientjetpack.Z_Passive._B_TestTransactionDataProvider
-import com.example.clientjetpack.Z_Passive.normalizeTimetampFromeStrDate
-import com.example.clientjetpack.Z_Passive.strDateFromVidTimestamp
+import com.example.clientjetpack.Id2.ClientGpsFilter.Test.Z_Passive.A_LogMapsIDSDatesHistoriqueTransactions
+import com.example.clientjetpack.Id2.ClientGpsFilter.Test.Z_Passive.A_Logs_FilterByDayeLog
+import com.example.clientjetpack.Id2.ClientGpsFilter.Test.Z_Passive.D_ParDatesHistoriqueTransactions_RepositoryHierarchicalStructure
+import com.example.clientjetpack.Id2.ClientGpsFilter.Test.Z_Passive._B_TestTransactionDataProvider
+import com.example.clientjetpack.Id2.ClientGpsFilter.Test.Z_Passive.normalizeTimetampFromeStrDate
+import com.example.clientjetpack.Id2.ClientGpsFilter.Test.Z_Passive.strDateFromVidTimestamp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -31,8 +31,7 @@ class ImprovedDatesHistoriqueTest {
 
     private lateinit var mapsIDSDatesHistoriqueTransactions: DA_MapsIDSDatesHistoriqueTransactionsRep_Repository
     private lateinit var sqlDatasDatesHistorique: DB_ParDatesHistoriqueTransactions_Repository
-    private lateinit var joursRepository: DB_ParDatesHistoriqueTransactions_Repository
-        .JoursRepositoryImp
+    private lateinit var joursRepository: DB_ParDatesHistoriqueTransactions_Repository.JoursRepositoryImp
 
     @Before
     fun setup() {
@@ -48,8 +47,8 @@ class ImprovedDatesHistoriqueTest {
         )
 
         // Initialize JoursRepositoryImp
-        joursRepository = DB_ParDatesHistoriqueTransactions_Repository
-            .JoursRepositoryImp(sqlDatasDatesHistorique)
+        joursRepository =
+            DB_ParDatesHistoriqueTransactions_Repository.JoursRepositoryImp(sqlDatasDatesHistorique)
     }
 
     @After
@@ -142,7 +141,8 @@ class ImprovedDatesHistoriqueTest {
     }
 
     private fun mapSemainJours_LogDisplayerTest(
-        mapsIDSDatesHistoriqueTransactionsPassed: DA_MapsIDSDatesHistoriqueTransactionsRep_Repository) {
+        mapsIDSDatesHistoriqueTransactionsPassed: DA_MapsIDSDatesHistoriqueTransactionsRep_Repository
+    ) {
         try {
             val nameDataBase = "mapSemainJours"
 
