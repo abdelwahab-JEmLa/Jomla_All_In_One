@@ -31,7 +31,6 @@ class AB_ReferentialSepareDataBases {
 }
 
 class B_GroupeRepositoryImp {
-    // Explicitly set IDs to match the ones referenced in AA_TarificationDataBaseFacileEntre
     class ProduitDataBase_RepositoryImp {
         var modelList: List<AB_ReferentialSepareDataBases.ProduitDataBase> = mutableStateListOf(
             AB_ReferentialSepareDataBases.ProduitDataBase(
@@ -46,12 +45,10 @@ class B_GroupeRepositoryImp {
     }
 
     companion object {
-        // Make clientRepository accessible statically to ensure we always reference the same list
         val clientRepository = ClientDataBase_RepositoryImp()
     }
 
     class ClientDataBase_RepositoryImp {
-        // Changed from List to MutableList to make direct updates possible
         var modelList = mutableStateListOf(
             AB_ReferentialSepareDataBases.ClientDataBase(
                 id = 1L,
@@ -64,15 +61,11 @@ class B_GroupeRepositoryImp {
             ),
         )
 
-        // Added methods to ClientDataBase_RepositoryImp to modify its own list
         fun add(client: AB_ReferentialSepareDataBases.ClientDataBase) {
-            // Check if client with this ID already exists
             val existingIndex = modelList.indexOfFirst { it.id == client.id }
             if (existingIndex == -1) {
-                // Add only if not already exists
                 modelList.add(client)
             } else {
-                // Update if exists
                 modelList[existingIndex] = client
             }
         }
@@ -110,7 +103,6 @@ class B_GroupeRepositoryImp {
     fun addNewData(
         data: AB_ReferentialSepareDataBases.ClientDataBase,
     ) {
-        // Fixed: Use the add method on the clientRepository
         clientRepository.add(data)
     }
 
