@@ -105,5 +105,4 @@ class B_GroupeRepositoryImp {
     ) {
         clientRepository.add(data)
     }
-
 }
