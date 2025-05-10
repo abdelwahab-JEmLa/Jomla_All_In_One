@@ -26,7 +26,7 @@ class _TarificationViewModel(
     private fun loadImbriquantData() {
         viewModelScope.launch {
             val produitRepository = B_GroupeRepositoryImp.ProduitDataBase_RepositoryImp()
-            val clientRepository = B_GroupeRepositoryImp.clientRepository // Use the shared instance
+            val clientRepository = B_GroupeRepositoryImp.clientRepository
             val typeTarificationRepository = B_GroupeRepositoryImp.TypeTarificationDataBase_RepositoryImp()
             val tarificationEntries = tarificationDataBaseFacileEntre_RepositoryImp.modelList
 
