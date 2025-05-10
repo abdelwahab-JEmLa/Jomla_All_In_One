@@ -115,7 +115,7 @@ class _TestsDisplayerLogDataBase {
                 append(clientPrefix)
                 append(" Client ID: ")
                 append(client.id)
-                append(" (${clientInfo?.nom ?: "Unknown"} )")
+                append(" (${clientInfo?.nom ?: "Unknown"})")
                 append(", Date: ")
                 append(clientDate)
                 append(" Time: ")
