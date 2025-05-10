@@ -6,6 +6,7 @@ import com.example.clientjetpack.Z_Passive.A_Logs_FilterByDayeLog
 import com.example.clientjetpack.Z_Passive.D_ParDatesHistoriqueTransactions_RepositoryHierarchicalStructure
 import com.example.clientjetpack.Z_Passive._B_TestTransactionDataProvider
 import com.example.clientjetpack.Z_Passive.normalizeTimetampFromeStrDate
+import com.example.clientjetpack.Z_Passive.strDateFromVidTimestamp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -18,7 +19,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
-import java.util.Calendar
 
 @ExperimentalCoroutinesApi
 class ImprovedDatesHistoriqueTest {
@@ -177,7 +177,7 @@ class ImprovedDatesHistoriqueTest {
             val isLastWeek = weekIndex == sortedWeeks.size - 1
             val weekPrefix = TreePrefix.Type1.get(isLastWeek)
 
-            val weekDate = formatTimestamp(weekTimestamp)
+            val weekDate = strDateFromVidTimestamp(weekTimestamp)
             println("$weekPrefix Week: $weekDate (${days.size} days)")
 
             val sortedDays = days.sortedByDescending { it }
@@ -196,7 +196,7 @@ class ImprovedDatesHistoriqueTest {
         val isLastDay = dayIndex == sortedDays.size - 1
         val dayPrefix = TreePrefix.Type2.get(isLastDay)
 
-        val dayDate = formatTimestamp(dayTimestamp)
+        val dayDate = strDateFromVidTimestamp(dayTimestamp)
 
         val jourObject = sqlDatasDatesHistorique.jours.find { it.vidTimeTemp == dayTimestamp }
         val isActive = jourObject?.itsActiveDaye ?: false
@@ -204,13 +204,5 @@ class ImprovedDatesHistoriqueTest {
         println("$dayPrefix Day: $dayDate itsActiveDaye = $isActive")
     }
 
-    private fun formatTimestamp(timestamp: Long): String {
-        val calendar = Calendar.getInstance().apply {
-            timeInMillis = timestamp
-        }
 
-        return "${calendar.get(Calendar.YEAR)}-" +
-                "${(calendar.get(Calendar.MONTH) + 1).toString().padStart(2, '0')}-" +
-                calendar.get(Calendar.DAY_OF_MONTH).toString().padStart(2, '0')
-    }
 }
