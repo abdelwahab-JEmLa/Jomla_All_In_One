@@ -54,6 +54,11 @@ class B_GroupeRepositoryImp {
         // Changed from List to MutableList to make direct updates possible
         var modelList = mutableStateListOf(
             AB_ReferentialSepareDataBases.ClientDataBase(
+                id = 1L,
+                nom = "Client A",
+                idActiveTypeTarificationDataBase = 1L  // Set to match the tarification type
+            ),
+            AB_ReferentialSepareDataBases.ClientDataBase(
                 id = 2L,  // Explicitly set ID
                 nom = "Client B",
             ),
@@ -72,10 +77,14 @@ class B_GroupeRepositoryImp {
             }
         }
 
-        fun update(client: AB_ReferentialSepareDataBases.ClientDataBase) {
+        fun update(
+            client: AB_ReferentialSepareDataBases.ClientDataBase,
+            onSuccess: (AB_ReferentialSepareDataBases.ClientDataBase) -> Unit = {},
+        ) {
             val index = modelList.indexOfFirst { it.id == client.id }
             if (index != -1) {
                 modelList[index] = client
+                onSuccess(client)
             }
         }
     }
@@ -98,13 +107,11 @@ class B_GroupeRepositoryImp {
             )
     }
 
-    fun addNewData(data: AB_ReferentialSepareDataBases.ClientDataBase) {
+    fun addNewData(
+        data: AB_ReferentialSepareDataBases.ClientDataBase,
+    ) {
         // Fixed: Use the add method on the clientRepository
         clientRepository.add(data)
     }
 
-    fun updateData(data: AB_ReferentialSepareDataBases.ClientDataBase) {
-        // Fixed: Use the update method on the clientRepository
-        clientRepository.update(data)
-    }
 }

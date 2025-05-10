@@ -1,6 +1,7 @@
 package com.example.clientjetpack.Id1.PrixChangable.Test
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.example.clientjetpack.Id1.PrixChangable.Test.B_GroupeRepositoryImp.Companion.clientRepository
 import com.example.clientjetpack.Id1.PrixChangable.Test.Passive.createTimestamp
 import com.example.clientjetpack.Id1.PrixChangable.Test.Passive.strDateEtTempFromVidTimestamp
 import kotlinx.coroutines.Dispatchers
@@ -52,22 +53,25 @@ class _TestsDisplayerLogDataBase {
             prixCurrency = 9.99
         )
 
-        // First ensure Client A exists in the repository
-        val newClient = AB_ReferentialSepareDataBases.ClientDataBase(
-            id = 1L,
-            nom = "Client A",
-            idActiveTypeTarificationDataBase = 2L  // Set to match the tarification type
-        )
 
-        // Add the client first to ensure it exists
-        b_GroupeRepositoryImp.addNewData(newClient)
-
-        // Verify client was added
-        val clientExists = B_GroupeRepositoryImp.clientRepository.modelList.any { it.id == 1L }
-        println("Client with ID 1 exists in repository: $clientExists")
 
         // Add the tarification entry
-        tarificationRepo.add(newTarification)
+        tarificationRepo.add(newTarification) {addedTarification->
+
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            // Find the client to update
+            val client = clientRepository.modelList.find { clientToUpdate ->
+                clientToUpdate.id == addedTarification.idClient
+            }?.copy(
+                idActiveTypeTarificationDataBase = addedTarification.idTypeTarification
+            )
+
+            if (client != null) {
+                clientRepository.update(client)
+            }
+
+        }
 
         // Force dispatcher to process coroutines
         testDispatcher.scheduler.advanceUntilIdle()
