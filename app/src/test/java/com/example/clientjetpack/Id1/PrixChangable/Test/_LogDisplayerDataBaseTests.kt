@@ -41,9 +41,11 @@ class _TestsDisplayerLogDataBase {
     fun SepareReferentialDataBases() = runTest {
         try {
             val name = "A_DataBasesSepareReferential"
-
-            println("======== TESTING $name TRANSACTIONS ========")
-
+            val currentStrTime = strDateEtTempFromVidTimestamp(System.currentTimeMillis())
+            println(
+                "======== C Le Test Log Output Print Du Temp=${currentStrTime.first} " +
+                        "${currentStrTime.second} du  $name  ========"
+            )
             // Advance the dispatcher to ensure coroutines complete
             testDispatcher.scheduler.advanceUntilIdle()
 
@@ -77,11 +79,14 @@ class _TestsDisplayerLogDataBase {
 
     private fun logClients(
         clients: List<A_DataBase_Imbricant.Produit.Client>,
-        isLastProduit: Boolean
+        isLastProduit: Boolean,
     ) {
         clients.forEachIndexed { clientIndex, client ->
             val isLastClient = clientIndex == clients.size - 1
-            val clientPrefix = if (isLastProduit) TreePrefix.Type3.get(isLastClient) else TreePrefix.Type2.get(isLastClient)
+            val clientPrefix =
+                if (isLastProduit) TreePrefix.Type3.get(isLastClient) else TreePrefix.Type2.get(
+                    isLastClient
+                )
 
             val (clientDate, clientTime) = strDateEtTempFromVidTimestamp(client.vidTimestamp)
 
@@ -94,14 +99,14 @@ class _TestsDisplayerLogDataBase {
     private fun logTarificationTypes(
         types: List<A_DataBase_Imbricant.Produit.Client.TypeTarification>,
         isLastProduit: Boolean,
-        isLastClient: Boolean
+        isLastClient: Boolean,
     ) {
         types.forEachIndexed { typeIndex, type ->
             val isLastType = typeIndex == types.size - 1
-            val typePrefix = if (isLastProduit && isLastClient) {
-                TreePrefix.Type4.get(isLastType)
-            } else {
-                TreePrefix.getNestedPrefix(isLastType)
+            val typePrefix = when {
+                isLastProduit && isLastClient -> TreePrefix.Type4.get(isLastType)
+                isLastClient -> "  │     ${if (isLastType) "└─" else "├─"}"
+                else -> "  │     ${if (isLastType) "└─" else "├─"}"
             }
 
             val (typeDate, typeTime) = strDateEtTempFromVidTimestamp(type.vidTimestamp)
@@ -116,13 +121,14 @@ class _TestsDisplayerLogDataBase {
         currencies: List<A_DataBase_Imbricant.Produit.Client.TypeTarification.Prix>,
         isLastProduit: Boolean,
         isLastClient: Boolean,
-        isLastType: Boolean
+        isLastType: Boolean,
     ) {
         currencies.forEachIndexed { currencyIndex, currency ->
             val isLastCurrency = currencyIndex == currencies.size - 1
             val currencyPrefix = when {
-                isLastProduit && isLastClient && isLastType -> TreePrefix.getDeepNestedPrefix(isLastCurrency)
-                else -> TreePrefix.getDeepNestedBranchPrefix(isLastCurrency)
+                isLastProduit && isLastClient && isLastType -> "          ${if (isLastCurrency) "└─" else "├─"}"
+                isLastClient && isLastType -> "          ${if (isLastCurrency) "└─" else "├─"}"
+                else -> "  │     │  ${if (isLastCurrency) "└─" else "├─"}"
             }
 
             val (currencyDate, currencyTime) = strDateEtTempFromVidTimestamp(currency.vidTimestamp)
@@ -135,15 +141,9 @@ class _TestsDisplayerLogDataBase {
         Type1("└─", "├─"),                 // For products
         Type2("  ├─", "  ├─"),             // For clients (not last product)
         Type3("  └─", "  └─"),             // For clients (last product)
-        Type4("       ", "  │     ");      // For special spacing cases
+        Type4("     └─", "     ├─");       // For tarification types (last client)
 
         fun get(isLast: Boolean): String = if (isLast) lastItem else normalItem
-
-        companion object {
-            fun getNestedPrefix(isLast: Boolean): String = "  │     ${if (isLast) "└─" else "├─"}"
-            fun getDeepNestedPrefix(isLast: Boolean): String = "          ${if (isLast) "└─" else "├─"}"
-            fun getDeepNestedBranchPrefix(isLast: Boolean): String = "  │     │  ${if (isLast) "└─" else "├─"}"
-        }
     }
 
     private fun strDateEtTempFromVidTimestamp(timestamp: Long): Pair<String, String> {
