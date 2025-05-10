@@ -125,7 +125,7 @@ class ImprovedDatesHistoriqueTest {
 
             firstDay.itsActiveDaye = true  // Set the value in the model
             joursRepository.update(firstDay)  // Update via repository
-            println("joursRepository.update(firstDay)")
+            println("joursRepository.update(firstDay)\n")
 
             assertEquals(true, sqlDatasDatesHistorique.jours[1].itsActiveDaye)
 
