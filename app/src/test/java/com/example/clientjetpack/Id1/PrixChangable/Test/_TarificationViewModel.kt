@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class _TarificationViewModel(
@@ -11,10 +12,24 @@ class _TarificationViewModel(
 ): ViewModel(){
     // State for tarification data
     private val _imbriquantFlow = MutableStateFlow(A_DataBase_Imbricant(emptyList()))
-    val imbriquantFlow: StateFlow<A_DataBase_Imbricant> = _imbriquantFlow
+    val imbriquantFlow: StateFlow<A_DataBase_Imbricant> = _imbriquantFlow.asStateFlow()
 
     init {
-        loadImbriquantData()
+        // Set up an observer for the tarification data
+        observeTarificationData()
+    }
+
+    private fun observeTarificationData() {
+        viewModelScope.launch {
+            // Initially load data
+            loadImbriquantData()
+
+            // In a real implementation with flow-based repositories, you would collect the flow here
+            // For example:
+            // tarificationDataBaseFacileEntre_RepositoryImp.dataFlow.collect { newData ->
+            //     processDataAndUpdateState(newData)
+            // }
+        }
     }
 
     private fun loadImbriquantData() {

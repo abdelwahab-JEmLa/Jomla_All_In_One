@@ -1,7 +1,10 @@
 package com.example.clientjetpack.Id1.PrixChangable.Test
 
-import androidx.compose.runtime.mutableStateListOf
 import com.example.clientjetpack.Id1.PrixChangable.Test.Passive.createTimestamp
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 data class AA_TarificationDataBaseFacileEntre(
     val vidTimestamp: Long,
@@ -12,8 +15,9 @@ data class AA_TarificationDataBaseFacileEntre(
 )
 
 class TarificationDataBaseFacileEntre_RepositoryImp {
-    var modelList: List<AA_TarificationDataBaseFacileEntre> =
-        mutableStateListOf(
+    // Using MutableStateFlow to expose data changes
+    private val _dataFlow = MutableStateFlow<List<AA_TarificationDataBaseFacileEntre>>(
+        listOf(
             // Test data for Caramels (product id 1)
             AA_TarificationDataBaseFacileEntre(
                 vidTimestamp = System.currentTimeMillis() - 86400000, // 1 day ago
@@ -42,17 +46,26 @@ class TarificationDataBaseFacileEntre_RepositoryImp {
                 idTypeTarification = 2L, // ParBenifice
                 prixCurrency = 4.99
             ),
-
         )
+    )
+
+    // Expose data as a Flow to be observed
+    val dataFlow: Flow<List<AA_TarificationDataBaseFacileEntre>> = _dataFlow.asStateFlow()
+
+    // Keep modelList for backward compatibility
+    var modelList: List<AA_TarificationDataBaseFacileEntre>
+        get() = _dataFlow.value
+        set(value) {
+            _dataFlow.value = value
+        }
 
     fun add(
         data: AA_TarificationDataBaseFacileEntre,
         onSuccess: (AA_TarificationDataBaseFacileEntre) -> Unit = {},
     ) {
-        val updatedList = modelList.toMutableList()
-        updatedList.add(data)
-        modelList = updatedList
+        _dataFlow.update { currentList ->
+            currentList + data
+        }
         onSuccess(data)
     }
-
 }

@@ -65,8 +65,9 @@ class _TestsDisplayerLogDataBase {
             }
         }
 
-        // Refresh view model data
-        viewModel.refreshData()
+        // No need to explicitly call refreshData() as the ViewModel now observes changes
+        // Wait for the coroutine to complete and data to be updated
+        testDispatcher.scheduler.advanceUntilIdle()
 
         println("\n========Apre Update========\n")
 
@@ -89,7 +90,9 @@ class _TestsDisplayerLogDataBase {
             // Advance the dispatcher to ensure coroutines complete
             testDispatcher.scheduler.advanceUntilIdle()
 
-            mainLog(viewModel.imbriquantFlow.value)
+            // Get the current value from the flow
+            val currentValue = viewModel.imbriquantFlow.value
+            mainLog(currentValue)
 
             assertTrue(true)
             println("\n========TEST $name COMPLETED SUCCESSFULLY ========\n")
