@@ -47,11 +47,12 @@ class TarificationDataBaseFacileEntre_RepositoryImp {
 
     fun add(
         data: AA_TarificationDataBaseFacileEntre,
-        onSuccess: (AA_TarificationDataBaseFacileEntre) -> Unit ={},
-        ) {
+        onSuccess: (AA_TarificationDataBaseFacileEntre) -> Unit = {},
+    ) {
         val updatedList = modelList.toMutableList()
         updatedList.add(data)
         modelList = updatedList
         onSuccess(data)
     }
+
 }

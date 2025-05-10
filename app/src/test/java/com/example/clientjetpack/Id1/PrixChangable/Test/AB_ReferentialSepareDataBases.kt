@@ -45,6 +45,11 @@ class B_GroupeRepositoryImp {
         )
     }
 
+    companion object {
+        // Make clientRepository accessible statically to ensure we always reference the same list
+        val clientRepository = ClientDataBase_RepositoryImp()
+    }
+
     class ClientDataBase_RepositoryImp {
         var modelList: List<AB_ReferentialSepareDataBases.ClientDataBase> = mutableStateListOf(
             AB_ReferentialSepareDataBases.ClientDataBase(
@@ -76,14 +81,18 @@ class B_GroupeRepositoryImp {
             )
     }
 
-    private val clientRepository = ClientDataBase_RepositoryImp()
-
     fun addNewData(data: AB_ReferentialSepareDataBases.ClientDataBase) {
-
+        val currentList = clientRepository.modelList.toMutableList()
+        currentList.add(data)
+        clientRepository.modelList = currentList
     }
+
     fun updateData(data: AB_ReferentialSepareDataBases.ClientDataBase) {
         val currentList = clientRepository.modelList.toMutableList()
-        currentList[currentList.indexOfFirst { it.id == data.id }] = data
-        clientRepository.modelList = currentList
+        val index = currentList.indexOfFirst { it.id == data.id }
+        if (index != -1) {
+            currentList[index] = data
+            clientRepository.modelList = currentList
+        }
     }
 }

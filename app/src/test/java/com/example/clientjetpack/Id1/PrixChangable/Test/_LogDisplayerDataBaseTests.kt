@@ -40,38 +40,60 @@ class _TestsDisplayerLogDataBase {
         Dispatchers.resetMain()
     }
 
+
     @Test
     fun B_logUpdateReferentialDataBases(): Unit {
-        // Get the existing client from repository
+        // Get the existing client repository
         val clientRepository = B_GroupeRepositoryImp.ClientDataBase_RepositoryImp()
 
-        tarificationRepo.add(
-            // Add a new type for Client A (id 1) with product Caramels (id 1)
-            AA_TarificationDataBaseFacileEntre(
-                vidTimestamp = createTimestamp(
-                    day = 10,
-                    hour = 16,
-                    minute = 30
-                ),
-                idProduit = 1L,
-                idClient = 1L,
-                idTypeTarification = 2L,
-                prixCurrency = 9.99
-            )
-        )  {
-            val updatedClient = clientRepository.modelList.find { clientToUpdate ->
-                clientToUpdate.id == it.idClient
-            }?.copy(
-                idActiveTypeTarificationDataBase = it.idTypeTarification
-            )
+        // First print the current state of clients
+        println("Before update, client active tarification types:")
+        clientRepository.modelList.forEach { client ->
+            println("Client ${client.id}: activeType=${client.idActiveTypeTarificationDataBase}")
+        }
 
-            // Update the client in the repository
-            if (updatedClient != null) {
+        // Create a new tarification entry
+        val newTarification = AA_TarificationDataBaseFacileEntre(
+            vidTimestamp = createTimestamp(day = 10, hour = 16, minute = 30),
+            idProduit = 1L,
+            idClient = 1L,
+            idTypeTarification = 2L,
+            prixCurrency = 9.99
+        )
+
+        // Add the new tarification entry
+        tarificationRepo.add(newTarification) { addedTarification ->
+            // Find the client to update
+            val clientToUpdate = clientRepository.modelList.find { client ->
+                client.id == addedTarification.idClient
+            }
+
+            if (clientToUpdate != null) {
+                // Create updated client with active tarification type
+                val updatedClient = clientToUpdate.copy(
+                    idActiveTypeTarificationDataBase = addedTarification.idTypeTarification
+                )
+
+                // Update the client in the repository
                 b_GroupeRepositoryImp.updateData(updatedClient)
+                println("Client updated: $updatedClient")
             }
         }
 
+        // Print the updated state of clients
+        println("After update, client active tarification types:")
+        clientRepository.modelList.forEach { client ->
+            println("Client ${client.id}: activeType=${client.idActiveTypeTarificationDataBase}")
+        }
+
+        // Force the dispatcher to execute pending coroutines
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Refresh data to capture the changes
         viewModel.refreshData()
+
+        // Force the dispatcher to execute the refresh
+        testDispatcher.scheduler.advanceUntilIdle()
 
         println("\n========Apre Update========\n")
 
@@ -81,8 +103,8 @@ class _TestsDisplayerLogDataBase {
     @Test
     fun A_logSepareReferentialDataBases(): Unit {
         SepareReferentialDataBases()
-
     }
+
     private fun SepareReferentialDataBases() = runTest {
         try {
             val name = "A_DataBasesSepareReferential"
@@ -165,19 +187,17 @@ class _TestsDisplayerLogDataBase {
 
             println(clientInfos)
 
-            logTarificationTypes(client.typeTarification, isLastProduit, isLastClient)
+            logTarificationTypes(client.typeTarification, isLastProduit, isLastClient, clientInfo)
         }
     }
-
-    // Modified logTarificationTypes function in _LogDisplayerDataBaseTests.kt
 
     private fun logTarificationTypes(
         types: List<A_DataBase_Imbricant.Produit.Client.TypeTarification>,
         isLastProduit: Boolean,
         isLastClient: Boolean,
+        clientInfo: AB_ReferentialSepareDataBases.ClientDataBase?
     ) {
         val typeRepository = B_GroupeRepositoryImp.TypeTarificationDataBase_RepositoryImp()
-        val clientRepository = B_GroupeRepositoryImp.ClientDataBase_RepositoryImp()
 
         types.forEachIndexed { typeIndex, type ->
             val isLastType = typeIndex == types.size - 1
@@ -190,23 +210,18 @@ class _TestsDisplayerLogDataBase {
             val (typeDate, typeTime) = strDateEtTempFromVidTimestamp(type.vidTimestamp)
             val typeInfo = typeRepository.modelList.find { it.id == type.id }
 
-            // Get active status from repository
-            val clientId = viewModel.imbriquantFlow.value.produits
-                .flatMap { it.clients }
-                .find { it.typeTarification.contains(type) }?.id ?: -1L
-
-            val clientInfo = clientRepository.modelList.find { it.id == clientId }
+            // Check if this type is the active one for this client
             val isActive = clientInfo?.idActiveTypeTarificationDataBase == type.id
-            val activeStatus = if (isActive) "[ACTIVE]" else ""
+            val activeStatus = if (isActive) " [ACTIVE]" else ""
 
             // Using StringBuilder for more efficient string concatenation
             val typeInfos = StringBuilder().apply {
                 append(typePrefix)
                 append(" Tarification Type : ")
                 append(type.id)
-                append("=(${typeInfo?.typeTarificationEnum ?: "Unknown"}) ")
-                append(activeStatus) // Add active status indicator
-                append(", Date: ")
+                append("=(${typeInfo?.typeTarificationEnum ?: "Unknown"})")
+                append(activeStatus)
+                append(" , Date: ")
                 append(typeDate)
                 append(" Time: ")
                 append(typeTime)
