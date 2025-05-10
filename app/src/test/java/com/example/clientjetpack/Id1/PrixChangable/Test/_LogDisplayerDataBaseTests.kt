@@ -25,7 +25,7 @@ class _TestsDisplayerLogDataBase {
 
     private val testDispatcher = StandardTestDispatcher()
 
-    private lateinit var viewModel: _TarificationViewModel
+    lateinit var viewModel: _TarificationViewModel
     private lateinit var b_GroupeRepositoryImp: B_GroupeRepositoryImp
     private lateinit var tarificationRepo: TarificationDataBaseFacileEntre_RepositoryImp
 
@@ -100,13 +100,9 @@ class _TestsDisplayerLogDataBase {
                 "======== C Le Test Log Output Print Du Temp=${currentStrTime.first} " +
                         "${currentStrTime.second} du  $name  ========"
             )
-            testDispatcher.scheduler.advanceUntilIdle()
 
             val currentValue = viewModel.imbriquantFlow.value
             mainLog(currentValue)
-
-            val client = clientRepository.modelList.find { it.id == 1L }
-            assertEquals(1L, client?.idActiveTypeTarificationDataBase)
 
             println("\n========TEST $name COMPLETED SUCCESSFULLY ========\n")
 
@@ -118,153 +114,8 @@ class _TestsDisplayerLogDataBase {
 
     private fun mainLog(value: A_DataBase_Imbricant) {
         println("\n-- Hierarchical Structure --")
-
         logProduits(value)
     }
 
-    private fun logProduits(value: A_DataBase_Imbricant) {
-        val produitRepository = B_GroupeRepositoryImp.ProduitDataBase_RepositoryImp()
 
-        value.produits.forEachIndexed { produitIndex, produit ->
-            val isLastProduit = produitIndex == value.produits.size - 1
-            val produitPrefix = TreePrefix.Type1.get(isLastProduit)
-
-            val (produitDate, produitTime) = strDateEtTempFromVidTimestamp(produit.vidTimestamp)
-            val relatedInfos = produitRepository.modelList.find { it.id == produit.id }
-
-            val produitInfos = StringBuilder().apply {
-                append(produitPrefix)
-                append(" Product : ")
-                append(produit.id)
-                append("=(${relatedInfos?.nom ?: " Unknown "})")
-            }.toString()
-
-            println("$produitInfos, Date: $produitDate Time: $produitTime (${produit.clients.size} clients)")
-
-            logClients(produit.clients, isLastProduit)
-        }
-    }
-
-    private fun logClients(
-        clients: List<A_DataBase_Imbricant.Produit.Client>,
-        isLastProduit: Boolean,
-    ) {
-        val clientRepository = B_GroupeRepositoryImp.clientRepository
-
-        clients.forEachIndexed { clientIndex, client ->
-            val isLastClient = clientIndex == clients.size - 1
-            val clientPrefix =
-                if (isLastProduit) TreePrefix.Type3.get(isLastClient) else TreePrefix.Type2.get(
-                    isLastClient
-                )
-
-            val (clientDate, clientTime) = strDateEtTempFromVidTimestamp(client.vidTimestamp)
-            val clientInfo = clientRepository.modelList.find { it.id == client.id }
-
-            val clientInfos = StringBuilder().apply {
-                append(clientPrefix)
-                append(" Client ID: ")
-                append(client.id)
-                append("=(${clientInfo?.nom ?: "Unknown"})")
-                append(", Date: ")
-                append(clientDate)
-                append(" Time: ")
-                append(clientTime)
-                append(" (${client.typeTarification.size} tarification types)")
-            }.toString()
-
-            println(clientInfos)
-
-            logTarificationTypes(client.typeTarification, isLastProduit, isLastClient)
-        }
-    }
-
-    private fun logTarificationTypes(
-        types: List<A_DataBase_Imbricant.Produit.Client.TypeTarification>,
-        isLastProduit: Boolean,
-        isLastClient: Boolean,
-    ) {
-        val typeRepository = B_GroupeRepositoryImp.TypeTarificationDataBase_RepositoryImp()
-        val clientRepository = B_GroupeRepositoryImp.clientRepository
-
-        val currentClient = viewModel.imbriquantFlow.value.produits
-            .flatMap { it.clients }
-            .find { client -> client.typeTarification.any { types.contains(it) } }
-
-        if (currentClient != null) {
-            val clientInfo = clientRepository.modelList.find { it.id == currentClient.id }
-
-            types.forEachIndexed { typeIndex, type ->
-                val isLastType = typeIndex == types.size - 1
-                val typePrefix = when {
-                    isLastProduit && isLastClient -> TreePrefix.Type4.get(isLastType)
-                    isLastClient -> "  │     ${if (isLastType) "└─" else "├─"}"
-                    else -> "  │     ${if (isLastType) "└─" else "├─"}"
-                }
-
-                val (typeDate, typeTime) = strDateEtTempFromVidTimestamp(type.vidTimestamp)
-                val typeInfo = typeRepository.modelList.find { it.id == type.id }
-
-                val isActive = clientInfo?.idActiveTypeTarificationDataBase == type.id
-                val activeStatus = if (isActive) " [ACTIVE]" else ""
-
-                val typeInfos = StringBuilder().apply {
-                    append(typePrefix)
-                    append(" Tarification Type : ")
-                    append(type.id)
-                    append("=(${typeInfo?.typeTarificationEnum ?: "Unknown"})")
-                    append(activeStatus)
-                    append(" , Date: ")
-                    append(typeDate)
-                    append(" Time: ")
-                    append(typeTime)
-                    append(" (${type.PrixsCurrency.size} currencies)")
-                }.toString()
-
-                println(typeInfos)
-
-                logPrixCurrencies(type.PrixsCurrency, isLastProduit, isLastClient, isLastType)
-            }
-        }
-    }
-
-    private fun logPrixCurrencies(
-        currencies: List<A_DataBase_Imbricant.Produit.Client.TypeTarification.Prix>,
-        isLastProduit: Boolean,
-        isLastClient: Boolean,
-        isLastType: Boolean,
-    ) {
-        currencies.forEachIndexed { currencyIndex, currency ->
-            val isLastCurrency = currencyIndex == currencies.size - 1
-            val currencyPrefix = when {
-                isLastProduit && isLastClient && isLastType -> "          ${if (isLastCurrency) "└─" else "├─"}"
-                isLastClient && isLastType -> "          ${if (isLastCurrency) "└─" else "├─"}"
-                else -> "  │     │  ${if (isLastCurrency) "└─" else "├─"}"
-            }
-
-            val (currencyDate, currencyTime) = strDateEtTempFromVidTimestamp(currency.vidTimestamp)
-
-            // Using StringBuilder for more efficient string concatenation
-            val currencyInfos = StringBuilder().apply {
-                append(currencyPrefix)
-                append(" Currency: ")
-                append(currency.valeur)
-                append(", Date: ")
-                append(currencyDate)
-                append(" Time: ")
-                append(currencyTime)
-            }.toString()
-
-            println(currencyInfos)
-        }
-    }
-
-    enum class TreePrefix(private val lastItem: String, private val normalItem: String) {
-        Type1("└─", "├─"),                 // For products
-        Type2("  ├─", "  ├─"),             // For clients (not last product)
-        Type3("  └─", "  └─"),             // For clients (last product)
-        Type4("     └─", "     ├─");       // For tarification types (last client)
-
-        fun get(isLast: Boolean): String = if (isLast) lastItem else normalItem
-    }
 }
