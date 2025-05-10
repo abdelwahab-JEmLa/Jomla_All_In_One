@@ -90,8 +90,6 @@ class _TestsDisplayerLogDataBase {
         println("\n========TEST $name COMPLETED SUCCESSFULLY ========\n")
     }
 
-
-
     private fun SepareReferentialDataBases() = runTest {
         try {
             val name = "A_DataBasesSepareReferential"
@@ -111,11 +109,8 @@ class _TestsDisplayerLogDataBase {
         }
     }
 
-
     private fun mainLog(value: A_DataBase_Imbricant) {
         println("\n-- Hierarchical Structure --")
         logProduits(value)
     }
-
-
 }
