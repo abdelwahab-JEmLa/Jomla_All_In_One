@@ -5,9 +5,6 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 class _TarificationViewModel(
     private val tarificationDataBaseFacileEntre_RepositoryImp: TarificationDataBaseFacileEntre_RepositoryImp
@@ -134,9 +131,5 @@ class _TarificationViewModel(
         }
     }
 
-    fun formatDateForDisplay(timestamp: Long): String {
-        val date = Date(timestamp)
-        val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-        return format.format(date)
-    }
+
 }
