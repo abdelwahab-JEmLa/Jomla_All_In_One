@@ -95,19 +95,10 @@ class _TestsDisplayerLogDataBase {
             val currentValue = viewModel.imbriquantFlow.value
             mainLog(currentValue)
 
-            val clientA = currentValue.produits
-                .find { it.id == 1L }?.clients
-                ?.find { it.id == 1L }
 
-            if (clientA != null) {
-                val activeTypeTarificationId = clientRepository.modelList
-                    .find { it.id == 1L }?.idActiveTypeTarificationDataBase
+            val updatedClient = clientRepository.modelList.find { it.id == 1L }
+            assertEquals(1L, updatedClient?.idActiveTypeTarificationDataBase)
 
-                val hasActiveType = clientA.typeTarification
-                    .any { it.id == activeTypeTarificationId }
-
-                assertTrue("Client A should have an active tarification type", hasActiveType)
-            }
 
             println("\n========TEST $name COMPLETED SUCCESSFULLY ========\n")
 
