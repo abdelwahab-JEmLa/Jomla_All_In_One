@@ -201,7 +201,7 @@ class ImprovedDatesHistoriqueTest {
         val jourObject = sqlDatasDatesHistorique.jours.find { it.vidTimeTemp == dayTimestamp }
         val isActive = jourObject?.itsActiveDaye ?: false
 
-        println("$dayPrefix Day: $dayDate itsActiveDaye >= $isActive")
+        println("$dayPrefix Day: $dayDate itsActiveDaye = $isActive")
     }
 
     private fun formatTimestamp(timestamp: Long): String {
