@@ -3,7 +3,7 @@ package com.example.clientjetpack.Id1.PrixChangable.Test
 import androidx.compose.runtime.mutableStateListOf
 import androidx.room.PrimaryKey
 
-class A_DataBasesSepareReferential {
+class AB_ReferentialSepareDataBases {
     data class ProduitDataBase(
         @PrimaryKey(autoGenerate = true)
         val id: Long = 0,
@@ -31,46 +31,46 @@ class A_DataBasesSepareReferential {
 
 class B_GroupeRepositoryImp {
     class ProduitDataBase_RepositoryImp {
-        var modelList: List<A_DataBasesSepareReferential.ProduitDataBase> =
+        var modelList: List<AB_ReferentialSepareDataBases.ProduitDataBase> =
             mutableStateListOf(
-                A_DataBasesSepareReferential.ProduitDataBase(
+                AB_ReferentialSepareDataBases.ProduitDataBase(
                     nom = "Caramels"
                 ),
-                A_DataBasesSepareReferential.ProduitDataBase(
+                AB_ReferentialSepareDataBases.ProduitDataBase(
                     nom = "Chocolats"
                 )
             )
     }
 
     class ClientDataBase_RepositoryImp {
-        var modelList: List<A_DataBasesSepareReferential.ClientDataBase> =
+        var modelList: List<AB_ReferentialSepareDataBases.ClientDataBase> =
             mutableStateListOf(
-                A_DataBasesSepareReferential.ClientDataBase(
+                AB_ReferentialSepareDataBases.ClientDataBase(
                     nom = "Client 1"
                 ),
-                A_DataBasesSepareReferential.ClientDataBase(
+                AB_ReferentialSepareDataBases.ClientDataBase(
                     nom = "Client 2"
                 ),
-                A_DataBasesSepareReferential.ClientDataBase(
+                AB_ReferentialSepareDataBases.ClientDataBase(
                     nom = "Client 3"
                 ),
-                A_DataBasesSepareReferential.ClientDataBase(
+                AB_ReferentialSepareDataBases.ClientDataBase(
                     nom = "Client 4"
                 )
             )
     }
 
     class TypeTarificationDataBase_RepositoryImp {
-        var modelList: List<A_DataBasesSepareReferential.TypeTarificationDataBase> =
+        var modelList: List<AB_ReferentialSepareDataBases.TypeTarificationDataBase> =
             mutableStateListOf(
-                A_DataBasesSepareReferential.TypeTarificationDataBase(
-                    typeTarificationEnum = A_DataBasesSepareReferential.TypeTarificationEnum.ParBenifice
+                AB_ReferentialSepareDataBases.TypeTarificationDataBase(
+                    typeTarificationEnum = AB_ReferentialSepareDataBases.TypeTarificationEnum.ParBenifice
                 ),
-                A_DataBasesSepareReferential.TypeTarificationDataBase(
-                    typeTarificationEnum = A_DataBasesSepareReferential.TypeTarificationEnum.Historique
+                AB_ReferentialSepareDataBases.TypeTarificationDataBase(
+                    typeTarificationEnum = AB_ReferentialSepareDataBases.TypeTarificationEnum.Historique
                 ),
-                A_DataBasesSepareReferential.TypeTarificationDataBase(
-                    typeTarificationEnum = A_DataBasesSepareReferential.TypeTarificationEnum.LeMaxPrixArrive
+                AB_ReferentialSepareDataBases.TypeTarificationDataBase(
+                    typeTarificationEnum = AB_ReferentialSepareDataBases.TypeTarificationEnum.LeMaxPrixArrive
                 )
             )
     }

@@ -1,0 +1,8 @@
+======== TESTING A_DataBasesSepareReferential TRANSACTIONS ========
+
+-- Hierarchical Structure --
+Database (0 products):      //<--
+//TODO(1): pk c 0 
+
+========TEST A_DataBasesSepareReferential COMPLETED SUCCESSFULLY ========
+

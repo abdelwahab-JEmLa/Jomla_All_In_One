@@ -60,7 +60,7 @@ class B_TarificationViewModel(
                         
                         // Process each tarification type
                         for (typeId in uniqueTypeIds) {
-                            var latestEntry: TarificationDataBaseFacileEntre? = null
+                            var latestEntry: AA_TarificationDataBaseFacileEntre? = null
                             var latestTimestamp: Long = 0
                             
                             // Find the latest entry for this type

@@ -39,7 +39,7 @@ class _TestsDisplayerLogDataBase {
     @Test
     fun SepareReferentialDataBases() {
         try {
-            val name = "A_DataBasesSepareReferential"
+            val name = "AB_ReferentialSepareDataBases"
 
             println("======== TESTING $name TRANSACTIONS ========")
             mainLog(viewModel.imbriquantFlow.value)
