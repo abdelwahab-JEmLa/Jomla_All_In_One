@@ -43,14 +43,6 @@ class _TestsDisplayerLogDataBase {
 
     @Test
     fun B_logUpdateReferentialDataBases(): Unit {
-        // Get the existing client repository
-        val clientRepository = B_GroupeRepositoryImp.ClientDataBase_RepositoryImp()
-
-        // First print the current state of clients
-        println("Before update, client active tarification types:")
-        clientRepository.modelList.forEach { client ->
-            println("Client ${client.id}: activeType=${client.idActiveTypeTarificationDataBase}")
-        }
 
         // Create a new tarification entry
         val newTarification = AA_TarificationDataBaseFacileEntre(
@@ -64,23 +56,13 @@ class _TestsDisplayerLogDataBase {
         // Add the new tarification entry
         tarificationRepo.add(newTarification) { addedTarification ->
             // Find the client to update
-            val updatedClient = clientRepository.modelList.find { clientToUpdate ->
-                clientToUpdate.id == addedTarification.idClient
-            }?.copy(
+            val newClient = AB_ReferentialSepareDataBases.ClientDataBase(
+                id = addedTarification.idClient,
+                nom = "Client A",
                 idActiveTypeTarificationDataBase = addedTarification.idTypeTarification
             )
 
-            // Update the client in the repository
-            if (updatedClient != null) {
-                b_GroupeRepositoryImp.updateData(updatedClient)
-                println("Client updated: $updatedClient")
-            }
-        }
-
-        // Print the updated state of clients
-        println("After update, client active tarification types:")
-        clientRepository.modelList.forEach { client ->
-            println("Client ${client.id}: activeType=${client.idActiveTypeTarificationDataBase}")
+            b_GroupeRepositoryImp.addNewData(newClient)
         }
 
         viewModel.refreshData()

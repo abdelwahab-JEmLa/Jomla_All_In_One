@@ -52,11 +52,7 @@ class B_GroupeRepositoryImp {
 
     class ClientDataBase_RepositoryImp {
         var modelList: List<AB_ReferentialSepareDataBases.ClientDataBase> = mutableStateListOf(
-            AB_ReferentialSepareDataBases.ClientDataBase(
-                id = 1L,  // Explicitly set ID
-                nom = "Client A",
-                idActiveTypeTarificationDataBase = 1
-            ),
+
             AB_ReferentialSepareDataBases.ClientDataBase(
                 id = 2L,  // Explicitly set ID
                 nom = "Client B",
