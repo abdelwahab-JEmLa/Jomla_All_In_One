@@ -1,4 +1,4 @@
-package com.example.clientjetpack.Id1.PrixChangable.Test
+package com.example.clientjetpack.Id1.PrixChangable.Test.DataBase
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,13 +8,14 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class _TarificationViewModel(
+class TarificationViewModel(
     private val tarificationDataBaseFacileEntre_RepositoryImp: TarificationDataBaseFacileEntre_RepositoryImp
 ): ViewModel(){
     private val _imbriquantFlow = MutableStateFlow(A_DataBase_Imbricant(emptyList()))
     val imbriquantFlow: StateFlow<A_DataBase_Imbricant> = _imbriquantFlow.asStateFlow()
 
     init {
+        loadImbriquantData()
         observeTarificationData()
     }
 
@@ -26,7 +27,8 @@ class _TarificationViewModel(
         }
     }
 
-    private fun loadImbriquantData() {
+    // Changed to public so it can be called from test directly
+    fun loadImbriquantData() {
         viewModelScope.launch {
             val produitRepository = B_GroupeRepositoryImp.ProduitDataBase_RepositoryImp()
             val clientRepository = B_GroupeRepositoryImp.clientRepository
@@ -70,11 +72,12 @@ class _TarificationViewModel(
                                     )
                                 }
 
-                                val typeTarification = A_DataBase_Imbricant.Produit.Client.TypeTarification(
-                                    vidTimestamp = latestTimestamp,
-                                    id = typeId,
-                                    PrixsCurrency = priceList
-                                )
+                                val typeTarification =
+                                    A_DataBase_Imbricant.Produit.Client.TypeTarification(
+                                        vidTimestamp = latestTimestamp,
+                                        id = typeId,
+                                        PrixsCurrency = priceList
+                                    )
 
                                 typeTarifications.add(typeTarification)
                             }

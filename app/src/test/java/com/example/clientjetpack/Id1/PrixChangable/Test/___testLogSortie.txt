@@ -1,39 +1,27 @@
-======== C Le Test Log Output Print Du Temp=2025-05-10 12:41:47 du  A_DataBasesSepareReferential  ========
+======== C Le Test Log Output Print Du Temp=2025-05-10 19:30:47 du  A_DataBasesSepareReferential  ========
 
 -- Hierarchical Structure --
-├─ Product : 1=(Caramels), Date: 2025-05-10 Time: 14:30:00 (1 clients)
-  ├─ Client ID: 1=(Client A), Date: 2025-05-10 Time: 14:30:00 (2 tarification types)
-  │     ├─ Tarification Type : 1=(ParBenifice) [ACTIVE] , Date: 2025-05-09 Time: 12:41:47 (1 currencies)  //<--
-                                                                                                                 //TODO(1): ajoute n assert true au premier et apre update
-  │     │  └─ Currency: 2.99, Date: 2025-05-09 Time: 12:41:47
-  │     └─ Tarification Type : 2=(Historique) , Date: 2025-05-10 Time: 14:30:00 (1 currencies)
-          └─ Currency: 5.99, Date: 2025-05-10 Time: 14:30:00
-└─ Product : 2=(Chocolats), Date: 2025-05-08 Time: 12:41:47 (1 clients)
-  └─ Client ID: 2=(Client B), Date: 2025-05-08 Time: 12:41:47 (1 tarification types)
-     └─ Tarification Type : 2=(Historique) , Date: 2025-05-08 Time: 12:41:47 (1 currencies)
-          └─ Currency: 4.99, Date: 2025-05-08 Time: 12:41:47
-
+                              //<--
+                              //TODO(1): pk c vide ici 
 ========TEST A_DataBasesSepareReferential COMPLETED SUCCESSFULLY ========
 
 
 ========Apre Update========
 
-======== C Le Test Log Output Print Du Temp=2025-05-10 12:41:47 du  A_DataBasesSepareReferential  ========
+======== C Le Test Log Output Print Du Temp=2025-05-10 19:30:47 du  A_DataBasesSepareReferential_AfterUpdate  ========
 
 -- Hierarchical Structure --
 ├─ Product : 1=(Caramels), Date: 2025-05-10 Time: 16:30:00 (1 clients)
   ├─ Client ID: 1=(Client A), Date: 2025-05-10 Time: 16:30:00 (2 tarification types)
-  │     ├─ Tarification Type : 1=(ParBenifice) , Date: 2025-05-09 Time: 12:41:47 (1 currencies)
-  │     │  └─ Currency: 2.99, Date: 2025-05-09 Time: 12:41:47
-  │     └─ Tarification Type : 2=(Historique) [ACTIVE]    //<--
-                                                                 //TODO(1): ajoute n assert true au premier et apre update
-  , Date: 2025-05-10 Time: 16:30:00 (2 currencies)
+  │     ├─ Tarification Type : 1=(ParBenifice) , Date: 2025-05-09 Time: 19:30:47 (1 currencies)
+  │     │  └─ Currency: 2.99, Date: 2025-05-09 Time: 19:30:47
+  │     └─ Tarification Type : 2=(Historique) [ACTIVE] , Date: 2025-05-10 Time: 16:30:00 (2 currencies)
           ├─ Currency: 9.99, Date: 2025-05-10 Time: 16:30:00
           └─ Currency: 5.99, Date: 2025-05-10 Time: 14:30:00
-└─ Product : 2=(Chocolats), Date: 2025-05-08 Time: 12:41:47 (1 clients)
-  └─ Client ID: 2=(Client B), Date: 2025-05-08 Time: 12:41:47 (1 tarification types)
-     └─ Tarification Type : 2=(Historique) , Date: 2025-05-08 Time: 12:41:47 (1 currencies)
-          └─ Currency: 4.99, Date: 2025-05-08 Time: 12:41:47
+└─ Product : 2=(Chocolats), Date: 2025-05-08 Time: 19:30:47 (1 clients)
+  └─ Client ID: 2=(Client B), Date: 2025-05-08 Time: 19:30:47 (1 tarification types)
+     └─ Tarification Type : 2=(Historique) , Date: 2025-05-08 Time: 19:30:47 (1 currencies)
+          └─ Currency: 4.99, Date: 2025-05-08 Time: 19:30:47
 
-========TEST A_DataBasesSepareReferential COMPLETED SUCCESSFULLY ========
+========TEST A_DataBasesSepareReferential_AfterUpdate COMPLETED SUCCESSFULLY ========
 

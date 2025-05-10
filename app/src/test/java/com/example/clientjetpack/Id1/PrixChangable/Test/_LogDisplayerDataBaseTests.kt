@@ -1,7 +1,13 @@
 package com.example.clientjetpack.Id1.PrixChangable.Test
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.example.clientjetpack.Id1.PrixChangable.Test.B_GroupeRepositoryImp.Companion.clientRepository
+import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.AA_TarificationDataBaseFacileEntre
+import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.A_DataBase_Imbricant
+import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.B_GroupeRepositoryImp
+import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.B_GroupeRepositoryImp.Companion.clientRepository
+import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.TarificationDataBaseFacileEntre_RepositoryImp
+import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.TarificationViewModel
+import com.example.clientjetpack.Id1.PrixChangable.Test.Log.logProduits
 import com.example.clientjetpack.Id1.PrixChangable.Test.Passive.createTimestamp
 import com.example.clientjetpack.Id1.PrixChangable.Test.Passive.strDateEtTempFromVidTimestamp
 import kotlinx.coroutines.Dispatchers
@@ -25,7 +31,7 @@ class _TestsDisplayerLogDataBase {
 
     private val testDispatcher = StandardTestDispatcher()
 
-    lateinit var viewModel: _TarificationViewModel
+    lateinit var viewModel: TarificationViewModel
     private lateinit var b_GroupeRepositoryImp: B_GroupeRepositoryImp
     private lateinit var tarificationRepo: TarificationDataBaseFacileEntre_RepositoryImp
 
@@ -34,7 +40,7 @@ class _TestsDisplayerLogDataBase {
         Dispatchers.setMain(testDispatcher)
         tarificationRepo = TarificationDataBaseFacileEntre_RepositoryImp()
         b_GroupeRepositoryImp = B_GroupeRepositoryImp()
-        viewModel = _TarificationViewModel(tarificationRepo)
+        viewModel = TarificationViewModel(tarificationRepo)
     }
 
     @After

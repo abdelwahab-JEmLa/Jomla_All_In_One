@@ -1,14 +1,17 @@
-package com.example.clientjetpack.Id1.PrixChangable.Test
+package com.example.clientjetpack.Id1.PrixChangable.Test.Log
 
+import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.A_DataBase_Imbricant
+import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.B_GroupeRepositoryImp
 import com.example.clientjetpack.Id1.PrixChangable.Test.Passive.TreePrefix
 import com.example.clientjetpack.Id1.PrixChangable.Test.Passive.strDateEtTempFromVidTimestamp
+import com.example.clientjetpack.Id1.PrixChangable.Test._TestsDisplayerLogDataBase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @OptIn(ExperimentalCoroutinesApi::class)
 fun _TestsDisplayerLogDataBase.logTarificationTypes(
-        types: List<A_DataBase_Imbricant.Produit.Client.TypeTarification>,
-        isLastProduit: Boolean,
-        isLastClient: Boolean,
+    types: List<A_DataBase_Imbricant.Produit.Client.TypeTarification>,
+    isLastProduit: Boolean,
+    isLastClient: Boolean,
     ) {
         val typeRepository = B_GroupeRepositoryImp.TypeTarificationDataBase_RepositoryImp()
         val clientRepository = B_GroupeRepositoryImp.clientRepository

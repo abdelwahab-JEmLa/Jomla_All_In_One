@@ -1,4 +1,4 @@
-package com.example.clientjetpack.Id1.PrixChangable.Test
+package com.example.clientjetpack.Id1.PrixChangable.Test.DataBase
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.room.PrimaryKey
