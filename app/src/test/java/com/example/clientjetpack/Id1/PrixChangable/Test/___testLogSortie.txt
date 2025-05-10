@@ -1,35 +1,10 @@
-======== TESTING A_DataBasesSepareReferential TRANSACTIONS ========
+======== C Le Test Log Output Print Du Temp=2025-05-10 09:35:47 du  A_DataBasesSepareReferential  ========
 
 -- Hierarchical Structure --
 Database (2 products):
-├─ Product ID: 1, Date: 2025-05-10 Time: 09:12:08 (3 clients)
-  ├─ Client ID: 1, Date: 2025-05-09 Time: 09:12:08 (1 tarification types)
-  │     └─ Tarification Type ID: 1, Date: 2025-05-09 Time: 09:12:08 (1 currencies)
-  
-  //<--
-  //TODO(1): ajout un autre type au tree pour que 
-  //<--
-  //TODO(1):   │     │  └─ Currency: 2.99, Date: 2025-05-09 Time: 09:12:08
-  //<--
-  //TODO(1): soit :   │        └─ Currency: 2.99, Date: 2025-05-09 Time: 09:12:08 car c le last
-
-  │     │  └─ Currency: 2.99, Date: 2025-05-09 Time: 09:12:08
-  ├─ Client ID: 2, Date: 2025-05-09 Time: 21:12:08 (1 tarification types)
-  │     └─ Tarification Type ID: 2, Date: 2025-05-09 Time: 21:12:08 (1 currencies)
-  │     │  └─ Currency: 3.49, Date: 2025-05-09 Time: 21:12:08
-  ├─ Client ID: 3, Date: 2025-05-10 Time: 09:12:08 (1 tarification types)
-  │     └─ Tarification Type ID: 3, Date: 2025-05-10 Time: 09:12:08 (1 currencies)
-  │     │  └─ Currency: 3.99, Date: 2025-05-10 Time: 09:12:08
-└─ Product ID: 2, Date: 2025-05-10 Time: 09:12:08 (3 clients)
-  └─ Client ID: 1, Date: 2025-05-08 Time: 09:12:08 (1 tarification types)
-  │     └─ Tarification Type ID: 1, Date: 2025-05-08 Time: 09:12:08 (1 currencies)
-  │     │  └─ Currency: 4.99, Date: 2025-05-08 Time: 09:12:08
-  └─ Client ID: 3, Date: 2025-05-10 Time: 03:12:08 (1 tarification types)
-  │     └─ Tarification Type ID: 2, Date: 2025-05-10 Time: 03:12:08 (1 currencies)
-  │     │  └─ Currency: 5.49, Date: 2025-05-10 Time: 03:12:08
-  └─ Client ID: 4, Date: 2025-05-10 Time: 09:12:08 (1 tarification types)
-        Tarification Type ID: 3, Date: 2025-05-10 Time: 09:12:08 (1 currencies)
-          └─ Currency: 5.99, Date: 2025-05-10 Time: 09:12:08
+├─ Product ID: 0 Caramels, Date: 2025-05-10 Time: 09:35:47 (0 clients)        //<--
+//TODO(1): pk ce log
+└─ Product ID: 0 Caramels, Date: 2025-05-10 Time: 09:35:47 (0 clients)
 
 ========TEST A_DataBasesSepareReferential COMPLETED SUCCESSFULLY ========
 

@@ -1,5 +1,7 @@
 package com.example.clientjetpack.Id1.PrixChangable.Test.Passive
 
+import java.util.Calendar
+
 fun strDateEtTempFromVidTimestamp(timestamp: Long): Pair<String, String> {
         val calendar = Calendar.getInstance().apply {
             timeInMillis = timestamp

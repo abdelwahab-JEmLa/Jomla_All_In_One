@@ -23,12 +23,14 @@ class _TestsDisplayerLogDataBase {
     private val testDispatcher = StandardTestDispatcher()
 
     private lateinit var viewModel: _TarificationViewModel
+    private lateinit var b_GroupeRepositoryImp: B_GroupeRepositoryImp
     private lateinit var tarificationRepo: TarificationDataBaseFacileEntre_RepositoryImp
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         tarificationRepo = TarificationDataBaseFacileEntre_RepositoryImp()
+        b_GroupeRepositoryImp = B_GroupeRepositoryImp()
         viewModel = _TarificationViewModel(tarificationRepo)
     }
 
@@ -64,14 +66,17 @@ class _TestsDisplayerLogDataBase {
 
         println("Database (${value.produits.size} products):")
 
+        val produitRepository = B_GroupeRepositoryImp.ProduitDataBase_RepositoryImp()
+
         value.produits.forEachIndexed { produitIndex, produit ->
             val isLastProduit = produitIndex == value.produits.size - 1
             val produitPrefix = TreePrefix.Type1.get(isLastProduit)
 
             val (produitDate, produitTime) = strDateEtTempFromVidTimestamp(produit.vidTimestamp)
+            val relatedInfos = produitRepository.modelList.find { it.id == produit.id }
 
             //Header
-            println("$produitPrefix Product ID: ${produit.id}, Date: $produitDate Time: $produitTime (${produit.clients.size} clients)")
+            println("$produitPrefix Product ID: ${produit.id} ${relatedInfos?.nom ?: "Unknown"}, Date: $produitDate Time: $produitTime (${produit.clients.size} clients)")
 
             logClients(produit.clients, isLastProduit)
         }
@@ -81,6 +86,8 @@ class _TestsDisplayerLogDataBase {
         clients: List<A_DataBase_Imbricant.Produit.Client>,
         isLastProduit: Boolean,
     ) {
+        val clientRepository = B_GroupeRepositoryImp.ClientDataBase_RepositoryImp()
+
         clients.forEachIndexed { clientIndex, client ->
             val isLastClient = clientIndex == clients.size - 1
             val clientPrefix =
@@ -89,8 +96,9 @@ class _TestsDisplayerLogDataBase {
                 )
 
             val (clientDate, clientTime) = strDateEtTempFromVidTimestamp(client.vidTimestamp)
+            val clientInfo = clientRepository.modelList.find { it.id == client.id }
 
-            println("$clientPrefix Client ID: ${client.id}, Date: $clientDate Time: $clientTime (${client.typeTarification.size} tarification types)")
+            println("$clientPrefix Client ID: ${client.id}, Name: ${clientInfo?.nom ?: "Unknown"}, Date: $clientDate Time: $clientTime (${client.typeTarification.size} tarification types)")
 
             logTarificationTypes(client.typeTarification, isLastProduit, isLastClient)
         }
@@ -101,6 +109,8 @@ class _TestsDisplayerLogDataBase {
         isLastProduit: Boolean,
         isLastClient: Boolean,
     ) {
+        val typeRepository = B_GroupeRepositoryImp.TypeTarificationDataBase_RepositoryImp()
+
         types.forEachIndexed { typeIndex, type ->
             val isLastType = typeIndex == types.size - 1
             val typePrefix = when {
@@ -110,8 +120,9 @@ class _TestsDisplayerLogDataBase {
             }
 
             val (typeDate, typeTime) = strDateEtTempFromVidTimestamp(type.vidTimestamp)
+            val typeInfo = typeRepository.modelList.find { it.id == type.id }
 
-            println("$typePrefix Tarification Type ID: ${type.id}, Date: $typeDate Time: $typeTime (${type.PrixsCurrency.size} currencies)")
+            println("$typePrefix Tarification Type ID: ${type.id}, Type: ${typeInfo?.typeTarificationEnum ?: "Unknown"}, Date: $typeDate Time: $typeTime (${type.PrixsCurrency.size} currencies)")
 
             logPrixCurrencies(type.PrixsCurrency, isLastProduit, isLastClient, isLastType)
         }
@@ -145,5 +156,4 @@ class _TestsDisplayerLogDataBase {
 
         fun get(isLast: Boolean): String = if (isLast) lastItem else normalItem
     }
-
 }
