@@ -53,34 +53,20 @@ class _TestsDisplayerLogDataBase {
             prixCurrency = 9.99
         )
 
-
-
-        // Add the tarification entry
-        tarificationRepo.add(newTarification) {addedTarification->
-
-            testDispatcher.scheduler.advanceUntilIdle()
-
+        tarificationRepo.add(newTarification) { addedTarification ->
             // Find the client to update
             val client = clientRepository.modelList.find { clientToUpdate ->
                 clientToUpdate.id == addedTarification.idClient
             }?.copy(
                 idActiveTypeTarificationDataBase = addedTarification.idTypeTarification
             )
-
             if (client != null) {
                 clientRepository.update(client)
             }
-
         }
-
-        // Force dispatcher to process coroutines
-        testDispatcher.scheduler.advanceUntilIdle()
 
         // Refresh view model data
         viewModel.refreshData()
-
-        // Force dispatcher to process coroutines again
-        testDispatcher.scheduler.advanceUntilIdle()
 
         println("\n========Apre Update========\n")
 
