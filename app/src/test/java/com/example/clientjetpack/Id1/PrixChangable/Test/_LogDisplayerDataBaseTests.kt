@@ -42,6 +42,13 @@ class _TestsDisplayerLogDataBase {
         Dispatchers.resetMain()
     }
 
+    @Test
+    fun A_logSepareReferentialDataBases(): Unit = runTest {
+        val initialClient = clientRepository.modelList.find { it.id == 1L }
+        assertEquals(1L, initialClient?.idActiveTypeTarificationDataBase)
+
+        SepareReferentialDataBases()
+    }
 
     @Test
     fun B_logUpdateReferentialDataBases(): Unit = runTest {
@@ -67,20 +74,23 @@ class _TestsDisplayerLogDataBase {
         val updatedClient = clientRepository.modelList.find { it.id == 1L }
         assertEquals(2L, updatedClient?.idActiveTypeTarificationDataBase)
 
+        val name = "A_DataBasesSepareReferential_AfterUpdate"
+        val currentStrTime = strDateEtTempFromVidTimestamp(System.currentTimeMillis())
         println("\n========Apre Update========\n")
+        println(
+            "======== C Le Test Log Output Print Du Temp=${currentStrTime.first} " +
+                    "${currentStrTime.second} du  $name  ========"
+        )
 
-        SepareReferentialDataBases()
-    }
-
-    @Test
-    fun A_logSepareReferentialDataBases(): Unit = runTest {
         testDispatcher.scheduler.advanceUntilIdle()
+        val currentValue = viewModel.imbriquantFlow.value
+        mainLog(currentValue)
 
-        val initialClient = clientRepository.modelList.find { it.id == 1L }
-        assertEquals(1L, initialClient?.idActiveTypeTarificationDataBase)
 
-        SepareReferentialDataBases()
+        println("\n========TEST $name COMPLETED SUCCESSFULLY ========\n")
     }
+
+
 
     private fun SepareReferentialDataBases() = runTest {
         try {
@@ -95,10 +105,8 @@ class _TestsDisplayerLogDataBase {
             val currentValue = viewModel.imbriquantFlow.value
             mainLog(currentValue)
 
-
-            val updatedClient = clientRepository.modelList.find { it.id == 1L }
-            assertEquals(1L, updatedClient?.idActiveTypeTarificationDataBase)
-
+            val client = clientRepository.modelList.find { it.id == 1L }
+            assertEquals(1L, client?.idActiveTypeTarificationDataBase)
 
             println("\n========TEST $name COMPLETED SUCCESSFULLY ========\n")
 
@@ -106,6 +114,7 @@ class _TestsDisplayerLogDataBase {
             assertTrue("Exception during filtering: ${e.message}", false)
         }
     }
+
 
     private fun mainLog(value: A_DataBase_Imbricant) {
         println("\n-- Hierarchical Structure --")
