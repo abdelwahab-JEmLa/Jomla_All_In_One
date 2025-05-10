@@ -49,13 +49,13 @@ class _TestsDisplayerLogDataBase {
             AA_TarificationDataBaseFacileEntre(
                 vidTimestamp = createTimestamp(
                     day = 10,
-                    hour = 14,
+                    hour = 16,
                     minute = 30
                 ),
                 idProduit = 1L,
                 idClient = 1L,
                 idTypeTarification = 2L,
-                prixCurrency = 5.99
+                prixCurrency = 9.99
             )
         )
 
