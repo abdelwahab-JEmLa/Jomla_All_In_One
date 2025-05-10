@@ -38,24 +38,11 @@ class TarificationDataBaseFacileEntre_RepositoryImp {
             AA_TarificationDataBaseFacileEntre(
                 vidTimestamp = System.currentTimeMillis() - 172800000, // 2 days ago
                 idProduit = 2L,
-                idClient = 1L, // Client 1
-                idTypeTarification = 4L, // ParBenifice
+                idClient = 2L,
+                idTypeTarification = 2L, // ParBenifice
                 prixCurrency = 4.99
             ),
-            AA_TarificationDataBaseFacileEntre(
-                vidTimestamp = System.currentTimeMillis() - 21600000, // 6 hours ago
-                idProduit = 2L,
-                idClient = 3L, // Client 3
-                idTypeTarification = 5L, // Historique
-                prixCurrency = 5.49
-            ),
-            AA_TarificationDataBaseFacileEntre(
-                vidTimestamp = System.currentTimeMillis(),
-                idProduit = 2L,
-                idClient = 4L, // Client 4
-                idTypeTarification = 6L, // LeMaxPrixArrive
-                prixCurrency = 5.99
-            )
+
         )
 
     fun add(data: AA_TarificationDataBaseFacileEntre) {
