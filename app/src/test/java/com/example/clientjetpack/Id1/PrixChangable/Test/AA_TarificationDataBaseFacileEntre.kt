@@ -33,35 +33,27 @@ class TarificationDataBaseFacileEntre_RepositoryImp {
                 idTypeTarification = 2L,
                 prixCurrency = 5.99
             ),
-            AA_TarificationDataBaseFacileEntre(
-                vidTimestamp = System.currentTimeMillis() - 43200000, // 12 hours ago
-                idProduit = 1L,
-                idClient = 2L, // Client 2
-                idTypeTarification = 2L, // Historique
-                prixCurrency = 3.49
-            ),
-
 
             // Test data for Chocolats (product id 2)
             AA_TarificationDataBaseFacileEntre(
                 vidTimestamp = System.currentTimeMillis() - 172800000, // 2 days ago
                 idProduit = 2L,
                 idClient = 1L, // Client 1
-                idTypeTarification = 1L, // ParBenifice
+                idTypeTarification = 4L, // ParBenifice
                 prixCurrency = 4.99
             ),
             AA_TarificationDataBaseFacileEntre(
                 vidTimestamp = System.currentTimeMillis() - 21600000, // 6 hours ago
                 idProduit = 2L,
                 idClient = 3L, // Client 3
-                idTypeTarification = 2L, // Historique
+                idTypeTarification = 5L, // Historique
                 prixCurrency = 5.49
             ),
             AA_TarificationDataBaseFacileEntre(
                 vidTimestamp = System.currentTimeMillis(),
                 idProduit = 2L,
                 idClient = 4L, // Client 4
-                idTypeTarification = 3L, // LeMaxPrixArrive
+                idTypeTarification = 6L, // LeMaxPrixArrive
                 prixCurrency = 5.99
             )
         )

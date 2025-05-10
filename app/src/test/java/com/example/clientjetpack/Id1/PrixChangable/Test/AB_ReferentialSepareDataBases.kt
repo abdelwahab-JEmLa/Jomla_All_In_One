@@ -72,29 +72,28 @@ class B_GroupeRepositoryImp {
             // Client 1 (ID: 1) tarification types
             AB_ReferentialSepareDataBases.TypeTarificationDataBase(
                 id = 1L,
-                typeTarificationEnum = AB_ReferentialSepareDataBases.TypeTarificationEnum.ParBenifice,
+                typeTarificationEnum = AB_ReferentialSepareDataBases
+                    .TypeTarificationEnum.ParBenifice,
                 itsTheActiveOne = true,
                 clientId = 1L
             ),
             AB_ReferentialSepareDataBases.TypeTarificationDataBase(
                 id = 2L,
-                typeTarificationEnum = AB_ReferentialSepareDataBases.TypeTarificationEnum.Historique,
+                typeTarificationEnum = AB_ReferentialSepareDataBases
+                    .TypeTarificationEnum.Historique,
                 clientId = 1L
             ),
-            AB_ReferentialSepareDataBases.TypeTarificationDataBase(
-                id = 3L,
-                typeTarificationEnum = AB_ReferentialSepareDataBases.TypeTarificationEnum.LeMaxPrixArrive,
-                clientId = 1L
-            ),
+
 
             // Client 2 (ID: 2) tarification types
             AB_ReferentialSepareDataBases.TypeTarificationDataBase(
                 id = 4L,
                 typeTarificationEnum = AB_ReferentialSepareDataBases.TypeTarificationEnum.ParBenifice,
-                itsTheActiveOne = true,
                 clientId = 2L
             ),
             AB_ReferentialSepareDataBases.TypeTarificationDataBase(
+                itsTheActiveOne = true,
+
                 id = 5L,
                 typeTarificationEnum = AB_ReferentialSepareDataBases.TypeTarificationEnum.Historique,
                 clientId = 2L
@@ -105,41 +104,6 @@ class B_GroupeRepositoryImp {
                 clientId = 2L
             ),
 
-            // Client 3 (ID: 3) tarification types
-            AB_ReferentialSepareDataBases.TypeTarificationDataBase(
-                id = 7L,
-                typeTarificationEnum = AB_ReferentialSepareDataBases.TypeTarificationEnum.ParBenifice,
-                itsTheActiveOne = true,
-                clientId = 3L
-            ),
-            AB_ReferentialSepareDataBases.TypeTarificationDataBase(
-                id = 8L,
-                typeTarificationEnum = AB_ReferentialSepareDataBases.TypeTarificationEnum.Historique,
-                clientId = 3L
-            ),
-            AB_ReferentialSepareDataBases.TypeTarificationDataBase(
-                id = 9L,
-                typeTarificationEnum = AB_ReferentialSepareDataBases.TypeTarificationEnum.LeMaxPrixArrive,
-                clientId = 3L
-            ),
-
-            // Client 4 (ID: 4) tarification types
-            AB_ReferentialSepareDataBases.TypeTarificationDataBase(
-                id = 10L,
-                typeTarificationEnum = AB_ReferentialSepareDataBases.TypeTarificationEnum.ParBenifice,
-                clientId = 4L
-            ),
-            AB_ReferentialSepareDataBases.TypeTarificationDataBase(
-                id = 11L,
-                typeTarificationEnum = AB_ReferentialSepareDataBases.TypeTarificationEnum.Historique,
-                itsTheActiveOne = true,
-                clientId = 4L
-            ),
-            AB_ReferentialSepareDataBases.TypeTarificationDataBase(
-                id = 12L,
-                typeTarificationEnum = AB_ReferentialSepareDataBases.TypeTarificationEnum.LeMaxPrixArrive,
-                clientId = 4L
-            )
         )
     }
 }
