@@ -31,47 +31,80 @@ class AB_ReferentialSepareDataBases {
 
 class B_GroupeRepositoryImp {
     class ProduitDataBase_RepositoryImp {
-        var modelList: List<AB_ReferentialSepareDataBases.ProduitDataBase> =
-            mutableStateListOf(
-                AB_ReferentialSepareDataBases.ProduitDataBase(
-                    nom = "Caramels"
-                ),
-                AB_ReferentialSepareDataBases.ProduitDataBase(
-                    nom = "Chocolats"
-                )
+        data class ProduitDataBase(
+            val vidTimestamp: Long,
+            val id: Long,
+            val name: String
+        )
+
+        var modelList: List<ProduitDataBase> = mutableStateListOf(
+            ProduitDataBase(
+                vidTimestamp = System.currentTimeMillis() - 172800000, // 2 days ago
+                id = 1L,
+                name = "Caramels"
+            ),
+            ProduitDataBase(
+                vidTimestamp = System.currentTimeMillis() - 86400000, // 1 day ago
+                id = 2L,
+                name = "Chocolats"
             )
+        )
     }
 
     class ClientDataBase_RepositoryImp {
-        var modelList: List<AB_ReferentialSepareDataBases.ClientDataBase> =
-            mutableStateListOf(
-                AB_ReferentialSepareDataBases.ClientDataBase(
-                    nom = "Client 1"
-                ),
-                AB_ReferentialSepareDataBases.ClientDataBase(
-                    nom = "Client 2"
-                ),
-                AB_ReferentialSepareDataBases.ClientDataBase(
-                    nom = "Client 3"
-                ),
-                AB_ReferentialSepareDataBases.ClientDataBase(
-                    nom = "Client 4"
-                )
+        data class ClientDataBase(
+            val vidTimestamp: Long,
+            val id: Long,
+            val name: String
+        )
+
+        var modelList: List<ClientDataBase> = mutableStateListOf(
+            ClientDataBase(
+                vidTimestamp = System.currentTimeMillis() - 259200000, // 3 days ago
+                id = 1L,
+                name = "Client A"
+            ),
+            ClientDataBase(
+                vidTimestamp = System.currentTimeMillis() - 172800000, // 2 days ago
+                id = 2L,
+                name = "Client B"
+            ),
+            ClientDataBase(
+                vidTimestamp = System.currentTimeMillis() - 86400000, // 1 day ago
+                id = 3L,
+                name = "Client C"
+            ),
+            ClientDataBase(
+                vidTimestamp = System.currentTimeMillis(),
+                id = 4L,
+                name = "Client D"
             )
+        )
     }
 
     class TypeTarificationDataBase_RepositoryImp {
-        var modelList: List<AB_ReferentialSepareDataBases.TypeTarificationDataBase> =
-            mutableStateListOf(
-                AB_ReferentialSepareDataBases.TypeTarificationDataBase(
-                    typeTarificationEnum = AB_ReferentialSepareDataBases.TypeTarificationEnum.ParBenifice
-                ),
-                AB_ReferentialSepareDataBases.TypeTarificationDataBase(
-                    typeTarificationEnum = AB_ReferentialSepareDataBases.TypeTarificationEnum.Historique
-                ),
-                AB_ReferentialSepareDataBases.TypeTarificationDataBase(
-                    typeTarificationEnum = AB_ReferentialSepareDataBases.TypeTarificationEnum.LeMaxPrixArrive
-                )
+        data class TypeTarificationDataBase(
+            val vidTimestamp: Long,
+            val id: Long,
+            val name: String
+        )
+
+        var modelList: List<TypeTarificationDataBase> = mutableStateListOf(
+            TypeTarificationDataBase(
+                vidTimestamp = System.currentTimeMillis() - 259200000, // 3 days ago
+                id = 1L,
+                name = "ParBenifice"
+            ),
+            TypeTarificationDataBase(
+                vidTimestamp = System.currentTimeMillis() - 172800000, // 2 days ago
+                id = 2L,
+                name = "Historique"
+            ),
+            TypeTarificationDataBase(
+                vidTimestamp = System.currentTimeMillis() - 86400000, // 1 day ago
+                id = 3L,
+                name = "LeMaxPrixArrive"
             )
+        )
     }
 }

@@ -1,8 +1,29 @@
 ======== TESTING A_DataBasesSepareReferential TRANSACTIONS ========
 
 -- Hierarchical Structure --
-Database (0 products):      //<--
-//TODO(1): pk c 0 
+Database (2 products):
+├─ Product ID: 1, Date: 2025-05-10 Time: 09:00:57 (3 clients)
+  ├─ Client ID: 1, Date: 2025-05-09 Time: 09:00:57 (1 tarification types)
+  │     └─ Tarification Type ID: 1, Date: 2025-05-09 Time: 09:00:57 (1 currencies)
+  │     │  └─ Currency: 2.99, Date: 2025-05-09 Time: 09:00:57
+  ├─ Client ID: 2, Date: 2025-05-09 Time: 21:00:57 (1 tarification types)
+  │     └─ Tarification Type ID: 2, Date: 2025-05-09 Time: 21:00:57 (1 currencies)
+  │     │   //<--
+  //TODO(1): ici normalement c └─
+    └─ Currency: 3.49, Date: 2025-05-09 Time: 21:00:57
+  ├─ Client ID: 3, Date: 2025-05-10 Time: 09:00:57 (1 tarification types)
+  │     └─ Tarification Type ID: 3, Date: 2025-05-10 Time: 09:00:57 (1 currencies)
+  │     │  └─ Currency: 3.99, Date: 2025-05-10 Time: 09:00:57
+└─ Product ID: 2, Date: 2025-05-10 Time: 09:00:57 (3 clients)
+  └─ Client ID: 1, Date: 2025-05-08 Time: 09:00:57 (1 tarification types)
+  │     └─ Tarification Type ID: 1, Date: 2025-05-08 Time: 09:00:57 (1 currencies)
+  │     │  └─ Currency: 4.99, Date: 2025-05-08 Time: 09:00:57
+  └─ Client ID: 3, Date: 2025-05-10 Time: 03:00:57 (1 tarification types)
+  │     └─ Tarification Type ID: 2, Date: 2025-05-10 Time: 03:00:57 (1 currencies)
+  │     │  └─ Currency: 5.49, Date: 2025-05-10 Time: 03:00:57
+  └─ Client ID: 4, Date: 2025-05-10 Time: 09:00:57 (1 tarification types)
+        Tarification Type ID: 3, Date: 2025-05-10 Time: 09:00:57 (1 currencies)
+          └─ Currency: 5.99, Date: 2025-05-10 Time: 09:00:57
 
 ========TEST A_DataBasesSepareReferential COMPLETED SUCCESSFULLY ========
 

@@ -1,7 +1,5 @@
 package com.example.clientjetpack.Id1.PrixChangable.Test
 
-import android.icu.util.Currency
-
 data class A_DataBase_Imbricant(
     val produits: List<Produit>,
 ) {
@@ -18,11 +16,11 @@ data class A_DataBase_Imbricant(
             data class TypeTarification(
                 val vidTimestamp: Long,
                 val id: Long,
-                val PrixsCurrency: List<PrixCurrency>,
+                val PrixsCurrency: List<Prix>,
             ) {
-                data class PrixCurrency(
+                data class Prix(
                     val vidTimestamp: Long,
-                    val currency: Currency,
+                    val valeur: Double,
                 )
             }
         }
