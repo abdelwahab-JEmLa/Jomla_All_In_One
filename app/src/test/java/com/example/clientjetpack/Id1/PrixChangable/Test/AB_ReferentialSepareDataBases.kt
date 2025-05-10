@@ -55,6 +55,7 @@ class B_GroupeRepositoryImp {
             AB_ReferentialSepareDataBases.ClientDataBase(
                 id = 1L,  // Explicitly set ID
                 nom = "Client A"
+
             ),
             AB_ReferentialSepareDataBases.ClientDataBase(
                 id = 2L,  // Explicitly set ID
