@@ -45,7 +45,6 @@ class _TestsDisplayerLogDataBase {
 
     @Test
     fun B_logUpdateReferentialDataBases(): Unit = runTest {
-        // Create a new tarification entry
         val newTarification = AA_TarificationDataBaseFacileEntre(
             vidTimestamp = createTimestamp(day = 10, hour = 16, minute = 30),
             idProduit = 1L,
@@ -55,7 +54,6 @@ class _TestsDisplayerLogDataBase {
         )
 
         tarificationRepo.add(newTarification) { addedTarification ->
-            // Find the client to update
             val client = clientRepository.modelList.find { clientToUpdate ->
                 clientToUpdate.id == addedTarification.idClient
             }?.copy(
@@ -66,10 +64,6 @@ class _TestsDisplayerLogDataBase {
             }
         }
 
-        // Advance the dispatcher to ensure coroutines complete
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        // Assert that the active tarification type has been updated to 2 (Historique)
         val updatedClient = clientRepository.modelList.find { it.id == 1L }
         assertEquals(2L, updatedClient?.idActiveTypeTarificationDataBase)
 
@@ -80,10 +74,8 @@ class _TestsDisplayerLogDataBase {
 
     @Test
     fun A_logSepareReferentialDataBases(): Unit = runTest {
-        // Advance the dispatcher to ensure coroutines complete
         testDispatcher.scheduler.advanceUntilIdle()
 
-        // Assert that the initial active tarification type is 1 (ParBenifice)
         val initialClient = clientRepository.modelList.find { it.id == 1L }
         assertEquals(1L, initialClient?.idActiveTypeTarificationDataBase)
 
@@ -98,14 +90,11 @@ class _TestsDisplayerLogDataBase {
                 "======== C Le Test Log Output Print Du Temp=${currentStrTime.first} " +
                         "${currentStrTime.second} du  $name  ========"
             )
-            // Advance the dispatcher to ensure coroutines complete
             testDispatcher.scheduler.advanceUntilIdle()
 
-            // Get the current value from the flow
             val currentValue = viewModel.imbriquantFlow.value
             mainLog(currentValue)
 
-            // Check that active tarification marker appears in the correct location
             val clientA = currentValue.produits
                 .find { it.id == 1L }?.clients
                 ?.find { it.id == 1L }
@@ -143,7 +132,6 @@ class _TestsDisplayerLogDataBase {
             val (produitDate, produitTime) = strDateEtTempFromVidTimestamp(produit.vidTimestamp)
             val relatedInfos = produitRepository.modelList.find { it.id == produit.id }
 
-            // Using StringBuilder for more efficient string concatenation
             val produitInfos = StringBuilder().apply {
                 append(produitPrefix)
                 append(" Product : ")
@@ -173,7 +161,6 @@ class _TestsDisplayerLogDataBase {
             val (clientDate, clientTime) = strDateEtTempFromVidTimestamp(client.vidTimestamp)
             val clientInfo = clientRepository.modelList.find { it.id == client.id }
 
-            // Using StringBuilder for more efficient string concatenation
             val clientInfos = StringBuilder().apply {
                 append(clientPrefix)
                 append(" Client ID: ")
@@ -200,14 +187,11 @@ class _TestsDisplayerLogDataBase {
         val typeRepository = B_GroupeRepositoryImp.TypeTarificationDataBase_RepositoryImp()
         val clientRepository = B_GroupeRepositoryImp.clientRepository
 
-        // Find the client that owns these tarification types
         val currentClient = viewModel.imbriquantFlow.value.produits
             .flatMap { it.clients }
             .find { client -> client.typeTarification.any { types.contains(it) } }
 
-        // Only proceed if we found the client
         if (currentClient != null) {
-            // Get full client info from repository
             val clientInfo = clientRepository.modelList.find { it.id == currentClient.id }
 
             types.forEachIndexed { typeIndex, type ->
@@ -221,11 +205,9 @@ class _TestsDisplayerLogDataBase {
                 val (typeDate, typeTime) = strDateEtTempFromVidTimestamp(type.vidTimestamp)
                 val typeInfo = typeRepository.modelList.find { it.id == type.id }
 
-                // Check if this type is the active one for this client
                 val isActive = clientInfo?.idActiveTypeTarificationDataBase == type.id
                 val activeStatus = if (isActive) " [ACTIVE]" else ""
 
-                // Using StringBuilder for more efficient string concatenation
                 val typeInfos = StringBuilder().apply {
                     append(typePrefix)
                     append(" Tarification Type : ")
