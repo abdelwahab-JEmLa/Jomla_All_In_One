@@ -141,7 +141,7 @@ class ImprovedDatesHistoriqueTest {
         }
     }
 
-    fun mapSemainJours_LogDisplayerTest(
+    private fun mapSemainJours_LogDisplayerTest(
         mapsIDSDatesHistoriqueTransactionsPassed: DA_MapsIDSDatesHistoriqueTransactionsRep_Repository) {
         try {
             val nameDataBase = "mapSemainJours"
@@ -178,30 +178,28 @@ class ImprovedDatesHistoriqueTest {
             val weekPrefix = TreePrefix.Type1.get(isLastWeek)
 
             val weekDate = strDateFromVidTimestamp(weekTimestamp)
+
+            //Header
             println("$weekPrefix Week: $weekDate (${days.size} days)")
 
-            val sortedDays = days.sortedByDescending { it }
-
-            sortedDays.forEachIndexed { dayIndex, dayTimestamp ->
-                ItemLog(dayIndex, sortedDays, dayTimestamp)
-            }
+            ItemLog(days)
         }
     }
 
     private fun ItemLog(
-        dayIndex: Int,
-        sortedDays: List<Long>,
-        dayTimestamp: Long,
+        sortedDays: List<Long>
     ) {
-        val isLastDay = dayIndex == sortedDays.size - 1
-        val dayPrefix = TreePrefix.Type2.get(isLastDay)
+        sortedDays.forEachIndexed { dayIndex, dayTimestamp ->
+            val isLastDay = dayIndex == sortedDays.size - 1
+            val dayPrefix = TreePrefix.Type2.get(isLastDay)
 
-        val dayDate = strDateFromVidTimestamp(dayTimestamp)
+            val dayDate = strDateFromVidTimestamp(dayTimestamp)
 
-        val jourObject = sqlDatasDatesHistorique.jours.find { it.vidTimeTemp == dayTimestamp }
-        val isActive = jourObject?.itsActiveDaye ?: false
+            val jourObject = sqlDatasDatesHistorique.jours.find { it.vidTimeTemp == dayTimestamp }
+            val isActive = jourObject?.itsActiveDaye ?: false
 
-        println("$dayPrefix Day: $dayDate itsActiveDaye = $isActive")
+            println("$dayPrefix Day: $dayDate itsActiveDaye = $isActive")
+        }
     }
 
 
