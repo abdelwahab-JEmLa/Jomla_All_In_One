@@ -64,17 +64,14 @@ class _TestsDisplayerLogDataBase {
         // Add the new tarification entry
         tarificationRepo.add(newTarification) { addedTarification ->
             // Find the client to update
-            val clientToUpdate = clientRepository.modelList.find { client ->
-                client.id == addedTarification.idClient
-            }
+            val updatedClient = clientRepository.modelList.find { clientToUpdate ->
+                clientToUpdate.id == addedTarification.idClient
+            }?.copy(
+                idActiveTypeTarificationDataBase = addedTarification.idTypeTarification
+            )
 
-            if (clientToUpdate != null) {
-                // Create updated client with active tarification type
-                val updatedClient = clientToUpdate.copy(
-                    idActiveTypeTarificationDataBase = addedTarification.idTypeTarification
-                )
-
-                // Update the client in the repository
+            // Update the client in the repository
+            if (updatedClient != null) {
                 b_GroupeRepositoryImp.updateData(updatedClient)
                 println("Client updated: $updatedClient")
             }
@@ -86,14 +83,7 @@ class _TestsDisplayerLogDataBase {
             println("Client ${client.id}: activeType=${client.idActiveTypeTarificationDataBase}")
         }
 
-        // Force the dispatcher to execute pending coroutines
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        // Refresh data to capture the changes
         viewModel.refreshData()
-
-        // Force the dispatcher to execute the refresh
-        testDispatcher.scheduler.advanceUntilIdle()
 
         println("\n========Apre Update========\n")
 
@@ -103,6 +93,7 @@ class _TestsDisplayerLogDataBase {
     @Test
     fun A_logSepareReferentialDataBases(): Unit {
         SepareReferentialDataBases()
+
     }
 
     private fun SepareReferentialDataBases() = runTest {
@@ -187,50 +178,63 @@ class _TestsDisplayerLogDataBase {
 
             println(clientInfos)
 
-            logTarificationTypes(client.typeTarification, isLastProduit, isLastClient, clientInfo)
+            logTarificationTypes(client.typeTarification, isLastProduit, isLastClient)
         }
     }
+
+    // Modified logTarificationTypes function in _LogDisplayerDataBaseTests.kt
 
     private fun logTarificationTypes(
         types: List<A_DataBase_Imbricant.Produit.Client.TypeTarification>,
         isLastProduit: Boolean,
         isLastClient: Boolean,
-        clientInfo: AB_ReferentialSepareDataBases.ClientDataBase?
     ) {
         val typeRepository = B_GroupeRepositoryImp.TypeTarificationDataBase_RepositoryImp()
+        val clientRepository = B_GroupeRepositoryImp.ClientDataBase_RepositoryImp()
 
-        types.forEachIndexed { typeIndex, type ->
-            val isLastType = typeIndex == types.size - 1
-            val typePrefix = when {
-                isLastProduit && isLastClient -> TreePrefix.Type4.get(isLastType)
-                isLastClient -> "  │     ${if (isLastType) "└─" else "├─"}"
-                else -> "  │     ${if (isLastType) "└─" else "├─"}"
+        // Find the client that owns these tarification types
+        val currentClient = viewModel.imbriquantFlow.value.produits
+            .flatMap { it.clients }
+            .find { client -> client.typeTarification.any { types.contains(it) } }
+
+        // Only proceed if we found the client
+        if (currentClient != null) {
+            // Get full client info from repository
+            val clientInfo = clientRepository.modelList.find { it.id == currentClient.id }
+
+            types.forEachIndexed { typeIndex, type ->
+                val isLastType = typeIndex == types.size - 1
+                val typePrefix = when {
+                    isLastProduit && isLastClient -> TreePrefix.Type4.get(isLastType)
+                    isLastClient -> "  │     ${if (isLastType) "└─" else "├─"}"
+                    else -> "  │     ${if (isLastType) "└─" else "├─"}"
+                }
+
+                val (typeDate, typeTime) = strDateEtTempFromVidTimestamp(type.vidTimestamp)
+                val typeInfo = typeRepository.modelList.find { it.id == type.id }
+
+                // Check if this type is the active one for this client
+                val isActive = clientInfo?.idActiveTypeTarificationDataBase == type.id
+                val activeStatus = if (isActive) " [ACTIVE]" else ""
+
+                // Using StringBuilder for more efficient string concatenation
+                val typeInfos = StringBuilder().apply {
+                    append(typePrefix)
+                    append(" Tarification Type : ")
+                    append(type.id)
+                    append("=(${typeInfo?.typeTarificationEnum ?: "Unknown"})")
+                    append(activeStatus)
+                    append(" , Date: ")
+                    append(typeDate)
+                    append(" Time: ")
+                    append(typeTime)
+                    append(" (${type.PrixsCurrency.size} currencies)")
+                }.toString()
+
+                println(typeInfos)
+
+                logPrixCurrencies(type.PrixsCurrency, isLastProduit, isLastClient, isLastType)
             }
-
-            val (typeDate, typeTime) = strDateEtTempFromVidTimestamp(type.vidTimestamp)
-            val typeInfo = typeRepository.modelList.find { it.id == type.id }
-
-            // Check if this type is the active one for this client
-            val isActive = clientInfo?.idActiveTypeTarificationDataBase == type.id
-            val activeStatus = if (isActive) " [ACTIVE]" else ""
-
-            // Using StringBuilder for more efficient string concatenation
-            val typeInfos = StringBuilder().apply {
-                append(typePrefix)
-                append(" Tarification Type : ")
-                append(type.id)
-                append("=(${typeInfo?.typeTarificationEnum ?: "Unknown"})")
-                append(activeStatus)
-                append(" , Date: ")
-                append(typeDate)
-                append(" Time: ")
-                append(typeTime)
-                append(" (${type.PrixsCurrency.size} currencies)")
-            }.toString()
-
-            println(typeInfos)
-
-            logPrixCurrencies(type.PrixsCurrency, isLastProduit, isLastClient, isLastType)
         }
     }
 
