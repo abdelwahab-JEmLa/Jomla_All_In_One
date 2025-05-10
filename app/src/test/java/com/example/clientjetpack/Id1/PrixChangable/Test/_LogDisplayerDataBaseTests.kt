@@ -165,6 +165,7 @@ class _TestsDisplayerLogDataBase {
         isLastClient: Boolean,
     ) {
         val typeRepository = B_GroupeRepositoryImp.TypeTarificationDataBase_RepositoryImp()
+        val clientRepository = B_GroupeRepositoryImp.ClientDataBase_RepositoryImp()
 
         types.forEachIndexed { typeIndex, type ->
             val isLastType = typeIndex == types.size - 1
@@ -178,8 +179,13 @@ class _TestsDisplayerLogDataBase {
             val typeInfo = typeRepository.modelList.find { it.id == type.id }
 
             // Get active status from repository
-      //      val isActive = TODO()
-       //     val activeStatus = if (isActive) "[ACTIVE]" else ""
+            val clientId = viewModel.imbriquantFlow.value.produits
+                .flatMap { it.clients }
+                .find { it.typeTarification.contains(type) }?.id ?: -1L
+
+            val clientInfo = clientRepository.modelList.find { it.id == clientId }
+            val isActive = clientInfo?.idActiveTypeTarificationDataBase == type.id
+            val activeStatus = if (isActive) "[ACTIVE]" else ""
 
             // Using StringBuilder for more efficient string concatenation
             val typeInfos = StringBuilder().apply {
@@ -187,7 +193,7 @@ class _TestsDisplayerLogDataBase {
                 append(" Tarification Type : ")
                 append(type.id)
                 append("=(${typeInfo?.typeTarificationEnum ?: "Unknown"}) ")
-        //        append(activeStatus) // Add active status indicator
+                append(activeStatus) // Add active status indicator
                 append(", Date: ")
                 append(typeDate)
                 append(" Time: ")

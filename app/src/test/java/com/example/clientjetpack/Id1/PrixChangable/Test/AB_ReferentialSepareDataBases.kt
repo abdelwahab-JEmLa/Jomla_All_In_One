@@ -14,6 +14,7 @@ class AB_ReferentialSepareDataBases {
         @PrimaryKey(autoGenerate = true)
         val id: Long = 0,
         val nom: String,
+        val idActiveTypeTarificationDataBase: Long=0,
     )
 
     data class TypeTarificationDataBase(
@@ -51,7 +52,8 @@ class B_GroupeRepositoryImp {
             ),
             AB_ReferentialSepareDataBases.ClientDataBase(
                 id = 2L,  // Explicitly set ID
-                nom = "Client B"
+                nom = "Client B" ,
+                idActiveTypeTarificationDataBase = 2
             ),
         )
     }
