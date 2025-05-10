@@ -65,10 +65,6 @@ class _TestsDisplayerLogDataBase {
             }
         }
 
-        // No need to explicitly call refreshData() as the ViewModel now observes changes
-        // Wait for the coroutine to complete and data to be updated
-        testDispatcher.scheduler.advanceUntilIdle()
-
         println("\n========Apre Update========\n")
 
         SepareReferentialDataBases()

@@ -1,9 +1,7 @@
 package com.example.clientjetpack.Id1.PrixChangable.Test
 
 import com.example.clientjetpack.Id1.PrixChangable.Test.Passive.createTimestamp
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 data class AA_TarificationDataBaseFacileEntre(
@@ -49,10 +47,6 @@ class TarificationDataBaseFacileEntre_RepositoryImp {
         )
     )
 
-    // Expose data as a Flow to be observed
-    val dataFlow: Flow<List<AA_TarificationDataBaseFacileEntre>> = _dataFlow.asStateFlow()
-
-    // Keep modelList for backward compatibility
     var modelList: List<AA_TarificationDataBaseFacileEntre>
         get() = _dataFlow.value
         set(value) {
