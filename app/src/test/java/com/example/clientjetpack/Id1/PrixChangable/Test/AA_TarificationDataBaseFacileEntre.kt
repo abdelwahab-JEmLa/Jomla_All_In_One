@@ -40,13 +40,7 @@ class TarificationDataBaseFacileEntre_RepositoryImp {
                 idTypeTarification = 2L, // Historique
                 prixCurrency = 3.49
             ),
-            AA_TarificationDataBaseFacileEntre(
-                vidTimestamp = System.currentTimeMillis(),
-                idProduit = 1L,
-                idClient = 3L, // Client 3
-                idTypeTarification = 3L, // LeMaxPrixArrive
-                prixCurrency = 3.99
-            ),
+
 
             // Test data for Chocolats (product id 2)
             AA_TarificationDataBaseFacileEntre(

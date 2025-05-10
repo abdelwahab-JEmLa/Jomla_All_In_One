@@ -153,6 +153,8 @@ class _TestsDisplayerLogDataBase {
         }
     }
 
+    // Modified logTarificationTypes function in _LogDisplayerDataBaseTests.kt
+
     private fun logTarificationTypes(
         types: List<A_DataBase_Imbricant.Produit.Client.TypeTarification>,
         isLastProduit: Boolean,
@@ -171,12 +173,17 @@ class _TestsDisplayerLogDataBase {
             val (typeDate, typeTime) = strDateEtTempFromVidTimestamp(type.vidTimestamp)
             val typeInfo = typeRepository.modelList.find { it.id == type.id }
 
+            // Get active status from repository
+            val isActive = typeInfo?.itsTheActiveOne ?: false
+            val activeStatus = if (isActive) "[ACTIVE]" else ""
+
             // Using StringBuilder for more efficient string concatenation
             val typeInfos = StringBuilder().apply {
                 append(typePrefix)
                 append(" Tarification Type : ")
                 append(type.id)
-                append("=(${typeInfo?.typeTarificationEnum ?: "Unknown"})")
+                append("=(${typeInfo?.typeTarificationEnum ?: "Unknown"}) ")
+                append(activeStatus) // Add active status indicator
                 append(", Date: ")
                 append(typeDate)
                 append(" Time: ")
