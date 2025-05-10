@@ -125,6 +125,7 @@ class ImprovedDatesHistoriqueTest {
 
             firstDay.itsActiveDaye = true  // Set the value in the model
             joursRepository.update(firstDay)  // Update via repository
+            println("joursRepository.update(firstDay)")
 
             assertEquals(true, sqlDatasDatesHistorique.jours[1].itsActiveDaye)
 
@@ -182,17 +183,25 @@ class ImprovedDatesHistoriqueTest {
             val sortedDays = days.sortedByDescending { it }
 
             sortedDays.forEachIndexed { dayIndex, dayTimestamp ->
-                val isLastDay = dayIndex == sortedDays.size - 1
-                val dayPrefix = TreePrefix.Type2.get(isLastDay)
-
-                val dayDate = formatTimestamp(dayTimestamp)
-
-                val jourObject = sqlDatasDatesHistorique.jours.find { it.vidTimeTemp == dayTimestamp }
-                val isActive = jourObject?.itsActiveDaye ?: false
-
-                println("$dayPrefix Day: $dayDate itsActiveDaye=$isActive")
+                ItemLog(dayIndex, sortedDays, dayTimestamp)
             }
         }
+    }
+
+    private fun ItemLog(
+        dayIndex: Int,
+        sortedDays: List<Long>,
+        dayTimestamp: Long,
+    ) {
+        val isLastDay = dayIndex == sortedDays.size - 1
+        val dayPrefix = TreePrefix.Type2.get(isLastDay)
+
+        val dayDate = formatTimestamp(dayTimestamp)
+
+        val jourObject = sqlDatasDatesHistorique.jours.find { it.vidTimeTemp == dayTimestamp }
+        val isActive = jourObject?.itsActiveDaye ?: false
+
+        println("$dayPrefix Day: $dayDate itsActiveDaye >= $isActive")
     }
 
     private fun formatTimestamp(timestamp: Long): String {
