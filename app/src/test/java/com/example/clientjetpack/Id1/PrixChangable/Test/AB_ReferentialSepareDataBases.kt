@@ -133,19 +133,17 @@ class B_GroupeRepositoryImp {
             AB_ReferentialSepareDataBases.TypeTarificationDataBase(
                 id = 10L,
                 typeTarificationEnum = AB_ReferentialSepareDataBases.TypeTarificationEnum.ParBenifice,
-                itsTheActiveOne = true,
                 clientId = 4L
             ),
             AB_ReferentialSepareDataBases.TypeTarificationDataBase(
                 id = 11L,
                 typeTarificationEnum = AB_ReferentialSepareDataBases.TypeTarificationEnum.Historique,
-                itsTheActiveOne = false,
+                itsTheActiveOne = true,
                 clientId = 4L
             ),
             AB_ReferentialSepareDataBases.TypeTarificationDataBase(
                 id = 12L,
                 typeTarificationEnum = AB_ReferentialSepareDataBases.TypeTarificationEnum.LeMaxPrixArrive,
-                itsTheActiveOne = false,
                 clientId = 4L
             )
         )
