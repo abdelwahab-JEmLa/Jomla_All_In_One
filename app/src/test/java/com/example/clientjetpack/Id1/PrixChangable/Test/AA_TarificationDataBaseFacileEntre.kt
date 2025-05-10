@@ -73,14 +73,8 @@ class TarificationDataBaseFacileEntre_RepositoryImp {
         )
 
     fun add(data: AA_TarificationDataBaseFacileEntre) {
-        // Create a mutable copy of the current list
         val updatedList = modelList.toMutableList()
-
-        // Add as a new entry regardless of existing entries
-        // This is important to preserve history and ensure new tarification types are added
         updatedList.add(data)
-
-        // Update the model list
         modelList = updatedList
     }
 }

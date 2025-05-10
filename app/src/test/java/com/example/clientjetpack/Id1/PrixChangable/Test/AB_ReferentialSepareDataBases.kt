@@ -20,7 +20,8 @@ class AB_ReferentialSepareDataBases {
         @PrimaryKey(autoGenerate = true)
         val id: Long = 0,
         val typeTarificationEnum: TypeTarificationEnum,
-    )
+        val itsTheActiveOne: Boolean = false,
+        )
 
     enum class TypeTarificationEnum {
         ParBenifice,
@@ -29,7 +30,6 @@ class AB_ReferentialSepareDataBases {
     }
 }
 class B_GroupeRepositoryImp {
-    // Explicitly set IDs to match the ones referenced in AA_TarificationDataBaseFacileEntre
     class ProduitDataBase_RepositoryImp {
         var modelList: List<AB_ReferentialSepareDataBases.ProduitDataBase> = mutableStateListOf(
             AB_ReferentialSepareDataBases.ProduitDataBase(
