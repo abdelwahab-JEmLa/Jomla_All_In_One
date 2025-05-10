@@ -57,26 +57,6 @@ class _TestsDisplayerLogDataBase {
         }
     }
 
-
-
-    enum class TreePrefix(private val lastItem: String, private val normalItem: String) {
-        Type1("└─", "├─"),                 // For products
-        Type2("  ├─", "  ├─"),             // For clients (not last product)
-        Type3("  └─", "  └─"),             // For clients (last product)
-        Type4("       ", "  │     ");      // For special spacing cases
-
-        fun get(isLast: Boolean): String = if (isLast) lastItem else normalItem
-
-        companion object {
-            fun getNestedPrefix(isLast: Boolean): String = "  │     ${if (isLast) "└─" else "├─"}"
-            fun getDeepNestedPrefix(isLast: Boolean): String = "          ${if (isLast) "└─" else "├─"}"
-            fun getDeepNestedBranchPrefix(isLast: Boolean): String = "  │     │  ${if (isLast) "└─" else "├─"}"
-
-            // New method specifically for the last client of the last product
-            fun getLastClientPrefix(isLast: Boolean): String = "        ${if (isLast) "└─" else "├─"}"
-        }
-    }
-
     private fun mainLog(value: A_DataBase_Imbricant) {
         println("\n-- Hierarchical Structure --")
 
@@ -118,12 +98,10 @@ class _TestsDisplayerLogDataBase {
     ) {
         types.forEachIndexed { typeIndex, type ->
             val isLastType = typeIndex == types.size - 1
-
-            // Special case for the last client of the last product
             val typePrefix = if (isLastProduit && isLastClient) {
-                "        ${if (isLastType) "└─" else "├─"}"  // 8 spaces followed by the tree connector
+                TreePrefix.Type4.get(isLastType)
             } else {
-                "  │     ${if (isLastType) "└─" else "├─"}"  // Standard format for other cases
+                TreePrefix.getNestedPrefix(isLastType)
             }
 
             val (typeDate, typeTime) = strDateEtTempFromVidTimestamp(type.vidTimestamp)
@@ -142,12 +120,9 @@ class _TestsDisplayerLogDataBase {
     ) {
         currencies.forEachIndexed { currencyIndex, currency ->
             val isLastCurrency = currencyIndex == currencies.size - 1
-
-            // Special case for the last client of the last product
-            val currencyPrefix = if (isLastProduit && isLastClient) {
-                "          ${if (isLastCurrency) "└─" else "├─"}"  // 10 spaces for correct indentation
-            } else {
-                "  │     │  ${if (isLastCurrency) "└─" else "├─"}"  // Standard format for other cases
+            val currencyPrefix = when {
+                isLastProduit && isLastClient && isLastType -> TreePrefix.getDeepNestedPrefix(isLastCurrency)
+                else -> TreePrefix.getDeepNestedBranchPrefix(isLastCurrency)
             }
 
             val (currencyDate, currencyTime) = strDateEtTempFromVidTimestamp(currency.vidTimestamp)
@@ -155,6 +130,22 @@ class _TestsDisplayerLogDataBase {
             println("$currencyPrefix Currency: ${currency.valeur}, Date: $currencyDate Time: $currencyTime")
         }
     }
+
+    enum class TreePrefix(private val lastItem: String, private val normalItem: String) {
+        Type1("└─", "├─"),                 // For products
+        Type2("  ├─", "  ├─"),             // For clients (not last product)
+        Type3("  └─", "  └─"),             // For clients (last product)
+        Type4("       ", "  │     ");      // For special spacing cases
+
+        fun get(isLast: Boolean): String = if (isLast) lastItem else normalItem
+
+        companion object {
+            fun getNestedPrefix(isLast: Boolean): String = "  │     ${if (isLast) "└─" else "├─"}"
+            fun getDeepNestedPrefix(isLast: Boolean): String = "          ${if (isLast) "└─" else "├─"}"
+            fun getDeepNestedBranchPrefix(isLast: Boolean): String = "  │     │  ${if (isLast) "└─" else "├─"}"
+        }
+    }
+
     private fun strDateEtTempFromVidTimestamp(timestamp: Long): Pair<String, String> {
         val calendar = Calendar.getInstance().apply {
             timeInMillis = timestamp
