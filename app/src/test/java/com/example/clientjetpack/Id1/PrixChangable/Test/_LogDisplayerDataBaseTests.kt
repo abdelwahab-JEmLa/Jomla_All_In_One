@@ -85,7 +85,7 @@ class _TestsDisplayerLogDataBase {
                 append(produitPrefix)
                 append(" Product : ")
                 append(produit.id)
-                append(" (${relatedInfos?.nom ?: " Unknown "})")
+                append("=(${relatedInfos?.nom ?: " Unknown "})")
             }.toString()
 
             println("$produitInfos, Date: $produitDate Time: $produitTime (${produit.clients.size} clients)")
@@ -115,7 +115,7 @@ class _TestsDisplayerLogDataBase {
                 append(clientPrefix)
                 append(" Client ID: ")
                 append(client.id)
-                append(" (${clientInfo?.nom ?: "Unknown"})")
+                append("=(${clientInfo?.nom ?: "Unknown"})")
                 append(", Date: ")
                 append(clientDate)
                 append(" Time: ")
@@ -150,10 +150,9 @@ class _TestsDisplayerLogDataBase {
             // Using StringBuilder for more efficient string concatenation
             val typeInfos = StringBuilder().apply {
                 append(typePrefix)
-                append(" Tarification Type ID: ")
+                append(" Tarification Type : ")
                 append(type.id)
-                append(", Type: ")
-                append(typeInfo?.typeTarificationEnum ?: "Unknown")
+                append("=(${typeInfo?.typeTarificationEnum ?: "Unknown"})")
                 append(", Date: ")
                 append(typeDate)
                 append(" Time: ")
