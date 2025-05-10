@@ -147,7 +147,21 @@ class _TestsDisplayerLogDataBase {
             val (typeDate, typeTime) = strDateEtTempFromVidTimestamp(type.vidTimestamp)
             val typeInfo = typeRepository.modelList.find { it.id == type.id }
 
-            println("$typePrefix Tarification Type ID: ${type.id}, Type: ${typeInfo?.typeTarificationEnum ?: "Unknown"}, Date: $typeDate Time: $typeTime (${type.PrixsCurrency.size} currencies)")
+            // Using StringBuilder for more efficient string concatenation
+            val typeInfos = StringBuilder().apply {
+                append(typePrefix)
+                append(" Tarification Type ID: ")
+                append(type.id)
+                append(", Type: ")
+                append(typeInfo?.typeTarificationEnum ?: "Unknown")
+                append(", Date: ")
+                append(typeDate)
+                append(" Time: ")
+                append(typeTime)
+                append(" (${type.PrixsCurrency.size} currencies)")
+            }.toString()
+
+            println(typeInfos)
 
             logPrixCurrencies(type.PrixsCurrency, isLastProduit, isLastClient, isLastType)
         }
@@ -169,7 +183,18 @@ class _TestsDisplayerLogDataBase {
 
             val (currencyDate, currencyTime) = strDateEtTempFromVidTimestamp(currency.vidTimestamp)
 
-            println("$currencyPrefix Currency: ${currency.valeur}, Date: $currencyDate Time: $currencyTime")
+            // Using StringBuilder for more efficient string concatenation
+            val currencyInfos = StringBuilder().apply {
+                append(currencyPrefix)
+                append(" Currency: ")
+                append(currency.valeur)
+                append(", Date: ")
+                append(currencyDate)
+                append(" Time: ")
+                append(currencyTime)
+            }.toString()
+
+            println(currencyInfos)
         }
     }
 
