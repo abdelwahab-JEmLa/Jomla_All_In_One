@@ -25,12 +25,13 @@ class _TestsDisplayerLogDataBase {
 
     private lateinit var viewModel: _TarificationViewModel
     private lateinit var b_GroupeRepositoryImp: B_GroupeRepositoryImp
-    private lateinit var tarificationRepo: TarificationDataBaseFacileEntre_RepositoryImp
+    private lateinit var tarificationRepo: B_GroupeRepositoryImp.TarificationDataBaseFacileEntre_RepositoryImp
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        tarificationRepo = TarificationDataBaseFacileEntre_RepositoryImp()
+        tarificationRepo = B_GroupeRepositoryImp
+            .TarificationDataBaseFacileEntre_RepositoryImp()
         b_GroupeRepositoryImp = B_GroupeRepositoryImp()
         viewModel = _TarificationViewModel(tarificationRepo)
     }
@@ -45,7 +46,7 @@ class _TestsDisplayerLogDataBase {
 
         tarificationRepo.add(
             // Add a new type for Client A (id 1) with product Caramels (id 1)
-            AA_TarificationDataBaseFacileEntre(
+            AB_ReferentialSepareDataBases.AA_TarificationDataBaseFacileEntre(
                 vidTimestamp = createTimestamp(
                     day = 10,
                     hour = 16,

@@ -7,7 +7,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class _TarificationViewModel(
-    private val tarificationDataBaseFacileEntre_RepositoryImp: TarificationDataBaseFacileEntre_RepositoryImp
+    private val tarificationDataBaseFacileEntre_RepositoryImp: B_GroupeRepositoryImp
+        .TarificationDataBaseFacileEntre_RepositoryImp
 ): ViewModel(){
     // State for tarification data
     private val _imbriquantFlow = MutableStateFlow(A_DataBase_Imbricant(emptyList()))
