@@ -6,6 +6,9 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class B_TarificationViewModel(
     private val tarificationDataBaseFacileEntre_RepositoryImp: TarificationDataBaseFacileEntre_RepositoryImp
@@ -130,5 +133,14 @@ class B_TarificationViewModel(
             // Update the flow with the new A_DataBase_Imbricant
             _imbriquantFlow.value = A_DataBase_Imbricant(produitsList)
         }
+    }
+
+    /**
+     * Converts a timestamp to a formatted date string
+     */
+    fun strDateFromVidTimestamp(timestamp: Long): String {
+        val date = Date(timestamp)
+        val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+        return format.format(date)
     }
 }

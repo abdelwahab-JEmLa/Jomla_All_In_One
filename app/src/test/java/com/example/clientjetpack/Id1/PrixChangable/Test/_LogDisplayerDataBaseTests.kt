@@ -1,10 +1,6 @@
 package com.example.clientjetpack.Id1.PrixChangable.Test
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.example.clientjetpack.DA_MapsIDSDatesHistoriqueTransactionsRep_Repository
-import com.example.clientjetpack.DB_ParDatesHistoriqueTransactions_Repository
-import com.example.clientjetpack.TreePrefix
-import com.example.clientjetpack.Z_Passive._B_TestTransactionDataProvider
 import com.example.clientjetpack.Z_Passive.strDateFromVidTimestamp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -12,7 +8,6 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import org.junit.After
-import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -26,17 +21,14 @@ class _TestsDisplayerLogDataBase {
 
     private val testDispatcher = StandardTestDispatcher()
 
-    private val transactions = _B_TestTransactionDataProvider.getTransactions()
-
-    private lateinit var mapsIDSDatesHistoriqueTransactions: DA_MapsIDSDatesHistoriqueTransactionsRep_Repository
-    private lateinit var sqlDatasDatesHistorique: DB_ParDatesHistoriqueTransactions_Repository
-    private lateinit var joursRepository: DB_ParDatesHistoriqueTransactions_Repository
-        .JoursRepositoryImp
+    private lateinit var viewModel: B_TarificationViewModel
+    private lateinit var tarificationRepo: TarificationDataBaseFacileEntre_RepositoryImp
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-
+        tarificationRepo = TarificationDataBaseFacileEntre_RepositoryImp()
+        viewModel = B_TarificationViewModel(tarificationRepo)
     }
 
     @After
@@ -50,91 +42,102 @@ class _TestsDisplayerLogDataBase {
             val name = "A_DataBasesSepareReferential"
 
             println("======== TESTING $name TRANSACTIONS ========")
-            mapSemainJours_LogDisplayerTest(
-                mapsIDSDatesHistoriqueTransactions
-            )
-
-            val firstDay = sqlDatasDatesHistorique.jours[1]
-
-            firstDay.itsActiveDaye = true  // Set the value in the model
-            joursRepository.update(firstDay)  // Update via repository
-            println("joursRepository.update(firstDay)\n")
-
-            assertEquals(true, sqlDatasDatesHistorique.jours[1].itsActiveDaye)
-
-            mapSemainJours_LogDisplayerTest(
-                mapsIDSDatesHistoriqueTransactions
-            )
+            mainLog(viewModel.imbriquantFlow.value)
 
             assertTrue(true)
-            println("\n========TEST $name  COMPLETED SUCCESSFULLY ========\n")
+            println("\n========TEST $name COMPLETED SUCCESSFULLY ========\n")
 
         } catch (e: Exception) {
             assertTrue("Exception during filtering: ${e.message}", false)
         }
     }
 
-    private fun mapSemainJours_LogDisplayerTest(
-        mapsIDSDatesHistoriqueTransactionsPassed: DA_MapsIDSDatesHistoriqueTransactionsRep_Repository
-    ) {
-        try {
-            val nameDataBase = "mapSemainJours"
+    private fun mainLog(value: A_DataBase_Imbricant) {
+        println("\n-- Hierarchical Structure --")
 
-            println("======== TESTING $nameDataBase TRANSACTIONS ========")
-            println("\n-- Hierarchical Structure --")
+        println("Database (${value.produits.size} products):")
 
-            mapSemainJours_HierarchicalStructureLog(mapsIDSDatesHistoriqueTransactionsPassed)
+        value.produits.forEachIndexed { produitIndex, produit ->
+            val isLastProduit = produitIndex == value.produits.size - 1
+            val produitPrefix = TreePrefix.Type1.get(isLastProduit)
 
-            assertTrue(true)
-            println("\n======== TEST COMPLETED SUCCESSFULLY ========\n")
-        } catch (e: Exception) {
-            assertTrue("Exception during filtering: ${e.message}", false)
-        }
-    }
-
-    private fun mapSemainJours_HierarchicalStructureLog(
-        mapsIDSDatesHistoriqueTransactions: DA_MapsIDSDatesHistoriqueTransactionsRep_Repository,
-    ) {
-        println("Semaines (${mapsIDSDatesHistoriqueTransactions.semaines.size}):")
-
-        val sortedWeeks = mapsIDSDatesHistoriqueTransactions
-            .semaines
-            .entries.sortedByDescending { it.key }
-
-        ListLog(sortedWeeks)
-    }
-
-    private fun ListLog(
-        sortedWeeks: List<Map.Entry<Long, MutableList<Long>>>,
-    ) {
-        sortedWeeks.forEachIndexed { weekIndex, (weekTimestamp, days) ->
-            val isLastWeek = weekIndex == sortedWeeks.size - 1
-            val weekPrefix = TreePrefix.Type1.get(isLastWeek)
-
-            val weekDate = strDateFromVidTimestamp(weekTimestamp)
+            val produitDate = strDateFromVidTimestamp(produit.vidTimestamp)
 
             //Header
-            println("$weekPrefix Week: $weekDate (${days.size} days)")
+            println("$produitPrefix Product ID: ${produit.id}, Date: $produitDate (${produit.clients.size} clients)")
 
-            ItemLog(days)
+            logClients(produit.clients, isLastProduit)
         }
     }
 
-    private fun ItemLog(
-        sortedDays: List<Long>
+    private fun logClients(
+        clients: List<A_DataBase_Imbricant.Produit.Client>,
+        isLastProduit: Boolean
     ) {
-        sortedDays.forEachIndexed { dayIndex, dayTimestamp ->
-            val isLastDay = dayIndex == sortedDays.size - 1
-            val dayPrefix = TreePrefix.Type2.get(isLastDay)
+        clients.forEachIndexed { clientIndex, client ->
+            val isLastClient = clientIndex == clients.size - 1
+            val clientPrefix = if (isLastProduit) TreePrefix.Type3.get(isLastClient) else TreePrefix.Type2.get(isLastClient)
 
-            val dayDate = strDateFromVidTimestamp(dayTimestamp)
+            val clientDate = strDateFromVidTimestamp(client.vidTimestamp)
 
-            val jourObject = sqlDatasDatesHistorique.jours.find { it.vidTimeTemp == dayTimestamp }
-            val isActive = jourObject?.itsActiveDaye ?: false
+            println("$clientPrefix Client ID: ${client.id}, Date: $clientDate (${client.typeTarification.size} tarification types)")
 
-            println("$dayPrefix Day: $dayDate itsActiveDaye = $isActive")
+            logTarificationTypes(client.typeTarification, isLastProduit, isLastClient)
         }
     }
 
+    private fun logTarificationTypes(
+        types: List<A_DataBase_Imbricant.Produit.Client.TypeTarification>,
+        isLastProduit: Boolean,
+        isLastClient: Boolean
+    ) {
+        types.forEachIndexed { typeIndex, type ->
+            val isLastType = typeIndex == types.size - 1
+            val typePrefix = if (isLastProduit && isLastClient) {
+                TreePrefix.Type4.get(isLastType)
+            } else {
+                TreePrefix.getNestedPrefix(isLastType)
+            }
 
+            val typeDate = strDateFromVidTimestamp(type.vidTimestamp)
+
+            println("$typePrefix Tarification Type ID: ${type.id}, Date: $typeDate (${type.PrixsCurrency.size} currencies)")
+
+            logPrixCurrencies(type.PrixsCurrency, isLastProduit, isLastClient, isLastType)
+        }
+    }
+
+    private fun logPrixCurrencies(
+        currencies: List<A_DataBase_Imbricant.Produit.Client.TypeTarification.PrixCurrency>,
+        isLastProduit: Boolean,
+        isLastClient: Boolean,
+        isLastType: Boolean
+    ) {
+        currencies.forEachIndexed { currencyIndex, currency ->
+            val isLastCurrency = currencyIndex == currencies.size - 1
+            val currencyPrefix = when {
+                isLastProduit && isLastClient && isLastType -> TreePrefix.getDeepNestedPrefix(isLastCurrency)
+                else -> TreePrefix.getDeepNestedBranchPrefix(isLastCurrency)
+            }
+
+            val currencyDate = strDateFromVidTimestamp(currency.vidTimestamp)
+
+            println("$currencyPrefix Currency: ${currency.currency}, Date: $currencyDate")
+        }
+    }
+
+    enum class TreePrefix(private val lastItem: String, private val normalItem: String) {
+        Type1("└─", "├─"),                 // For products
+        Type2("  ├─", "  ├─"),             // For clients (not last product)
+        Type3("  └─", "  └─"),             // For clients (last product)
+        Type4("       ", "  │     ");      // For special spacing cases
+
+        fun get(isLast: Boolean): String = if (isLast) lastItem else normalItem
+
+        companion object {
+            fun getNestedPrefix(isLast: Boolean): String = "  │     ${if (isLast) "└─" else "├─"}"
+            fun getDeepNestedPrefix(isLast: Boolean): String = "          ${if (isLast) "└─" else "├─"}"
+            fun getDeepNestedBranchPrefix(isLast: Boolean): String = "  │     │  ${if (isLast) "└─" else "├─"}"
+        }
+    }
 }
