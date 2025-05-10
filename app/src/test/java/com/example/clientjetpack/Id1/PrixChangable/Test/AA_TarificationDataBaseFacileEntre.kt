@@ -14,7 +14,7 @@ data class AA_TarificationDataBaseFacileEntre(
 
 class TarificationDataBaseFacileEntre_RepositoryImp {
     // Using MutableStateFlow to expose data changes
-    private val _dataFlow = MutableStateFlow(
+    val _dataFlow = MutableStateFlow(
         listOf(
             // Test data for Caramels (product id 1)
             AA_TarificationDataBaseFacileEntre(
