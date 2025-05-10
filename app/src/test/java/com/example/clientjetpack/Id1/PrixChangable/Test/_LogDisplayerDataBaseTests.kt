@@ -45,7 +45,7 @@ class _TestsDisplayerLogDataBase {
         SepareReferentialDataBases()
 
         tarificationRepo.add(
-            // Test data for Caramels (product id 1)
+            // Add a new type for Client A (id 1) with product Caramels (id 1)
             AA_TarificationDataBaseFacileEntre(
                 vidTimestamp = createTimestamp(
                     day = 10,
@@ -58,6 +58,10 @@ class _TestsDisplayerLogDataBase {
                 prixCurrency = 5.99
             )
         )
+
+        // Update ViewModel after adding new data
+        viewModel.refreshData()
+
         println("\n========Apre Update========\n")
 
         SepareReferentialDataBases()

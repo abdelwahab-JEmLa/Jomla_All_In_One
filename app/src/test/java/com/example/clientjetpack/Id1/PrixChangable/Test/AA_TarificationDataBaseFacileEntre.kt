@@ -60,27 +60,13 @@ class TarificationDataBaseFacileEntre_RepositoryImp {
             )
         )
 
-    fun add(data: AA_TarificationDataBaseFacileEntre): Unit {
+    fun add(data: AA_TarificationDataBaseFacileEntre) {
         // Create a mutable copy of the current list
         val updatedList = modelList.toMutableList()
 
-        // Check if there's an existing entry with the same product, client, and tarification type
-        val existingIndex = updatedList.indexOfFirst {
-            it.idProduit == data.idProduit &&
-                    it.idClient == data.idClient &&
-                    it.idTypeTarification == data.idTypeTarification
-        }
-
-        if (existingIndex != -1) {
-            // If timestamp is newer than existing, replace it
-            val existing = updatedList[existingIndex]
-            if (data.vidTimestamp > existing.vidTimestamp) {
-                updatedList[existingIndex] = data
-            }
-        } else {
-            // Otherwise add as a new entry
-            updatedList.add(data)
-        }
+        // Add as a new entry regardless of existing entries
+        // This is important to preserve history and ensure new tarification types are added
+        updatedList.add(data)
 
         // Update the model list
         modelList = updatedList

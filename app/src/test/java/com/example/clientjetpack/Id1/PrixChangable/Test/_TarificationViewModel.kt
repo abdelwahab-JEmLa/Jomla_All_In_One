@@ -44,43 +44,39 @@ class _TarificationViewModel(
                 for (clientId in uniqueClientIds) {
                     val clientDB = clientRepository.modelList.find { it.id == clientId }
                     if (clientDB != null) {
-                        val typeTarifications = mutableListOf<A_DataBase_Imbricant.Produit.Client.TypeTarification>()
-                        val uniqueTypeIds = mutableSetOf<Long>()
-
-                        // Find all tarification types for this client and product
-                        for (entry in tarificationEntries) {
-                            if (entry.idProduit == produitId && entry.idClient == clientId) {
-                                uniqueTypeIds.add(entry.idTypeTarification)
-                            }
+                        // Find all entries for this client and product
+                        val clientEntries = tarificationEntries.filter {
+                            it.idProduit == produitId && it.idClient == clientId
                         }
 
-                        // Process each tarification type
+                        // Get all unique tarification types for this client and product
+                        val uniqueTypeIds = clientEntries.map { it.idTypeTarification }.toSet()
+
+                        // Build list of tarification types with their prices
+                        val typeTarifications = mutableListOf<A_DataBase_Imbricant.Produit.Client.TypeTarification>()
+
                         for (typeId in uniqueTypeIds) {
-                            var latestEntry: AA_TarificationDataBaseFacileEntre? = null
-                            var latestTimestamp: Long = 0
+                            // Get all entries for this specific tarification type
+                            val typeEntries = clientEntries.filter { it.idTypeTarification == typeId }
+                                .sortedByDescending { it.vidTimestamp }
 
-                            // Find the latest entry for this type
-                            for (entry in tarificationEntries) {
-                                if (entry.idProduit == produitId &&
-                                    entry.idClient == clientId &&
-                                    entry.idTypeTarification == typeId &&
-                                    entry.vidTimestamp > latestTimestamp) {
+                            if (typeEntries.isNotEmpty()) {
+                                // Get latest timestamp for this tarification type
+                                val latestTimestamp = typeEntries.first().vidTimestamp
 
-                                    latestEntry = entry
-                                    latestTimestamp = entry.vidTimestamp
+                                // Create price entries
+                                val priceList = typeEntries.map { entry ->
+                                    A_DataBase_Imbricant.Produit.Client.TypeTarification.Prix(
+                                        vidTimestamp = entry.vidTimestamp,
+                                        valeur = entry.prixCurrency
+                                    )
                                 }
-                            }
 
-                            if (latestEntry != null) {
-                                val prixCurrency = A_DataBase_Imbricant.Produit.Client.TypeTarification.Prix(
-                                    vidTimestamp = latestEntry.vidTimestamp,
-                                    valeur = latestEntry.prixCurrency
-                                )
-
+                                // Create tarification type object
                                 val typeTarification = A_DataBase_Imbricant.Produit.Client.TypeTarification(
-                                    vidTimestamp = latestEntry.vidTimestamp,
+                                    vidTimestamp = latestTimestamp,
                                     id = typeId,
-                                    PrixsCurrency = listOf(prixCurrency)
+                                    PrixsCurrency = priceList
                                 )
 
                                 typeTarifications.add(typeTarification)
@@ -88,12 +84,8 @@ class _TarificationViewModel(
                         }
 
                         if (typeTarifications.isNotEmpty()) {
-                            var clientLatestTimestamp: Long = 0
-                            for (typeTarif in typeTarifications) {
-                                if (typeTarif.vidTimestamp > clientLatestTimestamp) {
-                                    clientLatestTimestamp = typeTarif.vidTimestamp
-                                }
-                            }
+                            // Find latest timestamp across all tarification types
+                            val clientLatestTimestamp = typeTarifications.maxOf { it.vidTimestamp }
 
                             val client = A_DataBase_Imbricant.Produit.Client(
                                 vidTimestamp = clientLatestTimestamp,
@@ -106,15 +98,11 @@ class _TarificationViewModel(
                     }
                 }
 
-                var produitLatestTimestamp: Long = 0
-                for (client in produitClients) {
-                    if (client.vidTimestamp > produitLatestTimestamp) {
-                        produitLatestTimestamp = client.vidTimestamp
-                    }
-                }
-
-                if (produitLatestTimestamp == 0L) {
-                    produitLatestTimestamp = System.currentTimeMillis()
+                // Find latest timestamp across all clients
+                val produitLatestTimestamp = if (produitClients.isNotEmpty()) {
+                    produitClients.maxOf { it.vidTimestamp }
+                } else {
+                    System.currentTimeMillis()
                 }
 
                 val produit = A_DataBase_Imbricant.Produit(
@@ -130,6 +118,9 @@ class _TarificationViewModel(
             _imbriquantFlow.value = A_DataBase_Imbricant(produitsList)
         }
     }
+    // Add this method to your _TarificationViewModel.kt class
 
-
+    fun refreshData() {
+        loadImbriquantData()
+    }
 }
