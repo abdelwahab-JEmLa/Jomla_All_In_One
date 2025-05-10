@@ -2,6 +2,7 @@ package com.example.clientjetpack.Id1.PrixChangable.Test
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.example.clientjetpack.Id1.PrixChangable.Test.Passive.strDateEtTempFromVidTimestamp
+import com.example.clientjetpack.Id2.ClientGpsFilter.Test.TreePrefix
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -44,12 +45,10 @@ class _TestsDisplayerLogDataBase {
         try {
             val name = "A_DataBasesSepareReferential"
             val currentStrTime = strDateEtTempFromVidTimestamp(System.currentTimeMillis())
-            val logMessage = StringBuilder().apply {
-                append("======== C Le Test Log Output Print Du Temp=${currentStrTime.first} ")
-                append("${currentStrTime.second} du  $name  ========")
-            }.toString()
-            println(logMessage)
-
+            println(
+                "======== C Le Test Log Output Print Du Temp=${currentStrTime.first} " +
+                        "${currentStrTime.second} du  $name  ========"
+            )
             // Advance the dispatcher to ensure coroutines complete
             testDispatcher.scheduler.advanceUntilIdle()
 
@@ -68,6 +67,10 @@ class _TestsDisplayerLogDataBase {
 
         println("Database (${value.produits.size} products):")
 
+        logProduits(value)
+    }
+
+    private fun logProduits(value: A_DataBase_Imbricant) {
         val produitRepository = B_GroupeRepositoryImp.ProduitDataBase_RepositoryImp()
 
         value.produits.forEachIndexed { produitIndex, produit ->
@@ -79,12 +82,13 @@ class _TestsDisplayerLogDataBase {
 
             // Using StringBuilder for more efficient string concatenation
             val produitInfos = StringBuilder().apply {
-                append("Product : ")
+                append(produitPrefix)
+                append(" Product : ")
                 append(produit.id)
-                append(" (${relatedInfos?.nom ?: "Unknown"})")
+                append(" (${relatedInfos?.nom ?: " Unknown "})")
             }.toString()
 
-            println("$produitPrefix $produitInfos, Date: $produitDate Time: $produitTime (${produit.clients.size} clients)")
+            println("$produitInfos, Date: $produitDate Time: $produitTime (${produit.clients.size} clients)")
 
             logClients(produit.clients, isLastProduit)
         }
@@ -106,22 +110,20 @@ class _TestsDisplayerLogDataBase {
             val (clientDate, clientTime) = strDateEtTempFromVidTimestamp(client.vidTimestamp)
             val clientInfo = clientRepository.modelList.find { it.id == client.id }
 
-            val clientInfoStr = StringBuilder().apply {
+            // Using StringBuilder for more efficient string concatenation
+            val clientInfos = StringBuilder().apply {
                 append(clientPrefix)
                 append(" Client ID: ")
                 append(client.id)
-                append(", Name: ")
-                append(clientInfo?.nom ?: "Unknown")
+                append(" (${clientInfo?.nom ?: "Unknown"} )")
                 append(", Date: ")
                 append(clientDate)
                 append(" Time: ")
                 append(clientTime)
-                append(" (")
-                append(client.typeTarification.size)
-                append(" tarification types)")
+                append(" (${client.typeTarification.size} tarification types)")
             }.toString()
 
-            println(clientInfoStr)
+            println(clientInfos)
 
             logTarificationTypes(client.typeTarification, isLastProduit, isLastClient)
         }
@@ -145,22 +147,7 @@ class _TestsDisplayerLogDataBase {
             val (typeDate, typeTime) = strDateEtTempFromVidTimestamp(type.vidTimestamp)
             val typeInfo = typeRepository.modelList.find { it.id == type.id }
 
-            val typeInfoStr = StringBuilder().apply {
-                append(typePrefix)
-                append(" Tarification Type ID: ")
-                append(type.id)
-                append(", Type: ")
-                append(typeInfo?.typeTarificationEnum ?: "Unknown")
-                append(", Date: ")
-                append(typeDate)
-                append(" Time: ")
-                append(typeTime)
-                append(" (")
-                append(type.PrixsCurrency.size)
-                append(" currencies)")
-            }.toString()
-
-            println(typeInfoStr)
+            println("$typePrefix Tarification Type ID: ${type.id}, Type: ${typeInfo?.typeTarificationEnum ?: "Unknown"}, Date: $typeDate Time: $typeTime (${type.PrixsCurrency.size} currencies)")
 
             logPrixCurrencies(type.PrixsCurrency, isLastProduit, isLastClient, isLastType)
         }
@@ -182,17 +169,7 @@ class _TestsDisplayerLogDataBase {
 
             val (currencyDate, currencyTime) = strDateEtTempFromVidTimestamp(currency.vidTimestamp)
 
-            val currencyInfoStr = StringBuilder().apply {
-                append(currencyPrefix)
-                append(" Currency: ")
-                append(currency.valeur)
-                append(", Date: ")
-                append(currencyDate)
-                append(" Time: ")
-                append(currencyTime)
-            }.toString()
-
-            println(currencyInfoStr)
+            println("$currencyPrefix Currency: ${currency.valeur}, Date: $currencyDate Time: $currencyTime")
         }
     }
 
