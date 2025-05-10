@@ -1,6 +1,7 @@
 package com.example.clientjetpack.Id1.PrixChangable.Test
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.example.clientjetpack.Id1.PrixChangable.Test.Passive.createTimestamp
 import com.example.clientjetpack.Id1.PrixChangable.Test.Passive.strDateEtTempFromVidTimestamp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -14,7 +15,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
-import java.util.Calendar
 
 @ExperimentalCoroutinesApi
 class _TestsDisplayerLogDataBase {
@@ -65,13 +65,6 @@ class _TestsDisplayerLogDataBase {
         println("\n========Apre Update========\n")
 
         SepareReferentialDataBases()
-    }
-
-    fun createTimestamp(year: Int = 2025, month: Int=5, day: Int, hour: Int, minute: Int): Long {
-        val calendar = Calendar.getInstance()
-        calendar.set(year, month - 1, day, hour, minute, 0)
-        calendar.set(Calendar.MILLISECOND, 0)
-        return calendar.timeInMillis
     }
 
     fun SepareReferentialDataBases() = runTest {
