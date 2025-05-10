@@ -40,9 +40,10 @@ class _TestsDisplayerLogDataBase {
         Dispatchers.resetMain()
     }
 
+
+
     @Test
-    fun logUpdateReferentialDataBases(): Unit {
-        SepareReferentialDataBases()
+    fun B_logUpdateReferentialDataBases(): Unit {
 
         tarificationRepo.add(
             // Add a new type for Client A (id 1) with product Caramels (id 1)
@@ -66,7 +67,11 @@ class _TestsDisplayerLogDataBase {
 
         SepareReferentialDataBases()
     }
+    @Test
+    fun A_logSepareReferentialDataBases(): Unit {
+        SepareReferentialDataBases()
 
+    }
     fun SepareReferentialDataBases() = runTest {
         try {
             val name = "A_DataBasesSepareReferential"

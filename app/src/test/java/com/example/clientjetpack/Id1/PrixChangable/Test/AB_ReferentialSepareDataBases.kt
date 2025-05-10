@@ -79,13 +79,11 @@ class B_GroupeRepositoryImp {
             AB_ReferentialSepareDataBases.TypeTarificationDataBase(
                 id = 2L,
                 typeTarificationEnum = AB_ReferentialSepareDataBases.TypeTarificationEnum.Historique,
-                itsTheActiveOne = false,
                 clientId = 1L
             ),
             AB_ReferentialSepareDataBases.TypeTarificationDataBase(
                 id = 3L,
                 typeTarificationEnum = AB_ReferentialSepareDataBases.TypeTarificationEnum.LeMaxPrixArrive,
-                itsTheActiveOne = false,
                 clientId = 1L
             ),
 
@@ -99,13 +97,11 @@ class B_GroupeRepositoryImp {
             AB_ReferentialSepareDataBases.TypeTarificationDataBase(
                 id = 5L,
                 typeTarificationEnum = AB_ReferentialSepareDataBases.TypeTarificationEnum.Historique,
-                itsTheActiveOne = false,
                 clientId = 2L
             ),
             AB_ReferentialSepareDataBases.TypeTarificationDataBase(
                 id = 6L,
                 typeTarificationEnum = AB_ReferentialSepareDataBases.TypeTarificationEnum.LeMaxPrixArrive,
-                itsTheActiveOne = false,
                 clientId = 2L
             ),
 
@@ -119,13 +115,11 @@ class B_GroupeRepositoryImp {
             AB_ReferentialSepareDataBases.TypeTarificationDataBase(
                 id = 8L,
                 typeTarificationEnum = AB_ReferentialSepareDataBases.TypeTarificationEnum.Historique,
-                itsTheActiveOne = false,
                 clientId = 3L
             ),
             AB_ReferentialSepareDataBases.TypeTarificationDataBase(
                 id = 9L,
                 typeTarificationEnum = AB_ReferentialSepareDataBases.TypeTarificationEnum.LeMaxPrixArrive,
-                itsTheActiveOne = false,
                 clientId = 3L
             ),
 
