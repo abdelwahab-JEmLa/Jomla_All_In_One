@@ -17,8 +17,6 @@ class _TarificationViewModel(
         loadImbriquantData()
     }
 
-// Modified loadImbriquantData function in _TarificationViewModel.kt
-
     private fun loadImbriquantData() {
         viewModelScope.launch {
             val produitRepository = B_GroupeRepositoryImp.ProduitDataBase_RepositoryImp()

@@ -40,8 +40,6 @@ class _TestsDisplayerLogDataBase {
         Dispatchers.resetMain()
     }
 
-
-
     @Test
     fun B_logUpdateReferentialDataBases(): Unit {
 
@@ -67,12 +65,14 @@ class _TestsDisplayerLogDataBase {
 
         SepareReferentialDataBases()
     }
+
     @Test
     fun A_logSepareReferentialDataBases(): Unit {
         SepareReferentialDataBases()
 
     }
-    fun SepareReferentialDataBases() = runTest {
+
+    private fun SepareReferentialDataBases() = runTest {
         try {
             val name = "A_DataBasesSepareReferential"
             val currentStrTime = strDateEtTempFromVidTimestamp(System.currentTimeMillis())
