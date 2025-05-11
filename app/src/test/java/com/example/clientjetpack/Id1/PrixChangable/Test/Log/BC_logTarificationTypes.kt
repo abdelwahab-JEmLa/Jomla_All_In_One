@@ -16,7 +16,7 @@ fun _TestsDisplayerLogDataBase.logTarificationTypes(
         .find { client -> client.typeTarification.any { types.contains(it) } }
 
     if (currentClient != null) {
-        val clientInfo = viewModel.getClient(currentClient.id)
+        val clientInfo = viewModel.getSqlClient(currentClient.id)
 
         types.forEachIndexed { typeIndex, type ->
             val isLastType = typeIndex == types.size - 1
@@ -26,7 +26,7 @@ fun _TestsDisplayerLogDataBase.logTarificationTypes(
             }
 
             val (typeDate, typeTime) = strDateEtTempFromVidTimestamp(type.vidTimestamp)
-            val typeInfo = viewModel.getTypeTarification(type.id)
+            val typeInfo = viewModel.getSqlTypeTarification(type.id)
 
             val isActive = clientInfo?.idActiveTypeTarificationDataBase == type.id
             val activeStatus = if (isActive) " [ACTIVE]" else ""

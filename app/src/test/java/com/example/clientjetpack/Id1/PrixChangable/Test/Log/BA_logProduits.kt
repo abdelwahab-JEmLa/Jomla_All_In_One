@@ -12,7 +12,7 @@ fun _TestsDisplayerLogDataBase.logProduits(value: OutputNoSqlModel) {
             val produitPrefix = TreePrefix.Type1.get(isLastProduit)
 
             val (produitDate, produitTime) = strDateEtTempFromVidTimestamp(produit.vidTimestamp)
-            val relatedInfos = viewModel.getProduitInfos(produit.id)
+            val relatedInfos = viewModel.getSqlProduitInfos(produit.id)
 
             val produitInfos = StringBuilder().apply {
                 append(produitPrefix)

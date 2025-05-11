@@ -18,7 +18,7 @@ fun _TestsDisplayerLogDataBase.logClients(
             )
 
         val (clientDate, clientTime) = strDateEtTempFromVidTimestamp(client.vidTimestamp)
-        val clientInfo = viewModel.getClient(client.id)
+        val clientInfo = viewModel.getSqlClient(client.id)
 
         val clientInfos = StringBuilder().apply {
             append(clientPrefix)

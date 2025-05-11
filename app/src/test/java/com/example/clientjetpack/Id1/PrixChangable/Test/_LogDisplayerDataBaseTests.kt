@@ -46,7 +46,7 @@ class _TestsDisplayerLogDataBase {
 
         assertEquals(
             1L,
-            viewModel.getClient(1)?.idActiveTypeTarificationDataBase
+            viewModel.getSqlClient(1)?.idActiveTypeTarificationDataBase
         )
 
         SepareReferentialDataBases()
@@ -59,7 +59,7 @@ class _TestsDisplayerLogDataBase {
 
         assertEquals(
             2L,
-            viewModel.getClient(1)?.idActiveTypeTarificationDataBase
+            viewModel.getSqlClient(1)?.idActiveTypeTarificationDataBase
         )
 
         val name = "A_DataBasesSepareReferential_AfterUpdate"

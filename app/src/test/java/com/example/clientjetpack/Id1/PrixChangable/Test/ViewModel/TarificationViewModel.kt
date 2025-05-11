@@ -63,14 +63,14 @@ class TarificationViewModel() : ViewModel() {
         }
     }
 
-    fun getProduitInfos(id: Long): InputEtInfosSqlModels.ProduitInfos? {
+    fun getSqlProduitInfos(id: Long): InputEtInfosSqlModels.ProduitInfos? {
        return inputSqlProduitInfosRepository.modelList.find { it.id == id }
     }
 
-    fun getClient(idClient: Long): InputEtInfosSqlModels.ClientDataBase? {
+    fun getSqlClient(idClient: Long): InputEtInfosSqlModels.ClientDataBase? {
        return inputSqlClientRepo.modelList.find { it.id == idClient }
     }
-    fun getTypeTarification(id: Long): InputEtInfosSqlModels.TypeTarificationDataBase? {
+    fun getSqlTypeTarification(id: Long): InputEtInfosSqlModels.TypeTarificationDataBase? {
        return typeTarificationInputSqlRepo.modelList.find { it.id == id }
     }
 }
