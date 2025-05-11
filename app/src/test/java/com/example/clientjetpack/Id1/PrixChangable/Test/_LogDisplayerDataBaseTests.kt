@@ -2,12 +2,12 @@ package com.example.clientjetpack.Id1.PrixChangable.Test
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Models.InputSqlModels
-import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.InputSqlGroupeRepositorysImp
-import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.InputSqlGroupeRepositorysImp.Companion.clientRepository
+import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Models.OutputNoSqlModel
+import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.Input.InputSqlGroupeRepositorysImp
+import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.Input.InputSqlGroupeRepositorysImp.Companion.clientRepository
 import com.example.clientjetpack.Id1.PrixChangable.Test.Log.logProduits
 import com.example.clientjetpack.Id1.PrixChangable.Test.Passive.createTimestamp
 import com.example.clientjetpack.Id1.PrixChangable.Test.Passive.strDateEtTempFromVidTimestamp
-import com.example.clientjetpack.Id1.PrixChangable.Test.ViewModel.OutputViewModelNoSqlModel
 import com.example.clientjetpack.Id1.PrixChangable.Test.ViewModel.TarificationViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -115,7 +115,7 @@ class _TestsDisplayerLogDataBase {
         }
     }
 
-    private fun mainLog(value: OutputViewModelNoSqlModel) {
+    private fun mainLog(value: OutputNoSqlModel) {
         println("\n-- Hierarchical Structure --")
         logProduits(value)
     }

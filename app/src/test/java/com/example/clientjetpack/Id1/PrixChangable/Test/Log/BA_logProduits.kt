@@ -1,13 +1,13 @@
 package com.example.clientjetpack.Id1.PrixChangable.Test.Log
 
-import com.example.clientjetpack.Id1.PrixChangable.Test.ViewModel.OutputViewModelNoSqlModel
-import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.InputSqlGroupeRepositorysImp
+import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Models.OutputNoSqlModel
+import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.Input.InputSqlGroupeRepositorysImp
 import com.example.clientjetpack.Id1.PrixChangable.Test.Passive.strDateEtTempFromVidTimestamp
 import com.example.clientjetpack.Id1.PrixChangable.Test._TestsDisplayerLogDataBase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @OptIn(ExperimentalCoroutinesApi::class)
-fun _TestsDisplayerLogDataBase.logProduits(value: OutputViewModelNoSqlModel) {
+fun _TestsDisplayerLogDataBase.logProduits(value: OutputNoSqlModel) {
         val produitRepository = InputSqlGroupeRepositorysImp.ProduitDataBase_RepositoryImp()
 
         value.produits.forEachIndexed { produitIndex, produit ->

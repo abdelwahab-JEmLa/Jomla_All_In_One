@@ -1,4 +1,4 @@
-package com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.Test
+package com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.Input.Test
 
 import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Models.InputSqlModels
 

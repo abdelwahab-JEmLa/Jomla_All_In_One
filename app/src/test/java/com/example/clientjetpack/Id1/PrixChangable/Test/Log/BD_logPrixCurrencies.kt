@@ -1,13 +1,13 @@
 package com.example.clientjetpack.Id1.PrixChangable.Test.Log
 
-import com.example.clientjetpack.Id1.PrixChangable.Test.ViewModel.OutputViewModelNoSqlModel
+import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Models.OutputNoSqlModel
 import com.example.clientjetpack.Id1.PrixChangable.Test.Passive.strDateEtTempFromVidTimestamp
 import com.example.clientjetpack.Id1.PrixChangable.Test._TestsDisplayerLogDataBase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @OptIn(ExperimentalCoroutinesApi::class)
 fun _TestsDisplayerLogDataBase.logPrixCurrencies(
-    currencies: List<OutputViewModelNoSqlModel.Produit.Client.TypeTarification.Prix>,
+    currencies: List<OutputNoSqlModel.Produit.Client.TypeTarification.Prix>,
     isLastProduit: Boolean,
     isLastClient: Boolean,
     isLastType: Boolean,

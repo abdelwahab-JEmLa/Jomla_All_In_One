@@ -1,16 +1,15 @@
-package com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository
+package com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.Input
 
 import androidx.compose.runtime.mutableStateListOf
 import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Models.InputSqlModels
-import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.Test.ClientTestData
-import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.Test.ProduitTestData
-import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.Test.TarificationTestData
-import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.Test.TypeTarificationTestData
+import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.Input.Test.ClientTestData
+import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.Input.Test.ProduitTestData
+import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.Input.Test.TarificationTestData
+import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.Input.Test.TypeTarificationTestData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
 class InputSqlGroupeRepositorysImp : InputSqlGroupeRepositorys {
-
     class ProduitDataBase_RepositoryImp :
         InputSqlGroupeRepositorys.ProduitDataBase_Repository {
         override var modelList: List<InputSqlModels.ProduitDataBase> = initDefaultData()
