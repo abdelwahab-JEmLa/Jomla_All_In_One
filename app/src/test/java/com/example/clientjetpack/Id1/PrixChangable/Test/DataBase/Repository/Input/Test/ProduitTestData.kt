@@ -10,11 +10,11 @@ object ProduitTestData {
      * Initial data for testing
      */
     val initialTestData = listOf(
-        InputSqlModels.ProduitDataBase(
+        InputSqlModels.ProduitInfos(
             id = 1L,  // Explicitly set ID to 1 to match references
             nom = "Caramels"
         ),
-        InputSqlModels.ProduitDataBase(
+        InputSqlModels.ProduitInfos(
             id = 2L,  // Explicitly set ID to 2 to match references
             nom = "Chocolats"
         )

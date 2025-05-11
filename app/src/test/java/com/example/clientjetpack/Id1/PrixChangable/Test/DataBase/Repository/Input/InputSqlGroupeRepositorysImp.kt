@@ -17,7 +17,7 @@ class InputSqlGroupeRepositorysImp : InputSqlGroupeRepositorys {
     private val tarificationRepository = TarificationRepositoryImp()
 
     // Methods to expose repositories
-    override fun ProduitDataBase_Repository(): InputSqlGroupeRepositorys.ProduitDataBase_Repository {
+    override fun ProduitInfosRepository(): InputSqlGroupeRepositorys.ProduitDataBase_Repository {
         return produitRepository
     }
 
@@ -35,10 +35,10 @@ class InputSqlGroupeRepositorysImp : InputSqlGroupeRepositorys {
 
     class ProduitDataBase_RepositoryImp :
         InputSqlGroupeRepositorys.ProduitDataBase_Repository {
-        override var modelList: List<InputSqlModels.ProduitDataBase> = initDefaultData()
+        override var modelList: List<InputSqlModels.ProduitInfos> = initDefaultData()
 
-        private fun initDefaultData(): List<InputSqlModels.ProduitDataBase> {
-            return mutableStateListOf<InputSqlModels.ProduitDataBase>().apply {
+        private fun initDefaultData(): List<InputSqlModels.ProduitInfos> {
+            return mutableStateListOf<InputSqlModels.ProduitInfos>().apply {
                 addAll(ProduitTestData.initialTestData)
             }
         }

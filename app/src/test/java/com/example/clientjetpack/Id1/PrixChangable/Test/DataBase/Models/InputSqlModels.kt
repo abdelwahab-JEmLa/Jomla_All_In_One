@@ -4,7 +4,7 @@ import androidx.room.PrimaryKey
 
 class InputSqlModels {
 
-    data class ProduitDataBase(
+    data class ProduitInfos(
         @PrimaryKey(autoGenerate = true)
         val id: Long = 0,
         val nom: String,

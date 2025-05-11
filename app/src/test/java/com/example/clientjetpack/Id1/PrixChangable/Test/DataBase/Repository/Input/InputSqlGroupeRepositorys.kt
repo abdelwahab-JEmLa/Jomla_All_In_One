@@ -4,7 +4,7 @@ import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Models.InputSql
 
 interface InputSqlGroupeRepositorys {
     // Factory methods to return repository instances
-    fun ProduitDataBase_Repository(): ProduitDataBase_Repository
+    fun ProduitInfosRepository(): ProduitDataBase_Repository
 
     fun ClientDataBase_Repository(): ClientDataBase_Repository
 
@@ -13,7 +13,7 @@ interface InputSqlGroupeRepositorys {
     fun TarificationRepository(): TarificationRepository
 
     interface ProduitDataBase_Repository {
-        val modelList: List<InputSqlModels.ProduitDataBase>
+        val modelList: List<InputSqlModels.ProduitInfos>
     }
 
     interface ClientDataBase_Repository {

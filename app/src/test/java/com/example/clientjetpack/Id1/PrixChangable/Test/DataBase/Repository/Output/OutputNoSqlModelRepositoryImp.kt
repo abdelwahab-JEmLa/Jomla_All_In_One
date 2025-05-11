@@ -19,7 +19,7 @@ class OutputNoSqlModelRepositoryImp(
     private val repositoryScope = CoroutineScope(Dispatchers.IO)
 
     // Creating repository instances using the factory methods
-    private val produitRepository = inputSqlGroupeRepositorys.ProduitDataBase_Repository()
+    private val produitRepository = inputSqlGroupeRepositorys.ProduitInfosRepository()
     private val clientRepository = inputSqlGroupeRepositorys.ClientDataBase_Repository()
     private val tarificationRepository = inputSqlGroupeRepositorys.TarificationRepository()
 

@@ -61,7 +61,9 @@ class _TestsDisplayerLogDataBase {
             2L,
             viewModel.getClient(1)?.idActiveTypeTarificationDataBase
         )
+
         val name = "A_DataBasesSepareReferential_AfterUpdate"
+
         val currentStrTime = strDateEtTempFromVidTimestamp(System.currentTimeMillis())
         println("\n========Apre Update========\n")
         println(

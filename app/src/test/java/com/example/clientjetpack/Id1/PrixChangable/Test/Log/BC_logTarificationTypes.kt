@@ -11,7 +11,6 @@ fun _TestsDisplayerLogDataBase.logTarificationTypes(
     isLastProduit: Boolean,
     isLastClient: Boolean,
 ) {
-
     val currentClient = viewModel.outputNoSqlFlow.value.produits
         .flatMap { it.clients }
         .find { client -> client.typeTarification.any { types.contains(it) } }

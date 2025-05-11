@@ -23,6 +23,7 @@ class TarificationViewModel() : ViewModel() {
 
     private val inputSqlClientRepo = inputSqlGroupeRepositorys.ClientDataBase_Repository()
     private val typeTarificationInputSqlRepo = inputSqlGroupeRepositorys.TypeTarificationDataBase_Repository()
+    private val inputSqlProduitInfosRepository= inputSqlGroupeRepositorys.ProduitInfosRepository()
 
     init {
         observeTarificationData()
@@ -57,6 +58,10 @@ class TarificationViewModel() : ViewModel() {
                 inputSqlClientRepo.update(client)
             }
         }
+    }
+
+    fun getProduitInfos(id: Long): InputSqlModels.ProduitInfos? {
+       return inputSqlProduitInfosRepository.modelList.find { it.id == id }
     }
 
     fun getClient(idClient: Long): InputSqlModels.ClientDataBase? {
