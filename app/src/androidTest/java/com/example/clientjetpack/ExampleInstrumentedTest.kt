@@ -29,8 +29,7 @@ class ExampleLogFilterTest : KoinComponent {
     // Combined rule that captures all necessary log filtering functionality
     @get:Rule
     val combinedLogFilter = LogFilterRule.filter()
-        .captureManualLogs(true)
-        .captureLogcat(true)
+        .filterByTag("TestRunner")
         .build()
 
     private val testDispatcher = StandardTestDispatcher()
