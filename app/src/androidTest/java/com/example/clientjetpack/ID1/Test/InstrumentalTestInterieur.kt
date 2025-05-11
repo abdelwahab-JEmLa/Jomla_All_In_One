@@ -43,6 +43,7 @@ class InstrumentalTestInterieur : KoinTest {
         .build()
 
     private val testDispatcher = StandardTestDispatcher()
+    private val fireBaseHandler = FireBaseHandler()
 
     private val parentDbRef: DatabaseReference =
         _0_0_HeadOfRepositorys_Model.getHeadSqlDataBaseRef()
@@ -64,12 +65,13 @@ class InstrumentalTestInterieur : KoinTest {
             modules(
                 module {
                     single { this@InstrumentalTestInterieur }
+                    single { FireBaseHandler() }
                 }
             )
         }
 
         clearDatabaseAsync(sonDataBaseRef)
-        addAllToFireBaseAsync(initialTestData, sonDataBaseRef)
+        fireBaseHandler.addAllToFireBaseAsync(initialTestData, sonDataBaseRef)
     }
 
     @After
@@ -80,7 +82,7 @@ class InstrumentalTestInterieur : KoinTest {
 
     @Test
     fun testLog() = runTest {
-        result = loadDatasAsync(sonDataBaseRef, InputEtInfosSqlModels.Tarification::class.java)
+        result = fireBaseHandler.loadDatasAsync(sonDataBaseRef, InputEtInfosSqlModels.Tarification::class.java)
             .sortedBy { it.vidTimestamp }
 
         assertEquals(3, result.size)
@@ -105,49 +107,57 @@ class InstrumentalTestInterieur : KoinTest {
         }
     }
 
-    private suspend fun <T> loadDatasAsync(databaseRef: DatabaseReference, dataClass: Class<T>): List<T> {
-        return suspendCancellableCoroutine { continuation ->
-            val dataList = mutableListOf<T>()
+    class FireBaseHandler {
+        suspend fun <T> loadDatasAsync(
+            databaseRef: DatabaseReference,
+            dataClass: Class<T>,
+        ): List<T> {
+            return suspendCancellableCoroutine { continuation ->
+                val dataList = mutableListOf<T>()
 
-            databaseRef.addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    for (childSnapshot in snapshot.children) {
-                        childSnapshot.getValue(dataClass)?.let {
-                            dataList.add(it)
+                databaseRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        for (childSnapshot in snapshot.children) {
+                            childSnapshot.getValue(dataClass)?.let {
+                                dataList.add(it)
+                            }
                         }
+
+                        continuation.resume(dataList)
                     }
 
-                    continuation.resume(dataList)
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    continuation.resume(emptyList())
-                }
-            })
-        }
-    }
-
-    private suspend fun <T> addAllToFireBaseAsync(modelList: List<T>, databaseRef: DatabaseReference) {
-        if (modelList.isEmpty()) return
-
-        val tasks = modelList.map { item ->
-            val key = when (item) {
-                is InputEtInfosSqlModels.Tarification -> item.vidTimestamp.toString()
-                is InputEtInfosSqlModels.ClientDataBase -> item.id.toString()
-                is InputEtInfosSqlModels.ProduitInfos -> item.id.toString()
-                is InputEtInfosSqlModels.TypeTarificationDataBase -> item.id.toString()
-                else -> databaseRef.push().key
-            } ?: databaseRef.push().key
-
-            suspendCancellableCoroutine<Unit> { continuation ->
-                databaseRef.child(key!!).setValue(item).addOnSuccessListener {
-                    continuation.resume(Unit)
-                }.addOnFailureListener { exception ->
-                    continuation.resumeWithException(exception)
-                }
+                    override fun onCancelled(error: DatabaseError) {
+                        continuation.resume(emptyList())
+                    }
+                })
             }
         }
 
-        tasks.forEach { it }
+        suspend fun <T> addAllToFireBaseAsync(
+            modelList: List<T>,
+            databaseRef: DatabaseReference,
+        ) {
+            if (modelList.isEmpty()) return
+
+            val tasks = modelList.map { item ->
+                val key = when (item) {
+                    is InputEtInfosSqlModels.Tarification -> item.vidTimestamp.toString()
+                    is InputEtInfosSqlModels.ClientDataBase -> item.id.toString()
+                    is InputEtInfosSqlModels.ProduitInfos -> item.id.toString()
+                    is InputEtInfosSqlModels.TypeTarificationDataBase -> item.id.toString()
+                    else -> databaseRef.push().key
+                } ?: databaseRef.push().key
+
+                suspendCancellableCoroutine<Unit> { continuation ->
+                    databaseRef.child(key!!).setValue(item).addOnSuccessListener {
+                        continuation.resume(Unit)
+                    }.addOnFailureListener { exception ->
+                        continuation.resumeWithException(exception)
+                    }
+                }
+            }
+
+            tasks.forEach { it }
+        }
     }
 }
