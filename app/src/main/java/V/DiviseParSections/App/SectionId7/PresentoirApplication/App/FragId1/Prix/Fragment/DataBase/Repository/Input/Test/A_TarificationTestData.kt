@@ -3,7 +3,7 @@ package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Pri
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Models.InputEtInfosSqlModels
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.Passive.createTimestamp
 
-object TarificationTestData {
+object A_TarificationTestData {
     val initialTestData = listOf(
         // Test data for Caramels (product id 1)
         InputEtInfosSqlModels.Tarification(

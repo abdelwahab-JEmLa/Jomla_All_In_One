@@ -145,6 +145,12 @@ dependencies {
     implementation("io.insert-koin:koin-android:3.5.0")
     implementation("io.insert-koin:koin-androidx-compose:3.5.0")
 
+    // Koin Testing dependencies - ADDED TO FIX TODOs
+    testImplementation("io.insert-koin:koin-test:3.5.0")
+    testImplementation("io.insert-koin:koin-test-junit4:3.5.0")
+    androidTestImplementation("io.insert-koin:koin-test:3.5.0")
+    androidTestImplementation("io.insert-koin:koin-test-junit4:3.5.0")
+
     // Dépendances Realm
     implementation("io.realm.kotlin:library-base:1.12.0")
     implementation("io.realm.kotlin:library-sync:1.12.0")

@@ -1,22 +1,37 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Repository.Input
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Models.InputEtInfosSqlModels
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Repository.Input.Test.A_TarificationTestData
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Repository.Input.Test.ClientTestData
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Repository.Input.Test.ProduitTestData
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Repository.Input.Test.TarificationTestData
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Repository.Input.Test.TypeTarificationTestData
+import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import androidx.compose.runtime.mutableStateListOf
+import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
-class InputEtInfosSqlGroupeRepositorysImp : InputEtInfosSqlGroupeRepositorys {
+class InputEtInfosSqlGroupeRepositorysImp(
+    private val testContext: Any
+) : InputEtInfosSqlGroupeRepositorys {
+    interface TestCallbacks {
+        fun onOperationSuccess()
+    }
+
+    // Region: Firebase Configuration
+    private val fireBaseHandler = FireBaseHandler(testContext)
+    private val inputEtInfosSqlGroupeRepositorysImpDataBaseRef: DatabaseReference =
+        _0_0_HeadOfRepositorys_Model.getHeadSqlDataBaseRef()
+            .child("C_InputEtInfosSql")
+    // EndRegion
+
     private val produitRepository = ProduitDataBase_RepositoryImp()
     private val clientRepository = ClientDataBase_RepositoryImp()
     private val typeTarificationRepository = TypeTarificationDataBase_RepositoryImp()
-    private val tarificationRepository = TarificationRepositoryImp()
+    private val tarificationRepository = TarificationRepositoryImp(fireBaseHandler, inputEtInfosSqlGroupeRepositorysImpDataBaseRef)
 
     override fun ProduitInfosRepository(): InputEtInfosSqlGroupeRepositorys
-        .ProduitDataBase_Repository {
+    .ProduitDataBase_Repository {
         return produitRepository
     }
 
@@ -65,7 +80,7 @@ class InputEtInfosSqlGroupeRepositorysImp : InputEtInfosSqlGroupeRepositorys {
 
         override fun update(
             client: InputEtInfosSqlModels.ClientDataBase,
-            onSuccess: (InputEtInfosSqlModels.ClientDataBase) -> Unit
+            onSuccess: (InputEtInfosSqlModels.ClientDataBase) -> Unit,
         ) {
             val list = modelList as? MutableList ?: return
             val index = list.indexOfFirst { it.id == client.id }
@@ -78,7 +93,8 @@ class InputEtInfosSqlGroupeRepositorysImp : InputEtInfosSqlGroupeRepositorys {
 
     class TypeTarificationDataBase_RepositoryImp :
         InputEtInfosSqlGroupeRepositorys.TypeTarificationDataBase_Repository {
-        override var modelList: List<InputEtInfosSqlModels.TypeTarificationDataBase> = initDefaultData()
+        override var modelList: List<InputEtInfosSqlModels.TypeTarificationDataBase> =
+            initDefaultData()
 
         private fun initDefaultData(): List<InputEtInfosSqlModels.TypeTarificationDataBase> {
             return mutableStateListOf<InputEtInfosSqlModels.TypeTarificationDataBase>().apply {
@@ -87,21 +103,38 @@ class InputEtInfosSqlGroupeRepositorysImp : InputEtInfosSqlGroupeRepositorys {
         }
     }
 
-    class TarificationRepositoryImp :
-        InputEtInfosSqlGroupeRepositorys.TarificationRepository {
-        val _dataFlow = MutableStateFlow(TarificationTestData.initialTestData)
+    class TarificationRepositoryImp(
+        private val fireBaseHandler: FireBaseHandler,
+        private val parentDbRef: DatabaseReference
+    ) : InputEtInfosSqlGroupeRepositorys.TarificationRepository {
+
+        val _dataFlow = MutableStateFlow(A_TarificationTestData.initialTestData)
         override var modelList: List<InputEtInfosSqlModels.Tarification>
             get() = _dataFlow.value
             set(value) {
                 _dataFlow.value = value
             }
 
+        private val sonDataBaseRef: DatabaseReference = parentDbRef.child("A_Tarification")
+
+        init {
+            // Initialize Firebase with test data
+            fireBaseHandler.addAllToFireBase(
+                modelList,
+                sonDataBaseRef
+            )
+        }
+
         override fun add(
             data: InputEtInfosSqlModels.Tarification,
-            onSuccess: (InputEtInfosSqlModels.Tarification) -> Unit
+            onSuccess: (InputEtInfosSqlModels.Tarification) -> Unit,
         ) {
             _dataFlow.update { currentList ->
-                currentList + data
+                val mutableList = currentList.toMutableList()
+                mutableList.add(data)
+                // Also add to Firebase
+                fireBaseHandler.addAllToFireBase(listOf(data), sonDataBaseRef)
+                mutableList
             }
             onSuccess(data)
         }

@@ -13,9 +13,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class TarificationViewModel() : ViewModel() {
-    private val inputSqlGroupeRepositorys =
-        InputEtInfosSqlGroupeRepositorysImp()
+class TarificationViewModel(
+    private val testContext: Any = Unit // Default value to allow instantiation without a test context
+) : ViewModel() {
+    private val inputSqlGroupeRepositorys = InputEtInfosSqlGroupeRepositorysImp(testContext)
+
     private val outputNoSqlModelRepository =
         OutputNoSqlModelRepositoryImp(inputSqlGroupeRepositorys)
 
@@ -25,7 +27,7 @@ class TarificationViewModel() : ViewModel() {
     private val inputSqlClientRepo = inputSqlGroupeRepositorys.ClientDataBase_Repository()
     private val typeTarificationInputSqlRepo = inputSqlGroupeRepositorys
         .TypeTarificationInfosRepository()
-    private val inputSqlProduitInfosRepository= inputSqlGroupeRepositorys
+    private val inputSqlProduitInfosRepository = inputSqlGroupeRepositorys
         .ProduitInfosRepository()
 
     init {
@@ -62,14 +64,14 @@ class TarificationViewModel() : ViewModel() {
     }
 
     fun getSqlProduitInfos(id: Long): InputEtInfosSqlModels.ProduitInfos? {
-       return inputSqlProduitInfosRepository.modelList.find { it.id == id }
+        return inputSqlProduitInfosRepository.modelList.find { it.id == id }
     }
 
     fun getSqlClient(idClient: Long): InputEtInfosSqlModels.ClientDataBase? {
-       return inputSqlClientRepo.modelList.find { it.id == idClient }
+        return inputSqlClientRepo.modelList.find { it.id == idClient }
     }
 
     fun getSqlTypeTarification(id: Long): InputEtInfosSqlModels.TypeTarificationDataBase? {
-       return typeTarificationInputSqlRepo.modelList.find { it.id == id }
+        return typeTarificationInputSqlRepo.modelList.find { it.id == id }
     }
 }
