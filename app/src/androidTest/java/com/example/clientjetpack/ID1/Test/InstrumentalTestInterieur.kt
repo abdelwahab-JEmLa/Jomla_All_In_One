@@ -3,6 +3,7 @@ package com.example.clientjetpack.ID1.Test
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Models.InputEtInfosSqlModels
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Repository.Input.Test.A_TarificationTestData.initialTestData
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
+import android.util.Log
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.clientjetpack.LogFilterRule
@@ -59,7 +60,7 @@ class InstrumentalTestInterieur : KoinTest {
             try {
                 stopKoin()
             } catch (e: IllegalStateException) {
-                android.util.Log.d("InstrumentalTest", "Koin was not started")
+                Log.d("InstrumentalTest", "Koin was not started")
             }
 
             startKoin {
@@ -77,7 +78,7 @@ class InstrumentalTestInterieur : KoinTest {
             addAllToFireBaseAsync(initialTestData, sonDataBaseRef)
 
         } catch (e: Exception) {
-            android.util.Log.e("InstrumentalTest", "Setup failed: ${e.message}", e)
+            Log.e("InstrumentalTest", "Setup failed: ${e.message}", e)
             throw e
         }
     }
@@ -112,10 +113,10 @@ class InstrumentalTestInterieur : KoinTest {
     private suspend fun clearDatabaseAsync(databaseRef: DatabaseReference) {
         return suspendCancellableCoroutine { continuation ->
             databaseRef.removeValue().addOnSuccessListener {
-                android.util.Log.d("InstrumentalTest", "Database cleared successfully")
+                Log.d("InstrumentalTest", "Database cleared successfully")
                 continuation.resume(Unit)
             }.addOnFailureListener { exception ->
-                android.util.Log.e("InstrumentalTest", "Failed to clear database: ${exception.message}")
+                Log.e("InstrumentalTest", "Failed to clear database: ${exception.message}")
                 continuation.resumeWithException(exception)
             }
         }
@@ -127,11 +128,11 @@ class InstrumentalTestInterieur : KoinTest {
 
             databaseRef.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    android.util.Log.d("InstrumentalTest", "Data loaded. Child count: ${snapshot.childrenCount}")
+                    Log.d("InstrumentalTest", "Data loaded. Child count: ${snapshot.childrenCount}")
                     for (childSnapshot in snapshot.children) {
                         childSnapshot.getValue(dataClass)?.let {
                             dataList.add(it)
-                            android.util.Log.d("InstrumentalTest", "Added item: $it")
+                            Log.d("InstrumentalTest", "Added item: $it")
                         }
                     }
 
@@ -139,7 +140,7 @@ class InstrumentalTestInterieur : KoinTest {
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    android.util.Log.e("InstrumentalTest", "Firebase data load cancelled: ${error.message}")
+                    Log.e("InstrumentalTest", "Firebase data load cancelled: ${error.message}")
                     continuation.resume(emptyList())
                 }
             })
@@ -158,14 +159,14 @@ class InstrumentalTestInterieur : KoinTest {
                 else -> databaseRef.push().key
             } ?: databaseRef.push().key
 
-            android.util.Log.d("InstrumentalTest", "Adding item with key $key: $item")
+            Log.d("InstrumentalTest", "Adding item with key $key: $item")
 
             suspendCancellableCoroutine<Unit> { continuation ->
                 databaseRef.child(key!!).setValue(item).addOnSuccessListener {
-                    android.util.Log.d("InstrumentalTest", "Successfully added item with key $key")
+                    Log.d("InstrumentalTest", "Successfully added item with key $key")
                     continuation.resume(Unit)
                 }.addOnFailureListener { exception ->
-                    android.util.Log.e("InstrumentalTest", "Failed to add item with key $key: ${exception.message}")
+                    Log.e("InstrumentalTest", "Failed to add item with key $key: ${exception.message}")
                     continuation.resumeWithException(exception)
                 }
             }
@@ -174,6 +175,6 @@ class InstrumentalTestInterieur : KoinTest {
         // Wait for all tasks to complete
         tasks.forEach { it }
 
-        android.util.Log.d("InstrumentalTest", "All items added to Firebase successfully")
+        Log.d("InstrumentalTest", "All items added to Firebase successfully")
     }
 }
