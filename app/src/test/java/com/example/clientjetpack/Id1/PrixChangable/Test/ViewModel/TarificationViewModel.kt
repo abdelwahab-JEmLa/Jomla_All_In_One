@@ -21,6 +21,9 @@ class TarificationViewModel() : ViewModel() {
     private val _OutputNoSqlFlow = MutableStateFlow(OutputNoSqlModel(emptyList()))
     val outputNoSqlFlow: StateFlow<OutputNoSqlModel> = _OutputNoSqlFlow.asStateFlow()
 
+    private val inputSqlClientRepo = inputSqlGroupeRepositorys.ClientDataBase_Repository()
+    private val typeTarificationInputSqlRepo = inputSqlGroupeRepositorys.TypeTarificationDataBase_Repository()
+
     init {
         observeTarificationData()
     }
@@ -45,14 +48,21 @@ class TarificationViewModel() : ViewModel() {
 
         // Add the new tarification data
         inputSqlGroupeRepositorys.TarificationRepository().add(newTarification) { addedTarification ->
-            val client = inputSqlGroupeRepositorys.ClientDataBase_Repository().modelList.find { clientToUpdate ->
+            val client = inputSqlClientRepo.modelList.find { clientToUpdate ->
                 clientToUpdate.id == addedTarification.idClient
             }?.copy(
                 idActiveTypeTarificationDataBase = addedTarification.idTypeTarification
             )
             if (client != null) {
-                inputSqlGroupeRepositorys.ClientDataBase_Repository().update(client)
+                inputSqlClientRepo.update(client)
             }
         }
+    }
+
+    fun getClient(idClient: Long): InputSqlModels.ClientDataBase? {
+       return inputSqlClientRepo.modelList.find { it.id == idClient }
+    }
+    fun getTypeTarification(id: Long): InputSqlModels.TypeTarificationDataBase? {
+       return typeTarificationInputSqlRepo.modelList.find { it.id == id }
     }
 }

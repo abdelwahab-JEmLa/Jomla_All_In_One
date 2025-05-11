@@ -2,7 +2,6 @@ package com.example.clientjetpack.Id1.PrixChangable.Test
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Models.OutputNoSqlModel
-import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.Input.InputSqlGroupeRepositorysImp.Companion.clientRepository
 import com.example.clientjetpack.Id1.PrixChangable.Test.Log.logProduits
 import com.example.clientjetpack.Id1.PrixChangable.Test.Passive.strDateEtTempFromVidTimestamp
 import com.example.clientjetpack.Id1.PrixChangable.Test.ViewModel.TarificationViewModel
@@ -44,9 +43,11 @@ class _TestsDisplayerLogDataBase {
 
     @Test
     fun A_logSepareReferentialDataBases(): Unit = runTest {
-        val initialClient = clientRepository.modelList.find { it.id == 1L } //->
-        //TODO(FIXME):Fix erreur Unresolved reference: clientRepository
-        assertEquals(1L, initialClient?.idActiveTypeTarificationDataBase)
+
+        assertEquals(
+            1L,
+            viewModel.getClient(1)?.idActiveTypeTarificationDataBase
+        )
 
         SepareReferentialDataBases()
     }
@@ -56,10 +57,10 @@ class _TestsDisplayerLogDataBase {
 
        viewModel.addNewTestDataTarificationEtClient()
 
-        val updatedClient = clientRepository.modelList.find { it.id == 1L }     //->
-        //TODO(FIXME):Fix erreur Unresolved reference: clientRepository
-        assertEquals(2L, updatedClient?.idActiveTypeTarificationDataBase)
-
+        assertEquals(
+            2L,
+            viewModel.getClient(1)?.idActiveTypeTarificationDataBase
+        )
         val name = "A_DataBasesSepareReferential_AfterUpdate"
         val currentStrTime = strDateEtTempFromVidTimestamp(System.currentTimeMillis())
         println("\n========Apre Update========\n")

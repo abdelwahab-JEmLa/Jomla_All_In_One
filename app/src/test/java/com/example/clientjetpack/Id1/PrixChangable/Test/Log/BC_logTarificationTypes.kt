@@ -1,7 +1,6 @@
 package com.example.clientjetpack.Id1.PrixChangable.Test.Log
 
 import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Models.OutputNoSqlModel
-import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.Input.InputSqlGroupeRepositorysImp
 import com.example.clientjetpack.Id1.PrixChangable.Test.Passive.strDateEtTempFromVidTimestamp
 import com.example.clientjetpack.Id1.PrixChangable.Test._TestsDisplayerLogDataBase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -12,16 +11,13 @@ fun _TestsDisplayerLogDataBase.logTarificationTypes(
     isLastProduit: Boolean,
     isLastClient: Boolean,
 ) {
-    // Fix: Use companion object property instead of creating a new instance
-    val typeRepository = InputSqlGroupeRepositorysImp.typeTarificationRepository
-    val clientRepository = InputSqlGroupeRepositorysImp.clientRepository
 
     val currentClient = viewModel.outputNoSqlFlow.value.produits
         .flatMap { it.clients }
         .find { client -> client.typeTarification.any { types.contains(it) } }
 
     if (currentClient != null) {
-        val clientInfo = clientRepository.modelList.find { it.id == currentClient.id }
+        val clientInfo = viewModel.getClient(currentClient.id)
 
         types.forEachIndexed { typeIndex, type ->
             val isLastType = typeIndex == types.size - 1
@@ -31,7 +27,7 @@ fun _TestsDisplayerLogDataBase.logTarificationTypes(
             }
 
             val (typeDate, typeTime) = strDateEtTempFromVidTimestamp(type.vidTimestamp)
-            val typeInfo = typeRepository.modelList.find { it.id == type.id }
+            val typeInfo = viewModel.getTypeTarification(type.id)
 
             val isActive = clientInfo?.idActiveTypeTarificationDataBase == type.id
             val activeStatus = if (isActive) " [ACTIVE]" else ""
