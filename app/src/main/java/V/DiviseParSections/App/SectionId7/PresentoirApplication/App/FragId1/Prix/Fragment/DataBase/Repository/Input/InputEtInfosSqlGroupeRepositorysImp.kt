@@ -103,15 +103,22 @@ class InputEtInfosSqlGroupeRepositorysImp(
         val _dataFlow = MutableStateFlow<List<InputEtInfosSqlModels.Tarification>>(emptyList())
 
         // Safe database reference
-        private val sonDataBaseRef: DatabaseReference? =
-            try {
-                parentDbRef.child("A_Tarification")
-            } catch (e: Exception) {
-                null
-            }
+        private val sonDataBaseRef: DatabaseReference =
+            parentDbRef.child("A_Tarification")
 
         init {
+            // First load data from Firebase
             loadDataFromFirebase()
+
+            // Check if the database is empty before adding initial data
+            if (_dataFlow.value.isEmpty()) {
+                fireBaseHandler.addAllToFireBase(
+                    modelList,
+                    sonDataBaseRef
+                )
+                // Reload data after adding
+                loadDataFromFirebase()
+            }
         }
 
         override var modelList: List<InputEtInfosSqlModels.Tarification>
@@ -121,15 +128,11 @@ class InputEtInfosSqlGroupeRepositorysImp(
             }
 
         private fun loadDataFromFirebase() {
-            if (sonDataBaseRef != null) {
-                val loadedData = fireBaseHandler.loadDatas(
-                    sonDataBaseRef,
-                    InputEtInfosSqlModels.Tarification::class.java
-                )
-                _dataFlow.value = loadedData
-            } else {
-                _dataFlow.value = emptyList()
-            }
+            val loadedData = fireBaseHandler.loadDatas(
+                sonDataBaseRef,
+                InputEtInfosSqlModels.Tarification::class.java
+            )
+            _dataFlow.value = loadedData
         }
 
         override fun add(
@@ -140,9 +143,7 @@ class InputEtInfosSqlGroupeRepositorysImp(
                 val mutableList = currentList.toMutableList()
                 mutableList.add(data)
                 // Also add to Firebase
-                if (sonDataBaseRef != null) {
-                    fireBaseHandler.addAllToFireBase(listOf(data), sonDataBaseRef)
-                }
+                fireBaseHandler.addAllToFireBase(listOf(data), sonDataBaseRef)
                 mutableList
             }
             onSuccess(data)
