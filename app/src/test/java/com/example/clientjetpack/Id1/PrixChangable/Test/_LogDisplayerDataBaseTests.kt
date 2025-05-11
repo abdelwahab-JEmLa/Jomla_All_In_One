@@ -11,6 +11,7 @@ import com.example.clientjetpack.Id1.PrixChangable.Test.Passive.strDateEtTempFro
 import com.example.clientjetpack.Id1.PrixChangable.Test.ViewModel.TarificationViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -89,9 +90,10 @@ class _TestsDisplayerLogDataBase {
         )
 
         testDispatcher.scheduler.advanceUntilIdle()
-        val currentValue = viewModel.imbriquantFlow.value
-        mainLog(currentValue)
 
+        val currentValue = viewModel.outputNoSqlFlow.first()
+
+        mainLog(currentValue)
 
         println("\n========TEST $name COMPLETED SUCCESSFULLY ========\n")
     }
@@ -105,7 +107,9 @@ class _TestsDisplayerLogDataBase {
                         "${currentStrTime.second} du  $name  ========"
             )
 
-            val currentValue = viewModel.imbriquantFlow.value
+            testDispatcher.scheduler.advanceUntilIdle()
+            val currentValue = viewModel.outputNoSqlFlow.first()
+
             mainLog(currentValue)
 
             println("\n========TEST $name COMPLETED SUCCESSFULLY ========\n")

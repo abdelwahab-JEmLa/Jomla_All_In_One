@@ -10,7 +10,7 @@ interface OutputNoSqlModelRepository {
     /**
      * StateFlow providing access to the imbriquant data model
      */
-    val imbriquantFlow: StateFlow<OutputNoSqlModel>
+    val dataFlow: StateFlow<OutputNoSqlModel>
     
     /**
      * Forces a reload of imbriquant data

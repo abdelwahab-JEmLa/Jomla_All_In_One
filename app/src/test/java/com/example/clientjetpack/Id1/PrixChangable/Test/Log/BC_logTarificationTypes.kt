@@ -15,7 +15,7 @@ fun _TestsDisplayerLogDataBase.logTarificationTypes(
     val typeRepository = InputSqlGroupeRepositorysImp.TypeTarificationDataBase_RepositoryImp()
     val clientRepository = InputSqlGroupeRepositorysImp.clientRepository
 
-    val currentClient = viewModel.imbriquantFlow.value.produits
+    val currentClient = viewModel.outputNoSqlFlow.value.produits
         .flatMap { it.clients }
         .find { client -> client.typeTarification.any { types.contains(it) } }
 

@@ -15,9 +15,9 @@ class TarificationViewModel(
     private val tarificationDataBaseFacileEntreRepositoryImp:
     InputSqlGroupeRepositorysImp.TarificationDataBaseFacileEntreRepositoryImp
 ): ViewModel(){
-    private val outputRepository = OutputNoSqlModelRepositoryImp(tarificationDataBaseFacileEntreRepositoryImp)
-    private val _imbriquantFlow = MutableStateFlow(OutputNoSqlModel(emptyList()))
-    val imbriquantFlow: StateFlow<OutputNoSqlModel> = _imbriquantFlow.asStateFlow()
+    private val outputNoSqlModelRepository = OutputNoSqlModelRepositoryImp(tarificationDataBaseFacileEntreRepositoryImp)
+    private val _OutputNoSqlFlow = MutableStateFlow(OutputNoSqlModel(emptyList()))
+    val outputNoSqlFlow: StateFlow<OutputNoSqlModel> = _OutputNoSqlFlow.asStateFlow()
 
     init {
         observeTarificationData()
@@ -25,8 +25,8 @@ class TarificationViewModel(
 
     private fun observeTarificationData() {
         viewModelScope.launch {
-            outputRepository.imbriquantFlow.collectLatest { data ->
-                _imbriquantFlow.value = data
+            outputNoSqlModelRepository.dataFlow.collectLatest { data ->
+                _OutputNoSqlFlow.value = data
             }
         }
     }

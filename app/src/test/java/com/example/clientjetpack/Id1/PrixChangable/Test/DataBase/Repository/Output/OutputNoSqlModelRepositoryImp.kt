@@ -15,7 +15,7 @@ class OutputNoSqlModelRepositoryImp(
     InputSqlGroupeRepositorysImp.TarificationDataBaseFacileEntreRepositoryImp
 ) : OutputNoSqlModelRepository {
     private val _imbriquantFlow = MutableStateFlow(OutputNoSqlModel(emptyList()))
-    override val imbriquantFlow: StateFlow<OutputNoSqlModel> = _imbriquantFlow.asStateFlow()
+    override val dataFlow: StateFlow<OutputNoSqlModel> = _imbriquantFlow.asStateFlow()
     private val repositoryScope = CoroutineScope(Dispatchers.IO)
 
     init {
