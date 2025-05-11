@@ -1,10 +1,10 @@
 package com.example.clientjetpack.ID1.Test
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Models.InputEtInfosSqlModels
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Repository.Input.Test.A_TarificationTestData.initialTestData
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.example.clientjetpack.ID1.Test.A_TarificationTestData.initialTestData
 import com.example.clientjetpack.LogFilterRule
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
