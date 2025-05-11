@@ -19,9 +19,8 @@ class FireBaseHandler(private val testContext: Any) {
             key?.let {
                 databaseRef.child(it.toString()).setValue(item).addOnSuccessListener {
                     if (testContext is InputEtInfosSqlGroupeRepositorysImp.TestCallbacks) {
-                        ( testContext ).onOperationSuccess()
+                        (testContext).onOperationSuccess()
                     }
-                }.addOnFailureListener { exception ->
                 }
             }
         }

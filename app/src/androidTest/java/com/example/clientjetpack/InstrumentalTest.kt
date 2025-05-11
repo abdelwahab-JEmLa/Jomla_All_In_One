@@ -104,7 +104,6 @@ class InstrumentalTest :
     fun testLogWithMethodFilter() = runTest {
         viewModel.addNewTestDataTarificationEtClient()
 
-        // Wait for Firebase operations to complete
         assertTrue("Firebase operation timed out", awaitOperationCompletion())
 
         assertEquals(
@@ -113,18 +112,17 @@ class InstrumentalTest :
         )
     }
 
-    // Implementation of TestCallbacks interface
     override fun onOperationSuccess() {
         operationSuccessful = true
         operationLatch.countDown()
     }
 
-    // Helper method to await operation completion
-    fun awaitOperationCompletion(timeoutSeconds: Long = 5): Boolean {
-        return operationLatch.await(timeoutSeconds, TimeUnit.SECONDS) && operationSuccessful
+    private fun awaitOperationCompletion(timeoutSeconds: Long = 5): Boolean {
+        return operationLatch
+            .await(timeoutSeconds, TimeUnit.SECONDS)
+                && operationSuccessful
     }
 
-    // Helper to manually assert in tests
     fun assertOperation(message: String) {
         assertTrue(message, operationSuccessful)
     }
