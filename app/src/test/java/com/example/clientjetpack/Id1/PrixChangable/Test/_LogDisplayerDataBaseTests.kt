@@ -1,12 +1,9 @@
 package com.example.clientjetpack.Id1.PrixChangable.Test
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Models.InputSqlModels
 import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Models.OutputNoSqlModel
-import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.Input.InputSqlGroupeRepositorysImp
 import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.Input.InputSqlGroupeRepositorysImp.Companion.clientRepository
 import com.example.clientjetpack.Id1.PrixChangable.Test.Log.logProduits
-import com.example.clientjetpack.Id1.PrixChangable.Test.Passive.createTimestamp
 import com.example.clientjetpack.Id1.PrixChangable.Test.Passive.strDateEtTempFromVidTimestamp
 import com.example.clientjetpack.Id1.PrixChangable.Test.ViewModel.TarificationViewModel
 import kotlinx.coroutines.Dispatchers
@@ -32,16 +29,12 @@ class _TestsDisplayerLogDataBase {
     private val testDispatcher = StandardTestDispatcher()
 
     lateinit var viewModel: TarificationViewModel
-    private lateinit var b_GroupeRepositoryImp: InputSqlGroupeRepositorysImp
-    private lateinit var tarificationRepo: InputSqlGroupeRepositorysImp.TarificationDataBaseFacileEntreRepositoryImp
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        tarificationRepo =
-            InputSqlGroupeRepositorysImp.TarificationDataBaseFacileEntreRepositoryImp()
-        b_GroupeRepositoryImp = InputSqlGroupeRepositorysImp()
-        viewModel = TarificationViewModel(tarificationRepo)
+
+        viewModel = TarificationViewModel()
     }
 
     @After
@@ -51,7 +44,8 @@ class _TestsDisplayerLogDataBase {
 
     @Test
     fun A_logSepareReferentialDataBases(): Unit = runTest {
-        val initialClient = clientRepository.modelList.find { it.id == 1L }
+        val initialClient = clientRepository.modelList.find { it.id == 1L } //->
+        //TODO(FIXME):Fix erreur Unresolved reference: clientRepository
         assertEquals(1L, initialClient?.idActiveTypeTarificationDataBase)
 
         SepareReferentialDataBases()
@@ -59,26 +53,11 @@ class _TestsDisplayerLogDataBase {
 
     @Test
     fun B_logUpdateReferentialDataBases(): Unit = runTest {
-        val newTarification = InputSqlModels.A_TarificationDataBaseFacileEntre(
-            vidTimestamp = createTimestamp(day = 10, hour = 16, minute = 30),
-            idProduit = 1L,
-            idClient = 1L,
-            idTypeTarification = 2L,
-            prixCurrency = 9.99
-        )
 
-        tarificationRepo.add(newTarification) { addedTarification ->
-            val client = clientRepository.modelList.find { clientToUpdate ->
-                clientToUpdate.id == addedTarification.idClient
-            }?.copy(
-                idActiveTypeTarificationDataBase = addedTarification.idTypeTarification
-            )
-            if (client != null) {
-                clientRepository.update(client)
-            }
-        }
+       viewModel.addNewTestDataTarificationEtClient()
 
-        val updatedClient = clientRepository.modelList.find { it.id == 1L }
+        val updatedClient = clientRepository.modelList.find { it.id == 1L }     //->
+        //TODO(FIXME):Fix erreur Unresolved reference: clientRepository
         assertEquals(2L, updatedClient?.idActiveTypeTarificationDataBase)
 
         val name = "A_DataBasesSepareReferential_AfterUpdate"
@@ -97,6 +76,7 @@ class _TestsDisplayerLogDataBase {
 
         println("\n========TEST $name COMPLETED SUCCESSFULLY ========\n")
     }
+
 
     private fun SepareReferentialDataBases() = runTest {
         try {

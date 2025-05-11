@@ -12,7 +12,8 @@ fun _TestsDisplayerLogDataBase.logTarificationTypes(
     isLastProduit: Boolean,
     isLastClient: Boolean,
 ) {
-    val typeRepository = InputSqlGroupeRepositorysImp.TypeTarificationDataBase_RepositoryImp()
+    // Fix: Use companion object property instead of creating a new instance
+    val typeRepository = InputSqlGroupeRepositorysImp.typeTarificationRepository
     val clientRepository = InputSqlGroupeRepositorysImp.clientRepository
 
     val currentClient = viewModel.outputNoSqlFlow.value.produits

@@ -1,6 +1,7 @@
 package com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.Output
 
 import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Models.OutputNoSqlModel
+import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.Input.InputSqlGroupeRepositorys
 import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.Input.InputSqlGroupeRepositorysImp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -11,12 +12,16 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class OutputNoSqlModelRepositoryImp(
-    private val tarificationDataBaseFacileEntreRepositoryImp:
-    InputSqlGroupeRepositorysImp.TarificationDataBaseFacileEntreRepositoryImp
+    private val inputSqlGroupeRepositorys: InputSqlGroupeRepositorys
 ) : OutputNoSqlModelRepository {
     private val _imbriquantFlow = MutableStateFlow(OutputNoSqlModel(emptyList()))
     override val dataFlow: StateFlow<OutputNoSqlModel> = _imbriquantFlow.asStateFlow()
     private val repositoryScope = CoroutineScope(Dispatchers.IO)
+
+    // Creating repository instances using the factory methods
+    private val produitRepository = inputSqlGroupeRepositorys.ProduitDataBase_Repository()
+    private val clientRepository = inputSqlGroupeRepositorys.ClientDataBase_Repository()
+    private val tarificationRepository = inputSqlGroupeRepositorys.TarificationRepository()
 
     init {
         loadImbriquantData()
@@ -25,7 +30,9 @@ class OutputNoSqlModelRepositoryImp(
 
     private fun observeTarificationData() {
         repositoryScope.launch {
-            tarificationDataBaseFacileEntreRepositoryImp._dataFlow.collectLatest { _ ->
+            // Access _dataFlow from tarificationRepository but with appropriate casting
+            val tarificationRepositoryImp = tarificationRepository as? InputSqlGroupeRepositorysImp.TarificationRepositoryImp
+            tarificationRepositoryImp?._dataFlow?.collectLatest { _ ->
                 loadImbriquantData()
             }
         }
@@ -33,9 +40,7 @@ class OutputNoSqlModelRepositoryImp(
 
     override fun loadImbriquantData() {
         repositoryScope.launch {
-            val produitRepository = InputSqlGroupeRepositorysImp.ProduitDataBase_RepositoryImp()
-            val clientRepository = InputSqlGroupeRepositorysImp.clientRepository
-            val tarificationEntries = tarificationDataBaseFacileEntreRepositoryImp.modelList
+            val tarificationEntries = tarificationRepository.modelList
 
             val produitsList = mutableListOf<OutputNoSqlModel.Produit>()
 

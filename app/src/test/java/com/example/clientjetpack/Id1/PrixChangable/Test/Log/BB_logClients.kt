@@ -10,33 +10,34 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 fun _TestsDisplayerLogDataBase.logClients(
     clients: List<OutputNoSqlModel.Produit.Client>,
     isLastProduit: Boolean,
-    ) {
-        val clientRepository = InputSqlGroupeRepositorysImp.clientRepository
+) {
+    val clientRepository = InputSqlGroupeRepositorysImp.clientRepository   //->
+    //TODO(FIXME):Fix erreur Unresolved reference: clientRepository
 
-        clients.forEachIndexed { clientIndex, client ->
-            val isLastClient = clientIndex == clients.size - 1
-            val clientPrefix =
-                if (isLastProduit) TreePrefix.Type3.get(isLastClient) else TreePrefix.Type2.get(
-                    isLastClient
-                )
+    clients.forEachIndexed { clientIndex, client ->
+        val isLastClient = clientIndex == clients.size - 1
+        val clientPrefix =
+            if (isLastProduit) TreePrefix.Type3.get(isLastClient) else TreePrefix.Type2.get(
+                isLastClient
+            )
 
-            val (clientDate, clientTime) = strDateEtTempFromVidTimestamp(client.vidTimestamp)
-            val clientInfo = clientRepository.modelList.find { it.id == client.id }
+        val (clientDate, clientTime) = strDateEtTempFromVidTimestamp(client.vidTimestamp)
+        val clientInfo = clientRepository.modelList.find { it.id == client.id }
 
-            val clientInfos = StringBuilder().apply {
-                append(clientPrefix)
-                append(" Client ID: ")
-                append(client.id)
-                append("=(${clientInfo?.nom ?: "Unknown"})")
-                append(", Date: ")
-                append(clientDate)
-                append(" Time: ")
-                append(clientTime)
-                append(" (${client.typeTarification.size} tarification types)")
-            }.toString()
+        val clientInfos = StringBuilder().apply {
+            append(clientPrefix)
+            append(" Client ID: ")
+            append(client.id)
+            append("=(${clientInfo?.nom ?: "Unknown"})")
+            append(", Date: ")
+            append(clientDate)
+            append(" Time: ")
+            append(clientTime)
+            append(" (${client.typeTarification.size} tarification types)")
+        }.toString()
 
-            println(clientInfos)
+        println(clientInfos)
 
-            logTarificationTypes(client.typeTarification, isLastProduit, isLastClient)
-        }
+        logTarificationTypes(client.typeTarification, isLastProduit, isLastClient)
     }
+}

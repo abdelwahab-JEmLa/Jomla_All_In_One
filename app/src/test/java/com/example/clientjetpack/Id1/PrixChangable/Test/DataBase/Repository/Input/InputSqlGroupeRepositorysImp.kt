@@ -10,11 +10,34 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
 class InputSqlGroupeRepositorysImp : InputSqlGroupeRepositorys {
+    // Instance fields to hold repository implementations
+    private val produitRepository = ProduitDataBase_RepositoryImp()
+    private val clientRepository = ClientDataBase_RepositoryImp()
+    private val typeTarificationRepository = TypeTarificationDataBase_RepositoryImp()
+    private val tarificationRepository = TarificationRepositoryImp()
+
+    // Methods to expose repositories
+    override fun ProduitDataBase_Repository(): InputSqlGroupeRepositorys.ProduitDataBase_Repository {
+        return produitRepository
+    }
+
+    override fun ClientDataBase_Repository(): InputSqlGroupeRepositorys.ClientDataBase_Repository {
+        return clientRepository
+    }
+
+    override fun TypeTarificationDataBase_Repository(): InputSqlGroupeRepositorys.TypeTarificationDataBase_Repository {
+        return typeTarificationRepository
+    }
+
+    override fun TarificationRepository(): InputSqlGroupeRepositorys.TarificationRepository {
+        return tarificationRepository
+    }
+
     class ProduitDataBase_RepositoryImp :
         InputSqlGroupeRepositorys.ProduitDataBase_Repository {
         override var modelList: List<InputSqlModels.ProduitDataBase> = initDefaultData()
 
-         private fun initDefaultData(): List<InputSqlModels.ProduitDataBase> {
+        private fun initDefaultData(): List<InputSqlModels.ProduitDataBase> {
             return mutableStateListOf<InputSqlModels.ProduitDataBase>().apply {
                 addAll(ProduitTestData.initialTestData)
             }
@@ -25,7 +48,7 @@ class InputSqlGroupeRepositorysImp : InputSqlGroupeRepositorys {
         InputSqlGroupeRepositorys.ClientDataBase_Repository {
         override var modelList: List<InputSqlModels.ClientDataBase> = initDefaultData()
 
-         private fun initDefaultData(): List<InputSqlModels.ClientDataBase> {
+        private fun initDefaultData(): List<InputSqlModels.ClientDataBase> {
             return mutableStateListOf<InputSqlModels.ClientDataBase>().apply {
                 addAll(ClientTestData.initialTestData)
             }
@@ -58,36 +81,30 @@ class InputSqlGroupeRepositorysImp : InputSqlGroupeRepositorys {
         InputSqlGroupeRepositorys.TypeTarificationDataBase_Repository {
         override var modelList: List<InputSqlModels.TypeTarificationDataBase> = initDefaultData()
 
-         private fun initDefaultData(): List<InputSqlModels.TypeTarificationDataBase> {
+        private fun initDefaultData(): List<InputSqlModels.TypeTarificationDataBase> {
             return mutableStateListOf<InputSqlModels.TypeTarificationDataBase>().apply {
                 addAll(TypeTarificationTestData.initialTestData)
             }
         }
     }
 
-    class TarificationDataBaseFacileEntreRepositoryImp :
-        InputSqlGroupeRepositorys.A_TarificationDataBaseFacileEntreRepository {
+    class TarificationRepositoryImp :
+        InputSqlGroupeRepositorys.TarificationRepository {
         val _dataFlow = MutableStateFlow(TarificationTestData.initialTestData)
-        override var modelList: List<InputSqlModels.A_TarificationDataBaseFacileEntre>
+        override var modelList: List<InputSqlModels.Tarification>
             get() = _dataFlow.value
             set(value) {
                 _dataFlow.value = value
             }
 
         override fun add(
-            data: InputSqlModels.A_TarificationDataBaseFacileEntre,
-            onSuccess: (InputSqlModels.A_TarificationDataBaseFacileEntre) -> Unit
+            data: InputSqlModels.Tarification,
+            onSuccess: (InputSqlModels.Tarification) -> Unit
         ) {
             _dataFlow.update { currentList ->
                 currentList + data
             }
             onSuccess(data)
         }
-    }
-    companion object {
-        val clientRepository = ClientDataBase_RepositoryImp()
-        val produitRepository = ProduitDataBase_RepositoryImp()
-        val typeTarificationRepository = TypeTarificationDataBase_RepositoryImp()
-        val tarificationDataBaseFacileEntreRepositoryImp = TarificationDataBaseFacileEntreRepositoryImp()
     }
 }

@@ -29,7 +29,7 @@ class InputSqlModels {
         LeMaxPrixArrive
     }
 
-    data class A_TarificationDataBaseFacileEntre(
+    data class Tarification(
         val vidTimestamp: Long,
         val idProduit: Long,
         val idClient: Long,
