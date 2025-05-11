@@ -16,30 +16,26 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.rules.TestRule
 import org.junit.runner.RunWith
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
-class InstrumentedTest : KoinComponent {
-
+class ExampleLogFilterTest : KoinComponent {
     @get:Rule
-    val rule: TestRule = InstantTaskExecutorRule()
+    val rule: InstantTaskExecutorRule = InstantTaskExecutorRule()
 
+    // Combined rule that captures all necessary log filtering functionality
     @get:Rule
-    val logFilterRule = EnhancedLogFilterRule(
-        includeOnly = listOf("TestRunner", "System.out"),
-        excludeTags = listOf(
-            "ConfigStore", "ANDR-PERF-MPCTL", "chatty", "NetworkSession",
-            "vendor.qti.hardware", "ogle.android.g"
-        )
-    )
+    val combinedLogFilter = LogFilterRule.filter()
+        .captureManualLogs(true)
+        .captureLogcat(true)
+        .build()
 
     private val testDispatcher = StandardTestDispatcher()
 
-    // Inject the viewModel using Koin instead of directly instantiating it
+    // Inject the viewModel using Koin
     private val viewModel: TarificationViewModel by inject()
 
     @Before
@@ -56,7 +52,7 @@ class InstrumentedTest : KoinComponent {
     }
 
     @Test
-    fun A_logSepareReferentialDataBases(): Unit = runTest {
+    fun testBasicLogging() = runTest {
         assertEquals(
             1L,
             viewModel.getSqlClient(1)?.idActiveTypeTarificationDataBase
@@ -64,7 +60,7 @@ class InstrumentedTest : KoinComponent {
     }
 
     @Test
-    fun B_logUpdateReferentialDataBases(): Unit = runTest {
+    fun testLogWithMethodFilter() = runTest {
         viewModel.addNewTestDataTarificationEtClient()
 
         assertEquals(
