@@ -49,8 +49,6 @@ class TarificationViewModel() : ViewModel() {
             prixCurrency = 9.99
         )
 
-
-        // Add the new tarification data
         inputSqlGroupeRepositorys.TarificationRepository().add(newTarification) { addedTarification ->
             val client = inputSqlClientRepo.modelList.find { clientToUpdate ->
                 clientToUpdate.id == addedTarification.idClient
@@ -70,6 +68,7 @@ class TarificationViewModel() : ViewModel() {
     fun getSqlClient(idClient: Long): InputEtInfosSqlModels.ClientDataBase? {
        return inputSqlClientRepo.modelList.find { it.id == idClient }
     }
+
     fun getSqlTypeTarification(id: Long): InputEtInfosSqlModels.TypeTarificationDataBase? {
        return typeTarificationInputSqlRepo.modelList.find { it.id == id }
     }
