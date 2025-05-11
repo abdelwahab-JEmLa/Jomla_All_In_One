@@ -5,6 +5,5 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface OutputNoSqlModelRepository {
     val dataFlow: StateFlow<OutputNoSqlModel>
-    
     fun loadImbriquantData()
 }
