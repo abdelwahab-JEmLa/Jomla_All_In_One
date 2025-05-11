@@ -18,8 +18,10 @@ class TarificationViewModel(
 ) : ViewModel() {
 
     interface TestCallbacks {
-        fun onOperationSuccess()
+        // Updated to accept a generic parameter for the result
+        fun <T> onOperationSuccess(result: T)
     }
+
 
     private val inputSqlGroupeRepositorys = InputEtInfosSqlGroupeRepositorysImp(testContext)
 

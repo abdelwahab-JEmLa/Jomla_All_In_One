@@ -6,12 +6,40 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
 
 class FireBaseHandler(private val testContext: Any) {
+    suspend fun <T> loadDatasAsync(databaseRef: DatabaseReference, dataClass: Class<T>): List<T> {
+        return suspendCancellableCoroutine { continuation ->
+            val dataList = mutableListOf<T>()
 
+            databaseRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    for (childSnapshot in snapshot.children) {
+                        childSnapshot.getValue(dataClass)?.let { item ->
+                            dataList.add(item)
+                        }
+                    }
+
+                    if (testContext is TarificationViewModel.TestCallbacks) {
+                        testContext.onOperationSuccess(dataList)
+                    }
+
+                    continuation.resume(dataList)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    continuation.resume(emptyList())
+                }
+            })
+        }
+    }
+
+    // Non-suspending version of the function for backward compatibility
     fun <T> loadDatas(databaseRef: DatabaseReference, dataClass: Class<T>): List<T> {
         val dataList = mutableListOf<T>()
-        // Use ValueEventListener to fetch data from Firebase
+
         databaseRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 for (childSnapshot in snapshot.children) {
@@ -21,11 +49,12 @@ class FireBaseHandler(private val testContext: Any) {
                 }
 
                 if (testContext is TarificationViewModel.TestCallbacks) {
-                    testContext.onOperationSuccess()
+                    testContext.onOperationSuccess(dataList)
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
+                // Handle error case
             }
         })
 
@@ -47,7 +76,7 @@ class FireBaseHandler(private val testContext: Any) {
             key?.let {
                 databaseRef.child(it.toString()).setValue(item).addOnSuccessListener {
                     if (testContext is TarificationViewModel.TestCallbacks) {
-                        (testContext).onOperationSuccess()
+                        (testContext).onOperationSuccess(modelList)
                     }
                 }
             }

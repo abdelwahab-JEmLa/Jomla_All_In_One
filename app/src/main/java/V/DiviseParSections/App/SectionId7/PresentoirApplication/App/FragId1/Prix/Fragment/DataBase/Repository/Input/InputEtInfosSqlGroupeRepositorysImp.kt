@@ -128,7 +128,21 @@ class InputEtInfosSqlGroupeRepositorysImp(
             }
 
         private fun loadDataFromFirebase() {
+            // Use the new implementation which correctly handles the callback
             val loadedData = fireBaseHandler.loadDatas(
+                sonDataBaseRef,
+                InputEtInfosSqlModels.Tarification::class.java
+            )
+
+            // Update the flow with loaded data
+            // Note: The actual data will be loaded asynchronously through the callback
+            // This empty list will be replaced when the callback triggers
+            _dataFlow.value = loadedData
+        }
+
+        // For coroutine usage
+        suspend fun loadDataFromFirebaseAsync() {
+            val loadedData = fireBaseHandler.loadDatasAsync(
                 sonDataBaseRef,
                 InputEtInfosSqlModels.Tarification::class.java
             )

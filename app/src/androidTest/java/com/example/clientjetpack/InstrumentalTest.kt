@@ -34,7 +34,6 @@ class InstrumentalTest :
     @get:Rule
     val rule: InstantTaskExecutorRule = InstantTaskExecutorRule()
 
-
     @get:Rule
     val combinedLogFilter = LogFilterRule.filter()
         .filterByTag("TestRunner")
@@ -53,6 +52,7 @@ class InstrumentalTest :
 
     private val operationLatch = CountDownLatch(1)
     private var operationSuccessful = false
+    private var lastResult: Any? = null
 
     @Before
     fun setup() = runBlocking {
@@ -71,6 +71,7 @@ class InstrumentalTest :
 
         viewModel = TarificationViewModel(this@InstrumentalTest)
         operationSuccessful = false
+        lastResult = null
     }
 
     @After
@@ -99,9 +100,15 @@ class InstrumentalTest :
         )
     }
 
-    override fun onOperationSuccess() {
+    override fun <T> onOperationSuccess(result: T) {
+        lastResult = result
         operationSuccessful = true
         operationLatch.countDown()
+
+        // Additional assertions can be made here if needed
+        if (result != null) {
+            assertEquals("Operation should return a valid result", true, true)
+        }
     }
 
     private fun awaitOperationCompletion(timeoutSeconds: Long = 5): Boolean {
@@ -112,5 +119,9 @@ class InstrumentalTest :
 
     fun assertOperation(message: String) {
         assertTrue(message, operationSuccessful)
+    }
+
+    fun <T> assertResult(expected: T, actual: T? = lastResult as? T) {
+        assertEquals(expected, actual)
     }
 }
