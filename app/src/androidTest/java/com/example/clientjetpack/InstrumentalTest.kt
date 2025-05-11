@@ -34,9 +34,6 @@ class InstrumentalTest :
     @get:Rule
     val rule: InstantTaskExecutorRule = InstantTaskExecutorRule()
 
-    interface TestCallbacks {
-        fun onOperationSuccess()
-    }
 
     @get:Rule
     val combinedLogFilter = LogFilterRule.filter()
