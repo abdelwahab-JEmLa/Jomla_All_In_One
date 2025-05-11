@@ -119,25 +119,20 @@ class InstrumentalTest :
             viewModel.getSqlClient(1)?.idActiveTypeTarificationDataBase
         )
 
-        // Also try using LogFilterRule's manual log method
         LogFilterRule.log("InstrumentalTest", "Testing manual log in testLogWithMethodFilter")
 
-        // Fix: Check if the lastResult is a List and handle it appropriately
         if (lastResult is List<*> && (lastResult as List<*>).isNotEmpty()) {
-            // Get the first item that matches our criteria
             val filteredItems = (lastResult as List<*>).filterIsInstance<InputEtInfosSqlModels.Tarification>()
                 .filter { it.idClient == 1L && it.idProduit == 1L && it.idTypeTarification == 1L }
 
             if (filteredItems.isNotEmpty()) {
-                // Use the most recent item
                 val mostRecentItem = filteredItems.maxByOrNull { it.vidTimestamp }
 
-                // Now verify this specific item
                 Log.i("InstrumentalTest", "Found matching item from list: $mostRecentItem")
 
-                // Create expected test data with the same timestamp
                 val testData = InputEtInfosSqlModels.Tarification(
-                    vidTimestamp = mostRecentItem?.vidTimestamp ?: System.currentTimeMillis() - 86400000,
+                    vidTimestamp = mostRecentItem?.vidTimestamp
+                        ?: (System.currentTimeMillis() - 86400000),
                     idProduit = 1L,
                     idClient = 1L,
                     idTypeTarification = 1L,
@@ -192,8 +187,7 @@ class InstrumentalTest :
         assertTrue(message, operationSuccessful)
     }
 
-    // New method to assert on a specific item from a list
-    fun assertResultItem(expected: InputEtInfosSqlModels.Tarification, actual: Any?) {
+    private fun assertResultItem(expected: InputEtInfosSqlModels.Tarification, actual: Any?) {
         Log.i("InstrumentalTest", "Starting assertResultItem with expected: $expected")
 
         if (actual is InputEtInfosSqlModels.Tarification) {
@@ -211,13 +205,10 @@ class InstrumentalTest :
     }
 
     fun <T> assertResult(expected: T, actual: T? = lastResult as? T) {
-        // Use INFO level instead of DEBUG to ensure logs are captured
         Log.i("InstrumentalTest", "Starting assertResult with expected: $expected")
         Log.i("InstrumentalTest", "Actual result type: ${lastResult?.javaClass?.simpleName}")
 
-        // Handle different types of expected/actual results
         when {
-            // Handle List vs Single item comparison
             expected is InputEtInfosSqlModels.Tarification && lastResult is List<*> -> {
                 Log.i("InstrumentalTest", "Expected is Tarification but result is List")
 
@@ -231,7 +222,6 @@ class InstrumentalTest :
 
                 assertTrue("List should contain at least one matching item", filteredItems.isNotEmpty())
 
-                // Check just the core properties
                 val item = filteredItems.first()
                 assertEquals("Product ID should match", expected.idProduit, item.idProduit)
                 assertEquals("Client ID should match", expected.idClient, item.idClient)
@@ -239,7 +229,6 @@ class InstrumentalTest :
                 assertEquals("Price should match", expected.prixCurrency, item.prixCurrency, 0.001)
             }
 
-            // Regular comparison for same types
             else -> {
                 if (actual != null) {
                     assertEquals(expected, actual)
