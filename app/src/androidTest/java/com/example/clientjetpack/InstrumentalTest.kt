@@ -29,7 +29,9 @@ import java.util.concurrent.TimeUnit
 
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
-class InstrumentalTest : KoinTest, InputEtInfosSqlGroupeRepositorysImp.TestCallbacks
+class InstrumentalTest :
+    KoinTest,
+    InputEtInfosSqlGroupeRepositorysImp.TestCallbacks
 {
     @get:Rule
     val rule: InstantTaskExecutorRule = InstantTaskExecutorRule()
