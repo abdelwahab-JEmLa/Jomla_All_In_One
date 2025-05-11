@@ -1,7 +1,6 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Repository.Input
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Models.InputEtInfosSqlModels
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Repository.Input.Test.A_TarificationTestData
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Repository.Input.Test.ClientTestData
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Repository.Input.Test.ProduitTestData
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Repository.Input.Test.TypeTarificationTestData
@@ -101,21 +100,36 @@ class InputEtInfosSqlGroupeRepositorysImp(
         private val fireBaseHandler: FireBaseHandler,
         private val parentDbRef: DatabaseReference
     ) : InputEtInfosSqlGroupeRepositorys.TarificationRepository {
+        val _dataFlow = MutableStateFlow<List<InputEtInfosSqlModels.Tarification>>(emptyList())
 
-        val _dataFlow = MutableStateFlow(A_TarificationTestData.initialTestData)
+        // Safe database reference
+        private val sonDataBaseRef: DatabaseReference? =
+            try {
+                parentDbRef.child("A_Tarification")
+            } catch (e: Exception) {
+                null
+            }
+
+        init {
+            loadDataFromFirebase()
+        }
+
         override var modelList: List<InputEtInfosSqlModels.Tarification>
             get() = _dataFlow.value
             set(value) {
                 _dataFlow.value = value
             }
 
-        private val sonDataBaseRef: DatabaseReference = parentDbRef.child("A_Tarification")
-
-        init {
-            fireBaseHandler.addAllToFireBase(
-                modelList,
-                sonDataBaseRef
-            )
+        private fun loadDataFromFirebase() {
+            if (sonDataBaseRef != null) {
+                val loadedData = fireBaseHandler.loadDatas(
+                    sonDataBaseRef,
+                    InputEtInfosSqlModels.Tarification::class.java
+                )
+                _dataFlow.value = loadedData
+            } else {
+                _dataFlow.value = emptyList()
+            }
         }
 
         override fun add(
@@ -126,7 +140,9 @@ class InputEtInfosSqlGroupeRepositorysImp(
                 val mutableList = currentList.toMutableList()
                 mutableList.add(data)
                 // Also add to Firebase
-                fireBaseHandler.addAllToFireBase(listOf(data), sonDataBaseRef)
+                if (sonDataBaseRef != null) {
+                    fireBaseHandler.addAllToFireBase(listOf(data), sonDataBaseRef)
+                }
                 mutableList
             }
             onSuccess(data)
