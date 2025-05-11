@@ -3,7 +3,6 @@ package com.example.clientjetpack
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.TarificationViewModel
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -34,14 +33,10 @@ class ExampleLogFilterTest : KoinComponent {
 
     private val testDispatcher = StandardTestDispatcher()
 
-    // Inject the viewModel using Koin
     private val viewModel: TarificationViewModel by inject()
 
     @Before
     fun setup() = runBlocking {
-        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        println("Testing on ${appContext.packageName}")
-
         Dispatchers.setMain(testDispatcher)
     }
 
