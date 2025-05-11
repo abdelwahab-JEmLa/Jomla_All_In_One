@@ -24,15 +24,10 @@ import org.koin.core.component.inject
 class ExampleLogFilterTest : KoinComponent {
     @get:Rule
     val rule: InstantTaskExecutorRule = InstantTaskExecutorRule()
-
-    // Combined rule that captures all necessary log filtering functionality
     @get:Rule
-    val combinedLogFilter = LogFilterRule.filter()
-        .filterByTag("TestRunner")
-        .build()
+    val combinedLogFilter = LogFilterRule.filter().filterByTag("TestRunner").build()
 
     private val testDispatcher = StandardTestDispatcher()
-
     private val viewModel: TarificationViewModel by inject()
 
     @Before
