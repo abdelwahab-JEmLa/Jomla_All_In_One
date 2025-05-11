@@ -3,7 +3,6 @@ package com.example.clientjetpack.ID1.Test
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Models.InputEtInfosSqlModels
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Repository.Input.Test.A_TarificationTestData.initialTestData
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
-import android.util.Log
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.clientjetpack.LogFilterRule
@@ -54,33 +53,23 @@ class InstrumentalTestInterieur : KoinTest {
 
     @Before
     fun setup() = runTest {
+        Dispatchers.setMain(testDispatcher)
+
         try {
-            Dispatchers.setMain(testDispatcher)
-
-            try {
-                stopKoin()
-            } catch (e: IllegalStateException) {
-                Log.d("InstrumentalTest", "Koin was not started")
-            }
-
-            startKoin {
-                modules(
-                    module {
-                        single { this@InstrumentalTestInterieur }
-                    }
-                )
-            }
-
-            // Clear database and wait for completion
-            clearDatabaseAsync(sonDataBaseRef)
-
-            // Add test data and wait for completion
-            addAllToFireBaseAsync(initialTestData, sonDataBaseRef)
-
-        } catch (e: Exception) {
-            Log.e("InstrumentalTest", "Setup failed: ${e.message}", e)
-            throw e
+            stopKoin()
+        } catch (e: IllegalStateException) {
         }
+
+        startKoin {
+            modules(
+                module {
+                    single { this@InstrumentalTestInterieur }
+                }
+            )
+        }
+
+        clearDatabaseAsync(sonDataBaseRef)
+        addAllToFireBaseAsync(initialTestData, sonDataBaseRef)
     }
 
     @After
@@ -90,19 +79,15 @@ class InstrumentalTestInterieur : KoinTest {
     }
 
     @Test
-    fun testLogWithMethodFilter() = runTest {
-        // Load data from Firebase
+    fun testLog() = runTest {
         result = loadDatasAsync(sonDataBaseRef, InputEtInfosSqlModels.Tarification::class.java)
             .sortedBy { it.vidTimestamp }
 
-        // Verify we have the correct number of items (check that all 3 test items were added)
         assertEquals(3, result.size)
 
-        // Create expected test data (first item from initialTestData sorted by timestamp)
         val sortedTestData = initialTestData.sortedBy { it.vidTimestamp }
         val expectedData = sortedTestData.first()
 
-        // Verify the first item matches our expected data
         val firstResult = result.first()
         assertEquals(expectedData.idProduit, firstResult.idProduit)
         assertEquals(expectedData.idClient, firstResult.idClient)
@@ -113,10 +98,8 @@ class InstrumentalTestInterieur : KoinTest {
     private suspend fun clearDatabaseAsync(databaseRef: DatabaseReference) {
         return suspendCancellableCoroutine { continuation ->
             databaseRef.removeValue().addOnSuccessListener {
-                Log.d("InstrumentalTest", "Database cleared successfully")
                 continuation.resume(Unit)
             }.addOnFailureListener { exception ->
-                Log.e("InstrumentalTest", "Failed to clear database: ${exception.message}")
                 continuation.resumeWithException(exception)
             }
         }
@@ -128,11 +111,9 @@ class InstrumentalTestInterieur : KoinTest {
 
             databaseRef.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    Log.d("InstrumentalTest", "Data loaded. Child count: ${snapshot.childrenCount}")
                     for (childSnapshot in snapshot.children) {
                         childSnapshot.getValue(dataClass)?.let {
                             dataList.add(it)
-                            Log.d("InstrumentalTest", "Added item: $it")
                         }
                     }
 
@@ -140,7 +121,6 @@ class InstrumentalTestInterieur : KoinTest {
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    Log.e("InstrumentalTest", "Firebase data load cancelled: ${error.message}")
                     continuation.resume(emptyList())
                 }
             })
@@ -159,22 +139,15 @@ class InstrumentalTestInterieur : KoinTest {
                 else -> databaseRef.push().key
             } ?: databaseRef.push().key
 
-            Log.d("InstrumentalTest", "Adding item with key $key: $item")
-
             suspendCancellableCoroutine<Unit> { continuation ->
                 databaseRef.child(key!!).setValue(item).addOnSuccessListener {
-                    Log.d("InstrumentalTest", "Successfully added item with key $key")
                     continuation.resume(Unit)
                 }.addOnFailureListener { exception ->
-                    Log.e("InstrumentalTest", "Failed to add item with key $key: ${exception.message}")
                     continuation.resumeWithException(exception)
                 }
             }
         }
 
-        // Wait for all tasks to complete
         tasks.forEach { it }
-
-        Log.d("InstrumentalTest", "All items added to Firebase successfully")
     }
 }
