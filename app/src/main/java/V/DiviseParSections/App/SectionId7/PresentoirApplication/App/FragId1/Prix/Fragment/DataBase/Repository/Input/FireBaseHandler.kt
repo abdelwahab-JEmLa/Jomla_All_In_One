@@ -17,9 +17,7 @@ class FireBaseHandler(private val testContext: Any) {
             databaseRef.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     for (childSnapshot in snapshot.children) {
-                        childSnapshot.getValue(dataClass)?.let { item ->
-                            dataList.add(item)
-                        }
+                        childSnapshot.getValue(dataClass)?.let { dataList.add(it) }
                     }
 
                     if (testContext is TarificationViewModel.TestCallbacks) {
@@ -36,24 +34,20 @@ class FireBaseHandler(private val testContext: Any) {
         }
     }
 
-    // Non-suspending version of the function for backward compatibility
     fun <T> loadDatas(databaseRef: DatabaseReference, dataClass: Class<T>): List<T> {
         val dataList = mutableListOf<T>()
 
         databaseRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 for (childSnapshot in snapshot.children) {
-                    childSnapshot.getValue(dataClass)?.let { item ->
-                        dataList.add(item)
-                    }
+                    childSnapshot.getValue(dataClass)?.let { dataList.add(it) }
                 }
 
                 if (testContext is TarificationViewModel.TestCallbacks) {
                     testContext.onOperationSuccess(dataList)
                 }
             }
-            override fun onCancelled(error: DatabaseError) {
-            }
+            override fun onCancelled(error: DatabaseError) {}
         })
 
         return dataList
@@ -74,7 +68,7 @@ class FireBaseHandler(private val testContext: Any) {
             key?.let {
                 databaseRef.child(it.toString()).setValue(item).addOnSuccessListener {
                     if (testContext is TarificationViewModel.TestCallbacks) {
-                        (testContext).onOperationSuccess(modelList)
+                        testContext.onOperationSuccess(modelList)
                     }
                 }
             }
