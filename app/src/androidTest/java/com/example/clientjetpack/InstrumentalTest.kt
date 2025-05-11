@@ -1,6 +1,5 @@
 package com.example.clientjetpack
 
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Repository.Input.InputEtInfosSqlGroupeRepositorysImp
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.TarificationViewModel
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -31,8 +30,7 @@ import java.util.concurrent.TimeUnit
 @RunWith(AndroidJUnit4::class)
 class InstrumentalTest :
     KoinTest,
-    InputEtInfosSqlGroupeRepositorysImp.TestCallbacks
-{
+    TarificationViewModel.TestCallbacks {
     @get:Rule
     val rule: InstantTaskExecutorRule = InstantTaskExecutorRule()
 
@@ -51,9 +49,7 @@ class InstrumentalTest :
 
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var viewModel: TarificationViewModel
-    private lateinit var inputEtInfosSqlGroupeRepositorysImp: InputEtInfosSqlGroupeRepositorysImp
 
-    // Used to signal when async operations complete
     private val operationLatch = CountDownLatch(1)
     private var operationSuccessful = false
 
@@ -61,14 +57,8 @@ class InstrumentalTest :
     fun setup() = runBlocking {
         Dispatchers.setMain(testDispatcher)
 
-        // Stop previous Koin instance if any
-        try {
-            stopKoin()
-        } catch (e: Exception) {
-            // Ignore if no Koin instance is running
-        }
+        stopKoin()
 
-        // Start Koin with our test module
         startKoin {
             modules(
                 module {
@@ -78,11 +68,7 @@ class InstrumentalTest :
             )
         }
 
-        // Initialize repository with this test class as context for callbacks
-        inputEtInfosSqlGroupeRepositorysImp = InputEtInfosSqlGroupeRepositorysImp(this@InstrumentalTest)
         viewModel = TarificationViewModel(this@InstrumentalTest)
-
-        // Reset operation tracking before each test
         operationSuccessful = false
     }
 

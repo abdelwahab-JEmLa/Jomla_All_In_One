@@ -14,16 +14,10 @@ import kotlinx.coroutines.flow.update
 class InputEtInfosSqlGroupeRepositorysImp(
     private val testContext: Any
 ) : InputEtInfosSqlGroupeRepositorys {
-    interface TestCallbacks {
-        fun onOperationSuccess()
-    }
-
-    // Region: Firebase Configuration
     private val fireBaseHandler = FireBaseHandler(testContext)
     private val inputEtInfosSqlGroupeRepositorysImpDataBaseRef: DatabaseReference =
         _0_0_HeadOfRepositorys_Model.getHeadSqlDataBaseRef()
             .child("C_InputEtInfosSql")
-    // EndRegion
 
     private val produitRepository = ProduitDataBase_RepositoryImp()
     private val clientRepository = ClientDataBase_RepositoryImp()

@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Repository.Input
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Models.InputEtInfosSqlModels
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.TarificationViewModel
 import com.google.firebase.database.DatabaseReference
 
 class FireBaseHandler(private val testContext: Any) {
@@ -18,7 +19,7 @@ class FireBaseHandler(private val testContext: Any) {
 
             key?.let {
                 databaseRef.child(it.toString()).setValue(item).addOnSuccessListener {
-                    if (testContext is InputEtInfosSqlGroupeRepositorysImp.TestCallbacks) {
+                    if (testContext is TarificationViewModel.TestCallbacks) {
                         (testContext).onOperationSuccess()
                     }
                 }
