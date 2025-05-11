@@ -1,6 +1,6 @@
-package com.example.clientjetpack.Id1.PrixChangable.Test.DataBase
+package com.example.clientjetpack.Id1.PrixChangable.Test.ViewModel
 
-data class A_DataBase_Imbricant(
+data class OutputViewModelNoSqlDB(
     val produits: List<Produit>,
 ) {
     data class Produit(

@@ -1,14 +1,14 @@
 package com.example.clientjetpack.Id1.PrixChangable.Test.Log
 
-import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.A_DataBase_Imbricant
-import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.B_GroupeRepositoryImp
+import com.example.clientjetpack.Id1.PrixChangable.Test.ViewModel.OutputViewModelNoSqlDB
+import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.InputSqlDBGroupeRepositoryImp
 import com.example.clientjetpack.Id1.PrixChangable.Test.Passive.strDateEtTempFromVidTimestamp
 import com.example.clientjetpack.Id1.PrixChangable.Test._TestsDisplayerLogDataBase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @OptIn(ExperimentalCoroutinesApi::class)
-fun _TestsDisplayerLogDataBase.logProduits(value: A_DataBase_Imbricant) {
-        val produitRepository = B_GroupeRepositoryImp.ProduitDataBase_RepositoryImp()
+fun _TestsDisplayerLogDataBase.logProduits(value: OutputViewModelNoSqlDB) {
+        val produitRepository = InputSqlDBGroupeRepositoryImp.ProduitDataBase_RepositoryImp()
 
         value.produits.forEachIndexed { produitIndex, produit ->
             val isLastProduit = produitIndex == value.produits.size - 1

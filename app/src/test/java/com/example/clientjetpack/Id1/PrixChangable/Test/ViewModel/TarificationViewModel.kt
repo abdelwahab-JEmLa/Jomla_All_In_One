@@ -1,7 +1,8 @@
-package com.example.clientjetpack.Id1.PrixChangable.Test.DataBase
+package com.example.clientjetpack.Id1.PrixChangable.Test.ViewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.InputSqlDBGroupeRepositoryImp
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -9,10 +10,11 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class TarificationViewModel(
-    private val tarificationDataBaseFacileEntre_RepositoryImp: TarificationDataBaseFacileEntre_RepositoryImp
+    private val tarificationDataBaseFacileEntre_RepositoryImp:
+    InputSqlDBGroupeRepositoryImp.TarificationDataBaseFacileEntreRepositoryImp
 ): ViewModel(){
-    private val _imbriquantFlow = MutableStateFlow(A_DataBase_Imbricant(emptyList()))
-    val imbriquantFlow: StateFlow<A_DataBase_Imbricant> = _imbriquantFlow.asStateFlow()
+    private val _imbriquantFlow = MutableStateFlow(OutputViewModelNoSqlDB(emptyList()))
+    val imbriquantFlow: StateFlow<OutputViewModelNoSqlDB> = _imbriquantFlow.asStateFlow()
 
     init {
         loadImbriquantData()
@@ -27,18 +29,17 @@ class TarificationViewModel(
         }
     }
 
-    // Changed to public so it can be called from test directly
-    fun loadImbriquantData() {
+    private fun loadImbriquantData() {
         viewModelScope.launch {
-            val produitRepository = B_GroupeRepositoryImp.ProduitDataBase_RepositoryImp()
-            val clientRepository = B_GroupeRepositoryImp.clientRepository
+            val produitRepository = InputSqlDBGroupeRepositoryImp.ProduitDataBase_RepositoryImp()
+            val clientRepository = InputSqlDBGroupeRepositoryImp.clientRepository
             val tarificationEntries = tarificationDataBaseFacileEntre_RepositoryImp.modelList
 
-            val produitsList = mutableListOf<A_DataBase_Imbricant.Produit>()
+            val produitsList = mutableListOf<OutputViewModelNoSqlDB.Produit>()
 
             for (produitDB in produitRepository.modelList) {
                 val produitId = produitDB.id
-                val produitClients = mutableListOf<A_DataBase_Imbricant.Produit.Client>()
+                val produitClients = mutableListOf<OutputViewModelNoSqlDB.Produit.Client>()
 
                 val uniqueClientIds = mutableSetOf<Long>()
                 for (entry in tarificationEntries) {
@@ -56,7 +57,7 @@ class TarificationViewModel(
 
                         val uniqueTypeIds = clientEntries.map { it.idTypeTarification }.toSet()
 
-                        val typeTarifications = mutableListOf<A_DataBase_Imbricant.Produit.Client.TypeTarification>()
+                        val typeTarifications = mutableListOf<OutputViewModelNoSqlDB.Produit.Client.TypeTarification>()
 
                         for (typeId in uniqueTypeIds) {
                             val typeEntries = clientEntries.filter { it.idTypeTarification == typeId }
@@ -66,14 +67,14 @@ class TarificationViewModel(
                                 val latestTimestamp = typeEntries.first().vidTimestamp
 
                                 val priceList = typeEntries.map { entry ->
-                                    A_DataBase_Imbricant.Produit.Client.TypeTarification.Prix(
+                                    OutputViewModelNoSqlDB.Produit.Client.TypeTarification.Prix(
                                         vidTimestamp = entry.vidTimestamp,
                                         valeur = entry.prixCurrency
                                     )
                                 }
 
                                 val typeTarification =
-                                    A_DataBase_Imbricant.Produit.Client.TypeTarification(
+                                    OutputViewModelNoSqlDB.Produit.Client.TypeTarification(
                                         vidTimestamp = latestTimestamp,
                                         id = typeId,
                                         PrixsCurrency = priceList
@@ -86,7 +87,7 @@ class TarificationViewModel(
                         if (typeTarifications.isNotEmpty()) {
                             val clientLatestTimestamp = typeTarifications.maxOf { it.vidTimestamp }
 
-                            val client = A_DataBase_Imbricant.Produit.Client(
+                            val client = OutputViewModelNoSqlDB.Produit.Client(
                                 vidTimestamp = clientLatestTimestamp,
                                 id = clientId,
                                 typeTarification = typeTarifications
@@ -105,7 +106,7 @@ class TarificationViewModel(
                     System.currentTimeMillis()
                 }
 
-                val produit = A_DataBase_Imbricant.Produit(
+                val produit = OutputViewModelNoSqlDB.Produit(
                     vidTimestamp = produitLatestTimestamp,
                     id = produitId,
                     clients = produitClients
@@ -114,7 +115,7 @@ class TarificationViewModel(
                 produitsList.add(produit)
             }
 
-            _imbriquantFlow.value = A_DataBase_Imbricant(produitsList)
+            _imbriquantFlow.value = OutputViewModelNoSqlDB(produitsList)
         }
     }
 }

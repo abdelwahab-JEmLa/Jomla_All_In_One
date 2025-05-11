@@ -1,15 +1,14 @@
 package com.example.clientjetpack.Id1.PrixChangable.Test
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.AA_TarificationDataBaseFacileEntre
-import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.A_DataBase_Imbricant
-import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.B_GroupeRepositoryImp
-import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.B_GroupeRepositoryImp.Companion.clientRepository
-import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.TarificationDataBaseFacileEntre_RepositoryImp
-import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.TarificationViewModel
+import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Models.AB_ReferentialSepareDataBases
+import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.InputSqlDBGroupeRepositoryImp
+import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.InputSqlDBGroupeRepositoryImp.Companion.clientRepository
 import com.example.clientjetpack.Id1.PrixChangable.Test.Log.logProduits
 import com.example.clientjetpack.Id1.PrixChangable.Test.Passive.createTimestamp
 import com.example.clientjetpack.Id1.PrixChangable.Test.Passive.strDateEtTempFromVidTimestamp
+import com.example.clientjetpack.Id1.PrixChangable.Test.ViewModel.OutputViewModelNoSqlDB
+import com.example.clientjetpack.Id1.PrixChangable.Test.ViewModel.TarificationViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -32,14 +31,15 @@ class _TestsDisplayerLogDataBase {
     private val testDispatcher = StandardTestDispatcher()
 
     lateinit var viewModel: TarificationViewModel
-    private lateinit var b_GroupeRepositoryImp: B_GroupeRepositoryImp
-    private lateinit var tarificationRepo: TarificationDataBaseFacileEntre_RepositoryImp
+    private lateinit var b_GroupeRepositoryImp: InputSqlDBGroupeRepositoryImp
+    private lateinit var tarificationRepo: InputSqlDBGroupeRepositoryImp.TarificationDataBaseFacileEntreRepositoryImp
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        tarificationRepo = TarificationDataBaseFacileEntre_RepositoryImp()
-        b_GroupeRepositoryImp = B_GroupeRepositoryImp()
+        tarificationRepo =
+            InputSqlDBGroupeRepositoryImp.TarificationDataBaseFacileEntreRepositoryImp()
+        b_GroupeRepositoryImp = InputSqlDBGroupeRepositoryImp()
         viewModel = TarificationViewModel(tarificationRepo)
     }
 
@@ -58,7 +58,7 @@ class _TestsDisplayerLogDataBase {
 
     @Test
     fun B_logUpdateReferentialDataBases(): Unit = runTest {
-        val newTarification = AA_TarificationDataBaseFacileEntre(
+        val newTarification = AB_ReferentialSepareDataBases.A_TarificationDataBaseFacileEntre(
             vidTimestamp = createTimestamp(day = 10, hour = 16, minute = 30),
             idProduit = 1L,
             idClient = 1L,
@@ -115,7 +115,7 @@ class _TestsDisplayerLogDataBase {
         }
     }
 
-    private fun mainLog(value: A_DataBase_Imbricant) {
+    private fun mainLog(value: OutputViewModelNoSqlDB) {
         println("\n-- Hierarchical Structure --")
         logProduits(value)
     }
