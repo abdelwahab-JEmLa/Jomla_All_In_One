@@ -1,6 +1,6 @@
 package com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.Test
 
-import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Models.AB_ReferentialSepareDataBases
+import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Models.InputSqlModels
 
 /**
  * Test data for TypeTarification repository
@@ -10,17 +10,17 @@ object TypeTarificationTestData {
      * Initial data for testing
      */
     val initialTestData = listOf(
-        AB_ReferentialSepareDataBases.TypeTarificationDataBase(
+        InputSqlModels.TypeTarificationDataBase(
             id = 1L,  // Explicitly set ID
-            typeTarificationEnum = AB_ReferentialSepareDataBases.TypeTarificationEnum.ParBenifice
+            typeTarificationEnum = InputSqlModels.TypeTarificationEnum.ParBenifice
         ),
-        AB_ReferentialSepareDataBases.TypeTarificationDataBase(
+        InputSqlModels.TypeTarificationDataBase(
             id = 2L,  // Explicitly set ID
-            typeTarificationEnum = AB_ReferentialSepareDataBases.TypeTarificationEnum.Historique
+            typeTarificationEnum = InputSqlModels.TypeTarificationEnum.Historique
         ),
-        AB_ReferentialSepareDataBases.TypeTarificationDataBase(
+        InputSqlModels.TypeTarificationDataBase(
             id = 3L,  // Explicitly set ID
-            typeTarificationEnum = AB_ReferentialSepareDataBases.TypeTarificationEnum.LeMaxPrixArrive
+            typeTarificationEnum = InputSqlModels.TypeTarificationEnum.LeMaxPrixArrive
         )
     )
 }

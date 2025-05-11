@@ -1,6 +1,6 @@
 package com.example.clientjetpack.Id1.PrixChangable.Test.ViewModel
 
-data class OutputViewModelNoSqlDB(
+data class OutputViewModelNoSqlModel(
     val produits: List<Produit>,
 ) {
     data class Produit(

@@ -1,17 +1,17 @@
 package com.example.clientjetpack.Id1.PrixChangable.Test.Log
 
-import com.example.clientjetpack.Id1.PrixChangable.Test.ViewModel.OutputViewModelNoSqlDB
-import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.InputSqlDBGroupeRepositoryImp
+import com.example.clientjetpack.Id1.PrixChangable.Test.ViewModel.OutputViewModelNoSqlModel
+import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.InputSqlGroupeRepositorysImp
 import com.example.clientjetpack.Id1.PrixChangable.Test.Passive.strDateEtTempFromVidTimestamp
 import com.example.clientjetpack.Id1.PrixChangable.Test._TestsDisplayerLogDataBase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @OptIn(ExperimentalCoroutinesApi::class)
 fun _TestsDisplayerLogDataBase.logClients(
-    clients: List<OutputViewModelNoSqlDB.Produit.Client>,
+    clients: List<OutputViewModelNoSqlModel.Produit.Client>,
     isLastProduit: Boolean,
     ) {
-        val clientRepository = InputSqlDBGroupeRepositoryImp.clientRepository
+        val clientRepository = InputSqlGroupeRepositorysImp.clientRepository
 
         clients.forEachIndexed { clientIndex, client ->
             val isLastClient = clientIndex == clients.size - 1

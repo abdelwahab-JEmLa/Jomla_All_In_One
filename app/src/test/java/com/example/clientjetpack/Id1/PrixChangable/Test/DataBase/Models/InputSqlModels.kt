@@ -2,7 +2,8 @@ package com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Models
 
 import androidx.room.PrimaryKey
 
-class AB_ReferentialSepareDataBases {
+class InputSqlModels {
+
     data class ProduitDataBase(
         @PrimaryKey(autoGenerate = true)
         val id: Long = 0,
@@ -35,7 +36,5 @@ class AB_ReferentialSepareDataBases {
         val idTypeTarification: Long,
         val prixCurrency: Double,
     )
-
-
 }
 

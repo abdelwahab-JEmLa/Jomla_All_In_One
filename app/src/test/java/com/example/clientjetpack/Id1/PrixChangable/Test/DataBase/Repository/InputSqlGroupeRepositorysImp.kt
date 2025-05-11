@@ -1,7 +1,7 @@
 package com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository
 
 import androidx.compose.runtime.mutableStateListOf
-import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Models.AB_ReferentialSepareDataBases
+import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Models.InputSqlModels
 import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.Test.ClientTestData
 import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.Test.ProduitTestData
 import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.Test.TarificationTestData
@@ -9,30 +9,30 @@ import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.Test
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
-class InputSqlDBGroupeRepositoryImp : B_SqlInputDataBaseGroupeRepository {
+class InputSqlGroupeRepositorysImp : InputSqlGroupeRepositorys {
 
     class ProduitDataBase_RepositoryImp :
-        B_SqlInputDataBaseGroupeRepository.ProduitDataBase_Repository {
-        override var modelList: List<AB_ReferentialSepareDataBases.ProduitDataBase> = initDefaultData()
+        InputSqlGroupeRepositorys.ProduitDataBase_Repository {
+        override var modelList: List<InputSqlModels.ProduitDataBase> = initDefaultData()
 
-         private fun initDefaultData(): List<AB_ReferentialSepareDataBases.ProduitDataBase> {
-            return mutableStateListOf<AB_ReferentialSepareDataBases.ProduitDataBase>().apply {
+         private fun initDefaultData(): List<InputSqlModels.ProduitDataBase> {
+            return mutableStateListOf<InputSqlModels.ProduitDataBase>().apply {
                 addAll(ProduitTestData.initialTestData)
             }
         }
     }
 
     class ClientDataBase_RepositoryImp :
-        B_SqlInputDataBaseGroupeRepository.ClientDataBase_Repository {
-        override var modelList: List<AB_ReferentialSepareDataBases.ClientDataBase> = initDefaultData()
+        InputSqlGroupeRepositorys.ClientDataBase_Repository {
+        override var modelList: List<InputSqlModels.ClientDataBase> = initDefaultData()
 
-         private fun initDefaultData(): List<AB_ReferentialSepareDataBases.ClientDataBase> {
-            return mutableStateListOf<AB_ReferentialSepareDataBases.ClientDataBase>().apply {
+         private fun initDefaultData(): List<InputSqlModels.ClientDataBase> {
+            return mutableStateListOf<InputSqlModels.ClientDataBase>().apply {
                 addAll(ClientTestData.initialTestData)
             }
         }
 
-        override fun add(client: AB_ReferentialSepareDataBases.ClientDataBase) {
+        override fun add(client: InputSqlModels.ClientDataBase) {
             val list = modelList as? MutableList ?: return
             val existingIndex = list.indexOfFirst { it.id == client.id }
             if (existingIndex == -1) {
@@ -43,8 +43,8 @@ class InputSqlDBGroupeRepositoryImp : B_SqlInputDataBaseGroupeRepository {
         }
 
         override fun update(
-            client: AB_ReferentialSepareDataBases.ClientDataBase,
-            onSuccess: (AB_ReferentialSepareDataBases.ClientDataBase) -> Unit
+            client: InputSqlModels.ClientDataBase,
+            onSuccess: (InputSqlModels.ClientDataBase) -> Unit
         ) {
             val list = modelList as? MutableList ?: return
             val index = list.indexOfFirst { it.id == client.id }
@@ -56,28 +56,28 @@ class InputSqlDBGroupeRepositoryImp : B_SqlInputDataBaseGroupeRepository {
     }
 
     class TypeTarificationDataBase_RepositoryImp :
-        B_SqlInputDataBaseGroupeRepository.TypeTarificationDataBase_Repository {
-        override var modelList: List<AB_ReferentialSepareDataBases.TypeTarificationDataBase> = initDefaultData()
+        InputSqlGroupeRepositorys.TypeTarificationDataBase_Repository {
+        override var modelList: List<InputSqlModels.TypeTarificationDataBase> = initDefaultData()
 
-         private fun initDefaultData(): List<AB_ReferentialSepareDataBases.TypeTarificationDataBase> {
-            return mutableStateListOf<AB_ReferentialSepareDataBases.TypeTarificationDataBase>().apply {
+         private fun initDefaultData(): List<InputSqlModels.TypeTarificationDataBase> {
+            return mutableStateListOf<InputSqlModels.TypeTarificationDataBase>().apply {
                 addAll(TypeTarificationTestData.initialTestData)
             }
         }
     }
 
     class TarificationDataBaseFacileEntreRepositoryImp :
-        B_SqlInputDataBaseGroupeRepository.A_TarificationDataBaseFacileEntreRepository {
+        InputSqlGroupeRepositorys.A_TarificationDataBaseFacileEntreRepository {
         val _dataFlow = MutableStateFlow(TarificationTestData.initialTestData)
-        override var modelList: List<AB_ReferentialSepareDataBases.A_TarificationDataBaseFacileEntre>
+        override var modelList: List<InputSqlModels.A_TarificationDataBaseFacileEntre>
             get() = _dataFlow.value
             set(value) {
                 _dataFlow.value = value
             }
 
         override fun add(
-            data: AB_ReferentialSepareDataBases.A_TarificationDataBaseFacileEntre,
-            onSuccess: (AB_ReferentialSepareDataBases.A_TarificationDataBaseFacileEntre) -> Unit
+            data: InputSqlModels.A_TarificationDataBaseFacileEntre,
+            onSuccess: (InputSqlModels.A_TarificationDataBaseFacileEntre) -> Unit
         ) {
             _dataFlow.update { currentList ->
                 currentList + data

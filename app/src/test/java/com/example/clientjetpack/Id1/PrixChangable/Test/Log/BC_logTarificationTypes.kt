@@ -1,19 +1,19 @@
 package com.example.clientjetpack.Id1.PrixChangable.Test.Log
 
-import com.example.clientjetpack.Id1.PrixChangable.Test.ViewModel.OutputViewModelNoSqlDB
-import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.InputSqlDBGroupeRepositoryImp
+import com.example.clientjetpack.Id1.PrixChangable.Test.ViewModel.OutputViewModelNoSqlModel
+import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.InputSqlGroupeRepositorysImp
 import com.example.clientjetpack.Id1.PrixChangable.Test.Passive.strDateEtTempFromVidTimestamp
 import com.example.clientjetpack.Id1.PrixChangable.Test._TestsDisplayerLogDataBase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @OptIn(ExperimentalCoroutinesApi::class)
 fun _TestsDisplayerLogDataBase.logTarificationTypes(
-    types: List<OutputViewModelNoSqlDB.Produit.Client.TypeTarification>,
+    types: List<OutputViewModelNoSqlModel.Produit.Client.TypeTarification>,
     isLastProduit: Boolean,
     isLastClient: Boolean,
 ) {
-    val typeRepository = InputSqlDBGroupeRepositoryImp.TypeTarificationDataBase_RepositoryImp()
-    val clientRepository = InputSqlDBGroupeRepositoryImp.clientRepository
+    val typeRepository = InputSqlGroupeRepositorysImp.TypeTarificationDataBase_RepositoryImp()
+    val clientRepository = InputSqlGroupeRepositorysImp.clientRepository
 
     val currentClient = viewModel.imbriquantFlow.value.produits
         .flatMap { it.clients }
