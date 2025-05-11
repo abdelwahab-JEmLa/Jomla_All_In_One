@@ -29,11 +29,19 @@ import java.util.concurrent.TimeUnit
 
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
-class InstrumentalTest : KoinTest, InputEtInfosSqlGroupeRepositorysImp.TestCallbacks {
+class InstrumentalTest : KoinTest, InputEtInfosSqlGroupeRepositorysImp.TestCallbacks
+{
     @get:Rule
     val rule: InstantTaskExecutorRule = InstantTaskExecutorRule()
+
     @get:Rule
-    val combinedLogFilter = LogFilterRule.filter().filterByTag("TestRunner").build()
+    val combinedLogFilter = LogFilterRule.filter()
+        .filterByTag("TestRunner")
+        .filterByTag("InstrumentalTest")
+        .filterByTag("FireBaseHandler")
+        .filterByTag("InputEtInfosRepo")
+        .build()
+
     @get:Rule
     val mockProvider = MockProviderRule.create { clazz ->
         Mockito.mock(clazz.java)

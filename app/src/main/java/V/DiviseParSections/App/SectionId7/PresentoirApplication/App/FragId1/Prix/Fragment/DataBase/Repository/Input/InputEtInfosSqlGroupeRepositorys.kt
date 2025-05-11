@@ -3,7 +3,6 @@ package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Pri
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Models.InputEtInfosSqlModels
 
 interface InputEtInfosSqlGroupeRepositorys {
-    // Factory methods to return repository instances
     fun ProduitInfosRepository(): ProduitDataBase_Repository
 
     fun ClientDataBase_Repository(): ClientDataBase_Repository

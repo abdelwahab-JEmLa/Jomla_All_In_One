@@ -208,12 +208,6 @@ class LogFilterRule private constructor(
         private var specificPattern: String? = null
 
         fun filterByTag(tag: String) = apply { this.filterByTag = tag }
-        fun captureManualLogs(capture: Boolean) = apply { this.captureManualLogs = capture }
-        fun captureLogcat(capture: Boolean) = apply { this.captureLogcat = capture }
-        fun filterByText(text: String) = apply { this.filterByText = text }
-        fun filterByTestMethod(methodName: String) = apply { this.filterByMethod = methodName }
-        fun filterByRegex(pattern: String) = apply { this.filterByRegexPattern = pattern }
-        fun matchExactly(pattern: String) = apply { this.specificPattern = pattern }
 
         fun build(): LogFilterRule {
             val filterByRegex = filterByRegexPattern?.let { Pattern.compile(it) }
