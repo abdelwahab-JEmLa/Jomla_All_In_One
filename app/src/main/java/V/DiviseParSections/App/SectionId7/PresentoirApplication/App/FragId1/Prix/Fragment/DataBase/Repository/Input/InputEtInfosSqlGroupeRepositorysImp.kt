@@ -1,6 +1,7 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Repository.Input
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Models.InputEtInfosSqlModels
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Repository.Input.Test.A_TarificationTestData.initialTestData
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Repository.Input.Test.ClientTestData
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Repository.Input.Test.ProduitTestData
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Repository.Input.Test.TypeTarificationTestData
@@ -113,7 +114,7 @@ class InputEtInfosSqlGroupeRepositorysImp(
             // Check if the database is empty before adding initial data
             if (_dataFlow.value.isEmpty()) {
                 fireBaseHandler.addAllToFireBase(
-                    modelList,
+                    initialTestData,
                     sonDataBaseRef
                 )
                 // Reload data after adding

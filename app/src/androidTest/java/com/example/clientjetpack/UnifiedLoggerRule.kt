@@ -20,6 +20,7 @@ class LogFilterRule private constructor(
     private var testClassName = ""
     private var testMethodName = ""
     private var startTime: Long = 0
+    private val logTagList = mutableListOf<String>()
 
     companion object {
         private const val TAG = "LogFilter"
@@ -87,14 +88,13 @@ class LogFilterRule private constructor(
                 }
             }
 
-            if (config.captureLogcat) {
-                val logcatOutput = getLogcatSinceTime(startTime)
-                val filteredLogs = filterLogs(logcatOutput)
+            // Always capture logcat, regardless of the captureLogcat setting
+            val logcatOutput = getLogcatSinceTime(startTime)
+            val filteredLogs = filterLogs(logcatOutput)
 
-                if (filteredLogs.isNotEmpty()) {
-                    Log.i(TAG, "-- FILTERED LOGCAT LOGS --")
-                    filteredLogs.forEach { Log.i(TAG, it) }
-                }
+            if (filteredLogs.isNotEmpty()) {
+                Log.i(TAG, "-- FILTERED LOGCAT LOGS --")
+                filteredLogs.forEach { Log.i(TAG, it) }
             }
 
             // 3. Capturer les logs spécifiques si un pattern est défini
@@ -122,12 +122,23 @@ class LogFilterRule private constructor(
         val dateFormat = SimpleDateFormat("MM-dd HH:mm:ss.SSS", Locale.US)
         val timeStr = dateFormat.format(Date(sinceTime))
 
-        val logcatCmd = "logcat -t \"$timeStr\""
+        // Include all log levels (V for verbose)
+        val logcatCmd = "logcat -v threadtime -t \"$timeStr\" *:V"
         return executeCommand(logcatCmd)
     }
 
     private fun filterLogs(logs: List<String>): List<String> {
         return logs.filter { line ->
+            // Check if any of the configured tags match
+            if (config.filterByTagList != null && config.filterByTagList.isNotEmpty()) {
+                for (tag in config.filterByTagList) {
+                    if (line.contains(tag)) {
+                        return@filter true
+                    }
+                }
+                return@filter false
+            }
+
             var keep = true
 
             // Appliquer les filtres configurés
@@ -178,8 +189,9 @@ class LogFilterRule private constructor(
      */
     data class LogConfig(
         val captureManualLogs: Boolean = true,
-        val captureLogcat: Boolean = false,
+        val captureLogcat: Boolean = true, // Changed default to true
         val filterByTag: String? = null,
+        val filterByTagList: List<String>? = null, // Added support for list of tags
         val filterByText: String? = null,
         val filterByMethod: String? = null,
         val filterByRegex: Pattern? = null,
@@ -200,14 +212,18 @@ class LogFilterRule private constructor(
      */
     class Builder {
         private var captureManualLogs: Boolean = true
-        private var captureLogcat: Boolean = false
+        private var captureLogcat: Boolean = true // Changed default to true
         private var filterByTag: String? = null
+        private var filterByTagList = mutableListOf<String>() // Added list of tags
         private var filterByText: String? = null
         private var filterByMethod: String? = null
         private var filterByRegexPattern: String? = null
         private var specificPattern: String? = null
 
-        fun filterByTag(tag: String) = apply { this.filterByTag = tag }
+        fun filterByTag(tag: String) = apply {
+            // Add the tag to our list instead of replacing
+            this.filterByTagList.add(tag)
+        }
 
         fun build(): LogFilterRule {
             val filterByRegex = filterByRegexPattern?.let { Pattern.compile(it) }
@@ -216,6 +232,7 @@ class LogFilterRule private constructor(
                 captureManualLogs,
                 captureLogcat,
                 filterByTag,
+                filterByTagList,
                 filterByText,
                 filterByMethod,
                 filterByRegex,

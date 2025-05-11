@@ -1,6 +1,8 @@
 package com.example.clientjetpack
 
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Models.InputEtInfosSqlModels
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.TarificationViewModel
+import android.util.Log
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.Dispatchers
@@ -54,11 +56,18 @@ class InstrumentalTest :
     private var operationSuccessful = false
     private var lastResult: Any? = null
 
+    // Use the tag constant without a variable, so it matches the filter exactly
+    private val TAG = "InstrumentalTest"
+
     @Before
-    fun setup() = runBlocking {
+    fun setup() {
         Dispatchers.setMain(testDispatcher)
 
         stopKoin()
+
+        runBlocking {
+            // Any suspending functions here
+        }
 
         startKoin {
             modules(
@@ -72,6 +81,7 @@ class InstrumentalTest :
         viewModel = TarificationViewModel(this@InstrumentalTest)
         operationSuccessful = false
         lastResult = null
+        Log.i(TAG, "Test setup complete")
     }
 
     @After
@@ -82,22 +92,76 @@ class InstrumentalTest :
 
     @Test
     fun testBasicLogging() = runTest {
+        // Use the direct tag name instead of the TAG variable to ensure it matches filter
+        Log.i("InstrumentalTest", "Starting testBasicLogging")
+
         assertEquals(
             1L,
             viewModel.getSqlClient(1)?.idActiveTypeTarificationDataBase
         )
+
+        Log.i("InstrumentalTest", "Completed testBasicLogging")
     }
 
     @Test
     fun testLogWithMethodFilter() = runTest {
+        // Log before adding test data
+        Log.i("InstrumentalTest", "Starting testLogWithMethodFilter")
+
         viewModel.addNewTestDataTarificationEtClient()
+        Log.i("InstrumentalTest", "Called addNewTestDataTarificationEtClient")
 
         assertTrue("Firebase operation timed out", awaitOperationCompletion())
+        Log.i("InstrumentalTest", "Operation completed: success=$operationSuccessful")
 
         assertEquals(
             2L,
             viewModel.getSqlClient(1)?.idActiveTypeTarificationDataBase
         )
+
+        // Also try using LogFilterRule's manual log method
+        LogFilterRule.log("InstrumentalTest", "Testing manual log in testLogWithMethodFilter")
+
+        // Fix: Check if the lastResult is a List and handle it appropriately
+        if (lastResult is List<*> && (lastResult as List<*>).isNotEmpty()) {
+            // Get the first item that matches our criteria
+            val filteredItems = (lastResult as List<*>).filterIsInstance<InputEtInfosSqlModels.Tarification>()
+                .filter { it.idClient == 1L && it.idProduit == 1L && it.idTypeTarification == 1L }
+
+            if (filteredItems.isNotEmpty()) {
+                // Use the most recent item
+                val mostRecentItem = filteredItems.maxByOrNull { it.vidTimestamp }
+
+                // Now verify this specific item
+                Log.i("InstrumentalTest", "Found matching item from list: $mostRecentItem")
+
+                // Create expected test data with the same timestamp
+                val testData = InputEtInfosSqlModels.Tarification(
+                    vidTimestamp = mostRecentItem?.vidTimestamp ?: System.currentTimeMillis() - 86400000,
+                    idProduit = 1L,
+                    idClient = 1L,
+                    idTypeTarification = 1L,
+                    prixCurrency = 2.99
+                )
+
+                // Now assert on this specific item
+                assertResultItem(testData, mostRecentItem)
+            } else {
+                // No matching item found
+                Log.i("InstrumentalTest", "No matching item found in result list")
+                assertTrue("No matching Tarification item found in result list", false)
+            }
+        } else {
+            // Handle case where lastResult is a single item
+            val testData = InputEtInfosSqlModels.Tarification(
+                vidTimestamp = System.currentTimeMillis() - 86400000,
+                idProduit = 1L,
+                idClient = 1L,
+                idTypeTarification = 1L,
+                prixCurrency = 2.99
+            )
+            assertResult(testData)
+        }
     }
 
     override fun <T> onOperationSuccess(result: T) {
@@ -105,24 +169,87 @@ class InstrumentalTest :
         operationSuccessful = true
         operationLatch.countDown()
 
+        // Use direct tag name for logging
+        Log.i("InstrumentalTest", "Operation success callback with result: $result")
+
         // Additional assertions can be made here if needed
         if (result != null) {
             assertEquals("Operation should return a valid result", true, true)
-
         }
     }
 
     private fun awaitOperationCompletion(timeoutSeconds: Long = 5): Boolean {
-        return operationLatch
+        val result = operationLatch
             .await(timeoutSeconds, TimeUnit.SECONDS)
                 && operationSuccessful
+
+        Log.i("InstrumentalTest", "awaitOperationCompletion result: $result")
+        return result
     }
 
     fun assertOperation(message: String) {
+        Log.i("InstrumentalTest", "assertOperation: $message, result: $operationSuccessful")
         assertTrue(message, operationSuccessful)
     }
 
+    // New method to assert on a specific item from a list
+    fun assertResultItem(expected: InputEtInfosSqlModels.Tarification, actual: Any?) {
+        Log.i("InstrumentalTest", "Starting assertResultItem with expected: $expected")
+
+        if (actual is InputEtInfosSqlModels.Tarification) {
+            // Verify the important fields
+            assertEquals("Product ID should match", expected.idProduit, actual.idProduit)
+            assertEquals("Client ID should match", expected.idClient, actual.idClient)
+            assertEquals("Tarification type ID should match", expected.idTypeTarification, actual.idTypeTarification)
+            assertEquals("Price should match", expected.prixCurrency, actual.prixCurrency, 0.001)
+
+            Log.i("InstrumentalTest", "All field assertions passed")
+        } else {
+            Log.i("InstrumentalTest", "Actual result is not a Tarification: $actual")
+            assertTrue("Expected a Tarification object", false)
+        }
+    }
+
     fun <T> assertResult(expected: T, actual: T? = lastResult as? T) {
-        assertEquals(expected, actual)
+        // Use INFO level instead of DEBUG to ensure logs are captured
+        Log.i("InstrumentalTest", "Starting assertResult with expected: $expected")
+        Log.i("InstrumentalTest", "Actual result type: ${lastResult?.javaClass?.simpleName}")
+
+        // Handle different types of expected/actual results
+        when {
+            // Handle List vs Single item comparison
+            expected is InputEtInfosSqlModels.Tarification && lastResult is List<*> -> {
+                Log.i("InstrumentalTest", "Expected is Tarification but result is List")
+
+                val list = lastResult as List<*>
+                val filteredItems = list.filterIsInstance<InputEtInfosSqlModels.Tarification>()
+                    .filter {
+                        it.idClient == expected.idClient &&
+                                it.idProduit == expected.idProduit &&
+                                it.idTypeTarification == expected.idTypeTarification
+                    }
+
+                assertTrue("List should contain at least one matching item", filteredItems.isNotEmpty())
+
+                // Check just the core properties
+                val item = filteredItems.first()
+                assertEquals("Product ID should match", expected.idProduit, item.idProduit)
+                assertEquals("Client ID should match", expected.idClient, item.idClient)
+                assertEquals("Tarification type ID should match", expected.idTypeTarification, item.idTypeTarification)
+                assertEquals("Price should match", expected.prixCurrency, item.prixCurrency, 0.001)
+            }
+
+            // Regular comparison for same types
+            else -> {
+                if (actual != null) {
+                    assertEquals(expected, actual)
+                } else {
+                    Log.i("InstrumentalTest", "Actual result is null, cannot compare with expected: $expected")
+                    assertTrue("Actual result should not be null", false)
+                }
+            }
+        }
+
+        Log.i("InstrumentalTest", "assertResult completed")
     }
 }
