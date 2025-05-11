@@ -15,7 +15,8 @@ class InputEtInfosSqlGroupeRepositorysImp : InputEtInfosSqlGroupeRepositorys {
     private val typeTarificationRepository = TypeTarificationDataBase_RepositoryImp()
     private val tarificationRepository = TarificationRepositoryImp()
 
-    override fun ProduitInfosRepository(): InputEtInfosSqlGroupeRepositorys.ProduitDataBase_Repository {
+    override fun ProduitInfosRepository(): InputEtInfosSqlGroupeRepositorys
+        .ProduitDataBase_Repository {
         return produitRepository
     }
 
@@ -32,6 +33,7 @@ class InputEtInfosSqlGroupeRepositorysImp : InputEtInfosSqlGroupeRepositorys {
     }
 
     class ProduitDataBase_RepositoryImp :
+
         InputEtInfosSqlGroupeRepositorys.ProduitDataBase_Repository {
         override var modelList: List<InputEtInfosSqlModels.ProduitInfos> = initDefaultData()
 

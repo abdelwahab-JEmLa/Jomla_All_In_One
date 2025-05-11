@@ -14,8 +14,6 @@ interface _1_3_TransactionCommercial_Repository {
 
     suspend fun ensureDataIsInitialized()
 
-
-
     companion object {
         const val TAG = "_1_3_TransactionCommercial"
 
