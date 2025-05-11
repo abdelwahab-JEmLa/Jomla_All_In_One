@@ -28,6 +28,7 @@ import org.koin.core.context.stopKoin
 import org.koin.dsl.module
 import org.koin.test.KoinTest
 import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
@@ -51,7 +52,7 @@ class InstrumentalTestInterieur : KoinTest {
     private var result: List<InputEtInfosSqlModels.Tarification> = emptyList()
 
     @Before
-    fun setup() {
+    fun setup() = runTest {
         try {
             Dispatchers.setMain(testDispatcher)
 
@@ -69,11 +70,11 @@ class InstrumentalTestInterieur : KoinTest {
                 )
             }
 
-            clearDatabase(sonDataBaseRef)
+            // Clear database and wait for completion
+            clearDatabaseAsync(sonDataBaseRef)
 
-            addAllToFireBase(initialTestData, sonDataBaseRef)
-
-            Thread.sleep(500)
+            // Add test data and wait for completion
+            addAllToFireBaseAsync(initialTestData, sonDataBaseRef)
 
         } catch (e: Exception) {
             android.util.Log.e("InstrumentalTest", "Setup failed: ${e.message}", e)
@@ -93,11 +94,12 @@ class InstrumentalTestInterieur : KoinTest {
         result = loadDatasAsync(sonDataBaseRef, InputEtInfosSqlModels.Tarification::class.java)
             .sortedBy { it.vidTimestamp }
 
-        // Verify we have the correct number of items
+        // Verify we have the correct number of items (check that all 3 test items were added)
         assertEquals(3, result.size)
 
-        // Create expected test data (first item from initialTestData)
-        val expectedData = initialTestData.first()
+        // Create expected test data (first item from initialTestData sorted by timestamp)
+        val sortedTestData = initialTestData.sortedBy { it.vidTimestamp }
+        val expectedData = sortedTestData.first()
 
         // Verify the first item matches our expected data
         val firstResult = result.first()
@@ -107,8 +109,16 @@ class InstrumentalTestInterieur : KoinTest {
         assertEquals(expectedData.prixCurrency, firstResult.prixCurrency, 0.01)
     }
 
-    private fun clearDatabase(databaseRef: DatabaseReference) {
-        databaseRef.removeValue()
+    private suspend fun clearDatabaseAsync(databaseRef: DatabaseReference) {
+        return suspendCancellableCoroutine { continuation ->
+            databaseRef.removeValue().addOnSuccessListener {
+                android.util.Log.d("InstrumentalTest", "Database cleared successfully")
+                continuation.resume(Unit)
+            }.addOnFailureListener { exception ->
+                android.util.Log.e("InstrumentalTest", "Failed to clear database: ${exception.message}")
+                continuation.resumeWithException(exception)
+            }
+        }
     }
 
     suspend fun <T> loadDatasAsync(databaseRef: DatabaseReference, dataClass: Class<T>): List<T> {
@@ -117,37 +127,53 @@ class InstrumentalTestInterieur : KoinTest {
 
             databaseRef.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
+                    android.util.Log.d("InstrumentalTest", "Data loaded. Child count: ${snapshot.childrenCount}")
                     for (childSnapshot in snapshot.children) {
-                        childSnapshot.getValue(dataClass)?.let { dataList.add(it) }
+                        childSnapshot.getValue(dataClass)?.let {
+                            dataList.add(it)
+                            android.util.Log.d("InstrumentalTest", "Added item: $it")
+                        }
                     }
 
                     continuation.resume(dataList)
                 }
 
                 override fun onCancelled(error: DatabaseError) {
+                    android.util.Log.e("InstrumentalTest", "Firebase data load cancelled: ${error.message}")
                     continuation.resume(emptyList())
                 }
             })
         }
     }
 
-    fun <T> addAllToFireBase(modelList: List<T>, databaseRef: DatabaseReference) {
+    suspend fun <T> addAllToFireBaseAsync(modelList: List<T>, databaseRef: DatabaseReference) {
         if (modelList.isEmpty()) return
 
-        modelList.forEach { item ->
+        val tasks = modelList.map { item ->
             val key = when (item) {
                 is InputEtInfosSqlModels.Tarification -> item.vidTimestamp.toString()
                 is InputEtInfosSqlModels.ClientDataBase -> item.id.toString()
                 is InputEtInfosSqlModels.ProduitInfos -> item.id.toString()
                 is InputEtInfosSqlModels.TypeTarificationDataBase -> item.id.toString()
                 else -> databaseRef.push().key
-            }
+            } ?: databaseRef.push().key
 
-            key?.let {
-                databaseRef.child(it).setValue(item).addOnSuccessListener {
-                    // Success handled silently
+            android.util.Log.d("InstrumentalTest", "Adding item with key $key: $item")
+
+            suspendCancellableCoroutine<Unit> { continuation ->
+                databaseRef.child(key!!).setValue(item).addOnSuccessListener {
+                    android.util.Log.d("InstrumentalTest", "Successfully added item with key $key")
+                    continuation.resume(Unit)
+                }.addOnFailureListener { exception ->
+                    android.util.Log.e("InstrumentalTest", "Failed to add item with key $key: ${exception.message}")
+                    continuation.resumeWithException(exception)
                 }
             }
         }
+
+        // Wait for all tasks to complete
+        tasks.forEach { it }
+
+        android.util.Log.d("InstrumentalTest", "All items added to Firebase successfully")
     }
 }
