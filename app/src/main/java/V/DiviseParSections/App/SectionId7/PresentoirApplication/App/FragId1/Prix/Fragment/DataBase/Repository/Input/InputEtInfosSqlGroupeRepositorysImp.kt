@@ -1,22 +1,20 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Repository.Input
 
-import androidx.compose.runtime.mutableStateListOf
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Models.InputEtInfosSqlModels
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Repository.Input.Test.ClientTestData
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Repository.Input.Test.ProduitTestData
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Repository.Input.Test.TarificationTestData
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Repository.Input.Test.TypeTarificationTestData
+import androidx.compose.runtime.mutableStateListOf
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
 class InputEtInfosSqlGroupeRepositorysImp : InputEtInfosSqlGroupeRepositorys {
-    // Instance fields to hold repository implementations
     private val produitRepository = ProduitDataBase_RepositoryImp()
     private val clientRepository = ClientDataBase_RepositoryImp()
     private val typeTarificationRepository = TypeTarificationDataBase_RepositoryImp()
     private val tarificationRepository = TarificationRepositoryImp()
 
-    // Methods to expose repositories
     override fun ProduitInfosRepository(): InputEtInfosSqlGroupeRepositorys.ProduitDataBase_Repository {
         return produitRepository
     }
