@@ -54,7 +54,7 @@ class ExampleLogFilterTest : KoinComponent {
     fun testBasicLogging() = runTest {
         assertEquals(
             1L,
-            viewModel.getSqlClient(1)?.idActiveTypeTarificationDataBase
+            viewModel.getSqlClient(2    )?.idActiveTypeTarificationDataBase
         )
     }
 
