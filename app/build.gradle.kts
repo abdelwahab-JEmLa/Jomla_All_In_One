@@ -27,27 +27,6 @@ android {
         }
     }
 
-    // Add this section if not already present
-    testOptions {
-        execution = "ANDROIDX_TEST_ORCHESTRATOR"
-        unitTests.isReturnDefaultValues = true
-
-        // Add this for instrumented tests
-        animationsDisabled = true
-
-        // Configure instrumented tests
-        managedDevices {
-            devices {
-                maybeCreate<com.android.build.api.dsl.ManagedVirtualDevice>("pixel2api30").apply {
-                    device = "Pixel 2"
-                    apiLevel = 30
-                    systemImageSource = "google_apis"
-                }
-            }
-        }
-    }
-
-
     buildTypes {
         release {
             isMinifyEnabled = false
