@@ -2,6 +2,7 @@ package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Pri
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Models.InputEtInfosSqlModels
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.TarificationViewModel
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.TarificationViewModel.TestCallbacks
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -9,7 +10,9 @@ import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
-class FireBaseHandler(private val testContext: Any) {
+class FireBaseHandler(
+    val testContext: TestCallbacks? = null
+) {
     suspend fun <T> loadDatasAsync(databaseRef: DatabaseReference, dataClass: Class<T>): List<T> {
         return suspendCancellableCoroutine { continuation ->
             val dataList = mutableListOf<T>()

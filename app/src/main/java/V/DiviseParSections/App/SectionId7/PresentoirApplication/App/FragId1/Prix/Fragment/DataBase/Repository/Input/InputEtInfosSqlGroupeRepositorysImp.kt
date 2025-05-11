@@ -5,6 +5,7 @@ import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Repository.Input.Test.ClientTestData
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Repository.Input.Test.ProduitTestData
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Repository.Input.Test.TypeTarificationTestData
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.TarificationViewModel.TestCallbacks
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import androidx.compose.runtime.mutableStateListOf
 import com.google.firebase.database.DatabaseReference
@@ -12,9 +13,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
 class InputEtInfosSqlGroupeRepositorysImp(
-    private val testContext: Any
+    val testCallbacks: TestCallbacks? = null
 ) : InputEtInfosSqlGroupeRepositorys {
-    private val fireBaseHandler = FireBaseHandler(testContext)
+    private val fireBaseHandler = FireBaseHandler(testCallbacks)
     private val inputEtInfosSqlGroupeRepositorysImpDataBaseRef: DatabaseReference =
         _0_0_HeadOfRepositorys_Model.getHeadSqlDataBaseRef()
             .child("C_InputEtInfosSql")
@@ -103,12 +104,17 @@ class InputEtInfosSqlGroupeRepositorysImp(
     ) : InputEtInfosSqlGroupeRepositorys.TarificationRepository {
         val _dataFlow = MutableStateFlow<List<InputEtInfosSqlModels.Tarification>>(emptyList())
 
-        // Safe database reference
         private val sonDataBaseRef: DatabaseReference =
             parentDbRef.child("A_Tarification")
 
-        init {
-            // First load data from Firebase
+        override var modelList: List<InputEtInfosSqlModels.Tarification>
+            get() = _dataFlow.value
+            set(value) {
+                _dataFlow.value = value
+            }
+
+        // Method to initialize data loading explicitly
+        fun initialize() {
             loadDataFromFirebase()
 
             // Check if the database is empty before adding initial data
@@ -122,12 +128,6 @@ class InputEtInfosSqlGroupeRepositorysImp(
             }
         }
 
-        override var modelList: List<InputEtInfosSqlModels.Tarification>
-            get() = _dataFlow.value
-            set(value) {
-                _dataFlow.value = value
-            }
-
         private fun loadDataFromFirebase() {
             val loadedData = fireBaseHandler.loadDatas(
                 sonDataBaseRef,
@@ -136,14 +136,6 @@ class InputEtInfosSqlGroupeRepositorysImp(
             _dataFlow.value = loadedData
         }
 
-        // For coroutine usage
-        suspend fun loadDataFromFirebaseAsync() {
-            val loadedData = fireBaseHandler.loadDatasAsync(
-                sonDataBaseRef,
-                InputEtInfosSqlModels.Tarification::class.java
-            )
-            _dataFlow.value = loadedData
-        }
 
         override fun add(
             data: InputEtInfosSqlModels.Tarification,

@@ -5,6 +5,7 @@ import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Repository.Input.InputEtInfosSqlGroupeRepositorysImp
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Repository.Output.OutputNoSqlModelRepositoryImp
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.Passive.createTimestamp
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +15,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class TarificationViewModel(
-    private val testContext: Any = Unit // Default value to allow instantiation without a test context
+     val testCallbacks: TestCallbacks? = null
 ) : ViewModel() {
 
     interface TestCallbacks {
@@ -22,8 +23,7 @@ class TarificationViewModel(
         fun <T> onOperationSuccess(result: T)
     }
 
-
-    private val inputSqlGroupeRepositorys = InputEtInfosSqlGroupeRepositorysImp(testContext)
+    private val inputSqlGroupeRepositorys = InputEtInfosSqlGroupeRepositorysImp(testCallbacks)
 
     private val outputNoSqlModelRepository =
         OutputNoSqlModelRepositoryImp(inputSqlGroupeRepositorys)
@@ -80,5 +80,9 @@ class TarificationViewModel(
 
     fun getSqlTypeTarification(id: Long): InputEtInfosSqlModels.TypeTarificationDataBase? {
         return typeTarificationInputSqlRepo.modelList.find { it.id == id }
+    }
+    fun notifySuccess(result: Any) {
+        Log.d("TarificationViewModel", "Notifying success with result: $result")
+        testCallbacks?.onOperationSuccess(result)
     }
 }
