@@ -2,7 +2,7 @@ package com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Models
 
 import androidx.room.PrimaryKey
 
-class InputSqlModels {
+class InputEtInfosSqlModels {
 
     data class ProduitInfos(
         @PrimaryKey(autoGenerate = true)

@@ -1,7 +1,7 @@
 package com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.Input
 
 import androidx.compose.runtime.mutableStateListOf
-import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Models.InputSqlModels
+import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Models.InputEtInfosSqlModels
 import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.Input.Test.ClientTestData
 import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.Input.Test.ProduitTestData
 import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.Input.Test.TarificationTestData
@@ -9,7 +9,7 @@ import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.Inpu
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
-class InputSqlGroupeRepositorysImp : InputSqlGroupeRepositorys {
+class InputEtInfosSqlGroupeRepositorysImp : InputEtInfosSqlGroupeRepositorys {
     // Instance fields to hold repository implementations
     private val produitRepository = ProduitDataBase_RepositoryImp()
     private val clientRepository = ClientDataBase_RepositoryImp()
@@ -17,44 +17,44 @@ class InputSqlGroupeRepositorysImp : InputSqlGroupeRepositorys {
     private val tarificationRepository = TarificationRepositoryImp()
 
     // Methods to expose repositories
-    override fun ProduitInfosRepository(): InputSqlGroupeRepositorys.ProduitDataBase_Repository {
+    override fun ProduitInfosRepository(): InputEtInfosSqlGroupeRepositorys.ProduitDataBase_Repository {
         return produitRepository
     }
 
-    override fun ClientDataBase_Repository(): InputSqlGroupeRepositorys.ClientDataBase_Repository {
+    override fun ClientDataBase_Repository(): InputEtInfosSqlGroupeRepositorys.ClientDataBase_Repository {
         return clientRepository
     }
 
-    override fun TypeTarificationDataBase_Repository(): InputSqlGroupeRepositorys.TypeTarificationDataBase_Repository {
+    override fun TypeTarificationInfosRepository(): InputEtInfosSqlGroupeRepositorys.TypeTarificationDataBase_Repository {
         return typeTarificationRepository
     }
 
-    override fun TarificationRepository(): InputSqlGroupeRepositorys.TarificationRepository {
+    override fun TarificationRepository(): InputEtInfosSqlGroupeRepositorys.TarificationRepository {
         return tarificationRepository
     }
 
     class ProduitDataBase_RepositoryImp :
-        InputSqlGroupeRepositorys.ProduitDataBase_Repository {
-        override var modelList: List<InputSqlModels.ProduitInfos> = initDefaultData()
+        InputEtInfosSqlGroupeRepositorys.ProduitDataBase_Repository {
+        override var modelList: List<InputEtInfosSqlModels.ProduitInfos> = initDefaultData()
 
-        private fun initDefaultData(): List<InputSqlModels.ProduitInfos> {
-            return mutableStateListOf<InputSqlModels.ProduitInfos>().apply {
+        private fun initDefaultData(): List<InputEtInfosSqlModels.ProduitInfos> {
+            return mutableStateListOf<InputEtInfosSqlModels.ProduitInfos>().apply {
                 addAll(ProduitTestData.initialTestData)
             }
         }
     }
 
     class ClientDataBase_RepositoryImp :
-        InputSqlGroupeRepositorys.ClientDataBase_Repository {
-        override var modelList: List<InputSqlModels.ClientDataBase> = initDefaultData()
+        InputEtInfosSqlGroupeRepositorys.ClientDataBase_Repository {
+        override var modelList: List<InputEtInfosSqlModels.ClientDataBase> = initDefaultData()
 
-        private fun initDefaultData(): List<InputSqlModels.ClientDataBase> {
-            return mutableStateListOf<InputSqlModels.ClientDataBase>().apply {
+        private fun initDefaultData(): List<InputEtInfosSqlModels.ClientDataBase> {
+            return mutableStateListOf<InputEtInfosSqlModels.ClientDataBase>().apply {
                 addAll(ClientTestData.initialTestData)
             }
         }
 
-        override fun add(client: InputSqlModels.ClientDataBase) {
+        override fun add(client: InputEtInfosSqlModels.ClientDataBase) {
             val list = modelList as? MutableList ?: return
             val existingIndex = list.indexOfFirst { it.id == client.id }
             if (existingIndex == -1) {
@@ -65,8 +65,8 @@ class InputSqlGroupeRepositorysImp : InputSqlGroupeRepositorys {
         }
 
         override fun update(
-            client: InputSqlModels.ClientDataBase,
-            onSuccess: (InputSqlModels.ClientDataBase) -> Unit
+            client: InputEtInfosSqlModels.ClientDataBase,
+            onSuccess: (InputEtInfosSqlModels.ClientDataBase) -> Unit
         ) {
             val list = modelList as? MutableList ?: return
             val index = list.indexOfFirst { it.id == client.id }
@@ -78,28 +78,28 @@ class InputSqlGroupeRepositorysImp : InputSqlGroupeRepositorys {
     }
 
     class TypeTarificationDataBase_RepositoryImp :
-        InputSqlGroupeRepositorys.TypeTarificationDataBase_Repository {
-        override var modelList: List<InputSqlModels.TypeTarificationDataBase> = initDefaultData()
+        InputEtInfosSqlGroupeRepositorys.TypeTarificationDataBase_Repository {
+        override var modelList: List<InputEtInfosSqlModels.TypeTarificationDataBase> = initDefaultData()
 
-        private fun initDefaultData(): List<InputSqlModels.TypeTarificationDataBase> {
-            return mutableStateListOf<InputSqlModels.TypeTarificationDataBase>().apply {
+        private fun initDefaultData(): List<InputEtInfosSqlModels.TypeTarificationDataBase> {
+            return mutableStateListOf<InputEtInfosSqlModels.TypeTarificationDataBase>().apply {
                 addAll(TypeTarificationTestData.initialTestData)
             }
         }
     }
 
     class TarificationRepositoryImp :
-        InputSqlGroupeRepositorys.TarificationRepository {
+        InputEtInfosSqlGroupeRepositorys.TarificationRepository {
         val _dataFlow = MutableStateFlow(TarificationTestData.initialTestData)
-        override var modelList: List<InputSqlModels.Tarification>
+        override var modelList: List<InputEtInfosSqlModels.Tarification>
             get() = _dataFlow.value
             set(value) {
                 _dataFlow.value = value
             }
 
         override fun add(
-            data: InputSqlModels.Tarification,
-            onSuccess: (InputSqlModels.Tarification) -> Unit
+            data: InputEtInfosSqlModels.Tarification,
+            onSuccess: (InputEtInfosSqlModels.Tarification) -> Unit
         ) {
             _dataFlow.update { currentList ->
                 currentList + data

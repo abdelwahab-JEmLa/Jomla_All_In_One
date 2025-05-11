@@ -1,8 +1,8 @@
 package com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.Output
 
 import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Models.OutputNoSqlModel
-import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.Input.InputSqlGroupeRepositorys
-import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.Input.InputSqlGroupeRepositorysImp
+import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.Input.InputEtInfosSqlGroupeRepositorys
+import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.Input.InputEtInfosSqlGroupeRepositorysImp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,16 +12,16 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class OutputNoSqlModelRepositoryImp(
-    private val inputSqlGroupeRepositorys: InputSqlGroupeRepositorys
+    private val inputEtInfosSqlGroupeRepositorys: InputEtInfosSqlGroupeRepositorys
 ) : OutputNoSqlModelRepository {
     private val _imbriquantFlow = MutableStateFlow(OutputNoSqlModel(emptyList()))
     override val dataFlow: StateFlow<OutputNoSqlModel> = _imbriquantFlow.asStateFlow()
     private val repositoryScope = CoroutineScope(Dispatchers.IO)
 
     // Creating repository instances using the factory methods
-    private val produitRepository = inputSqlGroupeRepositorys.ProduitInfosRepository()
-    private val clientRepository = inputSqlGroupeRepositorys.ClientDataBase_Repository()
-    private val tarificationRepository = inputSqlGroupeRepositorys.TarificationRepository()
+    private val produitRepository = inputEtInfosSqlGroupeRepositorys.ProduitInfosRepository()
+    private val clientRepository = inputEtInfosSqlGroupeRepositorys.ClientDataBase_Repository()
+    private val tarificationRepository = inputEtInfosSqlGroupeRepositorys.TarificationRepository()
 
     init {
         loadImbriquantData()
@@ -31,7 +31,7 @@ class OutputNoSqlModelRepositoryImp(
     private fun observeTarificationData() {
         repositoryScope.launch {
             // Access _dataFlow from tarificationRepository but with appropriate casting
-            val tarificationRepositoryImp = tarificationRepository as? InputSqlGroupeRepositorysImp.TarificationRepositoryImp
+            val tarificationRepositoryImp = tarificationRepository as? InputEtInfosSqlGroupeRepositorysImp.TarificationRepositoryImp
             tarificationRepositoryImp?._dataFlow?.collectLatest { _ ->
                 loadImbriquantData()
             }
