@@ -112,7 +112,6 @@ class InputEtInfosSqlGroupeRepositorysImp(
         private val sonDataBaseRef: DatabaseReference = parentDbRef.child("A_Tarification")
 
         init {
-            // Initialize Firebase with test data
             fireBaseHandler.addAllToFireBase(
                 modelList,
                 sonDataBaseRef

@@ -16,7 +16,6 @@ import kotlinx.coroutines.launch
 class TarificationViewModel(
     private val testContext: Any = Unit // Default value to allow instantiation without a test context
 ) : ViewModel() {
-
     interface TestCallbacks {
         fun onOperationSuccess()
     }

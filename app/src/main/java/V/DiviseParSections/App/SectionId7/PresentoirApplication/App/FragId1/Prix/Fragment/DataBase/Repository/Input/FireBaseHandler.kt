@@ -5,7 +5,6 @@ import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix
 import com.google.firebase.database.DatabaseReference
 
 class FireBaseHandler(private val testContext: Any) {
-
     fun <T> addAllToFireBase(modelList: List<T>, databaseRef: DatabaseReference) {
         if (modelList.isEmpty()) return
 
