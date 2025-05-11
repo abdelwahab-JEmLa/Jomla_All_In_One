@@ -122,7 +122,7 @@ class InstrumentalTestInterieur : KoinTest {
         }
     }
 
-    suspend fun <T> loadDatasAsync(databaseRef: DatabaseReference, dataClass: Class<T>): List<T> {
+    private suspend fun <T> loadDatasAsync(databaseRef: DatabaseReference, dataClass: Class<T>): List<T> {
         return suspendCancellableCoroutine { continuation ->
             val dataList = mutableListOf<T>()
 
@@ -147,7 +147,7 @@ class InstrumentalTestInterieur : KoinTest {
         }
     }
 
-    suspend fun <T> addAllToFireBaseAsync(modelList: List<T>, databaseRef: DatabaseReference) {
+    private suspend fun <T> addAllToFireBaseAsync(modelList: List<T>, databaseRef: DatabaseReference) {
         if (modelList.isEmpty()) return
 
         val tasks = modelList.map { item ->
