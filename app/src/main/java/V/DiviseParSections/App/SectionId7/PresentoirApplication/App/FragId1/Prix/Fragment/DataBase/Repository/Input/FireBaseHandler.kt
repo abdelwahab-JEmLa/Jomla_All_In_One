@@ -52,9 +52,7 @@ class FireBaseHandler(private val testContext: Any) {
                     testContext.onOperationSuccess(dataList)
                 }
             }
-
             override fun onCancelled(error: DatabaseError) {
-                // Handle error case
             }
         })
 
