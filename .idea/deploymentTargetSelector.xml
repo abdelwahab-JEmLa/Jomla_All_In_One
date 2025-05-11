@@ -29,9 +29,6 @@
       <SelectionState runConfigName="ClearAPP Lence">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="InstrumentedTest">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
       <SelectionState runConfigName="ExampleUnifiedLoggerTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>

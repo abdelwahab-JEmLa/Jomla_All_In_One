@@ -1,4 +1,3 @@
-
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Repository.Input
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Models.InputEtInfosSqlModels
@@ -27,8 +26,6 @@ class FireBaseHandler(private val testContext: Any) {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                // Handle potential errors
-                // Log error or notify test context if needed
             }
         })
 
