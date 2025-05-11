@@ -38,10 +38,11 @@ class InstrumentalTest :
 
     @get:Rule
     val combinedLogFilter = LogFilterRule.filter()
-        .filterByTag("TestRunner")
         .filterByTag("InstrumentalTest")
+/*
+        .filterByTag("TestRunner")
         .filterByTag("FireBaseHandler")
-        .filterByTag("InputEtInfosRepo")
+        .filterByTag("InputEtInfosRepo")            */
         .build()
 
     @get:Rule
@@ -105,7 +106,6 @@ class InstrumentalTest :
 
     @Test
     fun testLogWithMethodFilter() = runTest {
-        // Log before adding test data
         Log.i("InstrumentalTest", "Starting testLogWithMethodFilter")
 
         viewModel.addNewTestDataTarificationEtClient()
