@@ -1,7 +1,7 @@
-package com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.Input.Test
+package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Repository.Input.Test
 
-import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Models.InputEtInfosSqlModels
-import com.example.clientjetpack.Id1.PrixChangable.Test.Passive.createTimestamp
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Models.InputEtInfosSqlModels
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.Passive.createTimestamp
 
 object TarificationTestData {
     val initialTestData = listOf(

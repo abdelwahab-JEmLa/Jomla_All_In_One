@@ -1,12 +1,11 @@
-package com.example.clientjetpack.Id1.PrixChangable.Test.Log
+package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.Log
 
-import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Models.OutputNoSqlModel
-import com.example.clientjetpack.Id1.PrixChangable.Test.Passive.strDateEtTempFromVidTimestamp
-import com.example.clientjetpack.Id1.PrixChangable.Test._TestsDisplayerLogDataBase
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Models.OutputNoSqlModel
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.Passive.strDateEtTempFromVidTimestamp
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.TarificationViewModel
 
-@OptIn(ExperimentalCoroutinesApi::class)
-fun _TestsDisplayerLogDataBase.logTarificationTypes(
+fun logTarificationTypes(
+    viewModel: TarificationViewModel,
     types: List<OutputNoSqlModel.Produit.Client.TypeTarification>,
     isLastProduit: Boolean,
     isLastClient: Boolean,
@@ -21,8 +20,8 @@ fun _TestsDisplayerLogDataBase.logTarificationTypes(
         types.forEachIndexed { typeIndex, type ->
             val isLastType = typeIndex == types.size - 1
             val typePrefix = when {
-                isLastProduit && isLastClient -> TreePrefix.Type4.get(isLastType)
-                else -> TreePrefix.Type5.get(isLastType)
+                isLastProduit && isLastClient -> V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.Log.TreePrefix.Type4.get(isLastType)
+                else -> V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.Log.TreePrefix.Type5.get(isLastType)
             }
 
             val (typeDate, typeTime) = strDateEtTempFromVidTimestamp(type.vidTimestamp)

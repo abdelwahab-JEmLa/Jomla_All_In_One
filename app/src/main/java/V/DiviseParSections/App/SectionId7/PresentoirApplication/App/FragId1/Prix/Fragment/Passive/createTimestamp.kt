@@ -1,4 +1,4 @@
-package com.example.clientjetpack.Id1.PrixChangable.Test.Passive
+package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.Passive
 
 import java.util.Calendar
 

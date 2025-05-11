@@ -1,12 +1,9 @@
-package com.example.clientjetpack.Id1.PrixChangable.Test.Log
+package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.Log
 
-import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Models.OutputNoSqlModel
-import com.example.clientjetpack.Id1.PrixChangable.Test.Passive.strDateEtTempFromVidTimestamp
-import com.example.clientjetpack.Id1.PrixChangable.Test._TestsDisplayerLogDataBase
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Models.OutputNoSqlModel
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.Passive.strDateEtTempFromVidTimestamp
 
-@OptIn(ExperimentalCoroutinesApi::class)
-fun _TestsDisplayerLogDataBase.logPrixCurrencies(
+fun logPrixCurrencies(
     currencies: List<OutputNoSqlModel.Produit.Client.TypeTarification.Prix>,
     isLastProduit: Boolean,
     isLastClient: Boolean,
@@ -15,8 +12,8 @@ fun _TestsDisplayerLogDataBase.logPrixCurrencies(
     currencies.forEachIndexed { currencyIndex, currency ->
         val isLastCurrency = currencyIndex == currencies.size - 1
         val currencyPrefix = when {
-            isLastProduit && isLastClient && isLastType -> TreePrefix.Type6.get(isLastCurrency)
-            else -> TreePrefix.Type7.get(isLastCurrency)
+            isLastProduit && isLastClient && isLastType -> V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.Log.TreePrefix.Type6.get(isLastCurrency)
+            else -> V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.Log.TreePrefix.Type7.get(isLastCurrency)
         }
 
         val (currencyDate, currencyTime) = strDateEtTempFromVidTimestamp(currency.vidTimestamp)

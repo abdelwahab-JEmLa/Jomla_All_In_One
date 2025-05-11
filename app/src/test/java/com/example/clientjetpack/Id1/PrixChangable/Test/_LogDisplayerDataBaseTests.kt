@@ -1,10 +1,10 @@
 package com.example.clientjetpack.Id1.PrixChangable.Test
 
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Models.OutputNoSqlModel
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.Log.logProduits
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.Passive.strDateEtTempFromVidTimestamp
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.TarificationViewModel
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Models.OutputNoSqlModel
-import com.example.clientjetpack.Id1.PrixChangable.Test.Log.logProduits
-import com.example.clientjetpack.Id1.PrixChangable.Test.Passive.strDateEtTempFromVidTimestamp
-import com.example.clientjetpack.Id1.PrixChangable.Test.ViewModel.TarificationViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -104,6 +104,7 @@ class _TestsDisplayerLogDataBase {
 
     private fun mainLog(value: OutputNoSqlModel) {
         println("\n-- Hierarchical Structure --")
-        logProduits(value)
+        logProduits(value ,
+                viewModel)
     }
 }

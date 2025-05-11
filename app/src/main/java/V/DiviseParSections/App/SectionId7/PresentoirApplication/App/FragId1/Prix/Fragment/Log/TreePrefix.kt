@@ -1,4 +1,4 @@
-package com.example.clientjetpack.Id1.PrixChangable.Test.Log
+package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.Log
 
 enum class TreePrefix(private val lastItem: String, private val normalItem: String) {
     Type1("└─", "├─"),                 // For products

@@ -1,11 +1,11 @@
-package com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.Input
+package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Repository.Input
 
 import androidx.compose.runtime.mutableStateListOf
-import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Models.InputEtInfosSqlModels
-import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.Input.Test.ClientTestData
-import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.Input.Test.ProduitTestData
-import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.Input.Test.TarificationTestData
-import com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Repository.Input.Test.TypeTarificationTestData
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Models.InputEtInfosSqlModels
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Repository.Input.Test.ClientTestData
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Repository.Input.Test.ProduitTestData
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Repository.Input.Test.TarificationTestData
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Repository.Input.Test.TypeTarificationTestData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 

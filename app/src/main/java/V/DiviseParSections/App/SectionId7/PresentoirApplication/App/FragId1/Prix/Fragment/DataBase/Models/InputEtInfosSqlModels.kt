@@ -1,4 +1,4 @@
-package com.example.clientjetpack.Id1.PrixChangable.Test.DataBase.Models
+package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Models
 
 import androidx.room.PrimaryKey
 
