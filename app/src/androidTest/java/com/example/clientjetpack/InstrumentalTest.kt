@@ -21,7 +21,7 @@ import org.koin.core.component.inject
 
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
-class ExampleLogFilterTest : KoinComponent {
+class InstrumentalTest : KoinComponent {
     @get:Rule
     val rule: InstantTaskExecutorRule = InstantTaskExecutorRule()
     @get:Rule
