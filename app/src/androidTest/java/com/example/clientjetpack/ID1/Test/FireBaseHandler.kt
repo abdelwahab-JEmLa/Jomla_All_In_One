@@ -50,7 +50,7 @@ class FireBaseHandler(private val operationTracker: OperationTracker) {
     ) {
         if (modelList.isEmpty()) return
 
-        val tasks = modelList.map { item ->
+        modelList.map { item ->
             val key = when (item) {
                 is InputEtInfosSqlModels.Tarification -> item.vidTimestamp.toString()
                 is InputEtInfosSqlModels.ClientDataBase -> item.id.toString()
@@ -68,8 +68,6 @@ class FireBaseHandler(private val operationTracker: OperationTracker) {
                 }
             }
         }
-
-        tasks.forEach { it }
     }
 
     suspend fun clearDatabaseAsync(databaseRef: DatabaseReference) {
