@@ -44,8 +44,6 @@ class _TeID1_InstrumentalTestInterieur : KoinTest, FireBaseHandler.OperationTrac
 
     private val sonDataBaseRef: DatabaseReference = parentDbRef.child("A_Tarification")
 
-    private var result: List<InputEtInfosSqlModels.Tarification> = emptyList()
-
     private var algorithmeCounteAssertSuiveur = 0
 
     override fun incrementCounter() {
@@ -61,7 +59,7 @@ class _TeID1_InstrumentalTestInterieur : KoinTest, FireBaseHandler.OperationTrac
     }
 
     @Before
-    fun setup() = runTest {
+    fun setup() {
         Dispatchers.setMain(testDispatcher)
 
         fireBaseHandler = FireBaseHandler(this@_TeID1_InstrumentalTestInterieur)
@@ -74,37 +72,11 @@ class _TeID1_InstrumentalTestInterieur : KoinTest, FireBaseHandler.OperationTrac
     }
 
     @Test
-    fun testTarificationDataLoad() = runTest {
-        // Reset counter for the test assertions
-        restartConter()
-
-        result = fireBaseHandler.loadDatasAsync(
-            sonDataBaseRef,
-            InputEtInfosSqlModels.Tarification::class.java
-        )
-            .sortedBy { tarification -> tarification.vidTimestamp }
-
-        // Verify data was loaded correctly
-        assertEquals("Should load 3 tarification items", 3, result.size)
-        assertEquals(
-            "Counter should be 1 after loading data",
-            1,
-            getCounterAlgorithmeCounteAssertSuiveur()
-        )
-
-        // Verify data content is correct
-        val sortedTestData = initialTestData.sortedBy { it.vidTimestamp }
-        val expectedData = sortedTestData.first()
-
-        val firstResult = result.first()
-        assertEquals(expectedData, firstResult)
-    }
-
-    @Test
     fun test1() = runTest {
         // Reset counter before each test
         restartConter()
 
+        // Clear database
         fireBaseHandler.clearDatabaseAsync(sonDataBaseRef)
         // Expected counter value after clearDatabaseAsync: 1
         assertEquals(
@@ -113,6 +85,7 @@ class _TeID1_InstrumentalTestInterieur : KoinTest, FireBaseHandler.OperationTrac
             getCounterAlgorithmeCounteAssertSuiveur()
         )
 
+        // Add test data
         fireBaseHandler.addAllToFireBaseAsync(initialTestData, sonDataBaseRef)
         // Expected counter after adding 3 test items: 4 (1 + 3)
         assertEquals(
@@ -120,5 +93,27 @@ class _TeID1_InstrumentalTestInterieur : KoinTest, FireBaseHandler.OperationTrac
             4,
             getCounterAlgorithmeCounteAssertSuiveur()
         )
+
+        // Load data
+        val result = fireBaseHandler.loadDatasAsync(
+            sonDataBaseRef,
+            InputEtInfosSqlModels.Tarification::class.java
+        )
+            .sortedBy { tarification -> tarification.vidTimestamp }
+
+        // Verify data was loaded correctly
+        assertEquals("Should load 3 tarification items", 3, result.size)
+        assertEquals(
+            5,
+            getCounterAlgorithmeCounteAssertSuiveur()
+        )
+
+        // Verify data content is correct
+        val sortedTestData = initialTestData.sortedBy { it.vidTimestamp }
+        val expectedData = sortedTestData.first()
+
+        val firstResult = result.first()
+
+        assertEquals(expectedData, firstResult)
     }
 }

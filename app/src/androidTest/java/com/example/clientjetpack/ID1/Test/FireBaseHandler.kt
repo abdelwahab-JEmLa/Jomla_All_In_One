@@ -9,14 +9,12 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-class FireBaseHandler(tracker: OperationTracker) {
+class FireBaseHandler(private val operationTracker: OperationTracker) {
     interface OperationTracker {
         fun incrementCounter()
-    fun getCounterAlgorithmeCounteAssertSuiveur(): Int
-    fun restartConter()
+        fun getCounterAlgorithmeCounteAssertSuiveur(): Int
+        fun restartConter()
     }
-
-    private val operationTracker: OperationTracker = tracker
 
     suspend fun <T> loadDatasAsync(
         databaseRef: DatabaseReference,
@@ -40,7 +38,7 @@ class FireBaseHandler(tracker: OperationTracker) {
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    continuation.resume(emptyList())
+                    continuation.resumeWithException(error.toException())
                 }
             })
         }
@@ -73,6 +71,7 @@ class FireBaseHandler(tracker: OperationTracker) {
 
         tasks.forEach { it }
     }
+
     suspend fun clearDatabaseAsync(databaseRef: DatabaseReference) {
         return suspendCancellableCoroutine { continuation ->
             databaseRef.removeValue().addOnSuccessListener {
