@@ -194,13 +194,15 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
             )
         }
 
-        SepareReferentialDataBasesNoVM(produitsList)
+        SepareReferentialDataBasesNoVM(produitsList, "Frome testFromSqlToNoSqlDB")
     }
 
-    private fun SepareReferentialDataBasesNoVM(produitsList: MutableList<OutputNoSqlModel.Produit>) =
+    private fun SepareReferentialDataBasesNoVM(
+        produitsList: MutableList<OutputNoSqlModel.Produit>,
+        name: String,
+    ) =
         runTest {
             try {
-                val name = "A_DataBasesSepareReferential"
                 val currentStrTime =
                     strDateEtTempFromVidTimestamp(
                         System.currentTimeMillis()
@@ -233,17 +235,19 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
 
     @Test
     fun A_logSepareReferentialDataBases(): Unit = runTest {
-        // Vérifie l'état initial du client 1
         assertEquals(
             1L,
             viewModel.getSqlClient(1)?.idActiveTypeTarificationDataBase
         )
 
-        // Exécute le test qui a échoué précédemment
-        SepareReferentialDataBases()
-
-        // Vérifie que tous les produits ont au moins un client
         val currentValue = viewModel.outputNoSqlFlow.first()
+
+        // Convert the produits to a mutable list before passing to the function
+        val produitsMutableList = currentValue.produits.toMutableList()
+
+        // Now pass the mutable list instead of the OutputNoSqlModel
+        SepareReferentialDataBasesNoVM(produitsMutableList, "Frome viewModel.outputNoSqlFlow.first()")
+
         currentValue.produits.forEach { produit ->
             assertTrue(
                 "Le produit ${produit.id} doit avoir au moins un client",
@@ -295,35 +299,6 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
         println("\n========TEST $name COMPLETED SUCCESSFULLY ========\n")
     }
 
-    private fun SepareReferentialDataBases() = runTest {
-        try {
-            val name = "A_DataBasesSepareReferential"
-            val currentStrTime =
-                strDateEtTempFromVidTimestamp(
-                    System.currentTimeMillis()
-                )
-            println(
-                "======== C Le Test Log Output Print Du Temp=${currentStrTime.first} " +
-                        "${currentStrTime.second} du  $name  ========"
-            )
-
-            testDispatcher.scheduler.advanceUntilIdle()
-            val currentValue = viewModel.outputNoSqlFlow.first()
-
-            println("\n-- Hierarchical Structure --")
-
-            logProduits(
-                currentValue,
-                viewModel
-            )
-
-            println("\n========TEST $name COMPLETED SUCCESSFULLY ========\n")
-
-        } catch (e: Exception) {
-            println("Erreur dans SepareReferentialDataBases: ${e.message}")
-            throw e
-        }
-    }
 
     @Test
     fun testFullWorkflow() = runTest {
