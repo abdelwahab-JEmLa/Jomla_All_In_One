@@ -6,7 +6,7 @@ class InputEtInfosSqlModels {
     data class ProduitInfos(
         @PrimaryKey(autoGenerate = true)
         val id: Long = 0,
-        val nom: String = ""  // Added default value
+        val nom: String = ""
     )
 
     data class ClientDataBase(
@@ -19,7 +19,7 @@ class InputEtInfosSqlModels {
     data class TypeTarificationDataBase(
         @PrimaryKey(autoGenerate = true)
         val id: Long = 0,
-        val typeTarificationEnum: TypeTarificationEnum = TypeTarificationEnum.ParBenifice  // Added default value
+        val typeTarificationEnum: TypeTarificationEnum = TypeTarificationEnum.ParBenifice
     )
 
     enum class TypeTarificationEnum {
