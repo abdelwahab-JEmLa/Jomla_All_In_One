@@ -295,7 +295,6 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
         println("\n========TEST $name COMPLETED SUCCESSFULLY ========\n")
     }
 
-
     private fun SepareReferentialDataBases() = runTest {
         try {
             val name = "A_DataBasesSepareReferential"
@@ -325,7 +324,6 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
             throw e
         }
     }
-
 
     @Test
     fun testFullWorkflow() = runTest {
