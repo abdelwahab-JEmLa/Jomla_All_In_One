@@ -124,7 +124,8 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
 
                     val uniqueTypeIds = clientEntries.map { it.idTypeTarification }.toSet()
 
-                    val typeTarifications = mutableListOf<OutputNoSqlModel.Produit.Client.TypeTarification>()
+                    val typeTarifications =
+                        mutableListOf<OutputNoSqlModel.Produit.Client.TypeTarification>()
 
                     for (typeId in uniqueTypeIds) {
                         val typeEntries = clientEntries.filter { it.idTypeTarification == typeId }
@@ -181,47 +182,54 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
         }
 
         // Verify that at least one product has non-empty clients list
-        assertTrue("At least one product should have clients", produitsList.any { it.clients.isNotEmpty() })
+        assertTrue(
+            "At least one product should have clients",
+            produitsList.any { it.clients.isNotEmpty() })
 
         // Verify that all products have at least one client (based on test data provided)
         for (produit in produitsList) {
-            Assert.assertFalse("Product ${produit.id} should have clients", produit.clients.isEmpty())
+            Assert.assertFalse(
+                "Product ${produit.id} should have clients",
+                produit.clients.isEmpty()
+            )
         }
 
         SepareReferentialDataBasesNoVM(produitsList)
     }
 
-    private fun SepareReferentialDataBasesNoVM(produitsList: MutableList<OutputNoSqlModel.Produit>) = runTest {
-        try {
-            val name = "A_DataBasesSepareReferential"
-            val currentStrTime =
-                strDateEtTempFromVidTimestamp(
-                    System.currentTimeMillis()
+    private fun SepareReferentialDataBasesNoVM(produitsList: MutableList<OutputNoSqlModel.Produit>) =
+        runTest {
+            try {
+                val name = "A_DataBasesSepareReferential"
+                val currentStrTime =
+                    strDateEtTempFromVidTimestamp(
+                        System.currentTimeMillis()
+                    )
+                println(
+                    "======== C Le Test Log Output Print Du Temp=${currentStrTime.first} " +
+                            "${currentStrTime.second} du  $name  ========"
                 )
-            println(
-                "======== C Le Test Log Output Print Du Temp=${currentStrTime.first} " +
-                        "${currentStrTime.second} du  $name  ========"
-            )
 
-            testDispatcher.scheduler.advanceUntilIdle()
+                testDispatcher.scheduler.advanceUntilIdle()
 
-            println("\n-- Hierarchical Structure --")
+                println("\n-- Hierarchical Structure --")
 
-            // Create an OutputNoSqlModel from the produitsList
-            val outputModel = OutputNoSqlModel(produits = produitsList)
+                // Create an OutputNoSqlModel from the produitsList
+                val outputModel = OutputNoSqlModel(produits = produitsList)
 
-            // Now pass the properly constructed model to logProduits
-            logProduits(outputModel ,
+                // Now pass the properly constructed model to logProduits
+                logProduits(
+                    outputModel,
                     viewModel
-            )
+                )
 
-            println("\n========TEST $name COMPLETED SUCCESSFULLY ========\n")
+                println("\n========TEST $name COMPLETED SUCCESSFULLY ========\n")
 
-        } catch (e: Exception) {
-            println("Erreur dans SepareReferentialDataBases: ${e.message}")
-            throw e
+            } catch (e: Exception) {
+                println("Erreur dans SepareReferentialDataBases: ${e.message}")
+                throw e
+            }
         }
-    }
 
     @Test
     fun A_logSepareReferentialDataBases(): Unit = runTest {
@@ -281,7 +289,8 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
 
         logProduits(
             currentValue,
-            viewModel)
+            viewModel
+        )
 
         println("\n========TEST $name COMPLETED SUCCESSFULLY ========\n")
     }
@@ -306,7 +315,8 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
 
             logProduits(
                 currentValue,
-                viewModel)
+                viewModel
+            )
 
             println("\n========TEST $name COMPLETED SUCCESSFULLY ========\n")
 
