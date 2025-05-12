@@ -1,8 +1,8 @@
 package com.example.clientjetpack.Id1.PrixChangable.Test.Main.Modules
 
-import com.example.clientjetpack.Id1.PrixChangable.Test.Log.logProduits
+import com.example.clientjetpack.Id1.PrixChangable.Test.Function.strDateEtTempFromVidTimestamp
+import com.example.clientjetpack.Id1.PrixChangable.Test.Main.Modules.Log.logProduits
 import com.example.clientjetpack.Id1.PrixChangable.Test.Models.OutputNoSqlModel
-import com.example.clientjetpack.Id1.PrixChangable.Test.strDateEtTempFromVidTimestamp
 
 fun logHErartchiDataBase(
     produitsList: MutableList<OutputNoSqlModel.Produit>,

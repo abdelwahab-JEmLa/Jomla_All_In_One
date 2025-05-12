@@ -1,8 +1,8 @@
-package com.example.clientjetpack.Id1.PrixChangable.Test.Log
+package com.example.clientjetpack.Id1.PrixChangable.Test.Main.Modules.Log
 
 import com.example.clientjetpack.ID1.Test.Z.Fragment.Log.TreePrefix
 import com.example.clientjetpack.Id1.PrixChangable.Test.Models.OutputNoSqlModel
-import com.example.clientjetpack.Id1.PrixChangable.Test.strDateEtTempFromVidTimestamp
+import com.example.clientjetpack.Id1.PrixChangable.Test.Function.strDateEtTempFromVidTimestamp
 
 fun logPrixCurrencies(
     currencies: List<OutputNoSqlModel.Produit.Client.TypeTarification.Prix>,

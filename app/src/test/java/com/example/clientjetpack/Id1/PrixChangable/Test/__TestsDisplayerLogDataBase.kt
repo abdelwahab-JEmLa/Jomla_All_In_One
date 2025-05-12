@@ -1,13 +1,13 @@
-package com.example.clientjetpack.Id1.PrixChangable.Test.Main
+package com.example.clientjetpack.Id1.PrixChangable.Test
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.example.clientjetpack.Id1.PrixChangable.Test.Main.ID3.Test.testID2_Add
 import com.example.clientjetpack.Id1.PrixChangable.Test.Main.Modules.initialClientsData
 import com.example.clientjetpack.Id1.PrixChangable.Test.Main.Modules.initialProductsData
 import com.example.clientjetpack.Id1.PrixChangable.Test.Main.Modules.initialTestData
 import com.example.clientjetpack.Id1.PrixChangable.Test.Main.Modules.logHErartchiDataBase
 import com.example.clientjetpack.Id1.PrixChangable.Test.Main.Modules.mockOutputNoSqlModel
 import com.example.clientjetpack.Id1.PrixChangable.Test.Models.InputEtInfosSqlModels
+import com.example.clientjetpack.Id1.PrixChangable.Test._ID3.Test.testID2_Add
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -22,7 +22,7 @@ import org.junit.Test
 import org.junit.rules.TestRule
 
 @ExperimentalCoroutinesApi
-class _TestsDisplayerLogDataBase {
+class __TestsDisplayerLogDataBase {
     @get:Rule
     val rule: TestRule = InstantTaskExecutorRule()
 
