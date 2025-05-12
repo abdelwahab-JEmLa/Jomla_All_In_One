@@ -136,7 +136,7 @@ class InputEtInfosSqlGroupeRepositorysImp(
             }
         }
 
-        private suspend fun loadDataFromFirebase() {
+        override suspend fun loadDataFromFirebase() {
             val loadedData = fireBaseHandler.loadDatasAsync(
                 sonDataBaseRef,
                 InputEtInfosSqlModels.Tarification::class.java

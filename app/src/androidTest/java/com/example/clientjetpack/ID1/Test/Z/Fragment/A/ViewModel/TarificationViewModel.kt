@@ -17,7 +17,7 @@ class TarificationViewModel(
 ) : ViewModel() {
     val inputSqlGroupeRepositorys = InputEtInfosSqlGroupeRepositorysImp()
 
-    private val outputNoSqlModelRepository =
+    val outputNoSqlModelRepository =
         OutputNoSqlModelRepositoryImp(inputSqlGroupeRepositorys)
 
     private val _OutputNoSqlFlow = MutableStateFlow(

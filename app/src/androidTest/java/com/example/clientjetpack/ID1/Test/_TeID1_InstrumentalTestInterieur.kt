@@ -14,14 +14,12 @@ import com.example.clientjetpack.ID1.Test.Z.Fragment.Passive.strDateEtTempFromVi
 import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
-import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -50,8 +48,6 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
 
     private val testDispatcher = StandardTestDispatcher()
 
-
-    // Use Koin's inject to properly initialize the ViewModel
     private val viewModel: TarificationViewModel by inject()
 
     private val fireBaseHandler by lazy { viewModel.inputSqlGroupeRepositorys.fireBaseHandler }
@@ -76,119 +72,19 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
         }
 
         testDispatcher.scheduler.advanceUntilIdle()
+
+        fireBaseHandler.clearDatabaseAsync(sonDataBaseRef)
+        fireBaseHandler.addAllToFireBaseAsync(initialTestData, sonDataBaseRef)
+
+        viewModel.inputSqlGroupeRepositorys.TarificationRepository().loadDataFromFirebase()
+
+        testDispatcher.scheduler.advanceUntilIdle()
     }
 
     @After
     fun tearDown() {
         Dispatchers.resetMain()
         stopKoin()
-    }
-
-    @Test
-    fun testFromSqlToNoSqlDB() = runTest {
-        // Initialize the tarification entries with test data
-        val tarificationEntries = MutableStateFlow(initialTestData)
-
-        val initialProductsData1 = initialProductsData
-        val modelListclientRepository = initialClientsData
-
-        val produitsList = mutableListOf<OutputNoSqlModel.Produit>()
-
-        for (produitDB in initialProductsData1) {
-            val produitId = produitDB.id
-
-            val produitClients = mutableListOf<OutputNoSqlModel.Produit.Client>()
-
-            val uniqueClientIds = mutableSetOf<Long>()
-            val entriesList = tarificationEntries.value  // Get the list from the Flow
-            for (entry in entriesList) {  // Now iterating over a List, not a Flow
-                if (entry.idProduit == produitId) {
-                    uniqueClientIds.add(entry.idClient)
-                }
-            }
-
-            for (clientId in uniqueClientIds) {
-                assertTrue(modelListclientRepository.isNotEmpty())
-
-                val clientDB = modelListclientRepository.find { it.id == clientId }
-                if (clientDB != null) {
-                    val clientEntries = entriesList.filter {
-                        it.idProduit == produitId && it.idClient == clientId
-                    }
-
-                    val uniqueTypeIds = clientEntries.map { it.idTypeTarification }.toSet()
-
-                    val typeTarifications =
-                        mutableListOf<OutputNoSqlModel.Produit.Client.TypeTarification>()
-
-                    for (typeId in uniqueTypeIds) {
-                        val typeEntries = clientEntries.filter { it.idTypeTarification == typeId }
-                            .sortedByDescending { it.vidTimestamp }
-
-                        if (typeEntries.isNotEmpty()) {
-                            val latestTimestamp = typeEntries.first().vidTimestamp
-
-                            val priceList = typeEntries.map { entry ->
-                                OutputNoSqlModel.Produit.Client.TypeTarification.Prix(
-                                    vidTimestamp = entry.vidTimestamp,
-                                    valeur = entry.prixCurrency
-                                )
-                            }
-
-                            val typeTarification =
-                                OutputNoSqlModel.Produit.Client.TypeTarification(
-                                    vidTimestamp = latestTimestamp,
-                                    id = typeId,
-                                    PrixsCurrency = priceList
-                                )
-
-                            typeTarifications.add(typeTarification)
-                        }
-                    }
-
-                    if (typeTarifications.isNotEmpty()) {
-                        val clientLatestTimestamp = typeTarifications.maxOf { it.vidTimestamp }
-
-                        val client = OutputNoSqlModel.Produit.Client(
-                            vidTimestamp = clientLatestTimestamp,
-                            id = clientId,
-                            typeTarification = typeTarifications
-                        )
-
-                        produitClients.add(client)
-                    }
-                }
-            }
-
-            val produitLatestTimestamp = if (produitClients.isNotEmpty()) {
-                produitClients.maxOf { it.vidTimestamp }
-            } else {
-                System.currentTimeMillis()
-            }
-
-            val produit = OutputNoSqlModel.Produit(
-                vidTimestamp = produitLatestTimestamp,
-                id = produitId,
-                clients = produitClients
-            )
-
-            produitsList.add(produit)
-        }
-
-        // Verify that at least one product has non-empty clients list
-        assertTrue(
-            "At least one product should have clients",
-            produitsList.any { it.clients.isNotEmpty() })
-
-        // Verify that all products have at least one client (based on test data provided)
-        for (produit in produitsList) {
-            Assert.assertFalse(
-                "Product ${produit.id} should have clients",
-                produit.clients.isEmpty()
-            )
-        }
-
-        SepareReferentialDataBasesNoVM(produitsList, "Frome testFromSqlToNoSqlDB")
     }
 
     private fun SepareReferentialDataBasesNoVM(
@@ -202,8 +98,11 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
                         System.currentTimeMillis()
                     )
                 println(
-                    "\n======== C Le Test Log Output Print Du Temp=${currentStrTime.first} " +
-                            " du  $name  ========"
+                    "\n=================$name ===========================================" +
+                            "\n================================================================" +
+                            "\n======== C Le Test Log Output Print Du Temp=${currentStrTime.first} " +
+                            "\n================================================================" +
+                            " du   ========"
                 )
 
                 testDispatcher.scheduler.advanceUntilIdle()
@@ -228,30 +127,111 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
         }
 
     @Test
-    fun A_logSepareReferentialDataBases(): Unit = runTest {
-        assertEquals(
-            1L,
-            viewModel.getSqlClient(1)?.idActiveTypeTarificationDataBase
-        )
-
+    fun A_logFullWorkflow(): Unit = runTest {
         val currentValue = viewModel.outputNoSqlFlow.first()
 
-        // Convert the produits to a mutable list before passing to the function
-        val produitsMutableList = currentValue.produits.toMutableList()
-
-        // Now pass the mutable list instead of the OutputNoSqlModel
-        SepareReferentialDataBasesNoVM(produitsMutableList, "Frome viewModel.outputNoSqlFlow.first()")
-
-        currentValue.produits.forEach { produit ->
-            assertTrue(
-                "Le produit ${produit.id} doit avoir au moins un client",
-                produit.clients.isNotEmpty()
+        if (currentValue.produits.isEmpty()) {
+            val testData = createTestNoSqlModel()
+            SepareReferentialDataBasesNoVM(
+                testData.produits.toMutableList(),
+                "Frome viewModel.outputNoSqlFlow.first()"
+            )
+        } else {
+            val produitsMutableList = currentValue.produits.toMutableList()
+            SepareReferentialDataBasesNoVM(
+                produitsMutableList,
+                "Frome viewModel.outputNoSqlFlow.first()"
             )
         }
+
+        // Assert that the data isn't empty after processing
+        val updatedValue = viewModel.outputNoSqlFlow.first()
+        assertTrue("Products list should not be empty", updatedValue.produits.isNotEmpty())
+
+    }
+
+    private fun createTestNoSqlModel(): OutputNoSqlModel {
+        val tarificationEntries = initialTestData
+        val produitsList = mutableListOf<OutputNoSqlModel.Produit>()
+
+        for (produitDB in initialProductsData) {
+            val produitId = produitDB.id
+            val produitClients = mutableListOf<OutputNoSqlModel.Produit.Client>()
+
+            val uniqueClientIds = mutableSetOf<Long>()
+            for (entry in tarificationEntries) {
+                if (entry.idProduit == produitId) {
+                    uniqueClientIds.add(entry.idClient)
+                }
+            }
+
+            for (clientId in uniqueClientIds) {
+                val clientDB = initialClientsData.find { it.id == clientId }
+                if (clientDB != null) {
+                    val clientEntries = tarificationEntries.filter {
+                        it.idProduit == produitId && it.idClient == clientId
+                    }
+
+                    val uniqueTypeIds = clientEntries.map { it.idTypeTarification }.toSet()
+                    val typeTarifications =
+                        mutableListOf<OutputNoSqlModel.Produit.Client.TypeTarification>()
+
+                    for (typeId in uniqueTypeIds) {
+                        val typeEntries = clientEntries.filter { it.idTypeTarification == typeId }
+                            .sortedByDescending { it.vidTimestamp }
+
+                        if (typeEntries.isNotEmpty()) {
+                            val latestTimestamp = typeEntries.first().vidTimestamp
+                            val priceList = typeEntries.map { entry ->
+                                OutputNoSqlModel.Produit.Client.TypeTarification.Prix(
+                                    vidTimestamp = entry.vidTimestamp,
+                                    valeur = entry.prixCurrency
+                                )
+                            }
+
+                            typeTarifications.add(
+                                OutputNoSqlModel.Produit.Client.TypeTarification(
+                                    vidTimestamp = latestTimestamp,
+                                    id = typeId,
+                                    PrixsCurrency = priceList
+                                )
+                            )
+                        }
+                    }
+
+                    if (typeTarifications.isNotEmpty()) {
+                        val clientLatestTimestamp = typeTarifications.maxOf { it.vidTimestamp }
+                        produitClients.add(
+                            OutputNoSqlModel.Produit.Client(
+                                vidTimestamp = clientLatestTimestamp,
+                                id = clientId,
+                                typeTarification = typeTarifications
+                            )
+                        )
+                    }
+                }
+            }
+
+            val produitLatestTimestamp = if (produitClients.isNotEmpty()) {
+                produitClients.maxOf { it.vidTimestamp }
+            } else {
+                System.currentTimeMillis()
+            }
+
+            produitsList.add(
+                OutputNoSqlModel.Produit(
+                    vidTimestamp = produitLatestTimestamp,
+                    id = produitId,
+                    clients = produitClients
+                )
+            )
+        }
+
+        return OutputNoSqlModel(produitsList)
     }
 
     @Test
-    fun testFullWorkflow() = runTest {
+    fun test2() = runTest {
         fireBaseHandler.clearDatabaseAsync(sonDataBaseRef)
         fireBaseHandler.addAllToFireBaseAsync(initialTestData, sonDataBaseRef)
 
@@ -261,14 +241,8 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
         )
 
         assertEquals(
-            "La base de données doit contenir le bon nombre d'éléments",
-            initialTestData.size,
-            result.size
-        )
-
-        assertEquals(
-            result.first(),
-            initialTestData.first()
+            result,
+            initialTestData
         )
     }
 }

@@ -4,38 +4,29 @@ import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Models.InputEtInfo
 
 interface InputEtInfosSqlGroupeRepositorys {
     fun ProduitInfosRepository(): ProduitDataBase_Repository
-
     fun ClientDataBase_Repository(): ClientDataBase_Repository
-
     fun TypeTarificationInfosRepository(): TypeTarificationDataBase_Repository
-
     fun TarificationRepository(): TarificationRepository
 
     interface ProduitDataBase_Repository {
-        val modelList: List<InputEtInfosSqlModels.ProduitInfos>
+        var modelList: List<InputEtInfosSqlModels.ProduitInfos>
     }
 
     interface ClientDataBase_Repository {
-        val modelList: List<InputEtInfosSqlModels.ClientDataBase>
-
+        var modelList: List<InputEtInfosSqlModels.ClientDataBase>
         fun add(client: InputEtInfosSqlModels.ClientDataBase)
-
-        fun update(
-            client: InputEtInfosSqlModels.ClientDataBase,
-            onSuccess: (InputEtInfosSqlModels.ClientDataBase) -> Unit = {}
-        )
+        fun update(client: InputEtInfosSqlModels.ClientDataBase, onSuccess: (InputEtInfosSqlModels.ClientDataBase) -> Unit = {})
     }
 
     interface TypeTarificationDataBase_Repository {
-        val modelList: List<InputEtInfosSqlModels.TypeTarificationDataBase>
+        var modelList: List<InputEtInfosSqlModels.TypeTarificationDataBase>
     }
 
     interface TarificationRepository {
-        val modelList: List<InputEtInfosSqlModels.Tarification>
+        var modelList: List<InputEtInfosSqlModels.Tarification>
+        fun add(tarification: InputEtInfosSqlModels.Tarification, onSuccess: (InputEtInfosSqlModels.Tarification) -> Unit = {})
 
-        fun add(
-            tarification: InputEtInfosSqlModels.Tarification,
-            onSuccess: (InputEtInfosSqlModels.Tarification) -> Unit = {}
-        )
+        // Add the method to load data on demand
+        suspend fun loadDataFromFirebase()
     }
 }
