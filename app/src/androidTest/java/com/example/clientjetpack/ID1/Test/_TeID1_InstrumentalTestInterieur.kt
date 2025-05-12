@@ -59,13 +59,10 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
 
     @Test
     fun testFullWorkflow() = runTest {
-        // 1. Clear the database
         fireBaseHandler.clearDatabaseAsync(sonDataBaseRef)
 
-        // 2. Add test data
         fireBaseHandler.addAllToFireBaseAsync(initialTestData, sonDataBaseRef)
 
-        // 3. Load and verify data
         val result = fireBaseHandler.loadDatasAsync(
             sonDataBaseRef,
             InputEtInfosSqlModels.Tarification::class.java
