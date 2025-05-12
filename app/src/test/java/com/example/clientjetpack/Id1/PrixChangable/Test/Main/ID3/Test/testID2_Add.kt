@@ -1,8 +1,8 @@
 package com.example.clientjetpack.Id1.PrixChangable.Test.Main.ID3.Test
 
 import com.example.clientjetpack.Id1.PrixChangable.Test.Function.createTimestamp
-import com.example.clientjetpack.Id1.PrixChangable.Test.Main.logHErartchiDataBase
-import com.example.clientjetpack.Id1.PrixChangable.Test.Main.mockOutputNoSqlModel
+import com.example.clientjetpack.Id1.PrixChangable.Test.Main.Modules.logHErartchiDataBase
+import com.example.clientjetpack.Id1.PrixChangable.Test.Main.Modules.mockOutputNoSqlModel
 import com.example.clientjetpack.Id1.PrixChangable.Test.Models.InputEtInfosSqlModels
 
 fun testID2_Add(

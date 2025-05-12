@@ -2,6 +2,11 @@ package com.example.clientjetpack.Id1.PrixChangable.Test.Main
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.example.clientjetpack.Id1.PrixChangable.Test.Main.ID3.Test.testID2_Add
+import com.example.clientjetpack.Id1.PrixChangable.Test.Main.Modules.initialClientsData
+import com.example.clientjetpack.Id1.PrixChangable.Test.Main.Modules.initialProductsData
+import com.example.clientjetpack.Id1.PrixChangable.Test.Main.Modules.initialTestData
+import com.example.clientjetpack.Id1.PrixChangable.Test.Main.Modules.logHErartchiDataBase
+import com.example.clientjetpack.Id1.PrixChangable.Test.Main.Modules.mockOutputNoSqlModel
 import com.example.clientjetpack.Id1.PrixChangable.Test.Models.InputEtInfosSqlModels
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
