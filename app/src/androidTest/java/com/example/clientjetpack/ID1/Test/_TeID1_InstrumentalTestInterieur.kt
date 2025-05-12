@@ -127,10 +127,10 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
         }
 
     @Test
-     fun testLogFromviewModel() = runTest{
+    fun testID2_LogFromviewModel() = runTest {
         val produitsMutableList =
             viewModel.outputNoSqlFlow.first()
-            .produits.toMutableList()
+                .produits.toMutableList()
 
         assertTrue(
             "Products list should not be empty",
@@ -144,7 +144,26 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
     }
 
     @Test
-     fun testLogFromviewmock() = runTest{
+    fun testID3_apreAddNewTestDataTarificationEtClientl() = runTest {
+        val produitsMutableList =
+            viewModel.outputNoSqlFlow.first()
+                .produits.toMutableList()
+
+        viewModel.addNewTestDataTarificationEtClient()
+
+        assertTrue(
+            "Products list should not be empty",
+            produitsMutableList.isNotEmpty()
+        )
+
+        SepareReferentialDataBasesNoVM(
+            produitsMutableList,
+            "Frome viewModel.outputNoSqlFlow.first()"
+        )
+    }
+
+    @Test
+    fun testID1_LogFromviewmock() = runTest {
         val testData = mockOutputNoSqlModel()
 
         assertTrue(
@@ -239,7 +258,7 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
     }
 
     @Test
-    fun testAddLoadFB() = runTest {
+    fun testID9_AddLoadFB() = runTest {
         fireBaseHandler.clearDatabaseAsync(sonDataBaseRef)
         fireBaseHandler.addAllToFireBaseAsync(initialTestData, sonDataBaseRef)
 

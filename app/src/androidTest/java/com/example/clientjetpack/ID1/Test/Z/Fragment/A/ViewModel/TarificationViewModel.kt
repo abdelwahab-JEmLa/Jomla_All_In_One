@@ -69,9 +69,7 @@ class TarificationViewModel(
             prixCurrency = 9.99
         )
 
-        // Add the new tarification
         tarificationRepository.add(newTarification) { addedTarification ->
-            // Update the client's active tarification type
             val client = inputSqlClientRepo.modelList.find { clientToUpdate ->
                 clientToUpdate.id == addedTarification.idClient
             }?.copy(
