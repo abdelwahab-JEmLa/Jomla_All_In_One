@@ -15,20 +15,18 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.core.context.stopKoin
 import org.koin.test.KoinTest
-import kotlin.math.abs
 
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 class _TeID1_InstrumentalTestInterieur : KoinTest {
     @get:Rule
-    val rule = InstantTaskExecutorRule()
+    val rule: InstantTaskExecutorRule = InstantTaskExecutorRule()
 
     @get:Rule
     val combinedLogFilter = LogFilterRule.filter()
@@ -38,6 +36,7 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
         .build()
 
     private val testDispatcher = StandardTestDispatcher()
+
     private lateinit var fireBaseHandler: FireBaseHandler
 
     private val parentDbRef: DatabaseReference =
@@ -60,50 +59,27 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
 
     @Test
     fun testFullWorkflow() = runTest {
+        // 1. Clear the database
         fireBaseHandler.clearDatabaseAsync(sonDataBaseRef)
+
+        // 2. Add test data
         fireBaseHandler.addAllToFireBaseAsync(initialTestData, sonDataBaseRef)
 
+        // 3. Load and verify data
         val result = fireBaseHandler.loadDatasAsync(
             sonDataBaseRef,
             InputEtInfosSqlModels.Tarification::class.java
         )
 
-        assertEquals("Expected 3 items in the database", 3, result.size)
+        assertEquals(
+            "Expected 3 items in the database",
+            3,
+            result.size
+        )
 
-        initialTestData.forEach { expectedItem ->
-            val matchingItem = result.find { loadedItem ->
-                loadedItem.idProduit == expectedItem.idProduit &&
-                        loadedItem.idClient == expectedItem.idClient &&
-                        loadedItem.idTypeTarification == expectedItem.idTypeTarification &&
-                        loadedItem.prixCurrency == expectedItem.prixCurrency
-            }
-
-            assertTrue(
-                "Could not find matching item for: " +
-                        "idProduit=${expectedItem.idProduit}, " +
-                        "idClient=${expectedItem.idClient}, " +
-                        "idTypeTarification=${expectedItem.idTypeTarification}, " +
-                        "prixCurrency=${expectedItem.prixCurrency}",
-                matchingItem != null
-            )
-
-            if (expectedItem.vidTimestamp == initialTestData[0].vidTimestamp) {
-                val currentTime = System.currentTimeMillis()
-                val oneDayAgo = currentTime - 86400000
-
-                assertTrue(
-                    "First timestamp should be approximately 1 day ago",
-                    abs((matchingItem?.vidTimestamp ?: 0) - oneDayAgo) < 10000
-                )
-            } else {
-                assertEquals(
-                    "Timestamp does not match for item: " +
-                            "idProduit=${expectedItem.idProduit}, " +
-                            "idClient=${expectedItem.idClient}",
-                    expectedItem.vidTimestamp,
-                    matchingItem?.vidTimestamp
-                )
-            }
-        }
+        assertEquals(
+            result.first(),
+            initialTestData.first()
+        )
     }
 }

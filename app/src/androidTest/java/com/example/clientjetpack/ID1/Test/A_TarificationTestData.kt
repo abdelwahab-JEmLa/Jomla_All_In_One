@@ -5,17 +5,20 @@ import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix
 
 object A_TarificationTestData {
     val initialTestData = listOf(
-        // Test data for Caramels (product id 1)
         InputEtInfosSqlModels.Tarification(
-            vidTimestamp = System.currentTimeMillis() - 86400000, // 1 day ago
+            vidTimestamp = createTimestamp(
+                day = 10,
+                hour = 14,
+                minute = 30
+            ),
             idProduit = 1L,
-            idClient = 1L, // Client 1
-            idTypeTarification = 1L, // ParBenifice
+            idClient = 1L,
+            idTypeTarification = 1L,
             prixCurrency = 2.99
         ),
         InputEtInfosSqlModels.Tarification(
             vidTimestamp = createTimestamp(
-                day = 10,
+                day = 12,
                 hour = 14,
                 minute = 30
             ),
@@ -27,7 +30,11 @@ object A_TarificationTestData {
 
         // Test data for Chocolats (product id 2)
         InputEtInfosSqlModels.Tarification(
-            vidTimestamp = System.currentTimeMillis() - 172800000, // 2 days ago
+            vidTimestamp = createTimestamp(
+                day = 13,
+                hour = 14,
+                minute = 30
+            ),
             idProduit = 2L,
             idClient = 2L,
             idTypeTarification = 2L, // ParBenifice
