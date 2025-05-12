@@ -13,7 +13,7 @@ fun testID2_Add(
         tarificationEntries.add(
             InputEtInfosSqlModels.Tarification(
                 vidTimestamp = createTimestamp(day = 1, hour = 13, minute = 30),
-                idProduit = 1L,
+                idProduit = 5L,
                 idClient = 1L,
                 idTypeTarification = 2L,
                 prixCurrency = 20.99
