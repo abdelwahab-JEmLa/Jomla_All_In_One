@@ -134,7 +134,8 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
 
         assertTrue(
             "Products list should not be empty",
-            produitsMutableList.isNotEmpty())
+            produitsMutableList.isNotEmpty()
+        )
 
         SepareReferentialDataBasesNoVM(
             produitsMutableList,
@@ -145,6 +146,11 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
     @Test
      fun testLogFromviewmock() = runTest{
         val testData = mockOutputNoSqlModel()
+
+        assertTrue(
+            "Products list should not be empty",
+            testData.produits.isNotEmpty()
+        )
 
         SepareReferentialDataBasesNoVM(
             testData.produits.toMutableList(),
