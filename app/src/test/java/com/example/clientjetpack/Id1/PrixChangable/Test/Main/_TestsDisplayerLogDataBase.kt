@@ -24,12 +24,15 @@ class _TestsDisplayerLogDataBase {
 
     // Fix: Initialize as empty list with proper type
     private var tarificationEntries = emptyList<InputEtInfosSqlModels.Tarification>()
+    private var produitInfos = emptyList<InputEtInfosSqlModels.ProduitInfos>()
+    private var clientDataBase = emptyList<InputEtInfosSqlModels.ClientDataBase>()
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         tarificationEntries = initialTestData
-
+        produitInfos= initialProductsData
+        clientDataBase=  initialClientsData
     }
 
     @After
@@ -39,7 +42,11 @@ class _TestsDisplayerLogDataBase {
 
     @Test
     fun testID1_LogFrommock() = runTest {
-        val testData = mockOutputNoSqlModel(tarificationEntries)
+        val testData = mockOutputNoSqlModel(
+            tarificationEntries,
+            produitInfos,
+            clientDataBase
+        )
 
         assertTrue(
             "Products list should not be empty",
@@ -52,8 +59,12 @@ class _TestsDisplayerLogDataBase {
         )
     }
 
-    fun testID2_() = runTest {
-        val testData = mockOutputNoSqlModel(tarificationEntries)
+    fun testID2_Add() = runTest {
+
+        val testData = mockOutputNoSqlModel(
+            tarificationEntries, produitInfos, clientDataBase
+
+        )
 
         log(
             testData.produits.toMutableList(),
