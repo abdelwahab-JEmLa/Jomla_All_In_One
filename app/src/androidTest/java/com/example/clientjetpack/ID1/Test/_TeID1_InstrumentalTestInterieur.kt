@@ -50,8 +50,6 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
 
     private val testDispatcher = StandardTestDispatcher()
 
-    // Initializer pour les données de test
-    private val testDataInitializer = TestDataInitializer()
 
     // Use Koin's inject to properly initialize the ViewModel
     private val viewModel: TarificationViewModel by inject()
@@ -77,10 +75,6 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
             )
         }
 
-        // Initialisation des données de test complètes
-        testDataInitializer.initializeAllTestData()
-
-        // Avance le temps pour s'assurer que les données sont chargées
         testDispatcher.scheduler.advanceUntilIdle()
     }
 
