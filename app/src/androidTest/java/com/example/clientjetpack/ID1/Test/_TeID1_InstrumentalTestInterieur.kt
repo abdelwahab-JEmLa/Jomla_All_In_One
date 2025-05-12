@@ -3,10 +3,9 @@ package com.example.clientjetpack.ID1.Test
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.clientjetpack.ID1.Test.Fragment.DataBase.Models.InputEtInfosSqlModels
-import com.example.clientjetpack.ID1.Test.Fragment.DataBase.Repository.Input.FireBaseHandler
-import com.example.clientjetpack.ID1.Test.Fragment.DataBase.Repository.Input.Test.A_TarificationTestData.initialTestData
-import com.example.clientjetpack.LogFilterRule
+import com.example.clientjetpack.ID1.Test.Z.Fragment.A.ViewModel.TarificationViewModel
+import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Models.InputEtInfosSqlModels
+import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input.Test.A_TarificationTestData.initialTestData
 import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -20,8 +19,12 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
+import org.koin.dsl.module
 import org.koin.test.KoinTest
+import org.koin.test.inject
 
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
@@ -38,7 +41,10 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
 
     private val testDispatcher = StandardTestDispatcher()
 
-    private lateinit var fireBaseHandler: FireBaseHandler
+    // Use Koin's inject to properly initialize the ViewModel
+    private val tarificationViewModel: TarificationViewModel by inject()
+
+    private val fireBaseHandler by lazy { tarificationViewModel.inputSqlGroupeRepositorys.fireBaseHandler }
 
     private val parentDbRef: DatabaseReference =
         _0_0_HeadOfRepositorys_Model.getHeadSqlDataBaseRef()
@@ -49,7 +55,14 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        fireBaseHandler = FireBaseHandler()
+        stopKoin()
+        startKoin {
+            modules(
+                module {
+                    viewModel { TarificationViewModel() }
+                }
+            )
+        }
     }
 
     @After
@@ -80,5 +93,4 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
             initialTestData.first()
         )
     }
-
 }
