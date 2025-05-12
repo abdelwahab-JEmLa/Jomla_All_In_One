@@ -19,9 +19,11 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
+import org.koin.dsl.module
 import org.koin.test.KoinTest
-import org.koin.test.inject
 
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
@@ -38,10 +40,11 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
 
     private val testDispatcher = StandardTestDispatcher()
 
-    // Use Koin's inject to properly initialize the ViewModel
-    private val tarificationViewModel: TarificationViewModel by inject()
+    private lateinit var tarificationViewModel: TarificationViewModel
 
-    private val fireBaseHandler by lazy { tarificationViewModel.inputSqlGroupeRepositorys.fireBaseHandler }
+    private val fireBaseHandler = tarificationViewModel
+        .inputSqlGroupeRepositorys
+        .fireBaseHandler
 
     private val parentDbRef: DatabaseReference =
         _0_0_HeadOfRepositorys_Model.getHeadSqlDataBaseRef()
@@ -52,6 +55,15 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
+        stopKoin()
+        startKoin {
+            modules(
+                module {
+                    single { this@_TeID1_InstrumentalTestInterieur }
+                    viewModel { TarificationViewModel() }
+                }
+            )
+        }
     }
 
     @After
