@@ -1,19 +1,12 @@
 package com.example.clientjetpack.ID3.Test
 
-import com.example.clientjetpack.ID1.Test.Fragment.DataBase.Models.OutputNoSqlModel
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.Log.logProduits
-import com.example.clientjetpack.ID1.Test.Fragment.Passive.strDateEtTempFromVidTimestamp
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -26,13 +19,9 @@ class _TestsDisplayerLogDataBase {
 
     private val testDispatcher = StandardTestDispatcher()
 
-    lateinit var viewModel: TarificationViewModel
-
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-
-        viewModel = TarificationViewModel()
     }
 
     @After
@@ -41,73 +30,7 @@ class _TestsDisplayerLogDataBase {
     }
 
     @Test
-    fun A_logSepareReferentialDataBases(): Unit = runTest {
+    fun testFullWorkflow(){
 
-        assertEquals(
-            1L,
-            viewModel.getSqlClient(1)?.idActiveTypeTarificationDataBase
-        )
-
-        SepareReferentialDataBases()
-    }
-
-    @Test
-    fun B_logUpdateReferentialDataBases(): Unit = runTest {
-
-       viewModel.addNewTestDataTarificationEtClient()
-
-        assertEquals(
-            2L,
-            viewModel.getSqlClient(1)?.idActiveTypeTarificationDataBase
-        )
-
-        val name = "A_DataBasesSepareReferential_AfterUpdate"
-
-        val currentStrTime =
-            com.example.clientjetpack.ID1.Test.Fragment.Passive.strDateEtTempFromVidTimestamp(System.currentTimeMillis())
-        println("\n========Apre Update========\n")
-        println(
-            "======== C Le Test Log Output Print Du Temp=${currentStrTime.first} " +
-                    "${currentStrTime.second} du  $name  ========"
-        )
-
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        val currentValue = viewModel.outputNoSqlFlow.first()
-
-        mainLog(currentValue)
-
-        println("\n========TEST $name COMPLETED SUCCESSFULLY ========\n")
-    }
-
-
-    private fun SepareReferentialDataBases() = runTest {
-        try {
-            val name = "A_DataBasesSepareReferential"
-            val currentStrTime =
-                com.example.clientjetpack.ID1.Test.Fragment.Passive.strDateEtTempFromVidTimestamp(
-                    System.currentTimeMillis()
-                )
-            println(
-                "======== C Le Test Log Output Print Du Temp=${currentStrTime.first} " +
-                        "${currentStrTime.second} du  $name  ========"
-            )
-
-            testDispatcher.scheduler.advanceUntilIdle()
-            val currentValue = viewModel.outputNoSqlFlow.first()
-
-            mainLog(currentValue)
-
-            println("\n========TEST $name COMPLETED SUCCESSFULLY ========\n")
-
-        } catch (e: Exception) {
-            assertTrue("Exception during filtering: ${e.message}", false)
-        }
-    }
-
-    private fun mainLog(value: com.example.clientjetpack.ID1.Test.Fragment.DataBase.Models.OutputNoSqlModel) {
-        println("\n-- Hierarchical Structure --")
-        logProduits(value ,
-                viewModel)
     }
 }

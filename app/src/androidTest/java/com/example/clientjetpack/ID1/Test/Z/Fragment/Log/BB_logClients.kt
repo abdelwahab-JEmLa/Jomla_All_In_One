@@ -3,14 +3,12 @@ package com.example.clientjetpack.ID1.Test.Z.Fragment.Log
 import com.example.clientjetpack.ID1.Test.Z.Fragment.A.ViewModel.TarificationViewModel
 import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Models.OutputNoSqlModel
 import com.example.clientjetpack.ID1.Test.Z.Fragment.Passive.strDateEtTempFromVidTimestamp
-import org.junit.Assert
 
 fun logClients(
     viewModel: TarificationViewModel,
     clients: List<OutputNoSqlModel.Produit.Client>,
     isLastProduit: Boolean,
 ) {
-
     clients.forEachIndexed { clientIndex, client ->
         val isLastClient = clientIndex == clients.size - 1
         val clientPrefix =
