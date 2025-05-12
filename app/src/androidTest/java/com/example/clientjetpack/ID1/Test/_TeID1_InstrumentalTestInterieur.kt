@@ -127,26 +127,29 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
         }
 
     @Test
-    fun A_logFullWorkflow(): Unit = runTest {
-        val currentValue = viewModel.outputNoSqlFlow.first()
+     fun testLogFromviewModel() = runTest{
+        val produitsMutableList =
+            viewModel.outputNoSqlFlow.first()
+            .produits.toMutableList()
 
-        if (currentValue.produits.isEmpty()) {
-            val testData = mockOutputNoSqlModel()
-            SepareReferentialDataBasesNoVM(
-                testData.produits.toMutableList(),
-                "Frome mockOutputNoSqlModel()"
-            )
-        } else {
-            val produitsMutableList = currentValue.produits.toMutableList()
-            SepareReferentialDataBasesNoVM(
-                produitsMutableList,
-                "Frome viewModel.outputNoSqlFlow.first()"
-            )
-        }
+        assertTrue(
+            "Products list should not be empty",
+            produitsMutableList.isNotEmpty())
 
-        val updatedValue = viewModel.outputNoSqlFlow.first()
-        assertTrue("Products list should not be empty", updatedValue.produits.isNotEmpty())
+        SepareReferentialDataBasesNoVM(
+            produitsMutableList,
+            "Frome viewModel.outputNoSqlFlow.first()"
+        )
+    }
 
+    @Test
+     fun testLogFromviewmock() = runTest{
+        val testData = mockOutputNoSqlModel()
+
+        SepareReferentialDataBasesNoVM(
+            testData.produits.toMutableList(),
+            "Frome mockOutputNoSqlModel()"
+        )
     }
 
     private fun mockOutputNoSqlModel(): OutputNoSqlModel {
@@ -230,7 +233,7 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
     }
 
     @Test
-    fun test2() = runTest {
+    fun testAddLoadFB() = runTest {
         fireBaseHandler.clearDatabaseAsync(sonDataBaseRef)
         fireBaseHandler.addAllToFireBaseAsync(initialTestData, sonDataBaseRef)
 
