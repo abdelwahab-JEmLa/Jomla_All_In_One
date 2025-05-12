@@ -1,7 +1,7 @@
 package com.example.clientjetpack.Id1.PrixChangable.Test.Main
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.example.clientjetpack.Id1.PrixChangable.Test.Function.createTimestamp
+import com.example.clientjetpack.Id1.PrixChangable.Test.Main.ID3.Test.testID2_Add
 import com.example.clientjetpack.Id1.PrixChangable.Test.Models.InputEtInfosSqlModels
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -55,35 +55,12 @@ class _TestsDisplayerLogDataBase {
             testData.produits.isNotEmpty()
         )
 
-        log(
+        logHErartchiDataBase(
             testData.produits.toMutableList(),
             "Frome mockOutputNoSqlModel()",
         )
     }
 
-    @Test
-    fun testID2_Add() = runTest {
-        tarificationEntries.add(
-            InputEtInfosSqlModels.Tarification(
-                vidTimestamp = createTimestamp(day = 1, hour = 13, minute = 30),
-                idProduit = 1L,
-                idClient = 1L,
-                idTypeTarification = 2L,
-                prixCurrency = 20.99
-            )
-        )
+    @Test fun testID2_Add() = runTest { testID2_Add(tarificationEntries, produitInfos, clientDataBase) }
 
-        val testData = mockOutputNoSqlModel(
-            tarificationEntries, produitInfos, clientDataBase
-        )
-
-        log(
-            testData.produits.toMutableList(),
-            "Frome mockOutputNoSqlModel()",
-        )
-    }
-
-    fun addDataLog(): Unit {
-        // Empty function implementation maintained
-    }
 }

@@ -119,7 +119,7 @@ fun getFromeDayeStringTime(dateTimeStr: String): Long {
 
         return date.time
     } catch (e: Exception) {
-        // In case of any parsing errors, log and return current time as fallback
+        // In case of any parsing errors, logHErartchiDataBase and return current time as fallback
         println("Error parsing date/time string '$dateTimeStr': ${e.message}")
         return System.currentTimeMillis()
     }
