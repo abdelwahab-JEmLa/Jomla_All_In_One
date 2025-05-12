@@ -32,9 +32,6 @@
       <SelectionState runConfigName="_TeID1_InstrumentalTestInterieur">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="B_logUpdateReferentialDataBases()">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
       <SelectionState runConfigName="testFromSqlToNoSqlDB()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>

@@ -4,7 +4,7 @@ import com.example.clientjetpack.Id1.PrixChangable.Test.Log.logProduits
 import com.example.clientjetpack.Id1.PrixChangable.Test.Models.OutputNoSqlModel
 import com.example.clientjetpack.Id1.PrixChangable.Test.strDateEtTempFromVidTimestamp
 
-fun SepareReferentialDataBasesNoVM(
+fun log(
     produitsList: MutableList<OutputNoSqlModel.Produit>,
     name: String,
 )  {

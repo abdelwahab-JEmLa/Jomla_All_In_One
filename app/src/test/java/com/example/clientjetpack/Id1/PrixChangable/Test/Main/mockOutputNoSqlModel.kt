@@ -1,9 +1,9 @@
 package com.example.clientjetpack.Id1.PrixChangable.Test.Main
 
+import com.example.clientjetpack.Id1.PrixChangable.Test.Models.InputEtInfosSqlModels
 import com.example.clientjetpack.Id1.PrixChangable.Test.Models.OutputNoSqlModel
 
-fun mockOutputNoSqlModel(): OutputNoSqlModel {
-        val tarificationEntries = initialTestData
+fun mockOutputNoSqlModel(tarificationEntries: List<InputEtInfosSqlModels.Tarification>): OutputNoSqlModel {
         val produitsList = mutableListOf<OutputNoSqlModel.Produit>()
 
         for (produitDB in initialProductsData) {

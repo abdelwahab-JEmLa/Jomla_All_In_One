@@ -61,16 +61,8 @@ class TarificationViewModel(
     }
 
     fun addNewTestDataTarificationEtClient(newTarification: InputEtInfosSqlModels.Tarification) {
-        // Create a copy to avoid potential reference issues
-        val tarificationToAdd = newTarification.copy(
-            // Make sure the timestamp is unique to avoid duplicates
-            vidTimestamp = if (newTarification.vidTimestamp <= 0)
-                createTimestamp(day = 10, hour = 15, minute = 30)
-            else
-                newTarification.vidTimestamp
-        )
 
-        tarificationRepository.add(tarificationToAdd) { addedTarification ->
+        tarificationRepository.add(newTarification) { addedTarification ->
             val client = inputSqlClientRepo.modelList.find { clientToUpdate ->
                 clientToUpdate.id == addedTarification.idClient
             }?.copy(
@@ -78,14 +70,7 @@ class TarificationViewModel(
             )
 
             if (client != null) {
-                inputSqlClientRepo.update(client) {
-                    // Manually trigger a refresh in the output repository
-                    // to ensure the data is updated for tests
-                    outputNoSqlModelRepository.loadImbriquantData()
-                }
-            } else {
-                // Still trigger a refresh even if client update wasn't needed
-                outputNoSqlModelRepository.loadImbriquantData()
+                inputSqlClientRepo.update(client)
             }
         }
     }
