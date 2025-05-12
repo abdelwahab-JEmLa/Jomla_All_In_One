@@ -6,7 +6,6 @@ import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Models.InputEtInfo
 import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Models.OutputNoSqlModel
 import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input.InputEtInfosSqlGroupeRepositorysImp
 import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Output.OutputNoSqlModelRepositoryImp
-import com.example.clientjetpack.ID1.Test.Z.Fragment.Passive.createTimestamp
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -60,14 +59,7 @@ class TarificationViewModel(
         return typeTarificationInputSqlRepo.modelList.find { it.id == id }
     }
 
-    fun addNewTestDataTarificationEtClient() {
-        val newTarification = InputEtInfosSqlModels.Tarification(
-            vidTimestamp = createTimestamp(day = 10, hour = 16, minute = 30),
-            idProduit = 1L,
-            idClient = 1L,
-            idTypeTarification = 2L,
-            prixCurrency = 9.99
-        )
+    fun addNewTestDataTarificationEtClient(newTarification: InputEtInfosSqlModels.Tarification) {
 
         tarificationRepository.add(newTarification) { addedTarification ->
             val client = inputSqlClientRepo.modelList.find { clientToUpdate ->

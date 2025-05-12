@@ -5,12 +5,8 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.clientjetpack.ID1.Test.Z.Fragment.A.ViewModel.TarificationViewModel
 import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Models.InputEtInfosSqlModels
-import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Models.OutputNoSqlModel
-import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input.Test.initialClientsData
-import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input.Test.initialProductsData
 import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input.Test.initialTestData
-import com.example.clientjetpack.ID1.Test.Z.Fragment.Log.logProduits
-import com.example.clientjetpack.ID1.Test.Z.Fragment.Passive.strDateEtTempFromVidTimestamp
+import com.example.clientjetpack.ID1.Test.Z.Fragment.Passive.createTimestamp
 import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -87,44 +83,39 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
         stopKoin()
     }
 
-    private fun SepareReferentialDataBasesNoVM(
-        produitsList: MutableList<OutputNoSqlModel.Produit>,
-        name: String,
-    ) =
-        runTest {
-            try {
-                val currentStrTime =
-                    strDateEtTempFromVidTimestamp(
-                        System.currentTimeMillis()
-                    )
-                println(
-                    "\n=================$name ===========================================" +
-                            "\n================================================================" +
-                            "\n======== C Le Test Log Output Print Du Temp=${currentStrTime.first} " +
-                            "\n================================================================" +
-                            " du   ========"
-                )
+    @Test
+    fun testID3_apreAddNewTestDataTarificationEtClientl() = runTest {
+        val produitsMutableList =
+            viewModel.outputNoSqlFlow.first()
+                .produits.toMutableList()
 
-                testDispatcher.scheduler.advanceUntilIdle()
+        val newTarification =
+            InputEtInfosSqlModels.Tarification(
+                vidTimestamp = createTimestamp(day = 1, hour = 15, minute = 30),
+                idProduit = 1L,
+                idClient = 1L,
+                idTypeTarification = 1L,
+                prixCurrency = 10.99
+            )
 
-                println("\n-- Hierarchical Structure --")
+        viewModel.addNewTestDataTarificationEtClient(
+            newTarification
+        )
 
-                // Create an OutputNoSqlModel from the produitsList
-                val outputModel = OutputNoSqlModel(produits = produitsList)
+        assertEquals(
+            2,
+            produitsMutableList.find { it.id == newTarification.idProduit }
+                ?.clients?.find { it.id == newTarification.idClient }
+                ?.typeTarification?.find { it.id == newTarification.idTypeTarification }
+                ?.PrixsCurrency?.size
+        )
 
-                // Now pass the properly constructed model to logProduits
-                logProduits(
-                    outputModel,
-                    viewModel
-                )
-
-                println("\n========TEST $name COMPLETED SUCCESSFULLY ========\n")
-
-            } catch (e: Exception) {
-                println("Erreur dans SepareReferentialDataBases: ${e.message}")
-                throw e
-            }
-        }
+        SepareReferentialDataBasesNoVM(
+            produitsMutableList,
+            "after addNewTestDataTarificationEtClient",
+            viewModel
+        )
+    }
 
     @Test
     fun testID2_LogFromviewModel() = runTest {
@@ -139,30 +130,10 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
 
         SepareReferentialDataBasesNoVM(
             produitsMutableList,
-            "Frome viewModel.outputNoSqlFlow.first()"
+            "Frome viewModel.outputNoSqlFlow.first()", viewModel
         )
     }
 
-    @Test
-    fun testID3_apreAddNewTestDataTarificationEtClientl() = runTest {
-        val produitsMutableList =
-            viewModel.outputNoSqlFlow.first()
-                .produits.toMutableList()
-
-        viewModel.addNewTestDataTarificationEtClient()
-
-        assertTrue(
-            "Products list should not be empty",
-            produitsMutableList.isNotEmpty()
-        )
-
-        SepareReferentialDataBasesNoVM(
-            produitsMutableList,
-            "Frome viewModel.outputNoSqlFlow.first()"
-        )
-    }
-
-    @Test
     fun testID1_LogFromviewmock() = runTest {
         val testData = mockOutputNoSqlModel()
 
@@ -173,91 +144,11 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
 
         SepareReferentialDataBasesNoVM(
             testData.produits.toMutableList(),
-            "Frome mockOutputNoSqlModel()"
+            "Frome mockOutputNoSqlModel()",
+            viewModel
         )
     }
 
-    private fun mockOutputNoSqlModel(): OutputNoSqlModel {
-        val tarificationEntries = initialTestData
-        val produitsList = mutableListOf<OutputNoSqlModel.Produit>()
-
-        for (produitDB in initialProductsData) {
-            val produitId = produitDB.id
-            val produitClients = mutableListOf<OutputNoSqlModel.Produit.Client>()
-
-            val uniqueClientIds = mutableSetOf<Long>()
-            for (entry in tarificationEntries) {
-                if (entry.idProduit == produitId) {
-                    uniqueClientIds.add(entry.idClient)
-                }
-            }
-
-            for (clientId in uniqueClientIds) {
-                val clientDB = initialClientsData.find { it.id == clientId }
-                if (clientDB != null) {
-                    val clientEntries = tarificationEntries.filter {
-                        it.idProduit == produitId && it.idClient == clientId
-                    }
-
-                    val uniqueTypeIds = clientEntries.map { it.idTypeTarification }.toSet()
-                    val typeTarifications =
-                        mutableListOf<OutputNoSqlModel.Produit.Client.TypeTarification>()
-
-                    for (typeId in uniqueTypeIds) {
-                        val typeEntries = clientEntries.filter { it.idTypeTarification == typeId }
-                            .sortedByDescending { it.vidTimestamp }
-
-                        if (typeEntries.isNotEmpty()) {
-                            val latestTimestamp = typeEntries.first().vidTimestamp
-                            val priceList = typeEntries.map { entry ->
-                                OutputNoSqlModel.Produit.Client.TypeTarification.Prix(
-                                    vidTimestamp = entry.vidTimestamp,
-                                    valeur = entry.prixCurrency
-                                )
-                            }
-
-                            typeTarifications.add(
-                                OutputNoSqlModel.Produit.Client.TypeTarification(
-                                    vidTimestamp = latestTimestamp,
-                                    id = typeId,
-                                    PrixsCurrency = priceList
-                                )
-                            )
-                        }
-                    }
-
-                    if (typeTarifications.isNotEmpty()) {
-                        val clientLatestTimestamp = typeTarifications.maxOf { it.vidTimestamp }
-                        produitClients.add(
-                            OutputNoSqlModel.Produit.Client(
-                                vidTimestamp = clientLatestTimestamp,
-                                id = clientId,
-                                typeTarification = typeTarifications
-                            )
-                        )
-                    }
-                }
-            }
-
-            val produitLatestTimestamp = if (produitClients.isNotEmpty()) {
-                produitClients.maxOf { it.vidTimestamp }
-            } else {
-                System.currentTimeMillis()
-            }
-
-            produitsList.add(
-                OutputNoSqlModel.Produit(
-                    vidTimestamp = produitLatestTimestamp,
-                    id = produitId,
-                    clients = produitClients
-                )
-            )
-        }
-
-        return OutputNoSqlModel(produitsList)
-    }
-
-    @Test
     fun testID9_AddLoadFB() = runTest {
         fireBaseHandler.clearDatabaseAsync(sonDataBaseRef)
         fireBaseHandler.addAllToFireBaseAsync(initialTestData, sonDataBaseRef)
