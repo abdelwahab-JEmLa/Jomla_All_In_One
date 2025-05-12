@@ -20,9 +20,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
-import org.koin.dsl.module
 import org.koin.test.KoinTest
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -53,21 +51,6 @@ class InstrumentalTestInterieur : KoinTest {
     fun setup() = runTest {
         Dispatchers.setMain(testDispatcher)
 
-        try {
-            stopKoin()
-        } catch (e: IllegalStateException) {
-        }
-
-        startKoin {
-            modules(
-                module {
-                    single { this@InstrumentalTestInterieur }
-                    single { FireBaseHandler() }
-                }
-            )
-        }
-
-        // Initialize fireBaseHandler after Koin setup
         fireBaseHandler = FireBaseHandler()
 
         clearDatabaseAsync(sonDataBaseRef)
