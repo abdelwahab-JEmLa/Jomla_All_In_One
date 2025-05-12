@@ -6,7 +6,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.clientjetpack.ID1.Test.Z.Fragment.A.ViewModel.TarificationViewModel
 import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Models.InputEtInfosSqlModels
 import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Models.OutputNoSqlModel
-import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input.Test.A_TarificationTestData.initialTestData
+import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input.Test.initialTestData
 import com.example.clientjetpack.ID1.Test.Z.Fragment.Log.logProduits
 import com.example.clientjetpack.ID1.Test.Z.Fragment.Passive.strDateEtTempFromVidTimestamp
 import com.google.firebase.database.DatabaseReference
@@ -46,6 +46,9 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
 
     private val testDispatcher = StandardTestDispatcher()
 
+    // Initializer pour les données de test
+    private val testDataInitializer = TestDataInitializer()
+
     // Use Koin's inject to properly initialize the ViewModel
     private val viewModel: TarificationViewModel by inject()
 
@@ -58,7 +61,7 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
     private val sonDataBaseRef: DatabaseReference = parentDbRef.child("A_Tarification")
 
     @Before
-    fun setup() {
+    fun setup() = runTest {
         Dispatchers.setMain(testDispatcher)
         stopKoin()
         startKoin {
@@ -69,6 +72,12 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
                 }
             )
         }
+
+        // Initialisation des données de test complètes
+        testDataInitializer.initializeAllTestData()
+
+        // Avance le temps pour s'assurer que les données sont chargées
+        testDispatcher.scheduler.advanceUntilIdle()
     }
 
     @After
@@ -76,33 +85,43 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
         Dispatchers.resetMain()
         stopKoin()
     }
+
     @Test
     fun A_logSepareReferentialDataBases(): Unit = runTest {
-
+        // Vérifie l'état initial du client 1
         assertEquals(
             1L,
             viewModel.getSqlClient(1)?.idActiveTypeTarificationDataBase
         )
 
+        // Exécute le test qui a échoué précédemment
         SepareReferentialDataBases()
+
+        // Vérifie que tous les produits ont au moins un client
+        val currentValue = viewModel.outputNoSqlFlow.first()
+        currentValue.produits.forEach { produit ->
+            assertTrue(
+                "Le produit ${produit.id} doit avoir au moins un client",
+                produit.clients.isNotEmpty()
+            )
+        }
     }
 
     @Test
     fun B_logUpdateReferentialDataBases(): Unit = runTest {
-
+        // Ajoute une nouvelle tarification
         viewModel.addNewTestDataTarificationEtClient()
 
+        // Vérifie que la mise à jour a été effectuée
         assertEquals(
-            1L,
+            2L, // Maintenant 2L au lieu de 1L après l'appel à addNewTestDataTarificationEtClient
             viewModel.getSqlClient(1)?.idActiveTypeTarificationDataBase
         )
 
         val name = "A_DataBasesSepareReferential_AfterUpdate"
+        val currentStrTime = strDateEtTempFromVidTimestamp(System.currentTimeMillis())
 
-        val currentStrTime =
-            strDateEtTempFromVidTimestamp(System.currentTimeMillis())
-        println("\n========Apre Update========\n")
-
+        println("\n========Après Update========\n")
         println(
             "======== C Le Test Log Output Print Du Temp=${currentStrTime.first} " +
                     "${currentStrTime.second} du  $name  ========"
@@ -111,8 +130,15 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         val currentValue = viewModel.outputNoSqlFlow.first()
-
         assertTrue(currentValue.produits.isNotEmpty())
+
+        // Vérifie que tous les produits ont au moins un client
+        currentValue.produits.forEach { produit ->
+            assertTrue(
+                "Le produit ${produit.id} doit avoir au moins un client",
+                produit.clients.isNotEmpty()
+            )
+        }
 
         mainLog(currentValue)
 
@@ -139,7 +165,10 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
 
             println("\n========TEST $name COMPLETED SUCCESSFULLY ========\n")
 
-        } catch (_: Exception) {}
+        } catch (e: Exception) {
+            println("Erreur dans SepareReferentialDataBases: ${e.message}")
+            throw e
+        }
     }
 
     private fun mainLog(value: OutputNoSqlModel) {
@@ -153,7 +182,6 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
     @Test
     fun testFullWorkflow() = runTest {
         fireBaseHandler.clearDatabaseAsync(sonDataBaseRef)
-
         fireBaseHandler.addAllToFireBaseAsync(initialTestData, sonDataBaseRef)
 
         val result = fireBaseHandler.loadDatasAsync(
@@ -162,8 +190,8 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
         )
 
         assertEquals(
-            "Expected 3 items in the database",
-            3,
+            "La base de données doit contenir le bon nombre d'éléments",
+            initialTestData.size,
             result.size
         )
 

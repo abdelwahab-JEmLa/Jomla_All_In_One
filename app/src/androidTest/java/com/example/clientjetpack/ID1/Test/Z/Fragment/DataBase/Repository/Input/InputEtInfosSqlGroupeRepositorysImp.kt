@@ -3,10 +3,10 @@ package com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import androidx.compose.runtime.mutableStateListOf
 import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Models.InputEtInfosSqlModels
-import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input.Test.A_TarificationTestData.initialTestData
-import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input.Test.ClientTestData
-import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input.Test.ProduitTestData
-import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input.Test.TypeTarificationTestData
+import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input.Test.initialClientsData
+import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input.Test.initialProductsData
+import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input.Test.initialTestData
+import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input.Test.initialTypeTarificationData
 import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -52,7 +52,9 @@ class InputEtInfosSqlGroupeRepositorysImp(
 
         private fun initDefaultData(): List<InputEtInfosSqlModels.ProduitInfos> {
             return mutableStateListOf<InputEtInfosSqlModels.ProduitInfos>().apply {
-                addAll(ProduitTestData.initialTestData)
+                addAll(
+                    initialProductsData
+                )
             }
         }
     }
@@ -63,7 +65,7 @@ class InputEtInfosSqlGroupeRepositorysImp(
 
         private fun initDefaultData(): List<InputEtInfosSqlModels.ClientDataBase> {
             return mutableStateListOf<InputEtInfosSqlModels.ClientDataBase>().apply {
-                addAll(ClientTestData.initialTestData)
+                addAll(initialClientsData)
             }
         }
 
@@ -97,7 +99,9 @@ class InputEtInfosSqlGroupeRepositorysImp(
 
         private fun initDefaultData(): List<InputEtInfosSqlModels.TypeTarificationDataBase> {
             return mutableStateListOf<InputEtInfosSqlModels.TypeTarificationDataBase>().apply {
-                addAll(TypeTarificationTestData.initialTestData)
+                addAll(
+                    initialTypeTarificationData
+                )
             }
         }
     }

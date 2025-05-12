@@ -1,4 +1,4 @@
-package com.example.clientjetpack.Id1.PrixChangable.Test
+package com.example.clientjetpack.ID3.Test
 
 import com.example.clientjetpack.ID1.Test.Fragment.DataBase.Models.OutputNoSqlModel
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.Log.logProduits
