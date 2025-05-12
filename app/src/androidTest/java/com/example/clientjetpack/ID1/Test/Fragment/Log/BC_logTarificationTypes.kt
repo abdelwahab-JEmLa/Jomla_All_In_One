@@ -3,6 +3,7 @@ package com.example.clientjetpack.ID1.Test.Fragment.Log
 import com.example.clientjetpack.ID1.Test.Fragment.DataBase.Models.OutputNoSqlModel
 import com.example.clientjetpack.ID1.Test.Fragment.Passive.strDateEtTempFromVidTimestamp
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.TarificationViewModel
+import com.example.clientjetpack.ID1.Test.Fragment.ViewModel.TarificationViewModel
 
 fun logTarificationTypes(
     viewModel: TarificationViewModel,

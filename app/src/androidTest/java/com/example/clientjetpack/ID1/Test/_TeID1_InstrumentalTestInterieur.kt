@@ -3,8 +3,9 @@ package com.example.clientjetpack.ID1.Test
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.clientjetpack.ID1.Test.A_TarificationTestData.initialTestData
 import com.example.clientjetpack.ID1.Test.Fragment.DataBase.Models.InputEtInfosSqlModels
+import com.example.clientjetpack.ID1.Test.Fragment.DataBase.Repository.Input.FireBaseHandler
+import com.example.clientjetpack.ID1.Test.Fragment.DataBase.Repository.Input.Test.A_TarificationTestData.initialTestData
 import com.example.clientjetpack.LogFilterRule
 import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.Dispatchers
@@ -79,4 +80,5 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
             initialTestData.first()
         )
     }
+
 }

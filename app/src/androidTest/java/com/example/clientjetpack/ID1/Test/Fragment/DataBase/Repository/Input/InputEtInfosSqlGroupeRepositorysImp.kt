@@ -2,8 +2,7 @@ package com.example.clientjetpack.ID1.Test.Fragment.DataBase.Repository.Input
 
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import androidx.compose.runtime.mutableStateListOf
-import com.example.clientjetpack.ID1.Test.A_TarificationTestData.initialTestData
-import com.example.clientjetpack.ID1.Test.FireBaseHandler
+import com.example.clientjetpack.ID1.Test.Fragment.DataBase.Repository.Input.Test.A_TarificationTestData.initialTestData
 import com.example.clientjetpack.ID1.Test.Fragment.DataBase.Models.InputEtInfosSqlModels
 import com.example.clientjetpack.ID1.Test.Fragment.DataBase.Repository.Input.Test.ClientTestData
 import com.example.clientjetpack.ID1.Test.Fragment.DataBase.Repository.Input.Test.ProduitTestData
