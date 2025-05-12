@@ -6,11 +6,18 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.suspendCancellableCoroutine
-import org.junit.Assert
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-class FireBaseHandler {
+class FireBaseHandler(tracker: OperationTracker) {
+    // Interface to handle callbacks for operation tracking
+    interface OperationTracker {
+        fun incrementCounter()
+        fun getCounter(): Int
+    }
+
+    private val operationTracker: OperationTracker = tracker
+
     suspend fun <T> loadDatasAsync(
         databaseRef: DatabaseReference,
         dataClass: Class<T>,
@@ -26,7 +33,8 @@ class FireBaseHandler {
                         }
                     }
 
-                    Assert.assertEquals(true, true)
+                    // Increment counter for operation tracking
+                    operationTracker.incrementCounter()
 
                     continuation.resume(dataList)
                 }
@@ -55,6 +63,7 @@ class FireBaseHandler {
 
             suspendCancellableCoroutine { continuation ->
                 databaseRef.child(key!!).setValue(item).addOnSuccessListener {
+                    operationTracker.incrementCounter()
                     continuation.resume(Unit)
                 }.addOnFailureListener { exception ->
                     continuation.resumeWithException(exception)
@@ -63,5 +72,15 @@ class FireBaseHandler {
         }
 
         tasks.forEach { it }
+    }
+    suspend fun clearDatabaseAsync(databaseRef: DatabaseReference) {
+        return suspendCancellableCoroutine { continuation ->
+            databaseRef.removeValue().addOnSuccessListener {
+                operationTracker.incrementCounter() // Using the interface method
+                continuation.resume(Unit)
+            }.addOnFailureListener { exception ->
+                continuation.resumeWithException(exception)
+            }
+        }
     }
 }

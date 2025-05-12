@@ -9,7 +9,6 @@ import com.example.clientjetpack.LogFilterRule
 import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -22,12 +21,10 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.core.context.stopKoin
 import org.koin.test.KoinTest
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
-class InstrumentalTestInterieur : KoinTest {
+class _TeID1_InstrumentalTestInterieur : KoinTest, FireBaseHandler.OperationTracker {
     @get:Rule
     val rule: InstantTaskExecutorRule = InstantTaskExecutorRule()
 
@@ -38,23 +35,43 @@ class InstrumentalTestInterieur : KoinTest {
         .build()
 
     private val testDispatcher = StandardTestDispatcher()
-    private lateinit var fireBaseHandler: FireBaseHandler // Changed to lateinit var
+
+    private lateinit var fireBaseHandler: FireBaseHandler
 
     private val parentDbRef: DatabaseReference =
         _0_0_HeadOfRepositorys_Model.getHeadSqlDataBaseRef()
             .child("C_InputEtInfosSql")
+
     private val sonDataBaseRef: DatabaseReference = parentDbRef.child("A_Tarification")
 
     private var result: List<InputEtInfosSqlModels.Tarification> = emptyList()
+
+    private var algorithmeCounteAssertSuiveur = 0
+
+    override fun incrementCounter() {
+        algorithmeCounteAssertSuiveur += 1
+    }
+
+    override fun getCounter(): Int {
+        return algorithmeCounteAssertSuiveur
+    }
 
     @Before
     fun setup() = runTest {
         Dispatchers.setMain(testDispatcher)
 
-        fireBaseHandler = FireBaseHandler()
+        fireBaseHandler = FireBaseHandler(this@_TeID1_InstrumentalTestInterieur)
 
-        clearDatabaseAsync(sonDataBaseRef)
+        // Reset counter before each test
+         algorithmeCounteAssertSuiveur = 0
+
+        fireBaseHandler.clearDatabaseAsync(sonDataBaseRef)
+        // Expected counter value after clearDatabaseAsync: 1
+        assertEquals("Counter should be 1 after database clear", 1, algorithmeCounteAssertSuiveur)
+
         fireBaseHandler.addAllToFireBaseAsync(initialTestData, sonDataBaseRef)
+        // Expected counter after adding 3 test items: 4 (1 + 3)
+        assertEquals("Counter should be 4 after adding test data (1+3)", 4, algorithmeCounteAssertSuiveur)
     }
 
     @After
@@ -64,31 +81,22 @@ class InstrumentalTestInterieur : KoinTest {
     }
 
     @Test
-    fun testLog() = runTest {
-        // Fixed the unresolved reference by explicitly defining the lambda parameter
+    fun testTarificationDataLoad() = runTest {
+        // Reset counter for the test assertions
+        algorithmeCounteAssertSuiveur = 0
+
         result = fireBaseHandler.loadDatasAsync(sonDataBaseRef, InputEtInfosSqlModels.Tarification::class.java)
             .sortedBy { tarification -> tarification.vidTimestamp }
 
-        assertEquals(3, result.size)
+        // Verify data was loaded correctly
+        assertEquals("Should load 3 tarification items", 3, result.size)
+        assertEquals("Counter should be 1 after loading data", 1, algorithmeCounteAssertSuiveur)
 
+        // Verify data content is correct
         val sortedTestData = initialTestData.sortedBy { it.vidTimestamp }
         val expectedData = sortedTestData.first()
 
         val firstResult = result.first()
-        assertEquals(expectedData.idProduit, firstResult.idProduit)
-        assertEquals(expectedData.idClient, firstResult.idClient)
-        assertEquals(expectedData.idTypeTarification, firstResult.idTypeTarification)
-        assertEquals(expectedData.prixCurrency, firstResult.prixCurrency, 0.01)
-    }
-
-    private suspend fun clearDatabaseAsync(databaseRef: DatabaseReference) {
-        return suspendCancellableCoroutine { continuation ->
-            databaseRef.removeValue().addOnSuccessListener {
-                continuation.resume(Unit)
-            }.addOnFailureListener { exception ->
-                continuation.resumeWithException(exception)
-            }
-        }
+        assertEquals( expectedData, firstResult)
     }
 }
-
