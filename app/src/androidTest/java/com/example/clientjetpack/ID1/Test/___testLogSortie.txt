@@ -5,7 +5,8 @@ System.out
                   ======== C Le Test Log Output Print Du Temp=2025-05-12  du  Frome viewModel.outputNoSqlFlow.first()  ========
                   
                   -- Hierarchical Structure --
-                  
+                                                         //<--
+                                                         //TODO(1): pk c vide 
                   ========TEST Frome viewModel.outputNoSqlFlow.first() COMPLETED SUCCESSFULLY ========
 LogFilter         ===== TEST LOGS: _TeID1_InstrumentalTestInterieur.A_logSepareReferentialDataBases =====
                   ===============================================
@@ -14,7 +15,8 @@ TestRunner        finished: A_logSepareReferentialDataBases(com.example.clientje
 LogFilter         Setting up log filter for: _TeID1_InstrumentalTestInterieur.testFromSqlToNoSqlDB
 System.out        
                   ======== C Le Test Log Output Print Du Temp=2025-05-12  du  Frome testFromSqlToNoSqlDB  ========
-                  
+                                                                      //<--
+                                                                      //TODO(1): mais ici non 
                   -- Hierarchical Structure --
                   ├─ Product : 1=(Produit A), Date: 2025-05-05 Time: 16:30:00 (2 clients)
                     ├─ Client ID: 1=(Client Alpha), Date: 2025-05-01 Time: 10:30:00 (1 tarification types)
