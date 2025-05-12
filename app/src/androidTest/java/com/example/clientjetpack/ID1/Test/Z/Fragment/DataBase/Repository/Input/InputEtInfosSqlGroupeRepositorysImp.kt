@@ -105,7 +105,7 @@ class InputEtInfosSqlGroupeRepositorysImp(
     class TarificationRepositoryImp(
         private val fireBaseHandler: FireBaseHandler,
         private val parentDbRef: DatabaseReference,
-        repositoryScope: CoroutineScope
+        private val repositoryScope: CoroutineScope
     ) : InputEtInfosSqlGroupeRepositorys.TarificationRepository {
         val _dataFlow = MutableStateFlow<List<InputEtInfosSqlModels.Tarification>>(emptyList())
 
@@ -118,7 +118,6 @@ class InputEtInfosSqlGroupeRepositorysImp(
                 _dataFlow.value = value
             }
 
-        // In the head repository's init block
         init {
             repositoryScope.launch {
                 loadDataFromFirebase()
@@ -133,13 +132,42 @@ class InputEtInfosSqlGroupeRepositorysImp(
             }
         }
 
-
         private suspend fun loadDataFromFirebase() {
-            val loadedData =  fireBaseHandler.loadDatasAsync(
+            val loadedData = fireBaseHandler.loadDatasAsync(
                 sonDataBaseRef,
                 InputEtInfosSqlModels.Tarification::class.java
             )
             _dataFlow.value = loadedData
+        }
+
+        override fun add(
+            tarification: InputEtInfosSqlModels.Tarification,
+            onSuccess: (InputEtInfosSqlModels.Tarification) -> Unit
+        ) {
+            repositoryScope.launch {
+                try {
+                    // Generate a unique key for the new tarification
+                    val key = tarification.vidTimestamp.toString()
+
+                    // Add to Firebase
+                    sonDataBaseRef.child(key).setValue(tarification)
+                        .addOnSuccessListener {
+                            // Update local list
+                            val currentList = _dataFlow.value.toMutableList()
+                            currentList.add(tarification)
+                            _dataFlow.value = currentList
+
+                            // Call onSuccess callback
+                            onSuccess(tarification)
+                        }
+                        .addOnFailureListener { exception ->
+                            // Handle failure (you might want to add error logging)
+                            println("Failed to add tarification: ${exception.message}")
+                        }
+                } catch (e: Exception) {
+                    println("Error adding tarification: ${e.message}")
+                }
+            }
         }
     }
 }

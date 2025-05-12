@@ -6,6 +6,7 @@ import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Models.InputEtInfo
 import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Models.OutputNoSqlModel
 import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input.InputEtInfosSqlGroupeRepositorysImp
 import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Output.OutputNoSqlModelRepositoryImp
+import com.example.clientjetpack.ID1.Test.Z.Fragment.Passive.createTimestamp
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,7 +15,7 @@ import kotlinx.coroutines.launch
 
 class TarificationViewModel(
 ) : ViewModel() {
-     val inputSqlGroupeRepositorys = InputEtInfosSqlGroupeRepositorysImp()
+    val inputSqlGroupeRepositorys = InputEtInfosSqlGroupeRepositorysImp()
 
     private val outputNoSqlModelRepository =
         OutputNoSqlModelRepositoryImp(inputSqlGroupeRepositorys)
@@ -32,6 +33,8 @@ class TarificationViewModel(
         .TypeTarificationInfosRepository()
     private val inputSqlProduitInfosRepository = inputSqlGroupeRepositorys
         .ProduitInfosRepository()
+
+    private val tarificationRepository = inputSqlGroupeRepositorys.TarificationRepository()
 
     init {
         observeTarificationData()
@@ -58,7 +61,6 @@ class TarificationViewModel(
     }
 
     fun addNewTestDataTarificationEtClient() {
-        /*
         val newTarification = InputEtInfosSqlModels.Tarification(
             vidTimestamp = createTimestamp(day = 10, hour = 16, minute = 30),
             idProduit = 1L,
@@ -67,16 +69,18 @@ class TarificationViewModel(
             prixCurrency = 9.99
         )
 
-        inputSqlGroupeRepositorys.TarificationRepository()
-            .add(newTarification) { addedTarification ->
+        // Add the new tarification
+        tarificationRepository.add(newTarification) { addedTarification ->
+            // Update the client's active tarification type
             val client = inputSqlClientRepo.modelList.find { clientToUpdate ->
                 clientToUpdate.id == addedTarification.idClient
             }?.copy(
                 idActiveTypeTarificationDataBase = addedTarification.idTypeTarification
             )
+
             if (client != null) {
                 inputSqlClientRepo.update(client)
             }
-        }     */
+        }
     }
 }

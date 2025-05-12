@@ -32,5 +32,10 @@ interface InputEtInfosSqlGroupeRepositorys {
 
     interface TarificationRepository {
         val modelList: List<InputEtInfosSqlModels.Tarification>
+
+        fun add(
+            tarification: InputEtInfosSqlModels.Tarification,
+            onSuccess: (InputEtInfosSqlModels.Tarification) -> Unit = {}
+        )
     }
 }

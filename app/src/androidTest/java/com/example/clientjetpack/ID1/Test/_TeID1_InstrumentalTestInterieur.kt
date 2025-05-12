@@ -5,10 +5,14 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.clientjetpack.ID1.Test.Z.Fragment.A.ViewModel.TarificationViewModel
 import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Models.InputEtInfosSqlModels
+import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Models.OutputNoSqlModel
 import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input.Test.A_TarificationTestData.initialTestData
+import com.example.clientjetpack.ID1.Test.Z.Fragment.Log.logProduits
+import com.example.clientjetpack.ID1.Test.Z.Fragment.Passive.strDateEtTempFromVidTimestamp
 import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -24,6 +28,7 @@ import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
 import org.koin.test.KoinTest
+import org.koin.test.inject
 
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
@@ -40,11 +45,10 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
 
     private val testDispatcher = StandardTestDispatcher()
 
-    private lateinit var tarificationViewModel: TarificationViewModel
+    // Use Koin's inject to properly initialize the ViewModel
+    private val viewModel: TarificationViewModel by inject()
 
-    private val fireBaseHandler = tarificationViewModel
-        .inputSqlGroupeRepositorys
-        .fireBaseHandler
+    private val fireBaseHandler by lazy { viewModel.inputSqlGroupeRepositorys.fireBaseHandler }
 
     private val parentDbRef: DatabaseReference =
         _0_0_HeadOfRepositorys_Model.getHeadSqlDataBaseRef()
@@ -70,6 +74,75 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
     fun tearDown() {
         Dispatchers.resetMain()
         stopKoin()
+    }
+    @Test
+    fun A_logSepareReferentialDataBases(): Unit = runTest {
+
+        assertEquals(
+            1L,
+            viewModel.getSqlClient(1)?.idActiveTypeTarificationDataBase
+        )
+
+        SepareReferentialDataBases()
+    }
+
+    @Test
+    fun B_logUpdateReferentialDataBases(): Unit = runTest {
+
+        viewModel.addNewTestDataTarificationEtClient()
+
+        assertEquals(
+            1L,
+            viewModel.getSqlClient(1)?.idActiveTypeTarificationDataBase
+        )
+
+        val name = "A_DataBasesSepareReferential_AfterUpdate"
+
+        val currentStrTime =
+            strDateEtTempFromVidTimestamp(System.currentTimeMillis())
+        println("\n========Apre Update========\n")
+
+        println(
+            "======== C Le Test Log Output Print Du Temp=${currentStrTime.first} " +
+                    "${currentStrTime.second} du  $name  ========"
+        )
+
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        val currentValue = viewModel.outputNoSqlFlow.first()
+
+        mainLog(currentValue)
+
+        println("\n========TEST $name COMPLETED SUCCESSFULLY ========\n")
+    }
+
+
+    private fun SepareReferentialDataBases() = runTest {
+        try {
+            val name = "A_DataBasesSepareReferential"
+            val currentStrTime =
+                strDateEtTempFromVidTimestamp(
+                    System.currentTimeMillis()
+                )
+            println(
+                "======== C Le Test Log Output Print Du Temp=${currentStrTime.first} " +
+                        "${currentStrTime.second} du  $name  ========"
+            )
+
+            testDispatcher.scheduler.advanceUntilIdle()
+            val currentValue = viewModel.outputNoSqlFlow.first()
+
+            mainLog(currentValue)
+
+            println("\n========TEST $name COMPLETED SUCCESSFULLY ========\n")
+
+        } catch (_: Exception) {}
+    }
+
+    private fun mainLog(value: OutputNoSqlModel) {
+        println("\n-- Hierarchical Structure --")
+        logProduits(value ,
+            viewModel)
     }
 
     @Test
