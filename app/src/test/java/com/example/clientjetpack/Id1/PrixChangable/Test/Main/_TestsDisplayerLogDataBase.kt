@@ -1,6 +1,7 @@
 package com.example.clientjetpack.Id1.PrixChangable.Test.Main
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.example.clientjetpack.Id1.PrixChangable.Test.Function.createTimestamp
 import com.example.clientjetpack.Id1.PrixChangable.Test.Models.InputEtInfosSqlModels
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -22,17 +23,18 @@ class _TestsDisplayerLogDataBase {
 
     private val testDispatcher = StandardTestDispatcher()
 
-    // Fix: Initialize as empty list with proper type
-    private var tarificationEntries = emptyList<InputEtInfosSqlModels.Tarification>()
-    private var produitInfos = emptyList<InputEtInfosSqlModels.ProduitInfos>()
-    private var clientDataBase = emptyList<InputEtInfosSqlModels.ClientDataBase>()
+    // Change to mutable lists to support adding new elements
+    private var tarificationEntries = mutableListOf<InputEtInfosSqlModels.Tarification>()
+    private var produitInfos = mutableListOf<InputEtInfosSqlModels.ProduitInfos>()
+    private var clientDataBase = mutableListOf<InputEtInfosSqlModels.ClientDataBase>()
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        tarificationEntries = initialTestData
-        produitInfos= initialProductsData
-        clientDataBase=  initialClientsData
+        // Initialize with data from initialTestData
+        tarificationEntries = initialTestData.toMutableList()
+        produitInfos = initialProductsData.toMutableList()
+        clientDataBase = initialClientsData.toMutableList()
     }
 
     @After
@@ -59,11 +61,20 @@ class _TestsDisplayerLogDataBase {
         )
     }
 
+    @Test
     fun testID2_Add() = runTest {
+        tarificationEntries.add(
+            InputEtInfosSqlModels.Tarification(
+                vidTimestamp = createTimestamp(day = 1, hour = 13, minute = 30),
+                idProduit = 1L,
+                idClient = 1L,
+                idTypeTarification = 2L,
+                prixCurrency = 20.99
+            )
+        )
 
         val testData = mockOutputNoSqlModel(
             tarificationEntries, produitInfos, clientDataBase
-
         )
 
         log(
@@ -73,7 +84,6 @@ class _TestsDisplayerLogDataBase {
     }
 
     fun addDataLog(): Unit {
-
+        // Empty function implementation maintained
     }
-
 }
