@@ -26,6 +26,6 @@ fun testID2_Add(
 
         logHErartchiDataBase(
             testData.produits.toMutableList(),
-            "Frome mockOutputNoSqlModel()",
+            "testID2_Add",
         )
     }
