@@ -8,8 +8,11 @@ import com.example.clientjetpack.ID1.Test.Fragment.DataBase.Repository.Input.Tes
 import com.example.clientjetpack.ID1.Test.Fragment.DataBase.Repository.Input.Test.ProduitTestData
 import com.example.clientjetpack.ID1.Test.Fragment.DataBase.Repository.Input.Test.TypeTarificationTestData
 import com.google.firebase.database.DatabaseReference
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class InputEtInfosSqlGroupeRepositorysImp(
 ) : InputEtInfosSqlGroupeRepositorys {
@@ -18,10 +21,15 @@ class InputEtInfosSqlGroupeRepositorysImp(
         _0_0_HeadOfRepositorys_Model.getHeadSqlDataBaseRef()
             .child("C_InputEtInfosSql")
 
+    private val repositoryScope = CoroutineScope(Dispatchers.IO)
     private val produitRepository = ProduitDataBase_RepositoryImp()
     private val clientRepository = ClientDataBase_RepositoryImp()
     private val typeTarificationRepository = TypeTarificationDataBase_RepositoryImp()
-    private val tarificationRepository = TarificationRepositoryImp(fireBaseHandler, inputEtInfosSqlGroupeRepositorysImpDataBaseRef)
+    private val tarificationRepository = TarificationRepositoryImp(
+        fireBaseHandler,
+        inputEtInfosSqlGroupeRepositorysImpDataBaseRef,
+        repositoryScope
+    )
 
     override fun ProduitInfosRepository(): InputEtInfosSqlGroupeRepositorys
     .ProduitDataBase_Repository {
@@ -98,7 +106,8 @@ class InputEtInfosSqlGroupeRepositorysImp(
 
     class TarificationRepositoryImp(
         private val fireBaseHandler: FireBaseHandler,
-        private val parentDbRef: DatabaseReference
+        private val parentDbRef: DatabaseReference,
+        repositoryScope: CoroutineScope
     ) : InputEtInfosSqlGroupeRepositorys.TarificationRepository {
         val _dataFlow = MutableStateFlow<List<InputEtInfosSqlModels.Tarification>>(emptyList())
 
@@ -111,18 +120,21 @@ class InputEtInfosSqlGroupeRepositorysImp(
                 _dataFlow.value = value
             }
 
-        fun initialize() {
-            loadDataFromFirebase()
-
-            if (_dataFlow.value.isEmpty()) {
-                fireBaseHandler.addAllToFireBaseAsync(
-                    initialTestData,
-                    sonDataBaseRef
-                )
-                // Reload data after adding
+        // In the head repository's init block
+        init {
+            repositoryScope.launch {
                 loadDataFromFirebase()
+
+                if (_dataFlow.value.isEmpty()) {
+                    fireBaseHandler.addAllToFireBaseAsync(
+                        initialTestData,
+                        sonDataBaseRef
+                    )
+                    loadDataFromFirebase()
+                }
             }
         }
+
 
         private fun loadDataFromFirebase() {
             val loadedData = fireBaseHandler.loadDatas(
