@@ -1,8 +1,8 @@
 package com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Output
 
+import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Models.OutputNoSqlModel
 import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input.InputEtInfosSqlGroupeRepositorys
 import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input.InputEtInfosSqlGroupeRepositorysImp
-import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Models.OutputNoSqlModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import org.junit.Assert
 
 class OutputNoSqlModelRepositoryImp(
     private val inputEtInfosSqlGroupeRepositorys: InputEtInfosSqlGroupeRepositorys
@@ -60,6 +61,8 @@ class OutputNoSqlModelRepositoryImp(
                 }
 
                 for (clientId in uniqueClientIds) {
+                    Assert.assertTrue(clientRepository.modelList.isNotEmpty())
+
                     val clientDB = clientRepository.modelList.find { it.id == clientId }
                     if (clientDB != null) {
                         val clientEntries = tarificationEntries.filter {

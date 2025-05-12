@@ -19,6 +19,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -111,6 +112,8 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
 
         val currentValue = viewModel.outputNoSqlFlow.first()
 
+        assertTrue(currentValue.produits.isNotEmpty())
+
         mainLog(currentValue)
 
         println("\n========TEST $name COMPLETED SUCCESSFULLY ========\n")
@@ -141,7 +144,9 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
 
     private fun mainLog(value: OutputNoSqlModel) {
         println("\n-- Hierarchical Structure --")
-        logProduits(value ,
+
+        logProduits(
+            value,
             viewModel)
     }
 
