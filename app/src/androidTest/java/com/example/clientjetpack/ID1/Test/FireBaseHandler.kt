@@ -10,10 +10,10 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 class FireBaseHandler(tracker: OperationTracker) {
-    // Interface to handle callbacks for operation tracking
     interface OperationTracker {
         fun incrementCounter()
-        fun getCounter(): Int
+    fun getCounterAlgorithmeCounteAssertSuiveur(): Int
+    fun restartConter()
     }
 
     private val operationTracker: OperationTracker = tracker
@@ -76,7 +76,7 @@ class FireBaseHandler(tracker: OperationTracker) {
     suspend fun clearDatabaseAsync(databaseRef: DatabaseReference) {
         return suspendCancellableCoroutine { continuation ->
             databaseRef.removeValue().addOnSuccessListener {
-                operationTracker.incrementCounter() // Using the interface method
+                operationTracker.incrementCounter()
                 continuation.resume(Unit)
             }.addOnFailureListener { exception ->
                 continuation.resumeWithException(exception)
