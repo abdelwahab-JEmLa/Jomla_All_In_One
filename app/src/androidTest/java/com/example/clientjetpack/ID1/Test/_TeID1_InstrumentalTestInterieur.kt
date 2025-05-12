@@ -22,12 +22,13 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.core.context.stopKoin
 import org.koin.test.KoinTest
+import kotlin.math.abs
 
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 class _TeID1_InstrumentalTestInterieur : KoinTest {
     @get:Rule
-    val rule: InstantTaskExecutorRule = InstantTaskExecutorRule()
+    val rule = InstantTaskExecutorRule()
 
     @get:Rule
     val combinedLogFilter = LogFilterRule.filter()
@@ -37,7 +38,6 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
         .build()
 
     private val testDispatcher = StandardTestDispatcher()
-
     private lateinit var fireBaseHandler: FireBaseHandler
 
     private val parentDbRef: DatabaseReference =
@@ -46,13 +46,10 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
 
     private val sonDataBaseRef: DatabaseReference = parentDbRef.child("A_Tarification")
 
-    // Add an instance of OperationTrackerImp to handle the interface methods
-    private val operationTrackerImp = OperationTrackerImp()
-
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        fireBaseHandler = FireBaseHandler(operationTrackerImp)
+        fireBaseHandler = FireBaseHandler()
     }
 
     @After
@@ -62,63 +59,51 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
     }
 
     @Test
-    fun testClearDatabase() = runTest {
-        // Reset counter before the test
-        operationTrackerImp.restartConter()
-
-        // Clear database
+    fun testFullWorkflow() = runTest {
         fireBaseHandler.clearDatabaseAsync(sonDataBaseRef)
-
-        assertEquals(
-            "Counter should be 1 after database clear",
-            1,
-            operationTrackerImp.getCounterAlgorithmeCounteAssertSuiveur()
-        )
-    }
-
-    fun testAdd ()= runTest {
         fireBaseHandler.addAllToFireBaseAsync(initialTestData, sonDataBaseRef)
-        // Print current counter value for debugging
-        val counterAfterAdd = operationTrackerImp.getCounterAlgorithmeCounteAssertSuiveur()
-        println("Counter after add: $counterAfterAdd")
 
-        assertEquals(
-            2,
-            counterAfterAdd
-        )
-    }
-
-    @Test
-    fun testLoadData() = runTest {
         val result = fireBaseHandler.loadDatasAsync(
             sonDataBaseRef,
             InputEtInfosSqlModels.Tarification::class.java
         )
 
-        assertEquals(
-            3,
-            result.size)
+        assertEquals("Expected 3 items in the database", 3, result.size)
 
-        assertEquals(
-            5,
-            operationTrackerImp.getCounterAlgorithmeCounteAssertSuiveur()
-        )
+        initialTestData.forEach { expectedItem ->
+            val matchingItem = result.find { loadedItem ->
+                loadedItem.idProduit == expectedItem.idProduit &&
+                        loadedItem.idClient == expectedItem.idClient &&
+                        loadedItem.idTypeTarification == expectedItem.idTypeTarification &&
+                        loadedItem.prixCurrency == expectedItem.prixCurrency
+            }
 
-        // Check for specific items
-        val caramelItem = result.find {
-            it.idProduit == 1L &&
-                    it.idClient == 1L &&
-                    it.idTypeTarification == 1L &&
-                    it.prixCurrency == 2.99
+            assertTrue(
+                "Could not find matching item for: " +
+                        "idProduit=${expectedItem.idProduit}, " +
+                        "idClient=${expectedItem.idClient}, " +
+                        "idTypeTarification=${expectedItem.idTypeTarification}, " +
+                        "prixCurrency=${expectedItem.prixCurrency}",
+                matchingItem != null
+            )
+
+            if (expectedItem.vidTimestamp == initialTestData[0].vidTimestamp) {
+                val currentTime = System.currentTimeMillis()
+                val oneDayAgo = currentTime - 86400000
+
+                assertTrue(
+                    "First timestamp should be approximately 1 day ago",
+                    abs((matchingItem?.vidTimestamp ?: 0) - oneDayAgo) < 10000
+                )
+            } else {
+                assertEquals(
+                    "Timestamp does not match for item: " +
+                            "idProduit=${expectedItem.idProduit}, " +
+                            "idClient=${expectedItem.idClient}",
+                    expectedItem.vidTimestamp,
+                    matchingItem?.vidTimestamp
+                )
+            }
         }
-        assertTrue("Caramel item not found", caramelItem != null)
-
-        val chocolatItem = result.find {
-            it.idProduit == 2L &&
-                    it.idClient == 2L &&
-                    it.idTypeTarification == 2L &&
-                    it.prixCurrency == 4.99
-        }
-        assertTrue("Chocolat item not found", chocolatItem != null)
     }
 }
