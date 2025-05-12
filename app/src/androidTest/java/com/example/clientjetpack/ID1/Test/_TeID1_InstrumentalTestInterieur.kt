@@ -5,7 +5,6 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.clientjetpack.ID1.Test.Z.Fragment.A.ViewModel.TarificationViewModel
 import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Models.InputEtInfosSqlModels
-import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Models.OutputNoSqlModel
 import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input.Test.initialTestData
 import com.example.clientjetpack.ID1.Test.Z.Fragment.Log.logProduits
 import com.example.clientjetpack.ID1.Test.Z.Fragment.Passive.strDateEtTempFromVidTimestamp
@@ -140,7 +139,11 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
             )
         }
 
-        mainLog(currentValue)
+        println("\n-- Hierarchical Structure --")
+
+        logProduits(
+            currentValue,
+            viewModel)
 
         println("\n========TEST $name COMPLETED SUCCESSFULLY ========\n")
     }
@@ -161,7 +164,11 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
             testDispatcher.scheduler.advanceUntilIdle()
             val currentValue = viewModel.outputNoSqlFlow.first()
 
-            mainLog(currentValue)
+            println("\n-- Hierarchical Structure --")
+
+            logProduits(
+                currentValue,
+                viewModel)
 
             println("\n========TEST $name COMPLETED SUCCESSFULLY ========\n")
 
@@ -171,13 +178,6 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
         }
     }
 
-    private fun mainLog(value: OutputNoSqlModel) {
-        println("\n-- Hierarchical Structure --")
-
-        logProduits(
-            value,
-            viewModel)
-    }
 
     @Test
     fun testFullWorkflow() = runTest {
