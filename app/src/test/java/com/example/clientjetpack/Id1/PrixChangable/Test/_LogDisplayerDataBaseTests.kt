@@ -1,8 +1,8 @@
 package com.example.clientjetpack.Id1.PrixChangable.Test
 
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Models.OutputNoSqlModel
+import com.example.clientjetpack.ID1.Test.Fragment.DataBase.Models.OutputNoSqlModel
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.Log.logProduits
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.Passive.strDateEtTempFromVidTimestamp
+import com.example.clientjetpack.ID1.Test.Fragment.Passive.strDateEtTempFromVidTimestamp
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.ViewModel.TarificationViewModel
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import kotlinx.coroutines.Dispatchers
@@ -64,7 +64,8 @@ class _TestsDisplayerLogDataBase {
 
         val name = "A_DataBasesSepareReferential_AfterUpdate"
 
-        val currentStrTime = strDateEtTempFromVidTimestamp(System.currentTimeMillis())
+        val currentStrTime =
+            com.example.clientjetpack.ID1.Test.Fragment.Passive.strDateEtTempFromVidTimestamp(System.currentTimeMillis())
         println("\n========Apre Update========\n")
         println(
             "======== C Le Test Log Output Print Du Temp=${currentStrTime.first} " +
@@ -84,7 +85,10 @@ class _TestsDisplayerLogDataBase {
     private fun SepareReferentialDataBases() = runTest {
         try {
             val name = "A_DataBasesSepareReferential"
-            val currentStrTime = strDateEtTempFromVidTimestamp(System.currentTimeMillis())
+            val currentStrTime =
+                com.example.clientjetpack.ID1.Test.Fragment.Passive.strDateEtTempFromVidTimestamp(
+                    System.currentTimeMillis()
+                )
             println(
                 "======== C Le Test Log Output Print Du Temp=${currentStrTime.first} " +
                         "${currentStrTime.second} du  $name  ========"
@@ -102,7 +106,7 @@ class _TestsDisplayerLogDataBase {
         }
     }
 
-    private fun mainLog(value: OutputNoSqlModel) {
+    private fun mainLog(value: com.example.clientjetpack.ID1.Test.Fragment.DataBase.Models.OutputNoSqlModel) {
         println("\n-- Hierarchical Structure --")
         logProduits(value ,
                 viewModel)

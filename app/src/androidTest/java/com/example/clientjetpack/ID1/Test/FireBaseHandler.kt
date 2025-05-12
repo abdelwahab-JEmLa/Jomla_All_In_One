@@ -1,6 +1,6 @@
 package com.example.clientjetpack.ID1.Test
 
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.DataBase.Models.InputEtInfosSqlModels
+import com.example.clientjetpack.ID1.Test.Fragment.DataBase.Models.InputEtInfosSqlModels
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
