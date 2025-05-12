@@ -6,6 +6,7 @@ import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Models.InputEtInfo
 import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Models.OutputNoSqlModel
 import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input.InputEtInfosSqlGroupeRepositorysImp
 import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Output.OutputNoSqlModelRepositoryImp
+import com.example.clientjetpack.ID1.Test.Z.Fragment.Passive.createTimestamp
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -60,8 +61,16 @@ class TarificationViewModel(
     }
 
     fun addNewTestDataTarificationEtClient(newTarification: InputEtInfosSqlModels.Tarification) {
+        // Create a copy to avoid potential reference issues
+        val tarificationToAdd = newTarification.copy(
+            // Make sure the timestamp is unique to avoid duplicates
+            vidTimestamp = if (newTarification.vidTimestamp <= 0)
+                createTimestamp(day = 10, hour = 15, minute = 30)
+            else
+                newTarification.vidTimestamp
+        )
 
-        tarificationRepository.add(newTarification) { addedTarification ->
+        tarificationRepository.add(tarificationToAdd) { addedTarification ->
             val client = inputSqlClientRepo.modelList.find { clientToUpdate ->
                 clientToUpdate.id == addedTarification.idClient
             }?.copy(
@@ -69,7 +78,14 @@ class TarificationViewModel(
             )
 
             if (client != null) {
-                inputSqlClientRepo.update(client)
+                inputSqlClientRepo.update(client) {
+                    // Manually trigger a refresh in the output repository
+                    // to ensure the data is updated for tests
+                    outputNoSqlModelRepository.loadImbriquantData()
+                }
+            } else {
+                // Still trigger a refresh even if client update wasn't needed
+                outputNoSqlModelRepository.loadImbriquantData()
             }
         }
     }

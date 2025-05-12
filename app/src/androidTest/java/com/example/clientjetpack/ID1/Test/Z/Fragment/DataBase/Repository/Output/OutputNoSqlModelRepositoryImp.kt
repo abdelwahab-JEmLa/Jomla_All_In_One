@@ -35,9 +35,12 @@ class OutputNoSqlModelRepositoryImp(
 
     private fun observeTarificationData() {
         repositoryScope.launch {
-            // Access _dataFlow from tarificationRepository but with appropriate casting
+            // Access _dataFlow from tarificationRepository with appropriate casting
             val tarificationRepositoryImp = tarificationRepository as? InputEtInfosSqlGroupeRepositorysImp.TarificationRepositoryImp
-            tarificationRepositoryImp?._dataFlow?.collectLatest { _ ->
+
+            // Explicitly collect from the repository's dataFlow to detect changes
+            tarificationRepositoryImp?._dataFlow?.collectLatest { tarificationEntries ->
+                // Reload data whenever the tarification entries change
                 loadImbriquantData()
             }
         }
@@ -45,6 +48,7 @@ class OutputNoSqlModelRepositoryImp(
 
     override fun loadImbriquantData() {
         repositoryScope.launch {
+            // Fetch the latest tarification entries
             val tarificationEntries = tarificationRepository.modelList
 
             val produitsList = mutableListOf<OutputNoSqlModel.Produit>()
@@ -53,6 +57,7 @@ class OutputNoSqlModelRepositoryImp(
                 val produitId = produitDB.id
                 val produitClients = mutableListOf<OutputNoSqlModel.Produit.Client>()
 
+                // Find all unique clients for this product
                 val uniqueClientIds = mutableSetOf<Long>()
                 for (entry in tarificationEntries) {
                     if (entry.idProduit == produitId) {
@@ -65,21 +70,25 @@ class OutputNoSqlModelRepositoryImp(
 
                     val clientDB = clientRepository.modelList.find { it.id == clientId }
                     if (clientDB != null) {
+                        // Filter tarification entries for this product and client
                         val clientEntries = tarificationEntries.filter {
                             it.idProduit == produitId && it.idClient == clientId
                         }
 
+                        // Find all unique tarification types for this client
                         val uniqueTypeIds = clientEntries.map { it.idTypeTarification }.toSet()
 
                         val typeTarifications = mutableListOf<OutputNoSqlModel.Produit.Client.TypeTarification>()
 
                         for (typeId in uniqueTypeIds) {
+                            // Get entries for this tarification type and sort by timestamp
                             val typeEntries = clientEntries.filter { it.idTypeTarification == typeId }
                                 .sortedByDescending { it.vidTimestamp }
 
                             if (typeEntries.isNotEmpty()) {
                                 val latestTimestamp = typeEntries.first().vidTimestamp
 
+                                // Create price list from all entries of this type
                                 val priceList = typeEntries.map { entry ->
                                     OutputNoSqlModel.Produit.Client.TypeTarification.Prix(
                                         vidTimestamp = entry.vidTimestamp,
@@ -127,10 +136,8 @@ class OutputNoSqlModelRepositoryImp(
                 produitsList.add(produit)
             }
 
-            _imbriquantFlow.value =
-                OutputNoSqlModel(
-                    produitsList
-                )
+            // Update the flow with the new data
+            _imbriquantFlow.value = OutputNoSqlModel(produitsList)
         }
     }
 }

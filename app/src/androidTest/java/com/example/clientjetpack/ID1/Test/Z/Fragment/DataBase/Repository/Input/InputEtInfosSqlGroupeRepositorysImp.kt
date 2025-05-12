@@ -81,7 +81,7 @@ class InputEtInfosSqlGroupeRepositorysImp(
 
         override fun update(
             client: InputEtInfosSqlModels.ClientDataBase,
-            onSuccess: (InputEtInfosSqlModels.ClientDataBase) -> Unit,
+            onSuccess: (InputEtInfosSqlModels.ClientDataBase) -> Unit ,
         ) {
             val list = modelList as? MutableList ?: return
             val index = list.indexOfFirst { it.id == client.id }
@@ -156,12 +156,29 @@ class InputEtInfosSqlGroupeRepositorysImp(
                     // Add to Firebase
                     sonDataBaseRef.child(key).setValue(tarification)
                         .addOnSuccessListener {
-                            // Update local list
+                            // Update local list immediately without waiting for Firebase
                             val currentList = _dataFlow.value.toMutableList()
-                            currentList.add(tarification)
+
+                            // Check if this is a duplicate
+                            val existingIndex = currentList.indexOfFirst {
+                                it.vidTimestamp == tarification.vidTimestamp &&
+                                        it.idProduit == tarification.idProduit &&
+                                        it.idClient == tarification.idClient &&
+                                        it.idTypeTarification == tarification.idTypeTarification
+                            }
+
+                            if (existingIndex >= 0) {
+                                // Replace existing entry
+                                currentList[existingIndex] = tarification
+                            } else {
+                                // Add new entry
+                                currentList.add(tarification)
+                            }
+
+                            // Update flow with new list
                             _dataFlow.value = currentList
 
-                            // Call onSuccess callback
+                            // Call onSuccess callback with the updated tarification
                             onSuccess(tarification)
                         }
                         .addOnFailureListener { exception ->

@@ -1,4 +1,4 @@
-package com.example.clientjetpack.ID1.Test.Components
+package com.example.clientjetpack.ID1.Test
 
 /*
 fun B_logUpdateReferentialDataBases(): Unit = runTest {
