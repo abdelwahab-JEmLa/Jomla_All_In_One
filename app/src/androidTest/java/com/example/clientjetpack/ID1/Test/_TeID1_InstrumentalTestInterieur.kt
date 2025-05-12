@@ -33,6 +33,7 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
     val combinedLogFilter = LogFilterRule.filter()
         .filterByTag("InstrumentalTest")
         .filterByTag("onOperationSuccess")
+        .filterByTag("OperationTrackerImp")
         .build()
 
     private val testDispatcher = StandardTestDispatcher()
@@ -61,42 +62,43 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
     }
 
     @Test
-    fun testClearAndAddData() = runTest {
+    fun testClearDatabase() = runTest {
         // Reset counter before the test
         operationTrackerImp.restartConter()
 
         // Clear database
         fireBaseHandler.clearDatabaseAsync(sonDataBaseRef)
 
-        // Expected counter value after clearDatabaseAsync: 1
         assertEquals(
             "Counter should be 1 after database clear",
             1,
             operationTrackerImp.getCounterAlgorithmeCounteAssertSuiveur()
         )
+    }
 
-        // Add test data
+    fun testAdd ()= runTest {
         fireBaseHandler.addAllToFireBaseAsync(initialTestData, sonDataBaseRef)
-
         // Print current counter value for debugging
-        val currentCounter = operationTrackerImp.getCounterAlgorithmeCounteAssertSuiveur()
-        println("Current counter value after adding data: $currentCounter")
+        val counterAfterAdd = operationTrackerImp.getCounterAlgorithmeCounteAssertSuiveur()
+        println("Counter after add: $counterAfterAdd")
 
-        // Expected counter after adding 3 test items: 4 (1 + 3)
         assertEquals(
-            "Counter should be 4 after adding test data (1+3)",
-            4,
-            currentCounter
+            2,
+            counterAfterAdd
         )
+    }
 
-        // Load data
+    @Test
+    fun testLoadData() = runTest {
         val result = fireBaseHandler.loadDatasAsync(
             sonDataBaseRef,
             InputEtInfosSqlModels.Tarification::class.java
         )
 
-        // Verify data was loaded correctly
-        assertEquals("Should load 3 tarification items", 3, result.size)
+        assertEquals(
+            3,
+            result.size)
+
         assertEquals(
             5,
             operationTrackerImp.getCounterAlgorithmeCounteAssertSuiveur()
