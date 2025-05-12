@@ -121,20 +121,4 @@ val initialClientsData = listOf(
     )
 )
 
-/**
- * Données de test pour les types de tarification
- */
-val initialTypeTarificationData = listOf(
-    InputEtInfosSqlModels.TypeTarificationDataBase(
-        id = 1L,
-        typeTarificationEnum = InputEtInfosSqlModels.TypeTarificationEnum.ParBenifice
-    ),
-    InputEtInfosSqlModels.TypeTarificationDataBase(
-        id = 2L,
-        typeTarificationEnum = InputEtInfosSqlModels.TypeTarificationEnum.Historique
-    ),
-    InputEtInfosSqlModels.TypeTarificationDataBase(
-        id = 3L,
-        typeTarificationEnum = InputEtInfosSqlModels.TypeTarificationEnum.LeMaxPrixArrive
-    )
-)
+

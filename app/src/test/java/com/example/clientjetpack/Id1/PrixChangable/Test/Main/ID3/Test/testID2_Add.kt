@@ -19,6 +19,12 @@ fun testID2_Add(
                 prixCurrency = 20.99
             )
         )
+        produitInfos.add(
+            InputEtInfosSqlModels.ProduitInfos(
+                id = 5L,
+                nom = "Produit 5"
+            ),
+        )
 
         val testData = mockOutputNoSqlModel(
             tarificationEntries, produitInfos, clientDataBase
