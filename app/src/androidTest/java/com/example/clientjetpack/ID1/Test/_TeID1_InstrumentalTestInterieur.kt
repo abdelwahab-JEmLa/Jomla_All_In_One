@@ -19,10 +19,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.koin.androidx.viewmodel.dsl.viewModel
-import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
-import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.inject
 
@@ -55,14 +52,6 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        stopKoin()
-        startKoin {
-            modules(
-                module {
-                    viewModel { TarificationViewModel() }
-                }
-            )
-        }
     }
 
     @After
