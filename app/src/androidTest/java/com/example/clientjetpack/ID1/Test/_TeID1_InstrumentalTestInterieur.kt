@@ -131,10 +131,10 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
         val currentValue = viewModel.outputNoSqlFlow.first()
 
         if (currentValue.produits.isEmpty()) {
-            val testData = createTestNoSqlModel()
+            val testData = mockOutputNoSqlModel()
             SepareReferentialDataBasesNoVM(
                 testData.produits.toMutableList(),
-                "Frome viewModel.outputNoSqlFlow.first()"
+                "Frome mockOutputNoSqlModel()"
             )
         } else {
             val produitsMutableList = currentValue.produits.toMutableList()
@@ -144,13 +144,12 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
             )
         }
 
-        // Assert that the data isn't empty after processing
         val updatedValue = viewModel.outputNoSqlFlow.first()
         assertTrue("Products list should not be empty", updatedValue.produits.isNotEmpty())
 
     }
 
-    private fun createTestNoSqlModel(): OutputNoSqlModel {
+    private fun mockOutputNoSqlModel(): OutputNoSqlModel {
         val tarificationEntries = initialTestData
         val produitsList = mutableListOf<OutputNoSqlModel.Produit>()
 
