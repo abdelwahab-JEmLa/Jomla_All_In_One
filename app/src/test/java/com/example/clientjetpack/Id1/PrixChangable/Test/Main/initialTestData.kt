@@ -17,7 +17,14 @@ val initialTestData = listOf(
         idTypeTarification = 1L,
         prixCurrency = 10.99
     ),
-    
+    InputEtInfosSqlModels.Tarification(
+        vidTimestamp = createTimestamp(day = 1, hour = 11, minute = 30),
+        idProduit = 1L,
+        idClient = 1L,
+        idTypeTarification = 2L,
+        prixCurrency = 10.99
+    ),
+
     // Produit 2, Client 2, TypeTarification 2
     InputEtInfosSqlModels.Tarification(
         vidTimestamp = createTimestamp(day = 2, hour = 11, minute = 45),
