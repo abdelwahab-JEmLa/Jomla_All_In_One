@@ -38,11 +38,7 @@ class __TestsDisplayerLogDataBase {
         produitInfos = initialProductsData.toMutableList()
         clientDataBase = initialClientsData.toMutableList()
     }
-
-    @After
-    fun tearDown() {
-        Dispatchers.resetMain()
-    }
+    @After fun tearDown() { Dispatchers.resetMain() }
 
     @Test fun testID2_AddLogFrommock() = runTest { testID1(tarificationEntries, produitInfos, clientDataBase) }
 }
