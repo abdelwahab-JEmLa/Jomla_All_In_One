@@ -7,6 +7,7 @@ import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.Tarification
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.TypeTarificationDataBase
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.TypeTarificationEnum
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.createTimestamp
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -50,8 +51,8 @@ class NoSqlDataBasesPreviewProvider : PreviewParameterProvider<NoSqlDataBases> {
         NoSqlDataBases(
             produitInfos = mutableListOf(
                 ProduitInfos(id = 1, nom = "Produit Optila"),
-                ProduitInfos(id = 2, nom = "Produit B"),
-                ProduitInfos(id = 3, nom = "Produit C")
+                ProduitInfos(id = 2, nom = "Produit Hnina"),
+                ProduitInfos(id = 3, nom = "Produit kemya")
             ),
             clientDataBase = mutableListOf(
                 ClientDataBase(id = 1, nom = "Client Abderrahman", idActiveTypeTarificationDataBase = 1),
@@ -61,14 +62,14 @@ class NoSqlDataBasesPreviewProvider : PreviewParameterProvider<NoSqlDataBases> {
 
             tarificationEntries = mutableListOf(
                 Tarification(
-                    vidTimestamp = System.currentTimeMillis() - 86400000,
+                    vidTimestamp = createTimestamp(day = 1, hour = 12, minute = 30),
                     idProduit = 1,
                     idClient = 1,
                     idTypeTarification = 1,
-                    prixCurrency = 10.99
+                    prixCurrency = 20.99
                 ),
                 Tarification(
-                    vidTimestamp = System.currentTimeMillis(),
+                    vidTimestamp = createTimestamp(day = 5, hour = 13, minute = 30),
                     idProduit = 1,
                     idClient = 1,
                     idTypeTarification = 1,
@@ -76,7 +77,7 @@ class NoSqlDataBasesPreviewProvider : PreviewParameterProvider<NoSqlDataBases> {
                 ),
 
                 Tarification(
-                    vidTimestamp = System.currentTimeMillis() - 43200000,
+                    vidTimestamp = createTimestamp(day = 5, hour = 14, minute = 30),
                     idProduit = 1,
                     idClient = 2,
                     idTypeTarification = 2,
@@ -84,18 +85,17 @@ class NoSqlDataBasesPreviewProvider : PreviewParameterProvider<NoSqlDataBases> {
                 ),
 
                 Tarification(
-                    vidTimestamp = System.currentTimeMillis() - 172800000,
+                    vidTimestamp = createTimestamp(day = 6, hour = 3, minute = 30),
                     idProduit = 2,
                     idClient = 1,
                     idTypeTarification = 1,
                     prixCurrency = 15.25
                 ),
 
-                // Produit B - Client Gamma
                 Tarification(
-                    vidTimestamp = System.currentTimeMillis() - 21600000, // 6 hours ago
-                    idProduit = 2,
-                    idClient = 3,
+                    vidTimestamp = createTimestamp(day = 6, hour = 4, minute = 30),
+                    idProduit = 3,
+                    idClient = 1,
                     idTypeTarification = 3,
                     prixCurrency = 14.80
                 )
