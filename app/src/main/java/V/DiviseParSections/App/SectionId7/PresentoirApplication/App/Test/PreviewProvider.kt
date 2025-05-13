@@ -16,13 +16,11 @@ class PreviewProvider : PreviewParameterProvider<List<TypeTarification>> {
                         id = 1L,
                         timestamp = createTimestamp(day = 13, month = 5, hour = 10, minute = 30),
                         infos = Produit.ProduitInfos(nom = "Produit 1"),
-                        cesStatuesMutable = Produit.CesStatuesMutable(cActiveDonsSonListParent = true),
                         clients = listOf(
                             Produit.Client(
                                 id = 1L,
                                 timestamp = createTimestamp(day = 13, month = 5, hour = 10, minute = 30),
                                 infos = Produit.Client.ClientInfos(nom = "Client 1"),
-                                cesStatuesMutable = Produit.Client.CesStatuesMutable(cActiveDonsSonListParent = true),
                                 typesTarification = emptyList()
                             )
                         )
@@ -45,19 +43,16 @@ class PreviewProvider : PreviewParameterProvider<List<TypeTarification>> {
                 id = 3L,
                 timestamp = createTimestamp(day = 12, month = 5, hour = 22, minute = 30),
                 infos = TypeTarification.Infos(type = TypeTarification.TypeTarificationEnum.LeMaxPrixArrive),
-                cesStatuesMutable = TypeTarification.CesStatuesMutable(cActiveDonsSonListParent = true),
                 parent = TypeTarification.Parent(
                     produit = Produit(
                         id = 3L,
                         timestamp = createTimestamp(day = 12, month = 5, hour = 22, minute = 30),
                         infos = Produit.ProduitInfos(nom = "Produit 3"),
-                        cesStatuesMutable = Produit.CesStatuesMutable(cActiveDonsSonListParent = true),
                         clients = listOf(
                             Produit.Client(
                                 id = 3L,
                                 timestamp = createTimestamp(day = 12, month = 5, hour = 22, minute = 30),
                                 infos = Produit.Client.ClientInfos(nom = "Client 3"),
-                                cesStatuesMutable = Produit.Client.CesStatuesMutable(cActiveDonsSonListParent = true),
                                 typesTarification = emptyList()
                             )
                         )
@@ -80,19 +75,16 @@ class PreviewProvider : PreviewParameterProvider<List<TypeTarification>> {
                 id = 2L,
                 timestamp = createTimestamp(day = 12, month = 5, hour = 10, minute = 30),
                 infos = TypeTarification.Infos(type = TypeTarification.TypeTarificationEnum.Historique),
-                cesStatuesMutable = TypeTarification.CesStatuesMutable(cActiveDonsSonListParent = true),
                 parent = TypeTarification.Parent(
                     produit = Produit(
                         id = 2L,
                         timestamp = createTimestamp(day = 12, month = 5, hour = 10, minute = 30),
                         infos = Produit.ProduitInfos(nom = "Produit 2"),
-                        cesStatuesMutable = Produit.CesStatuesMutable(cActiveDonsSonListParent = true),
                         clients = listOf(
                             Produit.Client(
                                 id = 2L,
                                 timestamp = createTimestamp(day = 12, month = 5, hour = 10, minute = 30),
                                 infos = Produit.Client.ClientInfos(nom = "Client 2"),
-                                cesStatuesMutable = Produit.Client.CesStatuesMutable(cActiveDonsSonListParent = true),
                                 typesTarification = emptyList()
                             )
                         )
