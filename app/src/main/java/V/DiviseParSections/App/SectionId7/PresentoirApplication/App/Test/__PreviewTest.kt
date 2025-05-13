@@ -52,23 +52,18 @@ fun PreviewTest(
             },
             onFilter = {
                 isFiltered = !isFiltered
-                // Toggle between normal view and filtered view (Product 2, Client 105)
                 if (isFiltered) {
-                    // Filter for Product 2, Client 105
                     val filteredProducts = produits.map { product ->
                         if (product.id == 3L) {
-                            // Keep only client 105 for product 3
                             product.copy(
                                 clients = product.clients.filter { client ->
                                     client.id == 105L
                                 }
                             )
                         } else {
-                            // For other products, empty the clients list
                             product.copy(clients = emptyList())
                         }
                     }.filter { product ->
-                        // Keep only products that still have clients after filtering
                         product.clients.isNotEmpty()
                     }
                     produits = filteredProducts
