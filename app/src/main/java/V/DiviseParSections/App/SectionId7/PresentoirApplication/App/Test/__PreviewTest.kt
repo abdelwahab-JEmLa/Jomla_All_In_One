@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.Test
 
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.Test.Function.formatTimestamp
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,31 +36,31 @@ import com.example.clientjetpack.ui.theme.ClientJetPackTheme
 @Preview
 @Composable
 fun PreviewTest(
-    @PreviewParameter(ProduitsPreviewProvider::class) initProduits: List<Produit>
+    @PreviewParameter(PreviewProvider::class) initDatas: List<TypeTarification>
 ) {
-    var produits by remember { mutableStateOf(initProduits) }
+    var datas by remember { mutableStateOf(initDatas) }
 
     // Wrap the content with your app's theme
     ClientJetPackTheme(darkTheme = true) {
         MainScreen(
-            produits = produits,
-            onAddProduct = {
-                val newProduct = newProduit(produits)
-                produits = produits + newProduct
+            datas = datas,
+            onAddData = {
+                val newData = newData(datas)
+                datas = datas + newData
             }
         )
     }
 }
 
 @Composable
-fun MainScreen(produits: List<Produit>, modifier: Modifier = Modifier, onAddProduct: () -> Unit) {
+fun MainScreen(datas: List<TypeTarification>, modifier: Modifier = Modifier, onAddData: () -> Unit) {
     Box(modifier = modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
-            MainList(produits = produits)
+            MainList(datas = datas)
         }
 
         FloatingActionButton(
-            onClick = onAddProduct,
+            onClick = onAddData,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(16.dp)
@@ -70,22 +71,19 @@ fun MainScreen(produits: List<Produit>, modifier: Modifier = Modifier, onAddProd
 }
 
 @Composable
-fun MainList(produits: List<Produit>, modifier: Modifier = Modifier) {
+fun MainList(datas: List<TypeTarification>, modifier: Modifier = Modifier) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(vertical = 8.dp, horizontal = 16.dp)
     ) {
-        val allTypesTarification = produits
-            .filter { produit ->
-                produit.cesStatuesMutable.cActiveDonsSonListParent
-            }
-            .flatMap { produit ->
-                produit.clients.filter { client ->
-                    client.cesStatuesMutable.cActiveDonsSonListParent
-                }.flatMap { client ->
-                    client.typesTarification
-                }
+        val allTypesTarification = datas
+            .filter { typeTarification ->
+                // Filter to show only active products and clients
+                typeTarification.parent.produit.cesStatuesMutable.cActiveDonsSonListParent &&
+                        typeTarification.parent.produit.clients.any { client ->
+                            client.cesStatuesMutable.cActiveDonsSonListParent
+                        }
             }
 
         items(allTypesTarification) { typeTarification ->
@@ -96,7 +94,7 @@ fun MainList(produits: List<Produit>, modifier: Modifier = Modifier) {
 
 @Composable
 fun TarificationItem(
-    prix: Produit.Client.TypeTarification.Prix,
+    prix: TypeTarification.Prix,
     modifier: Modifier = Modifier
 ) {
     val (date, time) = formatTimestamp(prix.timestamp)
@@ -124,7 +122,7 @@ fun TarificationItem(
 
 @Composable
 fun TarificationTypeSection(
-    typeTarification: Produit.Client.TypeTarification,
+    typeTarification: TypeTarification,
     modifier: Modifier = Modifier
 ) {
     val (date, time) = formatTimestamp(typeTarification.timestamp)
@@ -157,7 +155,7 @@ fun TarificationTypeSection(
                 IconButton(onClick = {
                     val newPriceId =
                         (currentTypeTarification.PrixsCurrency.maxOfOrNull { it.id } ?: 0) + 1
-                    val newPrice = Produit.Client.TypeTarification.Prix(
+                    val newPrice = TypeTarification.Prix(
                         id = newPriceId,
                         timestamp = System.currentTimeMillis(),
                         valeur = 0.0

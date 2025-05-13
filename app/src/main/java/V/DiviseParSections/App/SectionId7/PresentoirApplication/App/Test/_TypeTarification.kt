@@ -1,5 +1,34 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.Test
 
+data class TypeTarification(
+    val id: Long,
+    val timestamp: Long,
+    val infos: Infos,
+    val parent: Parent,
+    val PrixsCurrency: List<Prix>,
+) {
+    data class Parent(
+        var produit: Produit,
+    )
+
+    data class Infos(
+        var type: TypeTarificationEnum = TypeTarificationEnum.NonDefini,
+    )
+
+    enum class TypeTarificationEnum {
+        NonDefini,
+        ParBenifice,
+        Historique,
+        LeMaxPrixArrive
+    }
+
+    data class Prix(
+        val id: Long,
+        val timestamp: Long,
+        val valeur: Double,
+    )
+}
+
 data class Produit(
     val id: Long,
     val timestamp: Long,
@@ -27,28 +56,5 @@ data class Produit(
         data class CesStatuesMutable(
             val cActiveDonsSonListParent: Boolean =false,
         )
-
-        data class TypeTarification(
-            val id: Long,
-            val timestamp: Long,
-            val infos: Infos,
-            val PrixsCurrency: List<Prix>,
-        ) {
-            data class Infos(
-                var type : TypeTarificationEnum = TypeTarificationEnum.NonDefini,
-            )
-            enum class TypeTarificationEnum {
-                NonDefini,
-                ParBenifice,
-                Historique,
-                LeMaxPrixArrive
-            }
-
-            data class Prix(
-                val id: Long,
-                val timestamp: Long,
-                val valeur: Double,
-            )
-        }
     }
 }
