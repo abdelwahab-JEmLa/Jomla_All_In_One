@@ -1,12 +1,12 @@
 package com.example.clientjetpack.Id1.PrixChangable.Test.Main.Modules
 
 import com.example.clientjetpack.Id1.PrixChangable.Test.Models.OutputNoSqlModel
-import com.example.clientjetpack.Id1.PrixChangable.Test.Models.NoSql
+import com.example.clientjetpack.Id1.PrixChangable.Test.Models.NoSqlDataBases
 
-fun mockOutputNoSqlModel(noSql: NoSql): OutputNoSqlModel {
-    val produitInfos=  noSql.produitInfos
-    val tarificationEntries=     noSql.tarificationEntries
-    val clientDataBase=   noSql.clientDataBase
+fun mockOutputNoSqlModel(noSqlDataBases: NoSqlDataBases): OutputNoSqlModel {
+    val produitInfos=  noSqlDataBases.produitInfos
+    val tarificationEntries=     noSqlDataBases.tarificationEntries
+    val clientDataBase=   noSqlDataBases.clientDataBase
 
     val produitsList = mutableListOf<OutputNoSqlModel.Produit>()
 

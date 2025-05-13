@@ -4,18 +4,18 @@ import com.example.clientjetpack.Id1.PrixChangable.Test.Function.createTimestamp
 import com.example.clientjetpack.Id1.PrixChangable.Test.Main.Modules.logHErartchiDataBase
 import com.example.clientjetpack.Id1.PrixChangable.Test.Main.Modules.mockOutputNoSqlModel
 import com.example.clientjetpack.Id1.PrixChangable.Test.Models.InputEtInfosSqlModels
-import com.example.clientjetpack.Id1.PrixChangable.Test.Models.NoSql
+import com.example.clientjetpack.Id1.PrixChangable.Test.Models.NoSqlDataBases
 
 fun testID1(
-    noSql: NoSql
+    noSqlDataBases: NoSqlDataBases
 ) {
     logHErartchiDataBase(
-        mockOutputNoSqlModel(noSql).produits.toMutableList(),
+        mockOutputNoSqlModel(noSqlDataBases).produits.toMutableList(),
         "logHErartchiDataBase"
     )
 
     // Add new test entries to validate data updates
-    noSql.apply {
+    noSqlDataBases.apply {
         tarificationEntries.add(
             InputEtInfosSqlModels.Tarification(
                 vidTimestamp = createTimestamp(day = 1, hour = 13, minute = 30),
@@ -35,7 +35,7 @@ fun testID1(
 
     // Verify updates with modified data
     logHErartchiDataBase(
-        mockOutputNoSqlModel(noSql).produits.toMutableList(),
+        mockOutputNoSqlModel(noSqlDataBases).produits.toMutableList(),
         "logHErartchiDataBase testDataAfterAdd"
     )
 }
