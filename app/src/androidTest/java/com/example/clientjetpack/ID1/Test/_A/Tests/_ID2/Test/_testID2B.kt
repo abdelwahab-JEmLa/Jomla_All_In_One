@@ -7,6 +7,11 @@ import com.example.clientjetpack.ID1.Test._A.Tests._ID2.Test.ViewModel.Tarificat
 import kotlinx.coroutines.flow.first
 
 suspend fun testID_2_B(viewModel: TarificationViewModel) {
+    logHErartchiDataBase(
+        viewModel.outputNoSqlFlow.first().produits.toMutableList(),
+        "first"
+    )
+
     val newTarification =
         InputEtInfosSqlModels.Tarification(
             vidTimestamp = createTimestamp(day = 1, hour = 13, minute = 30),
@@ -16,16 +21,17 @@ suspend fun testID_2_B(viewModel: TarificationViewModel) {
             prixCurrency = 20.99
         )
 
-
-    viewModel.addNewTestDataTarificationEtClient(
-        newTarification
-    )
     viewModel.addNewProduitInfos(
         InputEtInfosSqlModels.ProduitInfos(
             id = 5L,
             nom = "Produit 5"
         )
     )
+
+    viewModel.addNewTestDataTarificationEtClient(
+        newTarification
+    )
+
 
     logHErartchiDataBase(
         viewModel.outputNoSqlFlow.first().produits.toMutableList(),

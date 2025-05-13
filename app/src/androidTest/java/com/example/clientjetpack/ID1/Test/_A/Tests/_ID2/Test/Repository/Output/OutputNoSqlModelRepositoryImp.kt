@@ -1,11 +1,11 @@
 package com.example.clientjetpack.ID1.Test._A.Tests._ID2.Test.Repository.Output
 
-import com.example.clientjetpack.ID1.Test._A.Tests._ID2.Test.Repository.Input.InputEtInfosSqlGroupeRepositorys
-import com.example.clientjetpack.ID1.Test._A.Tests._ID2.Test.Repository.Input.InputEtInfosSqlGroupeRepositorysImp
 import com.example.clientjetpack.ID1.Test.Packages.Models.InputEtInfosSqlModels
 import com.example.clientjetpack.ID1.Test.Packages.Models.NoSqlDataBases
 import com.example.clientjetpack.ID1.Test.Packages.Models.OutputNoSqlModel
 import com.example.clientjetpack.ID1.Test.Packages.Modules.covertireDepitSqlAuNonSqlShemaDataBase
+import com.example.clientjetpack.ID1.Test._A.Tests._ID2.Test.Repository.Input.InputEtInfosSqlGroupeRepositorys
+import com.example.clientjetpack.ID1.Test._A.Tests._ID2.Test.Repository.Input.InputEtInfosSqlGroupeRepositorysImp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,6 +33,7 @@ class OutputNoSqlModelRepositoryImp(
     init {
         loadImbriquantData(tarificationRepository.modelList)
         observeTarificationData()
+        observeProduitData()
     }
 
     private fun observeTarificationData() {
@@ -42,6 +43,18 @@ class OutputNoSqlModelRepositoryImp(
 
             tarificationRepositoryImp?._dataFlow?.collectLatest { tarificationEntries ->
                 loadImbriquantData(tarificationEntries)
+            }
+        }
+    }
+
+    private fun observeProduitData() {
+        repositoryScope.launch {
+            val produitRepositoryImp =
+                produitRepository as? InputEtInfosSqlGroupeRepositorysImp.ProduitDataBase_RepositoryImp
+
+            produitRepositoryImp?._dataFlow?.collectLatest { produitEntries ->
+                // When product data changes, reload the entire data structure
+                loadImbriquantData(tarificationRepository.modelList)
             }
         }
     }

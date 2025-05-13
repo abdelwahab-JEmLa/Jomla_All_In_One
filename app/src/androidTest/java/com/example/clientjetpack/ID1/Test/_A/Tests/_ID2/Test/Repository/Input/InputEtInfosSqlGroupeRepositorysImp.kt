@@ -54,10 +54,16 @@ class InputEtInfosSqlGroupeRepositorysImp(
         val repositoryScope: CoroutineScope,
         val fireBaseHandler: FireBaseHandler
     ) : InputEtInfosSqlGroupeRepositorys.ProduitDataBase_Repository {
-        // Changed to MutableList to fix the "Unresolved reference: add" error
         private val _modelList = mutableStateListOf<InputEtInfosSqlModels.ProduitInfos>()
+        val _dataFlow = MutableStateFlow<List<InputEtInfosSqlModels.ProduitInfos>>(emptyList())
 
-        override var modelList: List<InputEtInfosSqlModels.ProduitInfos> = _modelList
+        override var modelList: List<InputEtInfosSqlModels.ProduitInfos>
+            get() = _dataFlow.value
+            set(value) {
+                _modelList.clear()
+                _modelList.addAll(value)
+                _dataFlow.value = _modelList
+            }
 
         init {
             initDefaultData()
@@ -66,6 +72,7 @@ class InputEtInfosSqlGroupeRepositorysImp(
         private fun initDefaultData() {
             _modelList.clear()
             _modelList.addAll(initialProductsData)
+            _dataFlow.value = _modelList.toList()
         }
 
         override fun add(
@@ -76,6 +83,7 @@ class InputEtInfosSqlGroupeRepositorysImp(
                 try {
                     // Add the product to the list
                     _modelList.add(produitInfos)
+                    _dataFlow.value = _modelList.toList()
 
                     assertTrue(
                         _modelList.size == 5

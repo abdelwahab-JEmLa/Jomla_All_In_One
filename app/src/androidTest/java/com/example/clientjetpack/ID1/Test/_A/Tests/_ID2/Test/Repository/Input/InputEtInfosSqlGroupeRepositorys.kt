@@ -10,16 +10,22 @@ interface InputEtInfosSqlGroupeRepositorys {
 
     interface ProduitDataBase_Repository {
         var modelList: List<InputEtInfosSqlModels.ProduitInfos>
+
         fun add(
             produitInfos: InputEtInfosSqlModels.ProduitInfos,
-            onSuccess: (InputEtInfosSqlModels.ProduitInfos) -> Unit ={}
+            onSuccess: (InputEtInfosSqlModels.ProduitInfos) -> Unit = {}
         )
     }
 
     interface ClientDataBase_Repository {
         var modelList: List<InputEtInfosSqlModels.ClientDataBase>
+
         fun add(client: InputEtInfosSqlModels.ClientDataBase)
-        fun update(client: InputEtInfosSqlModels.ClientDataBase, onSuccess: (InputEtInfosSqlModels.ClientDataBase) -> Unit = {})
+
+        fun update(
+            client: InputEtInfosSqlModels.ClientDataBase,
+            onSuccess: (InputEtInfosSqlModels.ClientDataBase) -> Unit,
+        )
     }
 
     interface TypeTarificationDataBase_Repository {
@@ -28,9 +34,12 @@ interface InputEtInfosSqlGroupeRepositorys {
 
     interface TarificationRepository {
         var modelList: List<InputEtInfosSqlModels.Tarification>
-        fun add(tarification: InputEtInfosSqlModels.Tarification, onSuccess: (InputEtInfosSqlModels.Tarification) -> Unit = {})
 
-        // Add the method to load data on demand
         suspend fun loadDataFromFirebase()
+
+        fun add(
+            tarification: InputEtInfosSqlModels.Tarification,
+            onSuccess: (InputEtInfosSqlModels.Tarification) -> Unit = {}
+        )
     }
 }
