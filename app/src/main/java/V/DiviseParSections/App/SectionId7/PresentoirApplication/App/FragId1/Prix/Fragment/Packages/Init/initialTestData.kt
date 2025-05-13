@@ -1,4 +1,4 @@
-package com.example.clientjetpack.ID1.Test.Packages.Init
+package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.Packages.Init
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.Packages.Function.createTimestamp
 import com.example.clientjetpack.ID1.Test.Packages.Models.InputEtInfosSqlModels

@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.Packages.Repository.Output
+package com.example.clientjetpack.ID1.Test.Packages.Repository.Output
 
 import com.example.clientjetpack.ID1.Test.Packages.Models.OutputNoSqlModel
 import kotlinx.coroutines.flow.StateFlow

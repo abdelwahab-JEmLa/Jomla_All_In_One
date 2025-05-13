@@ -3,11 +3,11 @@ package com.example.clientjetpack.ID1.Test
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.clientjetpack.ID1.Test.Packages.Init.initialTestData
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.Packages.Init.initialTestData
 import com.example.clientjetpack.ID1.Test.Packages.Models.InputEtInfosSqlModels
 import com.example.clientjetpack.ID1.Test._A.Tests.Filter.LogFilterRule
 import com.example.clientjetpack.ID1.Test._A.Tests._ID1.Test._testID1
-import com.example.clientjetpack.ID1.Test.Packages.ViewModel.TarificationViewModel
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.Packages.ViewModel.TarificationViewModel
 import com.example.clientjetpack.ID1.Test._A.Tests._ID2.Test.testID2
 import com.example.clientjetpack.ID1.Test._A.Tests._ID2.Test.testID_2_B
 import com.google.firebase.database.DatabaseReference
