@@ -1,4 +1,4 @@
-package com.example.clientjetpack.ID1.Test.Test.Test.Models
+package com.example.clientjetpack.ID1.Test._A.Tests._ID1.Test.Models
 
 data class OutputNoSqlModel(
     val produits: List<Produit>,

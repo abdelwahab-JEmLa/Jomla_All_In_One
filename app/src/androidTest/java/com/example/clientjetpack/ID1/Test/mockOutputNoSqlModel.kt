@@ -1,6 +1,6 @@
 package com.example.clientjetpack.ID1.Test
 
-import com.example.clientjetpack.ID1.Test.Test.Test.Models.OutputNoSqlModel
+import com.example.clientjetpack.ID1.Test._A.Tests._ID1.Test.Models.OutputNoSqlModel
 import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input.Test.initialClientsData
 import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input.Test.initialProductsData
 import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input.Test.initialTestData

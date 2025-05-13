@@ -1,9 +1,9 @@
 package com.example.clientjetpack.ID1.Test.Z.Fragment.Log
 
 import com.example.clientjetpack.ID1.Test.Z.Fragment.A.ViewModel.TarificationViewModel
-import com.example.clientjetpack.ID1.Test.Test.Test.Models.OutputNoSqlModel
+import com.example.clientjetpack.ID1.Test._A.Tests._ID1.Test.Models.OutputNoSqlModel
 import com.example.clientjetpack.ID1.Test.Z.Fragment.Passive.strDateEtTempFromVidTimestamp
-import com.example.clientjetpack.ID1.Test.Test.Test.Modules.Log.TreePrefix
+import com.example.clientjetpack.ID1.Test._A.Tests._ID1.Test.Modules.Log.TreePrefix
 
 fun logClients(
     viewModel: TarificationViewModel,

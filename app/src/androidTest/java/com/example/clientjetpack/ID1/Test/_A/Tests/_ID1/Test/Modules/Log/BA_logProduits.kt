@@ -1,7 +1,7 @@
-package com.example.clientjetpack.ID1.Test.Test.Test.Modules.Log
+package com.example.clientjetpack.ID1.Test._A.Tests._ID1.Test.Modules.Log
 
-import com.example.clientjetpack.ID1.Test.Test.Test.Models.OutputNoSqlModel
-import com.example.clientjetpack.ID1.Test.Test.Test.Z.Function.strDateEtTempFromVidTimestamp
+import com.example.clientjetpack.ID1.Test._A.Tests._ID1.Test.Models.OutputNoSqlModel
+import com.example.clientjetpack.ID1.Test._A.Tests._ID1.Test.Z.Function.strDateEtTempFromVidTimestamp
 
 fun logProduits(value: OutputNoSqlModel) {
         value.produits.forEachIndexed { produitIndex, produit ->

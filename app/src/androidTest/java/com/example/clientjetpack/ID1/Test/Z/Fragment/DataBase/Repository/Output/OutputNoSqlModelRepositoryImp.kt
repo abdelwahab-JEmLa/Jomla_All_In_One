@@ -2,10 +2,10 @@ package com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Output
 
 import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input.InputEtInfosSqlGroupeRepositorys
 import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input.InputEtInfosSqlGroupeRepositorysImp
-import com.example.clientjetpack.ID1.Test.Test.Test.Models.InputEtInfosSqlModels
-import com.example.clientjetpack.ID1.Test.Test.Test.Models.NoSqlDataBases
-import com.example.clientjetpack.ID1.Test.Test.Test.Models.OutputNoSqlModel
-import com.example.clientjetpack.ID1.Test.Test.Test.Modules.covertireDepitSqlAuNonSqlShemaDataBase
+import com.example.clientjetpack.ID1.Test._A.Tests._ID1.Test.Models.InputEtInfosSqlModels
+import com.example.clientjetpack.ID1.Test._A.Tests._ID1.Test.Models.NoSqlDataBases
+import com.example.clientjetpack.ID1.Test._A.Tests._ID1.Test.Models.OutputNoSqlModel
+import com.example.clientjetpack.ID1.Test._A.Tests._ID1.Test.Modules.covertireDepitSqlAuNonSqlShemaDataBase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
