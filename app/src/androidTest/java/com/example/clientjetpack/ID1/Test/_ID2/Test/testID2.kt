@@ -16,9 +16,9 @@ fun testID2(viewModel: TarificationViewModel) {
     val modelList = inputSqlGroupeRepositorys
         .TarificationRepository()
         .modelList
+
     val noSqlDataBases = NoSqlDataBases(
-        modelList
-            .toMutableList(),
+        modelList.toMutableList(),
         initialProductsData.toMutableList(),
         initialClientsData.toMutableList()
     )
