@@ -8,14 +8,19 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,13 +40,14 @@ fun PreviewTest(
 ) {
     var produits by remember { mutableStateOf(initProduits) }
     var showOnlyLatestPrices by remember { mutableStateOf(true) }
+    var showDebugLogs by remember { mutableStateOf(false) }
 
     ClientJetPackTheme(darkTheme = true) {
         MainScreen(
             produits = produits,
             showOnlyLatestPrices = showOnlyLatestPrices,
+            showDebugLogs = showDebugLogs,
             onAddProduct = {
-                // Fixed TODO(1): Added logging to track how many times this is called
                 logDebug("onAddProduct called. Current product count: ${produits.size}")
                 val newProduct = addNewTransactionType(produits)
                 newProduct?.let {
@@ -59,6 +65,9 @@ fun PreviewTest(
             },
             onToggleLatestPrices = {
                 showOnlyLatestPrices = !showOnlyLatestPrices
+            },
+            onToggleDebugLogs = {
+                showDebugLogs = !showDebugLogs
             }
         )
     }
@@ -68,9 +77,11 @@ fun PreviewTest(
 fun MainScreen(
     produits: List<Produit>,
     showOnlyLatestPrices: Boolean,
+    showDebugLogs: Boolean = false,
     modifier: Modifier = Modifier,
     onAddProduct: () -> Unit,
-    onToggleLatestPrices: () -> Unit
+    onToggleLatestPrices: () -> Unit,
+    onToggleDebugLogs: () -> Unit = {}
 ) {
     val filtredTariff = produits
         .filter { produit ->
@@ -97,10 +108,15 @@ fun MainScreen(
                 ProductClientInfoCard(produit = produit, client = client)
             }
 
-            MainList(
-                filtredTariff = filtredTariff.map { it.third },
-                showOnlyLatestPrices = showOnlyLatestPrices
-            )
+            if (showDebugLogs) {
+                DebugLogView(logs = debugLogs, modifier = Modifier.weight(1f))
+            } else {
+                MainList(
+                    filtredTariff = filtredTariff.map { it.third },
+                    showOnlyLatestPrices = showOnlyLatestPrices,
+                    modifier = Modifier.weight(1f)
+                )
+            }
         }
 
         Column(
@@ -109,18 +125,35 @@ fun MainScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            // New Debug Log toggle button
+            FloatingActionButton(
+                onClick = onToggleDebugLogs,
+                modifier = Modifier
+            ) {
+                Icon(
+                    Icons.Default.List,
+                    contentDescription = "Toggle Debug Logs"
+                )
+            }
+
             FloatingActionButton(
                 onClick = onToggleLatestPrices,
                 modifier = Modifier
             ) {
-                Icon(Icons.Default.History, contentDescription = "Toggle Latest Prices")
+                Icon(
+                    Icons.Default.History,
+                    contentDescription = "Toggle Latest Prices"
+                )
             }
 
             FloatingActionButton(
                 onClick = onAddProduct,
                 modifier = Modifier
             ) {
-                Icon(Icons.Default.Add, contentDescription = "Add")
+                Icon(
+                    Icons.Default.Add,
+                    contentDescription = "Add"
+                )
             }
         }
     }
