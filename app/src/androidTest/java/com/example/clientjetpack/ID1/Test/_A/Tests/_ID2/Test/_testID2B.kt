@@ -35,8 +35,11 @@ suspend fun testID_2_B(viewModel: TarificationViewModel) {
         newTarification
     )
 
+    kotlinx.coroutines.delay(200)
+
     repoImpl?.refreshData()
 
+    kotlinx.coroutines.delay(100)
 
     val currentProductCount = viewModel.outputNoSqlFlow.first().produits.size
 
