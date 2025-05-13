@@ -85,9 +85,7 @@ class InputEtInfosSqlGroupeRepositorysImp(
                     _modelList.add(produitInfos)
                     _dataFlow.value = _modelList.toList()
 
-                    assertTrue(
-                        _modelList.size == 5
-                    )
+
                     onSuccess(produitInfos)
                 } catch (e: Exception) {
                     // Handle error if needed

@@ -1,5 +1,6 @@
 package com.example.clientjetpack.ID1.Test._A.Tests._ID2.Test.Repository.Output
 
+import android.util.Log
 import com.example.clientjetpack.ID1.Test.Packages.Models.InputEtInfosSqlModels
 import com.example.clientjetpack.ID1.Test.Packages.Models.NoSqlDataBases
 import com.example.clientjetpack.ID1.Test.Packages.Models.OutputNoSqlModel
@@ -17,6 +18,8 @@ import kotlinx.coroutines.launch
 class OutputNoSqlModelRepositoryImp(
     private val inputEtInfosSqlGroupeRepositorys: InputEtInfosSqlGroupeRepositorys,
 ) : OutputNoSqlModelRepository {
+    private val TAG = "OutputNoSqlModelRepo" // Tag for logging
+
     private val _imbriquantFlow = MutableStateFlow(
         OutputNoSqlModel(
             emptyList()
@@ -31,9 +34,15 @@ class OutputNoSqlModelRepositoryImp(
     private val tarificationRepository = inputEtInfosSqlGroupeRepositorys.TarificationRepository()
 
     init {
-        loadImbriquantData(tarificationRepository.modelList)
-        observeTarificationData()
+        Log.d(TAG, "Initializing repository with initial data")
+        loadImbriquantData(
+            tarificationRepository.modelList,
+            produitRepository.modelList,
+            clientRepository.modelList
+        )
         observeProduitData()
+        observeTarificationData()
+        observeClientData()
     }
 
     private fun observeTarificationData() {
@@ -42,7 +51,12 @@ class OutputNoSqlModelRepositoryImp(
                 tarificationRepository as? InputEtInfosSqlGroupeRepositorysImp.TarificationRepositoryImp
 
             tarificationRepositoryImp?._dataFlow?.collectLatest { tarificationEntries ->
-                loadImbriquantData(tarificationEntries)
+                Log.d(TAG, "Tarification data updated: ${tarificationEntries.size} entries")
+                loadImbriquantData(
+                    tarificationEntries,
+                    produitRepository.modelList,
+                    clientRepository.modelList
+                )
             }
         }
     }
@@ -53,21 +67,36 @@ class OutputNoSqlModelRepositoryImp(
                 produitRepository as? InputEtInfosSqlGroupeRepositorysImp.ProduitDataBase_RepositoryImp
 
             produitRepositoryImp?._dataFlow?.collectLatest { produitEntries ->
-                // When product data changes, reload the entire data structure
-                loadImbriquantData(tarificationRepository.modelList)
+                Log.d(TAG, "Product data updated: ${produitEntries.size} entries")
+                loadImbriquantData(
+                    tarificationRepository.modelList,
+                    produitEntries,
+                    clientRepository.modelList
+                )
             }
         }
     }
 
-    private fun loadImbriquantData(tarificationEntries: List<InputEtInfosSqlModels.Tarification>) {
+    private fun observeClientData() {
+        // Since ClientDataBase_RepositoryImp doesn't have a StateFlow yet,
+        // we'll add a comment for future implementation
+        // TODO: Implement client data observation when StateFlow is added to ClientDataBase_RepositoryImp
+        Log.d(TAG, "Client data observation not implemented - waiting for StateFlow implementation")
+    }
+
+    private fun loadImbriquantData(
+        tarificationEntries: List<InputEtInfosSqlModels.Tarification>,
+        produitEntries: List<InputEtInfosSqlModels.ProduitInfos>,
+        clientEntries: List<InputEtInfosSqlModels.ClientDataBase>
+    ) {
         val noSqlDataBases = NoSqlDataBases(
             tarificationEntries.toMutableList(),
-            produitRepository.modelList.toMutableList(),
-            clientRepository.modelList.toMutableList()
+            produitEntries.toMutableList(),
+            clientEntries.toMutableList()
         )
 
-        _imbriquantFlow.value = covertireDepitSqlAuNonSqlShemaDataBase(
-            noSqlDataBases
-        )
+        val newData = covertireDepitSqlAuNonSqlShemaDataBase(noSqlDataBases)
+        _imbriquantFlow.value = newData
+
     }
 }

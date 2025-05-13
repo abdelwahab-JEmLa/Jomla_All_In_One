@@ -1,36 +1,47 @@
-  run started: 3 tests
-                  started: A_logSepareReferentialDataBases(com.example.clientjetpack.ID1.Test._TeID1_InstrumentalTestInterieur)
-LogFilter         Setting up log filter for: _TeID1_InstrumentalTestInterieur.A_logSepareReferentialDataBases
+epo Initializing repository with initial data
+                  Client data observation not implemented - waiting for StateFlow implementation
+                  Tarification data updated: 0 entries
+                  Product data updated: 4 entries
+                  Tarification data updated: 8 entries
+                  Product data updated: 5 entries
+                  Tarification data updated: 9 entries
 System.out        
-                  ======== C Le Test Log Output Print Du Temp=2025-05-12  du  Frome viewModel.outputNoSqlFlow.first()  ========
+                  =================testID_2_BaddNewTestDataTarificationEtClient ===========================================
+                  ================================================================
+                  ======== C Le Test Log Output Print Du Temp=2025-05-13 
+                  ================================================================ du   ========
                   
                   -- Hierarchical Structure --
-                                                         //<--
-                                                         //TODO(1): pk c vide 
-                  ========TEST Frome viewModel.outputNoSqlFlow.first() COMPLETED SUCCESSFULLY ========
-LogFilter         ===== TEST LOGS: _TeID1_InstrumentalTestInterieur.A_logSepareReferentialDataBases =====
-                  ===============================================
-TestRunner        finished: A_logSepareReferentialDataBases(com.example.clientjetpack.ID1.Test._TeID1_InstrumentalTestInterieur)
-                  started: testFromSqlToNoSqlDB(com.example.clientjetpack.ID1.Test._TeID1_InstrumentalTestInterieur)
-LogFilter         Setting up log filter for: _TeID1_InstrumentalTestInterieur.testFromSqlToNoSqlDB
-System.out        
-                  ======== C Le Test Log Output Print Du Temp=2025-05-12  du  Frome testFromSqlToNoSqlDB  ========
-                                                                      //<--
-                                                                      //TODO(1): mais ici non 
-                  -- Hierarchical Structure --
-                  ├─ Product : 1=(Produit A), Date: 2025-05-05 Time: 16:30:00 (2 clients)
-                    ├─ Client ID: 1=(Client Alpha), Date: 2025-05-01 Time: 10:30:00 (1 tarification types)
-                    ├─ Client ID: 2=(Client Beta), Date: 2025-05-05 Time: 16:30:00 (1 tarification types)
-                  ├─ Product : 2=(Produit B), Date: 2025-05-06 Time: 13:45:00 (2 clients)
-                    ├─ Client ID: 2=(Client Beta), Date: 2025-05-02 Time: 11:45:00 (1 tarification types)
-                    ├─ Client ID: 3=(Client Gamma), Date: 2025-05-06 Time: 13:45:00 (1 tarification types)
-                  ├─ Product : 3=(Produit C), Date: 2025-05-03 Time: 14:15:00 (1 clients)
-                    ├─ Client ID: 3=(Client Gamma), Date: 2025-05-03 Time: 14:15:00 (1 tarification types)
-                  └─ Product : 4=(Produit D), Date: 2025-05-04 Time: 09:00:00 (1 clients)
-                    └─ Client ID: 1=(Client Alpha), Date: 2025-05-04 Time: 09:00:00 (1 tarification types)
+                  ├─ Product : 1, Date: 2025-05-05 Time: 16:30:00 (2 clients)
+                    ├─ Client ID: 1, Date: 2025-05-01 Time: 12:30:00 (2 tarification types)
+                    │     ├─ Tarification Type : 1 , Date: 2025-05-01 Time: 10:30:00 (1 currencies)
+                    │     │  └─ Currency: 10.99, Date: 2025-05-01 Time: 10:30:00
+                    │     └─ Tarification Type : 2 , Date: 2025-05-01 Time: 12:30:00 (2 currencies)
+                    │     │  ├─ Currency: 10.99, Date: 2025-05-01 Time: 12:30:00
+                    │     │  └─ Currency: 10.99, Date: 2025-05-01 Time: 11:30:00
+                    ├─ Client ID: 2, Date: 2025-05-05 Time: 16:30:00 (1 tarification types)
+                    │     └─ Tarification Type : 3 , Date: 2025-05-05 Time: 16:30:00 (1 currencies)
+                    │     │  └─ Currency: 9.99, Date: 2025-05-05 Time: 16:30:00
+                  ├─ Product : 2, Date: 2025-05-06 Time: 13:45:00 (2 clients)
+                    ├─ Client ID: 2, Date: 2025-05-02 Time: 11:45:00 (1 tarification types)
+                    │     └─ Tarification Type : 2 , Date: 2025-05-02 Time: 11:45:00 (1 currencies)
+                    │     │  └─ Currency: 15.5, Date: 2025-05-02 Time: 11:45:00
+                    ├─ Client ID: 3, Date: 2025-05-06 Time: 13:45:00 (1 tarification types)
+                    │     └─ Tarification Type : 1 , Date: 2025-05-06 Time: 13:45:00 (1 currencies)
+                    │     │  └─ Currency: 17.25, Date: 2025-05-06 Time: 13:45:00
+                  ├─ Product : 3, Date: 2025-05-03 Time: 14:15:00 (1 clients)
+                    ├─ Client ID: 3, Date: 2025-05-03 Time: 14:15:00 (1 tarification types)
+                    │     └─ Tarification Type : 1 , Date: 2025-05-03 Time: 14:15:00 (1 currencies)
+                    │     │  └─ Currency: 8.75, Date: 2025-05-03 Time: 14:15:00
+                  └─ Product : 4, Date: 2025-05-04 Time: 09:00:00 (1 clients)
+                    └─ Client ID: 1, Date: 2025-05-04 Time: 09:00:00 (1 tarification types)
+                       └─ Tarification Type : 2 , Date: 2025-05-04 Time: 09:00:00 (1 currencies)
+                            └─ Currency: 12.99, Date: 2025-05-04 Time: 09:00:00         //<--
+                            //TODO(1): PK LE PROD 5 NE S AFFICHE PAS ICI
                   
-                  ========TEST Frome testFromSqlToNoSqlDB COMPLETED SUCCESSFULLY ========
-LogFilter         ===== TEST LOGS: _TeID1_InstrumentalTestInterieur.testFromSqlToNoSqlDB =====
+                  ========TEST testID_2_BaddNewTestDataTarificationEtClient COMPLETED SUCCESSFULLY ========
+LogFilter         ===== TEST LOGS: __InstrumentalTest.testID_2_B =====
                   ===============================================
-TestRunner        finished: testFromSqlToNoSqlDB(com.example.clientjetpack.ID1.Test._TeID1_InstrumentalTestInterieur)
-                  started: testFullWorkflow(com.example.clientjetpack.ID1.Test._TeID1_InstrumentalTestInterieur)
+TestRunner        finished: testID_2_B(com.example.clientjetpack.ID1.Test.__InstrumentalTest)
+                  run finished: 1 tests, 0 failed, 0 ignored
+---------------------------- PROCESS ENDED (25366) for package com.example.clientjetpack ----------------------------
