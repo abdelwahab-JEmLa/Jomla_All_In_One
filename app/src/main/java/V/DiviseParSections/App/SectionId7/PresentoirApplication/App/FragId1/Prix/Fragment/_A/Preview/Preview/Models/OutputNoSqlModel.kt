@@ -1,4 +1,4 @@
-package com.example.clientjetpack.ID1.Test.Packages.Models
+package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models
 
 data class OutputNoSqlModel(
     val produits: List<Produit>,

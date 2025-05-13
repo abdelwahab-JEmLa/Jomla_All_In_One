@@ -1,6 +1,6 @@
 package com.example.clientjetpack.ID1.Test.Packages.Modules.Log
 
-import com.example.clientjetpack.ID1.Test.Packages.Models.OutputNoSqlModel
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.OutputNoSqlModel
 import com.example.clientjetpack.ID1.Test.Packages.Function.strDateEtTempFromVidTimestamp
 
 fun logTarificationTypes(

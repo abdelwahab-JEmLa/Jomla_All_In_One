@@ -3,11 +3,11 @@ package com.example.clientjetpack.ID1.Test.Packages.Repository.Input
 
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import androidx.compose.runtime.mutableStateListOf
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.Packages.Init.initialClientsData
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.Packages.Init.initialProductsData
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.Packages.Init.initialTestData
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.Packages.Init.initialTypeTarificationData
-import com.example.clientjetpack.ID1.Test.Packages.Models.InputEtInfosSqlModels
+import com.example.clientjetpack.ID1.Test.Packages.Init.initialClientsData
+import com.example.clientjetpack.ID1.Test.Packages.Init.initialProductsData
+import com.example.clientjetpack.ID1.Test.Packages.Init.initialTestData
+import com.example.clientjetpack.ID1.Test.Packages.Init.initialTypeTarificationData
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.InputEtInfosSqlModels
 import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

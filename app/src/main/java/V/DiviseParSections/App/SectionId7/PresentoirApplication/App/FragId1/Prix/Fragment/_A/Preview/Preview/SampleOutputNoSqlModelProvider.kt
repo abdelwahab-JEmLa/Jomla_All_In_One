@@ -1,139 +1,29 @@
-package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview
+package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview
 
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.Packages.ViewModel.TarificationViewModel
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.OutputNoSqlModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.clientjetpack.ID1.Test.Packages.Function.strDateEtTempFromVidTimestamp
-import com.example.clientjetpack.ID1.Test.Packages.Models.OutputNoSqlModel
-
-@Preview
-@Composable
-fun PrixPrev() {
-    Main()
-}
-
-@Composable
-fun Main(
-    tarificationViewModel: TarificationViewModel = viewModel(),
-    modifier: Modifier = Modifier
-) {
-    val outputNoSqlData by tarificationViewModel.outputNoSqlFlow.collectAsState()
-    var tabIndex by remember { mutableStateOf(0) }
-    val tabs = listOf("UI", "Logs")
-
-    Column(modifier = modifier.fillMaxSize()) {
-        TabRow(selectedTabIndex = tabIndex) {
-            tabs.forEachIndexed { index, title ->
-                Tab(
-                    text = { Text(title) },
-                    selected = tabIndex == index,
-                    onClick = { tabIndex = index }
-                )
-            }
-        }
-
-        Box(modifier = Modifier.fillMaxSize()) {
-            when (tabIndex) {
-                0 -> UiView(outputNoSqlData, tarificationViewModel)
-            }
-
-            FloatingActionButton(
-                onClick = { tarificationViewModel.addTest(tarificationViewModel) },
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(16.dp)
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Add Test Data")
-            }
-        }
-    }
-}
-
-@Composable
-fun UiView(
-    data: OutputNoSqlModel,
-    tarificationViewModel: TarificationViewModel,
-    modifier: Modifier = Modifier
-) {
-    Column(modifier = modifier.fillMaxSize()) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                "Tarification Dashboard",
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold
-            )
-
-            Button(onClick = { tarificationViewModel.refreshOutputData() }) {
-                Icon(Icons.Default.Refresh, contentDescription = "Refresh")
-            }
-        }
-
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(8.dp)
-        ) {
-            items(data.produits) { produit ->
-                val produitInfo = tarificationViewModel.getSqlProduitInfos(produit.id)
-
-                ProduitCard(
-                    produit = produit,
-                    produitName = produitInfo?.nom ?: "Produit ${produit.id}",
-                    tarificationViewModel = tarificationViewModel
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-            }
-        }
-    }
-}
 
 @Composable
 fun ProduitCard(
     produit: OutputNoSqlModel.Produit,
     produitName: String,
-    tarificationViewModel: TarificationViewModel,
+    tarificationViewModel: TarificationViewModel?,
     modifier: Modifier = Modifier
 ) {
     val (date, time) = strDateEtTempFromVidTimestamp(produit.vidTimestamp)
@@ -171,7 +61,7 @@ fun ProduitCard(
             Spacer(modifier = Modifier.height(16.dp))
 
             produit.clients.forEach { client ->
-                val clientInfo = tarificationViewModel.getSqlClient(client.id)
+                val clientInfo = tarificationViewModel?.getSqlClient(client.id)
                 ClientSection(
                     client = client,
                     clientName = clientInfo?.nom ?: "Client ${client.id}",
@@ -187,7 +77,7 @@ fun ProduitCard(
 fun ClientSection(
     client: OutputNoSqlModel.Produit.Client,
     clientName: String,
-    tarificationViewModel: TarificationViewModel,
+    tarificationViewModel: TarificationViewModel?,
     modifier: Modifier = Modifier
 ) {
     val (date, time) = strDateEtTempFromVidTimestamp(client.vidTimestamp)
@@ -223,7 +113,7 @@ fun ClientSection(
         Spacer(modifier = Modifier.height(8.dp))
 
         client.typeTarification.forEach { typeTarif ->
-            val typeTarifInfo = tarificationViewModel.getSqlTypeTarification(typeTarif.id)
+            val typeTarifInfo = tarificationViewModel?.getSqlTypeTarification(typeTarif.id)
             TarificationTypeSection(
                 typeTarif = typeTarif,
                 typeName = typeTarifInfo?.typeTarificationEnum?.name ?: "Type ${typeTarif.id}"

@@ -3,10 +3,9 @@ package com.example.clientjetpack.ID1.Test.Packages.ViewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.Packages.Function.createTimestamp
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.Packages.ViewModel.TarificationViewModel
-import com.example.clientjetpack.ID1.Test.Packages.Models.InputEtInfosSqlModels
-import com.example.clientjetpack.ID1.Test.Packages.Models.OutputNoSqlModel
+import com.example.clientjetpack.ID1.Test.Packages.Function.createTimestamp
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.InputEtInfosSqlModels
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.OutputNoSqlModel
 import com.example.clientjetpack.ID1.Test.Packages.Repository.Input.InputEtInfosSqlGroupeRepositorysImp
 import com.example.clientjetpack.ID1.Test.Packages.Repository.Output.OutputNoSqlModelRepositoryImp
 import kotlinx.coroutines.flow.MutableStateFlow
