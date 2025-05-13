@@ -1,10 +1,14 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.ClientDataBase
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.NoSqlDataBases
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.OutputNoSqlModel
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.ProduitInfos
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.Tarification
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.TypeTarificationDataBase
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.TypeTarificationEnum
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +24,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -30,13 +35,307 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+
+class NoSqlDataBasesPreviewProvider : PreviewParameterProvider<NoSqlDataBases> {
+    override val values = sequenceOf(
+        NoSqlDataBases(
+            produitInfos = mutableListOf(
+                ProduitInfos(id = 1, nom = "Produit A"),
+                ProduitInfos(id = 2, nom = "Produit B"),
+                ProduitInfos(id = 3, nom = "Produit C")
+            ),
+            clientDataBase = mutableListOf(
+                ClientDataBase(id = 1, nom = "Client Alpha", idActiveTypeTarificationDataBase = 1),
+                ClientDataBase(id = 2, nom = "Client Beta", idActiveTypeTarificationDataBase = 2),
+                ClientDataBase(id = 3, nom = "Client Gamma", idActiveTypeTarificationDataBase = 3)
+            ),
+            tarificationEntries = mutableListOf(
+                // Produit A - Client Alpha
+                Tarification(
+                    vidTimestamp = System.currentTimeMillis() - 86400000, // 1 day ago
+                    idProduit = 1,
+                    idClient = 1,
+                    idTypeTarification = 1,
+                    prixCurrency = 10.99
+                ),
+                Tarification(
+                    vidTimestamp = System.currentTimeMillis(),
+                    idProduit = 1,
+                    idClient = 1,
+                    idTypeTarification = 1,
+                    prixCurrency = 12.50
+                ),
+
+                // Produit A - Client Beta
+                Tarification(
+                    vidTimestamp = System.currentTimeMillis() - 43200000, // 12 hours ago
+                    idProduit = 1,
+                    idClient = 2,
+                    idTypeTarification = 2,
+                    prixCurrency = 9.75
+                ),
+
+                // Produit B - Client Alpha
+                Tarification(
+                    vidTimestamp = System.currentTimeMillis() - 172800000, // 2 days ago
+                    idProduit = 2,
+                    idClient = 1,
+                    idTypeTarification = 1,
+                    prixCurrency = 15.25
+                ),
+
+                // Produit B - Client Gamma
+                Tarification(
+                    vidTimestamp = System.currentTimeMillis() - 21600000, // 6 hours ago
+                    idProduit = 2,
+                    idClient = 3,
+                    idTypeTarification = 3,
+                    prixCurrency = 14.80
+                )
+            )
+        )
+    )
+}
+
+/**
+ * Extension function to convert NoSqlDataBases to OutputNoSqlModel
+ */
+fun NoSqlDataBases.toOutputNoSqlModel(): OutputNoSqlModel {
+    // Group tarifications by product
+    val groupedByProduct = tarificationEntries.groupBy { it.idProduit }
+
+    // Map each product with its clients and tarifications
+    val produits = groupedByProduct.map { (produitId, produitTarifications) ->
+        // Group tarifications by client for this product
+        val groupedByClient = produitTarifications.groupBy { it.idClient }
+
+        // Get the latest timestamp for this product
+        val produitTimestamp = produitTarifications.maxOfOrNull { it.vidTimestamp } ?: System.currentTimeMillis()
+
+        // Map each client with its tarification types
+        val clients = groupedByClient.map { (clientId, clientTarifications) ->
+            // Group tarifications by type for this client
+            val groupedByType = clientTarifications.groupBy { it.idTypeTarification }
+
+            // Get the latest timestamp for this client
+            val clientTimestamp = clientTarifications.maxOfOrNull { it.vidTimestamp } ?: System.currentTimeMillis()
+
+            // Map each tarification type with its prices
+            val typeTarifications = groupedByType.map { (typeId, typeTarifications) ->
+                // Get the latest timestamp for this tarification type
+                val typeTimestamp = typeTarifications.maxOfOrNull { it.vidTimestamp } ?: System.currentTimeMillis()
+
+                // Map each price
+                val prices = typeTarifications.map { tarif ->
+                    OutputNoSqlModel.Produit.Client.TypeTarification.Prix(
+                        vidTimestamp = tarif.vidTimestamp,
+                        valeur = tarif.prixCurrency
+                    )
+                }.sortedByDescending { it.vidTimestamp }
+
+                OutputNoSqlModel.Produit.Client.TypeTarification(
+                    id = typeId,
+                    vidTimestamp = typeTimestamp,
+                    PrixsCurrency = prices
+                )
+            }.sortedByDescending { it.vidTimestamp }
+
+            OutputNoSqlModel.Produit.Client(
+                id = clientId,
+                vidTimestamp = clientTimestamp,
+                typeTarification = typeTarifications
+            )
+        }.sortedByDescending { it.vidTimestamp }
+
+        OutputNoSqlModel.Produit(
+            id = produitId,
+            vidTimestamp = produitTimestamp,
+            clients = clients
+        )
+    }.sortedByDescending { it.vidTimestamp }
+
+    return OutputNoSqlModel(produits = produits)
+}
+
+/**
+ * Helper class that provides an OutputNoSqlModel preview parameter from NoSqlDataBases
+ */
+class NoSqlToOutputModelPreviewProvider : PreviewParameterProvider<OutputNoSqlModel> {
+    private val noSqlProvider = NoSqlDataBasesPreviewProvider()
+
+    override val values = sequence {
+        noSqlProvider.values.forEach { noSqlData ->
+            yield(noSqlData.toOutputNoSqlModel())
+        }
+    }
+}
+
+@Composable
+fun ProduitCard(
+    produit: OutputNoSqlModel.Produit,
+    produitName: String,
+    tarificationViewModel: TarificationViewModel?,
+    modifier: Modifier = Modifier
+) {
+    val (date, time) = strDateEtTempFromVidTimestamp(produit.vidTimestamp)
+
+    Card(
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = produitName,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "$date $time",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "${produit.clients.size} clients",
+                style = MaterialTheme.typography.bodyMedium
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            produit.clients.forEach { client ->
+                val clientInfo = tarificationViewModel?.getSqlClient(client.id)
+                ClientSection(
+                    client = client,
+                    clientName = clientInfo?.nom ?: "Client ${client.id}",
+                    tarificationViewModel = tarificationViewModel
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+        }
+    }
+}
+
+@Composable
+fun ClientSection(
+    client: OutputNoSqlModel.Produit.Client,
+    clientName: String,
+    tarificationViewModel: TarificationViewModel?,
+    modifier: Modifier = Modifier
+) {
+    val (date, time) = strDateEtTempFromVidTimestamp(client.vidTimestamp)
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .border(1.dp, Color.LightGray)
+            .padding(8.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = clientName,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold
+            )
+            Text(
+                text = "$date $time",
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.Gray
+            )
+        }
+
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = "${client.typeTarification.size} tarification types",
+            style = MaterialTheme.typography.bodySmall
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        client.typeTarification.forEach { typeTarif ->
+            val typeTarifInfo = tarificationViewModel?.getSqlTypeTarification(typeTarif.id)
+            TarificationTypeSection(
+                typeTarif = typeTarif,
+                typeName = typeTarifInfo?.typeTarificationEnum?.name ?: "Type ${typeTarif.id}"
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+        }
+    }
+}
+
+@Composable
+fun TarificationTypeSection(
+    typeTarif: OutputNoSqlModel.Produit.Client.TypeTarification,
+    typeName: String,
+    modifier: Modifier = Modifier
+) {
+    val (date, time) = strDateEtTempFromVidTimestamp(typeTarif.vidTimestamp)
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(Color(0xFFF5F5F5))
+            .padding(8.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = typeName,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Medium
+            )
+            Text(
+                text = "$date $time",
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.Gray
+            )
+        }
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        typeTarif.PrixsCurrency.forEach { prix ->
+            val (prixDate, prixTime) = strDateEtTempFromVidTimestamp(prix.vidTimestamp)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 2.dp, horizontal = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "${prix.valeur}€",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Text(
+                    text = "$prixDate $prixTime",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray
+                )
+            }
+        }
+    }
+}
 
 // Mock TarificationViewModel to use in the preview
 class TarificationViewModel {
@@ -46,7 +345,7 @@ class TarificationViewModel {
     )
 
     private val produitMap = mapOf(
-        1L to ProduitInfos(id = 1, nom = "Produit A"),
+        1L to ProduitInfos(id = 1, nom = "Produit Ambassadeur"),
         2L to ProduitInfos(id = 2, nom = "Produit B"),
         3L to ProduitInfos(id = 3, nom = "Produit C")
     )
