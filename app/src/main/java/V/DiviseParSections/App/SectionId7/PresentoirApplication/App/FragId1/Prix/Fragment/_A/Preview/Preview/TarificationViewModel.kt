@@ -66,202 +66,6 @@ class TarificationViewModel(dataProvider: NoSqlDataBases? = null) {
     fun getSqlTypeTarification(id: Long) = typeTarificationMap[id]
 }
 
-class NoSqlDataBasesPreviewProvider : PreviewParameterProvider<NoSqlDataBases> {
-    override val values = sequenceOf(
-        NoSqlDataBases(
-            produitInfos = mutableListOf(
-                ProduitInfos(id = 1, nom = "Produit A"),
-                ProduitInfos(id = 2, nom = "Produit B"),
-                ProduitInfos(id = 3, nom = "Produit C")
-            ),
-            clientDataBase = mutableListOf(
-                ClientDataBase(id = 1, nom = "Client Alpha", idActiveTypeTarificationDataBase = 1),
-                ClientDataBase(id = 2, nom = "Client Beta", idActiveTypeTarificationDataBase = 2),
-                ClientDataBase(id = 3, nom = "Client Gamma", idActiveTypeTarificationDataBase = 3)
-            ),
-            tarificationEntries = mutableListOf(
-                Tarification(
-                    vidTimestamp = System.currentTimeMillis() - 86400000,
-                    idProduit = 1,
-                    idClient = 1,
-                    idTypeTarification = 1,
-                    prixCurrency = 10.99
-                ),
-                Tarification(
-                    vidTimestamp = System.currentTimeMillis(),
-                    idProduit = 1,
-                    idClient = 1,
-                    idTypeTarification = 1,
-                    prixCurrency = 12.50
-                ),
-
-                Tarification(
-                    vidTimestamp = System.currentTimeMillis() - 43200000,
-                    idProduit = 1,
-                    idClient = 2,
-                    idTypeTarification = 2,
-                    prixCurrency = 9.75
-                ),
-
-                Tarification(
-                    vidTimestamp = System.currentTimeMillis() - 172800000,
-                    idProduit = 2,
-                    idClient = 1,
-                    idTypeTarification = 1,
-                    prixCurrency = 15.25
-                ),
-
-                // Produit B - Client Gamma
-                Tarification(
-                    vidTimestamp = System.currentTimeMillis() - 21600000, // 6 hours ago
-                    idProduit = 2,
-                    idClient = 3,
-                    idTypeTarification = 3,
-                    prixCurrency = 14.80
-                )
-            )
-        )
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PrixPrevDirect(
-    @PreviewParameter(NoSqlToOutputModelPreviewProvider::class) outputModel: OutputNoSqlModel
-) {
-    val viewModel = remember {
-        // Create view model with the same data source used for generating the output model
-        val noSqlDataProvider = NoSqlDataBasesPreviewProvider().values.first()
-        TarificationViewModel(noSqlDataProvider)
-    }
-
-    MaterialTheme {
-        Column(modifier = Modifier.fillMaxSize()) {
-            TabRow(selectedTabIndex = 0) {
-                Tab(
-                    text = { Text("UI") },
-                    selected = true,
-                    onClick = { }
-                )
-                Tab(
-                    text = { Text("Logs") },
-                    selected = false,
-                    onClick = { }
-                )
-            }
-
-            Box(modifier = Modifier.fillMaxSize()) {
-                Column(modifier = Modifier.fillMaxSize()) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            "Tarification Dashboard (Direct Model)",
-                            style = MaterialTheme.typography.headlineSmall,
-                            fontWeight = FontWeight.Bold
-                        )
-
-                        Button(onClick = { }) {
-                            Icon(Icons.Default.Refresh, contentDescription = "Refresh")
-                        }
-                    }
-
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(8.dp)
-                    ) {
-                        items(outputModel.produits) { produit ->
-                            val produitName =
-                                viewModel.getSqlProduit(produit.id)?.nom ?: "Produit ${produit.id}"
-                            ProduitCard(
-                                produit = produit,
-                                produitName = produitName,
-                                tarificationViewModel = viewModel
-                            )
-                            Spacer(modifier = Modifier.height(16.dp))
-                        }
-                    }
-                }
-
-                FloatingActionButton(
-                    onClick = { },
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(16.dp)
-                ) {
-                    Icon(Icons.Default.Add, contentDescription = "Add Test Data")
-                }
-            }
-        }
-    }
-}
-
-
-fun NoSqlDataBases.toOutputNoSqlModel(): OutputNoSqlModel {
-    val groupedByProduct = tarificationEntries.groupBy { it.idProduit }
-
-    val produits = groupedByProduct.map { (produitId, produitTarifications) ->
-        val groupedByClient = produitTarifications.groupBy { it.idClient }
-
-        val produitTimestamp =
-            produitTarifications.maxOfOrNull { it.vidTimestamp } ?: System.currentTimeMillis()
-
-        val clients = groupedByClient.map { (clientId, clientTarifications) ->
-            val groupedByType = clientTarifications.groupBy { it.idTypeTarification }
-
-            val clientTimestamp =
-                clientTarifications.maxOfOrNull { it.vidTimestamp } ?: System.currentTimeMillis()
-
-            val typeTarifications = groupedByType.map { (typeId, typeTarifications) ->
-                val typeTimestamp =
-                    typeTarifications.maxOfOrNull { it.vidTimestamp } ?: System.currentTimeMillis()
-
-                val prices = typeTarifications.map { tarif ->
-                    OutputNoSqlModel.Produit.Client.TypeTarification.Prix(
-                        vidTimestamp = tarif.vidTimestamp,
-                        valeur = tarif.prixCurrency
-                    )
-                }.sortedByDescending { it.vidTimestamp }
-
-                OutputNoSqlModel.Produit.Client.TypeTarification(
-                    id = typeId,
-                    vidTimestamp = typeTimestamp,
-                    PrixsCurrency = prices
-                )
-            }.sortedByDescending { it.vidTimestamp }
-
-            OutputNoSqlModel.Produit.Client(
-                id = clientId,
-                vidTimestamp = clientTimestamp,
-                typeTarification = typeTarifications
-            )
-        }.sortedByDescending { it.vidTimestamp }
-
-        OutputNoSqlModel.Produit(
-            id = produitId,
-            vidTimestamp = produitTimestamp,
-            clients = clients
-        )
-    }.sortedByDescending { it.vidTimestamp }
-
-    return OutputNoSqlModel(produits = produits)
-}
-
-class NoSqlToOutputModelPreviewProvider : PreviewParameterProvider<OutputNoSqlModel> {
-    private val noSqlProvider = NoSqlDataBasesPreviewProvider()
-
-    override val values = sequence {
-        noSqlProvider.values.forEach { noSqlData ->
-            yield(noSqlData.toOutputNoSqlModel())
-        }
-    }
-}
-
 @Composable
 fun ProduitCard(
     produit: OutputNoSqlModel.Produit,
@@ -419,6 +223,201 @@ fun TarificationTypeSection(
         }
     }
 }
+class NoSqlDataBasesPreviewProvider : PreviewParameterProvider<NoSqlDataBases> {
+    override val values = sequenceOf(
+        NoSqlDataBases(
+            produitInfos = mutableListOf(
+                ProduitInfos(id = 1, nom = "Produit A"),
+                ProduitInfos(id = 2, nom = "Produit B"),
+                ProduitInfos(id = 3, nom = "Produit C")
+            ),
+            clientDataBase = mutableListOf(
+                ClientDataBase(id = 1, nom = "Client Alpha", idActiveTypeTarificationDataBase = 1),
+                ClientDataBase(id = 2, nom = "Client Beta", idActiveTypeTarificationDataBase = 2),
+                ClientDataBase(id = 3, nom = "Client Gamma", idActiveTypeTarificationDataBase = 3)
+            ),
+            tarificationEntries = mutableListOf(
+                Tarification(
+                    vidTimestamp = System.currentTimeMillis() - 86400000,
+                    idProduit = 1,
+                    idClient = 1,
+                    idTypeTarification = 1,
+                    prixCurrency = 10.99
+                ),
+                Tarification(
+                    vidTimestamp = System.currentTimeMillis(),
+                    idProduit = 1,
+                    idClient = 1,
+                    idTypeTarification = 1,
+                    prixCurrency = 12.50
+                ),
+
+                Tarification(
+                    vidTimestamp = System.currentTimeMillis() - 43200000,
+                    idProduit = 1,
+                    idClient = 2,
+                    idTypeTarification = 2,
+                    prixCurrency = 9.75
+                ),
+
+                Tarification(
+                    vidTimestamp = System.currentTimeMillis() - 172800000,
+                    idProduit = 2,
+                    idClient = 1,
+                    idTypeTarification = 1,
+                    prixCurrency = 15.25
+                ),
+
+                // Produit B - Client Gamma
+                Tarification(
+                    vidTimestamp = System.currentTimeMillis() - 21600000, // 6 hours ago
+                    idProduit = 2,
+                    idClient = 3,
+                    idTypeTarification = 3,
+                    prixCurrency = 14.80
+                )
+            )
+        )
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PrixPrevDirect(
+    @PreviewParameter(NoSqlToOutputModelPreviewProvider::class) outputModel: OutputNoSqlModel
+) {
+    val viewModel = remember {
+        // Create view model with the same data source used for generating the output model
+        val noSqlDataProvider = NoSqlDataBasesPreviewProvider().values.first()
+        TarificationViewModel(noSqlDataProvider)
+    }
+
+    MaterialTheme {
+        Column(modifier = Modifier.fillMaxSize()) {
+            TabRow(selectedTabIndex = 0) {
+                Tab(
+                    text = { Text("UI") },
+                    selected = true,
+                    onClick = { }
+                )
+                Tab(
+                    text = { Text("Logs") },
+                    selected = false,
+                    onClick = { }
+                )
+            }
+
+            Box(modifier = Modifier.fillMaxSize()) {
+                Column(modifier = Modifier.fillMaxSize()) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            "Tarification Dashboard (Direct Model)",
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontWeight = FontWeight.Bold
+                        )
+
+                        Button(onClick = { }) {
+                            Icon(Icons.Default.Refresh, contentDescription = "Refresh")
+                        }
+                    }
+
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(8.dp)
+                    ) {
+                        items(outputModel.produits) { produit ->
+                            val produitName =
+                                viewModel.getSqlProduit(produit.id)?.nom ?: "Produit ${produit.id}"
+                            ProduitCard(
+                                produit = produit,
+                                produitName = produitName,
+                                tarificationViewModel = viewModel
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                        }
+                    }
+                }
+
+                FloatingActionButton(
+                    onClick = { },
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(16.dp)
+                ) {
+                    Icon(Icons.Default.Add, contentDescription = "Add Test Data")
+                }
+            }
+        }
+    }
+}
+
+fun NoSqlDataBases.toOutputNoSqlModel(): OutputNoSqlModel {
+    val groupedByProduct = tarificationEntries.groupBy { it.idProduit }
+
+    val produits = groupedByProduct.map { (produitId, produitTarifications) ->
+        val groupedByClient = produitTarifications.groupBy { it.idClient }
+
+        val produitTimestamp =
+            produitTarifications.maxOfOrNull { it.vidTimestamp } ?: System.currentTimeMillis()
+
+        val clients = groupedByClient.map { (clientId, clientTarifications) ->
+            val groupedByType = clientTarifications.groupBy { it.idTypeTarification }
+
+            val clientTimestamp =
+                clientTarifications.maxOfOrNull { it.vidTimestamp } ?: System.currentTimeMillis()
+
+            val typeTarifications = groupedByType.map { (typeId, typeTarifications) ->
+                val typeTimestamp =
+                    typeTarifications.maxOfOrNull { it.vidTimestamp } ?: System.currentTimeMillis()
+
+                val prices = typeTarifications.map { tarif ->
+                    OutputNoSqlModel.Produit.Client.TypeTarification.Prix(
+                        vidTimestamp = tarif.vidTimestamp,
+                        valeur = tarif.prixCurrency
+                    )
+                }.sortedByDescending { it.vidTimestamp }
+
+                OutputNoSqlModel.Produit.Client.TypeTarification(
+                    id = typeId,
+                    vidTimestamp = typeTimestamp,
+                    PrixsCurrency = prices
+                )
+            }.sortedByDescending { it.vidTimestamp }
+
+            OutputNoSqlModel.Produit.Client(
+                id = clientId,
+                vidTimestamp = clientTimestamp,
+                typeTarification = typeTarifications
+            )
+        }.sortedByDescending { it.vidTimestamp }
+
+        OutputNoSqlModel.Produit(
+            id = produitId,
+            vidTimestamp = produitTimestamp,
+            clients = clients
+        )
+    }.sortedByDescending { it.vidTimestamp }
+
+    return OutputNoSqlModel(produits = produits)
+}
+
+class NoSqlToOutputModelPreviewProvider : PreviewParameterProvider<OutputNoSqlModel> {
+    private val noSqlProvider = NoSqlDataBasesPreviewProvider()
+
+    override val values = sequence {
+        noSqlProvider.values.forEach { noSqlData ->
+            yield(noSqlData.toOutputNoSqlModel())
+        }
+    }
+}
+
 
 
 // Helper function to format timestamp to readable date and time
