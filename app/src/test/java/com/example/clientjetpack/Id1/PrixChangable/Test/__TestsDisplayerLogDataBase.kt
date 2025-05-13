@@ -1,9 +1,6 @@
 package com.example.clientjetpack.Id1.PrixChangable.Test
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.example.clientjetpack.Id1.PrixChangable.Test._ID1.Test.initialClientsData
-import com.example.clientjetpack.Id1.PrixChangable.Test._ID1.Test.initialProductsData
-import com.example.clientjetpack.Id1.PrixChangable.Test._ID1.Test.initialTestData
 import com.example.clientjetpack.Id1.PrixChangable.Test.Models.NoSqlDataBases
 import com.example.clientjetpack.Id1.PrixChangable.Test._ID1.Test.testID1
 import kotlinx.coroutines.Dispatchers
@@ -30,11 +27,6 @@ class __TestsDisplayerLogDataBase {
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        noSqlDataBases = NoSqlDataBases(
-            initialTestData.toMutableList(),
-            initialProductsData.toMutableList(),
-            initialClientsData.toMutableList()
-        )
     }
 
     @After
@@ -44,6 +36,6 @@ class __TestsDisplayerLogDataBase {
 
     @Test
     fun testID1_AddLogFrommock() = runTest {
-        testID1(noSqlDataBases)
+        testID1()
     }
 }

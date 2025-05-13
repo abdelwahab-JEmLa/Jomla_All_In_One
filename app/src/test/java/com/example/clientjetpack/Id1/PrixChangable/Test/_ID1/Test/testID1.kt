@@ -6,15 +6,18 @@ import com.example.clientjetpack.Id1.PrixChangable.Test.Models.NoSqlDataBases
 import com.example.clientjetpack.Id1.PrixChangable.Test.Modules.Log.logHErartchiDataBase
 import com.example.clientjetpack.Id1.PrixChangable.Test.Modules.mockOutputNoSqlModel
 
-fun testID1(
-    noSqlDataBases: NoSqlDataBases
-) {
+fun testID1 (){
+    val noSqlDataBases = NoSqlDataBases(
+        initialTestData.toMutableList(),
+        initialProductsData.toMutableList(),
+        initialClientsData.toMutableList()
+    )
+
     logHErartchiDataBase(
         mockOutputNoSqlModel(noSqlDataBases).produits.toMutableList(),
         "logHErartchiDataBase"
     )
 
-    // Add new test entries to validate data updates
     noSqlDataBases.apply {
         tarificationEntries.add(
             InputEtInfosSqlModels.Tarification(
@@ -33,7 +36,6 @@ fun testID1(
         )
     }
 
-    // Verify updates with modified data
     logHErartchiDataBase(
         mockOutputNoSqlModel(noSqlDataBases).produits.toMutableList(),
         "logHErartchiDataBase testDataAfterAdd"
