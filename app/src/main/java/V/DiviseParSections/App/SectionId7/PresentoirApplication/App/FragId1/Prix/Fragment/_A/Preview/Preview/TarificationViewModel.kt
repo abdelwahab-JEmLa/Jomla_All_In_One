@@ -50,7 +50,11 @@ import java.util.Locale
 fun PrixPrevDirect(
     @PreviewParameter(NoSqlToOutputModelPreviewProvider::class) outputModel: OutputNoSqlModel
 ) {
-    val viewModel = remember { TarificationViewModel() }
+    val viewModel = remember {
+        // Create view model with the same data source used for generating the output model
+        val noSqlDataProvider = NoSqlDataBasesPreviewProvider().values.first()
+        TarificationViewModel(noSqlDataProvider)
+    }
 
     MaterialTheme {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -393,24 +397,49 @@ fun TarificationTypeSection(
     }
 }
 
-// Mock TarificationViewModel to use in the preview
-class TarificationViewModel {
-    private val clientMap = mapOf(
-        2L to ClientDataBase(id = 2, nom = "Client Beta"),
-        3L to ClientDataBase(id = 3, nom = "Client Gamma")
-    )
+// Updated TarificationViewModel to use data from the provider
+class TarificationViewModel(dataProvider: NoSqlDataBases? = null) {
+    private val clientMap: Map<Long, ClientDataBase>
+    private val produitMap: Map<Long, ProduitInfos>
+    private val typeTarificationMap: Map<Long, TypeTarificationDataBase>
 
-    private val produitMap = mapOf(
-        1L to ProduitInfos(id = 1, nom = "Produit Ambassadeur"),
-        2L to ProduitInfos(id = 2, nom = "Produit B"),
-        3L to ProduitInfos(id = 3, nom = "Produit C")
-    )
+    init {
+        if (dataProvider != null) {
+            // Generate maps from the data provider
+            clientMap = dataProvider.clientDataBase.associateBy { it.id }
+            produitMap = dataProvider.produitInfos.associateBy { it.id }
 
-    private val typeTarificationMap = mapOf(
-        1L to TypeTarificationDataBase(id = 1, typeTarificationEnum = TypeTarificationEnum.ParBenifice),
-        2L to TypeTarificationDataBase(id = 2, typeTarificationEnum = TypeTarificationEnum.Historique),
-        3L to TypeTarificationDataBase(id = 3, typeTarificationEnum = TypeTarificationEnum.LeMaxPrixArrive)
-    )
+            // Create TypeTarificationDataBase objects if they don't exist in the provider
+            val typeTarifEnumValues = TypeTarificationEnum.entries.toTypedArray()
+            typeTarificationMap = (1..3).associateBy(
+                keySelector = { it.toLong() },
+                valueTransform = { id ->
+                    // Use a default enum value based on the ID (cycling through available values)
+                    val enumValue = typeTarifEnumValues[(id - 1) % typeTarifEnumValues.size]
+                    TypeTarificationDataBase(id = id.toLong(), typeTarificationEnum = enumValue)
+                }
+            )
+        } else {
+            // Fallback to default values if no provider is given
+            clientMap = mapOf(
+                1L to ClientDataBase(id = 1, nom = "Client Alpha", idActiveTypeTarificationDataBase = 1),
+                2L to ClientDataBase(id = 2, nom = "Client Beta", idActiveTypeTarificationDataBase = 2),
+                3L to ClientDataBase(id = 3, nom = "Client Gamma", idActiveTypeTarificationDataBase = 3)
+            )
+
+            produitMap = mapOf(
+                1L to ProduitInfos(id = 1, nom = "Produit A"),
+                2L to ProduitInfos(id = 2, nom = "Produit B"),
+                3L to ProduitInfos(id = 3, nom = "Produit C")
+            )
+
+            typeTarificationMap = mapOf(
+                1L to TypeTarificationDataBase(id = 1, typeTarificationEnum = TypeTarificationEnum.ParBenifice),
+                2L to TypeTarificationDataBase(id = 2, typeTarificationEnum = TypeTarificationEnum.Historique),
+                3L to TypeTarificationDataBase(id = 3, typeTarificationEnum = TypeTarificationEnum.LeMaxPrixArrive)
+            )
+        }
+    }
 
     fun getSqlClient(id: Long) = clientMap[id]
     fun getSqlProduit(id: Long) = produitMap[id]
@@ -424,4 +453,3 @@ fun strDateEtTempFromVidTimestamp(timestamp: Long): Pair<String, String> {
     val timeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
     return Pair(dateFormat.format(date), timeFormat.format(date))
 }
-
