@@ -70,13 +70,11 @@ class _PreviewProvider : PreviewParameterProvider<List<Produit>> {
             Produit(
                 id = 2,
                 timestamp = createTimestamp(7, 14, 30, 2025, 5), // 3 days ago
-                cesStatuesMutable = Produit.CesStatuesMutable(cActiveDonsSonListParent = true),
                 infos = Produit.ProduitInfos(nom = "Produit B"),
                 clients = listOf(
                     Produit.Client(
                         id = 1,
                         timestamp = createTimestamp(10, 14, 30, 2025, 5),
-                        cesStatuesMutable = Produit.Client.CesStatuesMutable(cActiveDonsSonListParent = true),
                         infos = Produit.Client.ClientInfos(nom = "Client Gamma"),
                         typesTarification = listOf(
                             Produit.Client.TypeTarification(
@@ -121,7 +119,6 @@ class _PreviewProvider : PreviewParameterProvider<List<Produit>> {
                         id = 1,
                         timestamp = createTimestamp(10, 10, 0, 2025, 5),
                         infos = Produit.Client.ClientInfos(nom = "Client Delta"),
-                        cesStatuesMutable = Produit.Client.CesStatuesMutable(cActiveDonsSonListParent = true),
                         typesTarification = listOf(
                             Produit.Client.TypeTarification(
                                 id = 1,

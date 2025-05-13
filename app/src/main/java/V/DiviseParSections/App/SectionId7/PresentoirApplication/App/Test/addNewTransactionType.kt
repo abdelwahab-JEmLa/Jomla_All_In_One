@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.Test
 
 // Clean version without logging
-fun addNewTransactionType(produits: List<Produit>): Produit? {
+fun addNewTransactionType(produits: List<Produit>, newPrixValeur: Double, typeId: Long): Produit? {
     // Get the first active product
     val existingProduct = produits
         .find { it.cesStatuesMutable.cActiveDonsSonListParent }
@@ -18,9 +18,6 @@ fun addNewTransactionType(produits: List<Produit>): Produit? {
         return null
     }
 
-    // Set a fixed ID for the new tarification type
-    val typeId = 3L
-
     // Check if this type already exists
     val existingType = existingClient.typesTarification.find { it.id == typeId }
 
@@ -36,7 +33,7 @@ fun addNewTransactionType(produits: List<Produit>): Produit? {
     val newPrix = Produit.Client.TypeTarification.Prix(
         id = newPrixId,
         timestamp = currentTimestamp,
-        valeur = 500.0
+        valeur = newPrixValeur
     )
 
     // Update or create the tarification type

@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.List
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,16 +36,55 @@ fun PreviewTest(
     @PreviewParameter(_PreviewProvider::class) initProduits: List<Produit>
 ) {
     var produits by remember { mutableStateOf(initProduits) }
-    var showOnlyLatestPrices by remember { mutableStateOf(true) }
+    var showOnlyLatestPrices by remember { mutableStateOf(false) }
     var showDebugLogs by remember { mutableStateOf(false) }
+    val newPrixValeur by remember { mutableStateOf(0.0) }
 
+    val produitEtClientAActiveLeur by remember { mutableStateOf(Pair(1L, 2L)) }
+
+    LaunchedEffect(produits, produitEtClientAActiveLeur) {
+        // Find the product and client by their IDs
+        val (produitId, clientId) = produitEtClientAActiveLeur
+        val produitIndex = produits.indexOfFirst { it.id == produitId }
+
+        if (produitIndex >= 0) {
+            val updatedProduits = produits.toMutableList()
+            // Activate the selected product
+            updatedProduits[produitIndex] = updatedProduits[produitIndex].copy(
+                cesStatuesMutable = updatedProduits[produitIndex].cesStatuesMutable.copy(
+                    cActiveDonsSonListParent = true
+                )
+            )
+
+            // Find and activate the selected client
+            val clientIndex = updatedProduits[produitIndex].clients.indexOfFirst { it.id == clientId }
+            if (clientIndex >= 0) {
+                val updatedClients = updatedProduits[produitIndex].clients.toMutableList()
+                updatedClients[clientIndex] = updatedClients[clientIndex].copy(
+                    cesStatuesMutable = updatedClients[clientIndex].cesStatuesMutable.copy(
+                        cActiveDonsSonListParent = true
+                    )
+                )
+                updatedProduits[produitIndex] = updatedProduits[produitIndex].copy(
+                    clients = updatedClients
+                )
+            }
+
+            // Update the products list with our changes
+            produits = updatedProduits
+
+            // Log debug information
+            logDebug("Updated active product $produitId and client $clientId")
+        }
+    }
+    
     ClientJetPackTheme(darkTheme = true) {
         MainScreen(
             produits = produits,
             showOnlyLatestPrices = showOnlyLatestPrices,
             showDebugLogs = showDebugLogs,
             onAddProduct = {
-                val newProduct = addNewTransactionType(produits)
+                val newProduct = addNewTransactionType(produits, newPrixValeur, 3L)
                 newProduct?.let {
                     // Only add if not already in the list (prevents duplication)
                     val exists = produits.any { p -> p.id == it.id }
