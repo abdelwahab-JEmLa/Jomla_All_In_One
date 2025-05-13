@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -267,6 +268,8 @@ fun ProduitCard(
 ) {
     val (date, time) = formatTimestamp(produit.timestamp)
 
+    var currentProduit by remember { mutableStateOf(produit) }
+
     Card(
         modifier = modifier.fillMaxWidth()
     ) {
@@ -277,23 +280,43 @@ fun ProduitCard(
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = produit.infos.nom,
+                    text = currentProduit.infos.nom,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
-                Text(
-                    text = "$date $time",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray
-                )
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = "$date $time",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Gray
+                    )
+
+                    // Add edit button to demonstrate using the state
+                    IconButton(onClick = {
+                        // Update the product name as an example of using the state
+                        currentProduit = currentProduit.copy(
+                            infos = currentProduit.infos.copy(
+                                nom = "${currentProduit.infos.nom} (Édité)"
+                            )
+                        )
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "Éditer le produit",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            produit.clients.forEach { client ->
+            currentProduit.clients.forEach { client ->
                 ClientSection(client = client)
                 Spacer(modifier = Modifier.height(8.dp))
             }
@@ -308,6 +331,8 @@ fun ClientSection(
 ) {
     val (date, time) = formatTimestamp(client.timestamp)
 
+    var currentClient by remember { mutableStateOf(client) }
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -316,18 +341,38 @@ fun ClientSection(
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = client.infos.nom,
+                text = currentClient.infos.nom,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold
             )
-            Text(
-                text = "$date $time",
-                style = MaterialTheme.typography.bodySmall,
-                color = Color.Gray
-            )
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = "$date $time",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray
+                )
+
+                // Add edit button to demonstrate using the state
+                IconButton(onClick = {
+                    // Update the client name as an example of using the state
+                    currentClient = currentClient.copy(
+                        infos = currentClient.infos.copy(
+                            nom = "${currentClient.infos.nom} (Édité)"
+                        )
+                    )
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Éditer le client",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
         }
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -335,9 +380,9 @@ fun ClientSection(
         // Tabs for tarification types
         var selectedTabIndex by remember { mutableIntStateOf(0) }
 
-        if (client.typesTarification.isNotEmpty()) {
+        if (currentClient.typesTarification.isNotEmpty()) {
             TabRow(selectedTabIndex = selectedTabIndex) {
-                client.typesTarification.forEachIndexed { index, type ->
+                currentClient.typesTarification.forEachIndexed { index, type ->
                     Tab(
                         selected = selectedTabIndex == index,
                         onClick = { selectedTabIndex = index },
@@ -349,9 +394,9 @@ fun ClientSection(
             Spacer(modifier = Modifier.height(8.dp))
 
             // Show selected tarification type
-            if (selectedTabIndex < client.typesTarification.size) {
+            if (selectedTabIndex < currentClient.typesTarification.size) {
                 TarificationTypeSection(
-                    typeTarification = client.typesTarification[selectedTabIndex]
+                    typeTarification = currentClient.typesTarification[selectedTabIndex]
                 )
             }
         } else {
