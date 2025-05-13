@@ -80,9 +80,8 @@ class NoSqlDataBasesPreviewProvider : PreviewParameterProvider<NoSqlDataBases> {
                 ClientDataBase(id = 3, nom = "Client Gamma", idActiveTypeTarificationDataBase = 3)
             ),
             tarificationEntries = mutableListOf(
-                // Produit A - Client Alpha
                 Tarification(
-                    vidTimestamp = System.currentTimeMillis() - 86400000, // 1 day ago
+                    vidTimestamp = System.currentTimeMillis() - 86400000,
                     idProduit = 1,
                     idClient = 1,
                     idTypeTarification = 1,
@@ -96,18 +95,16 @@ class NoSqlDataBasesPreviewProvider : PreviewParameterProvider<NoSqlDataBases> {
                     prixCurrency = 12.50
                 ),
 
-                // Produit A - Client Beta
                 Tarification(
-                    vidTimestamp = System.currentTimeMillis() - 43200000, // 12 hours ago
+                    vidTimestamp = System.currentTimeMillis() - 43200000,
                     idProduit = 1,
                     idClient = 2,
                     idTypeTarification = 2,
                     prixCurrency = 9.75
                 ),
 
-                // Produit B - Client Alpha
                 Tarification(
-                    vidTimestamp = System.currentTimeMillis() - 172800000, // 2 days ago
+                    vidTimestamp = System.currentTimeMillis() - 172800000,
                     idProduit = 2,
                     idClient = 1,
                     idTypeTarification = 1,
