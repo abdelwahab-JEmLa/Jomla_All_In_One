@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.Test
 
-import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,9 +32,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.example.clientjetpack.ui.theme.ClientJetPackTheme
 
-@Preview(
-    uiMode = Configuration.UI_MODE_NIGHT_YES
-)
+@Preview
 @Composable
 fun PreviewTest(
     @PreviewParameter(ProduitsPreviewProvider::class) initProduits: List<Produit>
