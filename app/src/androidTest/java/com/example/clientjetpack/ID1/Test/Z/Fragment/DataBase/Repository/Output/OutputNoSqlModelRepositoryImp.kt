@@ -1,9 +1,10 @@
 package com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Output
 
-import com.example.clientjetpack.ID1.Test._ID1.Test.Models.OutputNoSqlModel
 import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input.InputEtInfosSqlGroupeRepositorys
 import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input.InputEtInfosSqlGroupeRepositorysImp
+import com.example.clientjetpack.ID1.Test._ID1.Test.Models.InputEtInfosSqlModels
 import com.example.clientjetpack.ID1.Test._ID1.Test.Models.NoSqlDataBases
+import com.example.clientjetpack.ID1.Test._ID1.Test.Models.OutputNoSqlModel
 import com.example.clientjetpack.ID1.Test._ID1.Test.Modules.covertireDepitSqlAuNonSqlShemaDataBase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -30,15 +31,8 @@ class OutputNoSqlModelRepositoryImp(
     private val tarificationRepository = inputEtInfosSqlGroupeRepositorys.TarificationRepository()
 
     init {
-        val noSqlDataBases = NoSqlDataBases(
-            tarificationRepository.modelList.toMutableList(),
-            produitRepository.modelList.toMutableList(),
-            clientRepository.modelList.toMutableList()
-        )
+        loadImbriquantData(tarificationRepository.modelList)
 
-        covertireDepitSqlAuNonSqlShemaDataBase(
-            noSqlDataBases
-        )
         observeTarificationData()
     }
 
@@ -48,16 +42,22 @@ class OutputNoSqlModelRepositoryImp(
                 tarificationRepository as? InputEtInfosSqlGroupeRepositorysImp.TarificationRepositoryImp
 
             tarificationRepositoryImp?._dataFlow?.collectLatest { tarificationEntries ->
-                val noSqlDataBases = NoSqlDataBases(
-                    tarificationEntries.toMutableList(),
-                    produitRepository.modelList.toMutableList(),
-                    clientRepository.modelList.toMutableList()
-                )
 
-                covertireDepitSqlAuNonSqlShemaDataBase(
-                    noSqlDataBases
-                )
+                loadImbriquantData(tarificationEntries)
+
             }
         }
+    }
+
+    fun loadImbriquantData(tarificationEntries: List<InputEtInfosSqlModels.Tarification>) {
+        val noSqlDataBases = NoSqlDataBases(
+            tarificationEntries.toMutableList(),
+            produitRepository.modelList.toMutableList(),
+            clientRepository.modelList.toMutableList()
+        )
+
+        _imbriquantFlow.value = covertireDepitSqlAuNonSqlShemaDataBase(
+            noSqlDataBases
+        )
     }
 }
