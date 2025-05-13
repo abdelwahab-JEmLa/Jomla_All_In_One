@@ -1,19 +1,13 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.Test
 
 data class Produit(
-    val id: Long,
-    val timestamp: Long,
-    val infos: ProduitInfos,
-    val cesStatuesMutable: CesStatuesMutable,
-    val clients: List<Client>,
+    val id: Long = 0,
+    val timestamp: Long = System.currentTimeMillis(),
+    val infos: ProduitInfos = ProduitInfos(),
+    val cesStatuesMutable: CesStatuesMutable = CesStatuesMutable(),
+    val clients: List<Client> = emptyList(),
 ) {
-    constructor() : this(
-        id = 0,
-        timestamp = System.currentTimeMillis(),
-        infos = ProduitInfos(),
-        cesStatuesMutable = CesStatuesMutable(),
-        clients = emptyList()
-    )
+    // The secondary constructor is no longer needed as default values are provided in the primary constructor
 
     data class ProduitInfos(
         val nom: String = ""
@@ -26,8 +20,8 @@ data class Produit(
         val id: Long,
         val timestamp: Long,
         val infos: ClientInfos,
-        val cesStatuesMutable: CesStatuesMutable,
-        val typesTarification: List<TypeTarification>,
+        val cesStatuesMutable: CesStatuesMutable= CesStatuesMutable(),
+        val typesTarification: List<TypeTarification> = emptyList(),
     ) {
         constructor() : this(
             id = 0,

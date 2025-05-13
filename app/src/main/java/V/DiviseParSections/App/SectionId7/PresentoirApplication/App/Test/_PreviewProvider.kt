@@ -12,35 +12,35 @@ class _PreviewProvider : PreviewParameterProvider<List<Produit>> {
                 cesStatuesMutable = Produit.CesStatuesMutable(cActiveDonsSonListParent = true),
                 clients = listOf(
                     Produit.Client(
-                        id = 101,
+                        id = 1,
                         timestamp = createTimestamp(2025, 5, 9, 14, 30), // Yesterday
-                        infos = Produit.Client.ClientInfos(nom = "Client Alpha"),
+                        infos = Produit.Client.ClientInfos(nom = "Client 1"),
                         cesStatuesMutable = Produit.Client.CesStatuesMutable(cActiveDonsSonListParent = true),
                         typesTarification = listOf(
                             Produit.Client.TypeTarification(
-                                id = 1001,
+                                id = 1,
                                 timestamp = createTimestamp(2025, 5, 10, 14, 30),
                                 infos = Produit.Client.TypeTarification.Infos(type = Produit.Client.TypeTarification.TypeTarificationEnum.ParBenifice),
                                 PrixsCurrency = listOf(
                                     Produit.Client.TypeTarification.Prix(
-                                        id = 10001,
+                                        id = 1,
                                         timestamp = createTimestamp(2025, 5, 10, 14, 30),
                                         valeur = 29.99
                                     ),
                                     Produit.Client.TypeTarification.Prix(
-                                        id = 10002,
+                                        id = 2,
                                         timestamp = createTimestamp(2025, 5, 3, 14, 30), // Week ago
                                         valeur = 24.99
                                     )
                                 )
                             ),
                             Produit.Client.TypeTarification(
-                                id = 1002,
+                                id = 2,
                                 timestamp = createTimestamp(2025, 5, 10, 14, 30),
                                 infos = Produit.Client.TypeTarification.Infos(type = Produit.Client.TypeTarification.TypeTarificationEnum.Historique),
                                 PrixsCurrency = listOf(
                                     Produit.Client.TypeTarification.Prix(
-                                        id = 10003,
+                                        id = 1,
                                         timestamp = createTimestamp(2025, 5, 10, 14, 30),
                                         valeur = 49.99
                                     )
@@ -49,18 +49,17 @@ class _PreviewProvider : PreviewParameterProvider<List<Produit>> {
                         )
                     ),
                     Produit.Client(
-                        id = 102,
+                        id = 2,
                         timestamp = createTimestamp(2025, 5, 10, 14, 30),
                         infos = Produit.Client.ClientInfos(nom = "Client Beta"),
-                        cesStatuesMutable = Produit.Client.CesStatuesMutable(cActiveDonsSonListParent = false),
                         typesTarification = listOf(
                             Produit.Client.TypeTarification(
-                                id = 1003,
+                                id = 1,
                                 timestamp = createTimestamp(2025, 5, 10, 14, 30),
                                 infos = Produit.Client.TypeTarification.Infos(type = Produit.Client.TypeTarification.TypeTarificationEnum.LeMaxPrixArrive),
                                 PrixsCurrency = listOf(
                                     Produit.Client.TypeTarification.Prix(
-                                        id = 10004,
+                                        id = 1,
                                         timestamp = createTimestamp(2025, 5, 10, 14, 30),
                                         valeur = 19.99
                                     )
@@ -74,21 +73,19 @@ class _PreviewProvider : PreviewParameterProvider<List<Produit>> {
                 id = 2,
                 timestamp = createTimestamp(2025, 5, 7, 14, 30), // 3 days ago
                 infos = Produit.ProduitInfos(nom = "Produit B"),
-                cesStatuesMutable = Produit.CesStatuesMutable(cActiveDonsSonListParent = false),
                 clients = listOf(
                     Produit.Client(
-                        id = 103,
+                        id = 1,
                         timestamp = createTimestamp(2025, 5, 10, 14, 30),
                         infos = Produit.Client.ClientInfos(nom = "Client Gamma"),
-                        cesStatuesMutable = Produit.Client.CesStatuesMutable(cActiveDonsSonListParent = true),
                         typesTarification = listOf(
                             Produit.Client.TypeTarification(
-                                id = 1004,
+                                id = 1,
                                 timestamp = createTimestamp(2025, 5, 10, 14, 30),
                                 infos = Produit.Client.TypeTarification.Infos(type = Produit.Client.TypeTarification.TypeTarificationEnum.ParBenifice),
                                 PrixsCurrency = listOf(
                                     Produit.Client.TypeTarification.Prix(
-                                        id = 10005,
+                                        id = 1,
                                         timestamp = createTimestamp(2025, 5, 10, 14, 30),
                                         valeur = 99.99
                                     )
@@ -98,21 +95,19 @@ class _PreviewProvider : PreviewParameterProvider<List<Produit>> {
                     )
                 )
             ),
-            // Added another product as per TODO(1): cree d autre
             Produit(
                 id = 3,
                 timestamp = createTimestamp(2025, 5, 10, 9, 15),
                 infos = Produit.ProduitInfos(nom = "Produit C"),
-                cesStatuesMutable = Produit.CesStatuesMutable(cActiveDonsSonListParent = true),
                 clients = listOf(
                     Produit.Client(
-                        id = 104,
+                        id = 1,
                         timestamp = createTimestamp(2025, 5, 10, 10, 0),
                         infos = Produit.Client.ClientInfos(nom = "Client Delta"),
                         cesStatuesMutable = Produit.Client.CesStatuesMutable(cActiveDonsSonListParent = true),
                         typesTarification = listOf(
                             Produit.Client.TypeTarification(
-                                id = 1005,
+                                id = 1,
                                 timestamp = createTimestamp(2025, 5, 10, 10, 30),
                                 infos = Produit.Client.TypeTarification.Infos(type = Produit.Client.TypeTarification.TypeTarificationEnum.ParBenifice),
                                 PrixsCurrency = listOf(
@@ -126,18 +121,17 @@ class _PreviewProvider : PreviewParameterProvider<List<Produit>> {
                         )
                     ),
                     Produit.Client(
-                        id = 105,
+                        id = 2,
                         timestamp = createTimestamp(2025, 5, 10, 12, 0),
                         infos = Produit.Client.ClientInfos(nom = "Client Epsilon"),
-                        cesStatuesMutable = Produit.Client.CesStatuesMutable(cActiveDonsSonListParent = true),
                         typesTarification = listOf(
                             Produit.Client.TypeTarification(
-                                id = 1006,
+                                id = 1,
                                 timestamp = createTimestamp(2025, 5, 10, 12, 30),
                                 infos = Produit.Client.TypeTarification.Infos(type = Produit.Client.TypeTarification.TypeTarificationEnum.Historique),
                                 PrixsCurrency = listOf(
                                     Produit.Client.TypeTarification.Prix(
-                                        id = 10007,
+                                        id = 1,
                                         timestamp = createTimestamp(2025, 5, 10, 13, 0),
                                         valeur = 59.99
                                     )
