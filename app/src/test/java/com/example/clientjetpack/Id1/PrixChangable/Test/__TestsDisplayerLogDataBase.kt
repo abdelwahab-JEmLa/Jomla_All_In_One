@@ -1,7 +1,6 @@
 package com.example.clientjetpack.Id1.PrixChangable.Test
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.example.clientjetpack.Id1.PrixChangable.Test._ID1.Test.Models.NoSqlDataBases
 import com.example.clientjetpack.Id1.PrixChangable.Test._ID1.Test.testID1
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -21,8 +20,6 @@ class __TestsStartApp {
     val rule: TestRule = InstantTaskExecutorRule()
 
     private val testDispatcher = StandardTestDispatcher()
-
-    private var noSqlDataBases = NoSqlDataBases()
 
     @Before
     fun setup() {
