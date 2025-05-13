@@ -67,9 +67,8 @@ class PreviewProvider : PreviewParameterProvider<List<TypeTarification>> {
                 id = 4L,
                 timestamp = createTimestamp(day = 13, month = 5, hour = 14, minute = 45),
                 infos = TypeTarification.Infos(type = TypeTarification.TypeTarificationEnum.ParBenifice),
-                cesStatuesMutable = TypeTarification.CesStatuesMutable(cActiveDonsSonListParent = true),
                 parent = TypeTarification.Parent(
-                    produit = hardData()[3] // Using fourth product from hardData
+                    produit = hardData()[3]
                 ),
                 PrixsCurrency = listOf(
                     TypeTarification.Prix(
@@ -87,8 +86,6 @@ class PreviewProvider : PreviewParameterProvider<List<TypeTarification>> {
             TypeTarification(
                 id = 5L,
                 timestamp = createTimestamp(day = 14, month = 5, hour = 9, minute = 15),
-                infos = TypeTarification.Infos(type = TypeTarification.TypeTarificationEnum.Historique),
-                cesStatuesMutable = TypeTarification.CesStatuesMutable(cActiveDonsSonListParent = true),
                 parent = TypeTarification.Parent(
                     produit = hardData()[0] // Reusing first product from hardData
                 ),
