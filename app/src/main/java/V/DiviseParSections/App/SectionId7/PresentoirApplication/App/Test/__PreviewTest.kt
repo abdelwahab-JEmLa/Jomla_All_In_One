@@ -53,9 +53,11 @@ fun PreviewTest(
 }
 
 @Composable
-fun MainScreen(datas: List<TypeTarification>,
-               modifier: Modifier = Modifier,
-               onAddData: () -> Unit) {
+fun MainScreen(
+    datas: List<TypeTarification>,
+    modifier: Modifier = Modifier,
+    onAddData: () -> Unit
+) {
     Box(modifier = modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
             MainList(datas = datas)
