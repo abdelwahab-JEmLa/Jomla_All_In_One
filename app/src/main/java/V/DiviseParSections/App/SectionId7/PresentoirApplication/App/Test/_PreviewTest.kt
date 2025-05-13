@@ -71,15 +71,11 @@ fun MainScreen(produits: List<Produit>, modifier: Modifier = Modifier, onAddProd
 
 @Composable
 fun MainList(produits: List<Produit>, modifier: Modifier = Modifier) {
-
-    var selectedClient by remember { mutableStateOf<Produit.Client?>(null) }
-
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(vertical = 8.dp, horizontal = 16.dp)
     ) {
-        // Filter active products first, then get tarification from active clients
         val allTypesTarification = produits
             .filter { produit ->
                 produit.cesStatuesMutable.cActiveDonsSonListParent
