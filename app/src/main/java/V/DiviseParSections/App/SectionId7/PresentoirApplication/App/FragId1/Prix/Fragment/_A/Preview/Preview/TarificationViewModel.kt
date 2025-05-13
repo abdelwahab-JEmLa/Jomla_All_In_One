@@ -178,35 +178,22 @@ class NoSqlDataBasesPreviewProvider : PreviewParameterProvider<NoSqlDataBases> {
     )
 }
 
-/**
- * Extension function to convert NoSqlDataBases to OutputNoSqlModel
- */
 fun NoSqlDataBases.toOutputNoSqlModel(): OutputNoSqlModel {
-    // Group tarifications by product
     val groupedByProduct = tarificationEntries.groupBy { it.idProduit }
 
-    // Map each product with its clients and tarifications
     val produits = groupedByProduct.map { (produitId, produitTarifications) ->
-        // Group tarifications by client for this product
         val groupedByClient = produitTarifications.groupBy { it.idClient }
 
-        // Get the latest timestamp for this product
         val produitTimestamp = produitTarifications.maxOfOrNull { it.vidTimestamp } ?: System.currentTimeMillis()
 
-        // Map each client with its tarification types
         val clients = groupedByClient.map { (clientId, clientTarifications) ->
-            // Group tarifications by type for this client
             val groupedByType = clientTarifications.groupBy { it.idTypeTarification }
 
-            // Get the latest timestamp for this client
             val clientTimestamp = clientTarifications.maxOfOrNull { it.vidTimestamp } ?: System.currentTimeMillis()
 
-            // Map each tarification type with its prices
             val typeTarifications = groupedByType.map { (typeId, typeTarifications) ->
-                // Get the latest timestamp for this tarification type
                 val typeTimestamp = typeTarifications.maxOfOrNull { it.vidTimestamp } ?: System.currentTimeMillis()
 
-                // Map each price
                 val prices = typeTarifications.map { tarif ->
                     OutputNoSqlModel.Produit.Client.TypeTarification.Prix(
                         vidTimestamp = tarif.vidTimestamp,
@@ -238,9 +225,6 @@ fun NoSqlDataBases.toOutputNoSqlModel(): OutputNoSqlModel {
     return OutputNoSqlModel(produits = produits)
 }
 
-/**
- * Helper class that provides an OutputNoSqlModel preview parameter from NoSqlDataBases
- */
 class NoSqlToOutputModelPreviewProvider : PreviewParameterProvider<OutputNoSqlModel> {
     private val noSqlProvider = NoSqlDataBasesPreviewProvider()
 
