@@ -2,11 +2,11 @@ package com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input
 
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import androidx.compose.runtime.mutableStateListOf
-import com.example.clientjetpack.ID1.Test._ID1.Test.Models.InputEtInfosSqlModels
 import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input.Test.initialClientsData
 import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input.Test.initialProductsData
 import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input.Test.initialTestData
 import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input.Test.initialTypeTarificationData
+import com.example.clientjetpack.ID1.Test._ID1.Test.Models.InputEtInfosSqlModels
 import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -149,45 +149,7 @@ class InputEtInfosSqlGroupeRepositorysImp(
             onSuccess: (InputEtInfosSqlModels.Tarification) -> Unit
         ) {
             repositoryScope.launch {
-                try {
-                    // Generate a unique key for the new tarification
-                    val key = tarification.vidTimestamp.toString()
 
-                    // Add to Firebase
-                    sonDataBaseRef.child(key).setValue(tarification)
-                        .addOnSuccessListener {
-                            // Update local list immediately without waiting for Firebase
-                            val currentList = _dataFlow.value.toMutableList()
-
-                            // Check if this is a duplicate
-                            val existingIndex = currentList.indexOfFirst {
-                                it.vidTimestamp == tarification.vidTimestamp &&
-                                        it.idProduit == tarification.idProduit &&
-                                        it.idClient == tarification.idClient &&
-                                        it.idTypeTarification == tarification.idTypeTarification
-                            }
-
-                            if (existingIndex >= 0) {
-                                // Replace existing entry
-                                currentList[existingIndex] = tarification
-                            } else {
-                                // Add new entry
-                                currentList.add(tarification)
-                            }
-
-                            // Update flow with new list
-                            _dataFlow.value = currentList
-
-                            // Call onSuccess callback with the updated tarification
-                            onSuccess(tarification)
-                        }
-                        .addOnFailureListener { exception ->
-                            // Handle failure (you might want to add error logging)
-                            println("Failed to add tarification: ${exception.message}")
-                        }
-                } catch (e: Exception) {
-                    println("Error adding tarification: ${e.message}")
-                }
             }
         }
     }
