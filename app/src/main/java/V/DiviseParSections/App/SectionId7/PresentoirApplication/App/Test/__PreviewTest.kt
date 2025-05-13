@@ -49,8 +49,6 @@ fun PreviewTest(
                 datas = datas + newData
             },
             onClickToFilter = {
-                // Implementation for TODO(2): update datas cActiveDonsSonListParent = false
-                // for products with id 2L
                 datas = datas.map { typeTarification ->
                     if (typeTarification.parent.produit.id == 2L) {
                         typeTarification.copy(
@@ -79,7 +77,6 @@ fun MainScreen(
             MainList(datas = datas)
         }
 
-        // Implementation for TODO(1): Added second FAB for filtering
         Row(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
