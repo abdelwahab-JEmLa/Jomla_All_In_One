@@ -4,12 +4,7 @@ import com.example.clientjetpack.Id1.PrixChangable.Test.Function.createTimestamp
 import com.example.clientjetpack.Id1.PrixChangable.Test.Main.Modules.logHErartchiDataBase
 import com.example.clientjetpack.Id1.PrixChangable.Test.Main.Modules.mockOutputNoSqlModel
 import com.example.clientjetpack.Id1.PrixChangable.Test.Models.InputEtInfosSqlModels
-
-data class NoSql(
-    val tarificationEntries: MutableList<InputEtInfosSqlModels.Tarification>,
-    val produitInfos: MutableList<InputEtInfosSqlModels.ProduitInfos>,
-    val clientDataBase: MutableList<InputEtInfosSqlModels.ClientDataBase>,
-)
+import com.example.clientjetpack.Id1.PrixChangable.Test.Models.NoSql
 
 fun testID1(
     tarificationEntries: MutableList<InputEtInfosSqlModels.Tarification>,
@@ -18,6 +13,7 @@ fun testID1(
 ) {
     // Create NoSql model and generate initial test data
     val noSql = NoSql(tarificationEntries, produitInfos, clientDataBase)
+
     logHErartchiDataBase(
         mockOutputNoSqlModel(noSql).produits.toMutableList(),
         "logHErartchiDataBase"

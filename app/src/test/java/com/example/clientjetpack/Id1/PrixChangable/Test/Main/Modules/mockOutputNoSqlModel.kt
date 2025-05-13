@@ -1,7 +1,7 @@
 package com.example.clientjetpack.Id1.PrixChangable.Test.Main.Modules
 
 import com.example.clientjetpack.Id1.PrixChangable.Test.Models.OutputNoSqlModel
-import com.example.clientjetpack.Id1.PrixChangable.Test._ID1.Test.NoSql
+import com.example.clientjetpack.Id1.PrixChangable.Test.Models.NoSql
 
 fun mockOutputNoSqlModel(noSql: NoSql): OutputNoSqlModel {
     val produitInfos=  noSql.produitInfos
