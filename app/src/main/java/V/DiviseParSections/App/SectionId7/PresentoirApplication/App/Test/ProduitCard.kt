@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.Test
 
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.ProduitInfos
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +19,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -190,7 +190,7 @@ class ProduitsPreviewProvider : PreviewParameterProvider<List<Produit>> {
 fun ProduitCardPrev(
     @PreviewParameter(ProduitsPreviewProvider::class) initProduits: List<Produit>
 ) {
-    var produits by remember { mutableStateOf(initProduits.toMutableList()) }
+    var produits by remember { mutableStateOf(initProduits) }
 
     MainScreen(
         produits = produits,
@@ -222,7 +222,7 @@ fun ProduitCardPrev(
                     )
                 )
             )
-            produits = (produits + newProduct).toMutableList()
+            produits = produits + newProduct
         }
     )
 }
@@ -371,6 +371,8 @@ fun TarificationTypeSection(
 ) {
     val (date, time) = formatTimestamp(typeTarification.timestamp)
 
+    var currentTypeTarification by remember { mutableStateOf(typeTarification) }
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -378,23 +380,48 @@ fun TarificationTypeSection(
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = typeTarification.infos.nom,
+                text = currentTypeTarification.infos.nom,
                 style = MaterialTheme.typography.titleSmall
             )
-            Text(
-                text = "$date $time",
-                style = MaterialTheme.typography.bodySmall,
-                color = Color.Gray
-            )
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = "$date $time",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray
+                )
+
+                IconButton(onClick = {
+                    // Create a new price with the next ID
+                    val newPriceId = (currentTypeTarification.PrixsCurrency.maxOfOrNull { it.id } ?: 0) + 1
+                    val newPrice = Produit.Client.TypeTarification.Prix(
+                        id = newPriceId,
+                        timestamp = System.currentTimeMillis(),
+                        valeur = 0.0
+                    )
+
+                    // Update the tarification with the new price
+                    currentTypeTarification = currentTypeTarification.copy(
+                        PrixsCurrency = currentTypeTarification.PrixsCurrency + newPrice
+                    )
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Ajouter un prix",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
         }
 
         Spacer(modifier = Modifier.height(8.dp))
 
         // Display all prices
-        typeTarification.PrixsCurrency.forEach { prix ->
+        currentTypeTarification.PrixsCurrency.forEach { prix ->
             TarificationItem(prix = prix)
             Spacer(modifier = Modifier.height(4.dp))
         }
