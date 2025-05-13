@@ -45,8 +45,6 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-
-
 class NoSqlDataBasesPreviewProvider : PreviewParameterProvider<NoSqlDataBases> {
     override val values = sequenceOf(
         NoSqlDataBases(
@@ -104,6 +102,7 @@ class NoSqlDataBasesPreviewProvider : PreviewParameterProvider<NoSqlDataBases> {
         )
     )
 }
+
 @Composable
 fun ProduitCard(
     produit: OutputNoSqlModel.Produit,
