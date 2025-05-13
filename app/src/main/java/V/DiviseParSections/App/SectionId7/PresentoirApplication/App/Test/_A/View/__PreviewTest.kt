@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -16,11 +15,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.List
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,17 +44,14 @@ fun PreviewTest(
             showOnlyLatestPrices = showOnlyLatestPrices,
             showDebugLogs = showDebugLogs,
             onAddProduct = {
-                logDebug("onAddProduct called. Current product count: ${produits.size}")
                 val newProduct = addNewTransactionType(produits)
                 newProduct?.let {
                     // Only add if not already in the list (prevents duplication)
                     val exists = produits.any { p -> p.id == it.id }
                     if (!exists) {
-                        logDebug("Adding new product with id: ${it.id}")
                         produits = produits + it
                     } else {
                         // If product exists, update it instead of adding a new one
-                        logDebug("Updating existing product with id: ${it.id}")
                         produits = produits.map { p -> if (p.id == it.id) it else p }
                     }
                 }
