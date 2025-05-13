@@ -5,10 +5,11 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.clientjetpack.ID1.Test.Components.LogFilterRule
 import com.example.clientjetpack.ID1.Test.Z.Fragment.A.ViewModel.TarificationViewModel
-import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Models.InputEtInfosSqlModels
 import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input.Test.initialTestData
 import com.example.clientjetpack.ID1.Test.Z.Fragment.Passive.createTimestamp
+import com.example.clientjetpack.ID1.Test._ID1.Test.Models.InputEtInfosSqlModels
 import com.example.clientjetpack.ID1.Test._ID1.Test.testID1
+import com.example.clientjetpack.ID1.Test._ID2.Test.testID2
 import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -88,6 +89,10 @@ class __InstrumentalTest: KoinTest {
     @Test
     fun testID1_AddLogFrommock() = runTest {
         testID1()
+    }
+    @Test
+    fun testID2_() = runTest {
+        testID2(viewModel)
     }
 
     fun testID3_apreAddNewTestDataTarificationEtClientl() = runTest {

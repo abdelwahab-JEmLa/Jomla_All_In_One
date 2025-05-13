@@ -2,7 +2,7 @@ package com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input
 
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import androidx.compose.runtime.mutableStateListOf
-import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Models.InputEtInfosSqlModels
+import com.example.clientjetpack.ID1.Test._ID1.Test.Models.InputEtInfosSqlModels
 import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input.Test.initialClientsData
 import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input.Test.initialProductsData
 import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input.Test.initialTestData
@@ -81,7 +81,7 @@ class InputEtInfosSqlGroupeRepositorysImp(
 
         override fun update(
             client: InputEtInfosSqlModels.ClientDataBase,
-            onSuccess: (InputEtInfosSqlModels.ClientDataBase) -> Unit ,
+            onSuccess: (InputEtInfosSqlModels.ClientDataBase) -> Unit,
         ) {
             val list = modelList as? MutableList ?: return
             val index = list.indexOfFirst { it.id == client.id }
