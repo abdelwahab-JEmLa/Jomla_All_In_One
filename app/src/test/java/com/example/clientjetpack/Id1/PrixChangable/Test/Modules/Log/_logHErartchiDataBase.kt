@@ -1,7 +1,6 @@
-package com.example.clientjetpack.Id1.PrixChangable.Test.Modules
+package com.example.clientjetpack.Id1.PrixChangable.Test.Modules.Log
 
 import com.example.clientjetpack.Id1.PrixChangable.Test.Function.strDateEtTempFromVidTimestamp
-import com.example.clientjetpack.Id1.PrixChangable.Test.Modules.Log.logProduits
 import com.example.clientjetpack.Id1.PrixChangable.Test.Models.OutputNoSqlModel
 
 fun logHErartchiDataBase(

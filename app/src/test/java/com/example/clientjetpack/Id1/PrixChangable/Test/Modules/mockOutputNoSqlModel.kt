@@ -4,7 +4,6 @@ import com.example.clientjetpack.Id1.PrixChangable.Test.Models.NoSqlDataBases
 import com.example.clientjetpack.Id1.PrixChangable.Test.Models.OutputNoSqlModel
 
 fun mockOutputNoSqlModel(noSqlDataBases: NoSqlDataBases): OutputNoSqlModel {
-
     val produitInfos=  noSqlDataBases.produitInfos
     val tarificationEntries=     noSqlDataBases.tarificationEntries
     val clientDataBase=   noSqlDataBases.clientDataBase
