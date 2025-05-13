@@ -4,7 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.example.clientjetpack.Id1.PrixChangable.Test.Main.Modules.initialClientsData
 import com.example.clientjetpack.Id1.PrixChangable.Test.Main.Modules.initialProductsData
 import com.example.clientjetpack.Id1.PrixChangable.Test.Main.Modules.initialTestData
-import com.example.clientjetpack.Id1.PrixChangable.Test.Models.InputEtInfosSqlModels
+import com.example.clientjetpack.Id1.PrixChangable.Test.Models.NoSql
 import com.example.clientjetpack.Id1.PrixChangable.Test._ID1.Test.testID1
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -25,20 +25,26 @@ class __TestsDisplayerLogDataBase {
 
     private val testDispatcher = StandardTestDispatcher()
 
-    // Change to mutable lists to support adding new elements
-    private var tarificationEntries = mutableListOf<InputEtInfosSqlModels.Tarification>()
-    private var produitInfos = mutableListOf<InputEtInfosSqlModels.ProduitInfos>()
-    private var clientDataBase = mutableListOf<InputEtInfosSqlModels.ClientDataBase>()
+    private var noSql = NoSql()
+
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        // Initialize with data from initialTestData
-        tarificationEntries = initialTestData.toMutableList()
-        produitInfos = initialProductsData.toMutableList()
-        clientDataBase = initialClientsData.toMutableList()
+        noSql = NoSql(
+            initialTestData.toMutableList(),
+            initialProductsData.toMutableList(),
+            initialClientsData.toMutableList()
+        )
     }
-    @After fun tearDown() { Dispatchers.resetMain() }
 
-    @Test fun testID2_AddLogFrommock() = runTest { testID1(tarificationEntries, produitInfos, clientDataBase) }
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
+
+    @Test
+    fun testID2_AddLogFrommock() = runTest {
+        testID1(noSql)
+    }
 }

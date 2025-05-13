@@ -7,13 +7,8 @@ import com.example.clientjetpack.Id1.PrixChangable.Test.Models.InputEtInfosSqlMo
 import com.example.clientjetpack.Id1.PrixChangable.Test.Models.NoSql
 
 fun testID1(
-    tarificationEntries: MutableList<InputEtInfosSqlModels.Tarification>,
-    produitInfos: MutableList<InputEtInfosSqlModels.ProduitInfos>,
-    clientDataBase: MutableList<InputEtInfosSqlModels.ClientDataBase>,
+    noSql: NoSql
 ) {
-    // Create NoSql model and generate initial test data
-    val noSql = NoSql(tarificationEntries, produitInfos, clientDataBase)
-
     logHErartchiDataBase(
         mockOutputNoSqlModel(noSql).produits.toMutableList(),
         "logHErartchiDataBase"
