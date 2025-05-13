@@ -22,6 +22,6 @@ suspend fun testID_2_B(viewModel: TarificationViewModel) {
 
     logHErartchiDataBase(
         viewModel.outputNoSqlFlow.first().produits.toMutableList(),
-        "logHErartchiDataBase"
+        "testID_2_BaddNewTestDataTarificationEtClient"
     )
 }
