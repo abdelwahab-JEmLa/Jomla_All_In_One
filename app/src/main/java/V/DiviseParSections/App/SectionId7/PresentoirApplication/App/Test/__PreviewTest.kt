@@ -81,7 +81,7 @@ fun MainList(datas: List<TypeTarification>, modifier: Modifier = Modifier) {
         contentPadding = PaddingValues(vertical = 8.dp, horizontal = 16.dp)
     ) {
         // Get all types where either the product or any of its clients are active
-        val allTypesTarification = datas
+        val filteredTariff = datas
             .filter { typeTarification ->
                 typeTarification.parent.produit.cesStatuesMutable.cActiveDonsSonListParent &&
                         typeTarification.parent.produit.clients.any { client ->
@@ -89,7 +89,7 @@ fun MainList(datas: List<TypeTarification>, modifier: Modifier = Modifier) {
                         }
             }
 
-        items(allTypesTarification) { typeTarification ->
+        items(filteredTariff) { typeTarification ->
             TarificationTypeSection(typeTarification = typeTarification)
         }
     }
