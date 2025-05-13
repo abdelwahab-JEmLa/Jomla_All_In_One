@@ -99,17 +99,14 @@ fun MainScreen(
 
     Box(modifier = modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
-            // Using the extracted ProductClientInfoCard composable
             if (filtredTariff.isNotEmpty()) {
                 val (produit, client, _) = filtredTariff.first()
                 ProductClientInfoCard(produit = produit, client = client)
             }
 
-            // Rest of the original code
             MainList(filtredTariff = filtredTariff.map { it.third })
         }
 
-        // Added two FABs - one for adding product and one for filtering
         Row(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
