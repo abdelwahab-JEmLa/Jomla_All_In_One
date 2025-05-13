@@ -5,3 +5,4 @@ data class NoSqlDataBases(
     val produitInfos: MutableList<InputEtInfosSqlModels.ProduitInfos> = mutableListOf(),
     val clientDataBase: MutableList<InputEtInfosSqlModels.ClientDataBase> = mutableListOf()
 )
+

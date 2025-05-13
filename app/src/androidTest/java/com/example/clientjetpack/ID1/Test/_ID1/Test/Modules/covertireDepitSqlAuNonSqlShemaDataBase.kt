@@ -3,10 +3,10 @@ package com.example.clientjetpack.ID1.Test._ID1.Test.Modules
 import com.example.clientjetpack.ID1.Test._ID1.Test.Models.NoSqlDataBases
 import com.example.clientjetpack.ID1.Test._ID1.Test.Models.OutputNoSqlModel
 
-fun mockOutputNoSqlModel(noSqlDataBases: NoSqlDataBases): OutputNoSqlModel {
-    val produitInfos=  noSqlDataBases.produitInfos
-    val tarificationEntries=     noSqlDataBases.tarificationEntries
-    val clientDataBase=   noSqlDataBases.clientDataBase
+fun covertireDepitSqlAuNonSqlShemaDataBase(noSqlDataBases: NoSqlDataBases): OutputNoSqlModel {
+    val tarificationEntries = noSqlDataBases.tarificationEntries
+    val produitInfos = noSqlDataBases.produitInfos
+    val clientDataBase = noSqlDataBases.clientDataBase
 
     val produitsList = mutableListOf<OutputNoSqlModel.Produit>()
 

@@ -1,7 +1,7 @@
 package com.example.clientjetpack.ID1.Test
 
 import com.example.clientjetpack.ID1.Test.Z.Fragment.A.ViewModel.TarificationViewModel
-import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Models.OutputNoSqlModel
+import com.example.clientjetpack.ID1.Test._ID1.Test.Models.OutputNoSqlModel
 import com.example.clientjetpack.ID1.Test.Z.Fragment.Log.logProduits
 import com.example.clientjetpack.ID1.Test.Z.Fragment.Passive.strDateEtTempFromVidTimestamp
 

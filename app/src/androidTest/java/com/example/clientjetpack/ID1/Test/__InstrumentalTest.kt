@@ -154,7 +154,7 @@ class __InstrumentalTest: KoinTest {
 
         SepareReferentialDataBasesNoVM(
             testData.produits.toMutableList(),
-            "Frome mockOutputNoSqlModel()",
+            "Frome covertireDepitSqlAuNonSqlShemaDataBase()",
             viewModel
         )
     }
