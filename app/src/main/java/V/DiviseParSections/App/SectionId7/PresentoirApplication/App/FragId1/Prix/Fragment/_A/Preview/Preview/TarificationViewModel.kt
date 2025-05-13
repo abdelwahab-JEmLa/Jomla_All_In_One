@@ -45,27 +45,65 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class TarificationViewModel(dataProvider: NoSqlDataBases? = null) {
-    private val clientMap: Map<Long, ClientDataBase> = dataProvider?.clientDataBase?.associateBy { it.id } !!
-    private val produitMap: Map<Long, ProduitInfos> = dataProvider?.produitInfos?.associateBy { it.id } !!
-    private val typeTarificationMap: Map<Long, TypeTarificationDataBase>
 
-    init {
-        val typeTarifEnumValues = TypeTarificationEnum.entries.toTypedArray()
-        typeTarificationMap = (1..3).associateBy(
-            keySelector = { it.toLong() },
-            valueTransform = { id ->
-                val enumValue = typeTarifEnumValues[(id - 1) % typeTarifEnumValues.size]
-                TypeTarificationDataBase(id = id.toLong(), typeTarificationEnum = enumValue)
-            }
+
+class NoSqlDataBasesPreviewProvider : PreviewParameterProvider<NoSqlDataBases> {
+    override val values = sequenceOf(
+        NoSqlDataBases(
+            produitInfos = mutableListOf(
+                ProduitInfos(id = 1, nom = "Produit A"),
+                ProduitInfos(id = 2, nom = "Produit B"),
+                ProduitInfos(id = 3, nom = "Produit C")
+            ),
+            clientDataBase = mutableListOf(
+                ClientDataBase(id = 1, nom = "Client Alpha", idActiveTypeTarificationDataBase = 1),
+                ClientDataBase(id = 2, nom = "Client Beta", idActiveTypeTarificationDataBase = 2),
+                ClientDataBase(id = 3, nom = "Client Gamma", idActiveTypeTarificationDataBase = 3)
+            ),
+            tarificationEntries = mutableListOf(
+                Tarification(
+                    vidTimestamp = System.currentTimeMillis() - 86400000,
+                    idProduit = 1,
+                    idClient = 1,
+                    idTypeTarification = 1,
+                    prixCurrency = 10.99
+                ),
+                Tarification(
+                    vidTimestamp = System.currentTimeMillis(),
+                    idProduit = 1,
+                    idClient = 1,
+                    idTypeTarification = 1,
+                    prixCurrency = 12.50
+                ),
+
+                Tarification(
+                    vidTimestamp = System.currentTimeMillis() - 43200000,
+                    idProduit = 1,
+                    idClient = 2,
+                    idTypeTarification = 2,
+                    prixCurrency = 9.75
+                ),
+
+                Tarification(
+                    vidTimestamp = System.currentTimeMillis() - 172800000,
+                    idProduit = 2,
+                    idClient = 1,
+                    idTypeTarification = 1,
+                    prixCurrency = 15.25
+                ),
+
+                // Produit B - Client Gamma
+                Tarification(
+                    vidTimestamp = System.currentTimeMillis() - 21600000, // 6 hours ago
+                    idProduit = 2,
+                    idClient = 3,
+                    idTypeTarification = 3,
+                    prixCurrency = 14.80
+                )
+            )
         )
-    }
-
-    fun getSqlClient(id: Long) = clientMap[id]
-    fun getSqlProduit(id: Long) = produitMap[id]
-    fun getSqlTypeTarification(id: Long) = typeTarificationMap[id]
+    )
 }
-
 @Composable
 fun ProduitCard(
     produit: OutputNoSqlModel.Produit,
@@ -223,63 +261,7 @@ fun TarificationTypeSection(
         }
     }
 }
-class NoSqlDataBasesPreviewProvider : PreviewParameterProvider<NoSqlDataBases> {
-    override val values = sequenceOf(
-        NoSqlDataBases(
-            produitInfos = mutableListOf(
-                ProduitInfos(id = 1, nom = "Produit A"),
-                ProduitInfos(id = 2, nom = "Produit B"),
-                ProduitInfos(id = 3, nom = "Produit C")
-            ),
-            clientDataBase = mutableListOf(
-                ClientDataBase(id = 1, nom = "Client Alpha", idActiveTypeTarificationDataBase = 1),
-                ClientDataBase(id = 2, nom = "Client Beta", idActiveTypeTarificationDataBase = 2),
-                ClientDataBase(id = 3, nom = "Client Gamma", idActiveTypeTarificationDataBase = 3)
-            ),
-            tarificationEntries = mutableListOf(
-                Tarification(
-                    vidTimestamp = System.currentTimeMillis() - 86400000,
-                    idProduit = 1,
-                    idClient = 1,
-                    idTypeTarification = 1,
-                    prixCurrency = 10.99
-                ),
-                Tarification(
-                    vidTimestamp = System.currentTimeMillis(),
-                    idProduit = 1,
-                    idClient = 1,
-                    idTypeTarification = 1,
-                    prixCurrency = 12.50
-                ),
 
-                Tarification(
-                    vidTimestamp = System.currentTimeMillis() - 43200000,
-                    idProduit = 1,
-                    idClient = 2,
-                    idTypeTarification = 2,
-                    prixCurrency = 9.75
-                ),
-
-                Tarification(
-                    vidTimestamp = System.currentTimeMillis() - 172800000,
-                    idProduit = 2,
-                    idClient = 1,
-                    idTypeTarification = 1,
-                    prixCurrency = 15.25
-                ),
-
-                // Produit B - Client Gamma
-                Tarification(
-                    vidTimestamp = System.currentTimeMillis() - 21600000, // 6 hours ago
-                    idProduit = 2,
-                    idClient = 3,
-                    idTypeTarification = 3,
-                    prixCurrency = 14.80
-                )
-            )
-        )
-    )
-}
 
 @Preview(showBackground = true)
 @Composable
@@ -356,6 +338,27 @@ fun PrixPrevDirect(
             }
         }
     }
+}
+
+class TarificationViewModel(dataProvider: NoSqlDataBases? = null) {
+    private val clientMap: Map<Long, ClientDataBase> = dataProvider?.clientDataBase?.associateBy { it.id } !!
+    private val produitMap: Map<Long, ProduitInfos> = dataProvider?.produitInfos?.associateBy { it.id } !!
+    private val typeTarificationMap: Map<Long, TypeTarificationDataBase>
+
+    init {
+        val typeTarifEnumValues = TypeTarificationEnum.entries.toTypedArray()
+        typeTarificationMap = (1..3).associateBy(
+            keySelector = { it.toLong() },
+            valueTransform = { id ->
+                val enumValue = typeTarifEnumValues[(id - 1) % typeTarifEnumValues.size]
+                TypeTarificationDataBase(id = id.toLong(), typeTarificationEnum = enumValue)
+            }
+        )
+    }
+
+    fun getSqlClient(id: Long) = clientMap[id]
+    fun getSqlProduit(id: Long) = produitMap[id]
+    fun getSqlTypeTarification(id: Long) = typeTarificationMap[id]
 }
 
 fun NoSqlDataBases.toOutputNoSqlModel(): OutputNoSqlModel {
