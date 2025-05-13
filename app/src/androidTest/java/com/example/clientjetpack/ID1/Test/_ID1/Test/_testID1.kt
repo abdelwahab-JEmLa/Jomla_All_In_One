@@ -3,7 +3,7 @@ package com.example.clientjetpack.ID1.Test._ID1.Test
 import com.example.clientjetpack.ID1.Test._ID1.Test.Models.InputEtInfosSqlModels
 import com.example.clientjetpack.ID1.Test._ID1.Test.Models.NoSqlDataBases
 import com.example.clientjetpack.ID1.Test._ID1.Test.Modules.Log.logHErartchiDataBase
-import com.example.clientjetpack.Id1.PrixChangable.Test._ID1.Test.Modules.mockOutputNoSqlModel
+import com.example.clientjetpack.ID1.Test._ID1.Test.Modules.mockOutputNoSqlModel
 import com.example.clientjetpack.ID1.Test._ID1.Test.W.Init.initialClientsData
 import com.example.clientjetpack.ID1.Test._ID1.Test.W.Init.initialProductsData
 import com.example.clientjetpack.ID1.Test._ID1.Test.W.Init.initialTestData

@@ -3,6 +3,7 @@ package com.example.clientjetpack.ID1.Test.Z.Fragment.Log
 import com.example.clientjetpack.ID1.Test.Z.Fragment.A.ViewModel.TarificationViewModel
 import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Models.OutputNoSqlModel
 import com.example.clientjetpack.ID1.Test.Z.Fragment.Passive.strDateEtTempFromVidTimestamp
+import com.example.clientjetpack.ID1.Test._ID1.Test.Modules.Log.TreePrefix
 
 fun logProduits(
     value: OutputNoSqlModel,

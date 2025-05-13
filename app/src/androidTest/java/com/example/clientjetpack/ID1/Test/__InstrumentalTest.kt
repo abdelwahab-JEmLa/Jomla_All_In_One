@@ -8,6 +8,7 @@ import com.example.clientjetpack.ID1.Test.Z.Fragment.A.ViewModel.TarificationVie
 import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Models.InputEtInfosSqlModels
 import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input.Test.initialTestData
 import com.example.clientjetpack.ID1.Test.Z.Fragment.Passive.createTimestamp
+import com.example.clientjetpack.ID1.Test._ID1.Test.testID1
 import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -32,7 +33,7 @@ import org.koin.test.inject
 
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
-class _TeID1_InstrumentalTestInterieur : KoinTest {
+class __InstrumentalTest: KoinTest {
     @get:Rule
     val rule: InstantTaskExecutorRule = InstantTaskExecutorRule()
 
@@ -62,7 +63,7 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
         startKoin {
             modules(
                 module {
-                    single { this@_TeID1_InstrumentalTestInterieur }
+                    single { this@__InstrumentalTest }
                     viewModel { TarificationViewModel() }
                 }
             )
@@ -85,6 +86,10 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
     }
 
     @Test
+    fun testID1_AddLogFrommock() = runTest {
+        testID1()
+    }
+
     fun testID3_apreAddNewTestDataTarificationEtClientl() = runTest {
         val produitsMutableList =
             viewModel.outputNoSqlFlow.first()
@@ -118,7 +123,6 @@ class _TeID1_InstrumentalTestInterieur : KoinTest {
         )
     }
 
-    @Test
     fun testID2_LogFromviewModel() = runTest {
         val produitsMutableList =
             viewModel.outputNoSqlFlow.first()

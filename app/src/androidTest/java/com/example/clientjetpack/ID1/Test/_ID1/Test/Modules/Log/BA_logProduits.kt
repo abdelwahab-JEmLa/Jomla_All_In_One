@@ -1,6 +1,5 @@
-package com.example.clientjetpack.Id1.PrixChangable.Test._ID1.Test.Modules.Log
+package com.example.clientjetpack.ID1.Test._ID1.Test.Modules.Log
 
-import com.example.clientjetpack.ID1.Test.Z.Fragment.Log.TreePrefix
 import com.example.clientjetpack.ID1.Test._ID1.Test.Models.OutputNoSqlModel
 import com.example.clientjetpack.ID1.Test._ID1.Test.Z.Function.strDateEtTempFromVidTimestamp
 

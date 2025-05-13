@@ -29,7 +29,7 @@
       <SelectionState runConfigName="ClearAPP Lence">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="_TeID1_InstrumentalTestInterieur">
+      <SelectionState runConfigName="__InstrumentalTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
