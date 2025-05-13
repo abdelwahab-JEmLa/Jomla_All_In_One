@@ -71,6 +71,7 @@ class __InstrumentalTest: KoinTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         fireBaseHandler.clearDatabaseAsync(sonDataBaseRef)
+
         fireBaseHandler.addAllToFireBaseAsync(initialTestData, sonDataBaseRef)
 
         viewModel.inputSqlGroupeRepositorys.TarificationRepository().loadDataFromFirebase()
