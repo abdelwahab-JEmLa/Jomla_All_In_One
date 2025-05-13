@@ -15,6 +15,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -35,60 +38,152 @@ import com.example.clientjetpack.ui.theme.ClientJetPackTheme
 @Preview
 @Composable
 fun PreviewTest(
-    @PreviewParameter(ProduitsPreviewProvider::class) initProduits: List<Produit>
+    @PreviewParameter(_PreviewProvider::class) initProduits: List<Produit>
 ) {
     var produits by remember { mutableStateOf(initProduits) }
+    var isFiltered by remember { mutableStateOf(false) }
 
-    // Wrap the content with your app's theme
     ClientJetPackTheme(darkTheme = true) {
         MainScreen(
             produits = produits,
             onAddProduct = {
                 val newProduct = newProduit(produits)
                 produits = produits + newProduct
+            },
+            onFilter = {
+                isFiltered = !isFiltered
+                // Toggle between normal view and filtered view (Product 2, Client 105)
+                if (isFiltered) {
+                    // Filter for Product 2, Client 105
+                    val filteredProducts = produits.map { product ->
+                        if (product.id == 3L) {
+                            // Keep only client 105 for product 3
+                            product.copy(
+                                clients = product.clients.filter { client ->
+                                    client.id == 105L
+                                }
+                            )
+                        } else {
+                            // For other products, empty the clients list
+                            product.copy(clients = emptyList())
+                        }
+                    }.filter { product ->
+                        // Keep only products that still have clients after filtering
+                        product.clients.isNotEmpty()
+                    }
+                    produits = filteredProducts
+                } else {
+                    // Reset to original products
+                    produits = initProduits
+                }
             }
         )
     }
 }
 
 @Composable
-fun MainScreen(produits: List<Produit>, modifier: Modifier = Modifier, onAddProduct: () -> Unit) {
-    Box(modifier = modifier.fillMaxSize()) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            MainList(produits = produits)
+fun MainScreen(
+    produits: List<Produit>,
+    modifier: Modifier = Modifier,
+    onAddProduct: () -> Unit,
+    onFilter: () -> Unit
+) {
+    val filtredTariff = produits
+        .filter { produit ->
+            produit.cesStatuesMutable.cActiveDonsSonListParent
+        }
+        .flatMap { produit ->
+            produit.clients.filter { client ->
+                client.cesStatuesMutable.cActiveDonsSonListParent
+            }.flatMap { client ->
+                client.typesTarification.map { typeTarification ->
+                    Triple(produit, client, typeTarification)
+                }
+            }
         }
 
-        FloatingActionButton(
-            onClick = onAddProduct,
+    Box(modifier = modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            // Using the extracted ProductClientInfoCard composable
+            if (filtredTariff.isNotEmpty()) {
+                val (produit, client, _) = filtredTariff.first()
+                ProductClientInfoCard(produit = produit, client = client)
+            }
+
+            // Rest of the original code
+            MainList(filtredTariff = filtredTariff.map { it.third })
+        }
+
+        // Added two FABs - one for adding product and one for filtering
+        Row(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(16.dp)
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Icon(Icons.Default.Add, contentDescription = "Add")
+            // Filter FAB - Will filter to show only product 3, client 105
+            FloatingActionButton(
+                onClick = onFilter,
+                modifier = Modifier
+            ) {
+                Icon(Icons.Default.FilterList, contentDescription = "Filter")
+            }
+
+            // Add Product FAB
+            FloatingActionButton(
+                onClick = onAddProduct,
+                modifier = Modifier
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Add")
+            }
         }
     }
 }
 
 @Composable
-fun MainList(produits: List<Produit>, modifier: Modifier = Modifier) {
+fun ProductClientInfoCard(produit: Produit, client: Produit.Client, modifier: Modifier = Modifier) {
+    ElevatedCard(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Text(
+                text = "Produit: ${produit.infos.nom}",
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Client: ${client.infos.nom}",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            val (date, time) = formatTimestamp(produit.timestamp)
+            Text(
+                text = "Date: $date $time",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+            )
+        }
+    }
+}
+
+@Composable
+fun MainList(filtredTariff: List<Produit.Client.TypeTarification>, modifier: Modifier = Modifier) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(vertical = 8.dp, horizontal = 16.dp)
     ) {
-        val allTypesTarification = produits
-            .filter { produit ->
-                produit.cesStatuesMutable.cActiveDonsSonListParent
-            }
-            .flatMap { produit ->
-                produit.clients.filter { client ->
-                    client.cesStatuesMutable.cActiveDonsSonListParent
-                }.flatMap { client ->
-                    client.typesTarification
-                }
-            }
 
-        items(allTypesTarification) { typeTarification ->
+        items(filtredTariff) { typeTarification ->
             TarificationTypeSection(typeTarification = typeTarification)
         }
     }
