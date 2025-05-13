@@ -1,7 +1,7 @@
-package com.example.clientjetpack.Id1.PrixChangable.Test._ID1.Test
+package com.example.clientjetpack.Id1.PrixChangable.Test._ID1.Test.W.Init
 
-import com.example.clientjetpack.Id1.PrixChangable.Test.Function.createTimestamp
-import com.example.clientjetpack.Id1.PrixChangable.Test.Models.InputEtInfosSqlModels
+import com.example.clientjetpack.Id1.PrixChangable.Test._ID1.Test.Z.Function.createTimestamp
+import com.example.clientjetpack.Id1.PrixChangable.Test._ID1.Test.Models.InputEtInfosSqlModels
 
 /**
  * Données de test pour l'initialisation des tarifications

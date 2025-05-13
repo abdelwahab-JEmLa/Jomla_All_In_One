@@ -1,4 +1,4 @@
-package com.example.clientjetpack.Id1.PrixChangable.Test.Models
+package com.example.clientjetpack.Id1.PrixChangable.Test._ID1.Test.Models
 
 import androidx.room.PrimaryKey
 
