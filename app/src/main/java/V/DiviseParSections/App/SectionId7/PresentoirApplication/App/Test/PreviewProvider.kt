@@ -32,7 +32,7 @@ class PreviewProvider : PreviewParameterProvider<List<TypeTarification>> {
                 infos = TypeTarification.Infos(type = TypeTarification.TypeTarificationEnum.Historique),
                 cesStatuesMutable = TypeTarification.CesStatuesMutable(cActiveDonsSonListParent = true),
                 parent = TypeTarification.Parent(
-                    produit = hardData()[1] // Using second product from hardData
+                    produit = hardData()[0] // Using second product from hardData
                 ),
                 PrixsCurrency = listOf(
                     TypeTarification.Prix(
@@ -48,7 +48,7 @@ class PreviewProvider : PreviewParameterProvider<List<TypeTarification>> {
                 infos = TypeTarification.Infos(type = TypeTarification.TypeTarificationEnum.LeMaxPrixArrive),
                 cesStatuesMutable = TypeTarification.CesStatuesMutable(cActiveDonsSonListParent = true),
                 parent = TypeTarification.Parent(
-                    produit = hardData()[2] // Using third product from hardData
+                    produit = hardData()[1] // Using third product from hardData
                 ),
                 PrixsCurrency = listOf(
                     TypeTarification.Prix(
@@ -68,7 +68,7 @@ class PreviewProvider : PreviewParameterProvider<List<TypeTarification>> {
                 timestamp = createTimestamp(day = 13, month = 5, hour = 14, minute = 45),
                 infos = TypeTarification.Infos(type = TypeTarification.TypeTarificationEnum.ParBenifice),
                 parent = TypeTarification.Parent(
-                    produit = hardData()[3]
+                    produit = hardData()[1]
                 ),
                 PrixsCurrency = listOf(
                     TypeTarification.Prix(
@@ -87,7 +87,7 @@ class PreviewProvider : PreviewParameterProvider<List<TypeTarification>> {
                 id = 5L,
                 timestamp = createTimestamp(day = 14, month = 5, hour = 9, minute = 15),
                 parent = TypeTarification.Parent(
-                    produit = hardData()[0] // Reusing first product from hardData
+                    produit = hardData()[3] // Reusing first product from hardData
                 ),
                 PrixsCurrency = listOf(
                     TypeTarification.Prix(

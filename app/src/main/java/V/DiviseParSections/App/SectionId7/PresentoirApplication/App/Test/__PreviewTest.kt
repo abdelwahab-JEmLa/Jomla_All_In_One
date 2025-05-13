@@ -17,6 +17,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -53,11 +55,15 @@ fun PreviewTest(
                     if (typeTarification.parent.produit.id == 2L) {
                         typeTarification.copy(
                             cesStatuesMutable = typeTarification.cesStatuesMutable.copy(
-                                cActiveDonsSonListParent = false
+                                cActiveDonsSonListParent = true
                             )
                         )
                     } else {
-                        typeTarification
+                        typeTarification.copy(
+                            cesStatuesMutable = typeTarification.cesStatuesMutable.copy(
+                                cActiveDonsSonListParent = false
+                            )
+                        )
                     }
                 }
             }
@@ -72,8 +78,50 @@ fun MainScreen(
     onAddData: () -> Unit,
     onClickToFilter: () -> Unit
 ) {
+    var showFirstCard by remember { mutableStateOf(true) }
+
+    val filteredTariff = datas
+        .filter { typeTarification ->
+            typeTarification.cesStatuesMutable.cActiveDonsSonListParent
+        }
+
     Box(modifier = modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
+            if (showFirstCard && filteredTariff.isNotEmpty()) {
+                val firstTariff = filteredTariff.first()
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    elevation = CardDefaults.cardElevation(
+                        defaultElevation = 4.dp
+                    ),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
+                        Text(
+                            text = "Produit: ${firstTariff.parent.produit.infos.nom}",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+
+                        val clientName = firstTariff.parent.produit.clients.firstOrNull()?.infos?.nom ?: "N/A"
+                        Text(
+                            text = "Client: $clientName",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+
             MainList(datas = datas)
         }
 
@@ -104,16 +152,25 @@ fun MainScreen(
 
 @Composable
 fun MainList(datas: List<TypeTarification>, modifier: Modifier = Modifier) {
+    var sortByNewest by remember { mutableStateOf(true) }
+
+    val filteredTariff = datas
+        .filter { typeTarification ->
+            typeTarification.cesStatuesMutable.cActiveDonsSonListParent
+        }
+        .let { list ->
+            if (sortByNewest) {
+                list.sortedByDescending { it.timestamp }
+            } else {
+                list.sortedBy { it.timestamp }
+            }
+        }
+
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(vertical = 8.dp, horizontal = 16.dp)
     ) {
-        val filteredTariff = datas
-            .filter { typeTarification ->
-                typeTarification.cesStatuesMutable.cActiveDonsSonListParent
-            }
-
         items(filteredTariff) { typeTarification ->
             TarificationTypeSection(typeTarification = typeTarification)
         }
@@ -126,6 +183,7 @@ fun TarificationItem(
     modifier: Modifier = Modifier
 ) {
     val (date, time) = formatTimestamp(prix.timestamp)
+    var isEditing by remember { mutableStateOf(false) }
 
     Row(
         modifier = modifier
