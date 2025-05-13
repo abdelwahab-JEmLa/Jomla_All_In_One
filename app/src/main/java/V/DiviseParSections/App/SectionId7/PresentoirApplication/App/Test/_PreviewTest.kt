@@ -112,12 +112,12 @@ fun TarificationItem(
         Text(
             text = "Prix: ${prix.valeur}€",
             style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant // Utiliser la couleur appropriée
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Text(
             text = "$date $time",
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f) // Utiliser une couleur appropriée avec transparence
+            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
         )
     }
 }
@@ -144,18 +144,17 @@ fun TarificationTypeSection(
             Text(
                 text = "Type: ${currentTypeTarification.infos.type.name}",
                 style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onBackground // Utiliser la couleur appropriée
+                color = MaterialTheme.colorScheme.onBackground
             )
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = "$date $time",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f) // Utiliser une couleur appropriée avec transparence
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
                 )
 
                 IconButton(onClick = {
-                    // Create a new price with the next ID
                     val newPriceId =
                         (currentTypeTarification.PrixsCurrency.maxOfOrNull { it.id } ?: 0) + 1
                     val newPrice = Produit.Client.TypeTarification.Prix(
@@ -164,7 +163,6 @@ fun TarificationTypeSection(
                         valeur = 0.0
                     )
 
-                    // Update the tarification with the new price
                     currentTypeTarification = currentTypeTarification.copy(
                         PrixsCurrency = currentTypeTarification.PrixsCurrency + newPrice
                     )
@@ -180,7 +178,6 @@ fun TarificationTypeSection(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Display all prices
         currentTypeTarification.PrixsCurrency.forEach { prix ->
             TarificationItem(prix = prix)
             Spacer(modifier = Modifier.height(4.dp))
