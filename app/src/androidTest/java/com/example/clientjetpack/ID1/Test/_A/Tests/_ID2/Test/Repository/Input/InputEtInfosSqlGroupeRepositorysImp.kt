@@ -12,6 +12,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import kotlin.test.assertTrue
 
 class InputEtInfosSqlGroupeRepositorysImp(
 ) : InputEtInfosSqlGroupeRepositorys {
@@ -76,6 +77,9 @@ class InputEtInfosSqlGroupeRepositorysImp(
                     // Add the product to the list
                     _modelList.add(produitInfos)
 
+                    assertTrue(
+                        _modelList.size == 5
+                    )
                     onSuccess(produitInfos)
                 } catch (e: Exception) {
                     // Handle error if needed
