@@ -269,7 +269,6 @@ fun PrixPrevDirect(
     @PreviewParameter(NoSqlToOutputModelPreviewProvider::class) outputModel: OutputNoSqlModel
 ) {
     val viewModel = remember {
-        // Create view model with the same data source used for generating the output model
         val noSqlDataProvider = NoSqlDataBasesPreviewProvider().values.first()
         TarificationViewModel(noSqlDataProvider)
     }
@@ -420,8 +419,6 @@ class NoSqlToOutputModelPreviewProvider : PreviewParameterProvider<OutputNoSqlMo
         }
     }
 }
-
-
 
 // Helper function to format timestamp to readable date and time
 fun strDateEtTempFromVidTimestamp(timestamp: Long): Pair<String, String> {
