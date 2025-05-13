@@ -1,6 +1,6 @@
+// File: OutputNoSqlModelRepositoryImp.kt
 package com.example.clientjetpack.ID1.Test._A.Tests._ID2.Test.Repository.Output
 
-import android.util.Log
 import com.example.clientjetpack.ID1.Test.Packages.Models.InputEtInfosSqlModels
 import com.example.clientjetpack.ID1.Test.Packages.Models.NoSqlDataBases
 import com.example.clientjetpack.ID1.Test.Packages.Models.OutputNoSqlModel
@@ -18,8 +18,6 @@ import kotlinx.coroutines.launch
 class OutputNoSqlModelRepositoryImp(
     private val inputEtInfosSqlGroupeRepositorys: InputEtInfosSqlGroupeRepositorys,
 ) : OutputNoSqlModelRepository {
-    private val TAG = "OutputNoSqlModelRepo" // Tag for logging
-
     private val _imbriquantFlow = MutableStateFlow(
         OutputNoSqlModel(
             emptyList()
@@ -34,7 +32,6 @@ class OutputNoSqlModelRepositoryImp(
     private val tarificationRepository = inputEtInfosSqlGroupeRepositorys.TarificationRepository()
 
     init {
-        Log.d(TAG, "Initializing repository with initial data")
         loadImbriquantData(
             tarificationRepository.modelList,
             produitRepository.modelList,
@@ -50,7 +47,6 @@ class OutputNoSqlModelRepositoryImp(
                 tarificationRepository as? InputEtInfosSqlGroupeRepositorysImp.TarificationRepositoryImp
 
             tarificationRepositoryImp?._dataFlow?.collectLatest { tarificationEntries ->
-                Log.d(TAG, "Tarification data updated: ${tarificationEntries.size} entries")
                 loadImbriquantData(
                     tarificationEntries,
                     produitRepository.modelList,
@@ -66,7 +62,6 @@ class OutputNoSqlModelRepositoryImp(
                 produitRepository as? InputEtInfosSqlGroupeRepositorysImp.ProduitDataBase_RepositoryImp
 
             produitRepositoryImp?._dataFlow?.collectLatest { produitEntries ->
-                Log.d(TAG, "Product data updated: ${produitEntries.size} entries")
                 loadImbriquantData(
                     tarificationRepository.modelList,
                     produitEntries,
@@ -81,8 +76,6 @@ class OutputNoSqlModelRepositoryImp(
         produitEntries: List<InputEtInfosSqlModels.ProduitInfos>,
         clientEntries: List<InputEtInfosSqlModels.ClientDataBase>
     ) {
-        Log.d(TAG, "Loading imbriquant data - Tarifications: ${tarificationEntries.size}, Products: ${produitEntries.size}")
-
         val noSqlDataBases = NoSqlDataBases(
             tarificationEntries.toMutableList(),
             produitEntries.toMutableList(),
@@ -91,18 +84,13 @@ class OutputNoSqlModelRepositoryImp(
 
         val newData = covertireDepitSqlAuNonSqlShemaDataBase(noSqlDataBases)
         _imbriquantFlow.value = newData
-
-        Log.d(TAG, "Updated imbriquant data - Products in output: ${newData.produits.size}")
     }
 
     fun refreshData() {
-        Log.d(TAG, "Manual refresh requested")
         // Get the latest data from all repositories
         val latestTarificationData = tarificationRepository.modelList
         val latestProduitData = produitRepository.modelList
         val latestClientData = clientRepository.modelList
-
-        Log.d(TAG, "Current product count: ${latestProduitData.size}")
 
         loadImbriquantData(
             latestTarificationData,

@@ -1,7 +1,7 @@
+// File: InputEtInfosSqlGroupeRepositorysImp.kt
 package com.example.clientjetpack.ID1.Test._A.Tests._ID2.Test.Repository.Input
 
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
-import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import com.example.clientjetpack.ID1.Test.Packages.Init.initialClientsData
 import com.example.clientjetpack.ID1.Test.Packages.Init.initialProductsData
@@ -54,7 +54,6 @@ class InputEtInfosSqlGroupeRepositorysImp(
         val repositoryScope: CoroutineScope,
         val fireBaseHandler: FireBaseHandler
     ) : InputEtInfosSqlGroupeRepositorys.ProduitDataBase_Repository {
-        private val TAG = "ProduitRepository"
         private val _modelList = mutableStateListOf<InputEtInfosSqlModels.ProduitInfos>()
         val _dataFlow = MutableStateFlow<List<InputEtInfosSqlModels.ProduitInfos>>(emptyList())
 
@@ -64,7 +63,6 @@ class InputEtInfosSqlGroupeRepositorysImp(
                 _modelList.clear()
                 _modelList.addAll(value)
                 _dataFlow.value = _modelList.toList()
-                Log.d(TAG, "Product list updated, size: ${_modelList.size}")
             }
 
         init {
@@ -75,7 +73,6 @@ class InputEtInfosSqlGroupeRepositorysImp(
             _modelList.clear()
             _modelList.addAll(initialProductsData)
             _dataFlow.value = _modelList.toList()
-            Log.d(TAG, "Default product data initialized, size: ${_modelList.size}")
         }
 
         override fun add(
@@ -84,27 +81,21 @@ class InputEtInfosSqlGroupeRepositorysImp(
         ) {
             repositoryScope.launch {
                 try {
-                    Log.d(TAG, "Adding product: ${produitInfos.id} - ${produitInfos.nom}")
-
                     // Check if product already exists
                     val existingIndex = _modelList.indexOfFirst { it.id == produitInfos.id }
                     if (existingIndex >= 0) {
                         // Update existing product
                         _modelList[existingIndex] = produitInfos
-                        Log.d(TAG, "Updated existing product at index $existingIndex")
                     } else {
                         // Add new product
                         _modelList.add(produitInfos)
-                        Log.d(TAG, "Added new product, new size: ${_modelList.size}")
                     }
 
                     // Update the flow
                     _dataFlow.value = _modelList.toList()
-                    Log.d(TAG, "Product list updated in flow, size: ${_dataFlow.value.size}")
 
                     onSuccess(produitInfos)
                 } catch (e: Exception) {
-                    Log.e(TAG, "Error adding product: ${e.message}", e)
                     e.printStackTrace()
                 }
             }
@@ -169,7 +160,6 @@ class InputEtInfosSqlGroupeRepositorysImp(
         private val parentDbRef: DatabaseReference,
         private val repositoryScope: CoroutineScope
     ) : InputEtInfosSqlGroupeRepositorys.TarificationRepository {
-        private val TAG = "TarificationRepo"
         val _dataFlow = MutableStateFlow<List<InputEtInfosSqlModels.Tarification>>(emptyList())
 
         // Using a mutable list to hold the actual data
@@ -184,7 +174,6 @@ class InputEtInfosSqlGroupeRepositorysImp(
                 _modelList.clear()
                 _modelList.addAll(value)
                 _dataFlow.value = _modelList.toList()
-                Log.d(TAG, "Tarification list updated, size: ${_modelList.size}")
             }
 
         init {
@@ -207,7 +196,6 @@ class InputEtInfosSqlGroupeRepositorysImp(
                 InputEtInfosSqlModels.Tarification::class.java
             )
             modelList = loadedData
-            Log.d(TAG, "Loaded tarification data from Firebase, size: ${loadedData.size}")
         }
 
         override fun add(
@@ -216,15 +204,12 @@ class InputEtInfosSqlGroupeRepositorysImp(
         ) {
             repositoryScope.launch {
                 try {
-                    Log.d(TAG, "Adding tarification for product: ${tarification.idProduit}")
                     // Add to the mutable list and update the StateFlow
                     _modelList.add(tarification)
                     _dataFlow.value = _modelList.toList()
-                    Log.d(TAG, "Tarification added, new size: ${_modelList.size}")
 
                     onSuccess(tarification)
                 } catch (e: Exception) {
-                    Log.e(TAG, "Error adding tarification: ${e.message}", e)
                     e.printStackTrace()
                 }
             }
