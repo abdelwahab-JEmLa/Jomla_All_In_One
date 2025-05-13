@@ -13,7 +13,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -35,8 +34,7 @@ fun PreviewTest(
     @PreviewParameter(_PreviewProvider::class) initProduits: List<Produit>
 ) {
     var produits by remember { mutableStateOf(initProduits) }
-    var isFiltered by remember { mutableStateOf(false) }
-    var showOnlyLatestPrices by remember { mutableStateOf(false) }
+    var showOnlyLatestPrices by remember { mutableStateOf(true) }
 
     ClientJetPackTheme(darkTheme = true) {
         MainScreen(
@@ -45,28 +43,6 @@ fun PreviewTest(
             onAddProduct = {
                 val newProduct = newProduit(produits)
                 produits = produits + newProduct
-            },
-            onFilter = {
-                isFiltered = !isFiltered
-                if (isFiltered) {
-                    val filteredProducts = produits.map { product ->
-                        if (product.id == 3L) {
-                            product.copy(
-                                clients = product.clients.filter { client ->
-                                    client.id == 105L
-                                }
-                            )
-                        } else {
-                            product.copy(clients = emptyList())
-                        }
-                    }.filter { product ->
-                        product.clients.isNotEmpty()
-                    }
-                    produits = filteredProducts
-                } else {
-                    // Reset to original products
-                    produits = initProduits
-                }
             },
             onToggleLatestPrices = {
                 showOnlyLatestPrices = !showOnlyLatestPrices
@@ -81,7 +57,6 @@ fun MainScreen(
     showOnlyLatestPrices: Boolean,
     modifier: Modifier = Modifier,
     onAddProduct: () -> Unit,
-    onFilter: () -> Unit,
     onToggleLatestPrices: () -> Unit
 ) {
     val filtredTariff = produits
@@ -126,13 +101,6 @@ fun MainScreen(
                 modifier = Modifier
             ) {
                 Icon(Icons.Default.History, contentDescription = "Toggle Latest Prices")
-            }
-
-            FloatingActionButton(
-                onClick = onFilter,
-                modifier = Modifier
-            ) {
-                Icon(Icons.Default.FilterList, contentDescription = "Filter")
             }
 
             FloatingActionButton(
