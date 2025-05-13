@@ -11,7 +11,7 @@ class PreviewProvider : PreviewParameterProvider<List<TypeTarification>> {
                 infos = TypeTarification.Infos(type = TypeTarification.TypeTarificationEnum.ParBenifice),
                 cesStatuesMutable = TypeTarification.CesStatuesMutable(cActiveDonsSonListParent = true),
                 parent = TypeTarification.Parent(
-                    produit = hardData()[0] // Using first product from hardData
+                    produit = hardData()[0]
                 ),
                 PrixsCurrency = listOf(
                     TypeTarification.Prix(

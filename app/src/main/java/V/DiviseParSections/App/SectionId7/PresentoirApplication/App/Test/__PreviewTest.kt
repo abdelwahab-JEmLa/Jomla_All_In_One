@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -46,6 +47,21 @@ fun PreviewTest(
             onAddData = {
                 val newData = newData(datas)
                 datas = datas + newData
+            },
+            onClickToFilter = {
+                // Implementation for TODO(2): update datas cActiveDonsSonListParent = false
+                // for products with id 2L
+                datas = datas.map { typeTarification ->
+                    if (typeTarification.parent.produit.id == 2L) {
+                        typeTarification.copy(
+                            cesStatuesMutable = typeTarification.cesStatuesMutable.copy(
+                                cActiveDonsSonListParent = false
+                            )
+                        )
+                    } else {
+                        typeTarification
+                    }
+                }
             }
         )
     }
@@ -55,20 +71,36 @@ fun PreviewTest(
 fun MainScreen(
     datas: List<TypeTarification>,
     modifier: Modifier = Modifier,
-    onAddData: () -> Unit
+    onAddData: () -> Unit,
+    onClickToFilter: () -> Unit
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
             MainList(datas = datas)
         }
 
-        FloatingActionButton(
-            onClick = onAddData,
+        // Implementation for TODO(1): Added second FAB for filtering
+        Row(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(16.dp)
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Icon(Icons.Default.Add, contentDescription = "Add")
+            // Filter FAB
+            FloatingActionButton(
+                onClick = onClickToFilter,
+                modifier = Modifier
+            ) {
+                Icon(Icons.Default.FilterList, contentDescription = "Filter")
+            }
+
+            // Add FAB
+            FloatingActionButton(
+                onClick = onAddData,
+                modifier = Modifier
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Add")
+            }
         }
     }
 }
