@@ -33,6 +33,7 @@ fun TarificationTypeSection(
     val (date, time) = formatTimestamp(typeTarification.timestamp)
 
     var currentTypeTarification by remember { mutableStateOf(typeTarification) }
+    val typeId = currentTypeTarification.id  // Store ID for logging
 
     Column(
         modifier = modifier
@@ -58,17 +59,32 @@ fun TarificationTypeSection(
                 )
 
                 IconButton(onClick = {
-                    val newPriceId =
-                        (currentTypeTarification.PrixsCurrency.maxOfOrNull { it.id } ?: 0) + 1
+                    // Add logging to track price addition
+                    logDebug("Add price button clicked for tarification type $typeId")
+
+                    // Find the maximum price ID to prevent duplicates
+                    val maxPriceId = currentTypeTarification.PrixsCurrency.maxOfOrNull { it.id } ?: 0
+                    val newPriceId = maxPriceId + 1
+                    logDebug("Creating new price with ID: $newPriceId (max was $maxPriceId)")
+
+                    val timestamp = System.currentTimeMillis()
                     val newPrice = Produit.Client.TypeTarification.Prix(
                         id = newPriceId,
-                        timestamp = System.currentTimeMillis(),
+                        timestamp = timestamp,
                         valeur = 0.0
                     )
 
-                    currentTypeTarification = currentTypeTarification.copy(
-                        PrixsCurrency = currentTypeTarification.PrixsCurrency + newPrice
-                    )
+                    logDebug("New price created with timestamp: $timestamp")
+
+                    // Ensure we're not adding duplicate price IDs
+                    if (currentTypeTarification.PrixsCurrency.none { it.id == newPriceId }) {
+                        logDebug("Adding new price to type $typeId")
+                        currentTypeTarification = currentTypeTarification.copy(
+                            PrixsCurrency = currentTypeTarification.PrixsCurrency + newPrice
+                        )
+                    } else {
+                        logDebug("Price ID $newPriceId already exists! Not adding.")
+                    }
                 }) {
                     Icon(
                         imageVector = Icons.Default.Add,
@@ -83,11 +99,13 @@ fun TarificationTypeSection(
 
         val pricesToShow = if (showOnlyLatestPrices) {
             // Get only the most recent price by timestamp
+            logDebug("Showing only latest price for type $typeId")
             currentTypeTarification.PrixsCurrency
                 .maxByOrNull { it.timestamp }
                 ?.let { listOf(it) } ?: emptyList()
         } else {
             // Show all prices sorted by id and value
+            logDebug("Showing all ${currentTypeTarification.PrixsCurrency.size} prices for type $typeId")
             currentTypeTarification.PrixsCurrency
                 .sortedWith(compareBy({ it.id }, { it.valeur }))
         }

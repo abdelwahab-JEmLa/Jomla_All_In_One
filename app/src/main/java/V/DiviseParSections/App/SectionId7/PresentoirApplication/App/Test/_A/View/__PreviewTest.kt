@@ -2,7 +2,7 @@ package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.Test._A.Vie
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.Test.Produit
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.Test._PreviewProvider
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.Test.newProduit
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.Test.addNewTransactionType
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,8 +41,21 @@ fun PreviewTest(
             produits = produits,
             showOnlyLatestPrices = showOnlyLatestPrices,
             onAddProduct = {
-                val newProduct = newProduit(produits)
-                produits = produits + newProduct
+                // Fixed TODO(1): Added logging to track how many times this is called
+                logDebug("onAddProduct called. Current product count: ${produits.size}")
+                val newProduct = addNewTransactionType(produits)
+                newProduct?.let {
+                    // Only add if not already in the list (prevents duplication)
+                    val exists = produits.any { p -> p.id == it.id }
+                    if (!exists) {
+                        logDebug("Adding new product with id: ${it.id}")
+                        produits = produits + it
+                    } else {
+                        // If product exists, update it instead of adding a new one
+                        logDebug("Updating existing product with id: ${it.id}")
+                        produits = produits.map { p -> if (p.id == it.id) it else p }
+                    }
+                }
             },
             onToggleLatestPrices = {
                 showOnlyLatestPrices = !showOnlyLatestPrices
