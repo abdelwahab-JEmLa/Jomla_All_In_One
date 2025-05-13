@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.getValue
@@ -58,12 +59,14 @@ class MainActivity : ComponentActivity() {
 
     private var applicationAfficheProduitsPourCompt by mutableStateOf(false)
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate: API level ${Build.VERSION.SDK_INT}")
         setupActivityContent()
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @OptIn(KoinExperimentalAPI::class)
     private fun setupActivityContent() {
         runCatching {

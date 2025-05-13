@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.Test
 
-
 data class TypeTarification(
     val id: Long = 0,
     val timestamp: Long = 0,
@@ -53,7 +52,7 @@ data class Produit(
         val id: Long = 0,
         val timestamp: Long = 0,
         val infos: ClientInfos = ClientInfos(),
-        val cesStatuesMutable: CesStatuesMutable = CesStatuesMutable(),
+        val cesStatuesMutable: CesStatuesMutable = CesStatuesMutable(cActiveDonsSonListParent = true),
         val typesTarification: List<TypeTarification> = emptyList(),
     ) {
         data class ClientInfos(
