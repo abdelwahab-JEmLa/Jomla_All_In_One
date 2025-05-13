@@ -6,6 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -39,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+
 
 data class Produit(
     val id: Long,
@@ -185,13 +188,47 @@ class ProduitsPreviewProvider : PreviewParameterProvider<List<Produit>> {
 @Preview(showBackground = true)
 @Composable
 fun ProduitCardPrev(
-    @PreviewParameter(ProduitsPreviewProvider::class) produits: List<Produit>
+    @PreviewParameter(ProduitsPreviewProvider::class) initProduits: List<Produit>
 ) {
-    MainScreen(produits = produits)
+    var produits by remember { mutableStateOf(initProduits.toMutableList()) }
+
+    MainScreen(
+        produits = produits,
+        onAddProduct = {
+            // Create a new product with a unique ID and add it to the list
+            val newProduct = Produit(
+                id = (produits.maxOfOrNull { it.id } ?: 0) + 1,
+                timestamp = System.currentTimeMillis(),
+                infos = Produit.ProduitInfos(nom = "Nouveau Produit"),
+                clients = listOf(
+                    Produit.Client(
+                        id = 1000,
+                        timestamp = System.currentTimeMillis(),
+                        infos = Produit.Client.ClientInfos(nom = "Nouveau Client"),
+                        typesTarification = listOf(
+                            Produit.Client.TypeTarification(
+                                id = 10000,
+                                timestamp = System.currentTimeMillis(),
+                                infos = Produit.Client.TypeTarification.Infos(nom = "Tarif Standard"),
+                                PrixsCurrency = listOf(
+                                    Produit.Client.TypeTarification.Prix(
+                                        id = 100000,
+                                        timestamp = System.currentTimeMillis(),
+                                        valeur = 500.0
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+            produits = (produits + newProduct).toMutableList()
+        }
+    )
 }
 
 @Composable
-fun MainScreen(produits: List<Produit>, modifier: Modifier = Modifier) {
+fun MainScreen(produits: List<Produit>, modifier: Modifier = Modifier, onAddProduct: () -> Unit) {
     Box(modifier = modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
             // Tabs for different views could go here
@@ -200,7 +237,7 @@ fun MainScreen(produits: List<Produit>, modifier: Modifier = Modifier) {
 
         // Add a floating action button for adding new products
         FloatingActionButton(
-            onClick = { /* TODO: Handle click */ },
+            onClick = onAddProduct,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(16.dp)
@@ -215,6 +252,7 @@ fun MainList(produits: List<Produit>, modifier: Modifier = Modifier) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(vertical = 8.dp, horizontal = 16.dp)
     ) {
         items(produits) { produit ->
             ProduitCard(produit = produit)
