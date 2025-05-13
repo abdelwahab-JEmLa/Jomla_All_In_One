@@ -27,7 +27,7 @@ fun newProduit(produits: List<Produit>): Produit {
                     Produit.Client.TypeTarification(
                         id = 3,
                         timestamp = System.currentTimeMillis(),
-                        infos = Produit.Client.TypeTarification.Infos(),
+                        infos = Produit.Client.TypeTarification.Infos(type = Produit.Client.TypeTarification.TypeTarificationEnum.LeMaxPrixArrive),
                         PrixsCurrency = listOf(
                             Produit.Client.TypeTarification.Prix(
                                 id = newPrixId,
