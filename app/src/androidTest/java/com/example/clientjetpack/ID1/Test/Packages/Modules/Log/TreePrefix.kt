@@ -1,4 +1,4 @@
-package com.example.clientjetpack.ID1.Test._A.Tests._ID1.Test.Modules.Log
+package com.example.clientjetpack.ID1.Test.Packages.Modules.Log
 
 enum class TreePrefix(private val lastItem: String, private val normalItem: String) {
     Type1("└─", "├─"),                 // For products

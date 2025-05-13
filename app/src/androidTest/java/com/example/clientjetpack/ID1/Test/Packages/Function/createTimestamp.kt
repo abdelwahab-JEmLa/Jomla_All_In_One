@@ -1,4 +1,4 @@
-package com.example.clientjetpack.ID1.Test._A.Tests._ID1.Test.Z.Function
+package com.example.clientjetpack.ID1.Test.Packages.Function
 
 import java.util.Calendar
 

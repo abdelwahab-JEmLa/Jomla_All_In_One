@@ -1,4 +1,4 @@
-package com.example.clientjetpack.ID1.Test._A.Tests._ID1.Test.Models
+package com.example.clientjetpack.ID1.Test.Packages.Models
 
 data class NoSqlDataBases(
     val tarificationEntries: MutableList<InputEtInfosSqlModels.Tarification> = mutableListOf(),

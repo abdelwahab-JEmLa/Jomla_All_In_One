@@ -3,11 +3,11 @@ package com.example.clientjetpack.ID1.Test
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.clientjetpack.ID1.Test.Components.LogFilterRule
+import com.example.clientjetpack.ID1.Test.Packages.Function.createTimestamp
+import com.example.clientjetpack.ID1.Test.Packages.Init.initialTestData
+import com.example.clientjetpack.ID1.Test.Packages.Models.InputEtInfosSqlModels
 import com.example.clientjetpack.ID1.Test.Z.Fragment.A.ViewModel.TarificationViewModel
-import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input.Test.initialTestData
-import com.example.clientjetpack.ID1.Test.Z.Fragment.Passive.createTimestamp
-import com.example.clientjetpack.ID1.Test._A.Tests._ID1.Test.Models.InputEtInfosSqlModels
+import com.example.clientjetpack.ID1.Test._A.Tests.Filter.LogFilterRule
 import com.example.clientjetpack.ID1.Test._A.Tests._ID1.Test._testID1
 import com.example.clientjetpack.ID1.Test._A.Tests._ID2.Test.testID2
 import com.google.firebase.database.DatabaseReference
@@ -20,7 +20,6 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -119,43 +118,6 @@ class __InstrumentalTest: KoinTest {
                 ?.clients?.find { it.id == newTarification.idClient }
                 ?.typeTarification?.find { it.id == newTarification.idTypeTarification }
                 ?.PrixsCurrency?.size
-        )
-
-        SepareReferentialDataBasesNoVM(
-            produitsMutableList,
-            "after addNewTestDataTarificationEtClient",
-            viewModel
-        )
-    }
-
-    fun testID2_LogFromviewModel() = runTest {
-        val produitsMutableList =
-            viewModel.outputNoSqlFlow.first()
-                .produits.toMutableList()
-
-        assertTrue(
-            "Products list should not be empty",
-            produitsMutableList.isNotEmpty()
-        )
-
-        SepareReferentialDataBasesNoVM(
-            produitsMutableList,
-            "Frome viewModel.outputNoSqlFlow.first()", viewModel
-        )
-    }
-
-    fun testID1_LogFromviewmock() = runTest {
-        val testData = mockOutputNoSqlModel()
-
-        assertTrue(
-            "Products list should not be empty",
-            testData.produits.isNotEmpty()
-        )
-
-        SepareReferentialDataBasesNoVM(
-            testData.produits.toMutableList(),
-            "Frome covertireDepitSqlAuNonSqlShemaDataBase()",
-            viewModel
         )
     }
 

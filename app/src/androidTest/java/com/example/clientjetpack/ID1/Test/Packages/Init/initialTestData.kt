@@ -1,7 +1,7 @@
-package com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input.Test
+package com.example.clientjetpack.ID1.Test.Packages.Init
 
-import com.example.clientjetpack.ID1.Test._A.Tests._ID1.Test.Models.InputEtInfosSqlModels
-import com.example.clientjetpack.ID1.Test.Z.Fragment.Passive.createTimestamp
+import com.example.clientjetpack.ID1.Test.Packages.Function.createTimestamp
+import com.example.clientjetpack.ID1.Test.Packages.Models.InputEtInfosSqlModels
 
 /**
  * Données de test pour l'initialisation des tarifications
@@ -17,7 +17,21 @@ val initialTestData = listOf(
         idTypeTarification = 1L,
         prixCurrency = 10.99
     ),
-    
+    InputEtInfosSqlModels.Tarification(
+        vidTimestamp = createTimestamp(day = 1, hour = 11, minute = 30),
+        idProduit = 1L,
+        idClient = 1L,
+        idTypeTarification = 2L,
+        prixCurrency = 10.99
+    ),
+    InputEtInfosSqlModels.Tarification(
+        vidTimestamp = createTimestamp(day = 1, hour = 12, minute = 30),
+        idProduit = 1L,
+        idClient = 1L,
+        idTypeTarification = 2L,
+        prixCurrency = 10.99
+    ),
+
     // Produit 2, Client 2, TypeTarification 2
     InputEtInfosSqlModels.Tarification(
         vidTimestamp = createTimestamp(day = 2, hour = 11, minute = 45),

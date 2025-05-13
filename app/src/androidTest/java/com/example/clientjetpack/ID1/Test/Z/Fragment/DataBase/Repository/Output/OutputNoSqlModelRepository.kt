@@ -1,6 +1,6 @@
 package com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Output
 
-import com.example.clientjetpack.ID1.Test._A.Tests._ID1.Test.Models.OutputNoSqlModel
+import com.example.clientjetpack.ID1.Test.Packages.Models.OutputNoSqlModel
 import kotlinx.coroutines.flow.StateFlow
 
 interface OutputNoSqlModelRepository {

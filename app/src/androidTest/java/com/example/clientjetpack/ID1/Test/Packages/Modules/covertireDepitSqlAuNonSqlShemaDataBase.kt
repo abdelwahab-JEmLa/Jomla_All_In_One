@@ -1,7 +1,7 @@
-package com.example.clientjetpack.ID1.Test._A.Tests._ID1.Test.Modules
+package com.example.clientjetpack.ID1.Test.Packages.Modules
 
-import com.example.clientjetpack.ID1.Test._A.Tests._ID1.Test.Models.NoSqlDataBases
-import com.example.clientjetpack.ID1.Test._A.Tests._ID1.Test.Models.OutputNoSqlModel
+import com.example.clientjetpack.ID1.Test.Packages.Models.NoSqlDataBases
+import com.example.clientjetpack.ID1.Test.Packages.Models.OutputNoSqlModel
 
 fun covertireDepitSqlAuNonSqlShemaDataBase(noSqlDataBases: NoSqlDataBases): OutputNoSqlModel {
     val tarificationEntries = noSqlDataBases.tarificationEntries

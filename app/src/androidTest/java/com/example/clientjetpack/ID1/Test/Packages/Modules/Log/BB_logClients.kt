@@ -1,7 +1,7 @@
-package com.example.clientjetpack.ID1.Test._A.Tests._ID1.Test.Modules.Log
+package com.example.clientjetpack.ID1.Test.Packages.Modules.Log
 
-import com.example.clientjetpack.ID1.Test._A.Tests._ID1.Test.Models.OutputNoSqlModel
-import com.example.clientjetpack.ID1.Test._A.Tests._ID1.Test.Z.Function.strDateEtTempFromVidTimestamp
+import com.example.clientjetpack.ID1.Test.Packages.Models.OutputNoSqlModel
+import com.example.clientjetpack.ID1.Test.Packages.Function.strDateEtTempFromVidTimestamp
 
 fun logClients(
     clients: List<OutputNoSqlModel.Produit.Client>,

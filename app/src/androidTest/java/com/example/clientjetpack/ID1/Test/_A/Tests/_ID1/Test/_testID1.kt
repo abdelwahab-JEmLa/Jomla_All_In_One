@@ -1,13 +1,13 @@
 package com.example.clientjetpack.ID1.Test._A.Tests._ID1.Test
 
-import com.example.clientjetpack.ID1.Test._A.Tests._ID1.Test.Models.InputEtInfosSqlModels
-import com.example.clientjetpack.ID1.Test._A.Tests._ID1.Test.Models.NoSqlDataBases
-import com.example.clientjetpack.ID1.Test._A.Tests._ID1.Test.Modules.Log.logHErartchiDataBase
-import com.example.clientjetpack.ID1.Test._A.Tests._ID1.Test.Modules.covertireDepitSqlAuNonSqlShemaDataBase
-import com.example.clientjetpack.ID1.Test._A.Tests._ID1.Test.W.Init.initialClientsData
-import com.example.clientjetpack.ID1.Test._A.Tests._ID1.Test.W.Init.initialProductsData
-import com.example.clientjetpack.ID1.Test._A.Tests._ID1.Test.W.Init.initialTestData
-import com.example.clientjetpack.ID1.Test._A.Tests._ID1.Test.Z.Function.createTimestamp
+import com.example.clientjetpack.ID1.Test.Packages.Function.createTimestamp
+import com.example.clientjetpack.ID1.Test.Packages.Init.initialClientsData
+import com.example.clientjetpack.ID1.Test.Packages.Init.initialProductsData
+import com.example.clientjetpack.ID1.Test.Packages.Init.initialTestData
+import com.example.clientjetpack.ID1.Test.Packages.Models.InputEtInfosSqlModels
+import com.example.clientjetpack.ID1.Test.Packages.Models.NoSqlDataBases
+import com.example.clientjetpack.ID1.Test.Packages.Modules.Log.logHErartchiDataBase
+import com.example.clientjetpack.ID1.Test.Packages.Modules.covertireDepitSqlAuNonSqlShemaDataBase
 
 fun _testID1 (){
     val noSqlDataBases = NoSqlDataBases(
