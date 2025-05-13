@@ -23,8 +23,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -306,13 +304,6 @@ fun PrixPrevDirect(
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Bold
                         )
-
-                        Button(onClick = {
-                            viewModel.refreshData()
-                            outputModelState.value = viewModel.getOutputModel()
-                        }) {
-                            Icon(Icons.Default.Refresh, contentDescription = "Refresh")
-                        }
                     }
 
                     LazyColumn(
@@ -396,17 +387,6 @@ class TarificationViewModel(private val dataProvider: NoSqlDataBases? = null) {
         dataProvider.tarificationEntries.add(newTarification)
     }
 
-    /**
-     * Refreshes the data (for the refresh button)
-     */
-    fun refreshData() {
-        // For now, just ensure the current data is properly formatted
-        // In a real app, this would fetch fresh data from a data source
-    }
-
-    /**
-     * Gets the current output model for the UI
-     */
     fun getOutputModel(): OutputNoSqlModel {
         return dataProvider?.toOutputNoSqlModel() ?: OutputNoSqlModel(emptyList())
     }
