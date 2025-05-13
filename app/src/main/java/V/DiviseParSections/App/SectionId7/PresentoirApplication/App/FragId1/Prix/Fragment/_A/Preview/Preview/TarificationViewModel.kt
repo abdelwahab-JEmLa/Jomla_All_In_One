@@ -45,6 +45,78 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+@Preview(showBackground = true)
+@Composable
+fun PrixPrevDirect(
+    @PreviewParameter(NoSqlToOutputModelPreviewProvider::class) outputModel: OutputNoSqlModel
+) {
+    val viewModel = remember { TarificationViewModel() }
+
+    MaterialTheme {
+        Column(modifier = Modifier.fillMaxSize()) {
+            TabRow(selectedTabIndex = 0) {
+                Tab(
+                    text = { Text("UI") },
+                    selected = true,
+                    onClick = { }
+                )
+                Tab(
+                    text = { Text("Logs") },
+                    selected = false,
+                    onClick = { }
+                )
+            }
+
+            Box(modifier = Modifier.fillMaxSize()) {
+                Column(modifier = Modifier.fillMaxSize()) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            "Tarification Dashboard (Direct Model)",
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontWeight = FontWeight.Bold
+                        )
+
+                        Button(onClick = { }) {
+                            Icon(Icons.Default.Refresh, contentDescription = "Refresh")
+                        }
+                    }
+
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(8.dp)
+                    ) {
+                        items(outputModel.produits) { produit ->
+                            val produitName = viewModel.getSqlProduit(produit.id)?.nom ?: "Produit ${produit.id}"
+                            ProduitCard(
+                                produit = produit,
+                                produitName = produitName,
+                                tarificationViewModel = viewModel
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                        }
+                    }
+                }
+
+                FloatingActionButton(
+                    onClick = { },
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(16.dp)
+                ) {
+                    Icon(Icons.Default.Add, contentDescription = "Add Test Data")
+                }
+            }
+        }
+    }
+}
+
 class NoSqlDataBasesPreviewProvider : PreviewParameterProvider<NoSqlDataBases> {
     override val values = sequenceOf(
         NoSqlDataBases(
@@ -369,75 +441,3 @@ fun strDateEtTempFromVidTimestamp(timestamp: Long): Pair<String, String> {
     return Pair(dateFormat.format(date), timeFormat.format(date))
 }
 
-// Second preview function showing direct use of NoSqlToOutputModelPreviewProvider
-@Preview(showBackground = true)
-@Composable
-fun PrixPrevDirect(
-    @PreviewParameter(NoSqlToOutputModelPreviewProvider::class) outputModel: OutputNoSqlModel
-) {
-    val viewModel = remember { TarificationViewModel() }
-
-    MaterialTheme {
-        Column(modifier = Modifier.fillMaxSize()) {
-            TabRow(selectedTabIndex = 0) {
-                Tab(
-                    text = { Text("UI") },
-                    selected = true,
-                    onClick = { }
-                )
-                Tab(
-                    text = { Text("Logs") },
-                    selected = false,
-                    onClick = { }
-                )
-            }
-
-            Box(modifier = Modifier.fillMaxSize()) {
-                Column(modifier = Modifier.fillMaxSize()) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            "Tarification Dashboard (Direct Model)",
-                            style = MaterialTheme.typography.headlineSmall,
-                            fontWeight = FontWeight.Bold
-                        )
-
-                        Button(onClick = { }) {
-                            Icon(Icons.Default.Refresh, contentDescription = "Refresh")
-                        }
-                    }
-
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(8.dp)
-                    ) {
-                        items(outputModel.produits) { produit ->
-                            val produitName = viewModel.getSqlProduit(produit.id)?.nom ?: "Produit ${produit.id}"
-                            ProduitCard(
-                                produit = produit,
-                                produitName = produitName,
-                                tarificationViewModel = viewModel
-                            )
-                            Spacer(modifier = Modifier.height(16.dp))
-                        }
-                    }
-                }
-
-                FloatingActionButton(
-                    onClick = { },
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(16.dp)
-                ) {
-                    Icon(Icons.Default.Add, contentDescription = "Add Test Data")
-                }
-            }
-        }
-    }
-}
