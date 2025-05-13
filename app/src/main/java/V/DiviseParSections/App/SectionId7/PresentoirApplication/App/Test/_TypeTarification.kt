@@ -34,32 +34,3 @@ data class TypeTarification(
     )
 }
 
-data class Produit(
-    val id: Long = 0,
-    val timestamp: Long = 0,
-    val infos: ProduitInfos = ProduitInfos(),
-    val cesStatuesMutable: CesStatuesMutable = CesStatuesMutable(),
-    val clients: List<Client> = emptyList(),
-) {
-    data class ProduitInfos(
-        val nom: String = ""
-    )
-    data class CesStatuesMutable(
-        val cActiveDonsSonListParent: Boolean = false,
-    )
-
-    data class Client(
-        val id: Long = 0,
-        val timestamp: Long = 0,
-        val infos: ClientInfos = ClientInfos(),
-        val cesStatuesMutable: CesStatuesMutable = CesStatuesMutable(cActiveDonsSonListParent = true),
-        val typesTarification: List<TypeTarification> = emptyList(),
-    ) {
-        data class ClientInfos(
-            val nom: String = ""
-        )
-        data class CesStatuesMutable(
-            val cActiveDonsSonListParent: Boolean = false,
-        )
-    }
-}

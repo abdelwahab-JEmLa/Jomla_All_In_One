@@ -2,7 +2,6 @@ package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.Test
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import java.util.Calendar
-
 class PreviewProvider : PreviewParameterProvider<List<TypeTarification>> {
     override val values = sequenceOf(
         listOf(
@@ -12,19 +11,7 @@ class PreviewProvider : PreviewParameterProvider<List<TypeTarification>> {
                 infos = TypeTarification.Infos(type = TypeTarification.TypeTarificationEnum.ParBenifice),
                 cesStatuesMutable = TypeTarification.CesStatuesMutable(cActiveDonsSonListParent = true),
                 parent = TypeTarification.Parent(
-                    produit = Produit(
-                        id = 1L,
-                        timestamp = createTimestamp(day = 13, month = 5, hour = 10, minute = 30),
-                        infos = Produit.ProduitInfos(nom = "Produit 1"),
-                        clients = listOf(
-                            Produit.Client(
-                                id = 1L,
-                                timestamp = createTimestamp(day = 13, month = 5, hour = 10, minute = 30),
-                                infos = Produit.Client.ClientInfos(nom = "Client 1"),
-                                typesTarification = emptyList()
-                            )
-                        )
-                    )
+                    produit = hardData()[0] // Using first product from hardData
                 ),
                 PrixsCurrency = listOf(
                     TypeTarification.Prix(
@@ -40,23 +27,28 @@ class PreviewProvider : PreviewParameterProvider<List<TypeTarification>> {
                 )
             ),
             TypeTarification(
+                id = 2L,
+                timestamp = createTimestamp(day = 12, month = 5, hour = 10, minute = 30),
+                infos = TypeTarification.Infos(type = TypeTarification.TypeTarificationEnum.Historique),
+                cesStatuesMutable = TypeTarification.CesStatuesMutable(cActiveDonsSonListParent = true),
+                parent = TypeTarification.Parent(
+                    produit = hardData()[1] // Using second product from hardData
+                ),
+                PrixsCurrency = listOf(
+                    TypeTarification.Prix(
+                        id = 3L,
+                        timestamp = createTimestamp(day = 11, month = 5, hour = 10, minute = 30),
+                        valeur = 15.50
+                    )
+                )
+            ),
+            TypeTarification(
                 id = 3L,
                 timestamp = createTimestamp(day = 12, month = 5, hour = 22, minute = 30),
                 infos = TypeTarification.Infos(type = TypeTarification.TypeTarificationEnum.LeMaxPrixArrive),
+                cesStatuesMutable = TypeTarification.CesStatuesMutable(cActiveDonsSonListParent = true),
                 parent = TypeTarification.Parent(
-                    produit = Produit(
-                        id = 3L,
-                        timestamp = createTimestamp(day = 12, month = 5, hour = 22, minute = 30),
-                        infos = Produit.ProduitInfos(nom = "Produit 3"),
-                        clients = listOf(
-                            Produit.Client(
-                                id = 3L,
-                                timestamp = createTimestamp(day = 12, month = 5, hour = 22, minute = 30),
-                                infos = Produit.Client.ClientInfos(nom = "Client 3"),
-                                typesTarification = emptyList()
-                            )
-                        )
-                    )
+                    produit = hardData()[2] // Using third product from hardData
                 ),
                 PrixsCurrency = listOf(
                     TypeTarification.Prix(
@@ -72,29 +64,39 @@ class PreviewProvider : PreviewParameterProvider<List<TypeTarification>> {
                 )
             ),
             TypeTarification(
-                id = 2L,
-                timestamp = createTimestamp(day = 12, month = 5, hour = 10, minute = 30),
-                infos = TypeTarification.Infos(type = TypeTarification.TypeTarificationEnum.Historique),
+                id = 4L,
+                timestamp = createTimestamp(day = 13, month = 5, hour = 14, minute = 45),
+                infos = TypeTarification.Infos(type = TypeTarification.TypeTarificationEnum.ParBenifice),
+                cesStatuesMutable = TypeTarification.CesStatuesMutable(cActiveDonsSonListParent = true),
                 parent = TypeTarification.Parent(
-                    produit = Produit(
-                        id = 2L,
-                        timestamp = createTimestamp(day = 12, month = 5, hour = 10, minute = 30),
-                        infos = Produit.ProduitInfos(nom = "Produit 2"),
-                        clients = listOf(
-                            Produit.Client(
-                                id = 2L,
-                                timestamp = createTimestamp(day = 12, month = 5, hour = 10, minute = 30),
-                                infos = Produit.Client.ClientInfos(nom = "Client 2"),
-                                typesTarification = emptyList()
-                            )
-                        )
-                    )
+                    produit = hardData()[3] // Using fourth product from hardData
                 ),
                 PrixsCurrency = listOf(
                     TypeTarification.Prix(
-                        id = 3L,
-                        timestamp = createTimestamp(day = 11, month = 5, hour = 10, minute = 30),
-                        valeur = 15.50
+                        id = 6L,
+                        timestamp = createTimestamp(day = 13, month = 5, hour = 14, minute = 45),
+                        valeur = 29.99
+                    ),
+                    TypeTarification.Prix(
+                        id = 7L,
+                        timestamp = createTimestamp(day = 13, month = 5, hour = 16, minute = 30),
+                        valeur = 32.50
+                    )
+                )
+            ),
+            TypeTarification(
+                id = 5L,
+                timestamp = createTimestamp(day = 14, month = 5, hour = 9, minute = 15),
+                infos = TypeTarification.Infos(type = TypeTarification.TypeTarificationEnum.Historique),
+                cesStatuesMutable = TypeTarification.CesStatuesMutable(cActiveDonsSonListParent = true),
+                parent = TypeTarification.Parent(
+                    produit = hardData()[0] // Reusing first product from hardData
+                ),
+                PrixsCurrency = listOf(
+                    TypeTarification.Prix(
+                        id = 8L,
+                        timestamp = createTimestamp(day = 14, month = 5, hour = 9, minute = 15),
+                        valeur = 22.99
                     )
                 )
             )
