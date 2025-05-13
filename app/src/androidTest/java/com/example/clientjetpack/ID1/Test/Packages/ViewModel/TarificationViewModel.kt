@@ -1,13 +1,13 @@
 // File: TarificationViewModel.kt
-package com.example.clientjetpack.ID1.Test._A.Tests._ID2.Test.ViewModel
+package com.example.clientjetpack.ID1.Test.Packages.ViewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.clientjetpack.ID1.Test.Packages.Function.createTimestamp
 import com.example.clientjetpack.ID1.Test.Packages.Models.InputEtInfosSqlModels
 import com.example.clientjetpack.ID1.Test.Packages.Models.OutputNoSqlModel
-import com.example.clientjetpack.ID1.Test._A.Tests._ID2.Test.Repository.Input.InputEtInfosSqlGroupeRepositorysImp
-import com.example.clientjetpack.ID1.Test._A.Tests._ID2.Test.Repository.Output.OutputNoSqlModelRepositoryImp
+import com.example.clientjetpack.ID1.Test.Packages.Repository.Input.InputEtInfosSqlGroupeRepositorysImp
+import com.example.clientjetpack.ID1.Test.Packages.Repository.Output.OutputNoSqlModelRepositoryImp
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

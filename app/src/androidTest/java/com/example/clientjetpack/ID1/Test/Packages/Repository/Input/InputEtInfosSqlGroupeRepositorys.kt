@@ -1,4 +1,4 @@
-package com.example.clientjetpack.ID1.Test._A.Tests._ID2.Test.Repository.Input
+package com.example.clientjetpack.ID1.Test.Packages.Repository.Input
 
 import com.example.clientjetpack.ID1.Test.Packages.Models.InputEtInfosSqlModels
 

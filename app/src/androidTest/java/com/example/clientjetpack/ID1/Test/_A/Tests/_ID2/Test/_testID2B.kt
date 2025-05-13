@@ -1,8 +1,8 @@
 package com.example.clientjetpack.ID1.Test._A.Tests._ID2.Test
 
 import com.example.clientjetpack.ID1.Test.Packages.Modules.Log.logHErartchiDataBase
-import com.example.clientjetpack.ID1.Test._A.Tests._ID2.Test.Repository.Output.OutputNoSqlModelRepositoryImp
-import com.example.clientjetpack.ID1.Test._A.Tests._ID2.Test.ViewModel.TarificationViewModel
+import com.example.clientjetpack.ID1.Test.Packages.Repository.Output.OutputNoSqlModelRepositoryImp
+import com.example.clientjetpack.ID1.Test.Packages.ViewModel.TarificationViewModel
 import kotlinx.coroutines.flow.first
 import kotlin.test.assertEquals
 

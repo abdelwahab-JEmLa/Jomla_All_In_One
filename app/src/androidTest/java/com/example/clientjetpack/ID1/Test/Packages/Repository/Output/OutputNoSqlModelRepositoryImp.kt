@@ -1,12 +1,12 @@
 // File: OutputNoSqlModelRepositoryImp.kt
-package com.example.clientjetpack.ID1.Test._A.Tests._ID2.Test.Repository.Output
+package com.example.clientjetpack.ID1.Test.Packages.Repository.Output
 
 import com.example.clientjetpack.ID1.Test.Packages.Models.InputEtInfosSqlModels
 import com.example.clientjetpack.ID1.Test.Packages.Models.NoSqlDataBases
 import com.example.clientjetpack.ID1.Test.Packages.Models.OutputNoSqlModel
 import com.example.clientjetpack.ID1.Test.Packages.Modules.covertireDepitSqlAuNonSqlShemaDataBase
-import com.example.clientjetpack.ID1.Test._A.Tests._ID2.Test.Repository.Input.InputEtInfosSqlGroupeRepositorys
-import com.example.clientjetpack.ID1.Test._A.Tests._ID2.Test.Repository.Input.InputEtInfosSqlGroupeRepositorysImp
+import com.example.clientjetpack.ID1.Test.Packages.Repository.Input.InputEtInfosSqlGroupeRepositorys
+import com.example.clientjetpack.ID1.Test.Packages.Repository.Input.InputEtInfosSqlGroupeRepositorysImp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
