@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.Test
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,15 +28,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-
+import com.example.clientjetpack.ui.theme.ClientJetPackTheme
 
 @Preview(
-    showBackground = true,
-    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES
+    uiMode = Configuration.UI_MODE_NIGHT_YES
 )
 @Composable
 fun PreviewTest(
@@ -43,15 +42,16 @@ fun PreviewTest(
 ) {
     var produits by remember { mutableStateOf(initProduits) }
 
-    // Use the system's theme (which will be dark because of UI_MODE_NIGHT_YES)
-    // Instead of creating a new MaterialTheme with custom colors
-    MainScreen(
-        produits = produits,
-        onAddProduct = {
-            val newProduct = newProduit(produits)
-            produits = produits + newProduct
-        }
-    )
+    // Wrap the content with your app's theme
+    ClientJetPackTheme(darkTheme = true) {
+        MainScreen(
+            produits = produits,
+            onAddProduct = {
+                val newProduct = newProduit(produits)
+                produits = produits + newProduct
+            }
+        )
+    }
 }
 
 @Composable
@@ -101,6 +101,33 @@ fun MainList(produits: List<Produit>, modifier: Modifier = Modifier) {
     }
 }
 
+@Composable
+fun TarificationItem(
+    prix: Produit.Client.TypeTarification.Prix,
+    modifier: Modifier = Modifier
+) {
+    val (date, time) = formatTimestamp(prix.timestamp)
+
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .padding(8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = "Prix: ${prix.valeur}€",
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant // Utiliser la couleur appropriée
+        )
+        Text(
+            text = "$date $time",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f) // Utiliser une couleur appropriée avec transparence
+        )
+    }
+}
 
 @Composable
 fun TarificationTypeSection(
@@ -123,14 +150,15 @@ fun TarificationTypeSection(
         ) {
             Text(
                 text = "Type: ${currentTypeTarification.infos.type.name}",
-                style = MaterialTheme.typography.titleSmall
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onBackground // Utiliser la couleur appropriée
             )
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = "$date $time",
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f) // Utiliser une couleur appropriée avec transparence
                 )
 
                 IconButton(onClick = {
@@ -164,32 +192,5 @@ fun TarificationTypeSection(
             TarificationItem(prix = prix)
             Spacer(modifier = Modifier.height(4.dp))
         }
-    }
-}
-
-@Composable
-fun TarificationItem(
-    prix: Produit.Client.TypeTarification.Prix,
-    modifier: Modifier = Modifier
-) {
-    val (date, time) = formatTimestamp(prix.timestamp)
-
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
-            .padding(8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = "Prix: ${prix.valeur}€",
-            style = MaterialTheme.typography.bodyLarge
-        )
-        Text(
-            text = "$date $time",
-            style = MaterialTheme.typography.bodySmall,
-            color = Color.Gray
-        )
     }
 }
