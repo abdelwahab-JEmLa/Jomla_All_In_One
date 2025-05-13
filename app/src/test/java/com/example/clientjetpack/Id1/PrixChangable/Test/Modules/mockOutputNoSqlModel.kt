@@ -1,4 +1,4 @@
-package com.example.clientjetpack.Id1.PrixChangable.Test.Main.Modules
+package com.example.clientjetpack.Id1.PrixChangable.Test.Modules
 
 import com.example.clientjetpack.Id1.PrixChangable.Test.Models.NoSqlDataBases
 import com.example.clientjetpack.Id1.PrixChangable.Test.Models.OutputNoSqlModel
