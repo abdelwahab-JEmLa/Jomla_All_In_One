@@ -7,9 +7,9 @@ import com.example.clientjetpack.ID1.Test.Components.LogFilterRule
 import com.example.clientjetpack.ID1.Test.Z.Fragment.A.ViewModel.TarificationViewModel
 import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input.Test.initialTestData
 import com.example.clientjetpack.ID1.Test.Z.Fragment.Passive.createTimestamp
-import com.example.clientjetpack.ID1.Test._ID1.Test.Models.InputEtInfosSqlModels
-import com.example.clientjetpack.ID1.Test._ID1.Test._testID1
-import com.example.clientjetpack.ID1.Test._ID2.Test.testID2
+import com.example.clientjetpack.ID1.Test.Test.Test.Models.InputEtInfosSqlModels
+import com.example.clientjetpack.ID1.Test.Test.Test._testID1
+import com.example.clientjetpack.ID1.Test._A.Tests._ID2.Test.testID2
 import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
