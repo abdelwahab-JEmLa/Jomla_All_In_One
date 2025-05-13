@@ -16,7 +16,7 @@ import org.junit.Test
 import org.junit.rules.TestRule
 
 @ExperimentalCoroutinesApi
-class __TestsDisplayerLogDataBase {
+class __TestsStartApp {
     @get:Rule
     val rule: TestRule = InstantTaskExecutorRule()
 
