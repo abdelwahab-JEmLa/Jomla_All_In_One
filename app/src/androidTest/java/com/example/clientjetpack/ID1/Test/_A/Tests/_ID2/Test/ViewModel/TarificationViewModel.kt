@@ -3,6 +3,7 @@ package com.example.clientjetpack.ID1.Test._A.Tests._ID2.Test.ViewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.clientjetpack.ID1.Test.Packages.Function.createTimestamp
 import com.example.clientjetpack.ID1.Test.Packages.Models.InputEtInfosSqlModels
 import com.example.clientjetpack.ID1.Test.Packages.Models.OutputNoSqlModel
 import com.example.clientjetpack.ID1.Test._A.Tests._ID2.Test.Repository.Input.InputEtInfosSqlGroupeRepositorysImp
@@ -60,7 +61,29 @@ class TarificationViewModel(
         return typeTarificationInputSqlRepo.modelList.find { it.id == id }
     }
 
-    fun addNewTestDataTarificationEtClient(newTarification: InputEtInfosSqlModels.Tarification) {
+
+     fun addTest(viewModel: TarificationViewModel) {
+        viewModel.addNewProduitInfos(
+            InputEtInfosSqlModels.ProduitInfos(
+                id = 5L,
+                nom = "Produit 5"
+            )
+        )
+        val newTarification =
+            InputEtInfosSqlModels.Tarification(
+                vidTimestamp = createTimestamp(day = 1, hour = 13, minute = 30),
+                idProduit = 5L,
+                idClient = 1L,
+                idTypeTarification = 2L,
+                prixCurrency = 20.99
+            )
+
+        viewModel.addNewTestDataTarification(
+            newTarification
+        )
+    }
+
+    fun addNewTestDataTarification(newTarification: InputEtInfosSqlModels.Tarification) {
         tarificationRepository.add(newTarification) { addedTarification ->
             refreshOutputData()
         }
