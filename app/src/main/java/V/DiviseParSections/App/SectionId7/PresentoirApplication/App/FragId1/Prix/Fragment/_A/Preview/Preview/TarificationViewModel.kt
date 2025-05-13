@@ -49,15 +49,16 @@ class NoSqlDataBasesPreviewProvider : PreviewParameterProvider<NoSqlDataBases> {
     override val values = sequenceOf(
         NoSqlDataBases(
             produitInfos = mutableListOf(
-                ProduitInfos(id = 1, nom = "Produit A"),
+                ProduitInfos(id = 1, nom = "Produit Optila"),
                 ProduitInfos(id = 2, nom = "Produit B"),
                 ProduitInfos(id = 3, nom = "Produit C")
             ),
             clientDataBase = mutableListOf(
-                ClientDataBase(id = 1, nom = "Client Alpha", idActiveTypeTarificationDataBase = 1),
+                ClientDataBase(id = 1, nom = "Client Abderrahman", idActiveTypeTarificationDataBase = 1),
                 ClientDataBase(id = 2, nom = "Client Beta", idActiveTypeTarificationDataBase = 2),
                 ClientDataBase(id = 3, nom = "Client Gamma", idActiveTypeTarificationDataBase = 3)
             ),
+
             tarificationEntries = mutableListOf(
                 Tarification(
                     vidTimestamp = System.currentTimeMillis() - 86400000,
@@ -71,7 +72,7 @@ class NoSqlDataBasesPreviewProvider : PreviewParameterProvider<NoSqlDataBases> {
                     idProduit = 1,
                     idClient = 1,
                     idTypeTarification = 1,
-                    prixCurrency = 12.50
+                    prixCurrency = 25.50
                 ),
 
                 Tarification(
