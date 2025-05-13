@@ -9,7 +9,7 @@ import com.example.clientjetpack.ID1.Test._ID1.Test.W.Init.initialProductsData
 import com.example.clientjetpack.ID1.Test._ID1.Test.W.Init.initialTestData
 import com.example.clientjetpack.ID1.Test._ID1.Test.Z.Function.createTimestamp
 
-fun testID1 (){
+fun _testID1 (){
     val noSqlDataBases = NoSqlDataBases(
         initialTestData.toMutableList(),
         initialProductsData.toMutableList(),

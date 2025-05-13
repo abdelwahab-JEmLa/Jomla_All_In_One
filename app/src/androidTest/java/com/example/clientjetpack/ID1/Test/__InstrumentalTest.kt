@@ -8,7 +8,7 @@ import com.example.clientjetpack.ID1.Test.Z.Fragment.A.ViewModel.TarificationVie
 import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input.Test.initialTestData
 import com.example.clientjetpack.ID1.Test.Z.Fragment.Passive.createTimestamp
 import com.example.clientjetpack.ID1.Test._ID1.Test.Models.InputEtInfosSqlModels
-import com.example.clientjetpack.ID1.Test._ID1.Test.testID1
+import com.example.clientjetpack.ID1.Test._ID1.Test._testID1
 import com.example.clientjetpack.ID1.Test._ID2.Test.testID2
 import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.Dispatchers
@@ -88,7 +88,7 @@ class __InstrumentalTest: KoinTest {
 
     @Test
     fun testID1_AddLogFrommock() = runTest {
-        testID1()
+        _testID1()
     }
     @Test
     fun testID2_() = runTest {
