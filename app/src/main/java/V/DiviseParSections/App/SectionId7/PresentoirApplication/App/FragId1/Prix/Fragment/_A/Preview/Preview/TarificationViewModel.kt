@@ -33,6 +33,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlin.random.Random
 
 class NoSqlDataBasesPreviewProvider : PreviewParameterProvider<NoSqlDataBases> {
     override val values = sequenceOf(
@@ -273,6 +275,8 @@ fun PrixPrevDirect(
         TarificationViewModel(noSqlDataProvider)
     }
 
+    val outputModelState = remember { mutableStateOf(outputModel) }
+
     MaterialTheme {
         Column(modifier = Modifier.fillMaxSize()) {
             TabRow(selectedTabIndex = 0) {
@@ -303,7 +307,10 @@ fun PrixPrevDirect(
                             fontWeight = FontWeight.Bold
                         )
 
-                        Button(onClick = { }) {
+                        Button(onClick = {
+                            viewModel.refreshData()
+                            outputModelState.value = viewModel.getOutputModel()
+                        }) {
                             Icon(Icons.Default.Refresh, contentDescription = "Refresh")
                         }
                     }
@@ -313,7 +320,7 @@ fun PrixPrevDirect(
                             .fillMaxSize()
                             .padding(8.dp)
                     ) {
-                        items(outputModel.produits) { produit ->
+                        items(outputModelState.value.produits) { produit ->
                             val produitName =
                                 viewModel.getSqlProduit(produit.id)?.nom ?: "Produit ${produit.id}"
                             ProduitCard(
@@ -327,7 +334,10 @@ fun PrixPrevDirect(
                 }
 
                 FloatingActionButton(
-                    onClick = { },
+                    onClick = {
+                        viewModel.addRandomTarification()
+                        outputModelState.value = viewModel.getOutputModel()
+                    },
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
                         .padding(16.dp)
@@ -339,9 +349,9 @@ fun PrixPrevDirect(
     }
 }
 
-class TarificationViewModel(dataProvider: NoSqlDataBases? = null) {
-    private val clientMap: Map<Long, ClientDataBase> = dataProvider?.clientDataBase?.associateBy { it.id } !!
-    private val produitMap: Map<Long, ProduitInfos> = dataProvider?.produitInfos?.associateBy { it.id } !!
+class TarificationViewModel(private val dataProvider: NoSqlDataBases? = null) {
+    private val clientMap: Map<Long, ClientDataBase> = dataProvider?.clientDataBase?.associateBy { it.id } ?: emptyMap()
+    private val produitMap: Map<Long, ProduitInfos> = dataProvider?.produitInfos?.associateBy { it.id } ?: emptyMap()
     private val typeTarificationMap: Map<Long, TypeTarificationDataBase>
 
     init {
@@ -358,6 +368,48 @@ class TarificationViewModel(dataProvider: NoSqlDataBases? = null) {
     fun getSqlClient(id: Long) = clientMap[id]
     fun getSqlProduit(id: Long) = produitMap[id]
     fun getSqlTypeTarification(id: Long) = typeTarificationMap[id]
+
+    /**
+     * Adds a random tarification entry to the database
+     */
+    fun addRandomTarification() {
+        if (dataProvider == null) return
+
+        val randomProduitId = 1
+        val randomClientId = 3
+        val randomTypeId = 2
+
+        // Generate a random price between 5.0 and 50.0
+        val randomPrice = (Random.nextDouble() * 45.0 + 5.0).round(2)
+
+        // Create a timestamp for current time
+        val currentTime = System.currentTimeMillis()
+
+        val newTarification = Tarification(
+            vidTimestamp = currentTime,
+            idProduit = randomProduitId.toLong(),
+            idClient = randomClientId.toLong(),
+            idTypeTarification = randomTypeId.toLong(),
+            prixCurrency = randomPrice
+        )
+
+        dataProvider.tarificationEntries.add(newTarification)
+    }
+
+    /**
+     * Refreshes the data (for the refresh button)
+     */
+    fun refreshData() {
+        // For now, just ensure the current data is properly formatted
+        // In a real app, this would fetch fresh data from a data source
+    }
+
+    /**
+     * Gets the current output model for the UI
+     */
+    fun getOutputModel(): OutputNoSqlModel {
+        return dataProvider?.toOutputNoSqlModel() ?: OutputNoSqlModel(emptyList())
+    }
 }
 
 fun NoSqlDataBases.toOutputNoSqlModel(): OutputNoSqlModel {
@@ -426,4 +478,11 @@ fun strDateEtTempFromVidTimestamp(timestamp: Long): Pair<String, String> {
     val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     val timeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
     return Pair(dateFormat.format(date), timeFormat.format(date))
+}
+
+// Extension function to round double to specified decimal places
+fun Double.round(decimals: Int): Double {
+    var multiplier = 1.0
+    repeat(decimals) { multiplier *= 10 }
+    return kotlin.math.round(this * multiplier) / multiplier
 }
