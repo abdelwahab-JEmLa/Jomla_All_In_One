@@ -40,7 +40,6 @@ fun PreviewTest(
 ) {
     var datas by remember { mutableStateOf(initDatas) }
 
-    // Wrap the content with your app's theme
     ClientJetPackTheme(darkTheme = true) {
         MainScreen(
             datas = datas,
