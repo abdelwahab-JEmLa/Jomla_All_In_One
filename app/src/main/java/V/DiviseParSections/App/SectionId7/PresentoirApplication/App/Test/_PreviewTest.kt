@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.Test
 
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.Test.Function.formatTimestamp
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,9 +15,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -39,139 +35,60 @@ import com.example.clientjetpack.ui.theme.ClientJetPackTheme
 @Preview
 @Composable
 fun PreviewTest(
-    @PreviewParameter(PreviewProvider::class) initDatas: List<TypeTarification>
+    @PreviewParameter(ProduitsPreviewProvider::class) initProduits: List<Produit>
 ) {
-    var datas by remember { mutableStateOf(initDatas) }
+    var produits by remember { mutableStateOf(initProduits) }
 
+    // Wrap the content with your app's theme
     ClientJetPackTheme(darkTheme = true) {
         MainScreen(
-            datas = datas,
-            onAddData = {
-                val newData = newData(datas)
-                datas = datas + newData
-            },
-            onClickToFilter = {
-                datas = datas.map { typeTarification ->
-                    if (typeTarification.parent.produit.id == 2L) {
-                        typeTarification.copy(
-                            cesStatuesMutable = typeTarification.cesStatuesMutable.copy(
-                                cActiveDonsSonListParent = true
-                            )
-                        )
-                    } else {
-                        typeTarification.copy(
-                            cesStatuesMutable = typeTarification.cesStatuesMutable.copy(
-                                cActiveDonsSonListParent = false
-                            )
-                        )
-                    }
-                }
+            produits = produits,
+            onAddProduct = {
+                val newProduct = newProduit(produits)
+                produits = produits + newProduct
             }
         )
     }
 }
 
 @Composable
-fun MainScreen(
-    datas: List<TypeTarification>,
-    modifier: Modifier = Modifier,
-    onAddData: () -> Unit,
-    onClickToFilter: () -> Unit
-) {
-    var showFirstCard by remember { mutableStateOf(true) }
-
-    val filteredTariff = datas
-        .filter { typeTarification ->
-            typeTarification.cesStatuesMutable.cActiveDonsSonListParent
-        }
-
+fun MainScreen(produits: List<Produit>, modifier: Modifier = Modifier, onAddProduct: () -> Unit) {
     Box(modifier = modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
-            if (showFirstCard && filteredTariff.isNotEmpty()) {
-                val firstTariff = filteredTariff.first()
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    elevation = CardDefaults.cardElevation(
-                        defaultElevation = 4.dp
-                    ),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer
-                    )
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                    ) {
-                        Text(
-                            text = "Produit: ${firstTariff.parent.produit.infos.nom}",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
-                        )
-
-                        val clientName = firstTariff.parent.produit.clients.firstOrNull()?.infos?.nom ?: "N/A"
-                        Text(
-                            text = "Client: $clientName",
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-            }
-
-            MainList(datas = datas)
+            MainList(produits = produits)
         }
 
-        Row(
+        FloatingActionButton(
+            onClick = onAddProduct,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                .padding(16.dp)
         ) {
-            // Filter FAB
-            FloatingActionButton(
-                onClick = onClickToFilter,
-                modifier = Modifier
-            ) {
-                Icon(Icons.Default.FilterList, contentDescription = "Filter")
-            }
-
-            // Add FAB
-            FloatingActionButton(
-                onClick = onAddData,
-                modifier = Modifier
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Add")
-            }
+            Icon(Icons.Default.Add, contentDescription = "Add")
         }
     }
 }
 
 @Composable
-fun MainList(datas: List<TypeTarification>, modifier: Modifier = Modifier) {
-    var sortByNewest by remember { mutableStateOf(true) }
-
-    val filteredTariff = datas
-        .filter { typeTarification ->
-            typeTarification.cesStatuesMutable.cActiveDonsSonListParent
-        }
-        .let { list ->
-            if (sortByNewest) {
-                list.sortedByDescending { it.timestamp }
-            } else {
-                list.sortedBy { it.timestamp }
-            }
-        }
-
+fun MainList(produits: List<Produit>, modifier: Modifier = Modifier) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(vertical = 8.dp, horizontal = 16.dp)
     ) {
-        items(filteredTariff) { typeTarification ->
+        val allTypesTarification = produits
+            .filter { produit ->
+                produit.cesStatuesMutable.cActiveDonsSonListParent
+            }
+            .flatMap { produit ->
+                produit.clients.filter { client ->
+                    client.cesStatuesMutable.cActiveDonsSonListParent
+                }.flatMap { client ->
+                    client.typesTarification
+                }
+            }
+
+        items(allTypesTarification) { typeTarification ->
             TarificationTypeSection(typeTarification = typeTarification)
         }
     }
@@ -179,11 +96,10 @@ fun MainList(datas: List<TypeTarification>, modifier: Modifier = Modifier) {
 
 @Composable
 fun TarificationItem(
-    prix: TypeTarification.Prix,
+    prix: Produit.Client.TypeTarification.Prix,
     modifier: Modifier = Modifier
 ) {
     val (date, time) = formatTimestamp(prix.timestamp)
-    var isEditing by remember { mutableStateOf(false) }
 
     Row(
         modifier = modifier
@@ -208,7 +124,7 @@ fun TarificationItem(
 
 @Composable
 fun TarificationTypeSection(
-    typeTarification: TypeTarification,
+    typeTarification: Produit.Client.TypeTarification,
     modifier: Modifier = Modifier
 ) {
     val (date, time) = formatTimestamp(typeTarification.timestamp)
@@ -241,7 +157,7 @@ fun TarificationTypeSection(
                 IconButton(onClick = {
                     val newPriceId =
                         (currentTypeTarification.PrixsCurrency.maxOfOrNull { it.id } ?: 0) + 1
-                    val newPrice = TypeTarification.Prix(
+                    val newPrice = Produit.Client.TypeTarification.Prix(
                         id = newPriceId,
                         timestamp = System.currentTimeMillis(),
                         valeur = 0.0

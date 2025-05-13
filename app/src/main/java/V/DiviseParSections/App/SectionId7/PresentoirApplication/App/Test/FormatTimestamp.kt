@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.Test.Function
+package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.Test
 
 import java.text.SimpleDateFormat
 import java.util.Date
