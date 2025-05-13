@@ -16,8 +16,15 @@ suspend fun testID_2_B(viewModel: TarificationViewModel) {
             prixCurrency = 20.99
         )
 
+
     viewModel.addNewTestDataTarificationEtClient(
         newTarification
+    )
+    viewModel.addNewProduitInfos(
+        InputEtInfosSqlModels.ProduitInfos(
+            id = 5L,
+            nom = "Produit 5"
+        )
     )
 
     logHErartchiDataBase(

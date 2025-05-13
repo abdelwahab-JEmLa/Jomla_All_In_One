@@ -21,7 +21,10 @@ class InputEtInfosSqlGroupeRepositorysImp(
             .child("C_InputEtInfosSql")
 
     private val repositoryScope = CoroutineScope(Dispatchers.IO)
-    private val produitRepository = ProduitDataBase_RepositoryImp()
+    private val produitRepository = ProduitDataBase_RepositoryImp(
+        repositoryScope,
+        fireBaseHandler
+    )
     private val clientRepository = ClientDataBase_RepositoryImp()
     private val typeTarificationRepository = TypeTarificationDataBase_RepositoryImp()
     private val tarificationRepository = TarificationRepositoryImp(
@@ -46,36 +49,63 @@ class InputEtInfosSqlGroupeRepositorysImp(
         return tarificationRepository
     }
 
-    class ProduitDataBase_RepositoryImp :
-        InputEtInfosSqlGroupeRepositorys.ProduitDataBase_Repository {
-        override var modelList: List<InputEtInfosSqlModels.ProduitInfos> = initDefaultData()
+    class ProduitDataBase_RepositoryImp(
+        val repositoryScope: CoroutineScope,
+        val fireBaseHandler: FireBaseHandler
+    ) : InputEtInfosSqlGroupeRepositorys.ProduitDataBase_Repository {
+        // Changed to MutableList to fix the "Unresolved reference: add" error
+        private val _modelList = mutableStateListOf<InputEtInfosSqlModels.ProduitInfos>()
 
-        private fun initDefaultData(): List<InputEtInfosSqlModels.ProduitInfos> {
-            return mutableStateListOf<InputEtInfosSqlModels.ProduitInfos>().apply {
-                addAll(
-                    initialProductsData
-                )
+        override var modelList: List<InputEtInfosSqlModels.ProduitInfos> = _modelList
+
+        init {
+            initDefaultData()
+        }
+
+        private fun initDefaultData() {
+            _modelList.clear()
+            _modelList.addAll(initialProductsData)
+        }
+
+        override fun add(
+            produitInfos: InputEtInfosSqlModels.ProduitInfos,
+            onSuccess: (InputEtInfosSqlModels.ProduitInfos) -> Unit
+        ) {
+            repositoryScope.launch {
+                try {
+                    // Add the product to the list
+                    _modelList.add(produitInfos)
+
+                    onSuccess(produitInfos)
+                } catch (e: Exception) {
+                    // Handle error if needed
+                    e.printStackTrace()
+                }
             }
         }
     }
 
     class ClientDataBase_RepositoryImp :
         InputEtInfosSqlGroupeRepositorys.ClientDataBase_Repository {
-        override var modelList: List<InputEtInfosSqlModels.ClientDataBase> = initDefaultData()
+        private val _modelList = mutableStateListOf<InputEtInfosSqlModels.ClientDataBase>()
 
-        private fun initDefaultData(): List<InputEtInfosSqlModels.ClientDataBase> {
-            return mutableStateListOf<InputEtInfosSqlModels.ClientDataBase>().apply {
-                addAll(initialClientsData)
-            }
+        override var modelList: List<InputEtInfosSqlModels.ClientDataBase> = _modelList
+
+        init {
+            initDefaultData()
+        }
+
+        private fun initDefaultData() {
+            _modelList.clear()
+            _modelList.addAll(initialClientsData)
         }
 
         override fun add(client: InputEtInfosSqlModels.ClientDataBase) {
-            val list = modelList as? MutableList ?: return
-            val existingIndex = list.indexOfFirst { it.id == client.id }
+            val existingIndex = _modelList.indexOfFirst { it.id == client.id }
             if (existingIndex == -1) {
-                list.add(client)
+                _modelList.add(client)
             } else {
-                list[existingIndex] = client
+                _modelList[existingIndex] = client
             }
         }
 
@@ -83,10 +113,9 @@ class InputEtInfosSqlGroupeRepositorysImp(
             client: InputEtInfosSqlModels.ClientDataBase,
             onSuccess: (InputEtInfosSqlModels.ClientDataBase) -> Unit,
         ) {
-            val list = modelList as? MutableList ?: return
-            val index = list.indexOfFirst { it.id == client.id }
+            val index = _modelList.indexOfFirst { it.id == client.id }
             if (index != -1) {
-                list[index] = client
+                _modelList[index] = client
                 onSuccess(client)
             }
         }
@@ -94,15 +123,17 @@ class InputEtInfosSqlGroupeRepositorysImp(
 
     class TypeTarificationDataBase_RepositoryImp :
         InputEtInfosSqlGroupeRepositorys.TypeTarificationDataBase_Repository {
-        override var modelList: List<InputEtInfosSqlModels.TypeTarificationDataBase> =
-            initDefaultData()
+        private val _modelList = mutableStateListOf<InputEtInfosSqlModels.TypeTarificationDataBase>()
 
-        private fun initDefaultData(): List<InputEtInfosSqlModels.TypeTarificationDataBase> {
-            return mutableStateListOf<InputEtInfosSqlModels.TypeTarificationDataBase>().apply {
-                addAll(
-                    initialTypeTarificationData
-                )
-            }
+        override var modelList: List<InputEtInfosSqlModels.TypeTarificationDataBase> = _modelList
+
+        init {
+            initDefaultData()
+        }
+
+        private fun initDefaultData() {
+            _modelList.clear()
+            _modelList.addAll(initialTypeTarificationData)
         }
     }
 
@@ -113,13 +144,18 @@ class InputEtInfosSqlGroupeRepositorysImp(
     ) : InputEtInfosSqlGroupeRepositorys.TarificationRepository {
         val _dataFlow = MutableStateFlow<List<InputEtInfosSqlModels.Tarification>>(emptyList())
 
+        // Using a mutable list to hold the actual data
+        private val _modelList = mutableStateListOf<InputEtInfosSqlModels.Tarification>()
+
         private val sonDataBaseRef: DatabaseReference =
             parentDbRef.child("A_Tarification")
 
         override var modelList: List<InputEtInfosSqlModels.Tarification>
             get() = _dataFlow.value
             set(value) {
-                _dataFlow.value = value
+                _modelList.clear()
+                _modelList.addAll(value)
+                _dataFlow.value = _modelList
             }
 
         init {
@@ -141,7 +177,7 @@ class InputEtInfosSqlGroupeRepositorysImp(
                 sonDataBaseRef,
                 InputEtInfosSqlModels.Tarification::class.java
             )
-            _dataFlow.value = loadedData
+            modelList = loadedData
         }
 
         override fun add(
@@ -149,20 +185,12 @@ class InputEtInfosSqlGroupeRepositorysImp(
             onSuccess: (InputEtInfosSqlModels.Tarification) -> Unit
         ) {
             repositoryScope.launch {
-                // Generate key using timestamp
-                val key = tarification.vidTimestamp.toString()
-
-                // Add to Firebase
                 try {
-                    fireBaseHandler.addAllToFireBaseAsync(
-                        listOf(tarification),
-                        sonDataBaseRef
-                    )
+                    // Fix: Add to the mutable list and update the StateFlow
+                    _modelList.add(tarification)
+                    _dataFlow.value = _modelList.toList()
 
-                    // Reload data from Firebase to update the local list
-                    loadDataFromFirebase()
 
-                    // Call onSuccess callback with the added tarification
                     onSuccess(tarification)
                 } catch (e: Exception) {
                     // Handle error if needed

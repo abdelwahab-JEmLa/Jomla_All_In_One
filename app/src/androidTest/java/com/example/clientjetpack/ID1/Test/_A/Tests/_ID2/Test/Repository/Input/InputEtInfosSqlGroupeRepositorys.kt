@@ -10,6 +10,10 @@ interface InputEtInfosSqlGroupeRepositorys {
 
     interface ProduitDataBase_Repository {
         var modelList: List<InputEtInfosSqlModels.ProduitInfos>
+        fun add(
+            produitInfos: InputEtInfosSqlModels.ProduitInfos,
+            onSuccess: (InputEtInfosSqlModels.ProduitInfos) -> Unit ={}
+        )
     }
 
     interface ClientDataBase_Repository {
