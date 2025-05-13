@@ -1,5 +1,6 @@
 package com.example.clientjetpack.ID1.Test._A.Tests._ID2.Test.ViewModel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.clientjetpack.ID1.Test.Packages.Models.InputEtInfosSqlModels
@@ -14,9 +15,10 @@ import kotlinx.coroutines.launch
 
 class TarificationViewModel(
 ) : ViewModel() {
+    private val TAG = "TarificationViewModel"
     val inputSqlGroupeRepositorys = InputEtInfosSqlGroupeRepositorysImp()
 
-    val outputNoSqlModelRepository =
+    val outputNoSqlRepository =
         OutputNoSqlModelRepositoryImp(inputSqlGroupeRepositorys)
 
     private val _OutputNoSqlFlow = MutableStateFlow(
@@ -41,7 +43,8 @@ class TarificationViewModel(
 
     private fun observeTarificationData() {
         viewModelScope.launch {
-            outputNoSqlModelRepository.dataFlow.collectLatest { data ->
+            outputNoSqlRepository.dataFlow.collectLatest { data ->
+                Log.d(TAG, "Received updated output NoSQL data, products: ${data.produits.size}")
                 _OutputNoSqlFlow.value = data
             }
         }
@@ -60,9 +63,23 @@ class TarificationViewModel(
     }
 
     fun addNewTestDataTarificationEtClient(newTarification: InputEtInfosSqlModels.Tarification) {
-        tarificationRepository.add(newTarification)
+        Log.d(TAG, "Adding new tarification for product: ${newTarification.idProduit}")
+        tarificationRepository.add(newTarification) { addedTarification ->
+            Log.d(TAG, "Successfully added tarification for product: ${addedTarification.idProduit}")
+            refreshOutputData()
+        }
     }
+
     fun addNewProduitInfos(data: InputEtInfosSqlModels.ProduitInfos) {
-        inputSqlProduitInfosRepository.add(data)
+        Log.d(TAG, "Adding new product: ${data.id} - ${data.nom}")
+        inputSqlProduitInfosRepository.add(data) { addedProduct ->
+            Log.d(TAG, "Successfully added product: ${addedProduct.id} - ${addedProduct.nom}")
+            refreshOutputData()
+        }
+    }
+
+    fun refreshOutputData() {
+        Log.d(TAG, "Requesting output data refresh")
+        (outputNoSqlRepository as? OutputNoSqlModelRepositoryImp)?.refreshData()
     }
 }

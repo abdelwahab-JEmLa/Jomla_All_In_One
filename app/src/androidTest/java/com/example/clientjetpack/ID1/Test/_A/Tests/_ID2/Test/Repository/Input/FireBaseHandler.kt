@@ -69,4 +69,16 @@ class FireBaseHandler() {
             }
         }
     }
+
+    fun addToFirebaseAsync(item: Any, ref: DatabaseReference) {
+        val key = ref.push().key ?: return
+        ref.child(key).setValue(item)
+            .addOnSuccessListener {
+                // Success handling if needed
+            }
+            .addOnFailureListener { e ->
+                // Error handling
+                e.printStackTrace()
+            }
+    }
 }

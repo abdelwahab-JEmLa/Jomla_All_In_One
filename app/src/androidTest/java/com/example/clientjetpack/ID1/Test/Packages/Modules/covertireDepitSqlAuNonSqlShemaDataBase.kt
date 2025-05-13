@@ -10,16 +10,19 @@ fun covertireDepitSqlAuNonSqlShemaDataBase(noSqlDataBases: NoSqlDataBases): Outp
 
     val produitsList = mutableListOf<OutputNoSqlModel.Produit>()
 
+    // Process each product in the database
     for (produitDB in produitInfos) {
         val produitId = produitDB.id
         val produitClients = mutableListOf<OutputNoSqlModel.Produit.Client>()
 
+        // Find clients for this product
         val uniqueClientIds = mutableSetOf<Long>()
         for (entry in tarificationEntries) {
             if (entry.idProduit == produitId) {
                 uniqueClientIds.add(entry.idClient)
             }
         }
+
 
         for (clientId in uniqueClientIds) {
             val clientDB = clientDataBase.find { it.id == clientId }
@@ -68,6 +71,7 @@ fun covertireDepitSqlAuNonSqlShemaDataBase(noSqlDataBases: NoSqlDataBases): Outp
             }
         }
 
+        // Even if no clients found, still include the product in the list
         val produitLatestTimestamp = if (produitClients.isNotEmpty()) {
             produitClients.maxOf { it.vidTimestamp }
         } else {

@@ -42,7 +42,6 @@ class OutputNoSqlModelRepositoryImp(
         )
         observeProduitData()
         observeTarificationData()
-        observeClientData()
     }
 
     private fun observeTarificationData() {
@@ -77,18 +76,13 @@ class OutputNoSqlModelRepositoryImp(
         }
     }
 
-    private fun observeClientData() {
-        // Since ClientDataBase_RepositoryImp doesn't have a StateFlow yet,
-        // we'll add a comment for future implementation
-        // TODO: Implement client data observation when StateFlow is added to ClientDataBase_RepositoryImp
-        Log.d(TAG, "Client data observation not implemented - waiting for StateFlow implementation")
-    }
-
     private fun loadImbriquantData(
         tarificationEntries: List<InputEtInfosSqlModels.Tarification>,
         produitEntries: List<InputEtInfosSqlModels.ProduitInfos>,
         clientEntries: List<InputEtInfosSqlModels.ClientDataBase>
     ) {
+        Log.d(TAG, "Loading imbriquant data - Tarifications: ${tarificationEntries.size}, Products: ${produitEntries.size}")
+
         val noSqlDataBases = NoSqlDataBases(
             tarificationEntries.toMutableList(),
             produitEntries.toMutableList(),
@@ -98,5 +92,22 @@ class OutputNoSqlModelRepositoryImp(
         val newData = covertireDepitSqlAuNonSqlShemaDataBase(noSqlDataBases)
         _imbriquantFlow.value = newData
 
+        Log.d(TAG, "Updated imbriquant data - Products in output: ${newData.produits.size}")
+    }
+
+    fun refreshData() {
+        Log.d(TAG, "Manual refresh requested")
+        // Get the latest data from all repositories
+        val latestTarificationData = tarificationRepository.modelList
+        val latestProduitData = produitRepository.modelList
+        val latestClientData = clientRepository.modelList
+
+        Log.d(TAG, "Current product count: ${latestProduitData.size}")
+
+        loadImbriquantData(
+            latestTarificationData,
+            latestProduitData,
+            latestClientData
+        )
     }
 }

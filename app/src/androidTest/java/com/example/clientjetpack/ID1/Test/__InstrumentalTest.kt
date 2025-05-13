@@ -88,7 +88,6 @@ class __InstrumentalTest: KoinTest {
     fun testID1_AddLogFrommock() = runTest {
         _testID1()
     }
-    @Test
     fun testID2_() = runTest {
         testID2(viewModel)
     }
