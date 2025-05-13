@@ -3,17 +3,16 @@ package com.example.clientjetpack.ID1.Test
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.clientjetpack.ID1.Test.Packages.Function.createTimestamp
 import com.example.clientjetpack.ID1.Test.Packages.Init.initialTestData
 import com.example.clientjetpack.ID1.Test.Packages.Models.InputEtInfosSqlModels
 import com.example.clientjetpack.ID1.Test._A.Tests.Filter.LogFilterRule
 import com.example.clientjetpack.ID1.Test._A.Tests._ID1.Test._testID1
 import com.example.clientjetpack.ID1.Test._A.Tests._ID2.Test.ViewModel.TarificationViewModel
 import com.example.clientjetpack.ID1.Test._A.Tests._ID2.Test.testID2
+import com.example.clientjetpack.ID1.Test._A.Tests._ID2.Test.testID_2_B
 import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -94,32 +93,8 @@ class __InstrumentalTest: KoinTest {
         testID2(viewModel)
     }
 
-    fun testID3_apreAddNewTestDataTarificationEtClientl() = runTest {
-        val produitsMutableList =
-            viewModel.outputNoSqlFlow.first()
-                .produits.toMutableList()
+    @Test fun testID_2_B() = runTest { testID_2_B(viewModel) }
 
-        val newTarification =
-            InputEtInfosSqlModels.Tarification(
-                vidTimestamp = createTimestamp(day = 1, hour = 15, minute = 30),
-                idProduit = 1L,
-                idClient = 1L,
-                idTypeTarification = 1L,
-                prixCurrency = 10.99
-            )
-
-        viewModel.addNewTestDataTarificationEtClient(
-            newTarification
-        )
-
-        assertEquals(
-            2,
-            produitsMutableList.find { it.id == newTarification.idProduit }
-                ?.clients?.find { it.id == newTarification.idClient }
-                ?.typeTarification?.find { it.id == newTarification.idTypeTarification }
-                ?.PrixsCurrency?.size
-        )
-    }
 
     fun testID9_AddLoadFB() = runTest {
         fireBaseHandler.clearDatabaseAsync(sonDataBaseRef)

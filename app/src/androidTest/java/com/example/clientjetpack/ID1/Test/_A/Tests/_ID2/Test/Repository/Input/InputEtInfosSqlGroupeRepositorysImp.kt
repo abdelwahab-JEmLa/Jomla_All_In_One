@@ -149,7 +149,25 @@ class InputEtInfosSqlGroupeRepositorysImp(
             onSuccess: (InputEtInfosSqlModels.Tarification) -> Unit
         ) {
             repositoryScope.launch {
+                // Generate key using timestamp
+                val key = tarification.vidTimestamp.toString()
 
+                // Add to Firebase
+                try {
+                    fireBaseHandler.addAllToFireBaseAsync(
+                        listOf(tarification),
+                        sonDataBaseRef
+                    )
+
+                    // Reload data from Firebase to update the local list
+                    loadDataFromFirebase()
+
+                    // Call onSuccess callback with the added tarification
+                    onSuccess(tarification)
+                } catch (e: Exception) {
+                    // Handle error if needed
+                    e.printStackTrace()
+                }
             }
         }
     }

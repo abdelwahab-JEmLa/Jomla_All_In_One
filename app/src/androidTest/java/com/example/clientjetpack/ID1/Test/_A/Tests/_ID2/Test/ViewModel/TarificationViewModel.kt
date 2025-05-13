@@ -60,7 +60,6 @@ class TarificationViewModel(
     }
 
     fun addNewTestDataTarificationEtClient(newTarification: InputEtInfosSqlModels.Tarification) {
-
         tarificationRepository.add(newTarification) { addedTarification ->
             val client = inputSqlClientRepo.modelList.find { clientToUpdate ->
                 clientToUpdate.id == addedTarification.idClient
