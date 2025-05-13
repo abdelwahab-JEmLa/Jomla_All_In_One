@@ -1,11 +1,11 @@
-package com.example.clientjetpack.ID1.Test.Z.Fragment.A.ViewModel
+package com.example.clientjetpack.ID1.Test._A.Tests._ID2.Test.ViewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.clientjetpack.ID1.Test.Packages.Models.InputEtInfosSqlModels
 import com.example.clientjetpack.ID1.Test.Packages.Models.OutputNoSqlModel
-import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Input.InputEtInfosSqlGroupeRepositorysImp
-import com.example.clientjetpack.ID1.Test.Z.Fragment.DataBase.Repository.Output.OutputNoSqlModelRepositoryImp
+import com.example.clientjetpack.ID1.Test._A.Tests._ID2.Test.Repository.Input.InputEtInfosSqlGroupeRepositorysImp
+import com.example.clientjetpack.ID1.Test._A.Tests._ID2.Test.Repository.Output.OutputNoSqlModelRepositoryImp
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

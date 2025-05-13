@@ -6,9 +6,9 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.clientjetpack.ID1.Test.Packages.Function.createTimestamp
 import com.example.clientjetpack.ID1.Test.Packages.Init.initialTestData
 import com.example.clientjetpack.ID1.Test.Packages.Models.InputEtInfosSqlModels
-import com.example.clientjetpack.ID1.Test.Z.Fragment.A.ViewModel.TarificationViewModel
 import com.example.clientjetpack.ID1.Test._A.Tests.Filter.LogFilterRule
 import com.example.clientjetpack.ID1.Test._A.Tests._ID1.Test._testID1
+import com.example.clientjetpack.ID1.Test._A.Tests._ID2.Test.ViewModel.TarificationViewModel
 import com.example.clientjetpack.ID1.Test._A.Tests._ID2.Test.testID2
 import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.Dispatchers
