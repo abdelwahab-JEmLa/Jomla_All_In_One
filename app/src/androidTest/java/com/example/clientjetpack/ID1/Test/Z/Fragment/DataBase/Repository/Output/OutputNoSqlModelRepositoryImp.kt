@@ -32,7 +32,6 @@ class OutputNoSqlModelRepositoryImp(
 
     init {
         loadImbriquantData(tarificationRepository.modelList)
-
         observeTarificationData()
     }
 
@@ -42,14 +41,12 @@ class OutputNoSqlModelRepositoryImp(
                 tarificationRepository as? InputEtInfosSqlGroupeRepositorysImp.TarificationRepositoryImp
 
             tarificationRepositoryImp?._dataFlow?.collectLatest { tarificationEntries ->
-
                 loadImbriquantData(tarificationEntries)
-
             }
         }
     }
 
-    fun loadImbriquantData(tarificationEntries: List<InputEtInfosSqlModels.Tarification>) {
+    private fun loadImbriquantData(tarificationEntries: List<InputEtInfosSqlModels.Tarification>) {
         val noSqlDataBases = NoSqlDataBases(
             tarificationEntries.toMutableList(),
             produitRepository.modelList.toMutableList(),
