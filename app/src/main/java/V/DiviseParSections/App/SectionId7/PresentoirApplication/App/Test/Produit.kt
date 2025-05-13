@@ -27,8 +27,15 @@ data class Produit(
             val PrixsCurrency: List<Prix>,
         ) {
             data class Infos(
-                val nom: String = ""
+                val nom: String = "",
+                var type : TypeTarificationEnum = TypeTarificationEnum.NonDefini,
             )
+            enum class TypeTarificationEnum {
+                NonDefini,
+                ParBenifice,
+                Historique,
+                LeMaxPrixArrive
+            }
 
             data class Prix(
                 val id: Long,

@@ -7,7 +7,6 @@ data class NoSqlDataBases(
     val clientDataBase: MutableList<ClientDataBase> = mutableListOf()
 )
 
-
 data class ProduitInfos(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
