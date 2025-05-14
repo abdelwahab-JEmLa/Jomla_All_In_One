@@ -9,7 +9,7 @@ import androidx.room.Query
 
 @Dao
 interface B_ClientDataBaseDao{
-    @Query("SELECT * FROM B_ClientDataBase ")
+    @Query("SELECT * FROM B_ClientInfos ")
     suspend fun getAll(): MutableList<B_ClientDataBase>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -21,10 +21,10 @@ interface B_ClientDataBaseDao{
     @Delete
     suspend fun delete(item: B_ClientDataBase)
 
-    @Query("DELETE FROM B_ClientDataBase")
+    @Query("DELETE FROM B_ClientInfos")
     suspend fun deleteAll()
 
-    @Query("SELECT COUNT(*) FROM B_ClientDataBase")
+    @Query("SELECT COUNT(*) FROM B_ClientInfos")
     fun getCount(): Int
 
 }

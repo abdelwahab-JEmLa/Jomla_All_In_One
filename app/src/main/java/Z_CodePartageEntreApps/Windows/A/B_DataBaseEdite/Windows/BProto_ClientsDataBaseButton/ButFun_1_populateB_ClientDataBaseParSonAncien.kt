@@ -86,7 +86,7 @@ fun ButFun_1_populateB_ClientDataBaseParSonAncien(
 
                 // Transform old data structure to new structure
                 val newDataList = ancienDataList.map { ancienData ->
-                    Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase(
+                    Z_CodePartageEntreApps.Model.B_ClientInfos.B_ClientInfos(
                         id = ancienData.id,
                         nom = ancienData.nom,
                         numTelephone = ancienData.statueDeBase.numTelephone,
@@ -98,19 +98,19 @@ fun ButFun_1_populateB_ClientDataBaseParSonAncien(
                         auFilterFAB = ancienData.statueDeBase.auFilterFAB,
                         typeDeSonMagasine = when (ancienData.statueDeBase.typeDeSonMagasine) {
                             B_ClientsDataBase.StatueDeBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT ->
-                                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT
+                                Z_CodePartageEntreApps.Model.B_ClientInfos.B_ClientInfos.TypeDeSonMagasine.ATAYAT_MOUKASSARAT
                             B_ClientsDataBase.StatueDeBase.TypeDeSonMagasine.AlIMENTATION_GENERALE ->
-                                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.TypeDeSonMagasine.AlIMENTATION_GENERALE
+                                Z_CodePartageEntreApps.Model.B_ClientInfos.B_ClientInfos.TypeDeSonMagasine.AlIMENTATION_GENERALE
                             else ->
-                                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.TypeDeSonMagasine.ATAYAT_MOUKASSARAT
+                                Z_CodePartageEntreApps.Model.B_ClientInfos.B_ClientInfos.TypeDeSonMagasine.ATAYAT_MOUKASSARAT
                         },
                         clientTypeMode = when (ancienData.etatesMutable.clientTypeMode) {
                             B_ClientsDataBase.EtatesMutable.ClientTypeMode.NEVEAU ->
-                                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.ClientTypeMode.NEVEAU
+                                Z_CodePartageEntreApps.Model.B_ClientInfos.B_ClientInfos.ClientTypeMode.NEVEAU
                             B_ClientsDataBase.EtatesMutable.ClientTypeMode.ANCIEN ->
-                                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.ClientTypeMode.ANCIEN
+                                Z_CodePartageEntreApps.Model.B_ClientInfos.B_ClientInfos.ClientTypeMode.ANCIEN
                             B_ClientsDataBase.EtatesMutable.ClientTypeMode.EVITE ->
-                                Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase.ClientTypeMode.EVITE
+                                Z_CodePartageEntreApps.Model.B_ClientInfos.B_ClientInfos.ClientTypeMode.EVITE
                         },
                         latitude = ancienData.gpsLocation.latitude,
                         longitude = ancienData.gpsLocation.longitude,
@@ -121,7 +121,7 @@ fun ButFun_1_populateB_ClientDataBaseParSonAncien(
                 }
 
                 // Create a SnapshotStateList from the converted data
-                val snapshotList = androidx.compose.runtime.snapshots.SnapshotStateList<Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase>()
+                val snapshotList = androidx.compose.runtime.snapshots.SnapshotStateList<Z_CodePartageEntreApps.Model.B_ClientInfos.B_ClientInfos>()
                 snapshotList.addAll(newDataList)
 
                 // Update repository with new data structure

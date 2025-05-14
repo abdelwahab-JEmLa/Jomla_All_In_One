@@ -150,7 +150,7 @@ class ViewModel_BProto_ClientsDataBase(
         }
     }
 
-    // Helper function to convert B_ClientDataBase to _3_ClientsDataBase
+    // Helper function to convert B_ClientInfos to _3_ClientsDataBase
     private fun convertToClientsDataBase(client: Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase): _3_ClientsDataBase {
         return _3_ClientsDataBase(
             vid = client.id,

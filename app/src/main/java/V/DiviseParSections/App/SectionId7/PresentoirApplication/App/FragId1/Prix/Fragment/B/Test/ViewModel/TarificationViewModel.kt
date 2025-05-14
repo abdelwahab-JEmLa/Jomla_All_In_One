@@ -2,9 +2,9 @@ package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Pri
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.ProduitNoSqlDataBase
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql.A_ProduitInfos
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql.B_ClientDataBase
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql.C_TypeTarificationDataBase
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql.D_Tarification
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql.B_ClientInfos
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql.C_TypeTarificationInfos
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql.D_TarificationInfos
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql.TypeTarificationEnum
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql._InfosSqlDataBases
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.function.round
@@ -43,45 +43,45 @@ class TarificationViewModel {
                 A_ProduitInfos(id = 2, nom = "Produit Hnina"),
                 A_ProduitInfos(id = 3, nom = "Produit kemya")
             ),
-            b_ClientDataBase = mutableListOf(
-                B_ClientDataBase(
+            b_ClientInfos = mutableListOf(
+                B_ClientInfos(
                     id = 1,
                     nom = "ClientAchteur Abderrahman",
                     idActiveTypeTarificationDataBase = 1
                 ),
-                B_ClientDataBase(id = 2, nom = "ClientAchteur Beta", idActiveTypeTarificationDataBase = 2),
-                B_ClientDataBase(id = 3, nom = "ClientAchteur Gamma", idActiveTypeTarificationDataBase = 3)
+                B_ClientInfos(id = 2, nom = "ClientAchteur Beta", idActiveTypeTarificationDataBase = 2),
+                B_ClientInfos(id = 3, nom = "ClientAchteur Gamma", idActiveTypeTarificationDataBase = 3)
             ),
-            d_Tarification = mutableListOf(
-                D_Tarification(
+            d_TarificationInfos = mutableListOf(
+                D_TarificationInfos(
                     vidTimestamp = createTimestamp(day = 1, hour = 12, minute = 30),
                     idProduit = 1,
                     idClient = 1,
                     idTypeTarification = 1,
                     prixCurrency = 20.99
                 ),
-                D_Tarification(
+                D_TarificationInfos(
                     vidTimestamp = createTimestamp(day = 5, hour = 13, minute = 30),
                     idProduit = 1,
                     idClient = 1,
                     idTypeTarification = 1,
                     prixCurrency = 25.50
                 ),
-                D_Tarification(
+                D_TarificationInfos(
                     vidTimestamp = createTimestamp(day = 5, hour = 14, minute = 30),
                     idProduit = 1,
                     idClient = 2,
                     idTypeTarification = 2,
                     prixCurrency = 9.75
                 ),
-                D_Tarification(
+                D_TarificationInfos(
                     vidTimestamp = createTimestamp(day = 6, hour = 3, minute = 30),
                     idProduit = 2,
                     idClient = 1,
                     idTypeTarification = 1,
                     prixCurrency = 15.25
                 ),
-                D_Tarification(
+                D_TarificationInfos(
                     vidTimestamp = createTimestamp(day = 6, hour = 4, minute = 30),
                     idProduit = 3,
                     idClient = 1,
@@ -93,7 +93,7 @@ class TarificationViewModel {
     }
 
     private fun _InfosSqlDataBases.toOutputNoSqlModel(): ProduitNoSqlDataBase {
-        val groupedByProduct = d_Tarification.groupBy { it.idProduit }
+        val groupedByProduct = d_TarificationInfos.groupBy { it.idProduit }
 
         val produits = groupedByProduct.map { (produitId, produitTarifications) ->
             val groupedByClient = produitTarifications.groupBy { it.idClient }
@@ -144,16 +144,16 @@ class TarificationViewModel {
         return ProduitNoSqlDataBase(produits = produits)
     }
 
-    fun getSqlClient(id: Long): B_ClientDataBase? {
-        return noSqlData.b_ClientDataBase.find { it.id == id }
+    fun getSqlClient(id: Long): B_ClientInfos? {
+        return noSqlData.b_ClientInfos.find { it.id == id }
     }
 
     fun getSqlProduit(id: Long): A_ProduitInfos? {
         return noSqlData.a_ProduitInfos.find { it.id == id }
     }
 
-    fun getSqlTypeTarification(id: Long): C_TypeTarificationDataBase? {
-        val tarification = noSqlData.d_Tarification.find { it.idTypeTarification == id }
+    fun getSqlTypeTarification(id: Long): C_TypeTarificationInfos? {
+        val tarification = noSqlData.d_TarificationInfos.find { it.idTypeTarification == id }
         return tarification?.let {
             val enumType = when (id) {
                 1L -> TypeTarificationEnum.ParBenifice
@@ -161,7 +161,7 @@ class TarificationViewModel {
                 3L -> TypeTarificationEnum.LeMaxPrixArrive
                 else -> TypeTarificationEnum.ParBenifice // Default value
             }
-            C_TypeTarificationDataBase(id = id, typeTarificationEnum = enumType)
+            C_TypeTarificationInfos(id = id, typeTarificationEnum = enumType)
         }
     }
 
@@ -179,7 +179,7 @@ class TarificationViewModel {
         // Create a timestamp for current time
         val currentTime = System.currentTimeMillis()
 
-        val newDTarification = D_Tarification(
+        val newDTarification = D_TarificationInfos(
             vidTimestamp = currentTime,
             idProduit = randomProduitId.toLong(),
             idClient = randomClientId.toLong(),
@@ -187,7 +187,7 @@ class TarificationViewModel {
             prixCurrency = randomPrice
         )
 
-        noSqlData.d_Tarification.add(newDTarification)
+        noSqlData.d_TarificationInfos.add(newDTarification)
 
         // Update UI state with the new model
         _uiState.value = UiState(outputModel = noSqlData.toOutputNoSqlModel())

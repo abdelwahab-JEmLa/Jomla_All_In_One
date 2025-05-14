@@ -1,6 +1,8 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql._InfosSqlDataBases
-import com.example.clientjetpack.ID1.Test.Packages.Models.InputEtInfosSqlModels
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql.A_ProduitInfos
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql.B_ClientInfos
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql.C_TypeTarificationInfos
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql.D_TarificationInfos
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -9,8 +11,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-class FireBaseHandler() {    //<--
-//TODO(1): fix 
+class FireBaseHandler() {
     suspend fun <T> loadDatasAsync(
         databaseRef: DatabaseReference,
         dataClass: Class<T>,
@@ -44,10 +45,10 @@ class FireBaseHandler() {    //<--
 
         modelList.map { item ->
             val key = when (item) {
-                is _InfosSqlDataBases.D_ -> item.vidTimestamp.toString()
-                is _InfosSqlDataBases. -> item.id.toString()
-                is _InfosSqlDataBases. -> item.id.toString()
-                is _InfosSqlDataBases. a_ProduitInfos-> item.id.toString()
+                is D_TarificationInfos -> item.vidTimestamp.toString()
+                is A_ProduitInfos -> item.id.toString()
+                is B_ClientInfos -> item.id.toString()
+                is C_TypeTarificationInfos -> item.id.toString()
                 else -> databaseRef.push().key
             } ?: databaseRef.push().key
 

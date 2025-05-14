@@ -384,7 +384,7 @@ fun MarkerStatusDialog(
                                     }
 
                                 clientToDelete?.let { client ->
-                                    // Find and delete the corresponding B_ClientDataBase object
+                                    // Find and delete the corresponding B_ClientInfos object
                                     val relatedClient = viewModel.bProto_ClientsDataBase.find {
                                         it.id == client.id
                                     }

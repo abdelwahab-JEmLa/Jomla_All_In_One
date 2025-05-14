@@ -1,16 +1,25 @@
 package Z_CodePartageEntreApps.Apps.Manager.Module.B.Room
 
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_2_ProduitAcheteOperation
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_3_TransactionCommercial
+import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_4_PeriodeVent
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.E1SecteurDeClients
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.E1SecteurDeClients.SQL.E1SecteurDeClientsDao
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Models.PolygonGeoLimite
 import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.Views.A_PolygonCreateur.Repository.PolygonGeoLimiteDao
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_2_ProduitAcheteOperation
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_3_TransactionCommercial
-import V.DiviseParSections.App.B.ClientUisView.App.FragID.MapClients.Fragment.FilterManager.Options.SQL._1_4_PeriodeVent
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Repository.EtateMessageVocaleDao
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.Repository.MessageVocaleDao
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.EtateMessageVocale
 import V.DiviseParSections.App.SectionID6.Messager.App.FragID1.Messager.Fragment.ViewModel.MessageVocale
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql.A_ProduitInfos
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql.B_ClientInfos
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql.C_TypeTarificationInfos
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql.ClientInfosDao
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql.D_TarificationInfos
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql.ProduitInfosDao
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql.TarificationInfosDao
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql.TypeTarificationEnum
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql.TypeTarificationInfosDao
 import Z_CodePartageEntreApps.Model.A_Produit.A_Produit
 import Z_CodePartageEntreApps.Model.A_Produit.Z.Repository.Extension.A_ProduitDao
 import Z_CodePartageEntreApps.Model.B_ClientDataBase.B_ClientDataBase
@@ -78,6 +87,10 @@ import java.util.Date
         MessageVocale::class,
         EtateMessageVocale::class,
 
+        A_ProduitInfos::class,
+        B_ClientInfos::class,
+        C_TypeTarificationInfos::class,
+        D_TarificationInfos::class
     ],
     version = 3, // Increment version number since we're adding new entities
     exportSchema = false
@@ -115,6 +128,11 @@ abstract class AppDatabase : RoomDatabase() {
 
     abstract fun messageVocaleDao(): MessageVocaleDao
     abstract fun etateMessageVocaleDao(): EtateMessageVocaleDao
+
+    abstract fun produitInfosDao(): ProduitInfosDao
+    abstract fun clientInfosDao(): ClientInfosDao
+    abstract fun typeTarificationInfosDao(): TypeTarificationInfosDao
+    abstract fun tarificationInfosDao(): TarificationInfosDao
 
     object DatabaseModule {
 
@@ -164,4 +182,35 @@ class DateConverter {
     fun fromDate(date: Date?): Long? {
         return date?.time
     }
+}
+
+/**
+ * Convertisseurs pour Room afin de gérer les types personnalisés
+ */
+class Converters {
+    private val gson = Gson()
+
+    /**
+     * Convertit l'enum TypeTarificationEnum en chaîne de caractères pour le stockage
+     */
+    @TypeConverter
+    fun fromTypeTarificationEnum(value: TypeTarificationEnum): String {
+        return value.name
+    }
+
+    /**
+     * Convertit une chaîne de caractères en TypeTarificationEnum pour l'utilisation dans l'application
+     */
+    @TypeConverter
+    fun toTypeTarificationEnum(value: String): TypeTarificationEnum {
+        return try {
+            TypeTarificationEnum.valueOf(value)
+        } catch (e: IllegalArgumentException) {
+            TypeTarificationEnum.ParBenifice // Valeur par défaut en cas d'erreur
+        }
+    }
+
+    /**
+     * D'autres convertisseurs peuvent être ajoutés ici si nécessaire
+     */
 }

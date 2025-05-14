@@ -32,8 +32,8 @@ fun BProto_ClientsDataBaseButton(
     ) {
         Text(
             text = if (updateProgress > 0)
-                "B_ClientDataBase (${(updateProgress * 100).toInt()}%)"
-            else "B_ClientDataBase"
+                "B_ClientInfos (${(updateProgress * 100).toInt()}%)"
+            else "B_ClientInfos"
         )
     }
 

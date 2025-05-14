@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 class B_ClientDataBaseRepositoryImpl(
     private val appDatabase: AppDatabase
 ) : B_ClientDataBaseRepository {
-    private val TAG = "B_ClientDataBase"
+    private val TAG = "B_ClientInfos"
 
     override var modelDatas: SnapshotStateList<B_ClientDataBase> = mutableStateListOf()
     override val progressRepo: MutableStateFlow<Float> = MutableStateFlow(0f)

@@ -118,7 +118,7 @@ fun PreviewContentWithData(data: OutputNoSqlModel) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        "D_Tarification Dashboard",
+                        "D_TarificationInfos Dashboard",
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold
                     )
