@@ -37,7 +37,6 @@ class __ID2InstrumentalTest: KoinTest {
 
     @get:Rule
     val combinedLogFilter = LogFilterRule.filter()
-
         .filterByTag("InstrumentalTest")
         .filterByTag("onOperationSuccess")
         .filterByTag("OperationTrackerImp")
