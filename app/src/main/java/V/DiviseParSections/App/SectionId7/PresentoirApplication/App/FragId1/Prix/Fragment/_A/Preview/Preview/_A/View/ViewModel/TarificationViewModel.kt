@@ -1,20 +1,15 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview._A.View.ViewModel
 
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.ClientDataBase
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.InfosSqlDataBases
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.OutputNoSqlModel
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.ProduitInfos
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.Tarification
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.TypeTarificationDataBase
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.TypeTarificationEnum
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.createTimestamp
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview._A.View.function.round
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.Test.Models.OutputNoSqlModel
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.room.PrimaryKey
+import java.util.Calendar
 import kotlin.random.Random
 
 class UiState(
-    val outputModel: OutputNoSqlModel = OutputNoSqlModel(emptyList()),
+    val outputModel: TarificationViewModel.OutputNoSqlModel = TarificationViewModel.OutputNoSqlModel(emptyList()),
     val isLoading: Boolean = false,
     val error: String? = null
 )
@@ -44,11 +39,11 @@ class TarificationViewModel {
             clientDataBase = mutableListOf(
                 ClientDataBase(
                     id = 1,
-                    nom = "Client Abderrahman",
+                    nom = "ClientAchteur Abderrahman",
                     idActiveTypeTarificationDataBase = 1
                 ),
-                ClientDataBase(id = 2, nom = "Client Beta", idActiveTypeTarificationDataBase = 2),
-                ClientDataBase(id = 3, nom = "Client Gamma", idActiveTypeTarificationDataBase = 3)
+                ClientDataBase(id = 2, nom = "ClientAchteur Beta", idActiveTypeTarificationDataBase = 2),
+                ClientDataBase(id = 3, nom = "ClientAchteur Gamma", idActiveTypeTarificationDataBase = 3)
             ),
             tarificationEntries = mutableListOf(
                 Tarification(
@@ -99,7 +94,7 @@ class TarificationViewModel {
             val produitTimestamp =
                 produitTarifications.maxOfOrNull { it.vidTimestamp } ?: System.currentTimeMillis()
 
-            val clients = groupedByClient.map { (clientId, clientTarifications) ->
+            val clientAchteurs = groupedByClient.map { (clientId, clientTarifications) ->
                 val groupedByType = clientTarifications.groupBy { it.idTypeTarification }
 
                 val clientTimestamp =
@@ -112,20 +107,20 @@ class TarificationViewModel {
                             ?: System.currentTimeMillis()
 
                     val prices = typeTarifications.map { tarif ->
-                        OutputNoSqlModel.Produit.Client.TypeTarification.Prix(
+                        OutputNoSqlModel.Produit.ClientAchteur.TypeTarification.Prix(
                             vidTimestamp = tarif.vidTimestamp,
                             valeur = tarif.prixCurrency
                         )
                     }.sortedByDescending { it.vidTimestamp }
 
-                    OutputNoSqlModel.Produit.Client.TypeTarification(
+                    OutputNoSqlModel.Produit.ClientAchteur.TypeTarification(
                         infosId = typeId,
                         vidTimestamp = typeTimestamp,
                         PrixsCurrency = prices
                     )
                 }.sortedByDescending { it.vidTimestamp }
 
-                OutputNoSqlModel.Produit.Client(
+                OutputNoSqlModel.Produit.ClientAchteur(
                     infosId = clientId,
                     vidTimestamp = clientTimestamp,
                     typeTarification = typeTarifications
@@ -135,7 +130,7 @@ class TarificationViewModel {
             OutputNoSqlModel.Produit(
                 infosId = produitId,
                 vidTimestamp = produitTimestamp,
-                clients = clients
+                clientAchteurs = clientAchteurs
             )
         }.sortedByDescending { it.vidTimestamp }
 
@@ -198,4 +193,77 @@ class TarificationViewModel {
     fun getOutputModel(): OutputNoSqlModel {
         return noSqlData.toOutputNoSqlModel()
     }
+
+    data class OutputNoSqlModel(
+        val produits: List<Produit>,
+    ) {
+        data class Produit(
+            val vidTimestamp: Long,
+            val infosId: Long,
+            val clientAchteurs: List<ClientAchteur>,
+        ) {
+            data class ClientAchteur(
+                val vidTimestamp: Long,
+                val infosId: Long,
+                val typeTarification: List<TypeTarification>,
+            ) {
+                data class TypeTarification(
+                    val vidTimestamp: Long,
+                    val infosId: Long,
+                    val PrixsCurrency: List<Prix>,
+                ) {
+                    data class Prix(
+                        val vidTimestamp: Long,
+                        val valeur: Double,
+                    )
+                }
+            }
+        }
+    }
+
+    data class InfosSqlDataBases(
+        val tarificationEntries: MutableList<Tarification> = mutableListOf(),
+        val produitInfos: MutableList<ProduitInfos> = mutableListOf(),
+        val clientDataBase: MutableList<ClientDataBase> = mutableListOf()
+    )
+
+    data class ProduitInfos(
+        @PrimaryKey(autoGenerate = true)
+        val id: Long = 0,
+        val nom: String = ""
+    )
+
+    data class ClientDataBase(
+        @PrimaryKey(autoGenerate = true)
+        val id: Long = 0,
+        val nom: String = "Non Difinie",
+        val idActiveTypeTarificationDataBase: Long = 0,
+    )
+
+    data class TypeTarificationDataBase(
+        @PrimaryKey(autoGenerate = true)
+        val id: Long = 0,
+        val typeTarificationEnum: TypeTarificationEnum = TypeTarificationEnum.ParBenifice
+    )
+
+    enum class TypeTarificationEnum {
+        ParBenifice,
+        Historique,
+        LeMaxPrixArrive
+    }
+
+    data class Tarification(
+        val vidTimestamp: Long = 0L,
+        val idProduit: Long = 0L,
+        val idClient: Long = 0L,
+        val idTypeTarification: Long = 0L,
+        val prixCurrency: Double = 0.0
+    )
+    fun createTimestamp(year: Int = 2025, month: Int=5, day: Int, hour: Int, minute: Int): Long {
+        val calendar = Calendar.getInstance()
+        calendar.set(year, month - 1, day, hour, minute, 0)
+        calendar.set(Calendar.MILLISECOND, 0)
+        return calendar.timeInMillis
+    }
+
 }

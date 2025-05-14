@@ -16,15 +16,15 @@ System.out
                   ======== C Le Test Log Output Print Du Temp=2025-05-12  du  Frome testFromSqlToNoSqlDB  ========
                   
                   -- Hierarchical Structure --
-                  ├─ Product : 1=(Produit A), Date: 2025-05-05 Time: 16:30:00 (2 clients)
+                  ├─ Product : 1=(Produit A), Date: 2025-05-05 Time: 16:30:00 (2 clientAchteurs)
                     ├─ Client ID: 1=(Client Alpha), Date: 2025-05-01 Time: 10:30:00 (1 tarification types)
                     ├─ Client ID: 2=(Client Beta), Date: 2025-05-05 Time: 16:30:00 (1 tarification types)
-                  ├─ Product : 2=(Produit B), Date: 2025-05-06 Time: 13:45:00 (2 clients)
+                  ├─ Product : 2=(Produit B), Date: 2025-05-06 Time: 13:45:00 (2 clientAchteurs)
                     ├─ Client ID: 2=(Client Beta), Date: 2025-05-02 Time: 11:45:00 (1 tarification types)
                     ├─ Client ID: 3=(Client Gamma), Date: 2025-05-06 Time: 13:45:00 (1 tarification types)
-                  ├─ Product : 3=(Produit C), Date: 2025-05-03 Time: 14:15:00 (1 clients)
+                  ├─ Product : 3=(Produit C), Date: 2025-05-03 Time: 14:15:00 (1 clientAchteurs)
                     ├─ Client ID: 3=(Client Gamma), Date: 2025-05-03 Time: 14:15:00 (1 tarification types)
-                  └─ Product : 4=(Produit D), Date: 2025-05-04 Time: 09:00:00 (1 clients)
+                  └─ Product : 4=(Produit D), Date: 2025-05-04 Time: 09:00:00 (1 clientAchteurs)
                     └─ Client ID: 1=(Client Alpha), Date: 2025-05-04 Time: 09:00:00 (1 tarification types)
                   
                   ========TEST Frome testFromSqlToNoSqlDB COMPLETED SUCCESSFULLY ========

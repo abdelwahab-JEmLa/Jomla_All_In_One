@@ -44,8 +44,8 @@ fun D_ParDatesHistoriqueTransactions_RepositoryHierarchicalStructure(
             var transactionCount = 0
             transactionsByClient.forEach { (clientId, transactions) ->
                 // Find client name
-                val clientName = sqlDatasDatesHistoriqueTransactions.clients
-                    .find { it.vidTimeTemp == clientId }?.nom ?: "Unknown Client"
+                val clientAchteurName = sqlDatasDatesHistoriqueTransactions.clients
+                    .find { it.vidTimeTemp == clientId }?.nom ?: "Unknown ClientAchteur"
 
                 // Using the enum instance method correctly
                 val clientPrefix = if (isLastDay)
@@ -53,7 +53,7 @@ fun D_ParDatesHistoriqueTransactions_RepositoryHierarchicalStructure(
                 else
                     TreePrefix.Type4.get(false)
 
-                println("$clientPrefix Client ID: $clientId ($clientName) - ${transactions.size} transaction(s)")
+                println("$clientPrefix ClientAchteur ID: $clientId ($clientAchteurName) - ${transactions.size} transaction(s)")
 
                 // Log individual transactions
                 transactions.forEachIndexed { tIndex, transaction ->

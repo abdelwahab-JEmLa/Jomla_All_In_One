@@ -1,14 +1,14 @@
 package com.example.clientjetpack.ID1.Test.Packages.Modules.Log
 
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.OutputNoSqlModel
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.Test.Models.OutputNoSqlModel
 import com.example.clientjetpack.ID1.Test.Packages.Function.strDateEtTempFromVidTimestamp
 
 fun logClients(
-    clients: List<OutputNoSqlModel.Produit.Client>,
+    clientAchteurs: List<OutputNoSqlModel.Produit.ClientAchteur>,
     isLastProduit: Boolean,
 ) {
-    clients.forEachIndexed { clientIndex, client ->
-        val isLastClient = clientIndex == clients.size - 1
+    clientAchteurs.forEachIndexed { clientIndex, client ->
+        val isLastClient = clientIndex == clientAchteurs.size - 1
         val clientPrefix =
             if (isLastProduit) TreePrefix.Type3.get(isLastClient) else TreePrefix.Type2.get(
                 isLastClient
@@ -18,9 +18,9 @@ fun logClients(
             client.vidTimestamp
         )
 
-        val clientInfos = StringBuilder().apply {
+        val clientAchteurInfos = StringBuilder().apply {
             append(clientPrefix)
-            append(" Client ID: ")
+            append(" ClientAchteur ID: ")
             append(client.infosId)
             append(", Date: ")
             append(clientDate)
@@ -29,7 +29,7 @@ fun logClients(
             append(" (${client.typeTarification.size} tarification types)")
         }.toString()
 
-        println(clientInfos)
+        println(clientAchteurInfos)
 
         logTarificationTypes(client.typeTarification, isLastProduit, isLastClient)
     }

@@ -175,12 +175,12 @@ fun A_GlobalOptionsControlsFloatingActionButtons_FragId1(
                             modifier = Modifier.size(40.dp),
                             containerColor = coloreButton
                         ) {
-                            Icon(Icons.Filled.FilterAlt, "Filter clients")
+                            Icon(Icons.Filled.FilterAlt, "Filter clientAchteurs")
                         }
 
                         if (showLabels) {
                             Text(
-                                "Filtrer les clients",
+                                "Filtrer les clientAchteurs",
                                 modifier = Modifier
                                     .background(coloreButton)
                                     .padding(4.dp),

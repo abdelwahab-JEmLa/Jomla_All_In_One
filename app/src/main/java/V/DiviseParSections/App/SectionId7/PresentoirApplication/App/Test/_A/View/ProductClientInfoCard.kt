@@ -35,7 +35,7 @@ fun ProductClientInfoCard(produit: Produit, client: Produit.Client, modifier: Mo
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Client: ${client.infos.nom}",
+                text = "ClientAchteur: ${client.infos.nom}",
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

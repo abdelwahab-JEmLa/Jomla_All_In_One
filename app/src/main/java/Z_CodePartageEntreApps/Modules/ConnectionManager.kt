@@ -341,7 +341,7 @@ class ConnectionManager(
 
             Nearby.getConnectionsClient(context)
                 .requestConnection(
-                    "Client Device",
+                    "ClientAchteur Device",
                     endpointId,
                     connectionLifecycleCallback
                 )

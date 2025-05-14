@@ -111,7 +111,7 @@ fun printReceipt(
 
         // Prepare text for printing
         val (texteImprimable, totalBon) = prepareTexteToPrint(
-            nomClient = client?.nom ?: "Client",
+            nomClient = client?.nom ?: "ClientAchteur",
             dateString = dateString,
             articles = articles,
             ancienCredits = creditBalance

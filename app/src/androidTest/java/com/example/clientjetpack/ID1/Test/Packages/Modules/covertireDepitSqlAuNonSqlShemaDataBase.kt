@@ -1,6 +1,6 @@
 package com.example.clientjetpack.ID1.Test.Packages.Modules
 
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.OutputNoSqlModel
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.Test.Models.OutputNoSqlModel
 
 fun covertireDepitSqlAuNonSqlShemaDataBase(noSqlDataBases: com.example.clientjetpack.ID1.Test.Packages.Models.NoSqlDataBases): OutputNoSqlModel {
     val tarificationEntries = noSqlDataBases.tarificationEntries
@@ -12,9 +12,9 @@ fun covertireDepitSqlAuNonSqlShemaDataBase(noSqlDataBases: com.example.clientjet
     // Process each product in the database
     for (produitDB in produitInfos) {
         val produitId = produitDB.id
-        val produitClients = mutableListOf<OutputNoSqlModel.Produit.Client>()
+        val produitClientAchteurs = mutableListOf<OutputNoSqlModel.Produit.ClientAchteur>()
 
-        // Find clients for this product
+        // Find clientAchteurs for this product
         val uniqueClientIds = mutableSetOf<Long>()
         for (entry in tarificationEntries) {
             if (entry.idProduit == produitId) {
@@ -32,7 +32,7 @@ fun covertireDepitSqlAuNonSqlShemaDataBase(noSqlDataBases: com.example.clientjet
 
                 val uniqueTypeIds = clientEntries.map { it.idTypeTarification }.toSet()
                 val typeTarifications =
-                    mutableListOf<OutputNoSqlModel.Produit.Client.TypeTarification>()
+                    mutableListOf<OutputNoSqlModel.Produit.ClientAchteur.TypeTarification>()
 
                 for (typeId in uniqueTypeIds) {
                     val typeEntries = clientEntries.filter { it.idTypeTarification == typeId }
@@ -41,14 +41,14 @@ fun covertireDepitSqlAuNonSqlShemaDataBase(noSqlDataBases: com.example.clientjet
                     if (typeEntries.isNotEmpty()) {
                         val latestTimestamp = typeEntries.first().vidTimestamp
                         val priceList = typeEntries.map { entry ->
-                            OutputNoSqlModel.Produit.Client.TypeTarification.Prix(
+                            OutputNoSqlModel.Produit.ClientAchteur.TypeTarification.Prix(
                                 vidTimestamp = entry.vidTimestamp,
                                 valeur = entry.prixCurrency
                             )
                         }
 
                         typeTarifications.add(
-                            OutputNoSqlModel.Produit.Client.TypeTarification(
+                            OutputNoSqlModel.Produit.ClientAchteur.TypeTarification(
                                 vidTimestamp = latestTimestamp,
                                 infosId = typeId,
                                 PrixsCurrency = priceList
@@ -59,8 +59,8 @@ fun covertireDepitSqlAuNonSqlShemaDataBase(noSqlDataBases: com.example.clientjet
 
                 if (typeTarifications.isNotEmpty()) {
                     val clientLatestTimestamp = typeTarifications.maxOf { it.vidTimestamp }
-                    produitClients.add(
-                        OutputNoSqlModel.Produit.Client(
+                    produitClientAchteurs.add(
+                        OutputNoSqlModel.Produit.ClientAchteur(
                             vidTimestamp = clientLatestTimestamp,
                             infosId = clientId,
                             typeTarification = typeTarifications
@@ -70,9 +70,9 @@ fun covertireDepitSqlAuNonSqlShemaDataBase(noSqlDataBases: com.example.clientjet
             }
         }
 
-        // Even if no clients found, still include the product in the list
-        val produitLatestTimestamp = if (produitClients.isNotEmpty()) {
-            produitClients.maxOf { it.vidTimestamp }
+        // Even if no clientAchteurs found, still include the product in the list
+        val produitLatestTimestamp = if (produitClientAchteurs.isNotEmpty()) {
+            produitClientAchteurs.maxOf { it.vidTimestamp }
         } else {
             System.currentTimeMillis()
         }
@@ -81,7 +81,7 @@ fun covertireDepitSqlAuNonSqlShemaDataBase(noSqlDataBases: com.example.clientjet
             OutputNoSqlModel.Produit(
                 vidTimestamp = produitLatestTimestamp,
                 infosId = produitId,
-                clients = produitClients
+                clientAchteurs = produitClientAchteurs
             )
         )
     }

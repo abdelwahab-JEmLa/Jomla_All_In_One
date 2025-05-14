@@ -68,7 +68,7 @@ fun MainScreenFilterFAB_F3(
                 )
             }
 
-            // Client list
+            // ClientAchteur list
             AnimatedVisibility(visible = showButtons) {
                 Column(
                     horizontalAlignment = Alignment.End,
@@ -97,7 +97,7 @@ fun MainScreenFilterFAB_F3(
                                     }
                                 }
 
-                                // Client info
+                                // ClientAchteur info
                                 Text(
                                     "${client.nom} (${client.id})",
                                     modifier = Modifier

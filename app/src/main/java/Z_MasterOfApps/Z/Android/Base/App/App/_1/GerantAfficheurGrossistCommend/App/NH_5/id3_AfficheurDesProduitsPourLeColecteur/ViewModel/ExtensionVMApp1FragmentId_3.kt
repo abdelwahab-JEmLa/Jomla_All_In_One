@@ -20,7 +20,7 @@ class ExtensionVMApp1FragmentId_3(
             return
         }
 
-        // Get the current and previous clients
+        // Get the current and previous clientAchteurs
         val currentClient = clientDataBaseSnapList[index]
         val prevClient = clientDataBaseSnapList[index - 1]
 
@@ -36,7 +36,7 @@ class ExtensionVMApp1FragmentId_3(
         clientDataBaseSnapList[index] = prevClient
         clientDataBaseSnapList[index - 1] = currentClient
 
-        // Update both clients in the database
+        // Update both clientAchteurs in the database
         viewModelInitApp.updateClientsDataBase(currentClient)
         viewModelInitApp.updateClientsDataBase(prevClient)
     }

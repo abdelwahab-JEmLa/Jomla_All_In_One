@@ -13,7 +13,7 @@ object _B_TestTransactionDataProvider {
         val today = Calendar.getInstance()
         val yesterday = Calendar.getInstance().apply { add(Calendar.DAY_OF_MONTH, -1) }
 
-        // Client ID 174 - "الاخ لعمري اسماعيل" - Today
+        // ClientAchteur ID 174 - "الاخ لعمري اسماعيل" - Today
         transactions.add(
             createTransaction(
             vid = 1L,
@@ -46,7 +46,7 @@ object _B_TestTransactionDataProvider {
         )
         )
 
-        // Client ID 177 - "الاخ زواوي محمد" - Yesterday
+        // ClientAchteur ID 177 - "الاخ زواوي محمد" - Yesterday
         transactions.add(
             createTransaction(
             vid = 8L,
@@ -79,7 +79,7 @@ object _B_TestTransactionDataProvider {
         )
         )
 
-        // Client ID 180 - "الاخ سليم بن علي" - Today
+        // ClientAchteur ID 180 - "الاخ سليم بن علي" - Today
         transactions.add(
             createTransaction(
             vid = 10L,
@@ -96,7 +96,7 @@ object _B_TestTransactionDataProvider {
         )
         )
 
-        // Client ID 185 - "الاخ محمد بن عمر" - Yesterday
+        // ClientAchteur ID 185 - "الاخ محمد بن عمر" - Yesterday
         transactions.add(
             createTransaction(
             vid = 11L,

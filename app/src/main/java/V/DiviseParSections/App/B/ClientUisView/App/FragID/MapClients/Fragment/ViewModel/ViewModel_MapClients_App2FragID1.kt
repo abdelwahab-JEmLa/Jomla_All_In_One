@@ -274,7 +274,7 @@ class ViewModel_MapClients_App2FragID1(
 
             val newnom = "ز.$newID"
 
-            val newClient = B_ClientDataBase().apply {
+            val newClientAchteur = B_ClientDataBase().apply {
                 id = newID
                 nom = newnom
                 cUnClientTemporaire = true
@@ -282,11 +282,11 @@ class ViewModel_MapClients_App2FragID1(
                 latitude = center.latitude
                 longitude = center.longitude
                 title = newnom
-                snippet = "Client temporaire"
+                snippet = "ClientAchteur temporaire"
             }
 
             viewModelScope.launch {
-                mainRepositery.addData(newClient)
+                mainRepositery.addData(newClientAchteur)
             }
         } catch (e: Exception) {
             // Error handling

@@ -29,10 +29,10 @@ fun A_Logs_FilterByDayeLog(
     var transactionCount = 0
     transactionsByClient.forEach { (clientId, transactions) ->
         // Find client name
-        val clientName = sqlDatasDatesHistorique.clients
-            .find { it.vidTimeTemp == clientId }?.nom ?: "Unknown Client"
+        val clientAchteurName = sqlDatasDatesHistorique.clients
+            .find { it.vidTimeTemp == clientId }?.nom ?: "Unknown ClientAchteur"
 
-        println("Client ID: $clientId ($clientName) - ${transactions.size} transaction(s)")
+        println("ClientAchteur ID: $clientId ($clientAchteurName) - ${transactions.size} transaction(s)")
 
         // Log individual transactions
         transactions.forEachIndexed { tIndex, transaction ->

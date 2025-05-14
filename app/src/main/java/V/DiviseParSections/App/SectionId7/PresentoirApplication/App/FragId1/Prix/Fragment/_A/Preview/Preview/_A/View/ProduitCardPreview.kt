@@ -1,6 +1,5 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview._A.View
 
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.OutputNoSqlModel
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview._A.View.ViewModel.TarificationViewModel
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview._A.View.function.strDateEtTempFromVidTimestamp
 import androidx.compose.foundation.background
@@ -46,7 +45,7 @@ fun ProduitCardPreview() {
 }
 @Composable
 fun ProduitCard(
-    produit: OutputNoSqlModel.Produit,
+    produit: TarificationViewModel.OutputNoSqlModel.Produit,
     produitName: String,
     tarificationViewModel: TarificationViewModel?,
     modifier: Modifier = Modifier
@@ -79,17 +78,17 @@ fun ProduitCard(
 
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "${produit.clients.size} clients",
+                text = "${produit.clientAchteurs.size} clientAchteurs",
                 style = MaterialTheme.typography.bodyMedium
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            produit.clients.forEach { client ->
+            produit.clientAchteurs.forEach { client ->
                 val clientInfo = tarificationViewModel?.getSqlClient(client.infosId)
                 ClientSection(
-                    client = client,
-                    clientName = clientInfo?.nom ?: "Client ${client.infosId}",
+                    clientAchteur = client,
+                    clientName = clientInfo?.nom ?: "ClientAchteur ${client.infosId}",
                     tarificationViewModel = tarificationViewModel
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -100,12 +99,12 @@ fun ProduitCard(
 
 @Composable
 fun ClientSection(
-    client: OutputNoSqlModel.Produit.Client,
+    clientAchteur: TarificationViewModel.OutputNoSqlModel.Produit.ClientAchteur,
     clientName: String,
     tarificationViewModel: TarificationViewModel?,
     modifier: Modifier = Modifier
 ) {
-    val (date, time) = strDateEtTempFromVidTimestamp(client.vidTimestamp)
+    val (date, time) = strDateEtTempFromVidTimestamp(clientAchteur.vidTimestamp)
 
     Column(
         modifier = modifier
@@ -131,13 +130,13 @@ fun ClientSection(
 
         Spacer(modifier = Modifier.height(4.dp))
         Text(
-            text = "${client.typeTarification.size} tarification types",
+            text = "${clientAchteur.typeTarification.size} tarification types",
             style = MaterialTheme.typography.bodySmall
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        client.typeTarification.forEach { typeTarif ->
+        clientAchteur.typeTarification.forEach { typeTarif ->
             val typeTarifInfo = tarificationViewModel?.getSqlTypeTarification(typeTarif.infosId)
             TarificationTypeSection(
                 typeTarif = typeTarif,
@@ -150,7 +149,7 @@ fun ClientSection(
 
 @Composable
 fun TarificationTypeSection(
-    typeTarif: OutputNoSqlModel.Produit.Client.TypeTarification,
+    typeTarif: TarificationViewModel.OutputNoSqlModel.Produit.ClientAchteur.TypeTarification,
     typeName: String,
     modifier: Modifier = Modifier
 ) {

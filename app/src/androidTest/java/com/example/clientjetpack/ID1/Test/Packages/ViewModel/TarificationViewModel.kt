@@ -1,7 +1,7 @@
 // File: TarificationViewModel.kt
 package com.example.clientjetpack.ID1.Test.Packages.ViewModel
 
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.OutputNoSqlModel
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.Test.Models.OutputNoSqlModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.clientjetpack.ID1.Test.Packages.Function.createTimestamp

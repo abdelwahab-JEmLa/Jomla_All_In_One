@@ -32,11 +32,11 @@ suspend fun updateMapMarkers(
         .filter { marker -> clientDataBaseSnapList.any { it.id.toString() == marker.id } }
     mapView.overlays.removeAll(markersToRemove)
 
-    // Filter clients based on the current mode
+    // Filter clientAchteurs based on the current mode
     val clientsToShow =
         filterClientsBasedOnMode(clientDataBaseSnapList, currentFilterMode, viewModel)
 
-    // Add markers for filtered clients
+    // Add markers for filtered clientAchteurs
     addMarkersForFilteredClients(
         mapView,
         clientsToShow,
@@ -103,7 +103,7 @@ fun createAndAddMarker(
         title(viewModel, client)
 
         snippet = if (client.cUnClientTemporaire)
-            "Client temporaire" else "Client permanent"
+            "ClientAchteur temporaire" else "ClientAchteur permanent"
         setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
 
         try {

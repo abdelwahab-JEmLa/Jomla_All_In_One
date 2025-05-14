@@ -106,7 +106,7 @@ fun MapSecteursPolygenHandelButtons(
                         }
 
                         if (showLabels) {
-                            Text("قطاعات العملاء", // Client Sectors
+                            Text("قطاعات العملاء", // ClientAchteur Sectors
                                 modifier = Modifier
                                     .background(couleurButton1)
                                     .padding(4.dp),

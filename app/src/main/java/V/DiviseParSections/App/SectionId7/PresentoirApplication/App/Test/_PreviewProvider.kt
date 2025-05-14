@@ -20,7 +20,7 @@ class _PreviewProvider : PreviewParameterProvider<List<Produit>> {
                     Produit.Client(
                         id = 1,
                         timestamp = createTimestamp(9, 14, 30, 2025, 5), // Yesterday
-                        infos = Produit.Client.ClientInfos(nom = "Client 1"),
+                        infos = Produit.Client.ClientInfos(nom = "ClientAchteur 1"),
                         cesStatuesMutable = Produit.Client.CesStatuesMutable(cActiveDonsSonListParent = false),
                         typesTarification = listOf(
                             Produit.Client.TypeTarification(
@@ -57,7 +57,7 @@ class _PreviewProvider : PreviewParameterProvider<List<Produit>> {
                     Produit.Client(
                         id = 2,
                         timestamp = createTimestamp(10, 14, 30, 2025, 5),
-                        infos = Produit.Client.ClientInfos(nom = "Client Beta"),
+                        infos = Produit.Client.ClientInfos(nom = "ClientAchteur Beta"),
                         cesStatuesMutable = Produit.Client.CesStatuesMutable(cActiveDonsSonListParent = true),
                         typesTarification = listOf(
                             Produit.Client.TypeTarification(
@@ -85,7 +85,7 @@ class _PreviewProvider : PreviewParameterProvider<List<Produit>> {
                     Produit.Client(
                         id = 1,
                         timestamp = createTimestamp(10, 14, 30, 2025, 5),
-                        infos = Produit.Client.ClientInfos(nom = "Client Gamma"),
+                        infos = Produit.Client.ClientInfos(nom = "ClientAchteur Gamma"),
                         cesStatuesMutable = Produit.Client.CesStatuesMutable(),  // Added this
                         typesTarification = listOf(
                             Produit.Client.TypeTarification(
@@ -130,7 +130,7 @@ class _PreviewProvider : PreviewParameterProvider<List<Produit>> {
                     Produit.Client(
                         id = 1,
                         timestamp = createTimestamp(10, 10, 0, 2025, 5),
-                        infos = Produit.Client.ClientInfos(nom = "Client Delta"),
+                        infos = Produit.Client.ClientInfos(nom = "ClientAchteur Delta"),
                         cesStatuesMutable = Produit.Client.CesStatuesMutable(),  // Added this
                         typesTarification = listOf(
                             Produit.Client.TypeTarification(
@@ -150,7 +150,7 @@ class _PreviewProvider : PreviewParameterProvider<List<Produit>> {
                     Produit.Client(
                         id = 2,
                         timestamp = createTimestamp(10, 12, 0, 2025, 5),
-                        infos = Produit.Client.ClientInfos(nom = "Client Epsilon"),
+                        infos = Produit.Client.ClientInfos(nom = "ClientAchteur Epsilon"),
                         cesStatuesMutable = Produit.Client.CesStatuesMutable(),  // Added this
                         typesTarification = listOf(
                             Produit.Client.TypeTarification(

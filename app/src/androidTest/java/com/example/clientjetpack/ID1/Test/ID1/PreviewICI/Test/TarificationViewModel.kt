@@ -1,13 +1,13 @@
 package com.example.clientjetpack.ID1.Test.ID1.PreviewICI.Test
 
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.ClientDataBase
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.InfosSqlDataBases
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.OutputNoSqlModel
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.ProduitInfos
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.Tarification
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.TypeTarificationDataBase
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.TypeTarificationEnum
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.createTimestamp
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.Test.Models.ClientDataBase
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.Test.Models.InfosSqlDataBases
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.Test.Models.OutputNoSqlModel
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.Test.Models.ProduitInfos
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.Test.Models.Tarification
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.Test.Models.TypeTarificationDataBase
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.Test.Models.TypeTarificationEnum
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.Test.Models.createTimestamp
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -55,9 +55,9 @@ class NoSqlDataBasesPreviewProvider : PreviewParameterProvider<InfosSqlDataBases
                 ProduitInfos(id = 3, nom = "Produit kemya")
             ),
             clientDataBase = mutableListOf(
-                ClientDataBase(id = 1, nom = "Client Abderrahman", idActiveTypeTarificationDataBase = 1),
-                ClientDataBase(id = 2, nom = "Client Beta", idActiveTypeTarificationDataBase = 2),
-                ClientDataBase(id = 3, nom = "Client Gamma", idActiveTypeTarificationDataBase = 3)
+                ClientDataBase(id = 1, nom = "ClientAchteur Abderrahman", idActiveTypeTarificationDataBase = 1),
+                ClientDataBase(id = 2, nom = "ClientAchteur Beta", idActiveTypeTarificationDataBase = 2),
+                ClientDataBase(id = 3, nom = "ClientAchteur Gamma", idActiveTypeTarificationDataBase = 3)
             ),
 
             tarificationEntries = mutableListOf(
@@ -139,17 +139,17 @@ fun ProduitCard(
 
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "${produit.clients.size} clients",
+                text = "${produit.clientAchteurs.size} clientAchteurs",
                 style = MaterialTheme.typography.bodyMedium
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            produit.clients.forEach { client ->
+            produit.clientAchteurs.forEach { client ->
                 val clientInfo = tarificationViewModel?.getSqlClient(client.infosId)
                 ClientSection(
-                    client = client,
-                    clientName = clientInfo?.nom ?: "Client ${client.infosId}",
+                    clientAchteur = client,
+                    clientName = clientInfo?.nom ?: "ClientAchteur ${client.infosId}",
                     tarificationViewModel = tarificationViewModel
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -160,12 +160,12 @@ fun ProduitCard(
 
 @Composable
 fun ClientSection(
-    client: OutputNoSqlModel.Produit.Client,
+    clientAchteur: OutputNoSqlModel.Produit.ClientAchteur,
     clientName: String,
     tarificationViewModel: TarificationViewModel?,
     modifier: Modifier = Modifier
 ) {
-    val (date, time) = strDateEtTempFromVidTimestamp(client.vidTimestamp)
+    val (date, time) = strDateEtTempFromVidTimestamp(clientAchteur.vidTimestamp)
 
     Column(
         modifier = modifier
@@ -191,13 +191,13 @@ fun ClientSection(
 
         Spacer(modifier = Modifier.height(4.dp))
         Text(
-            text = "${client.typeTarification.size} tarification types",
+            text = "${clientAchteur.typeTarification.size} tarification types",
             style = MaterialTheme.typography.bodySmall
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        client.typeTarification.forEach { typeTarif ->
+        clientAchteur.typeTarification.forEach { typeTarif ->
             val typeTarifInfo = tarificationViewModel?.getSqlTypeTarification(typeTarif.infosId)
             TarificationTypeSection(
                 typeTarif = typeTarif,
@@ -210,7 +210,7 @@ fun ClientSection(
 
 @Composable
 fun TarificationTypeSection(
-    typeTarif: OutputNoSqlModel.Produit.Client.TypeTarification,
+    typeTarif: OutputNoSqlModel.Produit.ClientAchteur.TypeTarification,
     typeName: String,
     modifier: Modifier = Modifier
 ) {
@@ -401,7 +401,7 @@ fun InfosSqlDataBases.toOutputNoSqlModel(): OutputNoSqlModel {
         val produitTimestamp =
             produitTarifications.maxOfOrNull { it.vidTimestamp } ?: System.currentTimeMillis()
 
-        val clients = groupedByClient.map { (clientId, clientTarifications) ->
+        val clientAchteurs = groupedByClient.map { (clientId, clientTarifications) ->
             val groupedByType = clientTarifications.groupBy { it.idTypeTarification }
 
             val clientTimestamp =
@@ -412,20 +412,20 @@ fun InfosSqlDataBases.toOutputNoSqlModel(): OutputNoSqlModel {
                     typeTarifications.maxOfOrNull { it.vidTimestamp } ?: System.currentTimeMillis()
 
                 val prices = typeTarifications.map { tarif ->
-                    OutputNoSqlModel.Produit.Client.TypeTarification.Prix(
+                    OutputNoSqlModel.Produit.ClientAchteur.TypeTarification.Prix(
                         vidTimestamp = tarif.vidTimestamp,
                         valeur = tarif.prixCurrency
                     )
                 }.sortedByDescending { it.vidTimestamp }
 
-                OutputNoSqlModel.Produit.Client.TypeTarification(
+                OutputNoSqlModel.Produit.ClientAchteur.TypeTarification(
                     infosId = typeId,
                     vidTimestamp = typeTimestamp,
                     PrixsCurrency = prices
                 )
             }.sortedByDescending { it.vidTimestamp }
 
-            OutputNoSqlModel.Produit.Client(
+            OutputNoSqlModel.Produit.ClientAchteur(
                 infosId = clientId,
                 vidTimestamp = clientTimestamp,
                 typeTarification = typeTarifications
@@ -435,7 +435,7 @@ fun InfosSqlDataBases.toOutputNoSqlModel(): OutputNoSqlModel {
         OutputNoSqlModel.Produit(
             infosId = produitId,
             vidTimestamp = produitTimestamp,
-            clients = clients
+            clientAchteurs = clientAchteurs
         )
     }.sortedByDescending { it.vidTimestamp }
 

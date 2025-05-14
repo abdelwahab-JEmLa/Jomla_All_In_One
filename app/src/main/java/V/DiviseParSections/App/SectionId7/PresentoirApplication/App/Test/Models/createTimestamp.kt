@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models
+package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.Test.Models
 
 import java.util.Calendar
 

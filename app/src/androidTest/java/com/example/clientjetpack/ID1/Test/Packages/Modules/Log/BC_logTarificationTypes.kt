@@ -1,10 +1,10 @@
 package com.example.clientjetpack.ID1.Test.Packages.Modules.Log
 
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.OutputNoSqlModel
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.Test.Models.OutputNoSqlModel
 import com.example.clientjetpack.ID1.Test.Packages.Function.strDateEtTempFromVidTimestamp
 
 fun logTarificationTypes(
-    types: List<OutputNoSqlModel.Produit.Client.TypeTarification>,
+    types: List<OutputNoSqlModel.Produit.ClientAchteur.TypeTarification>,
     isLastProduit: Boolean,
     isLastClient: Boolean,
 ) {

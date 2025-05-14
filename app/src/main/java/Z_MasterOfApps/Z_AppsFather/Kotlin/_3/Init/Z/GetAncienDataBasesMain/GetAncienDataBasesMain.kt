@@ -36,7 +36,7 @@ internal suspend fun GetAncienDataBasesMain(): AncienResourcesDataBaseMain {
             .getReference("G_Clients")
             .get()
             .await()
-        Log.d("GetAncienData", "Retrieved ${clients_Snapshot.childrenCount} clients")
+        Log.d("GetAncienData", "Retrieved ${clients_Snapshot.childrenCount} clientAchteurs")
 
         val produitsList = produitsSnapshot.children.mapNotNull {
             it.getValue(ProduitsAncienDataBaseMain::class.java)
@@ -55,7 +55,7 @@ internal suspend fun GetAncienDataBasesMain(): AncienResourcesDataBaseMain {
                 "${produitsList.size} products, " +
                 "${soldArticlesList.size} sold articles, " +
                 "${couleurs_List.size} colors, " +
-                "${clients_List.size} clients")
+                "${clients_List.size} clientAchteurs")
 
         return AncienResourcesDataBaseMain(
             produitsList,

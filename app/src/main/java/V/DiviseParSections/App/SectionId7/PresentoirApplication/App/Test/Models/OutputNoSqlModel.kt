@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models
+package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.Test.Models
 
 data class OutputNoSqlModel(
     val produits: List<Produit>,
@@ -6,9 +6,9 @@ data class OutputNoSqlModel(
     data class Produit(
         val vidTimestamp: Long,
         val infosId: Long,
-        val clients: List<Client>,
+        val clientAchteurs: List<ClientAchteur>,
     ) {
-        data class Client(
+        data class ClientAchteur(
             val vidTimestamp: Long,
             val infosId: Long,
             val typeTarification: List<TypeTarification>,

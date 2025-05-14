@@ -1,6 +1,6 @@
 package com.example.clientjetpack.ID1.Test.Packages.Modules.Log
 
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.OutputNoSqlModel
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.Test.Models.OutputNoSqlModel
 import com.example.clientjetpack.ID1.Test.Packages.Function.strDateEtTempFromVidTimestamp
 
 fun logProduits(value: OutputNoSqlModel) {
@@ -18,8 +18,8 @@ fun logProduits(value: OutputNoSqlModel) {
                 append(produit.infosId)
             }.toString()
 
-            println("$produitInfos, Date: $produitDate Time: $produitTime (${produit.clients.size} clients)")
+            println("$produitInfos, Date: $produitDate Time: $produitTime (${produit.clientAchteurs.size} clientAchteurs)")
 
-            logClients(produit.clients, isLastProduit)
+            logClients(produit.clientAchteurs, isLastProduit)
         }
     }

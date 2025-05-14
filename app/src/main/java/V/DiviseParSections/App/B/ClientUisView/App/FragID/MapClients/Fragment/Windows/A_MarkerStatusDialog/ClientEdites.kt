@@ -82,7 +82,7 @@ fun ClientEdites(
             )
         }
 
-        // Client Type Mode Toggle
+        // ClientAchteur Type Mode Toggle
         Card(
             modifier = Modifier
                 .padding(end = 8.dp)
@@ -106,7 +106,7 @@ fun ClientEdites(
             clientTypeMode?.let {
                 Icon(
                     imageVector = it.icon,
-                    contentDescription = "Toggle Client Type",
+                    contentDescription = "Toggle ClientAchteur Type",
                     tint = it.color
                 )
             }
@@ -122,7 +122,7 @@ fun ClientEdites(
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = relatedClients?.nom ?: "Client",
+                text = relatedClients?.nom ?: "ClientAchteur",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )

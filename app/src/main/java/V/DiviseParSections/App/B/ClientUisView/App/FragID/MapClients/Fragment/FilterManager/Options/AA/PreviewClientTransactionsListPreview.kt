@@ -127,7 +127,7 @@ fun TransactionItem(
     sqlData: com.example.clientjetpack.D_ParDatesHistoriqueTransactions_Repository
 ) {
     val client = remember {
-        sqlData.clients.find { it.vidTimeTemp == transaction.clientId }
+        sqlData.clientAchteurs.find { it.vidTimeTemp == transaction.clientId }
     }
 
     Row(
@@ -141,9 +141,9 @@ fun TransactionItem(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // Client name
+                // ClientAchteur name
                 Text(
-                    text = client?.nom ?: "Unknown Client",
+                    text = client?.nom ?: "Unknown ClientAchteur",
                     fontWeight = FontWeight.Medium
                 )
 

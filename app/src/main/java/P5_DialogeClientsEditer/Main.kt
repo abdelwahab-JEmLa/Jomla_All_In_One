@@ -61,9 +61,9 @@ fun ClientSelectionDialog(
 
     // Log initial data
     LaunchedEffect(clients, soldArticle) {
-        Log.d(TAG, "Initial Data: ${clients.size} clients, ${soldArticle.size} sold articles")
+        Log.d(TAG, "Initial Data: ${clients.size} clientAchteurs, ${soldArticle.size} sold articles")
         clients.forEach { client ->
-            Log.v(TAG, "Client ID: ${client.id}, Name: ${client.nom}")
+            Log.v(TAG, "ClientAchteur ID: ${client.id}, Name: ${client.nom}")
         }
     }
 
@@ -109,12 +109,12 @@ fun ClientSelectionDialog(
                     .padding(16.dp)
             ) {
                 Text(
-                    text = "Select Client",
+                    text = "Select ClientAchteur",
                     style = MaterialTheme.typography.headlineMedium,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
-                // Search and Add Client Row
+                // Search and Add ClientAchteur Row
                 SearchAndAddClientRow(
                     searchQuery = searchQuery,
                     onSearchQueryChange = {
@@ -127,9 +127,9 @@ fun ClientSelectionDialog(
                     }
                 )
 
-                // Client Grouping with Logging
+                // ClientAchteur Grouping with Logging
                 val groupedClients = remember(clients, soldArticle, searchQuery) {
-                    Log.d(TAG, "Regrouping clients. Search query: $searchQuery")
+                    Log.d(TAG, "Regrouping clientAchteurs. Search query: $searchQuery")
 
                     val filteredClients = if (searchQuery.length >= 2) {
                         clients.filter { client ->
@@ -143,7 +143,7 @@ fun ClientSelectionDialog(
 
                     filteredClients.groupBy { client ->
                         soldArticle.any { it?.clientSoldToItId == client.id }.also { hasOrders ->
-                            Log.v(TAG, "Client ${client.id} has orders: $hasOrders")
+                            Log.v(TAG, "ClientAchteur ${client.id} has orders: $hasOrders")
                         }
                     }
                 }
@@ -158,7 +158,7 @@ fun ClientSelectionDialog(
                     if (!groupedClients[true].isNullOrEmpty()) {
                         item(key = "active_header_${UUID.randomUUID()}") {
                             ListHeader("Active Clients")
-                            Log.d(TAG, "Rendering Active Clients section: ${groupedClients[true]?.size} clients")
+                            Log.d(TAG, "Rendering Active Clients section: ${groupedClients[true]?.size} clientAchteurs")
                         }
 
                         items(
@@ -195,7 +195,7 @@ fun ClientSelectionDialog(
                     if (!groupedClients[false].isNullOrEmpty()) {
                         item(key = "other_header_${UUID.randomUUID()}") {
                             ListHeader("Other Clients")
-                            Log.d(TAG, "Rendering Other Clients section: ${groupedClients[false]?.size} clients")
+                            Log.d(TAG, "Rendering Other Clients section: ${groupedClients[false]?.size} clientAchteurs")
                         }
 
                         items(
@@ -246,7 +246,7 @@ private fun SearchAndAddClientRow(
         OutlinedTextField(
             value = searchQuery,
             onValueChange = onSearchQueryChange,
-            label = { Text("Search Client") },
+            label = { Text("Search ClientAchteur") },
             modifier = Modifier.weight(1f),
             singleLine = true,
             leadingIcon = {
@@ -268,7 +268,7 @@ private fun SearchAndAddClientRow(
         ) {
             Icon(
                 Icons.Default.Add,
-                contentDescription = "Add Client",
+                contentDescription = "Add ClientAchteur",
                 tint = MaterialTheme.colorScheme.onPrimaryContainer
             )
         }
@@ -344,7 +344,7 @@ private fun NoResultsMessage(searchQuery: String) {
             tint = MaterialTheme.colorScheme.outline
         )
         Text(
-            text = "No clients found for \"$searchQuery\"",
+            text = "No clientAchteurs found for \"$searchQuery\"",
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.outline,
             textAlign = TextAlign.Center
@@ -365,7 +365,7 @@ private fun AddClientDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                "Add New Client",
+                "Add New ClientAchteur",
                 style = MaterialTheme.typography.headlineSmall
             )
         },
@@ -376,7 +376,7 @@ private fun AddClientDialog(
                 OutlinedTextField(
                     value = clientName,
                     onValueChange = { clientName = it },
-                    label = { Text("Client Name") },
+                    label = { Text("ClientAchteur Name") },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )

@@ -19,9 +19,9 @@ fun logClients(
             client.vidTimestamp
         )
 
-        val clientInfos = StringBuilder().apply {
+        val clientAchteurInfos = StringBuilder().apply {
             append(clientPrefix)
-            append(" Client ID: ")
+            append(" ClientAchteur ID: ")
             append(client.id)
             append(", Date: ")
             append(clientDate)
@@ -30,7 +30,7 @@ fun logClients(
             append(" (${client.typeTarification.size} tarification types)")
         }.toString()
 
-        println(clientInfos)
+        println(clientAchteurInfos)
 
         logTarificationTypes(client.typeTarification, isLastProduit, isLastClient)
     }

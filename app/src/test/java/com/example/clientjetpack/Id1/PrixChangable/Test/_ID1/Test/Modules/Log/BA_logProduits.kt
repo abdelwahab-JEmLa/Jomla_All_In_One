@@ -19,7 +19,7 @@ fun logProduits(value: OutputNoSqlModel) {
                 append(produit.id)
             }.toString()
 
-            println("$produitInfos, Date: $produitDate Time: $produitTime (${produit.clients.size} clients)")
+            println("$produitInfos, Date: $produitDate Time: $produitTime (${produit.clients.size} clientAchteurs)")
 
             logClients(produit.clients, isLastProduit)
         }

@@ -67,7 +67,7 @@ fun SecteurDialog(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
-                    text = "قطاعات العملاء", // Client Sectors in Arabic
+                    text = "قطاعات العملاء", // ClientAchteur Sectors in Arabic
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(bottom = 8.dp)

@@ -309,17 +309,17 @@ fun Acheteurs(
     ) {
         // Display each client with their quantity
         clientQuantities.forEach { (clientId, quantity) ->
-            // Skip clients with zero quantity
+            // Skip clientAchteurs with zero quantity
             if (quantity <= 0) return@forEach
 
             val clientDataBaseSnapList = B_ClientDataBaseRepository.modelDatas
 
-            val clientName = clientDataBaseSnapList.find {
+            val clientAchteurName = clientDataBaseSnapList.find {
                 it.id == clientId
-            }?.nom ?: "Client #$clientId"
+            }?.nom ?: "ClientAchteur #$clientId"
 
             Text(
-                text = "$clientName ",
+                text = "$clientAchteurName ",
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp
             )
@@ -331,7 +331,7 @@ fun Acheteurs(
                 fontWeight = FontWeight.Bold
             )
 
-            // Add spacing between clients
+            // Add spacing between clientAchteurs
             Spacer(modifier = Modifier.height(4.dp))
         }
     }

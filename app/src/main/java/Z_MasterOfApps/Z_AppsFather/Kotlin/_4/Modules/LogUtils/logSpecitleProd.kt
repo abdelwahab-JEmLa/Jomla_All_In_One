@@ -14,12 +14,12 @@ fun logProductFilter(
         Product Filter Analysis:
         ID: ${product.id}
         Name: ${product.nom}
-        Client ID Filter: $clientId
+        ClientAchteur ID Filter: $clientId
         Has BonCommend: ${product.bonCommendDeCetteCota != null}
         Position Check: ${product.bonCommendDeCetteCota?.mutableBasesStates?.cPositionCheyCeGrossit}
         Grossist ID: ${product.bonCommendDeCetteCota?.idGrossistChoisi}
         Grossist Name: ${grossists.find { it.id == product.bonCommendDeCetteCota?.idGrossistChoisi }?.nom}
-        Client Orders: ${product.bonsVentDeCetteCota.map { it.clientIdChoisi }.joinToString()}
+        ClientAchteur Orders: ${product.bonsVentDeCetteCota.map { it.clientIdChoisi }.joinToString()}
         Is Carton: ${product.statuesBase.seTrouveAuDernieDuCamionCarCCarton}
         ------------------------
     """.trimIndent())

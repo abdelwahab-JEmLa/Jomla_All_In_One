@@ -127,7 +127,7 @@ fun ButFun_1_populateB_ClientDataBaseParSonAncien(
                 // Update repository with new data structure
                 mainRepo.updateMultiDatas(snapshotList)
 
-                Log.d("ViewModel_BProto", "Successfully migrated {newDataList.size} clients from ancien database")
+                Log.d("ViewModel_BProto", "Successfully migrated {newDataList.size} clientAchteurs from ancien database")
             } catch (e: Exception) {
                 Log.e("ViewModel_BProto", "Error migrating ancien database: {e.message}", e)
             }

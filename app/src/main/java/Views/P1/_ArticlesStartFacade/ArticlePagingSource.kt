@@ -38,11 +38,11 @@ class ArticlePagingSource(
                 val isTemporaryClient = currentClient?.etatesMutable?.clientTypeMode ==
                         B_ClientsDataBase.EtatesMutable.ClientTypeMode.NEVEAU
 
-                // Check if the product is completely unavailable for all clients
+                // Check if the product is completely unavailable for all clientAchteurs
                 val isProductUnavailableForAll = productModel?.enumVarNonDispoPourClients ==
                         A_Produit.NON_DISPO_POUR_CLIENTS.TOUT
 
-                // Check if the product is unavailable specifically for temporary clients
+                // Check if the product is unavailable specifically for temporary clientAchteurs
                 val isProductUnavailableForTemporary = productModel?.enumVarNonDispoPourClients ==
                         A_Produit.NON_DISPO_POUR_CLIENTS.NEVEAU
 

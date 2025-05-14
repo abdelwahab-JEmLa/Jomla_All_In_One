@@ -141,7 +141,7 @@ class _013_ClientTransaction : RealmObject {
             for (k in 1..5) {
                 val acheteur = _013_ClientTransaction().apply {
                     idClient = k.toLong()
-                    nomClient = "Client $k"
+                    nomClient = "ClientAchteur $k"
                     startDesignation = "_013_ClientTransaction $k"
                     tempDateCreationStr = "2025_04_20(12:00)"
                     fireBaseKeyID = "${bsonObjectId}->$startDesignation"

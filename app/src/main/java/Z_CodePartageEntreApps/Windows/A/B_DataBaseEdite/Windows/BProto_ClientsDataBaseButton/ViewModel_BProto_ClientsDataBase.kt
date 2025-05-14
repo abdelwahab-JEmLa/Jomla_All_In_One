@@ -33,7 +33,7 @@ class ViewModel_BProto_ClientsDataBase(
                             actuelleEtat = B_ClientDataBase.DernierEtatAAffiche.NON_DEFINI
                         )
                     } else {
-                        // Just upsert_1_3_TransactionCommercial the state for other clients
+                        // Just upsert_1_3_TransactionCommercial the state for other clientAchteurs
                         client.copy(
                             actuelleEtat = B_ClientDataBase.DernierEtatAAffiche.NON_DEFINI
                         )
@@ -44,10 +44,10 @@ class ViewModel_BProto_ClientsDataBase(
                 val snapshotList = SnapshotStateList<B_ClientDataBase>()
                 snapshotList.addAll(updatedClients)
 
-                // Update the repository with all modified clients
+                // Update the repository with all modified clientAchteurs
                 mainRepo.updateMultiDatas(snapshotList)
 
-                Log.d("ViewModel_BProto", "Successfully changed state of ${updatedClients.size} clients to CIBLE_PRIORITE_2")
+                Log.d("ViewModel_BProto", "Successfully changed state of ${updatedClients.size} clientAchteurs to CIBLE_PRIORITE_2")
             } catch (e: Exception) {
                 Log.e("ViewModel_BProto", "Error changing client states: ${e.message}", e)
             }
@@ -133,7 +133,7 @@ class ViewModel_BProto_ClientsDataBase(
                             )
                             Log.d(
                                 "ViewModel_BProto",
-                                "Successfully migrated ${newDataList.size} clients to _3_ClientsDataBase_Repository"
+                                "Successfully migrated ${newDataList.size} clientAchteurs to _3_ClientsDataBase_Repository"
                             )
                         } catch (e: Exception) {
                             Log.e(

@@ -124,7 +124,7 @@ fun DialogInfosProduit(
                     Text(
                         text = viewModelInitApp._modelAppsFather.clientDataBase.find {
                             it.id == bonVent.clientIdChoisi
-                        }?.nom ?: "Unknown Client",
+                        }?.nom ?: "Unknown ClientAchteur",
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

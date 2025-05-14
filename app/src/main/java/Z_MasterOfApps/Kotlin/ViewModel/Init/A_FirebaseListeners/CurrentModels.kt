@@ -40,7 +40,7 @@ object CurrentModels {
         listeners.forEach { info ->
             when (info.path) {
                 "products" -> _ModelAppsFather.produitsFireBaseRef.removeEventListener(info.listener)
-                "clients" -> B_ClientsDataBase.refClientsDataBase.removeEventListener(info.listener)
+                "clientAchteurs" -> B_ClientsDataBase.refClientsDataBase.removeEventListener(info.listener)
                 "grossists" -> _ModelAppsFather.ref_HeadOfModels.removeEventListener(info.listener)
                 "couleurs" -> D_CouleursEtGoutesProduitsInfos.caReference.removeEventListener(info.listener)
                 "appInstalle" -> E_AppsOptionsStates.caReference.removeEventListener(info.listener)
@@ -143,7 +143,7 @@ object CurrentModels {
     }
 
     private fun setupClientsListener(viewModel: ViewModelInitApp) {
-        Log.d(TAG, "Setting up clients listener")
+        Log.d(TAG, "Setting up clientAchteurs listener")
 
         B_ClientsDataBase.refClientsDataBase.keepSynced(true)
 
@@ -184,7 +184,7 @@ object CurrentModels {
                             }
                         }
                     } catch (e: Exception) {
-                        Log.e(TAG, "Error in clients listener", e)
+                        Log.e(TAG, "Error in clientAchteurs listener", e)
                     }
                 }
             }
@@ -194,7 +194,7 @@ object CurrentModels {
             }
         }
 
-        listeners.add(ListenerInfo(listener, "clients"))
+        listeners.add(ListenerInfo(listener, "clientAchteurs"))
         B_ClientsDataBase.refClientsDataBase.addValueEventListener(listener)
     }
 

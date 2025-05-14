@@ -54,7 +54,7 @@ class DB_ParDatesHistoriqueTransactions_Repository(
                 transactionToClientMap[transaction.vid] = transaction.clientAcheteurID
             }
 
-        // Initialize clients data
+        // Initialize clientAchteurs data
         datesHistoriqueForTesting.clients.keys
             .forEach { clientId ->
                 val clientItem = Client()
@@ -64,7 +64,7 @@ class DB_ParDatesHistoriqueTransactions_Repository(
                 val clientTransactions = testTransactions?.filter { it.clientAcheteurID == clientId }
 
                 // Update client name from transactions
-                clientItem.nom = clientTransactions?.firstOrNull()?.nomClientConcerned ?: "Client $clientId"
+                clientItem.nom = clientTransactions?.firstOrNull()?.nomClientConcerned ?: "ClientAchteur $clientId"
 
                 // Set the oldest transaction ID as ancientIdTransaction
                 if (!clientTransactions.isNullOrEmpty()) {
@@ -137,7 +137,7 @@ class DB_ParDatesHistoriqueTransactions_Repository(
 
     class Client {
         var vidTimeTemp by mutableStateOf(0L)
-        var nom by mutableStateOf("Client 0")
+        var nom by mutableStateOf("ClientAchteur 0")
         var ancientIdTransaction by mutableStateOf(0L)
     }
 

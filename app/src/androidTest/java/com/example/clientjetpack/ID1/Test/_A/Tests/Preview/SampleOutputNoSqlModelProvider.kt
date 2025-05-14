@@ -32,7 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.clientjetpack.ID1.Test.Packages.Function.strDateEtTempFromVidTimestamp
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.OutputNoSqlModel
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.Test.Models.OutputNoSqlModel
 import com.example.clientjetpack.ID1.Test.Packages.ViewModel.TarificationViewModel
 
 @Preview(showBackground = true)
@@ -43,16 +43,16 @@ fun MultipleItemsPrixPrev() {
             OutputNoSqlModel.Produit(
                 infosId = 1,
                 vidTimestamp = System.currentTimeMillis(),
-                clients = listOf(
-                    OutputNoSqlModel.Produit.Client(
+                clientAchteurs = listOf(
+                    OutputNoSqlModel.Produit.ClientAchteur(
                         infosId = 1,
                         vidTimestamp = System.currentTimeMillis(),
                         typeTarification = listOf(
-                            OutputNoSqlModel.Produit.Client.TypeTarification(
+                            OutputNoSqlModel.Produit.ClientAchteur.TypeTarification(
                                 infosId = 1,
                                 vidTimestamp = System.currentTimeMillis(),
                                 PrixsCurrency = listOf(
-                                    OutputNoSqlModel.Produit.Client.TypeTarification.Prix(
+                                    OutputNoSqlModel.Produit.ClientAchteur.TypeTarification.Prix(
                                         valeur = 10.5,
                                         vidTimestamp = System.currentTimeMillis()
                                     )
@@ -65,16 +65,16 @@ fun MultipleItemsPrixPrev() {
             OutputNoSqlModel.Produit(
                 infosId = 2,
                 vidTimestamp = System.currentTimeMillis(),
-                clients = listOf(
-                    OutputNoSqlModel.Produit.Client(
+                clientAchteurs = listOf(
+                    OutputNoSqlModel.Produit.ClientAchteur(
                         infosId = 2,
                         vidTimestamp = System.currentTimeMillis(),
                         typeTarification = listOf(
-                            OutputNoSqlModel.Produit.Client.TypeTarification(
+                            OutputNoSqlModel.Produit.ClientAchteur.TypeTarification(
                                 infosId = 2,
                                 vidTimestamp = System.currentTimeMillis(),
                                 PrixsCurrency = listOf(
-                                    OutputNoSqlModel.Produit.Client.TypeTarification.Prix(
+                                    OutputNoSqlModel.Produit.ClientAchteur.TypeTarification.Prix(
                                         valeur = 15.75,
                                         vidTimestamp = System.currentTimeMillis()
                                     )
@@ -191,17 +191,17 @@ fun ProduitCard(
 
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "${produit.clients.size} clients",
+                text = "${produit.clientAchteurs.size} clientAchteurs",
                 style = MaterialTheme.typography.bodyMedium
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            produit.clients.forEach { client ->
+            produit.clientAchteurs.forEach { client ->
                 val clientInfo = tarificationViewModel?.getSqlClient(client.infosId)
                 ClientSection(
-                    client = client,
-                    clientName = clientInfo?.nom ?: "Client ${client.infosId}",
+                    clientAchteur = client,
+                    clientName = clientInfo?.nom ?: "ClientAchteur ${client.infosId}",
                     tarificationViewModel = tarificationViewModel
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -212,12 +212,12 @@ fun ProduitCard(
 
 @Composable
 fun ClientSection(
-    client: OutputNoSqlModel.Produit.Client,
+    clientAchteur: OutputNoSqlModel.Produit.ClientAchteur,
     clientName: String,
     tarificationViewModel: TarificationViewModel?,
     modifier: Modifier = Modifier
 ) {
-    val (date, time) = strDateEtTempFromVidTimestamp(client.vidTimestamp)
+    val (date, time) = strDateEtTempFromVidTimestamp(clientAchteur.vidTimestamp)
 
     Column(
         modifier = modifier
@@ -243,13 +243,13 @@ fun ClientSection(
 
         Spacer(modifier = Modifier.height(4.dp))
         Text(
-            text = "${client.typeTarification.size} tarification types",
+            text = "${clientAchteur.typeTarification.size} tarification types",
             style = MaterialTheme.typography.bodySmall
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        client.typeTarification.forEach { typeTarif ->
+        clientAchteur.typeTarification.forEach { typeTarif ->
             val typeTarifInfo = tarificationViewModel?.getSqlTypeTarification(typeTarif.infosId)
             TarificationTypeSection(
                 typeTarif = typeTarif,
@@ -262,7 +262,7 @@ fun ClientSection(
 
 @Composable
 fun TarificationTypeSection(
-    typeTarif: OutputNoSqlModel.Produit.Client.TypeTarification,
+    typeTarif: OutputNoSqlModel.Produit.ClientAchteur.TypeTarification,
     typeName: String,
     modifier: Modifier = Modifier
 ) {

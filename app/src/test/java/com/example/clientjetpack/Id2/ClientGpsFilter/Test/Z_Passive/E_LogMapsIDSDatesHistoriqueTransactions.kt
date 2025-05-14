@@ -62,10 +62,10 @@ fun A_LogMapsIDSDatesHistoriqueTransactions(
             transactionsByClient.forEach { (clientId, transactionIds) ->
                 val clientPrefix = if (isLastDay) "     " else "  │  "
 
-                val clientName = testTransactions
-                    .find { it.clientAcheteurID == clientId }?.nomClientConcerned ?: "Client $clientId"
+                val clientAchteurName = testTransactions
+                    .find { it.clientAcheteurID == clientId }?.nomClientConcerned ?: "ClientAchteur $clientId"
 
-                println("$clientPrefix Client ID: $clientId ($clientName) - ${transactionIds.size} transaction(s)")
+                println("$clientPrefix ClientAchteur ID: $clientId ($clientAchteurName) - ${transactionIds.size} transaction(s)")
 
                 transactionIds.forEachIndexed { tIndex, transactionId ->
                     val isLastTransaction = tIndex == transactionIds.size - 1 &&

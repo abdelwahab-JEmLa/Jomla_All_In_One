@@ -39,7 +39,7 @@ class ExteVMFragmentId_2(
         grossistsDataBase[index] = prev
         grossistsDataBase[index - 1] = currentElement
 
-        // Update both clients in the database
+        // Update both clientAchteurs in the database
         currentElement.updateGrossistDataBase(viewModelInitApp)
         prev.updateGrossistDataBase(viewModelInitApp)
     }

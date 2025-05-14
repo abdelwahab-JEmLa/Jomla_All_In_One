@@ -9,7 +9,7 @@ import com.example.clientjetpack.ID1.Test.Packages.Models.InputEtInfosSqlModels
  * - Chaque client doit avoir au moins un type de tarification
  */
 val initialTestData = listOf(
-    // Produit 1, Client 1, TypeTarification 1
+    // Produit 1, ClientAchteur 1, TypeTarification 1
     InputEtInfosSqlModels.Tarification(
         vidTimestamp = createTimestamp(day = 1, hour = 10, minute = 30),
         idProduit = 1L,
@@ -32,7 +32,7 @@ val initialTestData = listOf(
         prixCurrency = 10.99
     ),
 
-    // Produit 2, Client 2, TypeTarification 2
+    // Produit 2, ClientAchteur 2, TypeTarification 2
     InputEtInfosSqlModels.Tarification(
         vidTimestamp = createTimestamp(day = 2, hour = 11, minute = 45),
         idProduit = 2L,
@@ -41,7 +41,7 @@ val initialTestData = listOf(
         prixCurrency = 15.50
     ),
     
-    // Produit 3, Client 3, TypeTarification 1
+    // Produit 3, ClientAchteur 3, TypeTarification 1
     InputEtInfosSqlModels.Tarification(
         vidTimestamp = createTimestamp(day = 3, hour = 14, minute = 15),
         idProduit = 3L,
@@ -51,7 +51,7 @@ val initialTestData = listOf(
     ),
     
     // S'assurer que chaque produit a au moins un client
-    // Ajout d'un client pour le Produit 4 (qui semble manquer de clients)
+    // Ajout d'un client pour le Produit 4 (qui semble manquer de clientAchteurs)
     InputEtInfosSqlModels.Tarification(
         vidTimestamp = createTimestamp(day = 4, hour = 9, minute = 0),
         idProduit = 4L,
@@ -60,7 +60,7 @@ val initialTestData = listOf(
         prixCurrency = 12.99
     ),
     
-    // Ajouter des tarifications supplémentaires pour avoir plus de clients par produit
+    // Ajouter des tarifications supplémentaires pour avoir plus de clientAchteurs par produit
     InputEtInfosSqlModels.Tarification(
         vidTimestamp = createTimestamp(day = 5, hour = 16, minute = 30),
         idProduit = 1L,
@@ -101,22 +101,22 @@ val initialProductsData = listOf(
 )
 
 /**
- * Données de test pour les clients
+ * Données de test pour les clientAchteurs
  */
 val initialClientsData = listOf(
     InputEtInfosSqlModels.ClientDataBase(
         id = 1L,
-        nom = "Client Alpha",
+        nom = "ClientAchteur Alpha",
         idActiveTypeTarificationDataBase = 1L
     ),
     InputEtInfosSqlModels.ClientDataBase(
         id = 2L,
-        nom = "Client Beta",
+        nom = "ClientAchteur Beta",
         idActiveTypeTarificationDataBase = 2L
     ),
     InputEtInfosSqlModels.ClientDataBase(
         id = 3L,
-        nom = "Client Gamma",
+        nom = "ClientAchteur Gamma",
         idActiveTypeTarificationDataBase = 1L
     )
 )
