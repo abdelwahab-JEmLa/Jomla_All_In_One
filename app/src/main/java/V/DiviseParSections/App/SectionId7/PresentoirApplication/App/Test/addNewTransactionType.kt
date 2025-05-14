@@ -18,7 +18,6 @@ fun addNewTransactionType(produits: List<Produit>, newPrixValeur: Double, typeId
         return null
     }
 
-    // Check if this type already exists
     val existingType = existingClient.typesTarification.find { it.id == typeId }
 
     // Calculate the next price ID to prevent duplicates

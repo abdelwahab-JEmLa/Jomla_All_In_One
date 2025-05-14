@@ -1,9 +1,8 @@
 package com.example.clientjetpack.ID1.Test.Packages.Modules
 
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.NoSqlDataBases
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.OutputNoSqlModel
 
-fun covertireDepitSqlAuNonSqlShemaDataBase(noSqlDataBases: NoSqlDataBases): OutputNoSqlModel {
+fun covertireDepitSqlAuNonSqlShemaDataBase(noSqlDataBases: com.example.clientjetpack.ID1.Test.Packages.Models.NoSqlDataBases): OutputNoSqlModel {
     val tarificationEntries = noSqlDataBases.tarificationEntries
     val produitInfos = noSqlDataBases.produitInfos
     val clientDataBase = noSqlDataBases.clientDataBase

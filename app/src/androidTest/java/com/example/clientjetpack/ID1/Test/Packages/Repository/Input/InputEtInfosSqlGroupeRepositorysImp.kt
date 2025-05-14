@@ -7,7 +7,7 @@ import com.example.clientjetpack.ID1.Test.Packages.Init.initialClientsData
 import com.example.clientjetpack.ID1.Test.Packages.Init.initialProductsData
 import com.example.clientjetpack.ID1.Test.Packages.Init.initialTestData
 import com.example.clientjetpack.ID1.Test.Packages.Init.initialTypeTarificationData
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.InputEtInfosSqlModels
+import com.example.clientjetpack.ID1.Test.Packages.Models.InputEtInfosSqlModels
 import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

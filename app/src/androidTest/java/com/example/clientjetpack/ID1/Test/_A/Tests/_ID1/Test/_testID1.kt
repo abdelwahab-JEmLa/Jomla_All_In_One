@@ -4,13 +4,12 @@ import com.example.clientjetpack.ID1.Test.Packages.Function.createTimestamp
 import com.example.clientjetpack.ID1.Test.Packages.Init.initialClientsData
 import com.example.clientjetpack.ID1.Test.Packages.Init.initialProductsData
 import com.example.clientjetpack.ID1.Test.Packages.Init.initialTestData
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.InputEtInfosSqlModels
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.NoSqlDataBases
+import com.example.clientjetpack.ID1.Test.Packages.Models.InputEtInfosSqlModels
 import com.example.clientjetpack.ID1.Test.Packages.Modules.Log.logHErartchiDataBase
 import com.example.clientjetpack.ID1.Test.Packages.Modules.covertireDepitSqlAuNonSqlShemaDataBase
 
 fun _testID1 (){
-    val noSqlDataBases = NoSqlDataBases(
+    val noSqlDataBases = com.example.clientjetpack.ID1.Test.Packages.Models.NoSqlDataBases(
         initialTestData.toMutableList(),
         initialProductsData.toMutableList(),
         initialClientsData.toMutableList()

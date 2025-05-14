@@ -9,11 +9,13 @@ class _PreviewProvider : PreviewParameterProvider<List<Produit>> {
                 id = 1,
                 timestamp = createTimestamp(10, 14, 30, 2025, 5),
                 infos = Produit.ProduitInfos(nom = "Produit A"),
+                cesStatuesMutable = Produit.CesStatuesMutable(cActiveDonsSonListParent = true),
                 clients = listOf(
                     Produit.Client(
                         id = 1,
                         timestamp = createTimestamp(9, 14, 30, 2025, 5), // Yesterday
                         infos = Produit.Client.ClientInfos(nom = "Client 1"),
+                        cesStatuesMutable = Produit.Client.CesStatuesMutable(cActiveDonsSonListParent = false),
                         typesTarification = listOf(
                             Produit.Client.TypeTarification(
                                 id = 1,
@@ -50,6 +52,7 @@ class _PreviewProvider : PreviewParameterProvider<List<Produit>> {
                         id = 2,
                         timestamp = createTimestamp(10, 14, 30, 2025, 5),
                         infos = Produit.Client.ClientInfos(nom = "Client Beta"),
+                        cesStatuesMutable = Produit.Client.CesStatuesMutable(cActiveDonsSonListParent = true),
                         typesTarification = listOf(
                             Produit.Client.TypeTarification(
                                 id = 1,
@@ -98,14 +101,14 @@ class _PreviewProvider : PreviewParameterProvider<List<Produit>> {
                                         id = 1,
                                         timestamp = createTimestamp(10, 1, 0, 2025, 5),
                                         valeur = 200.99
-                                    ) ,
+                                    ),
                                     Produit.Client.TypeTarification.Prix(
                                         id = 2,
                                         timestamp = createTimestamp(10, 2, 0, 2025, 5),
                                         valeur = 300.99
-                                    ) ,
+                                    )
                                 )
-                            ),
+                            )
                         )
                     )
                 )

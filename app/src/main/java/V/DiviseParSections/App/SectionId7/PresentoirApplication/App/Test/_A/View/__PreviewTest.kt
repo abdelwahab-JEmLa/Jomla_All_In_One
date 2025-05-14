@@ -3,11 +3,17 @@ package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.Test._A.Vie
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.Test.Produit
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.Test._PreviewProvider
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.Test.addNewTransactionType
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.Test.formatTimestamp
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -17,6 +23,9 @@ import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -35,7 +44,6 @@ import com.example.clientjetpack.ui.theme.ClientJetPackTheme
 fun PreviewTest(
     @PreviewParameter(_PreviewProvider::class) initProduits: List<Produit>
 ) {
-
     Fragment(initProduits)
 }
 
@@ -216,5 +224,114 @@ fun MainList(
                 showOnlyLatestPrices = showOnlyLatestPrices
             )
         }
+    }
+}
+
+@Composable
+fun TarificationTypeSection(
+    typeTarification: Produit.Client.TypeTarification,
+    showOnlyLatestPrices: Boolean = false,
+    modifier: Modifier = Modifier
+) {
+    val (date, time) = formatTimestamp(typeTarification.timestamp)
+
+    var currentTypeTarification by remember { mutableStateOf(typeTarification) }
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Type: ${currentTypeTarification.infos.type.name}",
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = "$date $time",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+                )
+
+                IconButton(onClick = {
+                    // Find the maximum price ID to prevent duplicates
+                    val maxPriceId = currentTypeTarification.PrixsCurrency.maxOfOrNull { it.id } ?: 0
+                    val newPriceId = maxPriceId + 1
+
+                    val timestamp = System.currentTimeMillis()
+                    val newPrice = Produit.Client.TypeTarification.Prix(
+                        id = newPriceId,
+                        timestamp = timestamp,
+                        valeur = 0.0
+                    )
+
+                    // Ensure we're not adding duplicate price IDs
+                    if (currentTypeTarification.PrixsCurrency.none { it.id == newPriceId }) {
+                        currentTypeTarification = currentTypeTarification.copy(
+                            PrixsCurrency = currentTypeTarification.PrixsCurrency + newPrice
+                        )
+                    }
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Ajouter un prix",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        val pricesToShow = if (showOnlyLatestPrices) {
+            // Get only the most recent price by timestamp
+            currentTypeTarification.PrixsCurrency
+                .maxByOrNull { it.timestamp }
+                ?.let { listOf(it) } ?: emptyList()
+        } else {
+            // Show all prices sorted by id and value
+            currentTypeTarification.PrixsCurrency
+                .sortedWith(compareBy({ it.id }, { it.valeur }))
+        }
+
+        pricesToShow.forEach { prix ->
+            TarificationItem(prix = prix)
+            Spacer(modifier = Modifier.height(4.dp))
+        }
+    }
+}
+
+@Composable
+fun TarificationItem(
+    prix: Produit.Client.TypeTarification.Prix,
+    modifier: Modifier = Modifier
+) {
+    val (date, time) = formatTimestamp(prix.timestamp)
+
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .padding(8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = "Prix: ${prix.valeur}€",
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Text(
+            text = "$date $time",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+        )
     }
 }

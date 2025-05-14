@@ -4,7 +4,7 @@ import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepos
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.clientjetpack.ID1.Test.Packages.Init.initialTestData
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.InputEtInfosSqlModels
+import com.example.clientjetpack.ID1.Test.Packages.Models.InputEtInfosSqlModels
 import com.example.clientjetpack.ID1.Test.Packages.ViewModel.TarificationViewModel
 import com.example.clientjetpack.ID1.Test._A.Tests.Filter.LogFilterRule
 import com.example.clientjetpack.ID1.Test._A.Tests._ID1.Test._testID1
