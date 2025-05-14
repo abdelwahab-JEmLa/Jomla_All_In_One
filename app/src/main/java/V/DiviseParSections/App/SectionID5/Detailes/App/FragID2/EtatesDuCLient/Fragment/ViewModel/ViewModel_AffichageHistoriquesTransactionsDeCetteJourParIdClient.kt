@@ -56,19 +56,14 @@ class ViewModel_AffichageHistoriquesTransactionsDeCetteJourParIdClient(
         }
     }
 
-    // Add this function to your ViewModel class
     fun deleteVoiceRecordingFromStorage(vocaleKeyID: String, onComplete: (Boolean) -> Unit) {
-        // Check if the vocaleKeyID is valid before attempting to delete
         if (vocaleKeyID.isBlank()) {
-            // If vocaleKeyID is empty or blank, consider deletion successful since there's nothing to delete
             Log.d(TAG, "No voice recording ID provided, skipping deletion")
             onComplete(true)
             return
         }
 
-        // Attempting to delete the voice recording from Firebase Storage
         val storageRef = FirebaseStorage.getInstance().reference
-        // Update the path to match the correct location in Firebase Storage
         val voiceRef = storageRef.child("1_messagesVocales/$vocaleKeyID")
 
         // First check if the file exists
