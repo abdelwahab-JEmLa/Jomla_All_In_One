@@ -1,161 +1,49 @@
-package com.example.clientjetpack.ID1.Test._A.Tests.Preview
+package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview._A.View
 
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.OutputNoSqlModel
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview._A.View.ViewModel.TarificationViewModel
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview._A.View.function.strDateEtTempFromVidTimestamp
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.clientjetpack.ID1.Test.Packages.Function.strDateEtTempFromVidTimestamp
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.OutputNoSqlModel
-import com.example.clientjetpack.ID1.Test.Packages.ViewModel.TarificationViewModel
 
 @Preview(showBackground = true)
 @Composable
-fun MultipleItemsPrixPrev() {
-    val multipleItemsData = OutputNoSqlModel(
-        produits = listOf(
-            OutputNoSqlModel.Produit(
-                infosId = 1,
-                vidTimestamp = System.currentTimeMillis(),
-                clients = listOf(
-                    OutputNoSqlModel.Produit.Client(
-                        infosId = 1,
-                        vidTimestamp = System.currentTimeMillis(),
-                        typeTarification = listOf(
-                            OutputNoSqlModel.Produit.Client.TypeTarification(
-                                id = 1,
-                                vidTimestamp = System.currentTimeMillis(),
-                                PrixsCurrency = listOf(
-                                    OutputNoSqlModel.Produit.Client.TypeTarification.Prix(
-                                        valeur = 10.5,
-                                        vidTimestamp = System.currentTimeMillis()
-                                    )
-                                )
-                            )
-                        )
-                    )
-                )
-            ),
-            OutputNoSqlModel.Produit(
-                infosId = 2,
-                vidTimestamp = System.currentTimeMillis(),
-                clients = listOf(
-                    OutputNoSqlModel.Produit.Client(
-                        infosId = 2,
-                        vidTimestamp = System.currentTimeMillis(),
-                        typeTarification = listOf(
-                            OutputNoSqlModel.Produit.Client.TypeTarification(
-                                id = 2,
-                                vidTimestamp = System.currentTimeMillis(),
-                                PrixsCurrency = listOf(
-                                    OutputNoSqlModel.Produit.Client.TypeTarification.Prix(
-                                        valeur = 15.75,
-                                        vidTimestamp = System.currentTimeMillis()
-                                    )
-                                )
-                            )
-                        )
-                    )
-                )
-            )
+fun ProduitCardPreview() {
+    // Create a new view model to get test data
+    val viewModel = TarificationViewModel()
+
+    // Get the output model containing all data
+    val outputModel = viewModel.getOutputModel()
+
+    // Select the first product for preview (if available)
+    if (outputModel.produits.isNotEmpty()) {
+        val firstProduit = outputModel.produits.first()
+        val produitName = viewModel.getSqlProduit(firstProduit.infosId)?.nom ?: "Produit ${firstProduit.infosId}"
+
+        // Display the product card with the data
+        ProduitCard(
+            produit = firstProduit,
+            produitName = produitName,
+            tarificationViewModel = viewModel
         )
-    )
-
-    MaterialTheme {
-        PreviewContentWithData(multipleItemsData)
     }
 }
-
-@Composable
-fun PreviewContentWithData(data: OutputNoSqlModel) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        TabRow(selectedTabIndex = 0) {
-            Tab(
-                text = { Text("UI") },
-                selected = true,
-                onClick = { }
-            )
-            Tab(
-                text = { Text("Logs") },
-                selected = false,
-                onClick = { }
-            )
-        }
-
-        Box(modifier = Modifier.fillMaxSize()) {
-            Column(modifier = Modifier.fillMaxSize()) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        "Tarification Dashboard",
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold
-                    )
-
-                    Button(onClick = { }) {
-                        Icon(Icons.Default.Refresh, contentDescription = "Refresh")
-                    }
-                }
-
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(8.dp)
-                ) {
-                    items(data.produits) { produit ->
-                        V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview._A.View.ProduitCard(
-                            produit = produit,
-                            produitName = "Preview Produit ${produit.infosId}",
-                            tarificationViewModel = null
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                    }
-                }
-            }
-
-            FloatingActionButton(
-                onClick = { },
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(16.dp)
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Add Test Data")
-            }
-        }
-    }
-}
-
 @Composable
 fun ProduitCard(
     produit: OutputNoSqlModel.Produit,
