@@ -1,9 +1,5 @@
-package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql.A_ProduitInfos
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql.B_ClientInfos
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql.C_TypeTarificationInfos
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql.D_TarificationInfos
-import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
+package com.example.clientjetpack.ID1.Test._A.Tests.Packages.Repository.Input
+import com.example.clientjetpack.ID1.Test.Packages.Models.InputEtInfosSqlModels
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -13,17 +9,6 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 class FireBaseHandler() {
-    private val startFireBaseReference: DatabaseReference =
-        _0_0_HeadOfRepositorys_Model.getHeadSqlDataBaseRef()
-            .child("C_InfosSqlDataBases")
-
-    private val produitRef = startFireBaseReference.child("A_ProduitInfos")            //<--
-    //TODO(1): regle pour utili les ref depuit ici
-    private val clientRef = startFireBaseReference.child("B_ClientInfos")
-    private val typeTarificationRef = startFireBaseReference.child("C_TypeTarificationInfos")
-    private val tarificationRef = startFireBaseReference.child("D_TarificationInfos")
-
-
     suspend fun <T> loadDatasAsync(
         databaseRef: DatabaseReference,
         dataClass: Class<T>,
@@ -57,10 +42,10 @@ class FireBaseHandler() {
 
         modelList.map { item ->
             val key = when (item) {
-                is D_TarificationInfos -> item.vidTimestamp.toString()
-                is A_ProduitInfos -> item.id.toString()
-                is B_ClientInfos -> item.id.toString()
-                is C_TypeTarificationInfos -> item.id.toString()
+                is InputEtInfosSqlModels.Tarification -> item.vidTimestamp.toString()
+                is InputEtInfosSqlModels.ClientDataBase -> item.id.toString()
+                is InputEtInfosSqlModels.ProduitInfos -> item.id.toString()
+                is InputEtInfosSqlModels.TypeTarificationDataBase -> item.id.toString()
                 else -> databaseRef.push().key
             } ?: databaseRef.push().key
 

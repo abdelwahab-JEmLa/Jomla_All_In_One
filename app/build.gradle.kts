@@ -4,7 +4,7 @@ plugins {
     alias(libs.plugins.google.gms.google.services)
     id("kotlin-kapt")
     id("org.jetbrains.kotlin.plugin.serialization") version "1.8.0"
-    id("io.realm.kotlin") // Ajoutez cette ligne
+    id("io.realm.kotlin")
 }
 
 android {
@@ -19,7 +19,6 @@ android {
         versionName = "2.01"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        // Add this to potentially bypass some restrictions
         testInstrumentationRunnerArguments["clearPackageData"] = "true"
 
         vectorDrawables {
@@ -65,6 +64,11 @@ android {
             )
         }
     }
+    // Add this to properly handle testing setup
+    testOptions {
+        execution = "ANDROIDX_TEST_ORCHESTRATOR"
+        animationsDisabled = true
+    }
 }
 
 dependencies {
@@ -89,26 +93,26 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.androidx.compose.material)
     implementation(libs.firebase.storage.ktx)
-    implementation(libs.generativeai)
+
+    // Fix the generative AI dependency
+    implementation("com.google.ai.client.generativeai:generativeai:0.1.1")
+
     implementation(libs.material)
     implementation(libs.androidx.room.runtime.android)
 
     // Test dependencies
     testImplementation(libs.junit)
-    // Mockito dependencies pour tests unitaires
     testImplementation("org.mockito:mockito-core:4.11.0")
-    testImplementation("org.mockito:mockito-inline:4.11.0") // Pour mocker les méthodes finales
-    // Coroutines test
+    testImplementation("org.mockito:mockito-inline:4.11.0")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
-    // Pour tester les ViewModel et LiveData
     testImplementation("androidx.arch.core:core-testing:2.2.0")
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
-    // Add this line to fix the InstantTaskExecutorRule issue
     androidTestImplementation("androidx.arch.core:core-testing:2.2.0")
+
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.kotlinx.serialization.json)
@@ -125,46 +129,34 @@ dependencies {
 
     implementation(libs.androidx.paging.runtime)
     implementation(libs.androidx.paging.compose)
-    // Glide core dependencies
     implementation(libs.glide)
     kapt(libs.compiler)
 
-    // Glide Compose integration
     implementation(libs.compose.v100beta01)
     implementation(libs.glide.transformations)
     implementation(libs.play.services.nearby)
 
-    // OSMDroid dependencies
     implementation(libs.osmdroid.android)
     implementation(libs.osmdroid.wms)
     implementation(libs.osmdroid.mapsforge)
 
-    // Lottie Compose
     implementation("com.airbnb.android:lottie-compose:6.1.0")
 
-    // Koin pour Android
+    // Koin for dependency injection
     implementation("io.insert-koin:koin-android:3.5.0")
     implementation("io.insert-koin:koin-androidx-compose:3.5.0")
-
-    // Koin Testing dependencies - ADDED TO FIX TODOs
     testImplementation("io.insert-koin:koin-test:3.5.0")
     testImplementation("io.insert-koin:koin-test-junit4:3.5.0")
     androidTestImplementation("io.insert-koin:koin-test:3.5.0")
     androidTestImplementation("io.insert-koin:koin-test-junit4:3.5.0")
 
-    // Dépendances Realm
+    // Realm dependencies
     implementation("io.realm.kotlin:library-base:1.12.0")
     implementation("io.realm.kotlin:library-sync:1.12.0")
 
-    // MockK library for testing
+    // MockK for testing
     testImplementation("io.mockk:mockk:1.13.5")
-
-    // If you need Android-specific features of MockK
     testImplementation("io.mockk:mockk-android:1.13.5")
-
-    // Other testing dependencies you might need if not already included
-    testImplementation("androidx.arch.core:core-testing:2.2.0")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
 }
 
 apply(plugin = "com.google.gms.google-services")

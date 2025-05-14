@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql
+package com.example.clientjetpack.ID1.Test.ID2.Test
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

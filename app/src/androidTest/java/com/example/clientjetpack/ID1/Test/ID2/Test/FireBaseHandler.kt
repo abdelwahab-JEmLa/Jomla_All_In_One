@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel
+package com.example.clientjetpack.ID1.Test.ID2.Test
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql.A_ProduitInfos
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql.B_ClientInfos
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql.C_TypeTarificationInfos
@@ -17,21 +17,45 @@ class FireBaseHandler() {
         _0_0_HeadOfRepositorys_Model.getHeadSqlDataBaseRef()
             .child("C_InfosSqlDataBases")
 
-    private val produitRef = startFireBaseReference.child("A_ProduitInfos")            //<--
-    //TODO(1): regle pour utili les ref depuit ici
+    private val produitRef = startFireBaseReference.child("A_ProduitInfos")
     private val clientRef = startFireBaseReference.child("B_ClientInfos")
     private val typeTarificationRef = startFireBaseReference.child("C_TypeTarificationInfos")
     private val tarificationRef = startFireBaseReference.child("D_TarificationInfos")
 
+    // Getter methods for references to be used in repository implementations
+    fun getProduitRef(): DatabaseReference = produitRef
+    fun getClientRef(): DatabaseReference = clientRef
+    fun getTypeTarificationRef(): DatabaseReference = typeTarificationRef
+    fun getTarificationRef(): DatabaseReference = tarificationRef
+
+    // New method to get a reference by type
+    fun getRefByType(type: Class<*>): DatabaseReference {
+        return when (type) {
+            A_ProduitInfos::class.java -> produitRef
+            B_ClientInfos::class.java -> clientRef
+            C_TypeTarificationInfos::class.java -> typeTarificationRef
+            D_TarificationInfos::class.java -> tarificationRef
+            else -> throw IllegalArgumentException("Unknown type: ${type.simpleName}")
+        }
+    }
 
     suspend fun <T> loadDatasAsync(
         databaseRef: DatabaseReference,
         dataClass: Class<T>,
     ): List<T> {
+        // Get reference from within this class using the type parameter
+        val ref = when {
+            databaseRef != produitRef && databaseRef != clientRef &&
+                    databaseRef != typeTarificationRef && databaseRef != tarificationRef -> {
+                getRefByType(dataClass)
+            }
+            else -> databaseRef
+        }
+
         return suspendCancellableCoroutine { continuation ->
             val dataList = mutableListOf<T>()
 
-            databaseRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            ref.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     for (childSnapshot in snapshot.children) {
                         childSnapshot.getValue(dataClass)?.let {
@@ -85,7 +109,14 @@ class FireBaseHandler() {
     }
 
     fun addToFirebaseAsync(item: Any, ref: DatabaseReference) {
-        val key = ref.push().key ?: return
+        val key = when(item) {
+            is D_TarificationInfos -> item.vidTimestamp.toString()
+            is A_ProduitInfos -> item.id.toString()
+            is B_ClientInfos -> item.id.toString()
+            is C_TypeTarificationInfos -> item.id.toString()
+            else -> ref.push().key
+        } ?: return
+
         ref.child(key).setValue(item)
             .addOnSuccessListener {
                 // Success handling if needed
@@ -94,5 +125,18 @@ class FireBaseHandler() {
                 // Error handling
                 e.printStackTrace()
             }
+    }
+
+    // Overloaded version that determines reference from item type
+    fun addToFirebaseAsync(item: Any) {
+        val ref = when (item) {
+            is A_ProduitInfos -> produitRef
+            is B_ClientInfos -> clientRef
+            is C_TypeTarificationInfos -> typeTarificationRef
+            is D_TarificationInfos -> tarificationRef
+            else -> throw IllegalArgumentException("Unknown type: ${item.javaClass.simpleName}")
+        }
+
+        addToFirebaseAsync(item, ref)
     }
 }

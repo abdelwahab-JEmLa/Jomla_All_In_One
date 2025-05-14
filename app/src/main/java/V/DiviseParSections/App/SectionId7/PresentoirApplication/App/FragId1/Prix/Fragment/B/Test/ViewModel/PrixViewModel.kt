@@ -5,7 +5,6 @@ import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql.C_TypeTarificationInfos
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql.D_TarificationInfos
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql.TypeTarificationEnum
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.database.FirebaseDatabase
@@ -13,11 +12,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 
 /**
  * ViewModel principal pour la gestion des données des tarifications
  */
-class PrixViewModel(context: Context) : ViewModel() {
+class PrixViewModel(
+    val sqlRepository = _InfosSqlDataBases_GroupeRepositorysImp = koinInject()
+) : ViewModel() {
     
     // État de chargement
     private val _isLoading = MutableStateFlow(false)
@@ -31,8 +33,7 @@ class PrixViewModel(context: Context) : ViewModel() {
     private val firebaseRef = FirebaseDatabase.getInstance().reference.child("presentoir_data")
     
     // Repositories
-    private val sqlRepository = InfosSqlDataBasesRepository(context, firebaseRef)
-    
+
     // Synchroniseur
     private val dataSynchronizer = DataSynchronizer(sqlRepository)
     
@@ -44,7 +45,6 @@ class PrixViewModel(context: Context) : ViewModel() {
     val produitNoSqlFlow = dataSynchronizer.noSqlDataFlow
     
     init {
-        // Charger les données au démarrage
         loadAllData()
     }
     

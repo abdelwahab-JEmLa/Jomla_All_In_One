@@ -1,0 +1,115 @@
+   ================================================================
+                  ======== C Le Test Log Output Print Du Temp=2025-05-13 
+                  ================================================================ du   ========
+                  
+                  -- Hierarchical Structure --
+                  ├─ Product : 1, Date: 2025-05-05 Time: 16:30:00 (2 clientAchteurs)
+                    ├─ Client ID: 1, Date: 2025-05-01 Time: 12:30:00 (2 tarification types)
+                    │     ├─ Tarification Type : 1 , Date: 2025-05-01 Time: 10:30:00 (1 currencies)
+                    │     │  └─ Currency: 10.99, Date: 2025-05-01 Time: 10:30:00
+                    │     └─ Tarification Type : 2 , Date: 2025-05-01 Time: 12:30:00 (2 currencies)
+                    │     │  ├─ Currency: 10.99, Date: 2025-05-01 Time: 12:30:00
+                    │     │  └─ Currency: 10.99, Date: 2025-05-01 Time: 11:30:00
+                    ├─ Client ID: 2, Date: 2025-05-05 Time: 16:30:00 (1 tarification types)
+                    │     └─ Tarification Type : 3 , Date: 2025-05-05 Time: 16:30:00 (1 currencies)
+                    │     │  └─ Currency: 9.99, Date: 2025-05-05 Time: 16:30:00
+                  ├─ Product : 2, Date: 2025-05-06 Time: 13:45:00 (2 clientAchteurs)
+                    ├─ Client ID: 2, Date: 2025-05-02 Time: 11:45:00 (1 tarification types)
+                    │     └─ Tarification Type : 2 , Date: 2025-05-02 Time: 11:45:00 (1 currencies)
+                    │     │  └─ Currency: 15.5, Date: 2025-05-02 Time: 11:45:00
+                    ├─ Client ID: 3, Date: 2025-05-06 Time: 13:45:00 (1 tarification types)
+                    │     └─ Tarification Type : 1 , Date: 2025-05-06 Time: 13:45:00 (1 currencies)
+                    │     │  └─ Currency: 17.25, Date: 2025-05-06 Time: 13:45:00
+                  ├─ Product : 3, Date: 2025-05-03 Time: 14:15:00 (1 clientAchteurs)
+                    ├─ Client ID: 3, Date: 2025-05-03 Time: 14:15:00 (1 tarification types)
+                    │     └─ Tarification Type : 1 , Date: 2025-05-03 Time: 14:15:00 (1 currencies)
+                    │     │  └─ Currency: 8.75, Date: 2025-05-03 Time: 14:15:00
+                  └─ Product : 4, Date: 2025-05-04 Time: 09:00:00 (1 clientAchteurs)
+                    └─ Client ID: 1, Date: 2025-05-04 Time: 09:00:00 (1 tarification types)
+                       └─ Tarification Type : 2 , Date: 2025-05-04 Time: 09:00:00 (1 currencies)
+                            └─ Currency: 12.99, Date: 2025-05-04 Time: 09:00:00
+                  
+                  ========TEST logHErartchiDataBase COMPLETED SUCCESSFULLY ========
+                  
+                  =================logHErartchiDataBase testDataAfterAdd ===========================================
+                  ================================================================
+                  ======== C Le Test Log Output Print Du Temp=2025-05-13 
+                  ================================================================ du   ========
+                  
+                  -- Hierarchical Structure --
+                  ├─ Product : 1, Date: 2025-05-05 Time: 16:30:00 (2 clientAchteurs)
+                    ├─ Client ID: 1, Date: 2025-05-01 Time: 12:30:00 (2 tarification types)
+                    │     ├─ Tarification Type : 1 , Date: 2025-05-01 Time: 10:30:00 (1 currencies)
+                    │     │  └─ Currency: 10.99, Date: 2025-05-01 Time: 10:30:00
+                    │     └─ Tarification Type : 2 , Date: 2025-05-01 Time: 12:30:00 (2 currencies)
+                    │     │  ├─ Currency: 10.99, Date: 2025-05-01 Time: 12:30:00
+                    │     │  └─ Currency: 10.99, Date: 2025-05-01 Time: 11:30:00
+                    ├─ Client ID: 2, Date: 2025-05-05 Time: 16:30:00 (1 tarification types)
+                    │     └─ Tarification Type : 3 , Date: 2025-05-05 Time: 16:30:00 (1 currencies)
+                    │     │  └─ Currency: 9.99, Date: 2025-05-05 Time: 16:30:00
+                  ├─ Product : 2, Date: 2025-05-06 Time: 13:45:00 (2 clientAchteurs)
+                    ├─ Client ID: 2, Date: 2025-05-02 Time: 11:45:00 (1 tarification types)
+                    │     └─ Tarification Type : 2 , Date: 2025-05-02 Time: 11:45:00 (1 currencies)
+                    │     │  └─ Currency: 15.5, Date: 2025-05-02 Time: 11:45:00
+                    ├─ Client ID: 3, Date: 2025-05-06 Time: 13:45:00 (1 tarification types)
+                    │     └─ Tarification Type : 1 , Date: 2025-05-06 Time: 13:45:00 (1 currencies)
+                    │     │  └─ Currency: 17.25, Date: 2025-05-06 Time: 13:45:00
+                  ├─ Product : 3, Date: 2025-05-03 Time: 14:15:00 (1 clientAchteurs)
+                    ├─ Client ID: 3, Date: 2025-05-03 Time: 14:15:00 (1 tarification types)
+                    │     └─ Tarification Type : 1 , Date: 2025-05-03 Time: 14:15:00 (1 currencies)
+                    │     │  └─ Currency: 8.75, Date: 2025-05-03 Time: 14:15:00
+                  ├─ Product : 4, Date: 2025-05-04 Time: 09:00:00 (1 clientAchteurs)
+                    ├─ Client ID: 1, Date: 2025-05-04 Time: 09:00:00 (1 tarification types)
+                    │     └─ Tarification Type : 2 , Date: 2025-05-04 Time: 09:00:00 (1 currencies)
+                    │     │  └─ Currency: 12.99, Date: 2025-05-04 Time: 09:00:00
+                  └─ Product : 5, Date: 2025-05-01 Time: 13:30:00 (1 clientAchteurs)           //<--
+                  //TODO(1): pk logHErartchiDataBase  ca add
+                    └─ Client ID: 1, Date: 2025-05-01 Time: 13:30:00 (1 tarification types)
+                       └─ Tarification Type : 2 , Date: 2025-05-01 Time: 13:30:00 (1 currencies)
+                            └─ Currency: 20.99, Date: 2025-05-01 Time: 13:30:00
+                  
+                  ========TEST logHErartchiDataBase testDataAfterAdd COMPLETED SUCCESSFULLY ========
+LogFilter         ===== TEST LOGS: __InstrumentalTest.testID1_AddLogFrommock =====
+                  ===============================================
+TestRunner        finished: testID1_AddLogFrommock(com.example.clientjetpack.ID1.Test._A.Tests.__InstrumentalTest)
+                  started: testID_2_B(com.example.clientjetpack.ID1.Test._A.Tests.__InstrumentalTest)
+LogFilter         Setting up log filter for: __InstrumentalTest.testID_2_B
+OutputN...delRepo Initializing repository with initial data
+                  Product data updated: 4 entries
+                  Tarification data updated: 0 entries
+                  Tarification data updated: 8 entries
+                  Product data updated: 5 entries
+                  Tarification data updated: 9 entries
+System.out        
+                  =================testID_2_BaddNewTestDataTarificationEtClient ===========================================
+                  ================================================================
+                  ======== C Le Test Log Output Print Du Temp=2025-05-13 
+                  ================================================================ du   ========
+                  
+                  -- Hierarchical Structure --
+                  ├─ Product : 1, Date: 2025-05-05 Time: 16:30:00 (2 clientAchteurs)
+                    ├─ Client ID: 1, Date: 2025-05-01 Time: 12:30:00 (2 tarification types)
+                    │     ├─ Tarification Type : 1 , Date: 2025-05-01 Time: 10:30:00 (1 currencies)
+                    │     │  └─ Currency: 10.99, Date: 2025-05-01 Time: 10:30:00
+                    │     └─ Tarification Type : 2 , Date: 2025-05-01 Time: 12:30:00 (2 currencies)
+                    │     │  ├─ Currency: 10.99, Date: 2025-05-01 Time: 12:30:00
+                    │     │  └─ Currency: 10.99, Date: 2025-05-01 Time: 11:30:00
+                    ├─ Client ID: 2, Date: 2025-05-05 Time: 16:30:00 (1 tarification types)
+                    │     └─ Tarification Type : 3 , Date: 2025-05-05 Time: 16:30:00 (1 currencies)
+                    │     │  └─ Currency: 9.99, Date: 2025-05-05 Time: 16:30:00
+                  ├─ Product : 2, Date: 2025-05-06 Time: 13:45:00 (2 clientAchteurs)
+                    ├─ Client ID: 2, Date: 2025-05-02 Time: 11:45:00 (1 tarification types)
+                    │     └─ Tarification Type : 2 , Date: 2025-05-02 Time: 11:45:00 (1 currencies)
+                    │     │  └─ Currency: 15.5, Date: 2025-05-02 Time: 11:45:00
+                    ├─ Client ID: 3, Date: 2025-05-06 Time: 13:45:00 (1 tarification types)
+                    │     └─ Tarification Type : 1 , Date: 2025-05-06 Time: 13:45:00 (1 currencies)
+                    │     │  └─ Currency: 17.25, Date: 2025-05-06 Time: 13:45:00
+                  ├─ Product : 3, Date: 2025-05-03 Time: 14:15:00 (1 clientAchteurs)
+                    ├─ Client ID: 3, Date: 2025-05-03 Time: 14:15:00 (1 tarification types)
+                    │     └─ Tarification Type : 1 , Date: 2025-05-03 Time: 14:15:00 (1 currencies)
+                    │     │  └─ Currency: 8.75, Date: 2025-05-03 Time: 14:15:00
+                  └─ Product : 4, Date: 2025-05-04 Time: 09:00:00 (1 clientAchteurs)
+                    └─ Client ID: 1, Date: 2025-05-04 Time: 09:00:00 (1 tarification types)
+                       └─ Tarification Type : 2 , Date: 2025-05-04 Time: 09:00:00 (1 currencies)
+                            └─ Currency: 12.99, Date: 2025-05-04 Time: 09:00:00   //<--
+                            //TODO(1): mais par vm non
