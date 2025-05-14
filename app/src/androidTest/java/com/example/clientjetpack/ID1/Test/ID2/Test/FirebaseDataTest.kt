@@ -1,15 +1,16 @@
-package com.example.clientjetpack.ID1.Test.ID2.Test.DataBase
+package com.example.clientjetpack.ID1.Test.ID2.Test
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.FireBaseHandler
 import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo.Models.A_ProduitInfos
 import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo.Models.B_ClientInfos
 import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo.Models.C_TypeTarificationInfos
 import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo.Models.D_TarificationInfos
 import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo.Models.TypeTarificationEnum
 import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo._InfosSqlDataBases_GroupeRepositorysImp
-import com.example.clientjetpack.ID1.Test.ID2.Test.LogFilterRule
+import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.TestAppDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
