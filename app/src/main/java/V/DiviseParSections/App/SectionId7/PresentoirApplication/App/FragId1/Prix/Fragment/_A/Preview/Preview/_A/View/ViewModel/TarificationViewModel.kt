@@ -8,7 +8,9 @@ import java.util.Calendar
 import kotlin.random.Random
 
 class UiState(
-    val outputModel: TarificationViewModel.ProduitNoSqlDataBase = TarificationViewModel.ProduitNoSqlDataBase(emptyList()),
+    val outputModel: TarificationViewModel.ProduitNoSqlDataBase =
+        TarificationViewModel.ProduitNoSqlDataBase(emptyList()),
+
     val isLoading: Boolean = false,
     val error: String? = null
 )
