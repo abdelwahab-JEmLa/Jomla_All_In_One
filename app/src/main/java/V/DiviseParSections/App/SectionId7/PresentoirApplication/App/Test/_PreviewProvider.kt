@@ -4,7 +4,13 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 
 class _PreviewProvider : PreviewParameterProvider<List<Produit>> {
     override val values = sequenceOf(
-        listOf(
+        createSampleData()  // Call a method to create sample data
+    )
+
+    // No need to override count, the default implementation will work based on the sequence
+
+    private fun createSampleData(): List<Produit> {
+        return listOf(
             Produit(
                 id = 1,
                 timestamp = createTimestamp(10, 14, 30, 2025, 5),
@@ -74,11 +80,13 @@ class _PreviewProvider : PreviewParameterProvider<List<Produit>> {
                 id = 2,
                 timestamp = createTimestamp(7, 14, 30, 2025, 5), // 3 days ago
                 infos = Produit.ProduitInfos(nom = "Produit B"),
+                cesStatuesMutable = Produit.CesStatuesMutable(),  // Added this
                 clients = listOf(
                     Produit.Client(
                         id = 1,
                         timestamp = createTimestamp(10, 14, 30, 2025, 5),
                         infos = Produit.Client.ClientInfos(nom = "Client Gamma"),
+                        cesStatuesMutable = Produit.Client.CesStatuesMutable(),  // Added this
                         typesTarification = listOf(
                             Produit.Client.TypeTarification(
                                 id = 1,
@@ -117,11 +125,13 @@ class _PreviewProvider : PreviewParameterProvider<List<Produit>> {
                 id = 3,
                 timestamp = createTimestamp(10, 9, 15, 2025, 5),
                 infos = Produit.ProduitInfos(nom = "Produit C"),
+                cesStatuesMutable = Produit.CesStatuesMutable(),  // Added this
                 clients = listOf(
                     Produit.Client(
                         id = 1,
                         timestamp = createTimestamp(10, 10, 0, 2025, 5),
                         infos = Produit.Client.ClientInfos(nom = "Client Delta"),
+                        cesStatuesMutable = Produit.Client.CesStatuesMutable(),  // Added this
                         typesTarification = listOf(
                             Produit.Client.TypeTarification(
                                 id = 1,
@@ -141,6 +151,7 @@ class _PreviewProvider : PreviewParameterProvider<List<Produit>> {
                         id = 2,
                         timestamp = createTimestamp(10, 12, 0, 2025, 5),
                         infos = Produit.Client.ClientInfos(nom = "Client Epsilon"),
+                        cesStatuesMutable = Produit.Client.CesStatuesMutable(),  // Added this
                         typesTarification = listOf(
                             Produit.Client.TypeTarification(
                                 id = 1,
@@ -159,5 +170,5 @@ class _PreviewProvider : PreviewParameterProvider<List<Produit>> {
                 )
             )
         )
-    )
+    }
 }

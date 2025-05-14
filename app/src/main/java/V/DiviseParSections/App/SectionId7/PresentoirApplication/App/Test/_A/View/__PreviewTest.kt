@@ -41,10 +41,9 @@ import com.example.clientjetpack.ui.theme.ClientJetPackTheme
 
 @Preview
 @Composable
-fun PreviewTest(
-    @PreviewParameter(_PreviewProvider::class) initProduits: List<Produit>
-) {
-    Fragment(initProduits)
+fun PreviewTest(@PreviewParameter(_PreviewProvider::class) initProduits: List<Produit>?) {
+    val safeInitProduits = initProduits ?: emptyList()
+    Fragment(safeInitProduits)
 }
 
 @Composable
