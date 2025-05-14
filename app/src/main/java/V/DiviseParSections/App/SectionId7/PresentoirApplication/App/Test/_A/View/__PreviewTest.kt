@@ -35,6 +35,12 @@ import com.example.clientjetpack.ui.theme.ClientJetPackTheme
 fun PreviewTest(
     @PreviewParameter(_PreviewProvider::class) initProduits: List<Produit>
 ) {
+
+    Fragment(initProduits)
+}
+
+@Composable
+private fun Fragment(initProduits: List<Produit>) {
     var produits by remember { mutableStateOf(initProduits) }
     var showOnlyLatestPrices by remember { mutableStateOf(false) }
     var showDebugLogs by remember { mutableStateOf(false) }
@@ -57,7 +63,8 @@ fun PreviewTest(
             )
 
             // Find and activate the selected client
-            val clientIndex = updatedProduits[produitIndex].clients.indexOfFirst { it.id == clientId }
+            val clientIndex =
+                updatedProduits[produitIndex].clients.indexOfFirst { it.id == clientId }
             if (clientIndex >= 0) {
                 val updatedClients = updatedProduits[produitIndex].clients.toMutableList()
                 updatedClients[clientIndex] = updatedClients[clientIndex].copy(
@@ -77,7 +84,7 @@ fun PreviewTest(
             logDebug("Updated active product $produitId and client $clientId")
         }
     }
-    
+
     ClientJetPackTheme(darkTheme = true) {
         MainScreen(
             produits = produits,
@@ -88,11 +95,11 @@ fun PreviewTest(
                 newProduct?.let {
                     // Only add if not already in the list (prevents duplication)
                     val exists = produits.any { p -> p.id == it.id }
-                    if (!exists) {
-                        produits = produits + it
+                    produits = if (!exists) {
+                        produits + it
                     } else {
                         // If product exists, update it instead of adding a new one
-                        produits = produits.map { p -> if (p.id == it.id) it else p }
+                        produits.map { p -> if (p.id == it.id) it else p }
                     }
                 }
             },
