@@ -1,12 +1,12 @@
 package com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo
 
 import android.content.Context
+import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.FireBaseHandler
 import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo.Models.A_ProduitInfos
 import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo.Models.B_ClientInfos
 import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo.Models.C_TypeTarificationInfos
 import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo.Models.D_TarificationInfos
 import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.TestAppDatabase
-import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.FireBaseHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +18,6 @@ class _InfosSqlDataBases_GroupeRepositorysImp(
     private val context: Context,
     val database: TestAppDatabase
 ) : _InfosSqlDataBases_GroupeRepositorys {
-
     private val fireBaseHandler = FireBaseHandler()
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
