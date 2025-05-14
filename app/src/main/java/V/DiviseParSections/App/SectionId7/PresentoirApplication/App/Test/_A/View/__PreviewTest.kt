@@ -42,6 +42,7 @@ import com.example.clientjetpack.ui.theme.ClientJetPackTheme
 @Preview
 @Composable
 fun PreviewTest(@PreviewParameter(_PreviewProvider::class) initProduits: List<Produit>?) {
+    // Create a default empty list as fallback if initProduits is null
     val safeInitProduits = initProduits ?: emptyList()
     Fragment(safeInitProduits)
 }
@@ -143,8 +144,7 @@ fun MainScreen(
                 }
             }
         }
-        .sortedWith(
-            compareBy(
+        .sortedWith(compareBy(
             { it.third.id },
             { it.third.PrixsCurrency.maxByOrNull { prix -> prix.valeur }?.valeur ?: 0.0 }
         ))
@@ -167,53 +167,42 @@ fun MainScreen(
             }
         }
 
-        Fabs(
-            onToggleDebugLogs, onToggleLatestPrices, onAddProduct, modifier = Modifier.Companion
+        Column(
+            modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(16.dp)
-        )
-    }
-}
-
-@Composable
-private fun Fabs(
-    onToggleDebugLogs: () -> Unit,
-    onToggleLatestPrices: () -> Unit,
-    onAddProduct: () -> Unit,
-    modifier: Modifier
-) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        // New Debug Log toggle button
-        FloatingActionButton(
-            onClick = onToggleDebugLogs,
-            modifier = Modifier
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Icon(
-                Icons.Default.List,
-                contentDescription = "Toggle Debug Logs"
-            )
-        }
+            // New Debug Log toggle button
+            FloatingActionButton(
+                onClick = onToggleDebugLogs,
+                modifier = Modifier
+            ) {
+                Icon(
+                    Icons.Default.List,
+                    contentDescription = "Toggle Debug Logs"
+                )
+            }
 
-        FloatingActionButton(
-            onClick = onToggleLatestPrices,
-            modifier = Modifier
-        ) {
-            Icon(
-                Icons.Default.History,
-                contentDescription = "Toggle Latest Prices"
-            )
-        }
+            FloatingActionButton(
+                onClick = onToggleLatestPrices,
+                modifier = Modifier
+            ) {
+                Icon(
+                    Icons.Default.History,
+                    contentDescription = "Toggle Latest Prices"
+                )
+            }
 
-        FloatingActionButton(
-            onClick = onAddProduct,
-            modifier = Modifier
-        ) {
-            Icon(
-                Icons.Default.Add,
-                contentDescription = "Add"
-            )
+            FloatingActionButton(
+                onClick = onAddProduct,
+                modifier = Modifier
+            ) {
+                Icon(
+                    Icons.Default.Add,
+                    contentDescription = "Add"
+                )
+            }
         }
     }
 }
@@ -273,8 +262,7 @@ fun TarificationTypeSection(
 
                 IconButton(onClick = {
                     // Find the maximum price ID to prevent duplicates
-                    val maxPriceId =
-                        currentTypeTarification.PrixsCurrency.maxOfOrNull { it.id } ?: 0
+                    val maxPriceId = currentTypeTarification.PrixsCurrency.maxOfOrNull { it.id } ?: 0
                     val newPriceId = maxPriceId + 1
 
                     val timestamp = System.currentTimeMillis()
