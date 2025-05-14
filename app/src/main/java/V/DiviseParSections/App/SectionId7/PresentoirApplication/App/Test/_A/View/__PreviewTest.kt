@@ -42,7 +42,6 @@ import com.example.clientjetpack.ui.theme.ClientJetPackTheme
 @Preview
 @Composable
 fun PreviewTest(@PreviewParameter(_PreviewProvider::class) initProduits: List<Produit>?) {
-    // Create a default empty list as fallback if initProduits is null
     val safeInitProduits = initProduits ?: emptyList()
     Fragment(safeInitProduits)
 }
