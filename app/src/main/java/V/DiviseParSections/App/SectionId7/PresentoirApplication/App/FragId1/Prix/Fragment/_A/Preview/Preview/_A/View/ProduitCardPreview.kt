@@ -45,7 +45,7 @@ fun ProduitCardPreview() {
 }
 @Composable
 fun ProduitCard(
-    produit: TarificationViewModel.OutputNoSqlModel.Produit,
+    produit: TarificationViewModel.ProduitNoSqlDataBase.Produit,
     produitName: String,
     tarificationViewModel: TarificationViewModel?,
     modifier: Modifier = Modifier
@@ -99,7 +99,7 @@ fun ProduitCard(
 
 @Composable
 fun ClientSection(
-    clientAchteur: TarificationViewModel.OutputNoSqlModel.Produit.ClientAchteur,
+    clientAchteur: TarificationViewModel.ProduitNoSqlDataBase.Produit.ClientAchteur,
     clientName: String,
     tarificationViewModel: TarificationViewModel?,
     modifier: Modifier = Modifier
@@ -149,7 +149,7 @@ fun ClientSection(
 
 @Composable
 fun TarificationTypeSection(
-    typeTarif: TarificationViewModel.OutputNoSqlModel.Produit.ClientAchteur.TypeTarification,
+    typeTarif: TarificationViewModel.ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification,
     typeName: String,
     modifier: Modifier = Modifier
 ) {

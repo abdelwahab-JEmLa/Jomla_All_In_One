@@ -1,7 +1,6 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview._A.View.ViewModel
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview._A.View.function.round
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.Test.Models.OutputNoSqlModel
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.room.PrimaryKey
@@ -9,7 +8,7 @@ import java.util.Calendar
 import kotlin.random.Random
 
 class UiState(
-    val outputModel: TarificationViewModel.OutputNoSqlModel = TarificationViewModel.OutputNoSqlModel(emptyList()),
+    val outputModel: TarificationViewModel.ProduitNoSqlDataBase = TarificationViewModel.ProduitNoSqlDataBase(emptyList()),
     val isLoading: Boolean = false,
     val error: String? = null
 )
@@ -22,7 +21,7 @@ class TarificationViewModel {
     private val noSqlData: InfosSqlDataBases = addTestData()
 
     init {
-        // Use the InfosSqlDataBases instance to generate the OutputNoSqlModel
+        // Use the InfosSqlDataBases instance to generate the ProduitNoSqlDataBase
         _uiState.value = UiState(outputModel = noSqlData.toOutputNoSqlModel())
     }
 
@@ -85,7 +84,7 @@ class TarificationViewModel {
         )
     }
 
-    private fun InfosSqlDataBases.toOutputNoSqlModel(): OutputNoSqlModel {
+    private fun InfosSqlDataBases.toOutputNoSqlModel(): ProduitNoSqlDataBase {
         val groupedByProduct = tarificationEntries.groupBy { it.idProduit }
 
         val produits = groupedByProduct.map { (produitId, produitTarifications) ->
@@ -107,34 +106,34 @@ class TarificationViewModel {
                             ?: System.currentTimeMillis()
 
                     val prices = typeTarifications.map { tarif ->
-                        OutputNoSqlModel.Produit.ClientAchteur.TypeTarification.Prix(
+                        ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix(
                             vidTimestamp = tarif.vidTimestamp,
                             valeur = tarif.prixCurrency
                         )
                     }.sortedByDescending { it.vidTimestamp }
 
-                    OutputNoSqlModel.Produit.ClientAchteur.TypeTarification(
+                    ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification(
                         infosId = typeId,
                         vidTimestamp = typeTimestamp,
                         PrixsCurrency = prices
                     )
                 }.sortedByDescending { it.vidTimestamp }
 
-                OutputNoSqlModel.Produit.ClientAchteur(
+                ProduitNoSqlDataBase.Produit.ClientAchteur(
                     infosId = clientId,
                     vidTimestamp = clientTimestamp,
                     typeTarification = typeTarifications
                 )
             }.sortedByDescending { it.vidTimestamp }
 
-            OutputNoSqlModel.Produit(
+            ProduitNoSqlDataBase.Produit(
                 infosId = produitId,
                 vidTimestamp = produitTimestamp,
                 clientAchteurs = clientAchteurs
             )
         }.sortedByDescending { it.vidTimestamp }
 
-        return OutputNoSqlModel(produits = produits)
+        return ProduitNoSqlDataBase(produits = produits)
     }
 
     fun getSqlClient(id: Long): ClientDataBase? {
@@ -190,11 +189,11 @@ class TarificationViewModel {
         _uiState.value = UiState(outputModel = noSqlData.toOutputNoSqlModel())
     }
 
-    fun getOutputModel(): OutputNoSqlModel {
+    fun getOutputModel(): ProduitNoSqlDataBase {
         return noSqlData.toOutputNoSqlModel()
     }
 
-    data class OutputNoSqlModel(
+    data class ProduitNoSqlDataBase(
         val produits: List<Produit>,
     ) {
         data class Produit(
@@ -222,9 +221,9 @@ class TarificationViewModel {
     }
 
     data class InfosSqlDataBases(
-        val tarificationEntries: MutableList<Tarification> = mutableListOf(),
         val produitInfos: MutableList<ProduitInfos> = mutableListOf(),
-        val clientDataBase: MutableList<ClientDataBase> = mutableListOf()
+        val clientDataBase: MutableList<ClientDataBase> = mutableListOf(),
+        val tarificationEntries: MutableList<Tarification> = mutableListOf()
     )
 
     data class ProduitInfos(
