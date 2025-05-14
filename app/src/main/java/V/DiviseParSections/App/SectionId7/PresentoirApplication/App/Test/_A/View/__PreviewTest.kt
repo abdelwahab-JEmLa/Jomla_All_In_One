@@ -29,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -51,7 +52,7 @@ private fun Fragment(initProduits: List<Produit>) {
     var produits by remember { mutableStateOf(initProduits) }
     var showOnlyLatestPrices by remember { mutableStateOf(false) }
     var showDebugLogs by remember { mutableStateOf(false) }
-    val newPrixValeur by remember { mutableStateOf(0.0) }
+    val newPrixValeur by remember { mutableDoubleStateOf(0.0) }
 
     val produitEtClientAActiveLeur by remember { mutableStateOf(Pair(1L, 2L)) }
 
