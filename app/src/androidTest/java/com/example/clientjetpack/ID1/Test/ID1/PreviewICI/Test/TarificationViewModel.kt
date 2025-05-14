@@ -1,7 +1,7 @@
 package com.example.clientjetpack.ID1.Test.ID1.PreviewICI.Test
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.ClientDataBase
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.NoSqlDataBases
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.InfosSqlDataBases
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.OutputNoSqlModel
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.ProduitInfos
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.Tarification
@@ -46,9 +46,9 @@ import java.util.Date
 import java.util.Locale
 import kotlin.random.Random
 
-class NoSqlDataBasesPreviewProvider : PreviewParameterProvider<NoSqlDataBases> {
+class NoSqlDataBasesPreviewProvider : PreviewParameterProvider<InfosSqlDataBases> {
     override val values = sequenceOf(
-        NoSqlDataBases(
+        InfosSqlDataBases(
             produitInfos = mutableListOf(
                 ProduitInfos(id = 1, nom = "Produit Optila"),
                 ProduitInfos(id = 2, nom = "Produit Hnina"),
@@ -198,10 +198,10 @@ fun ClientSection(
         Spacer(modifier = Modifier.height(8.dp))
 
         client.typeTarification.forEach { typeTarif ->
-            val typeTarifInfo = tarificationViewModel?.getSqlTypeTarification(typeTarif.id)
+            val typeTarifInfo = tarificationViewModel?.getSqlTypeTarification(typeTarif.infosId)
             TarificationTypeSection(
                 typeTarif = typeTarif,
-                typeName = typeTarifInfo?.typeTarificationEnum?.name ?: "Type ${typeTarif.id}"
+                typeName = typeTarifInfo?.typeTarificationEnum?.name ?: "Type ${typeTarif.infosId}"
             )
             Spacer(modifier = Modifier.height(4.dp))
         }
@@ -340,7 +340,7 @@ fun PrixPrevDirect(
     }
 }
 
-class TarificationViewModel(private val dataProvider: NoSqlDataBases? = null) {
+class TarificationViewModel(private val dataProvider: InfosSqlDataBases? = null) {
     private val clientMap: Map<Long, ClientDataBase> = dataProvider?.clientDataBase?.associateBy { it.id } ?: emptyMap()
     private val produitMap: Map<Long, ProduitInfos> = dataProvider?.produitInfos?.associateBy { it.id } ?: emptyMap()
     private val typeTarificationMap: Map<Long, TypeTarificationDataBase>
@@ -392,7 +392,7 @@ class TarificationViewModel(private val dataProvider: NoSqlDataBases? = null) {
     }
 }
 
-fun NoSqlDataBases.toOutputNoSqlModel(): OutputNoSqlModel {
+fun InfosSqlDataBases.toOutputNoSqlModel(): OutputNoSqlModel {
     val groupedByProduct = tarificationEntries.groupBy { it.idProduit }
 
     val produits = groupedByProduct.map { (produitId, produitTarifications) ->
@@ -419,7 +419,7 @@ fun NoSqlDataBases.toOutputNoSqlModel(): OutputNoSqlModel {
                 }.sortedByDescending { it.vidTimestamp }
 
                 OutputNoSqlModel.Produit.Client.TypeTarification(
-                    id = typeId,
+                    infosId = typeId,
                     vidTimestamp = typeTimestamp,
                     PrixsCurrency = prices
                 )

@@ -49,7 +49,7 @@ fun MultipleItemsPrixPrev() {
                         vidTimestamp = System.currentTimeMillis(),
                         typeTarification = listOf(
                             OutputNoSqlModel.Produit.Client.TypeTarification(
-                                id = 1,
+                                infosId = 1,
                                 vidTimestamp = System.currentTimeMillis(),
                                 PrixsCurrency = listOf(
                                     OutputNoSqlModel.Produit.Client.TypeTarification.Prix(
@@ -71,7 +71,7 @@ fun MultipleItemsPrixPrev() {
                         vidTimestamp = System.currentTimeMillis(),
                         typeTarification = listOf(
                             OutputNoSqlModel.Produit.Client.TypeTarification(
-                                id = 2,
+                                infosId = 2,
                                 vidTimestamp = System.currentTimeMillis(),
                                 PrixsCurrency = listOf(
                                     OutputNoSqlModel.Produit.Client.TypeTarification.Prix(
@@ -250,10 +250,10 @@ fun ClientSection(
         Spacer(modifier = Modifier.height(8.dp))
 
         client.typeTarification.forEach { typeTarif ->
-            val typeTarifInfo = tarificationViewModel?.getSqlTypeTarification(typeTarif.id)
+            val typeTarifInfo = tarificationViewModel?.getSqlTypeTarification(typeTarif.infosId)
             TarificationTypeSection(
                 typeTarif = typeTarif,
-                typeName = typeTarifInfo?.typeTarificationEnum?.name ?: "Type ${typeTarif.id}"
+                typeName = typeTarifInfo?.typeTarificationEnum?.name ?: "Type ${typeTarif.infosId}"
             )
             Spacer(modifier = Modifier.height(4.dp))
         }

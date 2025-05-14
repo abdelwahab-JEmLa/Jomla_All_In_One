@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview._A.View.ViewModel
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.ClientDataBase
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.NoSqlDataBases
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.InfosSqlDataBases
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.OutputNoSqlModel
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.ProduitInfos
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.Tarification
@@ -9,41 +9,44 @@ import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.TypeTarificationEnum
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models.createTimestamp
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview._A.View.function.round
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import kotlin.random.Random
 
+class UiState(
+    val outputModel: OutputNoSqlModel = OutputNoSqlModel(emptyList()),
+    val isLoading: Boolean = false,
+    val error: String? = null
+)
+
 class TarificationViewModel {
-    private val dataProvider: NoSqlDataBases
-    private val produitMap: Map<Long, ProduitInfos>
-    private val clientMap: Map<Long, ClientDataBase>
-    private val typeTarificationMap: Map<Long, TypeTarificationDataBase>
+    private val _uiState = mutableStateOf(UiState())
+    val uiState: State<UiState> = _uiState
+
+    // Store the InfosSqlDataBases instance as a property
+    private val noSqlData: InfosSqlDataBases = addTestData()
 
     init {
-        dataProvider = addTestData()
-        produitMap = dataProvider.produitInfos.associateBy { it.id }
-        clientMap = dataProvider.clientDataBase.associateBy { it.id }
-
-        val typeTarifEnumValues = TypeTarificationEnum.entries.toTypedArray()
-        typeTarificationMap = (1..3).associateBy(
-            keySelector = { it.toLong() },
-            valueTransform = { id ->
-                val enumValue = typeTarifEnumValues[(id - 1) % typeTarifEnumValues.size]
-                TypeTarificationDataBase(id = id.toLong(), typeTarificationEnum = enumValue)
-            }
-        )
+        // Use the InfosSqlDataBases instance to generate the OutputNoSqlModel
+        _uiState.value = UiState(outputModel = noSqlData.toOutputNoSqlModel())
     }
 
     /**
      * Creates and returns test data for the application
      */
-    private fun addTestData(): NoSqlDataBases {
-        return NoSqlDataBases(
+    private fun addTestData(): InfosSqlDataBases {
+        return InfosSqlDataBases(
             produitInfos = mutableListOf(
                 ProduitInfos(id = 1, nom = "Produit Optila"),
                 ProduitInfos(id = 2, nom = "Produit Hnina"),
                 ProduitInfos(id = 3, nom = "Produit kemya")
             ),
             clientDataBase = mutableListOf(
-                ClientDataBase(id = 1, nom = "Client Abderrahman", idActiveTypeTarificationDataBase = 1),
+                ClientDataBase(
+                    id = 1,
+                    nom = "Client Abderrahman",
+                    idActiveTypeTarificationDataBase = 1
+                ),
                 ClientDataBase(id = 2, nom = "Client Beta", idActiveTypeTarificationDataBase = 2),
                 ClientDataBase(id = 3, nom = "Client Gamma", idActiveTypeTarificationDataBase = 3)
             ),
@@ -87,7 +90,7 @@ class TarificationViewModel {
         )
     }
 
-    fun NoSqlDataBases.toOutputNoSqlModel(): OutputNoSqlModel {
+    private fun InfosSqlDataBases.toOutputNoSqlModel(): OutputNoSqlModel {
         val groupedByProduct = tarificationEntries.groupBy { it.idProduit }
 
         val produits = groupedByProduct.map { (produitId, produitTarifications) ->
@@ -100,11 +103,13 @@ class TarificationViewModel {
                 val groupedByType = clientTarifications.groupBy { it.idTypeTarification }
 
                 val clientTimestamp =
-                    clientTarifications.maxOfOrNull { it.vidTimestamp } ?: System.currentTimeMillis()
+                    clientTarifications.maxOfOrNull { it.vidTimestamp }
+                        ?: System.currentTimeMillis()
 
                 val typeTarifications = groupedByType.map { (typeId, typeTarifications) ->
                     val typeTimestamp =
-                        typeTarifications.maxOfOrNull { it.vidTimestamp } ?: System.currentTimeMillis()
+                        typeTarifications.maxOfOrNull { it.vidTimestamp }
+                            ?: System.currentTimeMillis()
 
                     val prices = typeTarifications.map { tarif ->
                         OutputNoSqlModel.Produit.Client.TypeTarification.Prix(
@@ -114,7 +119,7 @@ class TarificationViewModel {
                     }.sortedByDescending { it.vidTimestamp }
 
                     OutputNoSqlModel.Produit.Client.TypeTarification(
-                        id = typeId,
+                        infosId = typeId,
                         vidTimestamp = typeTimestamp,
                         PrixsCurrency = prices
                     )
@@ -137,9 +142,30 @@ class TarificationViewModel {
         return OutputNoSqlModel(produits = produits)
     }
 
-    fun getSqlClient(id: Long) = clientMap[id]
-    fun getSqlProduit(id: Long) = produitMap[id]
-    fun getSqlTypeTarification(id: Long) = typeTarificationMap[id]
+    fun getSqlClient(id: Long): ClientDataBase? {
+        return noSqlData.clientDataBase.find { it.id == id }
+    }
+
+    fun getSqlProduit(id: Long): ProduitInfos? {
+        return noSqlData.produitInfos.find { it.id == id }
+    }
+
+    fun getSqlTypeTarification(id: Long): TypeTarificationDataBase? {
+        // Since TypeTarificationDataBase is not part of InfosSqlDataBases directly,
+        // we need to create it based on the Tarification entries
+        val tarification = noSqlData.tarificationEntries.find { it.idTypeTarification == id }
+        return tarification?.let {
+            // Create TypeTarificationDataBase with enum based on the id
+            // This is a simplified approach based on the available data
+            val enumType = when (id) {
+                1L -> TypeTarificationEnum.ParBenifice
+                2L -> TypeTarificationEnum.Historique
+                3L -> TypeTarificationEnum.LeMaxPrixArrive
+                else -> TypeTarificationEnum.ParBenifice // Default value
+            }
+            TypeTarificationDataBase(id = id, typeTarificationEnum = enumType)
+        }
+    }
 
     /**
      * Adds a random tarification entry to the database
@@ -163,10 +189,13 @@ class TarificationViewModel {
             prixCurrency = randomPrice
         )
 
-        dataProvider.tarificationEntries.add(newTarification)
+        noSqlData.tarificationEntries.add(newTarification)
+
+        // Update UI state with the new model
+        _uiState.value = UiState(outputModel = noSqlData.toOutputNoSqlModel())
     }
 
     fun getOutputModel(): OutputNoSqlModel {
-        return dataProvider.toOutputNoSqlModel()
+        return noSqlData.toOutputNoSqlModel()
     }
 }

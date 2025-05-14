@@ -1,7 +1,7 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.Models
 import androidx.room.PrimaryKey
 
-data class NoSqlDataBases(
+data class InfosSqlDataBases(
     val tarificationEntries: MutableList<Tarification> = mutableListOf(),
     val produitInfos: MutableList<ProduitInfos> = mutableListOf(),
     val clientDataBase: MutableList<ClientDataBase> = mutableListOf()

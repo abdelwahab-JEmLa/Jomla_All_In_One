@@ -15,7 +15,7 @@ data class OutputNoSqlModel(
         ) {
             data class TypeTarification(
                 val vidTimestamp: Long,
-                val id: Long,
+                val infosId: Long,
                 val PrixsCurrency: List<Prix>,
             ) {
                 data class Prix(

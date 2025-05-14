@@ -50,7 +50,7 @@ fun covertireDepitSqlAuNonSqlShemaDataBase(noSqlDataBases: com.example.clientjet
                         typeTarifications.add(
                             OutputNoSqlModel.Produit.Client.TypeTarification(
                                 vidTimestamp = latestTimestamp,
-                                id = typeId,
+                                infosId = typeId,
                                 PrixsCurrency = priceList
                             )
                         )

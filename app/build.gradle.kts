@@ -91,6 +91,7 @@ dependencies {
     implementation(libs.firebase.storage.ktx)
     implementation(libs.generativeai)
     implementation(libs.material)
+    implementation(libs.androidx.room.runtime.android)
 
     // Test dependencies
     testImplementation(libs.junit)
