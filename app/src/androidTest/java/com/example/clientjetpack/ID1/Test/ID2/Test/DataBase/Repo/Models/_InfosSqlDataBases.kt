@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql
+package com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo.Models
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -10,14 +10,14 @@ data class _InfosSqlDataBases(
     val d_TarificationInfos: MutableList<D_TarificationInfos> = mutableListOf()
 )
 
-@Entity(tableName = "produits")
+@Entity
 data class A_ProduitInfos(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val nom: String = ""
 )
 
-@Entity(tableName = "clients")
+@Entity
 data class B_ClientInfos(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
@@ -25,14 +25,14 @@ data class B_ClientInfos(
     val idActiveTypeTarificationDataBase: Long = 0,
 )
 
-@Entity(tableName = "type_tarifications")
+@Entity
 data class C_TypeTarificationInfos(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val typeTarificationEnum: TypeTarificationEnum = TypeTarificationEnum.ParBenifice
 )
 
-@Entity(tableName = "tarifications")
+@Entity
 data class D_TarificationInfos(
     @PrimaryKey
     val vidTimestamp: Long = 0L,

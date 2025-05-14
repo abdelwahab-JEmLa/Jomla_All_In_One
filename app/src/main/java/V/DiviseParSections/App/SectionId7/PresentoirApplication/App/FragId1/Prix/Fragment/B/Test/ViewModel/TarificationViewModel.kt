@@ -1,17 +1,8 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel
 
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.ProduitNoSqlDataBase
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql.A_ProduitInfos
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql.B_ClientInfos
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql.C_TypeTarificationInfos
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql.D_TarificationInfos
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql.TypeTarificationEnum
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql._InfosSqlDataBases
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.function.round
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import java.util.Calendar
-import kotlin.random.Random
 
 class UiState(
     val outputModel: ProduitNoSqlDataBase =
@@ -24,7 +15,7 @@ class UiState(
 class TarificationViewModel {
     private val _uiState = mutableStateOf(UiState())
     val uiState: State<UiState> = _uiState
-
+      /*
     // Store the _InfosSqlDataBases instance as a property
     private val noSqlData: _InfosSqlDataBases = addTestData()
 
@@ -203,5 +194,5 @@ class TarificationViewModel {
         calendar.set(Calendar.MILLISECOND, 0)
         return calendar.timeInMillis
     }
-
+            */
 }

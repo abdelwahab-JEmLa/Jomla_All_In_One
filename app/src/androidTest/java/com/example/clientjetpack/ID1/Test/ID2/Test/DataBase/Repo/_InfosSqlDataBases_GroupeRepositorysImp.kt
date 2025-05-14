@@ -1,11 +1,12 @@
-package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel
+package com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo
 
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql.A_ProduitInfos
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql.B_ClientInfos
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql.C_TypeTarificationInfos
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql.D_TarificationInfos
-import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import android.content.Context
+import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo.Models.A_ProduitInfos
+import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo.Models.B_ClientInfos
+import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo.Models.C_TypeTarificationInfos
+import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo.Models.D_TarificationInfos
+import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.TestAppDatabase
+import com.example.clientjetpack.ID1.Test.ID2.Test.FireBaseHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,12 +16,11 @@ import kotlinx.coroutines.launch
 
 class _InfosSqlDataBases_GroupeRepositorysImp(
     private val context: Context,
-    val database: AppDatabase
+    val database: TestAppDatabase
 ) : _InfosSqlDataBases_GroupeRepositorys {
-    
+
     private val fireBaseHandler = FireBaseHandler()
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
-
 
     // Implementation of A_ProduitInfos_Repository
     inner class A_ProduitInfos_RepositoryImpl : _InfosSqlDataBases_GroupeRepositorys.A_ProduitInfos_Repository {
@@ -30,12 +30,12 @@ class _InfosSqlDataBases_GroupeRepositorysImp(
             set(value) {
                 _modelListFlow.value = value
             }
-            
+
         override val modelListFlow: StateFlow<List<A_ProduitInfos>> = _modelListFlow.asStateFlow()
-        
+
         init {
             coroutineScope.launch {
-                database.produitInfosDao().getAllProduits().collect { produits ->
+                database.a_ProduitInfosDao().getAllProduits().collect { produits ->
                     modelList = produits
                 }
             }
@@ -43,28 +43,32 @@ class _InfosSqlDataBases_GroupeRepositorysImp(
 
         override fun add(produitInfos: A_ProduitInfos, onSuccess: (A_ProduitInfos) -> Unit) {
             coroutineScope.launch {
-                val id = database.produitInfosDao().insert(produitInfos)
+                val id = database.a_ProduitInfosDao().insert(produitInfos)
                 val insertedProduit = produitInfos.copy(id = id)
+                setToFireBase(insertedProduit)
                 onSuccess(insertedProduit)
             }
+        }
 
+        override fun deleteAll(onSuccess: () -> Unit) {
+            coroutineScope.launch {
+                database.a_ProduitInfosDao().deleteAll()
+                onSuccess()
+            }
         }
-          //<--
-          //TODO(1): ajout un delete fun
-        override fun setAuFireBase(produitInfos: A_ProduitInfos, onSuccess: (A_ProduitInfos) -> Unit) {   //<--
-        //TODO(1): fait que ca soit private et ca ce lence depuit add
-            fireBaseHandler.addToFirebaseAsync(produitInfos, produitRef) //<--
-            //TODO(1): enleve le prosuit ref car c son firebase handler
-            onSuccess(produitInfos)
+
+        private fun setToFireBase(produitInfos: A_ProduitInfos) {
+            fireBaseHandler.addToFirebaseAsync(produitInfos, fireBaseHandler.getProduitRef())
         }
-        //<--
-        //TODO(1): fait la mem chose pour les autres reposimp
-        
+
         suspend fun loadDataFromFirebase() {
             try {
-                val loadedData = fireBaseHandler.loadDatasAsync(produitRef, A_ProduitInfos::class.java)
+                val loadedData = fireBaseHandler.loadDatasAsync(
+                    fireBaseHandler.getProduitRef(),
+                    A_ProduitInfos::class.java
+                )
                 coroutineScope.launch {
-                    database.produitInfosDao().insertAll(loadedData)
+                    database.a_ProduitInfosDao().insertAll(loadedData)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -80,12 +84,12 @@ class _InfosSqlDataBases_GroupeRepositorysImp(
             set(value) {
                 _modelListFlow.value = value
             }
-            
+
         override val modelListFlow: StateFlow<List<B_ClientInfos>> = _modelListFlow.asStateFlow()
-        
+
         init {
             coroutineScope.launch {
-                database.clientInfosDao().getAllClients().collect { clients ->
+                database.b_ClientInfosDao().getAllClients().collect { clients ->
                     modelList = clients
                 }
             }
@@ -93,31 +97,45 @@ class _InfosSqlDataBases_GroupeRepositorysImp(
 
         override fun add(client: B_ClientInfos) {
             coroutineScope.launch {
-                database.clientInfosDao().insert(client)
-                fireBaseHandler.addToFirebaseAsync(client, clientRef)
+                val id = database.b_ClientInfosDao().insert(client)
+                val insertedClient = client.copy(id = id)
+                setToFireBase(insertedClient)
             }
         }
 
         override fun update(client: B_ClientInfos, onSuccess: (B_ClientInfos) -> Unit) {
             coroutineScope.launch {
-                database.clientInfosDao().update(client)
-                fireBaseHandler.addToFirebaseAsync(client, clientRef)
+                database.b_ClientInfosDao().update(client)
+                setToFireBase(client)
                 onSuccess(client)
             }
         }
-        
+
+        override fun deleteAll(onSuccess: () -> Unit) {
+            coroutineScope.launch {
+                database.b_ClientInfosDao().deleteAll()
+                onSuccess()
+            }
+        }
+
+        private fun setToFireBase(client: B_ClientInfos) {
+            fireBaseHandler.addToFirebaseAsync(client, fireBaseHandler.getClientRef())
+        }
+
         suspend fun loadDataFromFirebase() {
             try {
-                val loadedData = fireBaseHandler.loadDatasAsync(clientRef, B_ClientInfos::class.java)
+                val loadedData = fireBaseHandler.loadDatasAsync(
+                    fireBaseHandler.getClientRef(),
+                    B_ClientInfos::class.java
+                )
                 coroutineScope.launch {
-                    database.clientInfosDao().insertAll(loadedData)
+                    database.b_ClientInfosDao().insertAll(loadedData)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
     }
-
     // Implementation of C_TypeTarificationInfos_Repository
     inner class C_TypeTarificationInfos_RepositoryImpl : _InfosSqlDataBases_GroupeRepositorys.C_TypeTarificationInfos_Repository {
         private val _modelListFlow = MutableStateFlow<List<C_TypeTarificationInfos>>(emptyList())
@@ -126,36 +144,50 @@ class _InfosSqlDataBases_GroupeRepositorysImp(
             set(value) {
                 _modelListFlow.value = value
             }
-            
+
         override val modelListFlow: StateFlow<List<C_TypeTarificationInfos>> = _modelListFlow.asStateFlow()
-        
+
         init {
             coroutineScope.launch {
-                database.typeTarificationInfosDao().getAllTypeTarifications().collect { types ->
+                database.c_TypeTarificationInfosDao().getAllTypeTarifications().collect { types ->
                     modelList = types
                 }
             }
         }
-        
-        fun add(typeTarification: C_TypeTarificationInfos) {
+
+        override fun add(typeTarification: C_TypeTarificationInfos) {
             coroutineScope.launch {
-                database.typeTarificationInfosDao().insert(typeTarification)
-                fireBaseHandler.addToFirebaseAsync(typeTarification, typeTarificationRef)
+                val id = database.c_TypeTarificationInfosDao().insert(typeTarification)
+                val insertedType = typeTarification.copy(id = id)
+                setToFireBase(insertedType)
             }
         }
-        
+
+        override fun deleteAll(onSuccess: () -> Unit) {
+            coroutineScope.launch {
+                database.c_TypeTarificationInfosDao().deleteAll()
+                onSuccess()
+            }
+        }
+
+        private fun setToFireBase(typeTarification: C_TypeTarificationInfos) {
+            fireBaseHandler.addToFirebaseAsync(typeTarification, fireBaseHandler.getTypeTarificationRef())
+        }
+
         suspend fun loadDataFromFirebase() {
             try {
-                val loadedData = fireBaseHandler.loadDatasAsync(typeTarificationRef, C_TypeTarificationInfos::class.java)
+                val loadedData = fireBaseHandler.loadDatasAsync(
+                    fireBaseHandler.getTypeTarificationRef(),
+                    C_TypeTarificationInfos::class.java
+                )
                 coroutineScope.launch {
-                    database.typeTarificationInfosDao().insertAll(loadedData)
+                    database.c_TypeTarificationInfosDao().insertAll(loadedData)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
     }
-
     // Implementation of D_TarificationInfos_Repository
     inner class D_TarificationInfos_RepositoryImpl : _InfosSqlDataBases_GroupeRepositorys.D_TarificationInfos_Repository {
         private val _modelListFlow = MutableStateFlow<List<D_TarificationInfos>>(emptyList())
@@ -164,12 +196,12 @@ class _InfosSqlDataBases_GroupeRepositorysImp(
             set(value) {
                 _modelListFlow.value = value
             }
-            
+
         override val modelListFlow: StateFlow<List<D_TarificationInfos>> = _modelListFlow.asStateFlow()
-        
+
         init {
             coroutineScope.launch {
-                database.tarificationInfosDao().getAllTarifications().collect { tarifications ->
+                database.dTarificationInfosDao().getAllTarifications().collect { tarifications ->
                     modelList = tarifications
                 }
             }
@@ -177,9 +209,12 @@ class _InfosSqlDataBases_GroupeRepositorysImp(
 
         override suspend fun loadDataFromFirebase() {
             try {
-                val loadedData = fireBaseHandler.loadDatasAsync(tarificationRef, D_TarificationInfos::class.java)
+                val loadedData = fireBaseHandler.loadDatasAsync(
+                    fireBaseHandler.getTarificationRef(),
+                    D_TarificationInfos::class.java
+                )
                 coroutineScope.launch {
-                    database.tarificationInfosDao().insertAll(loadedData)
+                    database.dTarificationInfosDao().insertAll(loadedData)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -188,10 +223,21 @@ class _InfosSqlDataBases_GroupeRepositorysImp(
 
         override fun add(tarification: D_TarificationInfos, onSuccess: (D_TarificationInfos) -> Unit) {
             coroutineScope.launch {
-                database.tarificationInfosDao().insert(tarification)
-                fireBaseHandler.addToFirebaseAsync(tarification, tarificationRef)
+                database.dTarificationInfosDao().insert(tarification)
+                setToFireBase(tarification)
                 onSuccess(tarification)
             }
+        }
+
+        override fun deleteAll(onSuccess: () -> Unit) {
+            coroutineScope.launch {
+                database.dTarificationInfosDao().deleteAll()
+                onSuccess()
+            }
+        }
+
+        private fun setToFireBase(tarification: D_TarificationInfos) {
+            fireBaseHandler.addToFirebaseAsync(tarification, fireBaseHandler.getTarificationRef())
         }
     }
 

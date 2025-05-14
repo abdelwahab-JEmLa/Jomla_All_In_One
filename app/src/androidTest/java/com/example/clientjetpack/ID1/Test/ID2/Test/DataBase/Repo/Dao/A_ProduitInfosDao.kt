@@ -1,107 +1,111 @@
-package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql
+package com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo.Dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo.Models.A_ProduitInfos
+import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo.Models.B_ClientInfos
+import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo.Models.C_TypeTarificationInfos
+import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo.Models.D_TarificationInfos
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface ProduitInfosDao {
-    @Query("SELECT * FROM produits")
+interface A_ProduitInfosDao {
+    @Query("SELECT * FROM A_ProduitInfos")
     fun getAllProduits(): Flow<List<A_ProduitInfos>>
-    
-    @Query("SELECT * FROM produits")
+
+    @Query("SELECT * FROM A_ProduitInfos")
     suspend fun getAllProduitsSync(): List<A_ProduitInfos>
-    
-    @Query("SELECT * FROM produits WHERE id = :id")
+
+    @Query("SELECT * FROM A_ProduitInfos WHERE id = :id")
     suspend fun getProduitById(id: Long): A_ProduitInfos?
-    
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(produit: A_ProduitInfos): Long
-    
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(produits: List<A_ProduitInfos>)
-    
+
     @Update
     suspend fun update(produit: A_ProduitInfos)
-    
-    @Query("DELETE FROM produits")
+
+    @Query("DELETE FROM A_ProduitInfos")
     suspend fun deleteAll()
 }
 
 @Dao
-interface ClientInfosDao {
-    @Query("SELECT * FROM clients")
+interface B_ClientInfosDao {
+    @Query("SELECT * FROM B_ClientInfos")
     fun getAllClients(): Flow<List<B_ClientInfos>>
-    
-    @Query("SELECT * FROM clients")
+
+    @Query("SELECT * FROM B_ClientInfos")
     suspend fun getAllClientsSync(): List<B_ClientInfos>
-    
-    @Query("SELECT * FROM clients WHERE id = :id")
+
+    @Query("SELECT * FROM B_ClientInfos WHERE id = :id")
     suspend fun getClientById(id: Long): B_ClientInfos?
-    
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(client: B_ClientInfos): Long
-    
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(clients: List<B_ClientInfos>)
-    
+
     @Update
     suspend fun update(client: B_ClientInfos)
-    
-    @Query("DELETE FROM clients")
+
+    @Query("DELETE FROM B_ClientInfos")
     suspend fun deleteAll()
 }
 
 @Dao
-interface TypeTarificationInfosDao {
-    @Query("SELECT * FROM type_tarifications")
+interface C_TypeTarificationInfosDao {
+    @Query("SELECT * FROM C_TypeTarificationInfos")
     fun getAllTypeTarifications(): Flow<List<C_TypeTarificationInfos>>
-    
-    @Query("SELECT * FROM type_tarifications")
+
+    @Query("SELECT * FROM C_TypeTarificationInfos")
     suspend fun getAllTypeTarificationsSync(): List<C_TypeTarificationInfos>
-    
-    @Query("SELECT * FROM type_tarifications WHERE id = :id")
+
+    @Query("SELECT * FROM C_TypeTarificationInfos WHERE id = :id")
     suspend fun getTypeTarificationById(id: Long): C_TypeTarificationInfos?
-    
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(typeTarification: C_TypeTarificationInfos): Long
-    
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(typeTarifications: List<C_TypeTarificationInfos>)
-    
+
     @Update
     suspend fun update(typeTarification: C_TypeTarificationInfos)
-    
-    @Query("DELETE FROM type_tarifications")
+
+    @Query("DELETE FROM C_TypeTarificationInfos")
     suspend fun deleteAll()
 }
 
 @Dao
-interface TarificationInfosDao {
-    @Query("SELECT * FROM tarifications")
+interface D_TarificationInfosDao {
+    @Query("SELECT * FROM D_TarificationInfos")
     fun getAllTarifications(): Flow<List<D_TarificationInfos>>
-    
-    @Query("SELECT * FROM tarifications")
+
+    @Query("SELECT * FROM D_TarificationInfos")
     suspend fun getAllTarificationsSync(): List<D_TarificationInfos>
-    
-    @Query("SELECT * FROM tarifications WHERE vidTimestamp = :id")
+
+    @Query("SELECT * FROM D_TarificationInfos WHERE vidTimestamp = :id")
     suspend fun getTarificationById(id: Long): D_TarificationInfos?
-    
-    @Query("SELECT * FROM tarifications WHERE idProduit = :produitId AND idClient = :clientId")
+
+    @Query("SELECT * FROM D_TarificationInfos WHERE idProduit = :produitId AND idClient = :clientId")
     suspend fun getTarificationsByProduitAndClient(produitId: Long, clientId: Long): List<D_TarificationInfos>
-    
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(tarification: D_TarificationInfos)
-    
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(tarifications: List<D_TarificationInfos>)
-    
+
     @Update
     suspend fun update(tarification: D_TarificationInfos)
-    
-    @Query("DELETE FROM tarifications")
+
+    @Query("DELETE FROM D_TarificationInfos")
     suspend fun deleteAll()
 }

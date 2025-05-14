@@ -1,14 +1,16 @@
 package com.example.clientjetpack.ID1.Test.ID2.Test
 
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel.FireBaseHandler
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql.A_ProduitInfos
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql.B_ClientInfos
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql.D_TarificationInfos
-import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.Sql._InfosSqlDataBases
-import Z_CodePartageEntreApps.Apps.Manager.Module.B.Room.AppDatabase
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.clientjetpack.ID1.Test._A.Tests.Filter.LogFilterRule
+import androidx.test.platform.app.InstrumentationRegistry
+import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.LogFilterRule
+import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo.Models.A_ProduitInfos
+import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo.Models.B_ClientInfos
+import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo.Models.D_TarificationInfos
+import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo.Models._InfosSqlDataBases
+import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo._InfosSqlDataBases_GroupeRepositorys
+import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo._InfosSqlDataBases_GroupeRepositorysImp
+import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.TestAppDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -52,13 +54,25 @@ class __ID2InstrumentalTest: KoinTest {
         startKoin {
             modules(
                 module {
-                    single { AppDatabase.DatabaseModule.getDatabase(get()) }
-
-                    single<_InfosSqlDataBases_GroupeRepositorys> {
-                        _InfosSqlDataBases_GroupeRepositorysImp(get(), get())
+                    // Fixed: Use the companion object method directly
+                    single {
+                        TestAppDatabase.getTestDatabase(InstrumentationRegistry.getInstrumentation().targetContext)
                     }
 
-                    single { _InfosSqlDataBases_GroupeRepositorysImp(get(), get()) }
+                    single<_InfosSqlDataBases_GroupeRepositorys> {
+                        _InfosSqlDataBases_GroupeRepositorysImp(
+                            InstrumentationRegistry.getInstrumentation().targetContext,
+                            get()
+                        )
+                    }
+
+                    single {
+                        _InfosSqlDataBases_GroupeRepositorysImp(
+                            InstrumentationRegistry.getInstrumentation().targetContext,
+                            get()
+                        )
+                    }
+
                     single { this@__ID2InstrumentalTest }
                     single { FireBaseHandler() }
                 }
