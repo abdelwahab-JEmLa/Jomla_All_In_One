@@ -99,19 +99,16 @@ class __ID2InstrumentalTest : KoinTest {
         // Get test data
         val testData = testDatas()
 
-        // Create a counter to track completion of add operations
+        // Step 1: Add products with tracking
         var expectedProduits = testData.a_ProduitInfos.size
         var completedProduits = 0
 
-        // Use suspendCoroutine to create a synchronization point
         suspendCoroutine<Unit> { continuation ->
-            // Add test data to repositories with completion callbacks
             testData.a_ProduitInfos.forEach { produit ->
                 repositoriesImpl.produitRepository.add(produit) {
                     completedProduits++
                     LogFilterRule.log("InstrumentalTest", "Added produit ${it.id}: ${it.nom}")
 
-                    // Resume the coroutine when all products are added
                     if (completedProduits == expectedProduits) {
                         continuation.resume(Unit)
                     }
@@ -119,14 +116,41 @@ class __ID2InstrumentalTest : KoinTest {
             }
         }
 
-        // Add clients
-        testData.b_ClientInfos.forEach { client ->
-            repositoriesImpl.clientRepository.add(client)
+        // Step 2: Add clients with tracking
+        var expectedClients = testData.b_ClientInfos.size
+        var completedClients = 0
+
+        suspendCoroutine<Unit> { continuation ->
+            testData.b_ClientInfos.forEach { client ->
+                // Extend B_ClientInfos_Repository interface and implementation to support callbacks
+                // For now, using a workaround with update() which has a callback
+                repositoriesImpl.clientRepository.add(client)
+                repositoriesImpl.clientRepository.update(client) { updatedClient ->
+                    completedClients++
+                    LogFilterRule.log("InstrumentalTest", "Added/Updated client ${updatedClient.id}: ${updatedClient.nom}")
+
+                    if (completedClients == expectedClients) {
+                        continuation.resume(Unit)
+                    }
+                }
+            }
         }
 
-        // Add tarifications
-        testData.d_TarificationInfos.forEach { tarification ->
-            repositoriesImpl.tarificationRepository.add(tarification)
+        // Step 3: Add tarifications with tracking
+        var expectedTarifications = testData.d_TarificationInfos.size
+        var completedTarifications = 0
+
+        suspendCoroutine<Unit> { continuation ->
+            testData.d_TarificationInfos.forEach { tarification ->
+                repositoriesImpl.tarificationRepository.add(tarification) {
+                    completedTarifications++
+                    LogFilterRule.log("InstrumentalTest", "Added tarification with timestamp ${it.vidTimestamp}")
+
+                    if (completedTarifications == expectedTarifications) {
+                        continuation.resume(Unit)
+                    }
+                }
+            }
         }
 
         // Give time for data to be inserted
@@ -148,6 +172,10 @@ class __ID2InstrumentalTest : KoinTest {
         // Log the current state
         produits.forEach {
             LogFilterRule.log("InstrumentalTest", "Produit in DB: ${it.id} - ${it.nom}")
+        }
+
+        clients.forEach {
+            LogFilterRule.log("InstrumentalTest", "Client in DB: ${it.id} - ${it.nom}")
         }
 
         // Verify data was added correctly using the collected data
@@ -172,7 +200,6 @@ class __ID2InstrumentalTest : KoinTest {
             }
         }
     }
-
 
     fun createTimestamp(year: Int = 2025, month: Int = 5, day: Int, hour: Int, minute: Int): Long {
         val calendar = Calendar.getInstance()
