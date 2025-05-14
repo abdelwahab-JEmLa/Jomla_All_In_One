@@ -1,4 +1,4 @@
-package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview._A.View.function
+package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.function
 
 // Extension function to round double to specified decimal places
 fun Double.round(decimals: Int): Double {

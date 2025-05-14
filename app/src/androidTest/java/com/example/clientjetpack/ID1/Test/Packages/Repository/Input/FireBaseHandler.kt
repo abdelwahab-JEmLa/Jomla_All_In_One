@@ -8,7 +8,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-class FireBaseHandler() {
+class FireBaseHandlers() {
     suspend fun <T> loadDatasAsync(
         databaseRef: DatabaseReference,
         dataClass: Class<T>,

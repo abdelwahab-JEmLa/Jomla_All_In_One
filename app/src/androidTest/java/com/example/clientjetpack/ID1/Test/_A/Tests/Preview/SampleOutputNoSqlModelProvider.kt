@@ -134,7 +134,7 @@ fun PreviewContentWithData(data: OutputNoSqlModel) {
                         .padding(8.dp)
                 ) {
                     items(data.produits) { produit ->
-                        V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview._A.View.ProduitCard(
+                        V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ProduitCard(
                             produit = produit,
                             produitName = "Preview Produit ${produit.infosId}",
                             tarificationViewModel = null
