@@ -23,7 +23,7 @@ fun logTarificationTypes(
 
         val typeInfos = StringBuilder().apply {
             append(typePrefix)
-            append(" Tarification Type : ")
+            append(" D_Tarification Type : ")
             append(type.id)
             append(" , Date: ")
             append(typeDate)

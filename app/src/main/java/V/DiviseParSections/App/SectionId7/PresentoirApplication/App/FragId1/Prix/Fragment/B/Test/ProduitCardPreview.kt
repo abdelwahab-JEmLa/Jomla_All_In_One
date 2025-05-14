@@ -1,5 +1,6 @@
 package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test
 
+import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel._A.Models.ProduitNoSqlDataBase
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel.TarificationViewModel
 import V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.function.strDateEtTempFromVidTimestamp
 import androidx.compose.foundation.background
@@ -45,7 +46,7 @@ fun ProduitCardPreview() {
 }
 @Composable
 fun ProduitCard(
-    produit: TarificationViewModel.ProduitNoSqlDataBase.Produit,
+    produit: ProduitNoSqlDataBase.Produit,
     produitName: String,
     tarificationViewModel: TarificationViewModel?,
     modifier: Modifier = Modifier
@@ -99,7 +100,7 @@ fun ProduitCard(
 
 @Composable
 fun ClientSection(
-    clientAchteur: TarificationViewModel.ProduitNoSqlDataBase.Produit.ClientAchteur,
+    clientAchteur: ProduitNoSqlDataBase.Produit.ClientAchteur,
     clientName: String,
     tarificationViewModel: TarificationViewModel?,
     modifier: Modifier = Modifier
@@ -149,7 +150,7 @@ fun ClientSection(
 
 @Composable
 fun TarificationTypeSection(
-    typeTarif: TarificationViewModel.ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification,
+    typeTarif: ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification,
     typeName: String,
     modifier: Modifier = Modifier
 ) {

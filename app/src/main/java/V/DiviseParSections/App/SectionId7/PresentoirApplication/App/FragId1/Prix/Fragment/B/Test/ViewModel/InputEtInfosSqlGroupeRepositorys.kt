@@ -1,9 +1,6 @@
-package com.example.clientjetpack.ID1.Test.Packages.Repository.Input
+package V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment.B.Test.ViewModel
 
-import com.example.clientjetpack.ID1.Test.Packages.Models.InputEtInfosSqlModels
-
-
-interface InputEtInfosSqlGroupeRepositoryss {
+interface InputEtInfosSqlGroupeRepositorys {
     fun ProduitInfosRepository(): ProduitDataBase_Repository
     fun ClientDataBase_Repository(): ClientDataBase_Repository
     fun TypeTarificationInfosRepository(): TypeTarificationDataBase_Repository

@@ -72,7 +72,7 @@ private fun FragmentMain() {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            "Tarification Dashboard (Direct Model)",
+                            "D_Tarification Dashboard (Direct Model)",
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Bold
                         )
