@@ -145,12 +145,8 @@ class TarificationViewModel {
     }
 
     fun getSqlTypeTarification(id: Long): TypeTarificationDataBase? {
-        // Since TypeTarificationDataBase is not part of InfosSqlDataBases directly,
-        // we need to create it based on the Tarification entries
         val tarification = noSqlData.tarificationInfoList.find { it.idTypeTarification == id }
         return tarification?.let {
-            // Create TypeTarificationDataBase with enum based on the id
-            // This is a simplified approach based on the available data
             val enumType = when (id) {
                 1L -> TypeTarificationEnum.ParBenifice
                 2L -> TypeTarificationEnum.Historique
