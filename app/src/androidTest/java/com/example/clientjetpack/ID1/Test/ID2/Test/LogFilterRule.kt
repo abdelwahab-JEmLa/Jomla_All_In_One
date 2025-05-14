@@ -1,4 +1,4 @@
-package com.example.clientjetpack.ID1.Test.ID2.Test.DataBase
+package com.example.clientjetpack.ID1.Test.ID2.Test
 
 import android.util.Log
 import org.junit.rules.TestRule

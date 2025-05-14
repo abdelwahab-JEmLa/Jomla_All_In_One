@@ -6,7 +6,7 @@ import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo.Models.B_Client
 import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo.Models.C_TypeTarificationInfos
 import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo.Models.D_TarificationInfos
 import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.TestAppDatabase
-import com.example.clientjetpack.ID1.Test.ID2.Test.FireBaseHandler
+import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.FireBaseHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

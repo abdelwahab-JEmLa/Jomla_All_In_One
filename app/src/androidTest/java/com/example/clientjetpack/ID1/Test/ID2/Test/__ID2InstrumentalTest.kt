@@ -3,16 +3,13 @@ package com.example.clientjetpack.ID1.Test.ID2.Test
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.LogFilterRule
-import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo.Models.A_ProduitInfos
-import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo.Models.B_ClientInfos
-import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo.Models.D_TarificationInfos
-import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo.Models._InfosSqlDataBases
+import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.FireBaseHandler
 import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo._InfosSqlDataBases_GroupeRepositorys
 import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo._InfosSqlDataBases_GroupeRepositorysImp
 import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.TestAppDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -28,10 +25,12 @@ import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.inject
 import java.util.Calendar
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
-class __ID2InstrumentalTest: KoinTest {
+class __ID2InstrumentalTest : KoinTest {
     @get:Rule
     val rule: InstantTaskExecutorRule = InstantTaskExecutorRule()
 
@@ -94,95 +93,88 @@ class __ID2InstrumentalTest: KoinTest {
         repositoriesImpl.typeTarificationRepository.deleteAll()
         repositoriesImpl.tarificationRepository.deleteAll()
 
+        // Advance time to ensure deletions are processed
+        testDispatcher.scheduler.advanceUntilIdle()
+
         // Get test data
         val testData = testDatas()
 
-        // Add test data to repositories
-        testData.a_ProduitInfos.forEach { produit ->
-            repositoriesImpl.produitRepository.add(produit)
+        // Create a counter to track completion of add operations
+        var expectedProduits = testData.a_ProduitInfos.size
+        var completedProduits = 0
+
+        // Use suspendCoroutine to create a synchronization point
+        suspendCoroutine<Unit> { continuation ->
+            // Add test data to repositories with completion callbacks
+            testData.a_ProduitInfos.forEach { produit ->
+                repositoriesImpl.produitRepository.add(produit) {
+                    completedProduits++
+                    LogFilterRule.log("InstrumentalTest", "Added produit ${it.id}: ${it.nom}")
+
+                    // Resume the coroutine when all products are added
+                    if (completedProduits == expectedProduits) {
+                        continuation.resume(Unit)
+                    }
+                }
+            }
         }
 
+        // Add clients
         testData.b_ClientInfos.forEach { client ->
             repositoriesImpl.clientRepository.add(client)
         }
 
+        // Add tarifications
         testData.d_TarificationInfos.forEach { tarification ->
             repositoriesImpl.tarificationRepository.add(tarification)
         }
 
-        // Give time for data to be inserted and collected
+        // Give time for data to be inserted
         testDispatcher.scheduler.advanceUntilIdle()
 
-        // Verify data was added correctly
-        assert(repositoriesImpl.produitRepository.modelList.size == testData.a_ProduitInfos.size)
-        assert(repositoriesImpl.clientRepository.modelList.size == testData.b_ClientInfos.size)
-        assert(repositoriesImpl.tarificationRepository.modelList.size == testData.d_TarificationInfos.size)
+        // Add explicit logging to help debug
+        LogFilterRule.log("InstrumentalTest", "Before collecting flow data")
+
+        // Wait for all Flow collections to complete by accessing the flow directly
+        val produits = repositoriesImpl.produitRepository.modelListFlow.first()
+        LogFilterRule.log("InstrumentalTest", "Collected ${produits.size} produits")
+
+        val clients = repositoriesImpl.clientRepository.modelListFlow.first()
+        LogFilterRule.log("InstrumentalTest", "Collected ${clients.size} clients")
+
+        val tarifications = repositoriesImpl.tarificationRepository.modelListFlow.first()
+        LogFilterRule.log("InstrumentalTest", "Collected ${tarifications.size} tarifications")
+
+        // Log the current state
+        produits.forEach {
+            LogFilterRule.log("InstrumentalTest", "Produit in DB: ${it.id} - ${it.nom}")
+        }
+
+        // Verify data was added correctly using the collected data
+        assert(produits.size == testData.a_ProduitInfos.size) {
+            "Expected ${testData.a_ProduitInfos.size} produits, but got ${produits.size}"
+        }
+
+        assert(clients.size == testData.b_ClientInfos.size) {
+            "Expected ${testData.b_ClientInfos.size} clients, but got ${clients.size}"
+        }
+
+        assert(tarifications.size == testData.d_TarificationInfos.size) {
+            "Expected ${testData.d_TarificationInfos.size} tarifications, but got ${tarifications.size}"
+        }
 
         // Verify specific data content matches
         testData.a_ProduitInfos.forEach { produit ->
-            val found = repositoriesImpl.produitRepository.modelList.find { it.id == produit.id }
-            assert(found != null)
-            assert(found?.nom == produit.nom)
+            val found = produits.find { it.id == produit.id }
+            assert(found != null) { "Produit with id ${produit.id} not found" }
+            assert(found?.nom == produit.nom) {
+                "Produit name mismatch. Expected: ${produit.nom}, Found: ${found?.nom}"
+            }
         }
     }
 
-    private fun testDatas(): _InfosSqlDataBases {
-        return _InfosSqlDataBases(
-            a_ProduitInfos = mutableListOf(
-                A_ProduitInfos(id = 1, nom = "Produit Optila"),
-                A_ProduitInfos(id = 2, nom = "Produit Hnina"),
-                A_ProduitInfos(id = 3, nom = "Produit kemya")
-            ),
-            b_ClientInfos = mutableListOf(
-                B_ClientInfos(
-                    id = 1,
-                    nom = "ClientAchteur Abderrahman",
-                    idActiveTypeTarificationDataBase = 1
-                ),
-                B_ClientInfos(id = 2, nom = "ClientAchteur Beta", idActiveTypeTarificationDataBase = 2),
-                B_ClientInfos(id = 3, nom = "ClientAchteur Gamma", idActiveTypeTarificationDataBase = 3)
-            ),
-            d_TarificationInfos = mutableListOf(
-                D_TarificationInfos(
-                    vidTimestamp = createTimestamp(day = 1, hour = 12, minute = 30),
-                    idProduit = 1,
-                    idClient = 1,
-                    idTypeTarification = 1,
-                    prixCurrency = 20.99
-                ),
-                D_TarificationInfos(
-                    vidTimestamp = createTimestamp(day = 5, hour = 13, minute = 30),
-                    idProduit = 1,
-                    idClient = 1,
-                    idTypeTarification = 1,
-                    prixCurrency = 25.50
-                ),
-                D_TarificationInfos(
-                    vidTimestamp = createTimestamp(day = 5, hour = 14, minute = 30),
-                    idProduit = 1,
-                    idClient = 2,
-                    idTypeTarification = 2,
-                    prixCurrency = 9.75
-                ),
-                D_TarificationInfos(
-                    vidTimestamp = createTimestamp(day = 6, hour = 3, minute = 30),
-                    idProduit = 2,
-                    idClient = 1,
-                    idTypeTarification = 1,
-                    prixCurrency = 15.25
-                ),
-                D_TarificationInfos(
-                    vidTimestamp = createTimestamp(day = 6, hour = 4, minute = 30),
-                    idProduit = 3,
-                    idClient = 1,
-                    idTypeTarification = 3,
-                    prixCurrency = 14.80
-                )
-            )
-        )
-    }
 
-    fun createTimestamp(year: Int = 2025, month: Int=5, day: Int, hour: Int, minute: Int): Long {
+    fun createTimestamp(year: Int = 2025, month: Int = 5, day: Int, hour: Int, minute: Int): Long {
         val calendar = Calendar.getInstance()
         calendar.set(year, month - 1, day, hour, minute, 0)
         calendar.set(Calendar.MILLISECOND, 0)
