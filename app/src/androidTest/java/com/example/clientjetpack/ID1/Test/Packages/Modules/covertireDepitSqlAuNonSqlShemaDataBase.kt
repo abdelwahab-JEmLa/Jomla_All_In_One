@@ -62,7 +62,7 @@ fun covertireDepitSqlAuNonSqlShemaDataBase(noSqlDataBases: com.example.clientjet
                     produitClients.add(
                         OutputNoSqlModel.Produit.Client(
                             vidTimestamp = clientLatestTimestamp,
-                            id = clientId,
+                            infosId = clientId,
                             typeTarification = typeTarifications
                         )
                     )
@@ -80,7 +80,7 @@ fun covertireDepitSqlAuNonSqlShemaDataBase(noSqlDataBases: com.example.clientjet
         produitsList.add(
             OutputNoSqlModel.Produit(
                 vidTimestamp = produitLatestTimestamp,
-                id = produitId,
+                infosId = produitId,
                 clients = produitClients
             )
         )

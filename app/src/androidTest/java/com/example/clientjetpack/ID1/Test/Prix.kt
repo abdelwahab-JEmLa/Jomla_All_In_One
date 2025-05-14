@@ -116,11 +116,11 @@ fun UiView(
                 .padding(8.dp)
         ) {
             items(data.produits) { produit ->
-                val produitInfo = tarificationViewModel.getSqlProduitInfos(produit.id)
+                val produitInfo = tarificationViewModel.getSqlProduitInfos(produit.infosId)
 
                 ProduitCard(
                     produit = produit,
-                    produitName = produitInfo?.nom ?: "Produit ${produit.id}",
+                    produitName = produitInfo?.nom ?: "Produit ${produit.infosId}",
                     tarificationViewModel = tarificationViewModel
                 )
 
@@ -172,10 +172,10 @@ fun ProduitCard(
             Spacer(modifier = Modifier.height(16.dp))
 
             produit.clients.forEach { client ->
-                val clientInfo = tarificationViewModel.getSqlClient(client.id)
+                val clientInfo = tarificationViewModel.getSqlClient(client.infosId)
                 ClientSection(
                     client = client,
-                    clientName = clientInfo?.nom ?: "Client ${client.id}",
+                    clientName = clientInfo?.nom ?: "Client ${client.infosId}",
                     tarificationViewModel = tarificationViewModel
                 )
                 Spacer(modifier = Modifier.height(8.dp))

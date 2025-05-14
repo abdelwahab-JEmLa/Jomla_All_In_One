@@ -15,7 +15,7 @@ fun logProduits(value: OutputNoSqlModel) {
             val produitInfos = StringBuilder().apply {
                 append(produitPrefix)
                 append(" Product : ")
-                append(produit.id)
+                append(produit.infosId)
             }.toString()
 
             println("$produitInfos, Date: $produitDate Time: $produitTime (${produit.clients.size} clients)")

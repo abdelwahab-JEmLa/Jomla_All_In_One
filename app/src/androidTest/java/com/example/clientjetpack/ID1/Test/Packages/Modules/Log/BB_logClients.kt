@@ -21,7 +21,7 @@ fun logClients(
         val clientInfos = StringBuilder().apply {
             append(clientPrefix)
             append(" Client ID: ")
-            append(client.id)
+            append(client.infosId)
             append(", Date: ")
             append(clientDate)
             append(" Time: ")

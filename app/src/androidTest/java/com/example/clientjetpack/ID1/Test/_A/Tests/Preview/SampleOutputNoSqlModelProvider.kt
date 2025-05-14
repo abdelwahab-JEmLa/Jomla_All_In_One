@@ -41,11 +41,11 @@ fun MultipleItemsPrixPrev() {
     val multipleItemsData = OutputNoSqlModel(
         produits = listOf(
             OutputNoSqlModel.Produit(
-                id = 1,
+                infosId = 1,
                 vidTimestamp = System.currentTimeMillis(),
                 clients = listOf(
                     OutputNoSqlModel.Produit.Client(
-                        id = 1,
+                        infosId = 1,
                         vidTimestamp = System.currentTimeMillis(),
                         typeTarification = listOf(
                             OutputNoSqlModel.Produit.Client.TypeTarification(
@@ -63,11 +63,11 @@ fun MultipleItemsPrixPrev() {
                 )
             ),
             OutputNoSqlModel.Produit(
-                id = 2,
+                infosId = 2,
                 vidTimestamp = System.currentTimeMillis(),
                 clients = listOf(
                     OutputNoSqlModel.Produit.Client(
-                        id = 2,
+                        infosId = 2,
                         vidTimestamp = System.currentTimeMillis(),
                         typeTarification = listOf(
                             OutputNoSqlModel.Produit.Client.TypeTarification(
@@ -136,7 +136,7 @@ fun PreviewContentWithData(data: OutputNoSqlModel) {
                     items(data.produits) { produit ->
                         V.DiviseParSections.App.SectionId7.PresentoirApplication.App.FragId1.Prix.Fragment._A.Preview.Preview.ProduitCard(
                             produit = produit,
-                            produitName = "Preview Produit ${produit.id}",
+                            produitName = "Preview Produit ${produit.infosId}",
                             tarificationViewModel = null
                         )
                         Spacer(modifier = Modifier.height(16.dp))
@@ -198,10 +198,10 @@ fun ProduitCard(
             Spacer(modifier = Modifier.height(16.dp))
 
             produit.clients.forEach { client ->
-                val clientInfo = tarificationViewModel?.getSqlClient(client.id)
+                val clientInfo = tarificationViewModel?.getSqlClient(client.infosId)
                 ClientSection(
                     client = client,
-                    clientName = clientInfo?.nom ?: "Client ${client.id}",
+                    clientName = clientInfo?.nom ?: "Client ${client.infosId}",
                     tarificationViewModel = tarificationViewModel
                 )
                 Spacer(modifier = Modifier.height(8.dp))
