@@ -108,19 +108,15 @@ class FireBaseHandler {
     }
 
     private fun mapFromFirebaseSnapshot(snapshot: DataSnapshot): DataBasesInfosSql {
-        // Create empty lists for each data type
         val products = mutableListOf<A_ProduitInfos>()
         val clients = mutableListOf<B_ClientInfos>()
         val typeTarifications = mutableListOf<C_TypeTarificationInfos>()
         val tarifications = mutableListOf<D_TarificationInfos>()
 
-        // Extract products
         val productsSnapshot = snapshot.child("produits")
         if (productsSnapshot.exists()) {
             for (productSnap in productsSnapshot.children) {
                 try {
-                    // Use reflection to create a new product instance with all fields
-                    val id = productSnap.child("id").getValue(Long::class.java) ?: 0L
                     val product = A_ProduitInfos::class.java.getDeclaredConstructor().newInstance()
 
                     // Set each field dynamically
@@ -142,21 +138,17 @@ class FireBaseHandler {
 
                     products.add(product)
                 } catch (e: Exception) {
-                    // Handle parsing errors safely
                     println("Error parsing product data: ${e.message}")
                 }
             }
         }
 
-        // Extract clients
         val clientsSnapshot = snapshot.child("clients")
         if (clientsSnapshot.exists()) {
             for (clientSnap in clientsSnapshot.children) {
                 try {
-                    // Use reflection to create a new client instance with all fields
                     val client = B_ClientInfos::class.java.getDeclaredConstructor().newInstance()
 
-                    // Set each field dynamically
                     for (field in B_ClientInfos::class.java.declaredFields) {
                         field.isAccessible = true
                         val childSnapshot = clientSnap.child(field.name)
@@ -180,15 +172,12 @@ class FireBaseHandler {
             }
         }
 
-        // Extract type tarifications
         val typeTarifsSnapshot = snapshot.child("typeTarifications")
         if (typeTarifsSnapshot.exists()) {
             for (typeSnap in typeTarifsSnapshot.children) {
                 try {
-                    // Use reflection to create a new type tarification instance with all fields
                     val typeTarif = C_TypeTarificationInfos::class.java.getDeclaredConstructor().newInstance()
 
-                    // Set each field dynamically
                     for (field in C_TypeTarificationInfos::class.java.declaredFields) {
                         field.isAccessible = true
                         val childSnapshot = typeSnap.child(field.name)
@@ -220,15 +209,12 @@ class FireBaseHandler {
             }
         }
 
-        // Extract tarifications
         val tarifsSnapshot = snapshot.child("tarifications")
         if (tarifsSnapshot.exists()) {
             for (tarifSnap in tarifsSnapshot.children) {
                 try {
-                    // Use reflection to create a new tarification instance with all fields
                     val tarif = D_TarificationInfos::class.java.getDeclaredConstructor().newInstance()
 
-                    // Set each field dynamically
                     for (field in D_TarificationInfos::class.java.declaredFields) {
                         field.isAccessible = true
                         val childSnapshot = tarifSnap.child(field.name)
@@ -252,7 +238,6 @@ class FireBaseHandler {
             }
         }
 
-        // Return the complete data structure
         return DataBasesInfosSql(
             a_ProduitInfos = products,
             b_ClientInfos = clients,
@@ -261,7 +246,6 @@ class FireBaseHandler {
         )
     }
 
-    // Extension function to convert Firebase Task to suspend function
     private suspend fun <T> Task<T>.await(): T = suspendCancellableCoroutine { continuation ->
         addOnSuccessListener { result ->
             continuation.resume(result)
@@ -270,7 +254,6 @@ class FireBaseHandler {
             continuation.resumeWithException(exception)
         }
         continuation.invokeOnCancellation {
-            // Cancel the task if possible
             if (isComplete.not()) {
                 cancel()
             }
