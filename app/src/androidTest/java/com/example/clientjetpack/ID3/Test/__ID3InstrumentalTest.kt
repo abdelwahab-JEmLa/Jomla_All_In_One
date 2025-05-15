@@ -114,7 +114,6 @@ class __ID3InstrumentalTest : KoinTest {
         expected: DataBasesInfosSql,
         actual: ProduitNoSqlDataBase
     ) {
-        // Check that all products are converted correctly
         assertEquals(
             "Products list size should match",
             expected.a_ProduitInfos.size,
@@ -122,11 +121,11 @@ class __ID3InstrumentalTest : KoinTest {
         )
 
         expected.a_ProduitInfos.forEach { expectedProduct ->
-            val actualProduct = actual.produits.find { it.infosId == expectedProduct.id }
+            val actualProduct = actual.produits.find { it.infosId == expectedProduct.id }     //->
+            //TODO(FIXME):Fix erreur Variable 'actualProduct' is never used
                 ?: throw AssertionError("NoSQL Product with ID ${expectedProduct.id} not found")
         }
 
-        // Check that all clients are converted correctly
         val expectedClients = expected.b_ClientInfos
         val actualClientIds =
             actual.produits.flatMap { it.clientAchteurs }.map { it.infosId }.distinct()
