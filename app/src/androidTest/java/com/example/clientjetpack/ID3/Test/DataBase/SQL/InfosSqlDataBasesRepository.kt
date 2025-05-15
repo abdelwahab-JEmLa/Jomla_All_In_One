@@ -1,4 +1,3 @@
-// Modify the InfosSqlDataBasesRepository to support suspending functions
 package com.example.clientjetpack.ID3.Test.DataBase.SQL
 
 import com.example.clientjetpack.ID3.Test.DataBase.SQL.Home.FireBaseHandler
