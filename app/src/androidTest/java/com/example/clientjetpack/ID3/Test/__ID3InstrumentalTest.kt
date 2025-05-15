@@ -5,10 +5,12 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.example.clientjetpack.ID3.Test.DataBase.FireBase.ConvertiseurNoSqlToSqlRepository
 import com.example.clientjetpack.ID3.Test.DataBase.FireBase.Model.ProduitNoSqlDataBase
+import com.example.clientjetpack.ID3.Test.DataBase.FireBase.Model.testDatasProduitNoSqlDataBase
 import com.example.clientjetpack.ID3.Test.DataBase.SQL.Home.FireBaseHandler
 import com.example.clientjetpack.ID3.Test.DataBase.SQL.Home.TestAppDatabase
 import com.example.clientjetpack.ID3.Test.DataBase.SQL.InfosSqlDataBasesRepository
 import com.example.clientjetpack.ID3.Test.DataBase.SQL.Models.DataBasesInfosSql
+import com.example.clientjetpack.ID3.Test.DataBase.SQL.Models.testDatasDataBasesInfosSql
 import com.example.clientjetpack.Modules.LogFilterRule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -47,7 +49,7 @@ class __ID3InstrumentalTest : KoinTest {
     private val testDispatcher = StandardTestDispatcher(testScheduler)
     private val infosSqlDataBasesRepository: InfosSqlDataBasesRepository by inject()
     private val convertiseurNoSqlToSqlRepository: ConvertiseurNoSqlToSqlRepository by inject()
-    private val testDatas = testDatas()
+    private val testDatas = testDatasDataBasesInfosSql()
 
     @Before
     fun setup() = runTest(testDispatcher) {
@@ -155,131 +157,6 @@ class __ID3InstrumentalTest : KoinTest {
         }
     }
 
-    fun testDatasProduitNoSqlDataBase(): ProduitNoSqlDataBase {
-        // This should match the structure expected after conversion from testDatas()
-        return ProduitNoSqlDataBase(
-            produits = listOf(
-                // Produit 1: "Produit Optila"
-                ProduitNoSqlDataBase.Produit(
-                    vidTimestamp = System.currentTimeMillis(),  // Exact timestamp doesn't matter in test
-                    infosId = 1,
-                    clientAchteurs = listOf(
-                        // Client 1: "ClientAchteur Abderrahman"
-                        ProduitNoSqlDataBase.Produit.ClientAchteur(
-                            vidTimestamp = System.currentTimeMillis(),
-                            infosId = 1,
-                            typeTarification = listOf(
-                                // Type Tarification 1: "ParBenifice"
-                                ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification(
-                                    vidTimestamp = System.currentTimeMillis(),
-                                    infosId = 1,
-                                    PrixsCurrency = listOf(
-                                        // Two prices for this combination
-                                        ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix(
-                                            vidTimestamp = createTimestamp(
-                                                day = 1,
-                                                hour = 12,
-                                                minute = 30
-                                            ),
-                                            valeur = 20.99
-                                        ),
-                                        ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix(
-                                            vidTimestamp = createTimestamp(
-                                                day = 5,
-                                                hour = 13,
-                                                minute = 30
-                                            ),
-                                            valeur = 25.50
-                                        )
-                                    )
-                                )
-                            )
-                        ),
-                        // Client 2: "ClientAchteur Beta"
-                        ProduitNoSqlDataBase.Produit.ClientAchteur(
-                            vidTimestamp = System.currentTimeMillis(),
-                            infosId = 2,
-                            typeTarification = listOf(
-                                // Type Tarification 2: "Historique"
-                                ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification(
-                                    vidTimestamp = System.currentTimeMillis(),
-                                    infosId = 2,
-                                    PrixsCurrency = listOf(
-                                        ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix(
-                                            vidTimestamp = createTimestamp(
-                                                day = 5,
-                                                hour = 14,
-                                                minute = 30
-                                            ),
-                                            valeur = 9.75
-                                        )
-                                    )
-                                )
-                            )
-                        )
-                    )
-                ),
-                // Produit 2: "Produit Hnina"
-                ProduitNoSqlDataBase.Produit(
-                    vidTimestamp = System.currentTimeMillis(),
-                    infosId = 2,
-                    clientAchteurs = listOf(
-                        // Client 1: "ClientAchteur Abderrahman"
-                        ProduitNoSqlDataBase.Produit.ClientAchteur(
-                            vidTimestamp = System.currentTimeMillis(),
-                            infosId = 1,
-                            typeTarification = listOf(
-                                // Type Tarification 1: "ParBenifice"
-                                ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification(
-                                    vidTimestamp = System.currentTimeMillis(),
-                                    infosId = 1,
-                                    PrixsCurrency = listOf(
-                                        ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix(
-                                            vidTimestamp = createTimestamp(
-                                                day = 6,
-                                                hour = 3,
-                                                minute = 30
-                                            ),
-                                            valeur = 15.25
-                                        )
-                                    )
-                                )
-                            )
-                        )
-                    )
-                ),
-                // Produit 3: "Produit kemya"
-                ProduitNoSqlDataBase.Produit(
-                    vidTimestamp = System.currentTimeMillis(),
-                    infosId = 3,
-                    clientAchteurs = listOf(
-                        // Client 1: "ClientAchteur Abderrahman"
-                        ProduitNoSqlDataBase.Produit.ClientAchteur(
-                            vidTimestamp = System.currentTimeMillis(),
-                            infosId = 1,
-                            typeTarification = listOf(
-                                // Type Tarification 3: "LeMaxPrixArrive"
-                                ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification(
-                                    vidTimestamp = System.currentTimeMillis(),
-                                    infosId = 3,
-                                    PrixsCurrency = listOf(
-                                        ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix(
-                                            vidTimestamp = createTimestamp(
-                                                day = 6,
-                                                hour = 4,
-                                                minute = 30
-                                            ),
-                                            valeur = 14.80
-                                        )
-                                    )
-                                )
-                            )
-                        )
-                    )
-                )
-            )
-        )
-    }
 
     @Test
     fun testFlowWorksAndAssertEqualsTestData() = runTest(testDispatcher) {
