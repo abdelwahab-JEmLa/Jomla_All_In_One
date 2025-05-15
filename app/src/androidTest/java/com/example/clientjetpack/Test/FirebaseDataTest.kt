@@ -1,4 +1,4 @@
-package com.example.clientjetpack.ID1.Test.ID2.Test
+package com.example.clientjetpack.Test
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -11,6 +11,7 @@ import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo.Models.D_Tarifi
 import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo.Models.TypeTarificationEnum
 import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo._InfosSqlDataBases_GroupeRepositorysImp
 import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.TestAppDatabase
+import com.example.clientjetpack.ID1.Test.ID2.Test.LogFilterRule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -126,13 +127,19 @@ class FirebaseDataTest : KoinTest {
                 fireBaseHandler.getTypeTarificationRef(),
                 C_TypeTarificationInfos::class.java
             )
-            LogFilterRule.log("FirebaseDataTest", "Firebase type tarifications loaded: ${fbTypeTarifications.size}")
+            LogFilterRule.log(
+                "FirebaseDataTest",
+                "Firebase type tarifications loaded: ${fbTypeTarifications.size}"
+            )
             
             fbTarifications = fireBaseHandler.loadDatasAsync(
                 fireBaseHandler.getTarificationRef(),
                 D_TarificationInfos::class.java
             )
-            LogFilterRule.log("FirebaseDataTest", "Firebase tarifications loaded: ${fbTarifications.size}")
+            LogFilterRule.log(
+                "FirebaseDataTest",
+                "Firebase tarifications loaded: ${fbTarifications.size}"
+            )
         } catch (e: Exception) {
             LogFilterRule.log("FirebaseDataTest", "ERROR loading from Firebase: ${e.message}")
             e.printStackTrace()
@@ -159,7 +166,10 @@ class FirebaseDataTest : KoinTest {
             
             repositoriesImpl.tarificationRepository.loadDataFromFirebase()
         } catch (e: Exception) {
-            LogFilterRule.log("FirebaseDataTest", "ERROR loading from Firebase to local: ${e.message}")
+            LogFilterRule.log(
+                "FirebaseDataTest",
+                "ERROR loading from Firebase to local: ${e.message}"
+            )
             e.printStackTrace()
         }
         
@@ -171,7 +181,7 @@ class FirebaseDataTest : KoinTest {
         val localProduits = repositoriesImpl.produitRepository.modelListFlow.first()
         val localClients = repositoriesImpl.clientRepository.modelListFlow.first()
         val localTarifications = repositoriesImpl.tarificationRepository.modelListFlow.first()
-        
+
         LogFilterRule.log("FirebaseDataTest", "Local produits: ${localProduits.size}")
         LogFilterRule.log("FirebaseDataTest", "Local clients: ${localClients.size}")
         LogFilterRule.log("FirebaseDataTest", "Local tarifications: ${localTarifications.size}")
@@ -196,12 +206,18 @@ class FirebaseDataTest : KoinTest {
                         continuation.resume(Unit)
                     }
                     .addOnFailureListener { e ->
-                        LogFilterRule.log("FirebaseDataTest", "ERROR: Firebase write failed: ${e.message}")
+                        LogFilterRule.log(
+                            "FirebaseDataTest",
+                            "ERROR: Firebase write failed: ${e.message}"
+                        )
                         continuation.resume(Unit)
                     }
             }
         } catch (e: Exception) {
-            LogFilterRule.log("FirebaseDataTest", "EXCEPTION during Firebase connectivity test: ${e.message}")
+            LogFilterRule.log(
+                "FirebaseDataTest",
+                "EXCEPTION during Firebase connectivity test: ${e.message}"
+            )
             e.printStackTrace()
         }
     }
@@ -214,14 +230,20 @@ class FirebaseDataTest : KoinTest {
         val clientRef = fireBaseHandler.getClientRef()
         val typeTarificationRef = fireBaseHandler.getTypeTarificationRef()
         val tarificationRef = fireBaseHandler.getTarificationRef()
-        
+
         LogFilterRule.log("FirebaseDataTest", "Produit ref path: ${produitRef.path}")
         LogFilterRule.log("FirebaseDataTest", "Client ref path: ${clientRef.path}")
-        LogFilterRule.log("FirebaseDataTest", "Type tarification ref path: ${typeTarificationRef.path}")
+        LogFilterRule.log(
+            "FirebaseDataTest",
+            "Type tarification ref path: ${typeTarificationRef.path}"
+        )
         LogFilterRule.log("FirebaseDataTest", "Tarification ref path: ${tarificationRef.path}")
         
         val produitRefByType = fireBaseHandler.getRefByType(A_ProduitInfos::class.java)
-        LogFilterRule.log("FirebaseDataTest", "Ref by type path equals direct ref: ${produitRefByType.path == produitRef.path}")
+        LogFilterRule.log(
+            "FirebaseDataTest",
+            "Ref by type path equals direct ref: ${produitRefByType.path == produitRef.path}"
+        )
     }
     
     private fun cleanAllData() = runTest {
@@ -263,13 +285,19 @@ class FirebaseDataTest : KoinTest {
     
     private fun <T> verifyLocalItem(items: List<T>, expectedItem: T, itemType: String) {
         if (items.isEmpty()) {
-            LogFilterRule.log("FirebaseDataTest", "ERROR: No $itemType items found in local database")
+            LogFilterRule.log(
+                "FirebaseDataTest",
+                "ERROR: No $itemType items found in local database"
+            )
         } else {
             val containsItem = items.any { it.toString() == expectedItem.toString() }
             if (containsItem) {
                 LogFilterRule.log("FirebaseDataTest", "SUCCESS: $itemType found in local database")
             } else {
-                LogFilterRule.log("FirebaseDataTest", "ERROR: $itemType not found in local database")
+                LogFilterRule.log(
+                    "FirebaseDataTest",
+                    "ERROR: $itemType not found in local database"
+                )
                 LogFilterRule.log("FirebaseDataTest", "Expected: $expectedItem")
                 LogFilterRule.log("FirebaseDataTest", "Available items: $items")
             }

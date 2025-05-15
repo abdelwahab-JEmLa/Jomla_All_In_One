@@ -84,9 +84,15 @@ class __ID2InstrumentalTest : KoinTest {
         Dispatchers.resetMain()
         stopKoin()
     }
+    @Test
+    fun idTest2Num2() = runTest {
+        //<--
+        //TODO(1): fait ici 
+    }
 
     @Test
-    fun idTest2Num1() = runTest {
+    fun idTest2Num1() = runTest {//<--
+    //TODO(1): diminue la taiile et complicite de ca 
         // First delete all existing data
         repositoriesImpl.produitRepository.deleteAll()
         repositoriesImpl.clientRepository.deleteAll()
@@ -140,7 +146,7 @@ class __ID2InstrumentalTest : KoinTest {
         var expectedTarifications = testData.d_TarificationInfos.size
         var completedTarifications = 0
 
-        suspendCoroutine<Unit> { continuation ->
+        suspendCoroutine { continuation ->
             testData.d_TarificationInfos.forEach { tarification ->
                 repositoriesImpl.tarificationRepository.add(tarification) {
                     completedTarifications++
