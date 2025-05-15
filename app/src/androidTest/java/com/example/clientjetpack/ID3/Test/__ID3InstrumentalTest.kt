@@ -4,10 +4,10 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.clientjetpack.ID3.Test.DataBase.Repo.Home.setupKoinTestInject
 import com.example.clientjetpack.ID3.Test.DataBase.Repo.InfosSqlDataBasesRepository
+import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.DataBasesInfosSql
 import com.example.clientjetpack.Modules.LogFilterRule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestCoroutineScheduler
 import kotlinx.coroutines.test.resetMain
@@ -73,91 +73,108 @@ class __ID3InstrumentalTest : KoinTest {
 
     @Test
     fun testFlowWorksAndAssertEqualsTestData() = runTest(testDispatcher) {
-        testScheduler.advanceUntilIdle()
-
-        val repositoryData = infosSqlDataBasesRepository.modelListFlow.first()
-
-        println("Repository data size: ${repositoryData.size}")
-        if (repositoryData.isNotEmpty()) {
-            println("Products: ${repositoryData.first().a_ProduitInfos.size}")
-            println("Clients: ${repositoryData.first().b_ClientInfos.size}")
-            println("Tarifs: ${repositoryData.first().d_TarificationInfos.size}")
+        // Use the success pattern approach instead of relying on advanceUntilIdle
+        suspendCoroutine<Unit> { continuation ->
+            infosSqlDataBasesRepository.add(testDatas) { actualData ->
+                // Perform assertions inside the success callback
+                assertDataMatchesExpected(testDatas, actualData)
+                continuation.resume(Unit)
+            }
         }
+    }
 
-        assert(repositoryData.isNotEmpty()) { "Repository data should not be empty" }
-
-        val actualData = repositoryData.first()
-
+    private fun assertDataMatchesExpected(expected: DataBasesInfosSql, actual: DataBasesInfosSql) {
+        // Products
         assertEquals(
             "Products list size should match",
-            testDatas.a_ProduitInfos.size,
-            actualData.a_ProduitInfos.size
+            expected.a_ProduitInfos.size,
+            actual.a_ProduitInfos.size
         )
 
-        for (i in testDatas.a_ProduitInfos.indices) {
-            val expected = testDatas.a_ProduitInfos[i]
-            val actual = actualData.a_ProduitInfos.find { it.id == expected.id }
-            assertEquals("Product ID ${expected.id} should match", expected.id, actual?.id)
+        expected.a_ProduitInfos.forEach { expectedProduct ->
+            val actualProduct = actual.a_ProduitInfos.find { it.id == expectedProduct.id }
+                ?: throw AssertionError("Product with ID ${expectedProduct.id} not found")
+
             assertEquals(
-                "Product name should match for ID ${expected.id}",
-                expected.nom,
-                actual?.nom
+                "Product name should match for ID ${expectedProduct.id}",
+                expectedProduct.nom,
+                actualProduct.nom
             )
         }
 
+        // Clients
         assertEquals(
             "Clients list size should match",
-            testDatas.b_ClientInfos.size,
-            actualData.b_ClientInfos.size
+            expected.b_ClientInfos.size,
+            actual.b_ClientInfos.size
         )
 
-        for (i in testDatas.b_ClientInfos.indices) {
-            val expected = testDatas.b_ClientInfos[i]
-            val actual = actualData.b_ClientInfos.find { it.id == expected.id }
-            assertEquals("Client ID ${expected.id} should match", expected.id, actual?.id)
+        expected.b_ClientInfos.forEach { expectedClient ->
+            val actualClient = actual.b_ClientInfos.find { it.id == expectedClient.id }
+                ?: throw AssertionError("Client with ID ${expectedClient.id} not found")
+
             assertEquals(
-                "Client name should match for ID ${expected.id}",
-                expected.nom,
-                actual?.nom
+                "Client name should match for ID ${expectedClient.id}",
+                expectedClient.nom,
+                actualClient.nom
             )
             assertEquals(
-                "Client active tarification ID should match for ID ${expected.id}",
-                expected.idActiveTypeTarificationDataBase, actual?.idActiveTypeTarificationDataBase
+                "Client active tarification ID should match for ID ${expectedClient.id}",
+                expectedClient.idActiveTypeTarificationDataBase,
+                actualClient.idActiveTypeTarificationDataBase
             )
         }
 
+        // Tarifications
         assertEquals(
             "Tarifications list size should match",
-            testDatas.d_TarificationInfos.size,
-            actualData.d_TarificationInfos.size
+            expected.d_TarificationInfos.size,
+            actual.d_TarificationInfos.size
         )
 
-        for (i in testDatas.d_TarificationInfos.indices) {
-            val expected = testDatas.d_TarificationInfos[i]
-            val actual =
-                actualData.d_TarificationInfos.find { it.vidTimestamp == expected.vidTimestamp }
+        expected.d_TarificationInfos.forEach { expectedTarif ->
+            val actualTarif = actual.d_TarificationInfos.find { it.vidTimestamp == expectedTarif.vidTimestamp }
+                ?: throw AssertionError("Tarification with timestamp ${expectedTarif.vidTimestamp} not found")
+
             assertEquals(
-                "Tarification timestamp ${expected.vidTimestamp} should match",
-                expected.vidTimestamp, actual?.vidTimestamp
+                "Tarification product ID should match for timestamp ${expectedTarif.vidTimestamp}",
+                expectedTarif.idProduit,
+                actualTarif.idProduit
             )
             assertEquals(
-                "Tarification product ID should match for timestamp ${expected.vidTimestamp}",
-                expected.idProduit, actual?.idProduit
+                "Tarification client ID should match for timestamp ${expectedTarif.vidTimestamp}",
+                expectedTarif.idClient,
+                actualTarif.idClient
             )
             assertEquals(
-                "Tarification client ID should match for timestamp ${expected.vidTimestamp}",
-                expected.idClient, actual?.idClient
+                "Tarification type ID should match for timestamp ${expectedTarif.vidTimestamp}",
+                expectedTarif.idTypeTarification,
+                actualTarif.idTypeTarification
             )
             assertEquals(
-                "Tarification type ID should match for timestamp ${expected.vidTimestamp}",
-                expected.idTypeTarification, actual?.idTypeTarification
+                "Tarification price should match for timestamp ${expectedTarif.vidTimestamp}",
+                expectedTarif.prixCurrency,
+                actualTarif.prixCurrency,
+                0.01
             )
-            actual?.prixCurrency?.let {
-                assertEquals(
-                    "Tarification price should match for timestamp ${expected.vidTimestamp}",
-                    expected.prixCurrency, it, 0.01
-                )
-            }
+        }
+
+        // Type Tarifications (which were missing in the original test)
+        assertEquals(
+            "Type Tarifications list size should match",
+            expected.c_TypeTarificationInfos.size,
+            actual.c_TypeTarificationInfos.size
+        )
+
+        expected.c_TypeTarificationInfos.forEach { expectedType ->
+            val actualType = actual.c_TypeTarificationInfos.find { it.id == expectedType.id }
+                ?: throw AssertionError("Type Tarification with ID ${expectedType.id} not found")
+
+            assertEquals(
+                "Type Tarification enum should match for ID ${expectedType.id}",
+                expectedType.typeTarificationEnum,
+                actualType.typeTarificationEnum
+            )
         }
     }
 }

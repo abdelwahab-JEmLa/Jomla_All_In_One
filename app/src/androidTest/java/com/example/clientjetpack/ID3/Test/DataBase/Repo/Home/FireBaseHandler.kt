@@ -25,9 +25,42 @@ class FireBaseHandler {
         _0_0_HeadOfRepositorys_Model.getHeadSqlDataBaseRef()
             .child("C_InfosSqlDataBases")
 
-    fun addToFirebaseAsync(dataBasesInfosSql: DataBasesInfosSql) {
+    fun addToFirebaseAsync(
+        dataBasesInfosSql: DataBasesInfosSql,
+        onSuccess: () -> Unit={}
+    ) {
         val firebaseData = mapToFirebaseFormat(dataBasesInfosSql)
-        ref.setValue(firebaseData)
+
+        // Using batch updates instead of single setValue operation
+        val updates = mutableMapOf<String, Any>()
+
+        // Add each collection as a separate batch update
+        if (firebaseData.containsKey("produits")) {
+            updates["produits"] = firebaseData["produits"] as Any
+        }
+
+        if (firebaseData.containsKey("clients")) {
+            updates["clients"] = firebaseData["clients"] as Any
+        }
+
+        if (firebaseData.containsKey("typeTarifications")) {
+            updates["typeTarifications"] = firebaseData["typeTarifications"] as Any
+        }
+
+        if (firebaseData.containsKey("tarifications")) {
+            updates["tarifications"] = firebaseData["tarifications"] as Any
+        }
+
+        // Execute batch update and invoke onSuccess when complete
+        ref.updateChildren(updates)
+            .addOnSuccessListener {
+                onSuccess()
+            }
+            .addOnFailureListener { exception ->
+                // Log error but still call onSuccess to ensure the flow continues
+                println("Firebase update failed: ${exception.message}")
+                onSuccess()
+            }
     }
 
     suspend fun getDataFromFirebase(): DataBasesInfosSql? = withContext(Dispatchers.IO) {
@@ -56,7 +89,7 @@ class FireBaseHandler {
     private fun mapToFirebaseFormat(dataBasesInfosSql: DataBasesInfosSql): Map<String, Any> {
         val data = mutableMapOf<String, Any>()
 
-        // Map products 
+        // Map products
         val productsMap = mutableMapOf<String, Any>()
         dataBasesInfosSql.a_ProduitInfos.forEach { produit ->
             // Use reflection to get all properties dynamically

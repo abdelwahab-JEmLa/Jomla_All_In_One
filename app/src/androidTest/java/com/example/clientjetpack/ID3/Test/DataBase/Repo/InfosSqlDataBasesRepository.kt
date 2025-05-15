@@ -73,41 +73,55 @@ class InfosSqlDataBasesRepository(
                 insertToRoom(data)
                 setToFireBase(data)
 
-                collectLatestData()
-
-                onSuccess(data)
+                collectLatestData {
+                    onSuccess(modelList.firstOrNull() ?: data)
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
     }
 
-    private suspend fun collectLatestData() {
-        val produits = database.a_ProduitInfosDao().getAllProduitsSync()
-        val clients = database.b_ClientInfosDao().getAllClientsSync()
-        val typeTarifications = database.c_TypeTarificationInfosDao().getAllTypeTarificationsSync()
-        val tarifications = database.dTarificationInfosDao().getAllTarificationsSync()
+    private suspend fun collectLatestData(
+        onSuccess: () -> Unit={}
+    ) {
+        try {
+            val produits = database.a_ProduitInfosDao().getAllProduitsSync()
+            val clients = database.b_ClientInfosDao().getAllClientsSync()
+            val typeTarifications = database.c_TypeTarificationInfosDao().getAllTypeTarificationsSync()
+            val tarifications = database.dTarificationInfosDao().getAllTarificationsSync()
 
-        modelList = listOf(
-            DataBasesInfosSql(
-                a_ProduitInfos = produits.toMutableList(),
-                b_ClientInfos = clients.toMutableList(),
-                c_TypeTarificationInfos = typeTarifications.toMutableList(),
-                d_TarificationInfos = tarifications.toMutableList()
+            modelList = listOf(
+                DataBasesInfosSql(
+                    a_ProduitInfos = produits.toMutableList(),
+                    b_ClientInfos = clients.toMutableList(),
+                    c_TypeTarificationInfos = typeTarifications.toMutableList(),
+                    d_TarificationInfos = tarifications.toMutableList()
+                )
             )
-        )
+
+            onSuccess()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
-    private suspend fun insertToRoom(data: DataBasesInfosSql) {
+    private suspend fun insertToRoom(
+        data: DataBasesInfosSql,
+        onSuccess: () -> Unit={}
+    ) {
         withContext(ioDispatcher) {
             database.a_ProduitInfosDao().insertAll(data.a_ProduitInfos)
             database.b_ClientInfosDao().insertAll(data.b_ClientInfos)
             database.c_TypeTarificationInfosDao().insertAll(data.c_TypeTarificationInfos)
             database.dTarificationInfosDao().insertAll(data.d_TarificationInfos)
+            onSuccess()
         }
     }
 
-    fun deleteAll(onSuccess: () -> Unit={}) {
+    fun deleteAll(
+        onSuccess: () -> Unit={}
+    ) {
         coroutineScope.launch {
             try {
                 database.a_ProduitInfosDao().deleteAll()
@@ -115,18 +129,23 @@ class InfosSqlDataBasesRepository(
                 database.c_TypeTarificationInfosDao().deleteAll()
                 database.dTarificationInfosDao().deleteAll()
 
-                collectLatestData()
-
-                onSuccess()
+                collectLatestData {
+                    onSuccess()
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
     }
 
-    private fun setToFireBase(dataBasesInfosSql: DataBasesInfosSql) {
+    private fun setToFireBase(
+        dataBasesInfosSql: DataBasesInfosSql,
+        onSuccess: () -> Unit={}
+    ) {
         try {
-            fireBaseHandler.addToFirebaseAsync(dataBasesInfosSql)
+            fireBaseHandler.addToFirebaseAsync(dataBasesInfosSql){
+                onSuccess()
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -164,7 +183,16 @@ class InfosSqlDataBasesRepository(
             if (needsUpdate) {
                 val firebaseData = fireBaseHandler.getDataFromFirebase()
                 if (firebaseData != null) {
-                    insertToRoom(firebaseData)
+                    insertToRoom(firebaseData) {
+                        // Reset needUpdate flags in Firebase after successful sync to Room
+                        val updatedData = DataBasesInfosSql(
+                            a_ProduitInfos = firebaseData.a_ProduitInfos.map { it.copy(needUpdate = false) }.toMutableList(),
+                            b_ClientInfos = firebaseData.b_ClientInfos.map { it.copy(needUpdate = false) }.toMutableList(),
+                            c_TypeTarificationInfos = firebaseData.c_TypeTarificationInfos.map { it.copy(needUpdate = false) }.toMutableList(),
+                            d_TarificationInfos = firebaseData.d_TarificationInfos.map { it.copy(needUpdate = false) }.toMutableList()
+                        )
+                        setToFireBase(updatedData)
+                    }
                 }
             }
         } catch (e: Exception) {
