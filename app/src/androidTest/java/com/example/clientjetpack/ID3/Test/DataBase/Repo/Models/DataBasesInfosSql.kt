@@ -3,7 +3,7 @@ package com.example.clientjetpack.ID3.Test.DataBase.Repo.Models
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-data class InfosSqlDataBases(
+data class DataBasesInfosSql(
     val a_ProduitInfos: MutableList<A_ProduitInfos> = mutableListOf(),
     val b_ClientInfos: MutableList<B_ClientInfos> = mutableListOf(),
     val c_TypeTarificationInfos: MutableList<C_TypeTarificationInfos> = mutableListOf(),

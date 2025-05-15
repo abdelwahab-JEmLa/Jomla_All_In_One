@@ -5,7 +5,7 @@ import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.A_ProduitInfos
 import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.B_ClientInfos
 import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.C_TypeTarificationInfos
 import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.D_TarificationInfos
-import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.InfosSqlDataBases
+import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.DataBasesInfosSql
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -22,12 +22,12 @@ class FireBaseHandler {
         _0_0_HeadOfRepositorys_Model.getHeadSqlDataBaseRef()
             .child("C_InfosSqlDataBases")
 
-    fun addToFirebaseAsync(infosSqlDataBases: InfosSqlDataBases) {
-        val firebaseData = mapToFirebaseFormat(infosSqlDataBases)
+    fun addToFirebaseAsync(dataBasesInfosSql: DataBasesInfosSql) {
+        val firebaseData = mapToFirebaseFormat(dataBasesInfosSql)
         ref.setValue(firebaseData)
     }
 
-    suspend fun getDataFromFirebase(): InfosSqlDataBases? = withContext(Dispatchers.IO) {
+    suspend fun getDataFromFirebase(): DataBasesInfosSql? = withContext(Dispatchers.IO) {
         suspendCancellableCoroutine { continuation ->
             ref.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -50,18 +50,18 @@ class FireBaseHandler {
         }
     }
 
-    suspend fun clearAndAddTestData(testData: InfosSqlDataBases) = withContext(Dispatchers.IO) {
+    suspend fun clearAndAddTestData(testData: DataBasesInfosSql) = withContext(Dispatchers.IO) {
         ref.removeValue().await()
 
         val firebaseData = mapToFirebaseFormat(testData)
         ref.setValue(firebaseData).await()
     }
 
-    private fun mapToFirebaseFormat(infosSqlDataBases: InfosSqlDataBases): Map<String, Any> {
+    private fun mapToFirebaseFormat(dataBasesInfosSql: DataBasesInfosSql): Map<String, Any> {
         val data = mutableMapOf<String, Any>()
 
         val productsMap = mutableMapOf<String, Any>()
-        infosSqlDataBases.a_ProduitInfos.forEach { produit ->
+        dataBasesInfosSql.a_ProduitInfos.forEach { produit ->
             productsMap["prod_${produit.id}"] = mapOf(
                 "id" to produit.id,
                 "nom" to produit.nom,
@@ -71,7 +71,7 @@ class FireBaseHandler {
         data["produits"] = productsMap
 
         val clientsMap = mutableMapOf<String, Any>()
-        infosSqlDataBases.b_ClientInfos.forEach { client ->
+        dataBasesInfosSql.b_ClientInfos.forEach { client ->
             clientsMap["client_${client.id}"] = mapOf(
                 "id" to client.id,
                 "nom" to client.nom,
@@ -82,7 +82,7 @@ class FireBaseHandler {
         data["clients"] = clientsMap
 
         val typeTarifMap = mutableMapOf<String, Any>()
-        infosSqlDataBases.c_TypeTarificationInfos.forEach { typeTarif ->
+        dataBasesInfosSql.c_TypeTarificationInfos.forEach { typeTarif ->
             typeTarifMap["type_${typeTarif.id}"] = mapOf(
                 "id" to typeTarif.id,
                 "typeTarificationEnum" to typeTarif.typeTarificationEnum.name,
@@ -93,7 +93,7 @@ class FireBaseHandler {
 
         // Map tarifications
         val tarifsMap = mutableMapOf<String, Any>()
-        infosSqlDataBases.d_TarificationInfos.forEach { tarif ->
+        dataBasesInfosSql.d_TarificationInfos.forEach { tarif ->
             tarifsMap["tarif_${tarif.vidTimestamp}"] = mapOf(
                 "vidTimestamp" to tarif.vidTimestamp,
                 "idProduit" to tarif.idProduit,
@@ -108,7 +108,7 @@ class FireBaseHandler {
         return data
     }
 
-    private fun mapFromFirebaseSnapshot(snapshot: DataSnapshot): InfosSqlDataBases {
+    private fun mapFromFirebaseSnapshot(snapshot: DataSnapshot): DataBasesInfosSql {
         val produits = mutableListOf<A_ProduitInfos>()
         val clients = mutableListOf<B_ClientInfos>()
         val typeTarifications = mutableListOf<C_TypeTarificationInfos>()
@@ -159,7 +159,7 @@ class FireBaseHandler {
             tarifications.add(D_TarificationInfos(vidTimestamp, idProduit, idClient, idTypeTarification, prixCurrency, needUpdate))
         }
 
-        return InfosSqlDataBases(produits, clients, typeTarifications, tarifications)
+        return DataBasesInfosSql(produits, clients, typeTarifications, tarifications)
     }
 
     // Extension function to convert Firebase Task to suspend function

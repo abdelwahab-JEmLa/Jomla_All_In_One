@@ -2,7 +2,7 @@ package com.example.clientjetpack.ID3.Test.DataBase.Repo
 
 import com.example.clientjetpack.ID3.Test.DataBase.Repo.Home.FireBaseHandler
 import com.example.clientjetpack.ID3.Test.DataBase.Repo.Home.TestAppDatabase
-import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.InfosSqlDataBases
+import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.DataBasesInfosSql
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,14 +18,14 @@ class InfosSqlDataBasesRepository(
 ) {
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
-    private val _modelListFlow = MutableStateFlow<List<InfosSqlDataBases>>(emptyList())
-    private var modelList: List<InfosSqlDataBases>
+    private val _modelListFlow = MutableStateFlow<List<DataBasesInfosSql>>(emptyList())
+    private var modelList: List<DataBasesInfosSql>
         get() = _modelListFlow.value
         set(value) {
             _modelListFlow.value = value
         }
 
-    val modelListFlow: StateFlow<List<InfosSqlDataBases>> = _modelListFlow.asStateFlow()
+    val modelListFlow: StateFlow<List<DataBasesInfosSql>> = _modelListFlow.asStateFlow()
 
     init {
         coroutineScope.launch {
@@ -49,7 +49,7 @@ class InfosSqlDataBasesRepository(
                 tarificationsFlow
             ) { produits, clients, typeTarifications, tarifications ->
                 listOf(
-                    InfosSqlDataBases(
+                    DataBasesInfosSql(
                         a_ProduitInfos = produits.toMutableList(),
                         b_ClientInfos = clients.toMutableList(),
                         c_TypeTarificationInfos = typeTarifications.toMutableList(),
@@ -63,8 +63,8 @@ class InfosSqlDataBasesRepository(
     }
 
     fun add(
-        data: InfosSqlDataBases,
-        onSuccess: (InfosSqlDataBases) -> Unit
+        data: DataBasesInfosSql,
+        onSuccess: (DataBasesInfosSql) -> Unit={}
     ) {
         coroutineScope.launch {
             insertToRoom(data)
@@ -73,7 +73,7 @@ class InfosSqlDataBasesRepository(
         }
     }
 
-    private suspend fun insertToRoom(data: InfosSqlDataBases) {
+    private suspend fun insertToRoom(data: DataBasesInfosSql) {
         withContext(Dispatchers.IO) {
             database.a_ProduitInfosDao().insertAll(data.a_ProduitInfos)
             database.b_ClientInfosDao().insertAll(data.b_ClientInfos)
@@ -82,7 +82,7 @@ class InfosSqlDataBasesRepository(
         }
     }
 
-    fun deleteAll(onSuccess: () -> Unit) {
+    fun deleteAll(onSuccess: () -> Unit={}) {
         coroutineScope.launch {
             database.a_ProduitInfosDao().deleteAll()
             database.b_ClientInfosDao().deleteAll()
@@ -92,8 +92,8 @@ class InfosSqlDataBasesRepository(
         }
     }
 
-    private fun setToFireBase(infosSqlDataBases: InfosSqlDataBases) {
-        fireBaseHandler.addToFirebaseAsync(infosSqlDataBases)
+    private fun setToFireBase(dataBasesInfosSql: DataBasesInfosSql) {
+        fireBaseHandler.addToFirebaseAsync(dataBasesInfosSql)
     }
 
     suspend fun addNeedUpdateAuAllSiEmpty() {
