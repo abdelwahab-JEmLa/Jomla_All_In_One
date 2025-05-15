@@ -3,7 +3,7 @@ package com.example.clientjetpack.ID3.Test.DataBase.Repo.Models
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-data class _InfosSqlDataBases(
+data class InfosSqlDataBases(
     val a_ProduitInfos: MutableList<A_ProduitInfos> = mutableListOf(),
     val b_ClientInfos: MutableList<B_ClientInfos> = mutableListOf(),
     val c_TypeTarificationInfos: MutableList<C_TypeTarificationInfos> = mutableListOf(),
@@ -14,7 +14,8 @@ data class _InfosSqlDataBases(
 data class A_ProduitInfos(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
-    val nom: String = ""
+    val nom: String = "",
+    val needUpdate: Boolean = false
 )
 
 @Entity
@@ -23,13 +24,15 @@ data class B_ClientInfos(
     val id: Long = 0,
     val nom: String = "Non Difinie",
     val idActiveTypeTarificationDataBase: Long = 0,
+    val needUpdate: Boolean = false
 )
 
 @Entity
 data class C_TypeTarificationInfos(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
-    val typeTarificationEnum: TypeTarificationEnum = TypeTarificationEnum.ParBenifice
+    val typeTarificationEnum: TypeTarificationEnum = TypeTarificationEnum.ParBenifice ,
+    val needUpdate: Boolean = false
 )
 
 @Entity
@@ -39,5 +42,12 @@ data class D_TarificationInfos(
     val idProduit: Long = 0L,
     val idClient: Long = 0L,
     val idTypeTarification: Long = 0L,
-    val prixCurrency: Double = 0.0
+    val prixCurrency: Double = 0.0 ,
+    val needUpdate: Boolean = false
 )
+
+enum class TypeTarificationEnum {
+    ParBenifice,
+    Historique,
+    LeMaxPrixArrive
+}

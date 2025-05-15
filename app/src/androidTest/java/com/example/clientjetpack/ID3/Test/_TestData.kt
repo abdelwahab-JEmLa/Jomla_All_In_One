@@ -4,11 +4,11 @@ import com.example.clientjetpack.ID3.Test.DataBase.Repo.Dao.createTimestamp
 import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.A_ProduitInfos
 import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.B_ClientInfos
 import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.D_TarificationInfos
-import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models._InfosSqlDataBases
+import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.InfosSqlDataBases
 
-fun testDatas(): _InfosSqlDataBases {
+fun testDatas(): InfosSqlDataBases {
 
-        return _InfosSqlDataBases(
+        return InfosSqlDataBases(
             a_ProduitInfos = mutableListOf(
                 A_ProduitInfos(id = 1, nom = "Produit Optila"),
                 A_ProduitInfos(id = 2, nom = "Produit Hnina"),
