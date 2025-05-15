@@ -47,21 +47,6 @@ class __ID3InstrumentalTest : KoinTest {
     fun setup() = runTest(testDispatcher) {
         Dispatchers.setMain(testDispatcher)
         setupKoinTestInject()
-
-        testScheduler.advanceUntilIdle()
-
-        clearAndAddTestData()
-    }
-
-    private suspend fun clearAndAddTestData() {
-        suspendCoroutine { continuation ->
-            infosSqlDataBasesRepository.deleteAll {
-                infosSqlDataBasesRepository.add(testDatas) { data ->
-                    continuation.resume(data)
-                }
-            }
-        }
-
         testScheduler.advanceUntilIdle()
     }
 
@@ -73,23 +58,20 @@ class __ID3InstrumentalTest : KoinTest {
 
     @Test
     fun testFlowWorksAndAssertEqualsTestData() = runTest(testDispatcher) {
-        // Use the success pattern approach instead of relying on advanceUntilIdle
-        suspendCoroutine<Unit> { continuation ->
-            infosSqlDataBasesRepository.add(testDatas) { actualData ->
-                // Perform assertions inside the success callback
-                assertDataMatchesExpected(testDatas, actualData)
-                continuation.resume(Unit)
+        suspendCoroutine { continuation ->
+            infosSqlDataBasesRepository.deleteAll {
+                infosSqlDataBasesRepository.add(testDatas) { actualData ->
+                    assertDataMatchesExpected(testDatas, actualData)
+                    continuation.resume(Unit)
+                }
             }
         }
     }
 
     private fun assertDataMatchesExpected(expected: DataBasesInfosSql, actual: DataBasesInfosSql) {
         Products(expected, actual)
-
         Clients(expected, actual)
-
         Tarifications(expected, actual)
-
         TypeTarifications(expected, actual)
     }
 
@@ -97,7 +79,6 @@ class __ID3InstrumentalTest : KoinTest {
         expected: DataBasesInfosSql,
         actual: DataBasesInfosSql
     ) {
-        // Type Tarifications (which were missing in the original test)
         assertEquals(
             "Type Tarifications list size should match",
             expected.c_TypeTarificationInfos.size,
