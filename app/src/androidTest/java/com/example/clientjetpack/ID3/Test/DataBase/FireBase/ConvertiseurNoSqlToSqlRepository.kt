@@ -26,7 +26,11 @@ class ConvertiseurNoSqlToSqlRepository(
 
     init {
         coroutineScope.launch {
-            // Collect SQL data changes and convert to NoSQL format
+            // Perform initial conversion
+            val initialNoSqlData = convertSqlToNoSql()
+            _noSqlDataFlow.value = initialNoSqlData
+
+            // Then collect SQL data changes and convert to NoSQL format
             sqlRepository.modelListFlow.collect { sqlDataList ->
                 if (sqlDataList.isNotEmpty()) {
                     val noSqlData = convertSqlToNoSql()
@@ -101,12 +105,19 @@ class ConvertiseurNoSqlToSqlRepository(
                     )
                 }
 
+                val result = ProduitNoSqlDataBase(produitsList)
                 onSuccess()
-                ProduitNoSqlDataBase(produitsList)
+                result
             } catch (e: Exception) {
                 e.printStackTrace()
                 ProduitNoSqlDataBase(emptyList())
             }
         }
+    }
+
+    // Force immediate update of NoSQL data - useful for testing
+    suspend fun refreshNoSqlData() {
+        val noSqlData = convertSqlToNoSql()
+        _noSqlDataFlow.value = noSqlData
     }
 }

@@ -73,6 +73,7 @@ class __ID3InstrumentalTest : KoinTest {
                     single {
                         ConvertiseurNoSqlToSqlRepository(
                             get(),
+                            testDispatcher,
                         )
                     }
                 })
@@ -298,6 +299,10 @@ class __ID3InstrumentalTest : KoinTest {
             ?: throw AssertionError("Expected data not found")
         assertDataMatchesExpected(testDatas, actualData)
 
+        // Explicitly force the refresh of NoSQL data
+        convertiseurNoSqlToSqlRepository.refreshNoSqlData()
+        testScheduler.advanceUntilIdle()
+
         // Collect and verify NoSQL data
         val actualDatanoSqlDataFlow = convertiseurNoSqlToSqlRepository.noSqlDataFlow.first()
         assertDataMatchesExpectedNoSql(testDatasProduitNoSqlDataBase(), actualDatanoSqlDataFlow)
@@ -309,5 +314,4 @@ class __ID3InstrumentalTest : KoinTest {
         Tarifications(expected, actual)
         TypeTarifications(expected, actual)
     }
-
 }
