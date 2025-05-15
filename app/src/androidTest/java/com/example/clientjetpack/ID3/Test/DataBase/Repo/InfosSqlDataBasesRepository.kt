@@ -83,7 +83,6 @@ class InfosSqlDataBasesRepository(
     }
 
     private suspend fun collectLatestData() {
-        // Manually update the flow with latest data to ensure it's up to date
         val produits = database.a_ProduitInfosDao().getAllProduitsSync()
         val clients = database.b_ClientInfosDao().getAllClientsSync()
         val typeTarifications = database.c_TypeTarificationInfosDao().getAllTypeTarificationsSync()
@@ -116,7 +115,6 @@ class InfosSqlDataBasesRepository(
                 database.c_TypeTarificationInfosDao().deleteAll()
                 database.dTarificationInfosDao().deleteAll()
 
-                // Make sure we update the flow after clearing data
                 collectLatestData()
 
                 onSuccess()
@@ -130,14 +128,12 @@ class InfosSqlDataBasesRepository(
         try {
             fireBaseHandler.addToFirebaseAsync(dataBasesInfosSql)
         } catch (e: Exception) {
-            // Handle Firebase failures gracefully for testing
             e.printStackTrace()
         }
     }
 
     private suspend fun addNeedUpdateAuAllSiEmpty() {
         try {
-            // If any table is empty, fetch data from Firebase
             val firebaseData = fireBaseHandler.getDataFromFirebase()
             if (firebaseData != null) {
                 val updatedData = DataBasesInfosSql(
@@ -149,14 +145,12 @@ class InfosSqlDataBasesRepository(
                 setToFireBase(updatedData)
             }
         } catch (e: Exception) {
-            // Handle Firebase failures gracefully for testing
             e.printStackTrace()
         }
     }
 
     private suspend fun loadDataFromFirebaseAuRoomSiUnDataANeedUpdate() {
         try {
-            // Check if any data needs update
             val produits = database.a_ProduitInfosDao().getAllProduitsSync()
             val clients = database.b_ClientInfosDao().getAllClientsSync()
             val typeTarifications = database.c_TypeTarificationInfosDao().getAllTypeTarificationsSync()
