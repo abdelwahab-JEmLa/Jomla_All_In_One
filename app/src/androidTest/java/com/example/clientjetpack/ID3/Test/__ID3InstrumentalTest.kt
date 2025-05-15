@@ -71,18 +71,14 @@ class __ID3InstrumentalTest : KoinTest {
     }
 
     private fun idTest2Num1_FreeLuncheFlowWorkEtAssertEqualesTestData() = runTest {
-        // Ensure the dispatcher processes all pending tasks
         testDispatcher.scheduler.advanceUntilIdle()
 
-        // Get the current data from the repository flow
         val repositoryData = infosSqlDataBasesRepository.modelListFlow.first()
 
-        // Verify that we have data
         assert(repositoryData.isNotEmpty()) { "Repository data should not be empty" }
 
         val actualData = repositoryData.first()
 
-        // Compare products
         assertEquals(
             "Products list size should match",
             testDatas.a_ProduitInfos.size,

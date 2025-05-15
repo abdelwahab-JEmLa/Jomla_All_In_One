@@ -6,6 +6,7 @@ import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.B_ClientInfos
 import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.C_TypeTarificationInfos
 import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.D_TarificationInfos
 import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.DataBasesInfosSql
+import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.TypeTarificationEnum
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -16,6 +17,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
+import kotlin.reflect.full.memberProperties
 
 class FireBaseHandler {
     private val ref: DatabaseReference =
@@ -50,58 +52,54 @@ class FireBaseHandler {
         }
     }
 
-    suspend fun clearAndAddTestData(testData: DataBasesInfosSql) = withContext(Dispatchers.IO) {
-        ref.removeValue().await()
-
-        val firebaseData = mapToFirebaseFormat(testData)
-        ref.setValue(firebaseData).await()
-    }
-
     private fun mapToFirebaseFormat(dataBasesInfosSql: DataBasesInfosSql): Map<String, Any> {
         val data = mutableMapOf<String, Any>()
 
+        // Map products 
         val productsMap = mutableMapOf<String, Any>()
         dataBasesInfosSql.a_ProduitInfos.forEach { produit ->
-            productsMap["prod_${produit.id}"] = mapOf(
-                "id" to produit.id,
-                "nom" to produit.nom,
-                "needUpdate" to produit.needUpdate
-            )
+            // Use reflection to get all properties dynamically
+            val produitMap = produit::class.memberProperties.associate {
+                it.name to it.getter.call(produit)
+            }
+            productsMap["prod_${produit.id}"] = produitMap
         }
         data["produits"] = productsMap
 
+        // Map clients
         val clientsMap = mutableMapOf<String, Any>()
         dataBasesInfosSql.b_ClientInfos.forEach { client ->
-            clientsMap["client_${client.id}"] = mapOf(
-                "id" to client.id,
-                "nom" to client.nom,
-                "idActiveTypeTarificationDataBase" to client.idActiveTypeTarificationDataBase,
-                "needUpdate" to client.needUpdate
-            )
+            val clientMap = client::class.memberProperties.associate {
+                it.name to it.getter.call(client)
+            }
+            clientsMap["client_${client.id}"] = clientMap
         }
         data["clients"] = clientsMap
 
+        // Map type tarifications
         val typeTarifMap = mutableMapOf<String, Any>()
         dataBasesInfosSql.c_TypeTarificationInfos.forEach { typeTarif ->
-            typeTarifMap["type_${typeTarif.id}"] = mapOf(
-                "id" to typeTarif.id,
-                "typeTarificationEnum" to typeTarif.typeTarificationEnum.name,
-                "needUpdate" to typeTarif.needUpdate
-            )
+            val typeMap = mutableMapOf<String, Any>()
+            typeTarif::class.memberProperties.forEach { prop ->
+                val value = prop.getter.call(typeTarif)
+                // Handle enum specially
+                if (value is TypeTarificationEnum) {
+                    typeMap[prop.name] = value.name
+                } else {
+                    typeMap[prop.name] = value as Any
+                }
+            }
+            typeTarifMap["type_${typeTarif.id}"] = typeMap
         }
         data["typeTarifications"] = typeTarifMap
 
         // Map tarifications
         val tarifsMap = mutableMapOf<String, Any>()
         dataBasesInfosSql.d_TarificationInfos.forEach { tarif ->
-            tarifsMap["tarif_${tarif.vidTimestamp}"] = mapOf(
-                "vidTimestamp" to tarif.vidTimestamp,
-                "idProduit" to tarif.idProduit,
-                "idClient" to tarif.idClient,
-                "idTypeTarification" to tarif.idTypeTarification,
-                "prixCurrency" to tarif.prixCurrency,
-                "needUpdate" to tarif.needUpdate
-            )
+            val tarifMap = tarif::class.memberProperties.associate {
+                it.name to it.getter.call(tarif)
+            }
+            tarifsMap["tarif_${tarif.vidTimestamp}"] = tarifMap
         }
         data["tarifications"] = tarifsMap
 
@@ -109,57 +107,157 @@ class FireBaseHandler {
     }
 
     private fun mapFromFirebaseSnapshot(snapshot: DataSnapshot): DataBasesInfosSql {
-        val produits = mutableListOf<A_ProduitInfos>()
+        // Create empty lists for each data type
+        val products = mutableListOf<A_ProduitInfos>()
         val clients = mutableListOf<B_ClientInfos>()
         val typeTarifications = mutableListOf<C_TypeTarificationInfos>()
         val tarifications = mutableListOf<D_TarificationInfos>()
 
-        // Parse products
-        snapshot.child("produits").children.forEach { produitSnapshot ->
-            val id = produitSnapshot.child("id").getValue(Long::class.java) ?: 0
-            val nom = produitSnapshot.child("nom").getValue(String::class.java) ?: ""
-            val needUpdate = produitSnapshot.child("needUpdate").getValue(Boolean::class.java) ?: false
+        // Extract products
+        val productsSnapshot = snapshot.child("produits")
+        if (productsSnapshot.exists()) {
+            for (productSnap in productsSnapshot.children) {
+                try {
+                    // Use reflection to create a new product instance with all fields
+                    val id = productSnap.child("id").getValue(Long::class.java) ?: 0L
+                    val product = A_ProduitInfos::class.java.getDeclaredConstructor().newInstance()
 
-            produits.add(A_ProduitInfos(id, nom, needUpdate))
-        }
+                    // Set each field dynamically
+                    for (field in A_ProduitInfos::class.java.declaredFields) {
+                        field.isAccessible = true
+                        val childSnapshot = productSnap.child(field.name)
+                        if (childSnapshot.exists()) {
+                            val value = when (field.type) {
+                                Long::class.java -> childSnapshot.getValue(Long::class.java)
+                                String::class.java -> childSnapshot.getValue(String::class.java)
+                                Boolean::class.java -> childSnapshot.getValue(Boolean::class.java)
+                                else -> null
+                            }
+                            if (value != null) {
+                                field.set(product, value)
+                            }
+                        }
+                    }
 
-        // Parse clients
-        snapshot.child("clients").children.forEach { clientSnapshot ->
-            val id = clientSnapshot.child("id").getValue(Long::class.java) ?: 0
-            val nom = clientSnapshot.child("nom").getValue(String::class.java) ?: "Non Difinie"
-            val idActiveTypeTarificationDataBase = clientSnapshot.child("idActiveTypeTarificationDataBase").getValue(Long::class.java) ?: 0
-            val needUpdate = clientSnapshot.child("needUpdate").getValue(Boolean::class.java) ?: false
-
-            clients.add(B_ClientInfos(id, nom, idActiveTypeTarificationDataBase, needUpdate))
-        }
-
-        // Parse type tarifications
-        snapshot.child("typeTarifications").children.forEach { typeSnapshot ->
-            val id = typeSnapshot.child("id").getValue(Long::class.java) ?: 0
-            val typeEnumStr = typeSnapshot.child("typeTarificationEnum").getValue(String::class.java) ?: "ParBenifice"
-            val typeEnum = try {
-                com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.TypeTarificationEnum.valueOf(typeEnumStr)
-            } catch (e: Exception) {
-                com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.TypeTarificationEnum.ParBenifice
+                    products.add(product)
+                } catch (e: Exception) {
+                    // Handle parsing errors safely
+                    println("Error parsing product data: ${e.message}")
+                }
             }
-            val needUpdate = typeSnapshot.child("needUpdate").getValue(Boolean::class.java) ?: false
-
-            typeTarifications.add(C_TypeTarificationInfos(id, typeEnum, needUpdate))
         }
 
-        // Parse tarifications
-        snapshot.child("tarifications").children.forEach { tarifSnapshot ->
-            val vidTimestamp = tarifSnapshot.child("vidTimestamp").getValue(Long::class.java) ?: 0L
-            val idProduit = tarifSnapshot.child("idProduit").getValue(Long::class.java) ?: 0L
-            val idClient = tarifSnapshot.child("idClient").getValue(Long::class.java) ?: 0L
-            val idTypeTarification = tarifSnapshot.child("idTypeTarification").getValue(Long::class.java) ?: 0L
-            val prixCurrency = tarifSnapshot.child("prixCurrency").getValue(Double::class.java) ?: 0.0
-            val needUpdate = tarifSnapshot.child("needUpdate").getValue(Boolean::class.java) ?: false
+        // Extract clients
+        val clientsSnapshot = snapshot.child("clients")
+        if (clientsSnapshot.exists()) {
+            for (clientSnap in clientsSnapshot.children) {
+                try {
+                    // Use reflection to create a new client instance with all fields
+                    val client = B_ClientInfos::class.java.getDeclaredConstructor().newInstance()
 
-            tarifications.add(D_TarificationInfos(vidTimestamp, idProduit, idClient, idTypeTarification, prixCurrency, needUpdate))
+                    // Set each field dynamically
+                    for (field in B_ClientInfos::class.java.declaredFields) {
+                        field.isAccessible = true
+                        val childSnapshot = clientSnap.child(field.name)
+                        if (childSnapshot.exists()) {
+                            val value = when (field.type) {
+                                Long::class.java -> childSnapshot.getValue(Long::class.java)
+                                String::class.java -> childSnapshot.getValue(String::class.java)
+                                Boolean::class.java -> childSnapshot.getValue(Boolean::class.java)
+                                else -> null
+                            }
+                            if (value != null) {
+                                field.set(client, value)
+                            }
+                        }
+                    }
+
+                    clients.add(client)
+                } catch (e: Exception) {
+                    println("Error parsing client data: ${e.message}")
+                }
+            }
         }
 
-        return DataBasesInfosSql(produits, clients, typeTarifications, tarifications)
+        // Extract type tarifications
+        val typeTarifsSnapshot = snapshot.child("typeTarifications")
+        if (typeTarifsSnapshot.exists()) {
+            for (typeSnap in typeTarifsSnapshot.children) {
+                try {
+                    // Use reflection to create a new type tarification instance with all fields
+                    val typeTarif = C_TypeTarificationInfos::class.java.getDeclaredConstructor().newInstance()
+
+                    // Set each field dynamically
+                    for (field in C_TypeTarificationInfos::class.java.declaredFields) {
+                        field.isAccessible = true
+                        val childSnapshot = typeSnap.child(field.name)
+                        if (childSnapshot.exists()) {
+                            val value = when (field.type) {
+                                Long::class.java -> childSnapshot.getValue(Long::class.java)
+                                String::class.java -> childSnapshot.getValue(String::class.java)
+                                Boolean::class.java -> childSnapshot.getValue(Boolean::class.java)
+                                TypeTarificationEnum::class.java -> {
+                                    val typeTarifString = childSnapshot.getValue(String::class.java) ?: "ParBenifice"
+                                    try {
+                                        TypeTarificationEnum.valueOf(typeTarifString)
+                                    } catch (e: Exception) {
+                                        TypeTarificationEnum.ParBenifice
+                                    }
+                                }
+                                else -> null
+                            }
+                            if (value != null) {
+                                field.set(typeTarif, value)
+                            }
+                        }
+                    }
+
+                    typeTarifications.add(typeTarif)
+                } catch (e: Exception) {
+                    println("Error parsing type tarification data: ${e.message}")
+                }
+            }
+        }
+
+        // Extract tarifications
+        val tarifsSnapshot = snapshot.child("tarifications")
+        if (tarifsSnapshot.exists()) {
+            for (tarifSnap in tarifsSnapshot.children) {
+                try {
+                    // Use reflection to create a new tarification instance with all fields
+                    val tarif = D_TarificationInfos::class.java.getDeclaredConstructor().newInstance()
+
+                    // Set each field dynamically
+                    for (field in D_TarificationInfos::class.java.declaredFields) {
+                        field.isAccessible = true
+                        val childSnapshot = tarifSnap.child(field.name)
+                        if (childSnapshot.exists()) {
+                            val value = when (field.type) {
+                                Long::class.java -> childSnapshot.getValue(Long::class.java)
+                                Double::class.java -> childSnapshot.getValue(Double::class.java)
+                                Boolean::class.java -> childSnapshot.getValue(Boolean::class.java)
+                                else -> null
+                            }
+                            if (value != null) {
+                                field.set(tarif, value)
+                            }
+                        }
+                    }
+
+                    tarifications.add(tarif)
+                } catch (e: Exception) {
+                    println("Error parsing tarification data: ${e.message}")
+                }
+            }
+        }
+
+        // Return the complete data structure
+        return DataBasesInfosSql(
+            a_ProduitInfos = products,
+            b_ClientInfos = clients,
+            c_TypeTarificationInfos = typeTarifications,
+            d_TarificationInfos = tarifications
+        )
     }
 
     // Extension function to convert Firebase Task to suspend function

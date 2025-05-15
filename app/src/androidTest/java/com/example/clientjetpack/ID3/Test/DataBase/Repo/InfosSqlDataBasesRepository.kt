@@ -96,23 +96,21 @@ class InfosSqlDataBasesRepository(
         fireBaseHandler.addToFirebaseAsync(dataBasesInfosSql)
     }
 
-    suspend fun addNeedUpdateAuAllSiEmpty() {
-        // Check if any of the tables are empty
-        val produits = database.a_ProduitInfosDao().getAllProduitsSync()
-        val clients = database.b_ClientInfosDao().getAllClientsSync()
-        val typeTarifications = database.c_TypeTarificationInfosDao().getAllTypeTarificationsSync()
-        val tarifications = database.dTarificationInfosDao().getAllTarificationsSync()
-
-        if (produits.isEmpty() || clients.isEmpty() || typeTarifications.isEmpty() || tarifications.isEmpty()) {
-            // If any table is empty, fetch data from Firebase
-            val firebaseData = fireBaseHandler.getDataFromFirebase()
-            if (firebaseData != null) {
-                insertToRoom(firebaseData)
-            }
+    private suspend fun addNeedUpdateAuAllSiEmpty() {
+        // If any table is empty, fetch data from Firebase
+        val firebaseData = fireBaseHandler.getDataFromFirebase()
+        if (firebaseData != null) {
+            val updatedData = DataBasesInfosSql(
+                a_ProduitInfos = firebaseData.a_ProduitInfos.map { it.copy(needUpdate = true) }.toMutableList(),
+                b_ClientInfos = firebaseData.b_ClientInfos.map { it.copy(needUpdate = true) }.toMutableList(),
+                c_TypeTarificationInfos = firebaseData.c_TypeTarificationInfos.map { it.copy(needUpdate = true) }.toMutableList(),
+                d_TarificationInfos = firebaseData.d_TarificationInfos.map { it.copy(needUpdate = true) }.toMutableList()
+            )
+            setToFireBase(updatedData)
         }
     }
 
-    suspend fun loadDataFromFirebaseAuRoomSiUnDataANeedUpdate() {
+    private suspend fun loadDataFromFirebaseAuRoomSiUnDataANeedUpdate() {
         try {
             // Check if any data needs update
             val produits = database.a_ProduitInfosDao().getAllProduitsSync()
@@ -126,10 +124,8 @@ class InfosSqlDataBasesRepository(
                     tarifications.any { it.needUpdate }
 
             if (needsUpdate) {
-                // Fetch updated data from Firebase
                 val firebaseData = fireBaseHandler.getDataFromFirebase()
                 if (firebaseData != null) {
-                    // Update the Room database with the new data
                     insertToRoom(firebaseData)
                 }
             }
