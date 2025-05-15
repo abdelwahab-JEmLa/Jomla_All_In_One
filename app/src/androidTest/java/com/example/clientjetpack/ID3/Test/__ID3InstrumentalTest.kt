@@ -4,7 +4,6 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.clientjetpack.ID3.Test.DataBase.Repo.Home.setupKoinTestInject
 import com.example.clientjetpack.ID3.Test.DataBase.Repo.InfosSqlDataBasesRepository
-import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.DataBasesInfosSql
 import com.example.clientjetpack.Modules.LogFilterRule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -50,32 +49,23 @@ class __ID3InstrumentalTest : KoinTest {
 
     @Before
     fun setup() = runTest(testDispatcher) {
-        // Set the main dispatcher to our test dispatcher
         Dispatchers.setMain(testDispatcher)
         setupKoinTestInject()
 
-        // Make sure to advance the dispatcher before any operation
         testScheduler.advanceUntilIdle()
 
-        // Clear database and add test data
         clearAndAddTestData()
     }
 
     private suspend fun clearAndAddTestData() {
-        // No longer using withContext since we're already in the correct dispatcher context
-        // Use suspendCoroutine to make sure operations complete
-        suspendCoroutine<DataBasesInfosSql> { continuation ->
-            // Clear the database first
+        suspendCoroutine { continuation ->
             infosSqlDataBasesRepository.deleteAll {
-                // Add test data to repository and wait for it to complete
                 infosSqlDataBasesRepository.add(testDatas) { data ->
-                    // Resume the coroutine once data is added
                     continuation.resume(data)
                 }
             }
         }
 
-        // Explicitly advance the scheduler after operations
         testScheduler.advanceUntilIdle()
     }
 
@@ -87,13 +77,10 @@ class __ID3InstrumentalTest : KoinTest {
 
     @Test
     fun testFlowWorksAndAssertEqualsTestData() = runTest(testDispatcher) {
-        // Ensure the test scheduler processes all pending tasks
         testScheduler.advanceUntilIdle()
 
-        // Wait a moment to ensure data collection is complete
         val repositoryData = infosSqlDataBasesRepository.modelListFlow.first()
 
-        // Debugging
         println("Repository data size: ${repositoryData.size}")
         if (repositoryData.isNotEmpty()) {
             println("Products: ${repositoryData.first().a_ProduitInfos.size}")
@@ -105,7 +92,6 @@ class __ID3InstrumentalTest : KoinTest {
 
         val actualData = repositoryData.first()
 
-        // Compare products
         assertEquals(
             "Products list size should match",
             testDatas.a_ProduitInfos.size,
@@ -123,7 +109,6 @@ class __ID3InstrumentalTest : KoinTest {
             )
         }
 
-        // Compare clients
         assertEquals(
             "Clients list size should match",
             testDatas.b_ClientInfos.size,
@@ -145,7 +130,6 @@ class __ID3InstrumentalTest : KoinTest {
             )
         }
 
-        // Compare tarifications
         assertEquals(
             "Tarifications list size should match",
             testDatas.d_TarificationInfos.size,
