@@ -40,7 +40,7 @@ class ConvertiseurNoSqlToSqlRepository(
         }
     }
 
-    suspend fun convertSqlToNoSql(
+    private suspend fun convertSqlToNoSql(
         onSuccess: () -> Unit = {}
     ): ProduitNoSqlDataBase {
         return withContext(ioDispatcher) {
