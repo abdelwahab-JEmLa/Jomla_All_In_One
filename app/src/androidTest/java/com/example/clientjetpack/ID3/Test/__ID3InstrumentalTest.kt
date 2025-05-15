@@ -79,6 +79,7 @@ class __ID3InstrumentalTest : KoinTest {
 
         val actualData = repositoryData.first()
 
+        // Compare products
         assertEquals(
             "Products list size should match",
             testDatas.a_ProduitInfos.size,

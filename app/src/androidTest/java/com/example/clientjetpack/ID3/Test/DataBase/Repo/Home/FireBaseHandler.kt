@@ -7,6 +7,7 @@ import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.C_TypeTarificatio
 import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.D_TarificationInfos
 import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.DataBasesInfosSql
 import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.TypeTarificationEnum
+import com.google.android.gms.tasks.Task
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -261,7 +262,7 @@ class FireBaseHandler {
     }
 
     // Extension function to convert Firebase Task to suspend function
-    private suspend fun <T> com.google.android.gms.tasks.Task<T>.await(): T = suspendCancellableCoroutine { continuation ->
+    private suspend fun <T> Task<T>.await(): T = suspendCancellableCoroutine { continuation ->
         addOnSuccessListener { result ->
             continuation.resume(result)
         }
