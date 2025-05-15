@@ -38,13 +38,9 @@ class __ID3InstrumentalTest : KoinTest {
         .filterByTag("OperationTrackerImp")
         .build()
 
-    // Single scheduler that will be shared across all dispatchers
     private val testScheduler = TestCoroutineScheduler()
     private val testDispatcher = StandardTestDispatcher(testScheduler)
-
-    // Use the implementation class instead of the interface
     private val infosSqlDataBasesRepository: InfosSqlDataBasesRepository by inject()
-
     private val testDatas = testDatas()
 
     @Before
