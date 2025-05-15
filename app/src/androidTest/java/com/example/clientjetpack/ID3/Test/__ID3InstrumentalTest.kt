@@ -3,10 +3,10 @@ package com.example.clientjetpack.ID3.Test
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.FireBaseHandler
-import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo._InfosSqlDataBases_GroupeRepositorys
-import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo._InfosSqlDataBases_GroupeRepositorysImp
-import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.TestAppDatabase
+import com.example.clientjetpack.ID3.Test.DataBase.FireBaseHandler
+import com.example.clientjetpack.ID3.Test.DataBase.Repo._InfosSqlDataBases_GroupeRepositorys
+import com.example.clientjetpack.ID3.Test.DataBase.Repo._InfosSqlDataBases_GroupeRepositorysImp
+import com.example.clientjetpack.ID3.Test.DataBase.TestAppDatabase
 import com.example.clientjetpack.Modules.LogFilterRule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -24,10 +24,9 @@ import org.koin.core.context.stopKoin
 import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.inject
-
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
-class __ID2InstrumentalTest : KoinTest {
+class __ID3InstrumentalTest : KoinTest {
     @get:Rule
     val rule: InstantTaskExecutorRule = InstantTaskExecutorRule()
 
@@ -69,7 +68,7 @@ class __ID2InstrumentalTest : KoinTest {
                         )
                     }
 
-                    single { this@__ID2InstrumentalTest }
+                    single { this@__ID3InstrumentalTest }
                     single { FireBaseHandler() }
                 }
             )

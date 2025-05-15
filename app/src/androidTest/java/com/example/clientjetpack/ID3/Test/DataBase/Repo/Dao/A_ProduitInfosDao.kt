@@ -5,13 +5,11 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo.Models.A_ProduitInfos //<--
-//TODO(1): change depuit package com.example.clientjetpack.ID3.Test.DataBase.Repo.Models meme pour les autres
-import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo.Models.B_ClientInfos
-import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo.Models.C_TypeTarificationInfos
-import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo.Models.D_TarificationInfos
+import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.A_ProduitInfos
+import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.B_ClientInfos
+import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.C_TypeTarificationInfos
+import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.D_TarificationInfos
 import kotlinx.coroutines.flow.Flow
-
 @Dao
 interface A_ProduitInfosDao {
     @Query("SELECT * FROM A_ProduitInfos")

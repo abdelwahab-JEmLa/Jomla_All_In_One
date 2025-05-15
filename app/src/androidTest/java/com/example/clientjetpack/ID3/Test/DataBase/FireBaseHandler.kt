@@ -1,9 +1,10 @@
 package com.example.clientjetpack.ID3.Test.DataBase
+
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
-import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo.Models.A_ProduitInfos
-import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo.Models.B_ClientInfos
-import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo.Models.C_TypeTarificationInfos
-import com.example.clientjetpack.ID1.Test.ID2.Test.DataBase.Repo.Models.D_TarificationInfos
+import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.A_ProduitInfos
+import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.B_ClientInfos
+import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.C_TypeTarificationInfos
+import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.D_TarificationInfos
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
