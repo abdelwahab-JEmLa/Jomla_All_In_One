@@ -10,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestCoroutineScheduler
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -22,6 +23,8 @@ import org.junit.runner.RunWith
 import org.koin.core.context.stopKoin
 import org.koin.test.KoinTest
 import org.koin.test.inject
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
@@ -36,7 +39,9 @@ class __ID3InstrumentalTest : KoinTest {
         .filterByTag("OperationTrackerImp")
         .build()
 
-    private val testDispatcher = StandardTestDispatcher()
+    // Single scheduler that will be shared across all dispatchers
+    private val testScheduler = TestCoroutineScheduler()
+    private val testDispatcher = StandardTestDispatcher(testScheduler)
 
     // Use the implementation class instead of the interface
     private val infosSqlDataBasesRepository: InfosSqlDataBasesRepository by inject()
@@ -44,24 +49,34 @@ class __ID3InstrumentalTest : KoinTest {
     private val testDatas = testDatas()
 
     @Before
-    fun setup() = runTest {
+    fun setup() = runTest(testDispatcher) {
+        // Set the main dispatcher to our test dispatcher
         Dispatchers.setMain(testDispatcher)
         setupKoinTestInject()
-        clearAddTestDataAuFireBase(testDatas)
+
+        // Make sure to advance the dispatcher before any operation
+        testScheduler.advanceUntilIdle()
+
+        // Clear database and add test data
+        clearAndAddTestData()
     }
 
-    @Test
-    fun clearAddTestDataAuFireBase(testDatas: DataBasesInfosSql) = runTest {
-        // Clear the database first
-        infosSqlDataBasesRepository.deleteAll {
-            // Add test data to repository and wait for it to complete
-            infosSqlDataBasesRepository.add(testDatas) { _ ->
-                idTest2Num1_FreeLuncheFlowWorkEtAssertEqualesTestData()
+    private suspend fun clearAndAddTestData() {
+        // No longer using withContext since we're already in the correct dispatcher context
+        // Use suspendCoroutine to make sure operations complete
+        suspendCoroutine<DataBasesInfosSql> { continuation ->
+            // Clear the database first
+            infosSqlDataBasesRepository.deleteAll {
+                // Add test data to repository and wait for it to complete
+                infosSqlDataBasesRepository.add(testDatas) { data ->
+                    // Resume the coroutine once data is added
+                    continuation.resume(data)
+                }
             }
         }
 
-        // Advance the test dispatcher to ensure all operations complete
-        testDispatcher.scheduler.advanceUntilIdle()
+        // Explicitly advance the scheduler after operations
+        testScheduler.advanceUntilIdle()
     }
 
     @After
@@ -70,10 +85,21 @@ class __ID3InstrumentalTest : KoinTest {
         stopKoin()
     }
 
-    private fun idTest2Num1_FreeLuncheFlowWorkEtAssertEqualesTestData() = runTest {
-        testDispatcher.scheduler.advanceUntilIdle()
+    @Test
+    fun testFlowWorksAndAssertEqualsTestData() = runTest(testDispatcher) {
+        // Ensure the test scheduler processes all pending tasks
+        testScheduler.advanceUntilIdle()
 
+        // Wait a moment to ensure data collection is complete
         val repositoryData = infosSqlDataBasesRepository.modelListFlow.first()
+
+        // Debugging
+        println("Repository data size: ${repositoryData.size}")
+        if (repositoryData.isNotEmpty()) {
+            println("Products: ${repositoryData.first().a_ProduitInfos.size}")
+            println("Clients: ${repositoryData.first().b_ClientInfos.size}")
+            println("Tarifs: ${repositoryData.first().d_TarificationInfos.size}")
+        }
 
         assert(repositoryData.isNotEmpty()) { "Repository data should not be empty" }
 
