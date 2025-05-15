@@ -1,17 +1,17 @@
-package com.example.clientjetpack.ID3.Test.DataBase.Repo.Home
+package com.example.clientjetpack.ID3.Test.DataBase.SQL.Home
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.example.clientjetpack.ID3.Test.DataBase.Repo.Dao.A_ProduitInfosDao
-import com.example.clientjetpack.ID3.Test.DataBase.Repo.Dao.B_ClientInfosDao
-import com.example.clientjetpack.ID3.Test.DataBase.Repo.Dao.C_TypeTarificationInfosDao
-import com.example.clientjetpack.ID3.Test.DataBase.Repo.Dao.D_TarificationInfosDao
-import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.A_ProduitInfos
-import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.B_ClientInfos
-import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.C_TypeTarificationInfos
-import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.D_TarificationInfos
+import com.example.clientjetpack.ID3.Test.DataBase.SQL.Dao.A_ProduitInfosDao
+import com.example.clientjetpack.ID3.Test.DataBase.SQL.Dao.B_ClientInfosDao
+import com.example.clientjetpack.ID3.Test.DataBase.SQL.Dao.C_TypeTarificationInfosDao
+import com.example.clientjetpack.ID3.Test.DataBase.SQL.Dao.D_TarificationInfosDao
+import com.example.clientjetpack.ID3.Test.DataBase.SQL.Models.A_ProduitInfos
+import com.example.clientjetpack.ID3.Test.DataBase.SQL.Models.B_ClientInfos
+import com.example.clientjetpack.ID3.Test.DataBase.SQL.Models.C_TypeTarificationInfos
+import com.example.clientjetpack.ID3.Test.DataBase.SQL.Models.D_TarificationInfos
 
 @Database(
     entities = [

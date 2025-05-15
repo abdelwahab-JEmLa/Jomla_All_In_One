@@ -1,4 +1,4 @@
-package com.example.clientjetpack.ID3.Test.DataBase.Repo.Models
+package com.example.clientjetpack.ID3.Test.DataBase.SQL.Models
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -31,7 +31,7 @@ data class B_ClientInfos(
 data class C_TypeTarificationInfos(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
-    val typeTarificationEnum: TypeTarificationEnum = TypeTarificationEnum.ParBenifice ,
+    val typeTarificationEnum: TypeTarificationEnum = TypeTarificationEnum.ParBenifice,
     val needUpdate: Boolean = false
 )
 

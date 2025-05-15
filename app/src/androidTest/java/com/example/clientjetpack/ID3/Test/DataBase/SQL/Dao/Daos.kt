@@ -1,14 +1,14 @@
-package com.example.clientjetpack.ID3.Test.DataBase.Repo.Dao
+package com.example.clientjetpack.ID3.Test.DataBase.SQL.Dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.A_ProduitInfos
-import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.B_ClientInfos
-import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.C_TypeTarificationInfos
-import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.D_TarificationInfos
+import com.example.clientjetpack.ID3.Test.DataBase.SQL.Models.A_ProduitInfos
+import com.example.clientjetpack.ID3.Test.DataBase.SQL.Models.B_ClientInfos
+import com.example.clientjetpack.ID3.Test.DataBase.SQL.Models.C_TypeTarificationInfos
+import com.example.clientjetpack.ID3.Test.DataBase.SQL.Models.D_TarificationInfos
 import kotlinx.coroutines.flow.Flow
 @Dao
 interface A_ProduitInfosDao {

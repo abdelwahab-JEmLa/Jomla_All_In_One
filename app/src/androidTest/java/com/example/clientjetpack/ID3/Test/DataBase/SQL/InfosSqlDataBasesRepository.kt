@@ -1,8 +1,8 @@
-package com.example.clientjetpack.ID3.Test.DataBase.Repo
+package com.example.clientjetpack.ID3.Test.DataBase.SQL
 
-import com.example.clientjetpack.ID3.Test.DataBase.Repo.Home.FireBaseHandler
-import com.example.clientjetpack.ID3.Test.DataBase.Repo.Home.TestAppDatabase
-import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.DataBasesInfosSql
+import com.example.clientjetpack.ID3.Test.DataBase.SQL.Home.FireBaseHandler
+import com.example.clientjetpack.ID3.Test.DataBase.SQL.Home.TestAppDatabase
+import com.example.clientjetpack.ID3.Test.DataBase.SQL.Models.DataBasesInfosSql
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -26,7 +26,6 @@ class InfosSqlDataBasesRepository(
         set(value) {
             _modelListFlow.value = value
         }
-
     val modelListFlow: StateFlow<List<DataBasesInfosSql>> = _modelListFlow.asStateFlow()
 
     init {
@@ -66,7 +65,7 @@ class InfosSqlDataBasesRepository(
 
     fun add(
         data: DataBasesInfosSql,
-        onSuccess: (DataBasesInfosSql) -> Unit={}
+        onSuccess: () -> Unit={}
     ) {
         coroutineScope.launch {
             try {
@@ -74,7 +73,7 @@ class InfosSqlDataBasesRepository(
                 setToFireBase(data)
 
                 collectLatestData {
-                    onSuccess(modelList.firstOrNull() ?: data)
+                    onSuccess()
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

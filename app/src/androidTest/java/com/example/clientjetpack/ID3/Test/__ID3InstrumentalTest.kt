@@ -2,12 +2,19 @@ package com.example.clientjetpack.ID3.Test
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.clientjetpack.ID3.Test.DataBase.Repo.Home.setupKoinTestInject
-import com.example.clientjetpack.ID3.Test.DataBase.Repo.InfosSqlDataBasesRepository
-import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.DataBasesInfosSql
+import androidx.test.platform.app.InstrumentationRegistry
+import com.example.clientjetpack.ID3.Test.DataBase.SQL.Home.FireBaseHandler
+import com.example.clientjetpack.ID3.Test.DataBase.SQL.Home.TestAppDatabase
+import com.example.clientjetpack.ID3.Test.DataBase.SQL.InfosSqlDataBasesRepository
+import com.example.clientjetpack.ID3.Test.DataBase.SQL.Models.A_ProduitInfos
+import com.example.clientjetpack.ID3.Test.DataBase.SQL.Models.B_ClientInfos
+import com.example.clientjetpack.ID3.Test.DataBase.SQL.Models.D_TarificationInfos
+import com.example.clientjetpack.ID3.Test.DataBase.SQL.Models.DataBasesInfosSql
 import com.example.clientjetpack.Modules.LogFilterRule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestCoroutineScheduler
 import kotlinx.coroutines.test.resetMain
@@ -19,9 +26,12 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
+import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.inject
+import java.util.Calendar
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -46,7 +56,27 @@ class __ID3InstrumentalTest : KoinTest {
     @Before
     fun setup() = runTest(testDispatcher) {
         Dispatchers.setMain(testDispatcher)
-        setupKoinTestInject()
+        stopKoin()
+
+        val testDispatcher = StandardTestDispatcher(testScheduler)
+
+        startKoin {
+            modules(
+                module {
+                    single {
+                        TestAppDatabase.getTestDatabase(InstrumentationRegistry.getInstrumentation().targetContext)
+                    }
+
+                    single {
+                        InfosSqlDataBasesRepository(
+                            get(),
+                            get(),
+                            testDispatcher ,
+                        )
+                    }
+                    single { FireBaseHandler() }
+                })
+        }
         testScheduler.advanceUntilIdle()
     }
 
@@ -60,9 +90,13 @@ class __ID3InstrumentalTest : KoinTest {
     fun testFlowWorksAndAssertEqualsTestData() = runTest(testDispatcher) {
         suspendCoroutine { continuation ->
             infosSqlDataBasesRepository.deleteAll {
-                infosSqlDataBasesRepository.add(testDatas) { actualData ->
-                    assertDataMatchesExpected(testDatas, actualData)
-                    continuation.resume(Unit)
+                infosSqlDataBasesRepository.add(testDatas) {
+                    launch {
+                        val actualDataList = infosSqlDataBasesRepository.modelListFlow.first()
+                        val actualData = actualDataList.firstOrNull() ?: throw AssertionError("Expected data not found")
+                        assertDataMatchesExpected(testDatas, actualData)
+                        continuation.resume(Unit)
+                    }
                 }
             }
         }
@@ -187,4 +221,75 @@ class __ID3InstrumentalTest : KoinTest {
             )
         }
     }
+
+    private fun testDatas(): DataBasesInfosSql {
+        return DataBasesInfosSql(
+            a_ProduitInfos = mutableListOf(
+                A_ProduitInfos(id = 1, nom = "Produit Optila"),
+                A_ProduitInfos(id = 2, nom = "Produit Hnina"),
+                A_ProduitInfos(id = 3, nom = "Produit kemya")
+            ),
+            b_ClientInfos = mutableListOf(
+                B_ClientInfos(
+                    id = 1,
+                    nom = "ClientAchteur Abderrahman",
+                    idActiveTypeTarificationDataBase = 1
+                ),
+                B_ClientInfos(
+                    id = 2,
+                    nom = "ClientAchteur Beta",
+                    idActiveTypeTarificationDataBase = 2
+                ),
+                B_ClientInfos(
+                    id = 3,
+                    nom = "ClientAchteur Gamma",
+                    idActiveTypeTarificationDataBase = 3
+                )
+            ),
+            d_TarificationInfos = mutableListOf(
+                D_TarificationInfos(
+                    vidTimestamp = createTimestamp(day = 1, hour = 12, minute = 30),
+                    idProduit = 1,
+                    idClient = 1,
+                    idTypeTarification = 1,
+                    prixCurrency = 20.99
+                ),
+                D_TarificationInfos(
+                    vidTimestamp = createTimestamp(day = 5, hour = 13, minute = 30),
+                    idProduit = 1,
+                    idClient = 1,
+                    idTypeTarification = 1,
+                    prixCurrency = 25.50
+                ),
+                D_TarificationInfos(
+                    vidTimestamp = createTimestamp(day = 5, hour = 14, minute = 30),
+                    idProduit = 1,
+                    idClient = 2,
+                    idTypeTarification = 2,
+                    prixCurrency = 9.75
+                ),
+                D_TarificationInfos(
+                    vidTimestamp = createTimestamp(day = 6, hour = 3, minute = 30),
+                    idProduit = 2,
+                    idClient = 1,
+                    idTypeTarification = 1,
+                    prixCurrency = 15.25
+                ),
+                D_TarificationInfos(
+                    vidTimestamp = createTimestamp(day = 6, hour = 4, minute = 30),
+                    idProduit = 3,
+                    idClient = 1,
+                    idTypeTarification = 3,
+                    prixCurrency = 14.80
+                )
+            )
+        )
+    }
+    fun createTimestamp(year: Int = 2025, month: Int = 5, day: Int, hour: Int, minute: Int): Long {
+        val calendar = Calendar.getInstance()
+        calendar.set(year, month - 1, day, hour, minute, 0)
+        calendar.set(Calendar.MILLISECOND, 0)
+        return calendar.timeInMillis
+    }
+
 }

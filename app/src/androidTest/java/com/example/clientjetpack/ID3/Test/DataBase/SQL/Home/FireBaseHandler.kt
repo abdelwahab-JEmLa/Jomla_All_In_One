@@ -1,12 +1,12 @@
-package com.example.clientjetpack.ID3.Test.DataBase.Repo.Home
+package com.example.clientjetpack.ID3.Test.DataBase.SQL.Home
 
 import Z_CodePartageEntreApps.Repository._0_0_HeadOfRepositorys._0_0_HeadOfRepositorys_Model
-import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.A_ProduitInfos
-import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.B_ClientInfos
-import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.C_TypeTarificationInfos
-import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.D_TarificationInfos
-import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.DataBasesInfosSql
-import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.TypeTarificationEnum
+import com.example.clientjetpack.ID3.Test.DataBase.SQL.Models.A_ProduitInfos
+import com.example.clientjetpack.ID3.Test.DataBase.SQL.Models.B_ClientInfos
+import com.example.clientjetpack.ID3.Test.DataBase.SQL.Models.C_TypeTarificationInfos
+import com.example.clientjetpack.ID3.Test.DataBase.SQL.Models.D_TarificationInfos
+import com.example.clientjetpack.ID3.Test.DataBase.SQL.Models.DataBasesInfosSql
+import com.example.clientjetpack.ID3.Test.DataBase.SQL.Models.TypeTarificationEnum
 import com.google.android.gms.tasks.Task
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
