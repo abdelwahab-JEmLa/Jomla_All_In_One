@@ -5,7 +5,7 @@ import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.B_ClientInfos
 import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.C_TypeTarificationInfos
 import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.D_TarificationInfos
 import kotlinx.coroutines.flow.StateFlow
-interface _InfosSqlDataBases_GroupeRepositorys {
+interface InfosSqlDataBasesRepositorys {
     interface A_ProduitInfos_Repository {
         var modelList: List<A_ProduitInfos>
         val modelListFlow: StateFlow<List<A_ProduitInfos>>

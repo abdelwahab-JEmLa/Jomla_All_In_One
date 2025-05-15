@@ -4,8 +4,8 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.example.clientjetpack.ID3.Test.DataBase.FireBaseHandler
-import com.example.clientjetpack.ID3.Test.DataBase.Repo._InfosSqlDataBases_GroupeRepositorys
-import com.example.clientjetpack.ID3.Test.DataBase.Repo._InfosSqlDataBases_GroupeRepositorysImp
+import com.example.clientjetpack.ID3.Test.DataBase.Repo.InfosSqlDataBasesRepositorys
+import com.example.clientjetpack.ID3.Test.DataBase.Repo.InfosSqlDataBasesRepositorysImp
 import com.example.clientjetpack.ID3.Test.DataBase.TestAppDatabase
 import com.example.clientjetpack.Modules.LogFilterRule
 import kotlinx.coroutines.Dispatchers
@@ -24,6 +24,7 @@ import org.koin.core.context.stopKoin
 import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.inject
+
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 class __ID3InstrumentalTest : KoinTest {
@@ -40,7 +41,7 @@ class __ID3InstrumentalTest : KoinTest {
     private val testDispatcher = StandardTestDispatcher()
 
     // Use the implementation class instead of the interface
-    private val repositoriesImpl: _InfosSqlDataBases_GroupeRepositorysImp by inject()
+    private val infosSqlDataBasesRepositorysImp: InfosSqlDataBasesRepositorysImp by inject()
 
     @Before
     fun setup() = runTest {
@@ -54,15 +55,15 @@ class __ID3InstrumentalTest : KoinTest {
                         TestAppDatabase.getTestDatabase(InstrumentationRegistry.getInstrumentation().targetContext)
                     }
 
-                    single<_InfosSqlDataBases_GroupeRepositorys> {
-                        _InfosSqlDataBases_GroupeRepositorysImp(
+                    single<InfosSqlDataBasesRepositorys> {
+                        InfosSqlDataBasesRepositorysImp(
                             InstrumentationRegistry.getInstrumentation().targetContext,
                             get()
                         )
                     }
 
                     single {
-                        _InfosSqlDataBases_GroupeRepositorysImp(
+                        InfosSqlDataBasesRepositorysImp(
                             InstrumentationRegistry.getInstrumentation().targetContext,
                             get()
                         )

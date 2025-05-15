@@ -14,15 +14,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class _InfosSqlDataBases_GroupeRepositorysImp(
+class InfosSqlDataBasesRepositorysImp(
     private val context: Context,
     val database: TestAppDatabase
-) : _InfosSqlDataBases_GroupeRepositorys {
+) : InfosSqlDataBasesRepositorys {
     private val fireBaseHandler = FireBaseHandler()
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     // Implementation of A_ProduitInfos_Repository
-    inner class A_ProduitInfos_RepositoryImpl : _InfosSqlDataBases_GroupeRepositorys.A_ProduitInfos_Repository {
+    inner class A_ProduitInfos_RepositoryImpl : InfosSqlDataBasesRepositorys.A_ProduitInfos_Repository {
         private val _modelListFlow = MutableStateFlow<List<A_ProduitInfos>>(emptyList())
         override var modelList: List<A_ProduitInfos>
             get() = _modelListFlow.value
@@ -76,7 +76,7 @@ class _InfosSqlDataBases_GroupeRepositorysImp(
     }
 
     // Implementation of B_ClientInfos_Repository
-    inner class B_ClientInfos_RepositoryImpl : _InfosSqlDataBases_GroupeRepositorys.B_ClientInfos_Repository {
+    inner class B_ClientInfos_RepositoryImpl : InfosSqlDataBasesRepositorys.B_ClientInfos_Repository {
         private val _modelListFlow = MutableStateFlow<List<B_ClientInfos>>(emptyList())
         override var modelList: List<B_ClientInfos>
             get() = _modelListFlow.value
@@ -136,7 +136,7 @@ class _InfosSqlDataBases_GroupeRepositorysImp(
         }
     }
     // Implementation of C_TypeTarificationInfos_Repository
-    inner class C_TypeTarificationInfos_RepositoryImpl : _InfosSqlDataBases_GroupeRepositorys.C_TypeTarificationInfos_Repository {
+    inner class C_TypeTarificationInfos_RepositoryImpl : InfosSqlDataBasesRepositorys.C_TypeTarificationInfos_Repository {
         private val _modelListFlow = MutableStateFlow<List<C_TypeTarificationInfos>>(emptyList())
         override var modelList: List<C_TypeTarificationInfos>
             get() = _modelListFlow.value
@@ -188,7 +188,7 @@ class _InfosSqlDataBases_GroupeRepositorysImp(
         }
     }
     // Implementation of D_TarificationInfos_Repository
-    inner class D_TarificationInfos_RepositoryImpl : _InfosSqlDataBases_GroupeRepositorys.D_TarificationInfos_Repository {
+    inner class D_TarificationInfos_RepositoryImpl : InfosSqlDataBasesRepositorys.D_TarificationInfos_Repository {
         private val _modelListFlow = MutableStateFlow<List<D_TarificationInfos>>(emptyList())
         override var modelList: List<D_TarificationInfos>
             get() = _modelListFlow.value

@@ -12,6 +12,7 @@ import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.A_ProduitInfos
 import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.B_ClientInfos
 import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.C_TypeTarificationInfos
 import com.example.clientjetpack.ID3.Test.DataBase.Repo.Models.D_TarificationInfos
+
 @Database(
     entities = [
         A_ProduitInfos::class,
