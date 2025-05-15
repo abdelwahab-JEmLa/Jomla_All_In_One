@@ -200,8 +200,6 @@ class __ID2InstrumentalTest : KoinTest {
             }
         }
     }
-    //<--
-    //TODO(1): cree un test pour trouve pk je ne trouve pas les data seted au firebase database 
 
     fun createTimestamp(year: Int = 2025, month: Int = 5, day: Int, hour: Int, minute: Int): Long {
         val calendar = Calendar.getInstance()
