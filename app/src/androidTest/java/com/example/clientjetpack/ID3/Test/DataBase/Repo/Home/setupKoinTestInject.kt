@@ -24,7 +24,7 @@ fun setupKoinTestInject(testScheduler: TestCoroutineScheduler? = null) {
                     InfosSqlDataBasesRepository(
                         get(),
                         get(),
-                        testDispatcher ?: kotlinx.coroutines.Dispatchers.IO, // Use test dispatcher if provided
+                        testDispatcher ?: kotlinx.coroutines.Dispatchers.IO,
                     )
                 }
                 single { FireBaseHandler() }
