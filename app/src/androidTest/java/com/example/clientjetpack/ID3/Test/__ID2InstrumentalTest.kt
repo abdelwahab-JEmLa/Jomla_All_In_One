@@ -1,4 +1,4 @@
-package com.example.clientjetpack.ID1.Test.ID2.Test
+package com.example.clientjetpack.ID3.Test
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
