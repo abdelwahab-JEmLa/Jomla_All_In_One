@@ -84,47 +84,42 @@ class __ID3InstrumentalTest : KoinTest {
     }
 
     private fun assertDataMatchesExpected(expected: DataBasesInfosSql, actual: DataBasesInfosSql) {
-        // Products
+        Products(expected, actual)
+
+        Clients(expected, actual)
+
+        Tarifications(expected, actual)
+
+        TypeTarifications(expected, actual)
+    }
+
+    private fun TypeTarifications(
+        expected: DataBasesInfosSql,
+        actual: DataBasesInfosSql
+    ) {
+        // Type Tarifications (which were missing in the original test)
         assertEquals(
-            "Products list size should match",
-            expected.a_ProduitInfos.size,
-            actual.a_ProduitInfos.size
+            "Type Tarifications list size should match",
+            expected.c_TypeTarificationInfos.size,
+            actual.c_TypeTarificationInfos.size
         )
 
-        expected.a_ProduitInfos.forEach { expectedProduct ->
-            val actualProduct = actual.a_ProduitInfos.find { it.id == expectedProduct.id }
-                ?: throw AssertionError("Product with ID ${expectedProduct.id} not found")
+        expected.c_TypeTarificationInfos.forEach { expectedType ->
+            val actualType = actual.c_TypeTarificationInfos.find { it.id == expectedType.id }
+                ?: throw AssertionError("Type Tarification with ID ${expectedType.id} not found")
 
             assertEquals(
-                "Product name should match for ID ${expectedProduct.id}",
-                expectedProduct.nom,
-                actualProduct.nom
+                "Type Tarification enum should match for ID ${expectedType.id}",
+                expectedType.typeTarificationEnum,
+                actualType.typeTarificationEnum
             )
         }
+    }
 
-        // Clients
-        assertEquals(
-            "Clients list size should match",
-            expected.b_ClientInfos.size,
-            actual.b_ClientInfos.size
-        )
-
-        expected.b_ClientInfos.forEach { expectedClient ->
-            val actualClient = actual.b_ClientInfos.find { it.id == expectedClient.id }
-                ?: throw AssertionError("Client with ID ${expectedClient.id} not found")
-
-            assertEquals(
-                "Client name should match for ID ${expectedClient.id}",
-                expectedClient.nom,
-                actualClient.nom
-            )
-            assertEquals(
-                "Client active tarification ID should match for ID ${expectedClient.id}",
-                expectedClient.idActiveTypeTarificationDataBase,
-                actualClient.idActiveTypeTarificationDataBase
-            )
-        }
-
+    private fun Tarifications(
+        expected: DataBasesInfosSql,
+        actual: DataBasesInfosSql
+    ) {
         // Tarifications
         assertEquals(
             "Tarifications list size should match",
@@ -133,8 +128,9 @@ class __ID3InstrumentalTest : KoinTest {
         )
 
         expected.d_TarificationInfos.forEach { expectedTarif ->
-            val actualTarif = actual.d_TarificationInfos.find { it.vidTimestamp == expectedTarif.vidTimestamp }
-                ?: throw AssertionError("Tarification with timestamp ${expectedTarif.vidTimestamp} not found")
+            val actualTarif =
+                actual.d_TarificationInfos.find { it.vidTimestamp == expectedTarif.vidTimestamp }
+                    ?: throw AssertionError("Tarification with timestamp ${expectedTarif.vidTimestamp} not found")
 
             assertEquals(
                 "Tarification product ID should match for timestamp ${expectedTarif.vidTimestamp}",
@@ -158,22 +154,55 @@ class __ID3InstrumentalTest : KoinTest {
                 0.01
             )
         }
+    }
 
-        // Type Tarifications (which were missing in the original test)
+    private fun Clients(
+        expected: DataBasesInfosSql,
+        actual: DataBasesInfosSql
+    ) {
+        // Clients
         assertEquals(
-            "Type Tarifications list size should match",
-            expected.c_TypeTarificationInfos.size,
-            actual.c_TypeTarificationInfos.size
+            "Clients list size should match",
+            expected.b_ClientInfos.size,
+            actual.b_ClientInfos.size
         )
 
-        expected.c_TypeTarificationInfos.forEach { expectedType ->
-            val actualType = actual.c_TypeTarificationInfos.find { it.id == expectedType.id }
-                ?: throw AssertionError("Type Tarification with ID ${expectedType.id} not found")
+        expected.b_ClientInfos.forEach { expectedClient ->
+            val actualClient = actual.b_ClientInfos.find { it.id == expectedClient.id }
+                ?: throw AssertionError("Client with ID ${expectedClient.id} not found")
 
             assertEquals(
-                "Type Tarification enum should match for ID ${expectedType.id}",
-                expectedType.typeTarificationEnum,
-                actualType.typeTarificationEnum
+                "Client name should match for ID ${expectedClient.id}",
+                expectedClient.nom,
+                actualClient.nom
+            )
+            assertEquals(
+                "Client active tarification ID should match for ID ${expectedClient.id}",
+                expectedClient.idActiveTypeTarificationDataBase,
+                actualClient.idActiveTypeTarificationDataBase
+            )
+        }
+    }
+
+    private fun Products(
+        expected: DataBasesInfosSql,
+        actual: DataBasesInfosSql
+    ) {
+        // Products
+        assertEquals(
+            "Products list size should match",
+            expected.a_ProduitInfos.size,
+            actual.a_ProduitInfos.size
+        )
+
+        expected.a_ProduitInfos.forEach { expectedProduct ->
+            val actualProduct = actual.a_ProduitInfos.find { it.id == expectedProduct.id }
+                ?: throw AssertionError("Product with ID ${expectedProduct.id} not found")
+
+            assertEquals(
+                "Product name should match for ID ${expectedProduct.id}",
+                expectedProduct.nom,
+                actualProduct.nom
             )
         }
     }
