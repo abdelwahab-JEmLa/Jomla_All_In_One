@@ -13,7 +13,6 @@ import com.example.clientjetpack.Modules.LogFilterRule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestCoroutineScheduler
 import kotlinx.coroutines.test.resetMain
@@ -30,8 +29,6 @@ import org.koin.core.context.stopKoin
 import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.inject
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
@@ -285,33 +282,25 @@ class __ID3InstrumentalTest : KoinTest {
 
     @Test
     fun testFlowWorksAndAssertEqualsTestData() = runTest(testDispatcher) {
-        suspendCoroutine { continuation ->
-            infosSqlDataBasesRepository.deleteAll {
-                infosSqlDataBasesRepository.add(testDatas) {
-                    launch {
-                        // Wait for test dispatcher to process all coroutines
-                        testScheduler.advanceUntilIdle()
+        // First, delete all existing data
+        infosSqlDataBasesRepository.deleteAll()
+        // Advance time to process all coroutines related to deletion
+        testScheduler.advanceUntilIdle()
 
-                        val actualDataList = infosSqlDataBasesRepository.modelListFlow.first()
-                        val actualData = actualDataList.firstOrNull()
-                            ?: throw AssertionError("Expected data not found")
-                        assertDataMatchesExpected(testDatas, actualData)
+        // Add test data
+        infosSqlDataBasesRepository.add(testDatas)
+        // Advance time to process all coroutines related to adding data
+        testScheduler.advanceUntilIdle()
 
-                        // Wait for test dispatcher to process all coroutines
-                        testScheduler.advanceUntilIdle()
+        // Now collect and verify data from the repository
+        val actualDataList = infosSqlDataBasesRepository.modelListFlow.first()
+        val actualData = actualDataList.firstOrNull()
+            ?: throw AssertionError("Expected data not found")
+        assertDataMatchesExpected(testDatas, actualData)
 
-                        val actualDatanoSqlDataFlow =
-                            convertiseurNoSqlToSqlRepository.noSqlDataFlow.first()
-                        assertDataMatchesExpectedNoSql(
-                            testDatasProduitNoSqlDataBase(),
-                            actualDatanoSqlDataFlow
-                        )
-                        continuation.resume(Unit)
-                        continuation.resume(Unit)
-                    }
-                }
-            }
-        }
+        // Collect and verify NoSQL data
+        val actualDatanoSqlDataFlow = convertiseurNoSqlToSqlRepository.noSqlDataFlow.first()
+        assertDataMatchesExpectedNoSql(testDatasProduitNoSqlDataBase(), actualDatanoSqlDataFlow)
     }
 
     private fun assertDataMatchesExpected(expected: DataBasesInfosSql, actual: DataBasesInfosSql) {

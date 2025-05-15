@@ -1,3 +1,4 @@
+// Modify the InfosSqlDataBasesRepository to support suspending functions
 package com.example.clientjetpack.ID3.Test.DataBase.SQL
 
 import com.example.clientjetpack.ID3.Test.DataBase.SQL.Home.FireBaseHandler
@@ -63,18 +64,30 @@ class InfosSqlDataBasesRepository(
         }
     }
 
-    fun add(
-        data: DataBasesInfosSql,
-        onSuccess: () -> Unit={}
+    // Modified to support suspending operations
+    suspend fun add(
+        data: DataBasesInfosSql
     ) {
-        coroutineScope.launch {
+        withContext(ioDispatcher) {
             try {
                 insertToRoom(data)
                 setToFireBase(data)
+                collectLatestData()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
 
-                collectLatestData {
-                    onSuccess()
-                }
+    // Add non-suspending version with callback for backward compatibility
+    fun add(
+        data: DataBasesInfosSql,
+        onSuccess: () -> Unit = {}
+    ) {
+        coroutineScope.launch {
+            try {
+                add(data)
+                onSuccess()
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -82,7 +95,7 @@ class InfosSqlDataBasesRepository(
     }
 
     private suspend fun collectLatestData(
-        onSuccess: () -> Unit={}
+        onSuccess: () -> Unit = {}
     ) {
         try {
             val produits = database.a_ProduitInfosDao().getAllProduitsSync()
@@ -107,7 +120,7 @@ class InfosSqlDataBasesRepository(
 
     private suspend fun insertToRoom(
         data: DataBasesInfosSql,
-        onSuccess: () -> Unit={}
+        onSuccess: () -> Unit = {}
     ) {
         withContext(ioDispatcher) {
             database.a_ProduitInfosDao().insertAll(data.a_ProduitInfos)
@@ -118,19 +131,29 @@ class InfosSqlDataBasesRepository(
         }
     }
 
-    fun deleteAll(
-        onSuccess: () -> Unit={}
-    ) {
-        coroutineScope.launch {
+    // Modified to support suspending operations
+    suspend fun deleteAll() {
+        withContext(ioDispatcher) {
             try {
                 database.a_ProduitInfosDao().deleteAll()
                 database.b_ClientInfosDao().deleteAll()
                 database.c_TypeTarificationInfosDao().deleteAll()
                 database.dTarificationInfosDao().deleteAll()
+                collectLatestData()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
 
-                collectLatestData {
-                    onSuccess()
-                }
+    // Add non-suspending version with callback for backward compatibility
+    fun deleteAll(
+        onSuccess: () -> Unit = {}
+    ) {
+        coroutineScope.launch {
+            try {
+                deleteAll()
+                onSuccess()
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -139,10 +162,10 @@ class InfosSqlDataBasesRepository(
 
     private fun setToFireBase(
         dataBasesInfosSql: DataBasesInfosSql,
-        onSuccess: () -> Unit={}
+        onSuccess: () -> Unit = {}
     ) {
         try {
-            fireBaseHandler.addToFirebaseAsync(dataBasesInfosSql){
+            fireBaseHandler.addToFirebaseAsync(dataBasesInfosSql) {
                 onSuccess()
             }
         } catch (e: Exception) {

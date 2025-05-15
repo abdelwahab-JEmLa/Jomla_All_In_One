@@ -15,18 +15,18 @@ import kotlinx.coroutines.withContext
 import com.example.clientjetpack.ID3.Test.DataBase.SQL.Models.B_ClientInfos as SqlClientInfos
 
 class ConvertiseurNoSqlToSqlRepository(
-    private val sqlRepository: InfosSqlDataBasesRepository ,
+    private val sqlRepository: InfosSqlDataBasesRepository,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
-
 ) {
     private val coroutineScope = CoroutineScope(ioDispatcher)
 
-    // State flow pour les données NoSQL
+    // State flow for NoSQL data
     private val _noSqlDataFlow = MutableStateFlow(ProduitNoSqlDataBase(emptyList()))
     val noSqlDataFlow: StateFlow<ProduitNoSqlDataBase> = _noSqlDataFlow.asStateFlow()
 
     init {
         coroutineScope.launch {
+            // Collect SQL data changes and convert to NoSQL format
             sqlRepository.modelListFlow.collect { sqlDataList ->
                 if (sqlDataList.isNotEmpty()) {
                     val noSqlData = convertSqlToNoSql()
@@ -39,67 +39,74 @@ class ConvertiseurNoSqlToSqlRepository(
     suspend fun convertSqlToNoSql(
         onSuccess: () -> Unit = {}
     ): ProduitNoSqlDataBase {
-        return withContext(Dispatchers.Default) {
-            // Get the latest data from the SQL repository
-            val sqlData = sqlRepository.modelListFlow.first().firstOrNull()
-                ?: return@withContext ProduitNoSqlDataBase(emptyList())
+        return withContext(ioDispatcher) {
+            try {
+                // Get the latest data from the SQL repository
+                val sqlDataList = sqlRepository.modelListFlow.first()
+                if (sqlDataList.isEmpty()) {
+                    return@withContext ProduitNoSqlDataBase(emptyList())
+                }
 
-            val produits = sqlData.a_ProduitInfos
-            val clients = sqlData.b_ClientInfos
-            val typeTarifications = sqlData.c_TypeTarificationInfos
-            val tarifications = sqlData.d_TarificationInfos
+                val sqlData = sqlDataList.first()
 
-            val produitsList = produits.map { produit ->
-                // Find all tarifications for this product
-                val produitTarifications = tarifications.filter { it.idProduit == produit.id }
+                // Process each product
+                val produitsList = sqlData.a_ProduitInfos.map { produit ->
+                    // Get all tarifications for this product
+                    val produitTarifications = sqlData.d_TarificationInfos.filter { it.idProduit == produit.id }
 
-                // Group by client
-                val clientMap = produitTarifications.groupBy { it.idClient }
+                    // Group tarifications by client ID
+                    val clientGroups = produitTarifications.groupBy { it.idClient }
 
-                val clientAcheteurs = clientMap.map { (clientId, clientTarifications) ->
-                    // Find client info
-                    val clientInfo = clients.find { it.id == clientId } ?: SqlClientInfos(clientId)
+                    // Process each client group
+                    val clientAcheteurs = clientGroups.map { (clientId, clientTarifications) ->
+                        // Find client info
+                        val clientInfo = sqlData.b_ClientInfos.find { it.id == clientId }
+                            ?: SqlClientInfos(id = clientId)
 
-                    // Group by tarification type
-                    val typeTarificationMap = clientTarifications.groupBy { it.idTypeTarification }
+                        // Group by tarification type
+                        val typeGroups = clientTarifications.groupBy { it.idTypeTarification }
 
-                    val typeTarifications = typeTarificationMap.map { (typeId, tarificationsForType) ->
-                        // Find tarification type info
-                        val typeInfo = typeTarifications.find { it.id == typeId }
-                            ?: C_TypeTarificationInfos(typeId)
+                        // Process each tarification type
+                        val typeTarifications = typeGroups.map { (typeId, tarificationsForType) ->
+                            // Find type info
+                            val typeInfo = sqlData.c_TypeTarificationInfos.find { it.id == typeId }
+                                ?: C_TypeTarificationInfos(id = typeId)
 
-                        // Create price list
-                        val prix = tarificationsForType.map { tarif ->
-                            ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix(
-                                vidTimestamp = tarif.vidTimestamp,
-                                valeur = tarif.prixCurrency
+                            // Create price list
+                            val prixList = tarificationsForType.map { tarif ->
+                                ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix(
+                                    vidTimestamp = tarif.vidTimestamp,
+                                    valeur = tarif.prixCurrency
+                                )
+                            }
+
+                            ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification(
+                                vidTimestamp = System.currentTimeMillis(),
+                                infosId = typeInfo.id,
+                                PrixsCurrency = prixList
                             )
                         }
 
-                        ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification(
+                        ProduitNoSqlDataBase.Produit.ClientAchteur(
                             vidTimestamp = System.currentTimeMillis(),
-                            infosId = typeInfo.id,
-                            PrixsCurrency = prix
+                            infosId = clientInfo.id,
+                            typeTarification = typeTarifications
                         )
                     }
 
-                    ProduitNoSqlDataBase.Produit.ClientAchteur(
+                    ProduitNoSqlDataBase.Produit(
                         vidTimestamp = System.currentTimeMillis(),
-                        infosId = clientInfo.id,
-                        typeTarification = typeTarifications
+                        infosId = produit.id,
+                        clientAchteurs = clientAcheteurs
                     )
                 }
 
-                ProduitNoSqlDataBase.Produit(
-                    vidTimestamp = System.currentTimeMillis(),
-                    infosId = produit.id,
-                    clientAchteurs = clientAcheteurs
-                )
+                onSuccess()
+                ProduitNoSqlDataBase(produitsList)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                ProduitNoSqlDataBase(emptyList())
             }
-
-            val result = ProduitNoSqlDataBase(produitsList)
-            onSuccess()
-            result
         }
     }
 }
