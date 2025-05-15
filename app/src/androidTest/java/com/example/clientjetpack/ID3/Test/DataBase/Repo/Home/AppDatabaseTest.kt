@@ -37,8 +37,8 @@ abstract class TestAppDatabase : RoomDatabase() {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
-                    TestAppDatabase::class.java,  // Fixed: Use TestAppDatabase instead of AppDatabase
-                    "test_database"               // Changed: Use a different name for test database
+                    TestAppDatabase::class.java,
+                    "test_database"
                 )
                     .fallbackToDestructiveMigration()
                     .build()
