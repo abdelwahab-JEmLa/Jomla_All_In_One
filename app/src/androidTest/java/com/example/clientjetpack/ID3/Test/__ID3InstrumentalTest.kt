@@ -89,89 +89,197 @@ class __ID3InstrumentalTest : KoinTest {
         stopKoin()
     }
 
-    @Test
-    fun id2Test() = runTest(testDispatcher) {
-        suspendCoroutine { continuation ->
-            launch {
-                // First, ensure we have test data in the SQL repository
-                infosSqlDataBasesRepository.deleteAll {
-                    infosSqlDataBasesRepository.add(testDatas) {
-                        launch {
-                            val actualData = convertiseurNoSqlToSqlRepository.noSqlDataFlow.first()
-                            assertDataMatchesExpectedDontconvertiseurNoSqlToSqlRepository(
-                                testDatas,
-                                actualData
-                            )
-                            continuation.resume(Unit)
-                        }
+
+    private fun assertDataMatchesExpectedNoSql(
+        expected: ProduitNoSqlDataBase,
+        actual: ProduitNoSqlDataBase
+    ) {
+        // Compare the top-level list size
+        assertEquals(
+            "Products list size should match",
+            expected.produits.size,
+            actual.produits.size
+        )
+
+        // Compare each product
+        expected.produits.forEach { expectedProduit ->
+            val actualProduit = actual.produits.find { it.infosId == expectedProduit.infosId }
+                ?: throw AssertionError("Product with ID ${expectedProduit.infosId} not found")
+
+            // Compare client list size
+            assertEquals(
+                "Client list size should match for product ID ${expectedProduit.infosId}",
+                expectedProduit.clientAchteurs.size,
+                actualProduit.clientAchteurs.size
+            )
+
+            // Compare each client
+            expectedProduit.clientAchteurs.forEach { expectedClient ->
+                val actualClient =
+                    actualProduit.clientAchteurs.find { it.infosId == expectedClient.infosId }
+                        ?: throw AssertionError("Client with ID ${expectedClient.infosId} not found for product ID ${expectedProduit.infosId}")
+
+                // Compare type tarification list size
+                assertEquals(
+                    "Type tarification list size should match for client ID ${expectedClient.infosId}",
+                    expectedClient.typeTarification.size,
+                    actualClient.typeTarification.size
+                )
+
+                // Compare each type tarification
+                expectedClient.typeTarification.forEach { expectedType ->
+                    val actualType =
+                        actualClient.typeTarification.find { it.infosId == expectedType.infosId }
+                            ?: throw AssertionError("Type tarification with ID ${expectedType.infosId} not found for client ID ${expectedClient.infosId}")
+
+                    // Compare prices list size
+                    assertEquals(
+                        "Prices list size should match for type tarification ID ${expectedType.infosId}",
+                        expectedType.PrixsCurrency.size,
+                        actualType.PrixsCurrency.size
+                    )
+
+                    // Compare each price
+                    expectedType.PrixsCurrency.forEach { expectedPrix ->
+                        val actualPrix =
+                            actualType.PrixsCurrency.find { it.vidTimestamp == expectedPrix.vidTimestamp }
+                                ?: throw AssertionError("Price with timestamp ${expectedPrix.vidTimestamp} not found for type tarification ID ${expectedType.infosId}")
+
+                        assertEquals(
+                            "Price value should match for timestamp ${expectedPrix.vidTimestamp}",
+                            expectedPrix.valeur,
+                            actualPrix.valeur,
+                            0.01
+                        )
                     }
                 }
             }
         }
     }
 
-    private fun assertDataMatchesExpectedDontconvertiseurNoSqlToSqlRepository(
-        expected: DataBasesInfosSql,
-        actual: ProduitNoSqlDataBase
-    ) {
-        assertEquals(
-            "Products list size should match",
-            expected.a_ProduitInfos.size,
-            actual.produits.size
-        )
-
-        expected.a_ProduitInfos.forEach { expectedProduct ->
-            val actualProduct = actual.produits.find { it.infosId == expectedProduct.id }     //->
-            //TODO(FIXME):Fix erreur Variable 'actualProduct' is never used
-                ?: throw AssertionError("NoSQL Product with ID ${expectedProduct.id} not found")
-        }
-
-        val expectedClients = expected.b_ClientInfos
-        val actualClientIds =
-            actual.produits.flatMap { it.clientAchteurs }.map { it.infosId }.distinct()
-
-        assertEquals(
-            "Client list size should match",
-            expectedClients.size,
-            actualClientIds.size
-        )
-
-        expectedClients.forEach { expectedClient ->
-            val clientExists = actualClientIds.any { it == expectedClient.id }
-            if (!clientExists) {
-                throw AssertionError("NoSQL Client with ID ${expectedClient.id} not found")
-            }
-        }
-
-        // Check tarifications
-        val expectedTarifications = expected.d_TarificationInfos
-        var foundTarificationCount = 0
-
-        actual.produits.forEach { produit ->
-            produit.clientAchteurs.forEach { client ->
-                client.typeTarification.forEach { typeTarif ->
-                    foundTarificationCount += typeTarif.PrixsCurrency.size
-
-                    typeTarif.PrixsCurrency.forEach { prix ->
-                        val expectedTarif =
-                            expectedTarifications.find { it.vidTimestamp == prix.vidTimestamp }
-                        if (expectedTarif != null) {
-                            assertEquals(
-                                "Price value should match for timestamp ${prix.vidTimestamp}",
-                                expectedTarif.prixCurrency,
-                                prix.valeur,
-                                0.01
+    fun testDatasProduitNoSqlDataBase(): ProduitNoSqlDataBase {
+        // This should match the structure expected after conversion from testDatas()
+        return ProduitNoSqlDataBase(
+            produits = listOf(
+                // Produit 1: "Produit Optila"
+                ProduitNoSqlDataBase.Produit(
+                    vidTimestamp = System.currentTimeMillis(),  // Exact timestamp doesn't matter in test
+                    infosId = 1,
+                    clientAchteurs = listOf(
+                        // Client 1: "ClientAchteur Abderrahman"
+                        ProduitNoSqlDataBase.Produit.ClientAchteur(
+                            vidTimestamp = System.currentTimeMillis(),
+                            infosId = 1,
+                            typeTarification = listOf(
+                                // Type Tarification 1: "ParBenifice"
+                                ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification(
+                                    vidTimestamp = System.currentTimeMillis(),
+                                    infosId = 1,
+                                    PrixsCurrency = listOf(
+                                        // Two prices for this combination
+                                        ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix(
+                                            vidTimestamp = createTimestamp(
+                                                day = 1,
+                                                hour = 12,
+                                                minute = 30
+                                            ),
+                                            valeur = 20.99
+                                        ),
+                                        ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix(
+                                            vidTimestamp = createTimestamp(
+                                                day = 5,
+                                                hour = 13,
+                                                minute = 30
+                                            ),
+                                            valeur = 25.50
+                                        )
+                                    )
+                                )
                             )
-                        }
-                    }
-                }
-            }
-        }
-
-        assertEquals(
-            "Tarification count should match",
-            expectedTarifications.size,
-            foundTarificationCount
+                        ),
+                        // Client 2: "ClientAchteur Beta"
+                        ProduitNoSqlDataBase.Produit.ClientAchteur(
+                            vidTimestamp = System.currentTimeMillis(),
+                            infosId = 2,
+                            typeTarification = listOf(
+                                // Type Tarification 2: "Historique"
+                                ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification(
+                                    vidTimestamp = System.currentTimeMillis(),
+                                    infosId = 2,
+                                    PrixsCurrency = listOf(
+                                        ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix(
+                                            vidTimestamp = createTimestamp(
+                                                day = 5,
+                                                hour = 14,
+                                                minute = 30
+                                            ),
+                                            valeur = 9.75
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
+                ),
+                // Produit 2: "Produit Hnina"
+                ProduitNoSqlDataBase.Produit(
+                    vidTimestamp = System.currentTimeMillis(),
+                    infosId = 2,
+                    clientAchteurs = listOf(
+                        // Client 1: "ClientAchteur Abderrahman"
+                        ProduitNoSqlDataBase.Produit.ClientAchteur(
+                            vidTimestamp = System.currentTimeMillis(),
+                            infosId = 1,
+                            typeTarification = listOf(
+                                // Type Tarification 1: "ParBenifice"
+                                ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification(
+                                    vidTimestamp = System.currentTimeMillis(),
+                                    infosId = 1,
+                                    PrixsCurrency = listOf(
+                                        ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix(
+                                            vidTimestamp = createTimestamp(
+                                                day = 6,
+                                                hour = 3,
+                                                minute = 30
+                                            ),
+                                            valeur = 15.25
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
+                ),
+                // Produit 3: "Produit kemya"
+                ProduitNoSqlDataBase.Produit(
+                    vidTimestamp = System.currentTimeMillis(),
+                    infosId = 3,
+                    clientAchteurs = listOf(
+                        // Client 1: "ClientAchteur Abderrahman"
+                        ProduitNoSqlDataBase.Produit.ClientAchteur(
+                            vidTimestamp = System.currentTimeMillis(),
+                            infosId = 1,
+                            typeTarification = listOf(
+                                // Type Tarification 3: "LeMaxPrixArrive"
+                                ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification(
+                                    vidTimestamp = System.currentTimeMillis(),
+                                    infosId = 3,
+                                    PrixsCurrency = listOf(
+                                        ProduitNoSqlDataBase.Produit.ClientAchteur.TypeTarification.Prix(
+                                            vidTimestamp = createTimestamp(
+                                                day = 6,
+                                                hour = 4,
+                                                minute = 30
+                                            ),
+                                            valeur = 14.80
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            )
         )
     }
 
@@ -181,10 +289,24 @@ class __ID3InstrumentalTest : KoinTest {
             infosSqlDataBasesRepository.deleteAll {
                 infosSqlDataBasesRepository.add(testDatas) {
                     launch {
+                        // Wait for test dispatcher to process all coroutines
+                        testScheduler.advanceUntilIdle()
+
                         val actualDataList = infosSqlDataBasesRepository.modelListFlow.first()
                         val actualData = actualDataList.firstOrNull()
                             ?: throw AssertionError("Expected data not found")
                         assertDataMatchesExpected(testDatas, actualData)
+
+                        // Wait for test dispatcher to process all coroutines
+                        testScheduler.advanceUntilIdle()
+
+                        val actualDatanoSqlDataFlow =
+                            convertiseurNoSqlToSqlRepository.noSqlDataFlow.first()
+                        assertDataMatchesExpectedNoSql(
+                            testDatasProduitNoSqlDataBase(),
+                            actualDatanoSqlDataFlow
+                        )
+                        continuation.resume(Unit)
                         continuation.resume(Unit)
                     }
                 }
@@ -198,4 +320,5 @@ class __ID3InstrumentalTest : KoinTest {
         Tarifications(expected, actual)
         TypeTarifications(expected, actual)
     }
+
 }

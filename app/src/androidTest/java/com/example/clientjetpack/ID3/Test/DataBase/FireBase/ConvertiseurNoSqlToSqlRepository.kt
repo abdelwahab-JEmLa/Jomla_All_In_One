@@ -3,6 +3,7 @@ package com.example.clientjetpack.ID3.Test.DataBase.FireBase
 import com.example.clientjetpack.ID3.Test.DataBase.FireBase.Model.ProduitNoSqlDataBase
 import com.example.clientjetpack.ID3.Test.DataBase.SQL.InfosSqlDataBasesRepository
 import com.example.clientjetpack.ID3.Test.DataBase.SQL.Models.C_TypeTarificationInfos
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,9 +15,11 @@ import kotlinx.coroutines.withContext
 import com.example.clientjetpack.ID3.Test.DataBase.SQL.Models.B_ClientInfos as SqlClientInfos
 
 class ConvertiseurNoSqlToSqlRepository(
-    private val sqlRepository: InfosSqlDataBasesRepository
+    private val sqlRepository: InfosSqlDataBasesRepository ,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+
 ) {
-    private val coroutineScope = CoroutineScope(Dispatchers.Default)
+    private val coroutineScope = CoroutineScope(ioDispatcher)
 
     // State flow pour les données NoSQL
     private val _noSqlDataFlow = MutableStateFlow(ProduitNoSqlDataBase(emptyList()))
