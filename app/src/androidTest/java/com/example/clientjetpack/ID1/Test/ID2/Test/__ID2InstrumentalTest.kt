@@ -84,15 +84,62 @@ class __ID2InstrumentalTest : KoinTest {
         Dispatchers.resetMain()
         stopKoin()
     }
+
     @Test
-    fun idTest2Num2() = runTest {
+    fun idT2N2_TestAddModelListFlow() = runTest {
+        // Clear existing data
+        with(repositoriesImpl) {
+            produitRepository.deleteAll()
+            clientRepository.deleteAll()
+            typeTarificationRepository.deleteAll()
+            tarificationRepository.deleteAll()
+        }
+
+        // Advance time to ensure deletions are processed
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Get test data
+        val testData = testDatas()
+
+        // Add products
+        testData.a_ProduitInfos.forEach { produit ->
+            repositoriesImpl.produitRepository.add(produit)
+        }
+
+        // Add clients
+        testData.b_ClientInfos.forEach { client ->
+            repositoriesImpl.clientRepository.add(client)
+        }
+
+        // Add tarifications
+        testData.d_TarificationInfos.forEach { tarification ->
+            repositoriesImpl.tarificationRepository.add(tarification)
+        }
+
+        // Give time for data to be inserted
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Collect data from flows
+        val produits = repositoriesImpl.produitRepository.modelListFlow.first()
+        val clients = repositoriesImpl.clientRepository.modelListFlow.first()
+        val tarifications = repositoriesImpl.tarificationRepository.modelListFlow.first()
+
+        val testProduit = testData.a_ProduitInfos.first()
+        val dbProduit = produits.find { it.id == testProduit.id }
+        assert(dbProduit?.nom == testProduit.nom) {
+            "Produit name mismatch for ID ${testProduit.id}"
+        }
         //<--
-        //TODO(1): fait ici 
+        //TODO(1): jout verification des autres
     }
 
     @Test
-    fun idTest2Num1() = runTest {//<--
-    //TODO(1): diminue la taiile et complicite de ca 
+    fun idT2N3_initRepositorys() = runTest {
+
+    }
+
+    @Test
+    fun idTest2Num1() = runTest {
         // First delete all existing data
         repositoriesImpl.produitRepository.deleteAll()
         repositoriesImpl.clientRepository.deleteAll()
@@ -133,7 +180,10 @@ class __ID2InstrumentalTest : KoinTest {
                 repositoriesImpl.clientRepository.add(client)
                 repositoriesImpl.clientRepository.update(client) { updatedClient ->
                     completedClients++
-                    LogFilterRule.log("InstrumentalTest", "Added/Updated client ${updatedClient.id}: ${updatedClient.nom}")
+                    LogFilterRule.log(
+                        "InstrumentalTest",
+                        "Added/Updated client ${updatedClient.id}: ${updatedClient.nom}"
+                    )
 
                     if (completedClients == expectedClients) {
                         continuation.resume(Unit)
@@ -150,7 +200,10 @@ class __ID2InstrumentalTest : KoinTest {
             testData.d_TarificationInfos.forEach { tarification ->
                 repositoriesImpl.tarificationRepository.add(tarification) {
                     completedTarifications++
-                    LogFilterRule.log("InstrumentalTest", "Added tarification with timestamp ${it.vidTimestamp}")
+                    LogFilterRule.log(
+                        "InstrumentalTest",
+                        "Added tarification with timestamp ${it.vidTimestamp}"
+                    )
 
                     if (completedTarifications == expectedTarifications) {
                         continuation.resume(Unit)
