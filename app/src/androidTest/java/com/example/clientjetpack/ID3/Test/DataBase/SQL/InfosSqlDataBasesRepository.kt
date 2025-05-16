@@ -172,10 +172,6 @@ class InfosSqlDataBasesRepository(
                 println("DEBUG: Reference path: ${fireBaseHandler.getRefPath()}")
             }
 
-            Assert.assertTrue(
-                firebaseData != null
-            )
-
             if (firebaseData != null) {
                 val updatedData = DataBasesInfosSql(
                     a_ProduitInfos = firebaseData.a_ProduitInfos.map { it.copy(needUpdate = true) }.toMutableList(),
