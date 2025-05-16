@@ -24,7 +24,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -38,12 +37,9 @@ import org.koin.androidx.compose.koinViewModel
 @Preview
 @Composable
 fun PreviewTest() {
-    val selectedProductId by remember { mutableLongStateOf(1L) }
-    val selectedClientId by remember { mutableLongStateOf(1L) }
-
     Fragment(
-        selectedProductId=selectedProductId,
-        selectedClientId=selectedClientId
+        selectedProductId=1,
+        selectedClientId=1
     )
 }
 
