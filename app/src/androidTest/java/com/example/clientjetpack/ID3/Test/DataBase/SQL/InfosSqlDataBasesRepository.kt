@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.junit.Assert
 
 class InfosSqlDataBasesRepository(
     val database: TestAppDatabase,
